@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -18,33 +19,33 @@ import com.dpdocter.beans.GeneralData;
 public class HistoryCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Indexed
-    private String patientId;
+    private ObjectId patientId;
 
     @Field
     private List<GeneralData> generalRecords;
 
     @Field
-    private List<String> familyhistory;
+    private List<ObjectId> familyhistory;
 
     @Field
-    private List<String> medicalhistory;
+    private List<ObjectId> medicalhistory;
 
     @Field
-    private List<String> specialNotes;
+    private List<ObjectId> specialNotes;
 
-    public HistoryCollection(String doctorId, String locationId, String hospitalId, String patientId) {
+    public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
 	super();
 	this.doctorId = doctorId;
 	this.locationId = locationId;
@@ -52,43 +53,43 @@ public class HistoryCollection extends GenericCollection {
 	this.patientId = patientId;
     }
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
-    public String getPatientId() {
+    public ObjectId getPatientId() {
 	return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(ObjectId patientId) {
 	this.patientId = patientId;
     }
 
@@ -100,27 +101,27 @@ public class HistoryCollection extends GenericCollection {
 	this.generalRecords = generalRecords;
     }
 
-    public List<String> getFamilyhistory() {
+    public List<ObjectId> getFamilyhistory() {
 	return familyhistory;
     }
 
-    public void setFamilyhistory(List<String> familyhistory) {
+    public void setFamilyhistory(List<ObjectId> familyhistory) {
 	this.familyhistory = familyhistory;
     }
 
-    public List<String> getMedicalhistory() {
+    public List<ObjectId> getMedicalhistory() {
 	return medicalhistory;
     }
 
-    public void setMedicalhistory(List<String> medicalhistory) {
+    public void setMedicalhistory(List<ObjectId> medicalhistory) {
 	this.medicalhistory = medicalhistory;
     }
 
-    public List<String> getSpecialNotes() {
+    public List<ObjectId> getSpecialNotes() {
 	return specialNotes;
     }
 
-    public void setSpecialNotes(List<String> specialNotes) {
+    public void setSpecialNotes(List<ObjectId> specialNotes) {
 	this.specialNotes = specialNotes;
     }
 

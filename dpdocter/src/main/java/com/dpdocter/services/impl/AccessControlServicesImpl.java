@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,9 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AcosRepository;
 import com.dpdocter.repository.ArosAcosRepository;
 import com.dpdocter.repository.ArosRepository;
-import com.dpdocter.repository.RoleRepository;
-import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.AccessControlServices;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class AccessControlServicesImpl implements AccessControlServices {
@@ -39,28 +40,19 @@ public class AccessControlServicesImpl implements AccessControlServices {
     @Autowired
     private ArosAcosRepository arosAcosRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public AccessControl getAccessControls(String roleOrUserId, String locationId, String hospitalId) {
+    public AccessControl getAccessControls(ObjectId roleOrUserId, ObjectId locationId, ObjectId hospitalId) {
 	AccessControl response = null;
-	try {
+	try {	
 	    response = new AccessControl();
 	    ArosCollection arosCollection = arosRepository.findOne(roleOrUserId, locationId, hospitalId);
 	    if (arosCollection != null) {
 		ArosAcosCollection arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
 		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
-		    Iterator<AcosCollection> acosCollectionIterator = acosRepository.findAll(arosAcosCollection.getAcosIds()).iterator();
+			List<AcosCollection> acosCollections = acosRepository.findAll(arosAcosCollection.getAcosIds());
 
-		    List<AcosCollection> acosCollections = IteratorUtils.toList(acosCollectionIterator);
-
-		    List<AccessModule> accessModules = new ArrayList<AccessModule>();
+			List<AccessModule> accessModules = new ArrayList<AccessModule>();
 
 		    for (AcosCollection acosCollection : acosCollections) {
 			AccessModule accessModule = new AccessModule();
@@ -68,12 +60,12 @@ public class AccessControlServicesImpl implements AccessControlServices {
 			accessModules.add(accessModule);
 		    }
 		    response.setAccessModules(accessModules);
-		    response.setId(arosAcosCollection.getId());
+		    response.setId(arosAcosCollection.getId().toString());
 		}
 	    }
-	    response.setRoleOrUserId(roleOrUserId);
-	    response.setLocationId(locationId);
-	    response.setHospitalId(hospitalId);
+	    response.setRoleOrUserId(roleOrUserId.toString());
+	    response.setLocationId(locationId.toString());
+	    response.setHospitalId(hospitalId.toString());
 	} catch (Exception e) {
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}
@@ -86,8 +78,13 @@ public class AccessControlServicesImpl implements AccessControlServices {
     public AccessControl setAccessControls(AccessControl accessControl) {
 	AccessControl response = null;
 	try {
-	    ArosCollection arosCollection = arosRepository.findOne(accessControl.getRoleOrUserId(), accessControl.getLocationId(),
-		    accessControl.getHospitalId());
+		
+		ObjectId roleOrUserObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(accessControl.getRoleOrUserId()))roleOrUserObjectId = new ObjectId(accessControl.getRoleOrUserId());
+    	if(!DPDoctorUtils.anyStringEmpty(accessControl.getLocationId()))locationObjectId = new ObjectId(accessControl.getLocationId());
+    	if(!DPDoctorUtils.anyStringEmpty(accessControl.getHospitalId()))hospitalObjectId = new ObjectId(accessControl.getHospitalId());
+    	
+	    ArosCollection arosCollection = arosRepository.findOne(roleOrUserObjectId, locationObjectId, hospitalObjectId);
 	    ArosAcosCollection arosAcosCollection = null;
 	    List<AcosCollection> acosCollections = null;
 	    if (arosCollection != null) {
@@ -143,12 +140,12 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    arosCollection = arosRepository.save(arosCollection);
 	    acosCollections = acosRepository.save(acosCollections);
 	    arosAcosCollection.setArosId(arosCollection.getId());
-	    List<String> acosIds = new ArrayList<String>(CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
-	    List<String> finalAcosIds = arosAcosCollection.getAcosIds();
+	    List<ObjectId> acosIds = new ArrayList<ObjectId>(CollectionUtils.collect(acosCollections, new BeanToPropertyValueTransformer("id")));
+	    List<ObjectId> finalAcosIds = arosAcosCollection.getAcosIds();
 	    if (finalAcosIds == null)
-		finalAcosIds = new ArrayList<String>();
+		finalAcosIds = new ArrayList<ObjectId>();
 	    finalAcosIds.addAll(acosIds);
-	    finalAcosIds = new ArrayList<String>(new LinkedHashSet<String>(finalAcosIds));
+	    finalAcosIds = new ArrayList<ObjectId>(new LinkedHashSet<ObjectId>(finalAcosIds));
 	    arosAcosCollection.setAcosIds(finalAcosIds);
 	    arosAcosCollection = arosAcosRepository.save(arosAcosCollection);
 

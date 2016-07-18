@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -12,10 +13,10 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.ObservationCollection;
 
-public interface ObservationRepository extends MongoRepository<ObservationCollection, String>, PagingAndSortingRepository<ObservationCollection, String> {
+public interface ObservationRepository extends MongoRepository<ObservationCollection, ObjectId>, PagingAndSortingRepository<ObservationCollection, ObjectId> {
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
-    List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
+    List<ObservationCollection> findCustomGlobalObservations(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<ObservationCollection> findGlobalObservations(Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
@@ -24,16 +25,16 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     List<ObservationCollection> findObservations(Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-    List<ObservationCollection> findCustomObservations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
+    List<ObservationCollection> findCustomObservations(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<ObservationCollection> findCustomObservations(String doctorId, Date date, boolean[] discards, Pageable pageable);
+    List<ObservationCollection> findCustomObservations(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'doctorId': null, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
-    List<ObservationCollection> findCustomGlobalObservations(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
+    List<ObservationCollection> findCustomGlobalObservations(ObjectId doctorId, Collection<String> specialities, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'$or': [{'doctorId': ?0,  'locationId': ?1, 'hospitalId': ?2, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'speciality': {$in: ?3}, 'updatedTime': {'$gt': ?4},'discarded': {$in: ?5}}]}")
-    List<ObservationCollection> findCustomGlobalObservations(String doctorId, String locationId, String hospitalId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
+    List<ObservationCollection> findCustomGlobalObservations(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': null, 'speciality': {$in: ?0}, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<ObservationCollection> findGlobalObservations(Collection<String> specialities, Date date, boolean[] discards, Sort sort);
@@ -42,13 +43,13 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
     List<ObservationCollection> findObservations(Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-    List<ObservationCollection> findCustomObservations(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
+    List<ObservationCollection> findCustomObservations(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<ObservationCollection> findCustomObservations(String doctorId, Date date, boolean[] discards, Sort sort);
+    List<ObservationCollection> findCustomObservations(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'$or': [{'doctorId': ?0, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'doctorId': null, 'speciality': {$in: ?1}, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
-    List<ObservationCollection> findCustomGlobalObservations(String doctorId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
+    List<ObservationCollection> findCustomGlobalObservations(ObjectId doctorId, Collection<String> specialities, Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<ObservationCollection> findCustomGlobalObservationsForAdmin(Date date, boolean[] discards, Pageable pageable);
@@ -85,5 +86,4 @@ public interface ObservationRepository extends MongoRepository<ObservationCollec
 
 	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'observation' : {$regex : '^?2', $options : 'i'}}")
 	List<ObservationCollection> findCustomObservationsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
-
 }

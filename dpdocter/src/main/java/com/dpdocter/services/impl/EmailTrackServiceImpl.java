@@ -1,13 +1,15 @@
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,9 +18,10 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.EmailTrackRepository;
 import com.dpdocter.services.EmailTackService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class EmailTrackServiceImpl implements EmailTackService {
@@ -28,45 +31,39 @@ public class EmailTrackServiceImpl implements EmailTackService {
     @Autowired
     private EmailTrackRepository emailTrackRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    
     @Override
     @Transactional
     public List<EmailTrack> getEmailDetails(String patientId, String doctorId, String locationId, String hospitalId, int page, int size) {
 	List<EmailTrack> response = null;
-	List<EmailTrackCollection> emailTrackCollections = null;
 	try {
-		String[] type = {"APPOINTMENT", ComponentType.PRESCRIPTIONS.getType(), ComponentType.VISITS.getType(), ComponentType.CLINICAL_NOTES.getType(), ComponentType.REPORTS.getType()};
-	    if (doctorId == null) {
-		if (locationId == null && hospitalId == null) {
-		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findByType(type, new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			emailTrackCollections = emailTrackRepository.findByType(type, new Sort(Sort.Direction.DESC, "sentTime"));
-		} else {
-		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			emailTrackCollections = emailTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, new Sort(Sort.Direction.DESC, "sentTime"));
-		}
-	    } else {
-		if (locationId == null && hospitalId == null) {
-		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findByDoctorPatient(doctorId, patientId, type, new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			emailTrackCollections = emailTrackRepository.findByDoctorPatient(doctorId, patientId, type, new Sort(Sort.Direction.DESC, "sentTime"));
-		} else {
-		    if (size > 0)
-			emailTrackCollections = emailTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId, type, 
-				new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			emailTrackCollections = emailTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId, type, 
-				new Sort(Sort.Direction.DESC, "sentTime"));
-		}
-	    }
-
-	    if (emailTrackCollections != null) {
-		response = new ArrayList<EmailTrack>();
-		BeanUtil.map(emailTrackCollections, response);
-	    }
+		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
+		Criteria criteria = new Criteria("type").in("APPOINTMENT", ComponentType.PRESCRIPTIONS.getType(), ComponentType.VISITS.getType(), ComponentType.CLINICAL_NOTES.getType(), ComponentType.REPORTS.getType());
+		
+		if (doctorObjectId == null) {
+			if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
+			    criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("smsDetails.userId").is(patientObjectId);
+			}
+		    } else {
+				if (DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("doctorId").is(doctorObjectId).and("smsDetails.userId").is(patientObjectId);
+				else criteria.and("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("smsDetails.userId").is(patientObjectId);
+		    }
+		    Aggregation aggregation = null;
+		    if(size > 0){
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			}else{
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")));
+			}
+		    AggregationResults<EmailTrack> aggregationResults = mongoTemplate.aggregate(aggregation, EmailTrackCollection.class, EmailTrack.class);
+		    response = aggregationResults.getMappedResults();
+		    
 	} catch (BusinessException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());

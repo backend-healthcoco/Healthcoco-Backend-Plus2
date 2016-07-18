@@ -20,6 +20,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Value(value = "${verify.link}")
     private String link;
 
+    @Value(value = "${login.link}")
+    private String loginLink;
+
     @Value(value = "${reset.password.link}")
     private String RESET_PASSWORD_LINK;
 
@@ -41,6 +44,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("doctorName", doctorName);
 	model.put("clinicName", clinicName);
 	model.put("link", link+"/"+tokenId);
+	model.put("loginLink", loginLink);
 	model.put("imageURL", imagePath + "templatesImage");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
@@ -55,15 +59,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("imageURL", imagePath + "templatesImage");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
 	return text;
-    }
-
-    @Override
-    @Transactional
-    public String generatePatientRegistrationEmailBody(String userName, char[] password, String firstName, String lastName) {
-	StringBuffer body = new StringBuffer();
-	body.append("Dear " + firstName + " " + lastName + ", \n");
-	body.append("Your username is " + userName + " and password is " + password);
-	return body.toString();
     }
 
     @Override
@@ -118,15 +113,6 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("doctorName", doctorName);
 	model.put("imageURL", imagePath + "templatesImage");
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
-	return text;
-    }
-
-    @Override
-    @Transactional
-    public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName) {
-	Map<String, Object> model = new HashMap<String, Object>();
-	model.put("fName", firstName);
-	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "", "UTF-8", model);
 	return text;
     }
 

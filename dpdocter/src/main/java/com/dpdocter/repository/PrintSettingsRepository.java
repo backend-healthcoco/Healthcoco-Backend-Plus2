@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,19 +12,19 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.PrintSettingsCollection;
 
-public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCollection, String>, PagingAndSortingRepository<PrintSettingsCollection, String> {
+public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCollection, ObjectId>, PagingAndSortingRepository<PrintSettingsCollection, ObjectId> {
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Date date, boolean[] discards, Pageable pageable);
+    List<PrintSettingsCollection> getSettings(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, Date date, boolean[] discards, Sort sort);
+    List<PrintSettingsCollection> getSettings(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Sort sort);
+    List<PrintSettingsCollection> getSettings(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-    List<PrintSettingsCollection> getSettings(String doctorId, String locationId, String hospitalId, Date date, boolean[] discards, Pageable pageable);
+    List<PrintSettingsCollection> getSettings(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<PrintSettingsCollection> findAll(Date date, boolean[] discards, Pageable pageable);
@@ -32,12 +33,12 @@ public interface PrintSettingsRepository extends MongoRepository<PrintSettingsCo
     List<PrintSettingsCollection> findAll(Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'componentType': ?3}")
-    PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId, String type);
+    PrintSettingsCollection getSettings(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String type);
 
     @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}")
-    PrintSettingsCollection getSettings(String doctorId, String locationId, String hospitalId);
+    PrintSettingsCollection getSettings(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 
     @Query("{'locationId': ?0}")
-    List<PrintSettingsCollection> findByLocationId(String locationId);
+    List<PrintSettingsCollection> findByLocationId(ObjectId locationId);
 
 }

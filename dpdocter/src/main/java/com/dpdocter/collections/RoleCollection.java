@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class RoleCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String role;
@@ -18,15 +19,15 @@ public class RoleCollection extends GenericCollection {
     private String explanation;
 
     @Indexed
-    private String locationId;
+    private ObjectId locationId;
 
     @Indexed
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
     private Boolean discarded = false;
 
-    public RoleCollection(String role, String locationId, String hospitalId) {
+    public RoleCollection(String role, ObjectId locationId, ObjectId hospitalId) {
 	this.role = role;
 	this.locationId = locationId;
 	this.hospitalId = hospitalId;
@@ -36,11 +37,11 @@ public class RoleCollection extends GenericCollection {
 	// TODO Auto-generated constructor stub
     }
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -60,19 +61,19 @@ public class RoleCollection extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	public String getLocationId() {
+	public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 

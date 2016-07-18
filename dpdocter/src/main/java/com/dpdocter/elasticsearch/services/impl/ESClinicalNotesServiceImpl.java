@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -82,7 +83,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    esComplaintsRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.COMPLAINT, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.COMPLAINT, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Complaints");
@@ -96,7 +97,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    esDiagnosesRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.DIAGNOSIS, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.DIAGNOSIS, true);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -111,7 +112,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    esNotesRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.NOTES, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.NOTES, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Notes");
@@ -126,7 +127,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    esDiagramsRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.DIAGRAM, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.DIAGRAM, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Diagrams");
@@ -140,7 +141,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    esInvestigationsRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.INVESTIGATION, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.INVESTIGATION, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Investigations");
@@ -155,7 +156,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    esObservationsRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.OBSERVATION, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.OBSERVATION, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Observations");

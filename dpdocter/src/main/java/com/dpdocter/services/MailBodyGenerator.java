@@ -11,8 +11,6 @@ public interface MailBodyGenerator {
 
     public String generateForgotUsernameEmailBody(List<UserCollection> userCollection);
 
-    public String generatePatientRegistrationEmailBody(String userName, char[] password, String firstName, String lastName);
-
     public String generateIssueTrackEmailBody(String userName, String firstName, String middleName, String lastName);
 
     public String generateResetPasswordSuccessEmailBody(String firstName);
@@ -21,9 +19,7 @@ public interface MailBodyGenerator {
 
     public String generateRecordsShareOtpAfterVerificationEmailBody(String emailAddress, String firstName, String doctorName);
 
-    public String generateRecordsUploadedEmailBody(String userName, String firstName, String middleName, String lastName);
-
-	String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime, String clinicName, String templatePath);
+ 	String generateAppointmentEmailBody(String doctorName, String patientName, String dateTime, String clinicName, String templatePath);
 
 	String generateEmailBody(String userName, String resumeType, String templatePath) throws Exception;
 

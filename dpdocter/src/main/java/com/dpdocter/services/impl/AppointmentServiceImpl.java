@@ -14,6 +14,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -235,7 +236,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Transactional
     public Boolean activateDeactivateCity(String cityId, boolean activate) {
 	try {
-	    CityCollection cityCollection = cityRepository.findOne(cityId);
+	    CityCollection cityCollection = cityRepository.findOne(new ObjectId(cityId));
 	    if (cityCollection == null) {
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid city Id");
 	    }
@@ -254,12 +255,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<City> getCities(String state) {
 	List<City> response = new ArrayList<City>();
 	try {
-	    List<CityCollection> cities = null;
-	    if(DPDoctorUtils.allStringsEmpty(state))cities = cityRepository.findAll(new Sort(Sort.Direction.ASC, "city"));
-	    else cities = cityRepository.findAll(state, new Sort(Sort.Direction.ASC, "city"));
-	    if (cities != null) {
-		BeanUtil.map(cities, response);
-	    }
+	    if(DPDoctorUtils.allStringsEmpty(state))response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.ASC, "city"))), CityCollection.class, City.class).getMappedResults();
+	    else response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("state").is(state)), Aggregation.sort(new Sort(Sort.Direction.ASC, "city"))), CityCollection.class, City.class).getMappedResults();
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -272,7 +270,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public City getCity(String cityId) {
 	City response = new City();
 	try {
-	    CityCollection city = cityRepository.findOne(cityId);
+	    CityCollection city = cityRepository.findOne(new ObjectId(cityId));
 	    if (city != null) {
 		BeanUtil.map(city, response);
 	    }
@@ -291,7 +289,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    LandmarkLocalityCollection landmarkLocalityCollection = new LandmarkLocalityCollection();
 	    BeanUtil.map(landmarkLocality, landmarkLocalityCollection);
 	    if (landmarkLocality.getCityId() != null) {
-		cityCollection = cityRepository.findOne(landmarkLocality.getCityId());
+		cityCollection = cityRepository.findOne(new ObjectId(landmarkLocality.getCityId()));
 	    }
 	   
 	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(landmarkLocality.getLandmark() != null ? landmarkLocality.getLandmark()
@@ -312,7 +310,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	return landmarkLocality;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     @Transactional
     public Clinic getClinic(String locationId) {
 	Clinic response = new Clinic();
@@ -323,7 +322,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	List<Doctor> doctors = new ArrayList<Doctor>();
 	try {
-	    localtionCollection = locationRepository.findOne(locationId);
+	    localtionCollection = locationRepository.findOne(new ObjectId(locationId));
 	    if (localtionCollection == null) {
 		return null;
 	    } else {
@@ -353,12 +352,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (doctorClinicProfileCollection != null) {
 			    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
 			    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
-			    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId());
-			    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId());
+			    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId().toString());
+			    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId().toString());
 			    doctor.setDoctorClinicProfile(doctorClinicProfile);
 			}
-			if(doctor.getSpecialities() != null && !doctor.getSpecialities().isEmpty()){
-				List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctor.getSpecialities()),new BeanToPropertyValueTransformer("superSpeciality"));
+			if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()){
+				List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("superSpeciality"));
 				doctor.setSpecialities(specialities);
 			}
 			doctors.add(doctor);
@@ -390,8 +389,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    
 		    AppointmentCollection appointmentCollectionToCheck = null;
 		    if (request.getState().equals(AppointmentState.RESCHEDULE))
-			appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(),
-				appointmentCollection.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),request.getToDate(),
+			appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),request.getToDate(),
 				AppointmentState.CANCEL.getState());
 		    if (appointmentCollectionToCheck == null) {
 			AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
@@ -515,14 +513,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    BeanUtil.map(appointmentCollection, response);
 			PatientCard patientCard = new PatientCard();
 	    	BeanUtil.map(patient, patientCard);
-	    	patientCard.setUserId(patient.getId());
+	    	patientCard.setUserId(patient.getId().toString());
 	    	response.setPatient(patientCard);
 		     
 		    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
-		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(), null, false);
+		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId().toString(), appointmentCollection.getLocationId().toString(), appointmentCollection.getHospitalId().toString(), appointmentCollection.getPatientId().toString(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(), null, false);
 		    }
 		    else if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CANCEL.getState())){
-		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), null, 0, false);
+		    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId().toString(), appointmentCollection.getLocationId().toString(), appointmentCollection.getHospitalId().toString(), appointmentCollection.getPatientId().toString(), appointmentCollection.getFromDate(), null, 0, false);
 		    }
 		} else {
 		    logger.error(timeSlotIsBooked);
@@ -543,19 +541,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 	return response;
     }
 
-    @Override
+	@Override
     @Transactional
     public Appointment addAppointment(AppointmentRequest request) {
 	Appointment response = null;
 	UserLocationCollection userLocationCollection = null;
 	DoctorClinicProfileCollection clinicProfileCollection = null;
 	try {
-		UserCollection userCollection = userRepository.findOne(request.getDoctorId());
-		LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
-		UserCollection patient = userRepository.findOne(request.getPatientId());
-	    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
+		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+		LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+		UserCollection patient = userRepository.findOne(new ObjectId(request.getPatientId()));
+	    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
 
-	    userLocationCollection = userLocationRepository.findByUserIdAndLocationId(request.getDoctorId(), request.getLocationId());
+	    userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
         clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
     	
 	    if(userCollection != null && locationCollection != null && patient != null){
@@ -642,12 +640,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				BeanUtil.map(appointmentCollection, response);
 				PatientCard patientCard = new PatientCard();
 		    	BeanUtil.map(patient, patientCard);
-		    	patientCard.setUserId(patient.getId());
+		    	patientCard.setUserId(patient.getId().toString());
 		    	response.setPatient(patientCard);
 			    }
 			    
 			    if(appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())){
-			    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(),null, false);
+			    	updateQueue(appointmentCollection.getAppointmentId(), appointmentCollection.getDoctorId().toString(), appointmentCollection.getLocationId().toString(), appointmentCollection.getHospitalId().toString(), appointmentCollection.getPatientId().toString(), appointmentCollection.getFromDate(), appointmentCollection.getTime().getFromTime(),null, false);
 			    }
 			} else {
 			    logger.error(timeSlotIsBooked);
@@ -739,16 +737,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private void sendMsg(String formatType, String type, String doctorId, String locationId, String hospitalId,String userId, String mobileNumber, String patientName, String appointmentId, String dateTime, String doctorName, String clinicName, String clinicContactNum) {
 		SMSFormatCollection smsFormatCollection = null;
 		if(formatType != null){
-			smsFormatCollection = sMSFormatRepository.find(doctorId, locationId, hospitalId, formatType);
+			smsFormatCollection = sMSFormatRepository.find(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId), formatType);
 		}
 		
 		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-		smsTrackDetail.setDoctorId(doctorId);
-	    smsTrackDetail.setHospitalId(hospitalId);
-	    smsTrackDetail.setLocationId(locationId);
+		smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+	    smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+	    smsTrackDetail.setLocationId(new ObjectId(locationId));
 	    smsTrackDetail.setType("APPOINTMENT");
 	    SMSDetail smsDetail = new SMSDetail();
-	    smsDetail.setUserId(userId);
+	    smsDetail.setUserId(new ObjectId(userId));
 	    SMS sms = new SMS();
 	    
 	    if(DPDoctorUtils.anyStringEmpty(patientName))patientName="";
@@ -903,7 +901,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    if(size > 0) appointmentCollections = mongoTemplate.find(query.with(new PageRequest(page, size, Direction.ASC, "fromDate","time.from")), AppointmentCollection.class);
 	    else appointmentCollections = mongoTemplate.find(query.with(new Sort(Direction.ASC, "fromDate","time.from")), AppointmentCollection.class);
 		
-	    if (appointmentCollections != null) {
+	    if (appointmentCollections != null && !appointmentCollections.isEmpty()) {
 		    response = new ArrayList<Appointment>();
 		    
 		    for(AppointmentCollection collection : appointmentCollections){
@@ -1038,6 +1036,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
  }
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public Lab getLab(String locationId) {
@@ -1049,7 +1048,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		List<Doctor> doctors = new ArrayList<Doctor>();
 		try {
-		    localtionCollection = locationRepository.findOne(locationId);
+		    localtionCollection = locationRepository.findOne(new ObjectId(locationId));
 		    if (localtionCollection == null) {
 		    	return null;
 		    } else if(!localtionCollection.getIsLab()){
@@ -1069,8 +1068,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    UserLocationCollection userLocationCollection = iterator.next();
 			    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
 			    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection
-				    .getId());
+			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 
 			    if (doctorCollection != null) {
 				Doctor doctor = new Doctor();
@@ -1082,12 +1080,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (doctorClinicProfileCollection != null) {
 				    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
 				    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
-				    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId());
-				    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId());
+				    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId().toString());
+				    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId().toString());
 				    doctor.setDoctorClinicProfile(doctorClinicProfile);
 				}
-				if(doctor.getSpecialities() != null && !doctor.getSpecialities().isEmpty()){
-					List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctor.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
+				if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()){
+					List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
 					doctor.setSpecialities(specialities);
 				}
 				doctors.add(doctor);
@@ -1095,7 +1093,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 			response.setDoctors(doctors);
 			
-			List<LabTestCollection> labTestCollections = labTestRepository.findByLocationId(localtionCollection.getId());
+			List<LabTestCollection> labTestCollections = labTestRepository.findByLocationId(localtionCollection.getId().toString());
 			List<LabTest> labTests = null;
 			if(labTestCollections != null && !labTestCollections.isEmpty()){
 				labTests = new ArrayList<LabTest>();
@@ -1163,7 +1161,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 	List<Slot> slotResponse = null;
 	SlotDataResponse response = null;
 	try {
-		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorId, locationId);
+		ObjectId doctorObjectId = null, locationObjectId = null;
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+
+		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(doctorObjectId, locationObjectId);
 	    doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 	    if (doctorClinicProfileCollection != null) {
 	    	
@@ -1187,7 +1189,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    		}  		
 		    	}
 		    }
-		    List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository.findByDoctorLocationId(doctorId, locationId, date);
+		    List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
 		    if(bookedSlots != null && !bookedSlots.isEmpty())
 		    for(AppointmentBookedSlotCollection bookedSlot : bookedSlots){
 		    	if(bookedSlot.getTime() != null){
@@ -1221,9 +1223,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment addEvent(EventRequest request) {
 		Appointment response = null;
 		try {
-			UserCollection userCollection = userRepository.findOne(request.getDoctorId());
+			ObjectId doctorObjectId = null, locationObjectId = null;
+			if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
+	    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
+
+			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			
-		    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(request.getDoctorId(), request.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
+		    AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(doctorObjectId, locationObjectId, request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
 			
 		    if(userCollection != null){
 				if (appointmentCollection == null || !request.getIsCalenderBlocked()) {
@@ -1266,7 +1272,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment updateEvent(EventRequest request) {
 		Appointment response = null;
 		try {
-		    AppointmentCollection appointmentCollection = appointmentRepository.findOne(request.getId());
+		    AppointmentCollection appointmentCollection = appointmentRepository.findOne(new ObjectId(request.getId()));
 		    if (appointmentCollection != null) {
 		    	AppointmentCollection appointmentCollectionToCheck = null;
 		    	if(request.getState().equals(AppointmentState.RESCHEDULE)){
@@ -1363,7 +1369,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						String patientName=patient.getFirstName(),  
 								dateTime= _12HourSDF.format(_24HourDt)+", "+sdf.format(appointmentCollection.getFromDate()),
 								doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
-						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT", appointmentCollection.getDoctorId(),appointmentCollection.getLocationId(), appointmentCollection.getHospitalId(), appointmentCollection.getPatientId(), patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
+						sendMsg(SMSFormatType.APPOINTMENT_REMINDER.getType(), "APPOINTMENT_REMINDER_TO_PATIENT", appointmentCollection.getDoctorId().toString(), appointmentCollection.getLocationId().toString(), appointmentCollection.getHospitalId().toString(), appointmentCollection.getPatientId().toString(), patient.getMobileNumber(), patientName, appointmentId, dateTime, doctorName, clinicName, clinicContactNum);
 						response = true;
 					}
 				}
@@ -1409,6 +1415,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId) {
 		List<PatientQueue> response = null;
 		try{
+			ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
 		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		    localCalendar.setTime(new Date());
 		    int currentDay = localCalendar.get(Calendar.DATE);
@@ -1418,7 +1429,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
 	    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
 		    
-	    	List<PatientQueueCollection> patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
+	    	List<PatientQueueCollection> patientQueueCollections = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
 	    	if(patientQueueCollections != null){
 	    		response = new ArrayList<PatientQueue>();
 	    		for(PatientQueueCollection collection : patientQueueCollections){
@@ -1427,9 +1438,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    			PatientCard patientCard = new PatientCard();
 	    			UserCollection userCollection = userRepository.findOne(collection.getPatientId());
 	    			if(userCollection!=null)BeanUtil.map(userCollection, patientCard);
-	    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId, locationId, hospitalId);
+	    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorObjectId, locationObjectId, hospitalObjectId);
 	    			if(patientCollection!=null)BeanUtil.map(patientCollection, patientCard);
-	    			patientCard.setId(collection.getPatientId());
+	    			patientCard.setId(collection.getPatientId().toString());
 	    			patientQueue.setPatient(patientCard);
 	    			response.add(patientQueue);
 	    		}
@@ -1445,12 +1456,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 		List<PatientQueue> response = null;
 		List<PatientQueueCollection> patientQueueCollections = null; 
 		try{
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
     		PatientQueueCollection patientQueueCollection = new PatientQueueCollection();
     		patientQueueCollection.setAppointmentId(appointmentId);
-    		patientQueueCollection.setDoctorId(doctorId);
-    		patientQueueCollection.setLocationId(locationId);
-    		patientQueueCollection.setHospitalId(hospitalId);
-    		patientQueueCollection.setPatientId(patientId);
+    		patientQueueCollection.setDoctorId(doctorObjectId);
+    		patientQueueCollection.setLocationId(locationObjectId);
+    		patientQueueCollection.setHospitalId(hospitalObjectId);
+    		patientQueueCollection.setPatientId(patientObjectId);
     		patientQueueCollection.setDate(date);
     		patientQueueCollection.setStartTime(startTime);
 
@@ -1463,7 +1480,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
 	    	DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
 		    
-	    	patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
+	    	patientQueueCollections = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, start, end, false, new Sort(Direction.DESC,"sequenceNo"));
 	    	if(startTime != null){
 		    	if(patientQueueCollections == null || patientQueueCollections.isEmpty()){
 		    		patientQueueCollection.setSequenceNo(1);
@@ -1496,7 +1513,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				    			
 			    		}
 	    			}else{
-	    				Integer toCheck = patientQueueRepository.find(appointmentId, doctorId, locationId, hospitalId, patientId, start, end, sequenceNo, false);
+	    				Integer toCheck = patientQueueRepository.find(appointmentId, doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId, start, end, sequenceNo, false);
 	    				if(toCheck == null || toCheck == 0){
 	    					PatientQueueCollection temp = null;
 	    					int oldSeqNum = 0; int newStartTime = 0;
@@ -1558,7 +1575,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    			patientQueueRepository.save(patientQueueCollection);
 	    	}
 	    	
-	    	patientQueueCollections = patientQueueRepository.find(doctorId, locationId, hospitalId, start, end, false, new Sort(Direction.ASC,"sequenceNo"));
+	    	patientQueueCollections = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, start, end, false, new Sort(Direction.ASC,"sequenceNo"));
 	    	if(patientQueueCollections != null){
 	    		response = new ArrayList<PatientQueue>();
 	    		if(isPatientDetailRequire){
@@ -1568,10 +1585,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    			PatientCard patientCard = new PatientCard();
 		    			UserCollection userCollection = userRepository.findOne(collection.getPatientId());
 		    			if(userCollection!=null)BeanUtil.map(userCollection, patientCard);
-		    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorId, locationId, hospitalId);
+		    			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorObjectId, locationObjectId, hospitalObjectId);
 		    			if(patientCollection!=null)BeanUtil.map(patientCollection, patientCard);
 		    			patientQueue.setPatient(patientCard);
-		    			patientCard.setId(collection.getPatientId());
+		    			patientCard.setId(collection.getPatientId().toString());
 		    			response.add(patientQueue);
 		    		}
 	    		}else{

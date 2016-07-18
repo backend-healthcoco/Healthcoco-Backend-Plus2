@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,10 +14,10 @@ import com.dpdocter.enums.RoleEnum;
 public class UserDeviceCollection extends GenericCollection{
 	
 	@Id
-    private String id;
+    private ObjectId id;
 
     @Field
-    private List<String> userIds;
+    private List<ObjectId> userIds;
 
     @Field
     private DeviceType deviceType;
@@ -33,19 +34,19 @@ public class UserDeviceCollection extends GenericCollection{
     @Field
     private int batchCount = 0;
     
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public List<String> getUserIds() {
+	public List<ObjectId> getUserIds() {
 		return userIds;
 	}
 
-	public void setUserIds(List<String> userIds) {
+	public void setUserIds(List<ObjectId> userIds) {
 		this.userIds = userIds;
 	}
 

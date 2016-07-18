@@ -2,15 +2,16 @@ package com.dpdocter.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.collections.TransactionalCollection;
 
-public interface TransnationalRepositiory extends MongoRepository<TransactionalCollection, String> {
+public interface TransnationalRepositiory extends MongoRepository<TransactionalCollection, ObjectId> {
 
     @Query("{'resourceId': ?0, 'resource': ?1}")
-    TransactionalCollection findByResourceIdAndResource(String resourceId, String resource);
+    TransactionalCollection findByResourceIdAndResource(ObjectId resourceId, String resource);
 
     @Query("{'resource': ?0, 'isCached': ?1}")
     List<TransactionalCollection> findByResourceAndIsCached(String resource, boolean isCached);

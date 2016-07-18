@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.apache.commons.lang.WordUtils;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -21,7 +22,7 @@ import com.dpdocter.beans.Relations;
 public class PatientCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String firstName;
@@ -45,13 +46,13 @@ public class PatientCollection extends GenericCollection {
     private String emailAddress;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
     private String secMobile;
@@ -72,7 +73,7 @@ public class PatientCollection extends GenericCollection {
     private String insuranceName;
 
     @Indexed
-    private String userId;
+    private ObjectId userId;
 
     @Field
     private List<String> notes;
@@ -96,16 +97,16 @@ public class PatientCollection extends GenericCollection {
     private Long dateOfVisit;
 
     @Field
-    private String referredBy;
+    private ObjectId referredBy;
 
     @Field
     private Address address;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -141,11 +142,11 @@ public class PatientCollection extends GenericCollection {
 	this.emailAddress = emailAddress;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
@@ -197,11 +198,11 @@ public class PatientCollection extends GenericCollection {
 	this.insuranceName = insuranceName;
     }
 
-    public String getUserId() {
+    public ObjectId getUserId() {
 	return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(ObjectId userId) {
 	this.userId = userId;
     }
 
@@ -221,19 +222,19 @@ public class PatientCollection extends GenericCollection {
 	PID = pID;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
@@ -305,11 +306,11 @@ public class PatientCollection extends GenericCollection {
 		this.dateOfVisit = dateOfVisit;
 	}
 
-	public String getReferredBy() {
+	public ObjectId getReferredBy() {
 		return referredBy;
 	}
 
-	public void setReferredBy(String referredBy) {
+	public void setReferredBy(ObjectId referredBy) {
 		this.referredBy = referredBy;
 	}
 

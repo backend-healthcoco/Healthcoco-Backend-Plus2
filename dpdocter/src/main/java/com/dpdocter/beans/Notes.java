@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class Notes extends GenericCollection {

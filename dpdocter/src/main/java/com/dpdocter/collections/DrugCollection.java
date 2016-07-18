@@ -2,8 +2,8 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -13,7 +13,7 @@ import com.dpdocter.beans.Strength;
 @Document(collection = "drug_cl")
 public class DrugCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private DrugType drugType;
@@ -31,13 +31,13 @@ public class DrugCollection extends GenericCollection {
     private List<String> genericCodes;
 
     @Field
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
     private Boolean discarded = false;
@@ -55,11 +55,11 @@ public class DrugCollection extends GenericCollection {
     @Field
     private String MRP;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -104,27 +104,27 @@ public class DrugCollection extends GenericCollection {
 		this.genericCodes = genericCodes;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 

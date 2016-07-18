@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.IteratorUtils;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class ESCityServiceImpl  implements ESCityService{
 	try {
 		if(esCityDocument.getLatitude()!= null && esCityDocument.getLongitude() != null)esCityDocument.setGeoPoint(new GeoPoint(esCityDocument.getLatitude(), esCityDocument.getLongitude()));
 		esCityRepository.save(esCityDocument);
-	    transnationalService.addResource(esCityDocument.getId(), Resource.CITY, true);
+	    transnationalService.addResource(new ObjectId(esCityDocument.getId()), Resource.CITY, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -63,7 +64,7 @@ public class ESCityServiceImpl  implements ESCityService{
 	    ESCityDocument solrCity = esCityRepository.findOne(cityId);
 	    solrCity.setIsActivated(activate);
 	    esCityRepository.save(solrCity);
-	    transnationalService.addResource(cityId, Resource.CITY, true);
+	    transnationalService.addResource(new ObjectId(cityId), Resource.CITY, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -77,7 +78,7 @@ public class ESCityServiceImpl  implements ESCityService{
 	try {
 		if(esLandmarkLocalityDocument.getLatitude()!= null && esLandmarkLocalityDocument.getLongitude() != null)esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(esLandmarkLocalityDocument.getLatitude(), esLandmarkLocalityDocument.getLongitude()));
 	    esLocalityLandmarkRepository.save(esLandmarkLocalityDocument);
-	    transnationalService.addResource(esLandmarkLocalityDocument.getId(), Resource.LANDMARKLOCALITY, true);
+	    transnationalService.addResource(new ObjectId(esLandmarkLocalityDocument.getId()), Resource.LANDMARKLOCALITY, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -131,11 +132,13 @@ public class ESCityServiceImpl  implements ESCityService{
 	    int citySize = (int) esCityRepository.count();
 	    if (DPDoctorUtils.anyStringEmpty(latitude, longitude)) {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-		    if(localityLandmarkSize > 0){
-		    	landmarks = esLocalityLandmarkRepository.findByLandmark(searchTerm, new PageRequest(0, localityLandmarkSize));
-		    	localities = esLocalityLandmarkRepository.findByLocality(searchTerm, new PageRequest(0, localityLandmarkSize));
-		    }
-		    if(citySize > 0)cities = esCityRepository.findByQueryAnnotation(searchTerm, new PageRequest(0, citySize));
+			if(localityLandmarkSize > 0){
+				landmarks = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("landmark", searchTerm))).withPageable(new PageRequest(0, localityLandmarkSize)).build(), ESLandmarkLocalityDocument.class);
+				localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm))).withPageable(new PageRequest(0, localityLandmarkSize)).build(), ESLandmarkLocalityDocument.class);
+			}
+			if(citySize > 0){
+				cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+			}
 		} else {
 			if(localityLandmarkSize > 0)landmarks = IteratorUtils.toList(esLocalityLandmarkRepository.findAll(new PageRequest(0, localityLandmarkSize)).iterator());
 			if(citySize > 0)cities = IteratorUtils.toList(esCityRepository.findAll(new PageRequest(0, citySize)).iterator());

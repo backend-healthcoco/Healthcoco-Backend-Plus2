@@ -1,6 +1,5 @@
 package com.dpdocter.response;
 
-import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
 
 public class DoctorResponse {

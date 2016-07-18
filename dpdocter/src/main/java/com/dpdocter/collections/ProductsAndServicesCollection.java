@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -9,31 +10,31 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "products_and_services_cl")
 public class ProductsAndServicesCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String name;
 
     @Field
-    private List<String> specialityIds;
+    private List<ObjectId> specialityIds;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
     private boolean discarded = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -45,35 +46,35 @@ public class ProductsAndServicesCollection extends GenericCollection {
 	this.name = name;
     }
 
-    public List<String> getSpecialityIds() {
+    public List<ObjectId> getSpecialityIds() {
 	return specialityIds;
     }
 
-    public void setSpecialityIds(List<String> specialityIds) {
+    public void setSpecialityIds(List<ObjectId> specialityIds) {
 	this.specialityIds = specialityIds;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 

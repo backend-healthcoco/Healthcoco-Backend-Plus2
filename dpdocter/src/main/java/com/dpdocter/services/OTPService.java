@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.Date;
 
-import javax.ws.rs.core.UriInfo;
-
 public interface OTPService {
 
     String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);

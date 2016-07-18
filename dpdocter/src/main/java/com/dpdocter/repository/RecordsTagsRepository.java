@@ -2,6 +2,7 @@ package com.dpdocter.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,14 +12,14 @@ import org.springframework.stereotype.Repository;
 import com.dpdocter.collections.RecordsTagsCollection;
 
 @Repository
-public interface RecordsTagsRepository extends MongoRepository<RecordsTagsCollection, String> {
+public interface RecordsTagsRepository extends MongoRepository<RecordsTagsCollection, ObjectId> {
     @Query("{'tagsId': ?0}")
-    List<RecordsTagsCollection> findByTagsId(String tagsId, Pageable pageRequest);
+    List<RecordsTagsCollection> findByTagsId(ObjectId tagsId, Pageable pageRequest);
 
     @Query("{'doctorId': ?0}")
-    List<RecordsTagsCollection> findAll(String doctorId, Sort sort);
+    List<RecordsTagsCollection> findAll(ObjectId doctorId, Sort sort);
 
     @Query("{'tagsId': ?0}")
-    List<RecordsTagsCollection> findByTagsId(String tagId, Sort sort);
+    List<RecordsTagsCollection> findByTagsId(ObjectId tagId, Sort sort);
 
 }

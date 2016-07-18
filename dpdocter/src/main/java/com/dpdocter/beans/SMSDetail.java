@@ -2,10 +2,12 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.enums.SMSStatus;
 
 public class SMSDetail {
-    private String userId;
+    private ObjectId userId;
 
     private String userName;
 
@@ -17,11 +19,11 @@ public class SMSDetail {
 
     private String deliveredTime;
 
-    public String getUserId() {
+    public ObjectId getUserId() {
 	return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(ObjectId userId) {
 	this.userId = userId;
     }
 

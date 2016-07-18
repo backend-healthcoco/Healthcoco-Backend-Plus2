@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,10 +16,10 @@ import com.dpdocter.enums.DoctorFacility;
 @Document(collection = "doctor_clinic_profile_cl")
 public class DoctorClinicProfileCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Indexed
-    private String userLocationId;
+    private ObjectId userLocationId;
 
     @Field
     private String patientInitial = "P";
@@ -50,19 +51,19 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     @Field
     private String timeZone = "IST";
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getUserLocationId() {
+    public ObjectId getUserLocationId() {
 	return userLocationId;
     }
 
-    public void setUserLocationId(String userLocationId) {
+    public void setUserLocationId(ObjectId userLocationId) {
 	this.userLocationId = userLocationId;
     }
 

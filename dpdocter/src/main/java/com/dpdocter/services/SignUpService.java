@@ -39,7 +39,6 @@ public interface SignUpService {
 
     PateientSignUpCheckResponse checkMobileNumberSignedUp(String mobileNumber);
 
-    // User patientSignUp(PatientSignupRequestMobile request);
     User signupNewPatient(PatientSignupRequestMobile request);
 
     List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request);

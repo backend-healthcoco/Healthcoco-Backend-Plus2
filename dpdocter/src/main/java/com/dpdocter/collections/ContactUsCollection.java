@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class ContactUsCollection extends GenericCollection{
 
 	@Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String name;
@@ -22,11 +23,11 @@ public class ContactUsCollection extends GenericCollection{
     @Field
     private String message;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 

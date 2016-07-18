@@ -15,11 +15,16 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +54,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
@@ -97,9 +101,6 @@ public class RecordsServiceImpl implements RecordsService {
     private RecordsTagsRepository recordsTagsRepository;
 
     @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
     private MailBodyGenerator mailBodyGenerator;
 
     @Autowired
@@ -135,6 +136,9 @@ public class RecordsServiceImpl implements RecordsService {
     @Autowired
 	PushNotificationServices pushNotificationServices;
 	
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    
     @Value(value = "${image.path}")
     private String imagePath;
 
@@ -156,7 +160,7 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 
 	    Date createdTime = new Date();
-	    UserCollection patientCollection = userRepository.findOne(request.getPatientId());
+	    UserCollection patientCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 	    RecordsCollection recordsCollection = new RecordsCollection();
 	    BeanUtil.map(request, recordsCollection);
 	    if(!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())){
@@ -190,7 +194,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	    PrescriptionCollection prescriptionCollection = null;
 	    if (recordsCollection.getPrescriptionId() != null) {
-	    	prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(),recordsCollection.getPatientId());
+	    	prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
 	    	 if (prescriptionCollection != null) {
 	    			recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
 	    			recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
@@ -204,7 +208,7 @@ public class RecordsServiceImpl implements RecordsService {
 		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 		for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
 		    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
-			data.setRecordId(recordsCollection.getId());
+			data.setRecordId(recordsCollection.getId().toString());
 		    }
 		    tests.add(data);
 		}
@@ -213,9 +217,9 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionRepository.save(prescriptionCollection);
 	    }
 	    if(prescriptionCollection != null)
-	        pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	        pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 
-	   	pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	   	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
 
@@ -253,7 +257,7 @@ public class RecordsServiceImpl implements RecordsService {
 		recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 		recordsCollection.setRecordsPath(recordPath);
 		}
-	    RecordsCollection oldRecord = recordsRepository.findOne(request.getId());
+	    RecordsCollection oldRecord = recordsRepository.findOne(new ObjectId(request.getId()));
 	    recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
 	    recordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 	    recordsCollection.setUploadedByLocation(oldRecord.getUploadedByLocation());
@@ -265,36 +269,6 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setPrescribedByHospitalId(oldRecord.getHospitalId());
 	    recordsCollection.setPrescriptionId(oldRecord.getPrescriptionId());
 	    recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
-
-	    // PrescriptionCollection prescriptionCollection = null;
-	    // if(recordsCollection.getPrescriptionId() != null){
-	    // prescriptionCollection =
-	    // prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(),
-	    // recordsCollection.getPatientId());
-	    // }
-	    // if(prescriptionCollection != null){
-	    // recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
-	    // recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
-	    // recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
-	    //
-	    // }
-	    // recordsCollection = recordsRepository.save(recordsCollection);
-	    //
-	    // if(prescriptionCollection != null &&
-	    // (prescriptionCollection.getTests() != null ||
-	    // !prescriptionCollection.getTests().isEmpty())){
-	    // List<TestAndRecordData> tests = new
-	    // ArrayList<TestAndRecordData>();
-	    // for(TestAndRecordData data : prescriptionCollection.getTests()){
-	    // if(data.getLabTestId().equals(recordsCollection.getTestId())){
-	    // data.setRecordId(recordsCollection.getId());
-	    // }
-	    // tests.add(data);
-	    // }
-	    // prescriptionCollection.setTests(tests);
-	    // prescriptionCollection.setUpdatedTime(new Date());
-	    // prescriptionRepository.save(prescriptionCollection);
-	    // }
 
 	    recordsCollection = recordsRepository.save(recordsCollection);
 
@@ -331,11 +305,11 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    List<RecordsTagsCollection> recordsTagsCollections = new ArrayList<RecordsTagsCollection>();
 	    for (String tagId : request.getTags()) {
-		RecordsTagsCollection recordsTagsCollection = new RecordsTagsCollection();
-		recordsTagsCollection.setrecordsId(request.getRecordId());
-		recordsTagsCollection.setTagsId(tagId);
-		recordsTagsCollection.setCreatedTime(new Date());
-		recordsTagsCollections.add(recordsTagsCollection);
+			RecordsTagsCollection recordsTagsCollection = new RecordsTagsCollection();
+			recordsTagsCollection.setrecordsId(new ObjectId(request.getRecordId()));
+			recordsTagsCollection.setTagsId(new ObjectId(tagId));
+			recordsTagsCollection.setCreatedTime(new Date());
+			recordsTagsCollections.add(recordsTagsCollection);
 	    }
 	    recordsTagsRepository.save(recordsTagsCollections);
 	} catch (Exception e) {
@@ -346,7 +320,8 @@ public class RecordsServiceImpl implements RecordsService {
 
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     @Transactional
     public List<Records> searchRecords(RecordsSearchRequest request) {
 	List<Records> records = null;
@@ -359,38 +334,35 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (request.getDiscarded())
 		discards[1] = true;
 	    long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
-
-	    if (request.getTagId() != null) {
+	    ObjectId tagObjectId = null, patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+    	if(!DPDoctorUtils.anyStringEmpty(request.getTagId()))tagObjectId = new ObjectId(request.getTagId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getPatientId()))patientObjectId = new ObjectId(request.getPatientId());
+		if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))hospitalObjectId = new ObjectId(request.getHospitalId());
+    	
+	    if (request.getTagId() != null) {	
 		List<RecordsTagsCollection> recordsTagsCollections = null;
 
-		if (request.getSize() > 0)
-		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(),
-			    new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
-		else
-		    recordsTagsCollections = recordsTagsRepository.findByTagsId(request.getTagId(), new Sort(Sort.Direction.DESC, "createdTime"));
-		@SuppressWarnings("unchecked")
-		Collection<String> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
-
+		if (request.getSize() > 0)recordsTagsCollections = recordsTagsRepository.findByTagsId(tagObjectId, new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
+		else recordsTagsCollections = recordsTagsRepository.findByTagsId(tagObjectId, new Sort(Sort.Direction.DESC, "createdTime"));
+		
+		Collection<ObjectId> recordIds = CollectionUtils.collect(recordsTagsCollections, new BeanToPropertyValueTransformer("recordsId"));
 		recordsCollections = IteratorUtils.toList(recordsRepository.findAll(recordIds).iterator());
 
 	    } else {
 
 		if (isOTPVerified) {
 		    if (request.getSize() > 0) {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards,
-				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
+			recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 		    } else {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+			recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
 		} else {
 		    if (request.getSize() > 0) {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), discards,
-				new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
+			recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
 		    } else {
-			recordsCollections = recordsRepository.findRecords(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
-				request.getHospitalId(), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+			recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		    }
 		}
 
@@ -398,9 +370,9 @@ public class RecordsServiceImpl implements RecordsService {
 		for (RecordsCollection recordCollection : recordsCollections) {
 		    Records record = new Records();
 		    BeanUtil.map(recordCollection, record);
-		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
 		    if (patientVisitCollection != null)
-			record.setVisitId(patientVisitCollection.getId());
+			record.setVisitId(patientVisitCollection.getId().toString());
 		    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 		    records.add(record);
 		}
@@ -435,27 +407,15 @@ public class RecordsServiceImpl implements RecordsService {
     public List<Tags> getAllTags(String doctorId, String locationId, String hospitalId) {
 	List<Tags> tags = null;
 	try {
-
-	    List<TagsCollection> tagsCollections = null;
-	    if (doctorId != null && locationId != null && hospitalId != null) {
-		tagsCollections = new ArrayList<TagsCollection>();
-		tags = new ArrayList<Tags>();
-		tagsCollections = tagsRepository.findByDoctorIdAndlocationIdAndHospitalId(doctorId, locationId, hospitalId);
-		BeanUtil.map(tagsCollections, tags);
-	    } else if (doctorId != null && locationId != null && hospitalId == null) {
-		tagsCollections = new ArrayList<TagsCollection>();
-		tags = new ArrayList<Tags>();
-		tagsCollections = tagsRepository.findByDoctorIdAndlocationId(doctorId, locationId);
-		BeanUtil.map(tagsCollections, tags);
-	    } else if (doctorId != null && locationId == null && hospitalId == null) {
-		tagsCollections = new ArrayList<TagsCollection>();
-		tags = new ArrayList<Tags>();
-		tagsCollections = tagsRepository.findByDoctorId(doctorId);
-		BeanUtil.map(tagsCollections, tags);
-	    } else {
-		logger.warn("Invalid Input");
-		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input !");
-	    }
+		ObjectId doctorObjectId = null;
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	
+    	Criteria criteria = new Criteria("doctorId").is(doctorObjectId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))criteria.and("hospitalId").is(new ObjectId(hospitalId));
+    	
+    	AggregationResults<Tags> aggregationResults = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), TagsCollection.class, Tags.class);
+    	tags = aggregationResults.getMappedResults();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -469,9 +429,9 @@ public class RecordsServiceImpl implements RecordsService {
     public String getPatientEmailAddress(String patientId) {
 	String emailAddress = null;
 	try {
-	    UserCollection userCollection = userRepository.findOne(patientId);
+	    UserCollection userCollection = userRepository.findOne(new ObjectId(patientId));
 	    if (userCollection != null) {
-		emailAddress = userCollection.getEmailAddress();
+	    	emailAddress = userCollection.getEmailAddress();
 	    } else {
 		logger.warn("Invalid PatientId");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid PatientId");
@@ -490,7 +450,7 @@ public class RecordsServiceImpl implements RecordsService {
     public FileDownloadResponse getRecordFile(String recordId) {
     	FileDownloadResponse response = null; 
 	try {
-	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+	    RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 	    if (recordsCollection != null) {
 		if (recordsCollection.getRecordsPath() != null) {
 			BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
@@ -525,7 +485,7 @@ public class RecordsServiceImpl implements RecordsService {
     public Records deleteRecord(String recordId, Boolean discarded) {
     	Records response = null;
 	try {
-	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+	    RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 	    if (recordsCollection == null) {
 		logger.warn("Record Not found.Check RecordId");
 		throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
@@ -535,7 +495,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsRepository.save(recordsCollection);
 	    response = new Records();
 	    BeanUtil.map(recordsCollection, response);
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is discarded", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" is discarded", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	} catch (BusinessException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -552,7 +512,7 @@ public class RecordsServiceImpl implements RecordsService {
     public Tags deleteTag(String tagId, Boolean discarded) {
     	Tags response = null;
 	try {
-		TagsCollection tagsCollection = tagsRepository.findOne(tagId);
+		TagsCollection tagsCollection = tagsRepository.findOne(new ObjectId(tagId));
 	    if (tagsCollection == null) {
 		logger.warn("Tag Not found.Check tag Id");
 		throw new BusinessException(ServiceError.NoRecord, "Tag Not found.Check tag Id");
@@ -572,22 +532,21 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     @Transactional
-    public List<Records> getRecordsByIds(List<String> recordIds) {
+    public List<Records> getRecordsByIds(List<ObjectId> recordIds) {
 	List<Records> records = null;
 	try {
-	    Iterable<RecordsCollection> recordsCollectionIterable = recordsRepository.findAll(recordIds);
-	    if (recordsCollectionIterable != null) {
-		@SuppressWarnings("unchecked")
-		List<RecordsCollection> recordsCollections = IteratorUtils.toList(recordsCollectionIterable.iterator());
-		records = new ArrayList<Records>();
-		for (RecordsCollection recordCollection : recordsCollections) {
-		    Records record = new Records();
-		    BeanUtil.map(recordCollection, record);
-		    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
-		    if (patientVisitCollection != null)
-			record.setVisitId(patientVisitCollection.getId());
-		    records.add(record);
-		}
+	    List<RecordsCollection> recordsCollections = recordsRepository.findAll(recordIds);
+	    if (recordsCollections != null) {
+		    records = new ArrayList<Records>();
+			for (RecordsCollection recordCollection : recordsCollections) {
+			    Records record = new Records();
+			    BeanUtil.map(recordCollection, record);
+			    record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+			    PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
+			    if (patientVisitCollection != null)
+				record.setVisitId(patientVisitCollection.getId().toString());
+			    records.add(record);
+			}
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -602,10 +561,16 @@ public class RecordsServiceImpl implements RecordsService {
     public Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 	Integer recordCount = 0;
 	try {
+		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
 	    if (isOTPVerified)
-		recordCount = recordsRepository.getRecordCount(patientId, false);
+		recordCount = recordsRepository.getRecordCount(patientObjectId, false);
 	    else
-		recordCount = recordsRepository.getRecordCount(doctorId, patientId, hospitalId, locationId, false);
+		recordCount = recordsRepository.getRecordCount(doctorObjectId, patientObjectId, hospitalObjectId, locationObjectId, false);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while getting Records Count");
@@ -661,13 +626,12 @@ public class RecordsServiceImpl implements RecordsService {
     public Records getRecordById(String recordId) {
 	Records record = null;
 	try {
-	    RecordsCollection recordCollection = recordsRepository.findOne(recordId);
+	    RecordsCollection recordCollection = recordsRepository.findOne(new ObjectId(recordId));
 	    if (recordCollection != null) {
 		record = new Records();
 		BeanUtil.map(recordCollection, record);
-		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
-		if (patientVisitCollection != null)
-		    record.setVisitId(patientVisitCollection.getId());
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
+		if (patientVisitCollection != null)record.setVisitId(patientVisitCollection.getId().toString());
 		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 	    }
 	    
@@ -689,7 +653,7 @@ public class RecordsServiceImpl implements RecordsService {
     	MailResponse mailResponse = null;
     	MailAttachment mailAttachment = null;
 	try {
-	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+	    RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 	    if (recordsCollection != null) {
 
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
@@ -708,8 +672,8 @@ public class RecordsServiceImpl implements RecordsService {
 		    mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
 		}
 		
-		UserCollection doctorUser = userRepository.findOne(doctorId);
-		LocationCollection locationCollection = locationRepository.findOne(locationId);
+		UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+		LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 		
 		mailResponse = new MailResponse();
 		mailResponse.setMailAttachment(mailAttachment);
@@ -763,7 +727,7 @@ public class RecordsServiceImpl implements RecordsService {
     @Transactional
     public void changeLabelAndDescription(String recordId, String label, String explanation) {
 	try {
-	    RecordsCollection recordsCollection = recordsRepository.findOne(recordId);
+	    RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 	    if (recordsCollection == null) {
 		logger.warn("Record not found.Check RecordId !");
 		throw new BusinessException(ServiceError.NoRecord, "Record not found.Check RecordId !");
@@ -804,31 +768,33 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (!inHistory)
 		inHistorys[1] = false;
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-
+	    
+	    ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+	    if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
 	    if (isOTPVerified) {
 		if (size > 0) {
-		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys,
-			    new PageRequest(page, size, Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		} else {
-		    recordsCollections = recordsRepository.findRecords(patientId, new Date(createdTimeStamp), discards, inHistorys,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    } else {
 		if (size > 0) {
-		    recordsCollections = recordsRepository.findRecords(patientId, doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-			    inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
 		} else {
-		    recordsCollections = recordsRepository.findRecords(patientId, doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-			    inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
+		    recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
 		BeanUtil.map(recordCollection, record);
-		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
 		if (patientVisitCollection != null)
-		    record.setVisitId(patientVisitCollection.getId());
+		    record.setVisitId(patientVisitCollection.getId().toString());
 		records.add(record);
 	    }
 
@@ -850,21 +816,20 @@ public class RecordsServiceImpl implements RecordsService {
 	discards[0] = false;
 	try {
 	    long updatedTimeLong = Long.parseLong(updatedTime);
-	    if (discarded)
-		discards[1] = true;
-	    if (size > 0)
-		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards,
-			new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-	    else
-		recordsCollections = recordsRepository.findRecordsByPatientId(patientId, new Date(updatedTimeLong), discards,
-			new Sort(Sort.Direction.DESC, "createdTime"));
+	    if (discarded)discards[1] = true;
+	    
+	    ObjectId patientObjectId = null;
+		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+		
+	    if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+	    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
 		BeanUtil.map(recordCollection, record);
-		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(record.getId());
+		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
 		if (patientVisitCollection != null)
-		    record.setVisitId(patientVisitCollection.getId());
+		    record.setVisitId(patientVisitCollection.getId().toString());
 		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 		records.add(record);
 	    }
@@ -883,7 +848,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    Date createdTime = new Date();
 	    RecordsCollection recordsCollection = null, oldRecord = null;
 	    if(!DPDoctorUtils.anyStringEmpty(request.getId())){
-	    	recordsCollection = recordsRepository.findOne(request.getId());
+	    	recordsCollection = recordsRepository.findOne(new ObjectId(request.getId()));
 	    	oldRecord = recordsCollection;
 	    }
 	    if(recordsCollection == null)recordsCollection = new RecordsCollection();
@@ -931,8 +896,7 @@ public class RecordsServiceImpl implements RecordsService {
 		    }
 		    PrescriptionCollection prescriptionCollection = null;
 		    if (recordsCollection.getPrescriptionId() != null) {
-			prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(),
-				recordsCollection.getPatientId());
+			prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
 		    }
 		    if (prescriptionCollection != null) {
 			recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
@@ -944,7 +908,7 @@ public class RecordsServiceImpl implements RecordsService {
 				List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 				for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
 				    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
-					data.setRecordId(recordsCollection.getId());
+					data.setRecordId(recordsCollection.getId().toString());
 				    }
 				    tests.add(data);
 				}
@@ -953,13 +917,10 @@ public class RecordsServiceImpl implements RecordsService {
 				prescriptionRepository.save(prescriptionCollection);
 			    }
 		    
-		    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equalsIgnoreCase(recordsCollection.getDoctorId()) &&
-		    		prescriptionCollection.getLocationId().equalsIgnoreCase(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equalsIgnoreCase(recordsCollection.getHospitalId()))
-		    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
-
+		    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equals(recordsCollection.getDoctorId()) && prescriptionCollection.getLocationId().equals(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equals(recordsCollection.getHospitalId()))
+		    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	    }
-	    
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId());
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();

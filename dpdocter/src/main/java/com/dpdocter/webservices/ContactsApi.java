@@ -60,7 +60,7 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = "GET_DOCTOR_CONTACTS", notes = "GET_DOCTOR_CONTACTS")
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId()) || request.getGroups() == null || !request.getGroups().isEmpty()) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
@@ -137,25 +137,16 @@ public class ContactsApi {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
-	return doctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
-    }
-
-    private Response<RegisteredPatientDetails> doctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
-    	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    }
-	List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime,
-		discarded);
-	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
-	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
-		registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
-		registeredPatientDetail.setThumbnailUrl(getFinalImageURL(registeredPatientDetail.getThumbnailUrl()));
-	    }
-	}
-	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
-	response.setDataList(registeredPatientDetails);
-	return response;
+    List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
+    	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
+    	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
+    		registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
+    		registeredPatientDetail.setThumbnailUrl(getFinalImageURL(registeredPatientDetail.getThumbnailUrl()));
+    	    }
+    	}
+    	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+    	response.setDataList(registeredPatientDetails);
+    	return response;
     }
 
     @Path(value = PathProxy.ContactsUrls.IMPORT_CONTACTS)
@@ -260,29 +251,25 @@ public class ContactsApi {
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    }
-	return getGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-    }
-
-    private Response<Group> getGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
-	List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-	if (groups != null) {
-	    for (Group group : groups) {
-		GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
-		getDoctorContactsRequest.setDoctorId(doctorId);
-		List<String> groupList = new ArrayList<String>();
-		groupList.add(group.getId());
-		getDoctorContactsRequest.setGroups(groupList);
-		int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
-		group.setCount(ttlCount);
+	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    	    logger.warn("Invalid Input");
+	    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	    }
-	}
-	Response<Group> response = new Response<Group>();
-	response.setDataList(groups);
-	return response;
+	    List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+		if (groups != null) {
+		    for (Group group : groups) {
+			GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();
+			getDoctorContactsRequest.setDoctorId(doctorId);
+			List<String> groupList = new ArrayList<String>();
+			groupList.add(group.getId());
+			getDoctorContactsRequest.setGroups(groupList);
+			int ttlCount = contactsService.getContactsTotalSize(getDoctorContactsRequest);
+			group.setCount(ttlCount);
+		    }
+		}
+		Response<Group> response = new Response<Group>();
+		response.setDataList(groups);
+		return response;	
     }
 
     @Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)

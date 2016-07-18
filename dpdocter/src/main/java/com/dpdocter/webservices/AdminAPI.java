@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,6 @@ import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.collections.DiagramsCollection;
-import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -120,17 +120,6 @@ public class AdminAPI {
 
     @Value(value = "${image.path}")
     private String imagePath;
-
-//	@Path(value = PathProxy.AdminUrls.GET_INACTIVE_USERS)
-//	@GET
-//	@ApiOperation(value = PathProxy.AdminUrls.GET_INACTIVE_USERS, notes = PathProxy.AdminUrls.GET_INACTIVE_USERS)
-//	public Response<User> getInactiveUsers(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size){
-//		
-//		List<User> users = adminServices.getInactiveUsers(page, size);
-//		Response<User> response = new Response<User>();
-//		response.setDataList(users);
-//		return response;
-//	}
 	
 	@Path(value = PathProxy.AdminUrls.GET_HOSPITALS)
 	@GET
@@ -232,13 +221,6 @@ public class AdminAPI {
 //		return response;
 //	}
 	
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-		    return imagePath + imageURL;
-		} else
-		    return null;
-	    }
-
 	@Path(value = PathProxy.AdminUrls.IMPORT_DRUG)
     @GET
     public Response<Boolean> importDrug() {
@@ -313,7 +295,7 @@ public class AdminAPI {
 	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
-	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, true, searchTerm);
+	List<?> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, true, searchTerm);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
 		((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
@@ -335,7 +317,7 @@ public class AdminAPI {
     }
 	Complaint complaint = clinicalNotesService.addEditComplaint(request);
 
-	transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
+	transactionalManagementService.addResource(new ObjectId(complaint.getId()), Resource.COMPLAINT, false);
 	ESComplaintsDocument esComplaints = new ESComplaintsDocument();
 	BeanUtil.map(complaint, esComplaints);
 	esClinicalNotesService.addComplaints(esComplaints);
@@ -356,7 +338,7 @@ public class AdminAPI {
 	
 	Observation observation = clinicalNotesService.addEditObservation(request);
 
-	transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
+	transactionalManagementService.addResource(new ObjectId(observation.getId()), Resource.OBSERVATION, false);
 	ESObservationsDocument esObservations = new ESObservationsDocument();
 	BeanUtil.map(observation, esObservations);
 	esClinicalNotesService.addObservations(esObservations);
@@ -376,7 +358,7 @@ public class AdminAPI {
 	
 	Investigation investigation = clinicalNotesService.addEditInvestigation(request);
 
-	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
+	transactionalManagementService.addResource(new ObjectId(investigation.getId()), Resource.INVESTIGATION, false);
 	ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
 	BeanUtil.map(investigation, esInvestigations);
 	esClinicalNotesService.addInvestigations(esInvestigations);
@@ -397,7 +379,7 @@ public class AdminAPI {
 	
 	Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
 
-	transactionalManagementService.addResource(diagnosis.getId(), Resource.DIAGNOSIS, false);
+	transactionalManagementService.addResource(new ObjectId(diagnosis.getId()), Resource.DIAGNOSIS, false);
 	ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
 	BeanUtil.map(diagnosis, esDiagnoses);
 	esClinicalNotesService.addDiagnoses(esDiagnoses);
@@ -418,7 +400,7 @@ public class AdminAPI {
 	
 	Notes notes = clinicalNotesService.addEditNotes(request);
 
-	transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
+	transactionalManagementService.addResource(new ObjectId(notes.getId()), Resource.NOTES, false);
 	ESNotesDocument esNotes = new ESNotesDocument();
 	BeanUtil.map(notes, esNotes);
 	esClinicalNotesService.addNotes(esNotes);
@@ -438,7 +420,7 @@ public class AdminAPI {
     }
 	
 	Diagram diagram = clinicalNotesService.addEditDiagram(request);
-	transactionalManagementService.addResource(diagram.getId(), Resource.DIAGRAM, false);
+	transactionalManagementService.addResource(new ObjectId(diagram.getId()), Resource.DIAGRAM, false);
 	ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
 	BeanUtil.map(diagram, esDiagrams);
 	esClinicalNotesService.addDiagrams(esDiagrams);
@@ -461,7 +443,7 @@ public class AdminAPI {
     	Complaint complaint = clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
 	
     	if(complaint != null){
-			transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
+			transactionalManagementService.addResource(new ObjectId(complaint.getId()), Resource.COMPLAINT, false);
 			ESComplaintsDocument esComplaints = new ESComplaintsDocument();
 			BeanUtil.map(complaint, esComplaints);
 			esClinicalNotesService.addComplaints(esComplaints);
@@ -479,7 +461,7 @@ public class AdminAPI {
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Observation observation = clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
     	if(observation != null){
-			transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
+			transactionalManagementService.addResource(new ObjectId(observation.getId()), Resource.OBSERVATION, false);
 			ESObservationsDocument esObservations = new ESObservationsDocument();
 			BeanUtil.map(observation, esObservations);
 			esClinicalNotesService.addObservations(esObservations);
@@ -498,7 +480,7 @@ public class AdminAPI {
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Investigation investigation = clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
     	if(investigation != null){
-	    	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
+	    	transactionalManagementService.addResource(new ObjectId(investigation.getId()), Resource.INVESTIGATION, false);
 	    	ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
 	    	BeanUtil.map(investigation, esInvestigations);
 	    	esClinicalNotesService.addInvestigations(esInvestigations);
@@ -517,7 +499,7 @@ public class AdminAPI {
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Diagnoses diagnoses = clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
     	if(diagnoses != null){
-			transactionalManagementService.addResource(diagnoses.getId(), Resource.DIAGNOSIS, false);
+			transactionalManagementService.addResource(new ObjectId(diagnoses.getId()), Resource.DIAGNOSIS, false);
 			ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
 			BeanUtil.map(diagnoses, esDiagnoses);
 			esClinicalNotesService.addDiagnoses(esDiagnoses);
@@ -535,7 +517,7 @@ public class AdminAPI {
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Notes notes = clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
     	if(notes != null){
-			transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
+			transactionalManagementService.addResource(new ObjectId(notes.getId()), Resource.NOTES, false);
 			ESNotesDocument esNotes = new ESNotesDocument();
 			BeanUtil.map(notes, esNotes);
 			esClinicalNotesService.addNotes(esNotes);
@@ -553,7 +535,7 @@ public class AdminAPI {
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	Diagram diagram = clinicalNotesService.deleteDiagram(id, doctorId, locationId, hospitalId, discarded);
     	if(diagram != null){
-    		transactionalManagementService.addResource(diagram.getId(), Resource.DIAGRAM, false);
+    		transactionalManagementService.addResource(new ObjectId(diagram.getId()), Resource.DIAGRAM, false);
 			ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
 			BeanUtil.map(diagram, esDiagrams);
 			esClinicalNotesService.addDiagrams(esDiagrams);		
@@ -566,19 +548,19 @@ public class AdminAPI {
     @Path(value = PathProxy.AdminUrls.ADD_DISEASE)
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DISEASE, notes = PathProxy.AdminUrls.ADD_DISEASE)
-    public Response<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request) {
+    public Response<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
 	if (request == null) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	List<DiseasesCollection> diseases = historyServices.addDiseases(request);
-	for(DiseasesCollection addEditResponse : diseases){
-		transactionalManagementService.addResource(addEditResponse.getId(), Resource.DISEASE, false);
+	List<DiseaseAddEditResponse> diseases = historyServices.addDiseases(request);
+	for(DiseaseAddEditResponse addEditResponse : diseases){
+		transactionalManagementService.addResource(new ObjectId(addEditResponse.getId()), Resource.DISEASE, false);
 		ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
 		BeanUtil.map(addEditResponse, esDiseasesDocument);
 		esMasterService.addEditDisease(esDiseasesDocument);
 	}
-	Response<DiseasesCollection> response = new Response<DiseasesCollection>();
+	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
 	response.setDataList(diseases);
 	return response;
     }
@@ -593,7 +575,7 @@ public class AdminAPI {
 	}
 	request.setId(diseaseId);
 	DiseaseAddEditResponse diseases = historyServices.editDiseases(request);
-	transactionalManagementService.addResource(diseases.getId(), Resource.DISEASE, false);
+	transactionalManagementService.addResource(new ObjectId(diseases.getId()), Resource.DISEASE, false);
 	ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
 	BeanUtil.map(diseases, esDiseasesDocument);
 	esMasterService.addEditDisease(esDiseasesDocument);
@@ -608,9 +590,9 @@ public class AdminAPI {
     public Response<DiseaseAddEditResponse> deleteDisease(@PathParam(value = "diseaseId") String diseaseId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	if (StringUtils.isEmpty(diseaseId) || StringUtils.isEmpty(doctorId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
-	    logger.warn("Disease Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	if (DPDoctorUtils.anyStringEmpty(diseaseId)) {
+	    logger.warn("Disease Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Disease Id Cannot Be Empty");
 	}
 	DiseaseAddEditResponse diseaseDeleteResponse = historyServices.deleteDisease(diseaseId, doctorId, hospitalId, locationId, discarded);
 	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
@@ -638,13 +620,13 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG, notes = PathProxy.AdminUrls.ADD_DRUG)
     public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
-	if (request == null || request.getDrugType() == null || DPDoctorUtils.anyStringEmpty(request.getDrugType().getType())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDrugName())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
 
-	transactionalManagementService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
+	transactionalManagementService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
 	if (drugAddEditResponse != null) {
 	    ESDrugDocument esDrugDocument = new ESDrugDocument();
 	    BeanUtil.map(drugAddEditResponse, esDrugDocument);
@@ -664,14 +646,14 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG, notes = PathProxy.AdminUrls.EDIT_DRUG)
     public Response<DrugAddEditResponse> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(drugId)|| request.getDrugType() == null || DPDoctorUtils.anyStringEmpty(request.getDrugType().getType())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(drugId, request.getDrugName())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setId(drugId);
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
-	transactionalManagementService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
+	transactionalManagementService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
 	if (drugAddEditResponse != null) {
 	    ESDrugDocument esDrugDocument = new ESDrugDocument();
 	    BeanUtil.map(drugAddEditResponse, esDrugDocument);
@@ -695,7 +677,7 @@ public class AdminAPI {
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Id, Doctor Id Cannot Be Empty");
 	}
 	Drug drugDeleteResponse = prescriptionServices.deleteDrug(drugId, discarded);
-	transactionalManagementService.addResource(drugId, Resource.DRUG, false);
+	transactionalManagementService.addResource(new ObjectId(drugId), Resource.DRUG, false);
 	if (drugDeleteResponse != null) {
 	    ESDrugDocument esDrugDocument = new ESDrugDocument();
 	    BeanUtil.map(drugDeleteResponse, esDrugDocument);
@@ -714,12 +696,12 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_LAB_TEST, notes = PathProxy.AdminUrls.ADD_LAB_TEST)
     public Response<LabTest> addLabTest(LabTest request) {
-	if (request == null) {
+	if (request == null || request.getTest() == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	LabTest labTestResponse = prescriptionServices.addLabTest(request);
-	transactionalManagementService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
+	transactionalManagementService.addResource(new ObjectId(labTestResponse.getId()), Resource.LABTEST, false);
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestResponse, esLabTestDocument);
 	if (labTestResponse.getTest() != null)esLabTestDocument.setTestId(labTestResponse.getTest().getId());
@@ -733,13 +715,13 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_LAB_TEST, notes = PathProxy.AdminUrls.EDIT_LAB_TEST)
     public Response<LabTest> editLabTest(@PathParam(value = "labTestId") String labTestId, LabTest request) {
-    	if (request == null) {
+    	if (request == null|| request.getTest() == null) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	request.setId(labTestId);
 	LabTest labTestResponse = prescriptionServices.editLabTest(request);
-	transactionalManagementService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
+	transactionalManagementService.addResource(new ObjectId(labTestResponse.getId()), Resource.LABTEST, false);
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestResponse, esLabTestDocument);
 	if (labTestResponse.getTest() != null)esLabTestDocument.setTestId(labTestResponse.getTest().getId());
@@ -758,7 +740,7 @@ public class AdminAPI {
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id Cannot Be Empty");
 	}
 	LabTest labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, discarded);
-	transactionalManagementService.addResource(labTestDeleteResponse.getId(), Resource.LABTEST, false);
+	transactionalManagementService.addResource(new ObjectId(labTestDeleteResponse.getId()), Resource.LABTEST, false);
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestDeleteResponse, esLabTestDocument);
 	if (labTestDeleteResponse.getTest() != null)esLabTestDocument.setTestId(labTestDeleteResponse.getTest().getId());
@@ -773,7 +755,7 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG_TYPE, notes = PathProxy.AdminUrls.ADD_DRUG_TYPE)
     public Response<DrugTypeAddEditResponse> addDrugType(DrugTypeAddEditRequest request) {
-    	if (request == null) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getType())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
@@ -788,14 +770,14 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG_TYPE, notes = PathProxy.AdminUrls.EDIT_DRUG_TYPE)
     public Response<DrugTypeAddEditResponse> editDrugType(@PathParam(value = "drugTypeId") String drugTypeId, DrugTypeAddEditRequest request) {
-    	if (request == null) {
+    	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getType())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	request.setId(drugTypeId);
 	DrugTypeAddEditResponse drugTypeAddEditResponse = prescriptionServices.editDrugType(request);
 
-	transactionalManagementService.addResource(drugTypeId, Resource.DRUGSDRUGTYPE, false);
+	transactionalManagementService.addResource(new ObjectId(drugTypeId), Resource.DRUGSDRUGTYPE, false);
 	if (drugTypeAddEditResponse != null) {
 	    esPrescriptionService.editDrugTypeInDrugs(drugTypeId);
 	}
@@ -823,7 +805,7 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG_DOSAGE, notes = PathProxy.AdminUrls.ADD_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDosage())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -838,7 +820,7 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG_DOSAGE, notes = PathProxy.AdminUrls.EDIT_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
-	if (StringUtils.isEmpty(drugDosageId) || request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDosage())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -854,7 +836,7 @@ public class AdminAPI {
     @DELETE
     @ApiOperation(value = PathProxy.AdminUrls.DELETE_DRUG_DOSAGE, notes = PathProxy.AdminUrls.DELETE_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> deleteDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	if (StringUtils.isEmpty(drugDosageId)) {
+	if (DPDoctorUtils.anyStringEmpty(drugDosageId)) {
 	    logger.warn("Drug Dosage Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Dosage Id Cannot Be Empty");
 	}
@@ -869,7 +851,7 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG_DIRECTION, notes = PathProxy.AdminUrls.ADD_DRUG_DIRECTION)
     public Response<DrugDirectionAddEditResponse> addDrugDirection(DrugDirectionAddEditRequest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDirection())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -884,7 +866,7 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG_DIRECTION, notes = PathProxy.AdminUrls.EDIT_DRUG_DIRECTION)
     public Response<DrugDirectionAddEditResponse> editDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId, DrugDirectionAddEditRequest request) {
-	if (StringUtils.isEmpty(drugDirectionId) || request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(drugDirectionId, request.getDirection())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -900,7 +882,7 @@ public class AdminAPI {
     @DELETE
     @ApiOperation(value = PathProxy.AdminUrls.DELETE_DRUG_DIRECTION, notes = PathProxy.AdminUrls.DELETE_DRUG_DIRECTION)
     public Response<DrugDirectionAddEditResponse> deleteDrugDirection(@PathParam(value = "drugDirectionId") String drugDirectionId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	if (StringUtils.isEmpty(drugDirectionId)) {
+	if (DPDoctorUtils.anyStringEmpty(drugDirectionId)) {
 	    logger.warn("Drug Direction Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Drug Direction Id Cannot Be Empty");
 	}
@@ -915,7 +897,7 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG_DURATION_UNIT, notes = PathProxy.AdminUrls.ADD_DRUG_DURATION_UNIT)
     public Response<DrugDurationUnitAddEditResponse> addDrugDurationUnit(DrugDurationUnitAddEditRequest request) {
-	if (request == null) {
+	if (request == null  || DPDoctorUtils.anyStringEmpty(request.getUnit())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -931,7 +913,7 @@ public class AdminAPI {
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG_DURATION_UNIT, notes = PathProxy.AdminUrls.EDIT_DRUG_DURATION_UNIT)
     public Response<DrugDurationUnitAddEditResponse> editDrugDurationUnit(@PathParam(value = "drugDurationUnitId") String drugDurationUnitId,
 	    DrugDurationUnitAddEditRequest request) {
-	if (StringUtils.isEmpty(drugDurationUnitId) || request == null) {
+	if (request == null  || DPDoctorUtils.anyStringEmpty(drugDurationUnitId, request.getUnit())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -963,12 +945,12 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_EDIT_DIAGNOSTIC_TEST, notes = PathProxy.AdminUrls.ADD_EDIT_DIAGNOSTIC_TEST)
     public Response<DiagnosticTest> addEditDiagnosticTest(DiagnosticTest request) {
-	if (request == null) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getTestName())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	DiagnosticTest diagnosticTest = prescriptionServices.addEditDiagnosticTest(request);
-	transactionalManagementService.addResource(diagnosticTest.getId(), Resource.DIAGNOSTICTEST, false);
+	transactionalManagementService.addResource(new ObjectId(diagnosticTest.getId()), Resource.DIAGNOSTICTEST, false);
 
 	ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
 	BeanUtil.map(diagnosticTest, esDiagnosticTestDocument);
@@ -1009,7 +991,7 @@ public class AdminAPI {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	List<Object> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, true, searchTerm);
+	List<?> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, true, searchTerm);
 
 	Response<Object> response = new Response<Object>();
 	response.setDataList(clinicalItems);
@@ -1026,4 +1008,8 @@ public class AdminAPI {
 		response.setData(doctorContactUs);
 		return response;
     }
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) return imagePath + imageURL;
+		else return null;
+	 }
 }

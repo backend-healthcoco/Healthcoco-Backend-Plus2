@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,7 +11,7 @@ import com.dpdocter.beans.AccessPermission;
 @Document(collection = "acos_cl")
 public class AcosCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     private String module;
 
@@ -18,11 +19,11 @@ public class AcosCollection {
 
     private List<AccessPermission> accessPermissions;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 

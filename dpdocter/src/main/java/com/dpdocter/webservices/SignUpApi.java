@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,6 @@ import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
 import com.dpdocter.request.DoctorSignupHandheldRequest;
 import com.dpdocter.request.DoctorSignupRequest;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
-import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
 import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
@@ -124,7 +124,7 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
-	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
+	    transnationalService.addResource(new ObjectId(doctorSignUp.getUser().getId()), Resource.DOCTOR, false);
 	    esRegistrationService.addDoctor(getESDoctorDocument(doctorSignUp));
 	    }
 
@@ -185,7 +185,7 @@ public class SignUpApi {
 		    doctorSignUp.getHospital().setHospitalImageUrl(getFinalImageURL(doctorSignUp.getHospital().getHospitalImageUrl()));
 		}
 	    }
-	    transnationalService.addResource(doctorSignUp.getUser().getId(), Resource.DOCTOR, false);
+	    transnationalService.addResource(new ObjectId(doctorSignUp.getUser().getId()), Resource.DOCTOR, false);
 	    esRegistrationService.addDoctor(getESDoctorDocument(doctorSignUp));
 	}
 
@@ -288,8 +288,8 @@ public class SignUpApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
     	}
 	User user = signUpService.patientProfilePicChange(request);
-	transnationalService.addResource(user.getId(), Resource.PATIENT, false);
-	transnationalService.checkPatient(user.getId());
+	transnationalService.addResource(new ObjectId(user.getId()), Resource.PATIENT, false);
+	transnationalService.checkPatient(new ObjectId(user.getId()));
 	if (user != null) {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));

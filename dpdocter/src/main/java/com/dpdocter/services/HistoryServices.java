@@ -2,13 +2,14 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
-import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -16,7 +17,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 
 public interface HistoryServices {
 
-    List<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request);
+    List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request);
 
     DiseaseAddEditResponse editDiseases(DiseaseAddEditRequest request);
 
@@ -25,7 +26,7 @@ public interface HistoryServices {
     List<DiseaseListResponse> getDiseases(String range, int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
 	    Boolean discarded, Boolean isAdmin, String searchTerm);
 
-    List<DiseaseListResponse> getDiseasesByIds(List<String> diseasesIds);
+    List<DiseaseListResponse> getDiseasesByIds(List<ObjectId> diseasesIds);
 
     Records addReportToHistory(String reportId, String patientId, String doctorId, String hospitalId, String locationId);
 

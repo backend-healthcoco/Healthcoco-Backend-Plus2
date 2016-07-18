@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,7 +14,7 @@ import com.dpdocter.beans.WorkingSchedule;
 public class LocationCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String locationName;
@@ -43,7 +44,7 @@ public class LocationCollection extends GenericCollection {
     private String logoThumbnailUrl;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
     private Double latitude;
@@ -102,11 +103,11 @@ public class LocationCollection extends GenericCollection {
     @Field
     private Boolean isActivate = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -174,11 +175,11 @@ public class LocationCollection extends GenericCollection {
 	this.logoUrl = logoUrl;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 

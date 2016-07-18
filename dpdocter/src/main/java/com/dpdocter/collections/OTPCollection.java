@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,7 +12,7 @@ import com.dpdocter.enums.OTPState;
 public class OTPCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String otpNumber;
@@ -25,11 +26,11 @@ public class OTPCollection extends GenericCollection {
     @Indexed
     private OTPState state = OTPState.NOTVERIFIED;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 

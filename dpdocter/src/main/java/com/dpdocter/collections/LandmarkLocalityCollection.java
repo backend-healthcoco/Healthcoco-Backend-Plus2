@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,10 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class LandmarkLocalityCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
-    private String cityId;
+    private ObjectId cityId;
 
     @Field
     private String locality;
@@ -28,19 +29,19 @@ public class LandmarkLocalityCollection {
     @Field
     private Double longitude;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getCityId() {
+    public ObjectId getCityId() {
 	return cityId;
     }
 
-    public void setCityId(String cityId) {
+    public void setCityId(ObjectId cityId) {
 	this.cityId = cityId;
     }
 

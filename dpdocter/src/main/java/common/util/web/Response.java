@@ -11,7 +11,7 @@ public class Response<T> {
 
     private T data;
 
-    private List<T> dataList;
+    private List<?> dataList;
 
     public Response() {
 	}
@@ -24,11 +24,11 @@ public class Response<T> {
 	this.data = data;
     }
 
-    public List<T> getDataList() {
+    public List<?> getDataList() {
 	return dataList;
     }
 
-    public void setDataList(List<T> dataList) {
+    public void setDataList(List<?> dataList) {
 	this.dataList = dataList;
     }
 

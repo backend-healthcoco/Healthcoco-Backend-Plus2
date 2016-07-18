@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -519,7 +520,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	public void addEditDisease(ESDiseasesDocument esDiseasesDocument) {
 		try {
 		    esDiseaseRepository.save(esDiseasesDocument);
-		    transactionalManagementService.addResource(esDiseasesDocument.getId(), Resource.DISEASE, true);
+		    transactionalManagementService.addResource(new ObjectId(esDiseasesDocument.getId()), Resource.DISEASE, true);
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error("Error while adding disease " + e.getMessage());

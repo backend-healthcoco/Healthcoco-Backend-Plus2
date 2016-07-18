@@ -17,15 +17,19 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.dpdocter.enums.Resource;
 
@@ -58,6 +62,28 @@ public class DPDoctorUtils {
 	}
 	return result;
     }
+
+    public static boolean anyStringEmpty(ObjectId... values) {
+    	boolean result = false;
+    	for (ObjectId value : values) {
+    	    if (value == null) {
+    		result = true;
+    		break;
+    	    }
+    	}
+    	return result;
+        }
+
+        public static boolean allStringsEmpty(ObjectId... values) {
+    	boolean result = true;
+    	for (ObjectId value : values) {
+    	    if (value != null) {
+    		result = false;
+    		break;
+    	    }
+    	}
+    	return result;
+        }
 
     public static String getPrefixedNumber(int number) {
 	String result = String.valueOf(number);
@@ -213,5 +239,121 @@ public class DPDoctorUtils {
         }
         return searchQuery;
 	}
+
+	public static Aggregation createGlobalAggregation(int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
+		
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		
+	    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null);
+	    if(specialities != null && !specialities.isEmpty())criteria.and("speciality").in(specialities);
+	    if(!discarded)criteria.and("discarded").is(discarded);
+		Aggregation aggregation = null;
+		 if(anyStringEmpty(sortBy)){
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		 }else{
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)));
+		 }
+		
+       return aggregation;
+	}
+	
+	public static Aggregation createCustomAggregation(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
+		
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		
+	    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+	    if(!discarded)criteria.and("discarded").is(discarded);
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(new ObjectId(doctorId));
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))criteria.and("hospitalId").is(new ObjectId(hospitalId));
+    	
+	    Aggregation aggregation = null;
+		if(anyStringEmpty(sortBy)){
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		}else{
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)));
+		}
+		
+       return aggregation;       
+	}
+
+	public static Aggregation createCustomGlobalAggregation(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
+
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		
+	    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+	    if(!discarded)criteria.and("discarded").is(discarded);	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)), new Criteria("doctorId").is(null));
+	    else criteria.and("doctorId").is(null);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+    		criteria.orOperator(new Criteria("locationId").is(new ObjectId(locationId)), new Criteria("locationId").is(null));
+    		criteria.orOperator(new Criteria("hospitalId").is(new ObjectId(hospitalId)), new Criteria("hospitalId").is(null));
+    	}
+    	
+	    if(specialities != null && !specialities.isEmpty())criteria.and("speciality").in(specialities);
+		Aggregation aggregation = null;
+		if(anyStringEmpty(sortBy)){
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		}else{
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)));
+		}
+		
+       return aggregation;
+	}
+
+	public static Aggregation createGlobalAggregationForAdmin(int page, int size, String updatedTime, Boolean discarded, String searchTerm, String searchBy){
+		
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		
+	    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null);
+	    if(!discarded)criteria.and("discarded").is(discarded);
+	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria.and(searchBy).regex("^"+searchTerm,"i");
+		Aggregation aggregation = null;
+		if(size > 0){
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		}else{
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		}
+       return aggregation;
+	}
+	
+	public static Aggregation createCustomAggregationForAdmin(int page, int size, String updatedTime, Boolean discarded, String searchTerm, String searchBy){
+		
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("doctorId").ne(null).and("locationId").ne(null).and("hospitalId").ne(null);
+		if(!discarded)criteria.and("discarded").is(discarded);
+		if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria.and(searchBy).regex("^"+searchTerm,"i");
+	    Aggregation aggregation = null;
+		if(size > 0){
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		}else{
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		}
+       return aggregation;       
+	}
+
+	public static Aggregation createCustomGlobalAggregationForAdmin(int page, int size, String updatedTime, Boolean discarded, String searchTerm, String searchBy){
+
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		
+	    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+	    if(!discarded)criteria.and("discarded").is(discarded);	    
+	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria.and(searchBy).regex("^"+searchTerm,"i");
+	    Aggregation aggregation = null;
+		if(size > 0){
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		}else{
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+		}
+       return aggregation;
+	}
+
 
 }

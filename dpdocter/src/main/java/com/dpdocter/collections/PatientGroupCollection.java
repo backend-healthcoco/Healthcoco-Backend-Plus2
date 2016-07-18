@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,38 +9,38 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "patient_group_cl")
 public class PatientGroupCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Indexed
-    private String groupId;
+    private ObjectId groupId;
 
     @Indexed
-    private String patientId;
+    private ObjectId patientId;
 
     @Field
     private Boolean discarded = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getGroupId() {
+    public ObjectId getGroupId() {
 	return groupId;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(ObjectId groupId) {
 	this.groupId = groupId;
     }
 
-    public String getPatientId() {
+    public ObjectId getPatientId() {
 	return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(ObjectId patientId) {
 	this.patientId = patientId;
     }
 

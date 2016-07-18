@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -18,46 +19,43 @@ import com.dpdocter.beans.VitalSigns;
 public class ClinicalNotesCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String uniqueEmrId;
 
     @Field
-    private List<String> notes;
+    private List<ObjectId> notes;
 
     @Field
-    private List<String> observations;
+    private List<ObjectId> observations;
 
     @Field
-    private List<String> investigations;
+    private List<ObjectId> investigations;
 
     @Field
-    private List<String> diagnoses;
+    private List<ObjectId> diagnoses;
 
     @Field
-    private List<String> complaints;
+    private List<ObjectId> complaints;
 
     @Field
-    private List<String> diagrams;
-
-    @Field
-    private List<String> diagramsPaths;
+    private List<ObjectId> diagrams;
 
     @Field
     private List<String> comments;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Indexed
-    private String patientId;
+    private ObjectId patientId;
     
     @Field
     private Boolean discarded = false;
@@ -68,68 +66,60 @@ public class ClinicalNotesCollection extends GenericCollection {
     @Field
     private VitalSigns vitalSigns;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public List<String> getNotes() {
+    public List<ObjectId> getNotes() {
 	return notes;
     }
 
-    public void setNotes(List<String> notes) {
+    public void setNotes(List<ObjectId> notes) {
 	this.notes = notes;
     }
 
-    public List<String> getObservations() {
+    public List<ObjectId> getObservations() {
 	return observations;
     }
 
-    public void setObservations(List<String> observations) {
+    public void setObservations(List<ObjectId> observations) {
 	this.observations = observations;
     }
 
-    public List<String> getInvestigations() {
+    public List<ObjectId> getInvestigations() {
 	return investigations;
     }
 
-    public void setInvestigations(List<String> investigations) {
+    public void setInvestigations(List<ObjectId> investigations) {
 	this.investigations = investigations;
     }
 
-    public List<String> getDiagnoses() {
+    public List<ObjectId> getDiagnoses() {
 	return diagnoses;
     }
 
-    public void setDiagnoses(List<String> diagnoses) {
+    public void setDiagnoses(List<ObjectId> diagnoses) {
 	this.diagnoses = diagnoses;
     }
 
-    public List<String> getComplaints() {
+    public List<ObjectId> getComplaints() {
 	return complaints;
     }
 
-    public void setComplaints(List<String> complaints) {
+    public void setComplaints(List<ObjectId> complaints) {
 	this.complaints = complaints;
     }
 
-    public List<String> getDiagrams() {
+    public List<ObjectId> getDiagrams() {
 	return diagrams;
     }
 
-    public void setDiagrams(List<String> diagrams) {
+    public void setDiagrams(List<ObjectId> diagrams) {
 	this.diagrams = diagrams;
-    }
-
-    public List<String> getDiagramsPaths() {
-	return diagramsPaths;
-    }
-
-    public void setDiagramsPaths(List<String> diagramsPaths) {
-	this.diagramsPaths = diagramsPaths;
     }
 
     public List<String> getComments() {
@@ -140,27 +130,27 @@ public class ClinicalNotesCollection extends GenericCollection {
 	this.comments = comments;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
@@ -196,11 +186,11 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public String getPatientId() {
+	public ObjectId getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(String patientId) {
+	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
 	}
 
@@ -208,7 +198,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
 				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", complaints=" + complaints + ", diagrams=" + diagrams + ", diagramsPaths=" + diagramsPaths
+				+ ", complaints=" + complaints + ", diagrams=" + diagrams
 				+ ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", patientId=" + patientId + ", discarded=" + discarded + ", inHistory=" + inHistory
 				+ ", vitalSigns=" + vitalSigns + "]";

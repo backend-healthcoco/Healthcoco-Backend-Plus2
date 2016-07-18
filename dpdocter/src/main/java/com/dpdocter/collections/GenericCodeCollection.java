@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class GenericCodeCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Indexed(unique = true)
     @Field
@@ -18,11 +19,11 @@ public class GenericCodeCollection {
     @Field
     private String name;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 

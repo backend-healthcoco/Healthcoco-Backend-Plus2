@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -7,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "speciality_cl")
 public class SpecialityCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String speciality;
@@ -18,11 +19,11 @@ public class SpecialityCollection extends GenericCollection {
     @Field
     private Boolean toShow = true;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 

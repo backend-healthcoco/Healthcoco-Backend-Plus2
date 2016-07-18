@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
@@ -52,17 +51,6 @@ public class MailServiceImpl implements MailService {
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
     
-    /**
-     * @param String
-     *            to
-     * @param String
-     *            subject
-     * @param String
-     *            body
-     * @param MailAttachment
-     *            (Optional) - If any attachment is to be send with mail else
-     *            should be NULL. This method sends Simple mails,MIME mails
-     */
     @Override
     @Transactional
     public Boolean sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {

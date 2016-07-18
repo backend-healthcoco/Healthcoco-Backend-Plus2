@@ -12,8 +12,8 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -47,7 +47,6 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -77,9 +76,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
     private String imagePath;
 
     @Autowired
-    private ReferenceRepository referrenceRepository;
-
-    @Autowired
     private ESReferenceRepository esReferenceRepository;
 
     @Override
@@ -88,7 +84,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	try {
 	    esPatientRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getUserId(), Resource.PATIENT, true);
+	    transnationalService.addResource(new ObjectId(request.getUserId()), Resource.PATIENT, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Patient");
@@ -257,7 +253,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	    if(request.getLatitude()!= null && request.getLongitude() != null)request.setGeoPoint(new GeoPoint(request.getLatitude(), request.getLongitude()));
 	    esDoctorRepository.save(request);
-	    transnationalService.addResource(request.getUserId(), Resource.DOCTOR, true);
+	    transnationalService.addResource(new ObjectId(request.getUserId()), Resource.DOCTOR, true);
 	    response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -284,7 +280,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		doctorDocument.setId(id);
 		if(doctorDocument.getLatitude()!= null && doctorDocument.getLongitude() != null)doctorDocument.setGeoPoint(new GeoPoint(doctorDocument.getLatitude(), doctorDocument.getLongitude()));
 		esDoctorRepository.save(doctorDocument);
-		transnationalService.addResource(doctorLocation.getLocationId(), Resource.LOCATION, true);
+		transnationalService.addResource(new ObjectId(doctorLocation.getLocationId()), Resource.LOCATION, true);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -296,7 +292,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
     public void addEditReference(ESReferenceDocument esReferenceDocument) {
 	try {
 	    esReferenceRepository.save(esReferenceDocument);
-		transnationalService.addResource(esReferenceDocument.getId(), Resource.REFERENCE, true);
+		transnationalService.addResource(new ObjectId(esReferenceDocument.getId()), Resource.REFERENCE, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error("Error while editing reference " + e.getMessage());
@@ -308,7 +304,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		try {
 		    List<ESDoctorDocument> doctorDocument = esDoctorRepository.findByUserId(userId);
 		    if (doctorDocument != null){
-		    	UserCollection userCollection = userRepository.findOne(userId);
+		    	UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
 		    	for(ESDoctorDocument esDoctorDocument :  doctorDocument){
 		    		esDoctorDocument.setIsActive(userCollection.getIsActive());
 		    		esDoctorDocument.setIsVerified(userCollection.getIsVerified());

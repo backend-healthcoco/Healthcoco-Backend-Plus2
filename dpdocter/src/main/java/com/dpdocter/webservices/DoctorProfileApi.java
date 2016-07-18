@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -80,12 +81,12 @@ public class DoctorProfileApi {
     @POST
     @ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_NAME)
     public Response<Boolean> addEditName(DoctorNameAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getFirstName())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Boolean addEditNameResponse = doctorProfileService.addEditName(request);
-	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
+	if (addEditNameResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -100,7 +101,7 @@ public class DoctorProfileApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	DoctorExperience experienceResponse = doctorProfileService.addEditExperience(request);
-	if (experienceResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
+	if (experienceResponse != null)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -155,7 +156,7 @@ public class DoctorProfileApi {
     	}
 	List<String> specialityResponse = doctorProfileService.addEditSpeciality(request);
 	request.setSpeciality(specialityResponse);
-	if (specialityResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
+	if (specialityResponse != null)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -226,8 +227,8 @@ public class DoctorProfileApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	String addEditProfilePictureResponse = doctorProfileService.addEditProfilePicture(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditProfilePictureResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditProfilePictureResponse != null)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	addEditProfilePictureResponse = getFinalImageURL(addEditProfilePictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditProfilePictureResponse);
@@ -243,8 +244,8 @@ public class DoctorProfileApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	String addEditCoverPictureResponse = doctorProfileService.addEditCoverPicture(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditCoverPictureResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditCoverPictureResponse != null)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	addEditCoverPictureResponse = getFinalImageURL(addEditCoverPictureResponse);
 	Response<String> response = new Response<String>();
 	response.setData(addEditCoverPictureResponse);
@@ -329,8 +330,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditAppointmentNumbersResponse = doctorProfileService.addEditAppointmentNumbers(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditAppointmentNumbersResponse)  transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditAppointmentNumbersResponse)  transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentNumbersResponse);
@@ -349,8 +350,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditVisitingTimeResponse = doctorProfileService.addEditVisitingTime(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditVisitingTimeResponse)  transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditVisitingTimeResponse)  transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditVisitingTimeResponse);
 	return response;
@@ -368,8 +369,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditConsultationFeeResponse = doctorProfileService.addEditConsultationFee(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditConsultationFeeResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditConsultationFeeResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditConsultationFeeResponse);
 	return response;
@@ -387,8 +388,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, LocationId Is Empty");
 	}
 	Boolean addEditAppointmentSlotResponse = doctorProfileService.addEditAppointmentSlot(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditAppointmentSlotResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditAppointmentSlotResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditAppointmentSlotResponse);
 	return response;
@@ -407,8 +408,8 @@ public class DoctorProfileApi {
 	}
 
 	Boolean addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditGeneralInfoResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditGeneralInfoResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditGeneralInfoResponse);
 	return response;
@@ -463,8 +464,8 @@ public class DoctorProfileApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be null");
 	}
 	DoctorMultipleDataAddEditResponse addEditNameResponse = doctorProfileService.addEditMultipleData(request);
-	transnationalService.addResource(request.getDoctorId(), Resource.DOCTOR, false);
-	if (addEditNameResponse != null)transnationalService.checkDoctor(request.getDoctorId(), null);
+	transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+	if (addEditNameResponse != null)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	addEditNameResponse.setCoverImageUrl(getFinalImageURL(addEditNameResponse.getCoverImageUrl()));
 	addEditNameResponse.setProfileImageUrl(getFinalImageURL(addEditNameResponse.getProfileImageUrl()));
 	addEditNameResponse.setThumbnailCoverImageUrl(getFinalImageURL(addEditNameResponse.getThumbnailCoverImageUrl()));
@@ -488,8 +489,7 @@ public class DoctorProfileApi {
 	}
 
 	Boolean addEditIBSResponse = doctorProfileService.addEditFacility(request);
-	if (addEditIBSResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
-	transnationalService.checkDoctor(request.getDoctorId(), null);
+	if (addEditIBSResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditIBSResponse);
 	return response;
@@ -505,7 +505,7 @@ public class DoctorProfileApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	Boolean addEditNameResponse = doctorProfileService.addEditGender(request);
-	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
+	if (addEditNameResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;
@@ -520,7 +520,7 @@ public class DoctorProfileApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	Boolean addEditNameResponse = doctorProfileService.addEditDOB(request);
-	if (addEditNameResponse)transnationalService.checkDoctor(request.getDoctorId(), null);
+	if (addEditNameResponse)transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addEditNameResponse);
 	return response;

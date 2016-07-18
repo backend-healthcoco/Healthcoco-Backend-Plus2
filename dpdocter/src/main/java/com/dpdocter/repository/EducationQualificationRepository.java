@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -12,7 +13,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.dpdocter.collections.EducationQualificationCollection;
 
 public interface EducationQualificationRepository
-	extends MongoRepository<EducationQualificationCollection, String>, PagingAndSortingRepository<EducationQualificationCollection, String> {
+	extends MongoRepository<EducationQualificationCollection, ObjectId>, PagingAndSortingRepository<EducationQualificationCollection, ObjectId> {
 
     @Query("{'updatedTime': {'$gt': ?0}}")
     List<EducationQualificationCollection> find(Date date, Pageable pageRequest);

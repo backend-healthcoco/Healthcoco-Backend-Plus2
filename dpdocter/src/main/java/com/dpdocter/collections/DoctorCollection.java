@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,7 +18,7 @@ import com.dpdocter.beans.Education;
 @Document(collection = "docter_cl")
 public class DoctorCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private List<String> additionalNumbers;
@@ -26,7 +27,7 @@ public class DoctorCollection extends GenericCollection {
     private List<String> otherEmailAddresses;
 
     @Indexed
-    private String userId;
+    private ObjectId userId;
 
     @Field
     private DoctorExperience experience;
@@ -35,7 +36,7 @@ public class DoctorCollection extends GenericCollection {
     private List<Education> education;
 
     @Indexed
-    private List<String> specialities;
+    private List<ObjectId> specialities;
 
     @Field
     private List<Achievement> achievements;
@@ -50,7 +51,7 @@ public class DoctorCollection extends GenericCollection {
     private List<DoctorExperienceDetail> experienceDetails;
 
     @Field
-    private List<String> professionalMemberships;
+    private List<ObjectId> professionalMemberships;
 
     @Field
     private String registerNumber;
@@ -61,11 +62,11 @@ public class DoctorCollection extends GenericCollection {
     @Field
     private DOB dob;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -85,11 +86,11 @@ public class DoctorCollection extends GenericCollection {
 	this.otherEmailAddresses = otherEmailAddresses;
     }
 
-    public String getUserId() {
+    public ObjectId getUserId() {
 	return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(ObjectId userId) {
 	this.userId = userId;
     }
 
@@ -109,11 +110,11 @@ public class DoctorCollection extends GenericCollection {
 	this.education = education;
     }
 
-    public List<String> getSpecialities() {
+    public List<ObjectId> getSpecialities() {
 	return specialities;
     }
 
-    public void setSpecialities(List<String> specialities) {
+    public void setSpecialities(List<ObjectId> specialities) {
 	this.specialities = specialities;
     }
 
@@ -149,11 +150,11 @@ public class DoctorCollection extends GenericCollection {
 	this.experienceDetails = experienceDetails;
     }
 
-    public List<String> getProfessionalMemberships() {
+    public List<ObjectId> getProfessionalMemberships() {
 	return professionalMemberships;
     }
 
-    public void setProfessionalMemberships(List<String> professionalMemberships) {
+    public void setProfessionalMemberships(List<ObjectId> professionalMemberships) {
 	this.professionalMemberships = professionalMemberships;
     }
 

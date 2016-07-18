@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -15,49 +16,49 @@ import com.dpdocter.enums.Type;
 })
 public class ArosCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Indexed
-    private String roleOrUserId;
+    private ObjectId roleOrUserId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
     private Type type;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getRoleOrUserId() {
+    public ObjectId getRoleOrUserId() {
 	return roleOrUserId;
     }
 
-    public void setRoleOrUserId(String roleOrUserId) {
+    public void setRoleOrUserId(ObjectId roleOrUserId) {
 	this.roleOrUserId = roleOrUserId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 

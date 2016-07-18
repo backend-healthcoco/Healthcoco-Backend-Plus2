@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -16,20 +17,19 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class PatientQueueCollection extends GenericCollection {
 
     @Id
-    @Field
-    private String id;
+    private ObjectId id;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
-    private String patientId;
+    private ObjectId patientId;
 
     @Indexed
     private Date date;
@@ -46,43 +46,43 @@ public class PatientQueueCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
-    public String getPatientId() {
+    public ObjectId getPatientId() {
 	return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(ObjectId patientId) {
 	this.patientId = patientId;
     }
 

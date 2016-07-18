@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -215,26 +216,29 @@ public class AdminServicesImpl implements AdminServices {
 		List<Location> response = null;
 		try{
 			List<LocationCollection> locationCollections = null;
+			ObjectId hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
 			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if(DPDoctorUtils.anyStringEmpty(hospitalId)){
+				if(DPDoctorUtils.anyStringEmpty(hospitalObjectId)){
 					if(!isClinic && !isLab){
 						if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-						else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "createdTime"));
+						else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "updatedTime"));
 					}else{	
 						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
 					}
 				}else{
 					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByHospitalId(hospitalId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findByHospitalId(hospitalId, new Sort(Direction.DESC, "updatedTime"));
+						if(size > 0)locationCollections = locationRepository.findByHospitalId(hospitalObjectId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findByHospitalId(hospitalObjectId, new Sort(Direction.DESC, "updatedTime"));
 					}else{	
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
 					}
 				}
 			}else{
-				if(DPDoctorUtils.anyStringEmpty(hospitalId)){
+				if(DPDoctorUtils.anyStringEmpty(hospitalObjectId)){
 					if(!isClinic && !isLab){
 						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 						else locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new Sort(Direction.DESC, "updatedTime"));
@@ -244,20 +248,20 @@ public class AdminServicesImpl implements AdminServices {
 					}				
 				}else{
 					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalId, searchTerm, new Sort(Direction.DESC, "updatedTime"));
+						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalObjectId, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalObjectId, searchTerm, new Sort(Direction.DESC, "updatedTime"));
 					}else{
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(hospitalId, isClinic, isLab, searchTerm, new Sort(Direction.DESC, "updatedTime"));	
+						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+						else locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, searchTerm, new Sort(Direction.DESC, "updatedTime"));	
 					}
 				}
 			}
 			
 			if(locationCollections != null){
 				response = new ArrayList<Location>();
-				for(LocationCollection location : locationCollections){
-						if (location.getImages() != null && !location.getImages().isEmpty()) {
-							for (ClinicImage clinicImage : location.getImages()) {
+				for(LocationCollection locationCollection : locationCollections){
+						if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
+							for (ClinicImage clinicImage : locationCollection.getImages()) {
 							    if (clinicImage.getImageUrl() != null) {
 								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
 							    }
@@ -266,12 +270,14 @@ public class AdminServicesImpl implements AdminServices {
 							    }
 							}
 						    }
-						    if (location.getLogoUrl() != null)
-						    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
-						    if (location.getLogoThumbnailUrl() != null)
-						    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
-					}
-					BeanUtil.map(locationCollections, response);
+						    if (locationCollection.getLogoUrl() != null)
+						    	locationCollection.setLogoUrl(getFinalImageURL(locationCollection.getLogoUrl()));
+						    if (locationCollection.getLogoThumbnailUrl() != null)
+						    	locationCollection.setLogoThumbnailUrl(getFinalImageURL(locationCollection.getLogoThumbnailUrl()));
+						    Location location = new Location();
+						    BeanUtil.map(locationCollection, location);
+						    response.add(location);
+				    }
 				}
 		}catch(Exception e){
 			logger.error("Error while getting clinics "+ e.getMessage());
@@ -291,8 +297,7 @@ public class AdminServicesImpl implements AdminServices {
 			resumeCollection.setCreatedTime(new Date());
 			if (request.getFile() != null) {
 				request.getFile().setFileName(request.getFile().getFileName() + (new Date()).getTime());
-				String path = "resume" + File.separator + request.getType();
-				// save image
+				String path = "resumes" + File.separator + request.getType();
 				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFile(), path, false);
 				resumeCollection.setPath(imageURLResponse.getImageUrl());
 			    }
@@ -586,7 +591,7 @@ public class AdminServicesImpl implements AdminServices {
 			 
 			 Criteria criteria = null;
 			 if(!DPDoctorUtils.anyStringEmpty(locationId)){
-				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationId);
+				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId));
 				 @SuppressWarnings("unchecked")
 				 Collection<String> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
 				 if(criteria == null)criteria = new Criteria("id").in(userIds);
@@ -619,15 +624,21 @@ public class AdminServicesImpl implements AdminServices {
 		              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 			 }
 		}
-	    AggregationResults<DoctorResponse> results = mongoTemplate.aggregate(aggregation, UserCollection.class, DoctorResponse.class);
-	    response = results.getMappedResults();
-	    for(DoctorResponse doctorResponse : response){
-	    	List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(doctorResponse.getId());
-			@SuppressWarnings("unchecked")
-		    Collection<String> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
-		    if(roleIds != null && !roleIds.isEmpty()){
-		    	Integer count = roleRepository.findCountByIdAndRole(roleIds, RoleEnum.LOCATION_ADMIN.getRole());
-		    	if(count != null && count > 0)doctorResponse.setRole(RoleEnum.LOCATION_ADMIN.getRole());
+	    AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class);
+	    List<UserCollection> userCollections = results.getMappedResults();
+	    if(userCollections != null && !userCollections.isEmpty()){
+	    	response = new ArrayList<DoctorResponse>();
+	    	for(UserCollection userCollection : userCollections){
+		    	DoctorResponse doctorResponse = new DoctorResponse();
+		    	BeanUtil.map(userCollection, doctorResponse);
+		    	List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
+				@SuppressWarnings("unchecked")
+			    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
+			    if(roleIds != null && !roleIds.isEmpty()){
+			    	Integer count = roleRepository.findCountByIdAndRole(roleIds, RoleEnum.LOCATION_ADMIN.getRole());
+			    	if(count != null && count > 0)doctorResponse.setRole(RoleEnum.LOCATION_ADMIN.getRole());
+			    }
+			    response.add(doctorResponse);
 		    }
 	    }
 	    }catch(Exception e){
@@ -647,8 +658,11 @@ public class AdminServicesImpl implements AdminServices {
 				if(size > 0)locationCollections = locationRepository.findLabs(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
 				else locationCollections = locationRepository.findLabs(true, new Sort(Direction.DESC, "createdTime"));
 			}else{
-				if(size > 0)locationCollections = locationRepository.findLabs(hospitalId, true, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else locationCollections = locationRepository.findLabs(hospitalId, true, new Sort(Direction.DESC, "createdTime"));
+				ObjectId hospitalObjectId= null;
+				if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+		    	
+				if(size > 0)locationCollections = locationRepository.findLabs(hospitalObjectId, true, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else locationCollections = locationRepository.findLabs(hospitalObjectId, true, new Sort(Direction.DESC, "createdTime"));
 			}
 			if(locationCollections != null){
 				response = new ArrayList<Location>();
@@ -724,8 +738,14 @@ public class AdminServicesImpl implements AdminServices {
 	public List<Speciality> getUniqueSpecialities(String searchTerm, String updatedTime, int page, int size) {
 	   List<Speciality> response = null;
 	  try {
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.group("speciality").first("speciality").as("speciality"),
-					 Aggregation.sort(Sort.Direction.ASC, "speciality"));
+			Aggregation aggregation = null;
+			
+			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
+				aggregation = Aggregation.newAggregation(Aggregation.group("speciality").first("speciality").as("speciality"), Aggregation.sort(Sort.Direction.ASC, "speciality"));
+			}else{
+				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("speciality").regex("^"+searchTerm,"i")), Aggregation.group("speciality").first("speciality").as("speciality"), Aggregation.sort(Sort.Direction.ASC, "speciality"));
+			}
+			
 			AggregationResults <Speciality> groupResults = mongoTemplate.aggregate(aggregation, SpecialityCollection.class, Speciality.class);
 			response = groupResults.getMappedResults();
 			

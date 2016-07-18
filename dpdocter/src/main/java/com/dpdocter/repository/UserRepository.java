@@ -2,6 +2,7 @@ package com.dpdocter.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,7 +15,7 @@ import com.dpdocter.collections.UserCollection;
  * @author veeraj
  */
 @Repository
-public interface UserRepository extends MongoRepository<UserCollection, String> {
+public interface UserRepository extends MongoRepository<UserCollection, ObjectId> {
     @Query("{'userName': ?0}")
     public UserCollection findByUserName(String userName);
 

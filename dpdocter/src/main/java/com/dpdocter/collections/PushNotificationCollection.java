@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,7 +14,7 @@ import com.dpdocter.enums.PushNotificationType;
 public class PushNotificationCollection {
 
 	@Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private List<String> deviceIds;
@@ -33,7 +34,7 @@ public class PushNotificationCollection {
 	public PushNotificationCollection() {
 	}
 
-	public PushNotificationCollection(String id, List<String> deviceIds, String message, DeviceType deviceType,
+	public PushNotificationCollection(ObjectId id, List<String> deviceIds, String message, DeviceType deviceType,
 			String imageURL, PushNotificationType notificationType) {
 		this.id = id;
 		this.deviceIds = deviceIds;
@@ -43,11 +44,11 @@ public class PushNotificationCollection {
 		this.notificationType = notificationType;
 	}
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 

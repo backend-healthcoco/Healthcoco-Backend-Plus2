@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GenericCode;
@@ -12,7 +14,6 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
-import com.dpdocter.request.DrugStrengthAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
@@ -20,7 +21,6 @@ import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
-import com.dpdocter.response.DrugStrengthAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
@@ -57,7 +57,7 @@ public interface PrescriptionServices {
     List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVerified, boolean discarded, boolean inHistory);
 
-    List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds);
+    List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds);
 
     Prescription getPrescriptionById(String prescriptionId);
 
@@ -72,23 +72,17 @@ public interface PrescriptionServices {
 
     DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 
-    DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request);
-
     DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request);
 
     DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request);
 
     DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request);
 
-    DrugStrengthAddEditResponse editDrugStrength(DrugStrengthAddEditRequest request);
-
     DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request);
 
     DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
 
     DrugTypeAddEditResponse deleteDrugType(String drugTypeId, Boolean discarded);
-
-    DrugStrengthAddEditResponse deleteDrugStrength(String drugStrengthId, Boolean discarded);
 
     DrugDosageAddEditResponse deleteDrugDosage(String drugDosageId, Boolean discarded);
 
@@ -100,7 +94,7 @@ public interface PrescriptionServices {
 
     DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
-    List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, Boolean isAdmin, String searchTerm);
 
     void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);

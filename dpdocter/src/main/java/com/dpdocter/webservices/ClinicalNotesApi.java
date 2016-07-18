@@ -15,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -83,7 +84,7 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE, notes = PathProxy.ClinicalNotesUrls.SAVE_CLINICAL_NOTE)
     public Response<ClinicalNotes> addNotes(ClinicalNotesAddRequest request) {
-    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
@@ -182,7 +183,10 @@ public class ClinicalNotesApi {
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
     public Response<ClinicalNotes> getNotes(@PathParam(value = "patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-
+    	if (DPDoctorUtils.anyStringEmpty(patientId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
 	List<ClinicalNotes> clinicalNotes = null;
 	clinicalNotes = clinicalNotesService.getClinicalNotes(patientId, page, size, updatedTime, discarded);
 
@@ -203,13 +207,13 @@ public class ClinicalNotesApi {
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.ADD_COMPLAINT)
     public Response<Complaint> addComplaint(Complaint request) {
     	
-    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getComplaint())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	Complaint complaint = clinicalNotesService.addEditComplaint(request);
 
-	transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
+	transactionalManagementService.addResource(new ObjectId(complaint.getId()), Resource.COMPLAINT, false);
 	ESComplaintsDocument esComplaints = new ESComplaintsDocument();
 	BeanUtil.map(complaint, esComplaints);
 	esClinicalNotesService.addComplaints(esComplaints);
@@ -223,14 +227,14 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.ADD_OBSERVATION)
     public Response<Observation> addObservation(Observation request) {
-    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getObservation())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	
 	Observation observation = clinicalNotesService.addEditObservation(request);
 
-	transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
+	transactionalManagementService.addResource(new ObjectId(observation.getId()), Resource.OBSERVATION, false);
 	ESObservationsDocument esObservations = new ESObservationsDocument();
 	BeanUtil.map(observation, esObservations);
 	esClinicalNotesService.addObservations(esObservations);
@@ -243,14 +247,14 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION, notes = PathProxy.ClinicalNotesUrls.ADD_INVESTIGATION)
     public Response<Investigation> addInvestigation(Investigation request) {
-    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getInvestigation())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	
 	Investigation investigation = clinicalNotesService.addEditInvestigation(request);
 
-	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
+	transactionalManagementService.addResource(new ObjectId(investigation.getId()), Resource.INVESTIGATION, false);
 	ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
 	BeanUtil.map(investigation, esInvestigations);
 	esClinicalNotesService.addInvestigations(esInvestigations);
@@ -264,14 +268,14 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.ADD_DIAGNOSIS)
     public Response<Diagnoses> addDiagnosis(Diagnoses request) {
-    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getDiagnosis())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	
 	Diagnoses diagnosis = clinicalNotesService.addEditDiagnosis(request);
 
-	transactionalManagementService.addResource(diagnosis.getId(), Resource.DIAGNOSIS, false);
+	transactionalManagementService.addResource(new ObjectId(diagnosis.getId()), Resource.DIAGNOSIS, false);
 	ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
 	BeanUtil.map(diagnosis, esDiagnoses);
 	esClinicalNotesService.addDiagnoses(esDiagnoses);
@@ -285,14 +289,14 @@ public class ClinicalNotesApi {
     @POST
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOTES, notes = PathProxy.ClinicalNotesUrls.ADD_NOTES)
     public Response<Notes> addNotes(Notes request) {
-    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getNote())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	
 	Notes notes = clinicalNotesService.addEditNotes(request);
 
-	transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
+	transactionalManagementService.addResource(new ObjectId(notes.getId()), Resource.NOTES, false);
 	ESNotesDocument esNotes = new ESNotesDocument();
 	BeanUtil.map(notes, esNotes);
 	esClinicalNotesService.addNotes(esNotes);
@@ -312,7 +316,7 @@ public class ClinicalNotesApi {
     }
 	
 	Diagram diagram = clinicalNotesService.addEditDiagram(request);
-	transactionalManagementService.addResource(diagram.getId(), Resource.DIAGRAM, false);
+	transactionalManagementService.addResource(new ObjectId(diagram.getId()), Resource.DIAGRAM, false);
 	ESDiagramsDocument esDiagrams = new ESDiagramsDocument();
 	BeanUtil.map(diagram, esDiagrams);
 	esClinicalNotesService.addDiagrams(esDiagrams);
@@ -338,7 +342,7 @@ public class ClinicalNotesApi {
     	Complaint complaint = clinicalNotesService.deleteComplaint(id, doctorId, locationId, hospitalId, discarded);
 	
     	if(complaint != null){
-			transactionalManagementService.addResource(complaint.getId(), Resource.COMPLAINT, false);
+			transactionalManagementService.addResource(new ObjectId(complaint.getId()), Resource.COMPLAINT, false);
 			ESComplaintsDocument esComplaints = new ESComplaintsDocument();
 			BeanUtil.map(complaint, esComplaints);
 			esClinicalNotesService.addComplaints(esComplaints);
@@ -360,7 +364,7 @@ public class ClinicalNotesApi {
     	}
     	Observation observation = clinicalNotesService.deleteObservation(id, doctorId, locationId, hospitalId, discarded);
     	if(observation != null){
-			transactionalManagementService.addResource(observation.getId(), Resource.OBSERVATION, false);
+			transactionalManagementService.addResource(new ObjectId(observation.getId()), Resource.OBSERVATION, false);
 			ESObservationsDocument esObservations = new ESObservationsDocument();
 			BeanUtil.map(observation, esObservations);
 			esClinicalNotesService.addObservations(esObservations);
@@ -383,7 +387,7 @@ public class ClinicalNotesApi {
     	}
     	Investigation investigation = clinicalNotesService.deleteInvestigation(id, doctorId, locationId, hospitalId, discarded);
     	if(investigation != null){
-	    	transactionalManagementService.addResource(investigation.getId(), Resource.INVESTIGATION, false);
+	    	transactionalManagementService.addResource(new ObjectId(investigation.getId()), Resource.INVESTIGATION, false);
 	    	ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
 	    	BeanUtil.map(investigation, esInvestigations);
 	    	esClinicalNotesService.addInvestigations(esInvestigations);
@@ -406,7 +410,7 @@ public class ClinicalNotesApi {
     	}
     	Diagnoses diagnoses = clinicalNotesService.deleteDiagnosis(id, doctorId, locationId, hospitalId, discarded);
     	if(diagnoses != null){
-			transactionalManagementService.addResource(diagnoses.getId(), Resource.DIAGNOSIS, false);
+			transactionalManagementService.addResource(new ObjectId(diagnoses.getId()), Resource.DIAGNOSIS, false);
 			ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
 			BeanUtil.map(diagnoses, esDiagnoses);
 			esClinicalNotesService.addDiagnoses(esDiagnoses);
@@ -428,7 +432,7 @@ public class ClinicalNotesApi {
     	}
     	Notes notes = clinicalNotesService.deleteNotes(id, doctorId, locationId, hospitalId, discarded);
     	if(notes != null){
-			transactionalManagementService.addResource(notes.getId(), Resource.NOTES, false);
+			transactionalManagementService.addResource(new ObjectId(notes.getId()), Resource.NOTES, false);
 			ESNotesDocument esNotes = new ESNotesDocument();
 			BeanUtil.map(notes, esNotes);
 			esClinicalNotesService.addNotes(esNotes);
@@ -471,10 +475,10 @@ public class ClinicalNotesApi {
 	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
 	}
-	List<Object> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
+	List<?> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
-		((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
+		((Diagram) clinicalItem).setDiagramUrl(getFinalImageURL(((Diagram) clinicalItem).getDiagramUrl()));
 	    }
 	}
 	Response<Object> response = new Response<Object>();

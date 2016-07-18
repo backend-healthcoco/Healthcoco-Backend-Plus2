@@ -23,11 +23,16 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +68,9 @@ public class SMSServicesImpl implements SMSServices {
     @Autowired
     private SMSTrackRepository smsTrackRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    
     @Value(value = "${AUTH_KEY}")
     private String AUTH_KEY;
 
@@ -211,25 +219,25 @@ public class SMSServicesImpl implements SMSServices {
 	SMSResponse response = null;
 	List<SMSTrackDetail> smsTrackDetails = null;
 	try {
-		
+		ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
 		String[] type = {"APPOINTMENT", "PRESCRIPTION", "VISITS"};
-	    if (doctorId == null) {
-		if (size > 0)
-		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "createdTime"));
-		else
-		    smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "createdTime"));
+	    if (doctorObjectId == null) {
+		if (size > 0) smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId, type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		else smsTrackDetails = smsTrackRepository.findByLocationHospitalId(locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
 	    } else {
-		if (size > 0)
-		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new PageRequest(page, size, Direction.DESC, "createdTime"));
-		else
-		    smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorId, locationId, hospitalId, type, new Sort(Sort.Direction.DESC, "createdTime"));
+		if (size > 0)smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId, locationObjectId, hospitalObjectId, type, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		else smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalId(doctorObjectId, locationObjectId, hospitalObjectId, type, new Sort(Sort.Direction.DESC, "createdTime"));
 	    }
 
 	    @SuppressWarnings("unchecked")
-	    Collection<String> doctorIds = CollectionUtils.collect(smsTrackDetails, new BeanToPropertyValueTransformer("doctorId"));
+	    Collection<ObjectId> doctorIds = CollectionUtils.collect(smsTrackDetails, new BeanToPropertyValueTransformer("doctorId"));
 	    if (doctorIds != null && !doctorIds.isEmpty()) {
 		response = new SMSResponse();
-		List<DoctorSMSResponse> doctors = getSpecifiedDoctors(doctorIds, locationId, hospitalId);
+		List<DoctorSMSResponse> doctors = getSpecifiedDoctors(doctorIds, locationObjectId, hospitalObjectId);
 		response.setDoctors(doctors);
 	    }
 
@@ -241,13 +249,13 @@ public class SMSServicesImpl implements SMSServices {
 	return response;
     }
 
-    private List<DoctorSMSResponse> getSpecifiedDoctors(Collection<String> doctorIds, String locationId, String hospitalId) {
+    private List<DoctorSMSResponse> getSpecifiedDoctors(Collection<ObjectId> doctorIds, ObjectId locationId, ObjectId hospitalId) {
 	List<DoctorSMSResponse> doctors = new ArrayList<DoctorSMSResponse>();
-	for (String doctorId : doctorIds) {
+	for (ObjectId doctorId : doctorIds) {
 	    DoctorSMSResponse doctorSMSResponse = new DoctorSMSResponse();
 	    int count = smsTrackRepository.getDoctorsSMSCount(doctorId, locationId, hospitalId);
 	    UserCollection user = userRepository.findOne(doctorId);
-	    doctorSMSResponse.setDoctorId(doctorId);
+	    doctorSMSResponse.setDoctorId(doctorId.toString());
 	    if (user != null)
 		doctorSMSResponse.setDoctorName(user.getFirstName());
 	    doctorSMSResponse.setMsgSentCount(count + "");
@@ -260,43 +268,31 @@ public class SMSServicesImpl implements SMSServices {
     @Transactional
     public List<SMSTrack> getSMSDetails(int page, int size, String patientId, String doctorId, String locationId, String hospitalId) {
 	List<SMSTrack> response = null;
-	List<SMSTrackDetail> smsTrackCollections = null;
 	try {
-		String[] type = {"APPOINTMENT", "PRESCRIPTION", "VISITS"};
-	    if (doctorId == null) {
-		if (locationId == null && hospitalId == null) {
-		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findByType(type, new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			smsTrackCollections = smsTrackRepository.findByType(type, new Sort(Sort.Direction.DESC, "sentTime"));
-		} else {
-		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, 
-				new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			smsTrackCollections = smsTrackRepository.findByLocationHospitalPatientId(locationId, hospitalId, patientId, type, 
-				new Sort(Sort.Direction.DESC, "sentTime"));
+		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
+    	Criteria criteria = new Criteria("type").in("APPOINTMENT", "PRESCRIPTION", "VISITS");
+		
+	    if (doctorObjectId == null) {
+		if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
+		    criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("smsDetails.userId").is(patientObjectId);
 		}
 	    } else {
-		if (locationId == null && hospitalId == null) {
-		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findByDoctorPatient(doctorId, patientId, type, new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			smsTrackCollections = smsTrackRepository.findByDoctorPatient(doctorId, patientId, type, new Sort(Sort.Direction.DESC, "sentTime"));
-		} else {
-		    if (size > 0)
-			smsTrackCollections = smsTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId,type, 
-				new PageRequest(page, size, Direction.DESC, "sentTime"));
-		    else
-			smsTrackCollections = smsTrackRepository.findByDoctorLocationHospitalPatient(doctorId, locationId, hospitalId, patientId,type, 
-				new Sort(Sort.Direction.DESC, "sentTime"));
+			if (DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("doctorId").is(doctorObjectId).and("smsDetails.userId").is(patientObjectId);
+			else criteria.and("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("smsDetails.userId").is(patientObjectId);
+	    }
+	    Aggregation aggregation = null;
+	    if(size > 0){
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		}else{
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")));
 		}
-	    }
-
-	    if (smsTrackCollections != null) {
-		response = new ArrayList<SMSTrack>();
-		BeanUtil.map(smsTrackCollections, response);
-	    }
+	    AggregationResults<SMSTrack> aggregationResults = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, SMSTrack.class);
+	    response = aggregationResults.getMappedResults();
 	} catch (BusinessException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -393,12 +389,12 @@ public class SMSServicesImpl implements SMSServices {
 	    String mobileNumber, String type) {
 	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 	try {
-	    smsTrackDetail.setDoctorId(doctorId);
-	    smsTrackDetail.setHospitalId(hospitalId);
-	    smsTrackDetail.setLocationId(locationId);
+	    smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+	    smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+	    smsTrackDetail.setLocationId(new ObjectId(locationId));
 	    smsTrackDetail.setType(type);
 	    SMSDetail smsDetail = new SMSDetail();
-	    smsDetail.setUserId(patientId);
+	    smsDetail.setUserId(new ObjectId(patientId));
 	    smsDetail.setUserName(patientName);
 	    SMS sms = new SMS();
 	    sms.setSmsText(message);
@@ -425,15 +421,19 @@ public class SMSServicesImpl implements SMSServices {
 	SMSFormat response = null;
 	SMSFormatCollection smsFormatCollection = null;
 	try {
-	    smsFormatCollection = sMSFormatRepository.find(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-		    request.getType().getType());
+		ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))hospitalObjectId = new ObjectId(request.getHospitalId());
+    	
+	    smsFormatCollection = sMSFormatRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, request.getType().getType());
 	    if (smsFormatCollection == null) {
-		smsFormatCollection = new SMSFormatCollection();
-		BeanUtil.map(request, smsFormatCollection);
-		smsFormatCollection.setCreatedTime(new Date());
+			smsFormatCollection = new SMSFormatCollection();
+			BeanUtil.map(request, smsFormatCollection);
+			smsFormatCollection.setCreatedTime(new Date());
 	    } else {
-		smsFormatCollection.setContent(request.getContent());
-		smsFormatCollection.setUpdatedTime(new Date());
+			smsFormatCollection.setContent(request.getContent());
+			smsFormatCollection.setUpdatedTime(new Date());
 	    }
 	    smsFormatCollection = sMSFormatRepository.save(smsFormatCollection);
 	    response = new SMSFormat();
@@ -451,17 +451,26 @@ public class SMSServicesImpl implements SMSServices {
 	List<SMSFormat> response = null;
 	List<SMSFormatCollection> smsFormatCollections = null;
 	try {
+		ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
 	    if (type != null) {
-		SMSFormatCollection smsFormatCollection = sMSFormatRepository.find(doctorId, locationId, hospitalId, type);
+		SMSFormatCollection smsFormatCollection = sMSFormatRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, type);
 		if (smsFormatCollection != null) {
 		    smsFormatCollections = new ArrayList<SMSFormatCollection>();
 		    smsFormatCollections.add(smsFormatCollection);
 		}
 	    } else
-		smsFormatCollections = sMSFormatRepository.find(doctorId, locationId, hospitalId);
+		smsFormatCollections = sMSFormatRepository.find(doctorObjectId, locationObjectId, hospitalObjectId);
 	    if (smsFormatCollections != null) {
-		response = new ArrayList<SMSFormat>();
-		BeanUtil.map(smsFormatCollections, response);
+			response = new ArrayList<SMSFormat>();
+			for(SMSFormatCollection smsFormatCollection : smsFormatCollections){
+				SMSFormat smsFormat = new SMSFormat();
+				BeanUtil.map(smsFormatCollection, smsFormat);
+				response.add(smsFormat);
+			}
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);

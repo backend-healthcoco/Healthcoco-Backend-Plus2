@@ -17,11 +17,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,8 @@ import com.dpdocter.beans.Age;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugDosage;
+import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
@@ -50,7 +55,6 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugDirectionCollection;
 import com.dpdocter.collections.DrugDosageCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
-import com.dpdocter.collections.DrugStrengthUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GenericCodeCollection;
@@ -82,7 +86,6 @@ import com.dpdocter.repository.DrugDirectionRepository;
 import com.dpdocter.repository.DrugDosageRepository;
 import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
-import com.dpdocter.repository.DrugStrengthUnitRepository;
 import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.GenericCodeRepository;
 import com.dpdocter.repository.LabTestRepository;
@@ -98,7 +101,6 @@ import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
-import com.dpdocter.request.DrugStrengthAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
@@ -106,7 +108,6 @@ import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
-import com.dpdocter.response.DrugStrengthAddEditResponse;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -138,9 +139,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private DrugDirectionRepository drugDirectionRepository;
-
-	@Autowired
-	private DrugStrengthUnitRepository drugStrengthRepository;
 
 	@Autowired
 	private DrugTypeRepository drugTypeRepository;
@@ -205,6 +203,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	PushNotificationServices pushNotificationServices;
 
+	@Autowired
+    private MongoTemplate mongoTemplate;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -238,8 +239,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (drugCollection.getDrugType().getId() == null)
 					drugCollection.setDrugType(null);
 				else {
-					DrugTypeCollection drugTypeCollection = drugTypeRepository
-							.findOne(drugCollection.getDrugType().getId());
+					DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(new ObjectId(drugCollection.getDrugType().getId()));
 					if (drugTypeCollection != null) {
 						DrugType drugType = new DrugType();
 						BeanUtil.map(drugTypeCollection, drugType);
@@ -269,7 +269,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugCollection drugCollection = new DrugCollection();
 		BeanUtil.map(request, drugCollection);
 		try {
-			DrugCollection oldDrug = drugRepository.findOne(request.getId());
+			DrugCollection oldDrug = drugRepository.findOne(new ObjectId(request.getId()));
 			drugCollection.setCreatedBy(oldDrug.getCreatedBy());
 			drugCollection.setCreatedTime(oldDrug.getCreatedTime());
 			drugCollection.setDiscarded(oldDrug.getDiscarded());
@@ -277,8 +277,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (drugCollection.getDrugType().getId() == null)
 					drugCollection.setDrugType(null);
 				else {
-					DrugTypeCollection drugTypeCollection = drugTypeRepository
-							.findOne(drugCollection.getDrugType().getId());
+					DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(new ObjectId(drugCollection.getDrugType().getId()));
 					if (drugTypeCollection != null) {
 						DrugType drugType = new DrugType();
 						BeanUtil.map(drugTypeCollection, drugType);
@@ -307,13 +306,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Drug response = null;
 		DrugCollection drugCollection = null;
 		try {
-			drugCollection = drugRepository.findOne(drugId);
+			drugCollection = drugRepository.findOne(new ObjectId(drugId));
 			if (drugCollection != null) {
-				if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null
-						&& drugCollection.getLocationId() != null) {
-					if (drugCollection.getDoctorId().equals(doctorId)
-							&& drugCollection.getHospitalId().equals(hospitalId)
-							&& drugCollection.getLocationId().equals(locationId)) {
+				if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null && drugCollection.getLocationId() != null) {
+					if (drugCollection.getDoctorId().equals(doctorId) && drugCollection.getHospitalId().equals(hospitalId) && drugCollection.getLocationId().equals(locationId)) {
 						drugCollection.setDiscarded(discarded);
 						drugCollection.setUpdatedTime(new Date());
 						drugCollection = drugRepository.save(drugCollection);
@@ -321,8 +317,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						BeanUtil.map(drugCollection, response);
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-						throw new BusinessException(ServiceError.NotAuthorized,
-								"Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.NotAuthorized,"Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					logger.warn("Cannot Delete Global Drug");
@@ -346,7 +341,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Drug response = null;
 		DrugCollection drugCollection = null;
 		try {
-			drugCollection = drugRepository.findOne(drugId);
+			drugCollection = drugRepository.findOne(new ObjectId(drugId));
 			if (drugCollection != null) {
 				drugCollection.setUpdatedTime(new Date());
 				drugCollection.setDiscarded(discarded);
@@ -370,7 +365,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public DrugAddEditResponse getDrugById(String drugId) {
 		DrugAddEditResponse drugAddEditResponse = null;
 		try {
-			DrugCollection drugCollection = drugRepository.findOne(drugId);
+			DrugCollection drugCollection = drugRepository.findOne(new ObjectId(drugId));
 			if (drugCollection != null) {
 				drugAddEditResponse = new DrugAddEditResponse();
 				BeanUtil.map(drugCollection, drugAddEditResponse);
@@ -420,11 +415,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			templateCollection.setItems(items);
 			if (!DPDoctorUtils.anyStringEmpty(templateCollection.getDoctorId())) {
-				UserCollection userCollection = userRepository.findOne(templateCollection.getDoctorId());
+				UserCollection userCollection = userRepository.findOne(new ObjectId(templateCollection.getDoctorId()));
 				if (userCollection != null)
-					templateCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName());
+					templateCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 			}
 			templateCollection = templateRepository.save(templateCollection);
 
@@ -446,7 +439,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		TemplateCollection templateCollection = new TemplateCollection();
 		BeanUtil.map(request, templateCollection);
 		try {
-			TemplateCollection oldTemplate = templateRepository.findOne(request.getId());
+			TemplateCollection oldTemplate = templateRepository.findOne(new ObjectId(request.getId()));
 			templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
 			templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
 			templateCollection.setDiscarded(oldTemplate.getDiscarded());
@@ -485,12 +478,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for (TemplateItem templateItem : template.getItems()) {
 					TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 					BeanUtil.map(templateItem, templateItemDetail);
-					DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(templateItem.getDrugId()));
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
-					templateItemDetail.setDrug(drug);
-					templateItemDetails.add(templateItemDetail);
+						templateItemDetail.setDrug(drug);
+						templateItemDetails.add(templateItemDetail);
 				}
 				response.setItems(templateItemDetails);
 			}
@@ -509,13 +502,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		TemplateAddEditResponseDetails response = null;
 		TemplateCollection templateCollection = null;
 		try {
-			templateCollection = templateRepository.findOne(templateId);
+			templateCollection = templateRepository.findOne(new ObjectId(templateId));
 			if (templateCollection != null) {
-				if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null
-						&& templateCollection.getLocationId() != null) {
-					if (templateCollection.getDoctorId().equals(doctorId)
-							&& templateCollection.getHospitalId().equals(hospitalId)
-							&& templateCollection.getLocationId().equals(locationId)) {
+				if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null && templateCollection.getLocationId() != null) {
+					if (templateCollection.getDoctorId().equals(doctorId) && templateCollection.getHospitalId().equals(hospitalId) && templateCollection.getLocationId().equals(locationId)) {
 						templateCollection.setUpdatedTime(new Date());
 						templateCollection.setDiscarded(discarded);
 						templateCollection = templateRepository.save(templateCollection);
@@ -523,8 +513,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						BeanUtil.map(templateCollection, response);
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-						throw new BusinessException(ServiceError.NotAuthorized,
-								"Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.NotAuthorized,"Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
 					logger.warn("Cannot Delete Global Template");
@@ -544,18 +533,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId,
-			String locationId) {
+	public TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId) {
 		TemplateAddEditResponseDetails response = null;
 		TemplateCollection templateCollection = new TemplateCollection();
 		try {
-			templateCollection = templateRepository.getTemplate(templateId, doctorId, hospitalId, locationId);
+			ObjectId templateObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(templateId))templateObjectId = new ObjectId(templateId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
+			templateCollection = templateRepository.getTemplate(templateObjectId, doctorObjectId, hospitalObjectId, locationObjectId);
 			if (templateCollection != null) {
 				response = new TemplateAddEditResponseDetails();
 				BeanUtil.map(templateCollection, response);
 				int i = 0;
 				for (TemplateItem item : templateCollection.getItems()) {
-					DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -563,11 +557,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					i++;
 				}
 			}
-			// else {
-			// logger.warn("Template Not Found");
-			// throw new BusinessException(ServiceError.NotFound, "Template Not
-			// Found");
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Template");
@@ -590,8 +579,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Date createdTime = new Date();
 			prescriptionCollection.setCreatedTime(createdTime);
 			prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
-			prescriptionCollection
-					.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
+			prescriptionCollection.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
 			if (prescriptionCollection.getItems() != null) {
 				List<PrescriptionItem> items = null;
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
@@ -637,28 +625,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						diagnosticTestCollection.setCreatedTime(new Date());
 
 						if (userCollection != null)
-							diagnosticTestCollection.setCreatedBy(
-									(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-											+ userCollection.getFirstName());
+							diagnosticTestCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 						diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
 
-						transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST,
-								false);
+						transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
 						ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
 						BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
 						esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
 						if (tests == null)
 							tests = new ArrayList<TestAndRecordData>();
-						tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
+						tests.add(new TestAndRecordData(diagnosticTestCollection.getId().toString(), null));
 					}
 				}
 				prescriptionCollection.setDiagnosticTests(tests);
 			}
 
 			if (userCollection != null) {
-				prescriptionCollection
-						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-								+ userCollection.getFirstName());
+				prescriptionCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 			}
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 			response = new PrescriptionAddEditResponse();
@@ -668,8 +651,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionTest != null && !prescriptionTest.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
 				for (TestAndRecordData data : prescriptionTest) {
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(data.getTestId());
+					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 					DiagnosticTest diagnosticTest = new DiagnosticTest();
 					if (diagnosticTestCollection != null) {
 						BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -679,9 +661,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			response.setVisitId(request.getVisitId());
-			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(),
-					"Your prescription by Dr. " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
-					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
+			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),"Your prescription by Dr. " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
@@ -701,7 +681,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			request.setDiagnosticTests(null);
 			BeanUtil.map(request, prescriptionCollection);
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
-			PrescriptionCollection oldPrescription = prescriptionRepository.findOne(request.getId());
+			PrescriptionCollection oldPrescription = prescriptionRepository.findOne(new ObjectId(request.getId()));
 			prescriptionCollection.setCreatedBy(oldPrescription.getCreatedBy());
 			prescriptionCollection.setCreatedTime(oldPrescription.getCreatedTime());
 			prescriptionCollection.setDiscarded(oldPrescription.getDiscarded());
@@ -744,17 +724,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						diagnosticTestCollection.setCreatedTime(new Date());
 
 						if (userCollection != null)
-							diagnosticTestCollection.setCreatedBy(
-									(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-											+ userCollection.getFirstName());
+							diagnosticTestCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 						diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
 
-						transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST,
-								false);
+						transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST,	false);
 						ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
 						BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
 						esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
-						tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
+						tests.add(new TestAndRecordData(diagnosticTestCollection.getId().toString(), null));
 					}
 				}
 				prescriptionCollection.setDiagnosticTests(tests);
@@ -772,7 +749,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-					DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -784,8 +761,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionTests != null && !prescriptionTests.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
 				for (TestAndRecordData data : prescriptionTests) {
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(data.getTestId());
+					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 					DiagnosticTest diagnosticTest = new DiagnosticTest();
 					if (diagnosticTestCollection != null) {
 						BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -794,10 +770,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				response.setDiagnosticTests(tests);
 			}
-			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId(),
+			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by Dr. " + prescriptionCollection.getCreatedBy()
 							+ " has changed - Tap to view it!",
-					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
+					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Editing Prescription");
@@ -814,16 +790,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrescriptionCollection prescriptionCollection = null;
 		LocationCollection locationCollection = null;
 		try {
-			locationCollection = locationRepository.findOne(locationId);
-			prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+			locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 						&& prescriptionCollection.getLocationId() != null
 						&& prescriptionCollection.getPatientId() != null) {
-					if (prescriptionCollection.getDoctorId().equals(doctorId)
-							&& prescriptionCollection.getHospitalId().equals(hospitalId)
-							&& prescriptionCollection.getLocationId().equals(locationId)
-							&& prescriptionCollection.getPatientId().equals(patientId)) {
+					if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId) && prescriptionCollection.getLocationId().equals(locationId)	&& prescriptionCollection.getPatientId().equals(patientId)) {
 						prescriptionCollection.setDiscarded(discarded);
 						prescriptionCollection.setUpdatedTime(new Date());
 						prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
@@ -837,8 +810,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 								if (prescriptionItem.getDrugId() != null) {
-									DrugCollection drugCollection = drugRepository
-											.findOne(prescriptionItem.getDrugId());
+									DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 									Drug drug = new Drug();
 									if (drugCollection != null)
 										BeanUtil.map(drugCollection, drug);
@@ -848,17 +820,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							}
 							response.setItems(prescriptionItemDetailsList);
 						}
-						PatientVisitCollection patientVisitCollection = patientVisitRepository
-								.findByPrescriptionId(response.getId());
+						PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
 						if (patientVisitCollection != null)
-							response.setVisitId(patientVisitCollection.getId());
+							response.setVisitId(patientVisitCollection.getId().toString());
 
 						if (tests != null && !tests.isEmpty()) {
 							List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 							for (TestAndRecordData data : tests) {
 								if (data.getTestId() != null) {
-									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-											.findOne(data.getTestId());
+									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -870,14 +840,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							response.setDiagnosticTests(diagnosticTests);
 						}
 
-						pushNotificationServices.notifyUser(patientId,
-								"Your prescription has been discarded by Dr. " + prescriptionCollection.getCreatedBy()
-										+ ", for further details contact " + locationCollection.getLocationName(),
-								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId());
+						pushNotificationServices.notifyUser(patientId,"Your prescription has been discarded by Dr. " + prescriptionCollection.getCreatedBy()+ ", for further details contact " + locationCollection.getLocationName(), ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
-						throw new BusinessException(ServiceError.NotAuthorized,
-								"Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+						throw new BusinessException(ServiceError.NotAuthorized,"Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 					}
 				} else {
 					logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
@@ -897,9 +863,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId,
-			String locationId, String patientId, String updatedTime, boolean isOTPVerified, boolean discarded,
-			boolean inHistory) {
+	public List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		boolean[] discards = new boolean[2];
@@ -910,42 +874,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		inHistorys[1] = true;
 
 		try {
-			if (discarded)
-				discards[1] = true;
-			if (!inHistory)
-				inHistorys[1] = false;
+			if (discarded)discards[1] = true;
+			if (!inHistory)inHistorys[1] = false;
 
 			long createdTimestamp = Long.parseLong(updatedTime);
-
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
 			if (!isOTPVerified) {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorId, patientId,
-								new Date(createdTimestamp), discards, inHistorys,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorId, patientId,
-								new Date(createdTimestamp), discards, inHistorys,
-								new Sort(Sort.Direction.DESC, "createdTime"));
+				if (locationObjectId == null && hospitalObjectId == null) {
+					if (size > 0)prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId, patientObjectId, new Date(createdTimestamp), discards, inHistorys,	new PageRequest(page, size, Direction.DESC, "createdTime"));
+					else prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId, patientObjectId, new Date(createdTimestamp), discards, inHistorys,	new Sort(Sort.Direction.DESC, "createdTime"));
 				} else {
-					if (size > 0)
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId,
-								locationId, patientId, new Date(createdTimestamp), discards, inHistorys,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorId, hospitalId,
-								locationId, patientId, new Date(createdTimestamp), discards, inHistorys,
-								new Sort(Sort.Direction.DESC, "createdTime"));
+					if (size > 0)prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId, hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp), discards, inHistorys,	new PageRequest(page, size, Direction.DESC, "createdTime"));
+					else prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId, hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 			} else {
-				if (size > 0)
-					prescriptionCollections = prescriptionRepository.getPrescription(patientId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					prescriptionCollections = prescriptionRepository.getPrescription(patientId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new Sort(Sort.Direction.DESC, "createdTime"));
+				if (size > 0)prescriptionCollections = prescriptionRepository.getPrescription(patientObjectId, new Date(createdTimestamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else prescriptionCollections = prescriptionRepository.getPrescription(patientObjectId, new Date(createdTimestamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
+				
 				pushNotificationServices.notifyUser(patientId, "Global records", null, null);
 			}
 
@@ -963,27 +913,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 							if (prescriptionItem.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+								DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 								Drug drug = new Drug();
 								if (drugCollection != null)
 									BeanUtil.map(drugCollection, drug);
-								prescriptionItemDetails.setDrug(drug);
+									prescriptionItemDetails.setDrug(drug);
 							}
 							prescriptionItemDetailsList.add(prescriptionItemDetails);
 						}
 						prescription.setItems(prescriptionItemDetailsList);
 					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescription.getId());
+					PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
 					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId());
+						prescription.setVisitId(patientVisitCollection.getId().toString());
 
 					if (tests != null && !tests.isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : tests) {
 							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(data.getTestId());
+								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -1007,19 +955,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return prescriptions;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	@SuppressWarnings("unchecked")
-	public List<Prescription> getPrescriptionsByIds(List<String> prescriptionIds) {
+	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		try {
-			Iterable<PrescriptionCollection> prescriptionCollectionsIterable = prescriptionRepository
-					.findAll(prescriptionIds);
-			if (prescriptionCollectionsIterable != null) {
-				prescriptionCollections = IteratorUtils.toList(prescriptionCollectionsIterable.iterator());
-			}
-
+			prescriptionCollections = IteratorUtils.toList(prescriptionRepository.findAll(prescriptionIds).iterator());
 			if (prescriptionCollections != null) {
 				prescriptions = new ArrayList<Prescription>();
 				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
@@ -1033,7 +976,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 							if (drugCollection != null) {
 								Drug drug = new Drug();
 								BeanUtil.map(drugCollection, drug);
@@ -1043,17 +986,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setItems(prescriptionItemDetailsList);
 					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescription.getId());
+					PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
 					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId());
+						prescription.setVisitId(patientVisitCollection.getId().toString());
 
 					if (tests != null && !tests.isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : tests) {
 							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(data.getTestId());
+								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -1079,32 +1020,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId,
-			String locationId, String updatedTime, boolean discarded) {
+	public List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime, boolean discarded) {
 		List<TemplateAddEditResponseDetails> response = null;
 		List<TemplateCollection> templateCollections = null;
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
 		try {
-			if (discarded)
-				discards[1] = true;
+			if (discarded)discards[1] = true;
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
-			if (hospitalId == null && locationId == null) {
+			ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
+			if (hospitalObjectId == null && locationObjectId == null) {
 				if (size > 0)
-					templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp),
-							discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+					templateCollections = templateRepository.getTemplates(doctorObjectId, new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 				else
-					templateCollections = templateRepository.getTemplates(doctorId, new Date(createdTimeStamp),
-							discards, new Sort(Sort.Direction.DESC, "createdTime"));
+					templateCollections = templateRepository.getTemplates(doctorObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 			} else {
 				if (size > 0)
-					templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
+					templateCollections = templateRepository.getTemplates(doctorObjectId, hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
 				else
-					templateCollections = templateRepository.getTemplates(doctorId, hospitalId, locationId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+					templateCollections = templateRepository.getTemplates(doctorObjectId, hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 			}
 
 			if (templateCollections != null && !templateCollections.isEmpty()) {
@@ -1116,7 +1055,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (templateCollection.getItems() != null)
 						for (TemplateItem item : templateCollection.getItems()) {
 							if (item.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+								DrugCollection drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
 								Drug drug = new Drug();
 								if (drugCollection != null)
 									BeanUtil.map(drugCollection, drug);
@@ -1142,15 +1081,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId,
-			boolean isOTPVerified) {
+	public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
 		Integer prescriptionCount = 0;
 		try {
-			if (isOTPVerified)
-				prescriptionCount = prescriptionRepository.getPrescriptionCount(patientId, false);
-			else
-				prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorId, patientId, hospitalId,
-						locationId, false);
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
+			if (isOTPVerified)prescriptionCount = prescriptionRepository.getPrescriptionCount(patientObjectId, false);
+			else prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorObjectId, patientObjectId, hospitalObjectId, locationObjectId, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Prescription Count");
@@ -1172,7 +1113,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 				BeanUtil.map(templateItem, templateItemDetail);
 				if (templateItem.getDrugId() != null) {
-					DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(templateItem.getDrugId()));
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -1202,12 +1143,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 					if (prescriptionItem.getDrugId() != null) {
-						DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+						DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 						Drug drug = new Drug();
 						if (drugCollection != null)
 							BeanUtil.map(drugCollection, drug);
-						prescriptionItemDetail.setDrug(drug);
-						prescriptionItemDetails.add(prescriptionItemDetail);
+							prescriptionItemDetail.setDrug(drug);
+							prescriptionItemDetails.add(prescriptionItemDetail);
 					}
 				}
 			}
@@ -1228,9 +1169,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(drugTypeCollection.getDoctorId())) {
 				UserCollection userCollection = userRepository.findOne(drugTypeCollection.getDoctorId());
 				if (userCollection != null)
-					drugTypeCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName());
+					drugTypeCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 			} else {
 				drugTypeCollection.setCreatedBy("ADMIN");
 			}
@@ -1255,7 +1194,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
 		BeanUtil.map(request, drugTypeCollection);
 		try {
-			DrugTypeCollection oldDrug = drugTypeRepository.findOne(request.getId());
+			DrugTypeCollection oldDrug = drugTypeRepository.findOne(new ObjectId(request.getId()));
 			drugTypeCollection.setCreatedBy(oldDrug.getCreatedBy());
 			drugTypeCollection.setCreatedTime(oldDrug.getCreatedTime());
 			drugTypeCollection.setDiscarded(oldDrug.getDiscarded());
@@ -1278,7 +1217,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugTypeAddEditResponse response = null;
 		DrugTypeCollection drugTypeCollection = null;
 		try {
-			drugTypeCollection = drugTypeRepository.findOne(drugTypeId);
+			drugTypeCollection = drugTypeRepository.findOne(new ObjectId(drugTypeId));
 			if (drugTypeCollection != null) {
 				drugTypeCollection.setDiscarded(discarded);
 				drugTypeCollection.setUpdatedTime(new Date());
@@ -1299,86 +1238,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public DrugStrengthAddEditResponse addDrugStrength(DrugStrengthAddEditRequest request) {
-
-		DrugStrengthAddEditResponse response = null;
-
-		DrugStrengthUnitCollection drugStrengthUnitCollection = new DrugStrengthUnitCollection();
-		BeanUtil.map(request, drugStrengthUnitCollection);
-		try {
-			drugStrengthUnitCollection.setCreatedTime(new Date());
-			if (!DPDoctorUtils.anyStringEmpty(drugStrengthUnitCollection.getDoctorId())) {
-				UserCollection userCollection = userRepository.findOne(drugStrengthUnitCollection.getDoctorId());
-				if (userCollection != null)
-					drugStrengthUnitCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName());
-			} else {
-				drugStrengthUnitCollection.setCreatedBy("ADMIN");
-			}
-			drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
-			response = new DrugStrengthAddEditResponse();
-			BeanUtil.map(drugStrengthUnitCollection, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Saving Drug Strength");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug Strength");
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public DrugStrengthAddEditResponse editDrugStrength(DrugStrengthAddEditRequest request) {
-
-		DrugStrengthAddEditResponse response = null;
-
-		DrugStrengthUnitCollection drugStrengthUnitCollection = new DrugStrengthUnitCollection();
-		BeanUtil.map(request, drugStrengthUnitCollection);
-		try {
-			DrugStrengthUnitCollection oldDrugStrength = drugStrengthRepository.findOne(request.getId());
-			drugStrengthUnitCollection.setCreatedBy(oldDrugStrength.getCreatedBy());
-			drugStrengthUnitCollection.setCreatedTime(oldDrugStrength.getCreatedTime());
-			drugStrengthUnitCollection.setDiscarded(oldDrugStrength.getDiscarded());
-			drugStrengthUnitCollection = drugStrengthRepository.save(drugStrengthUnitCollection);
-			response = new DrugStrengthAddEditResponse();
-			BeanUtil.map(drugStrengthUnitCollection, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Editing Drug Strength");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug Strength");
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public DrugStrengthAddEditResponse deleteDrugStrength(String drugStrengthId, Boolean discarded) {
-
-		DrugStrengthAddEditResponse response = null;
-		DrugStrengthUnitCollection drugStrengthCollection = null;
-		try {
-			drugStrengthCollection = drugStrengthRepository.findOne(drugStrengthId);
-			if (drugStrengthCollection != null) {
-				drugStrengthCollection.setUpdatedTime(new Date());
-				drugStrengthCollection.setDiscarded(discarded);
-				drugStrengthCollection = drugStrengthRepository.save(drugStrengthCollection);
-				response = new DrugStrengthAddEditResponse();
-				BeanUtil.map(drugStrengthCollection, response);
-			} else {
-				logger.warn("Drug Strength Not Found");
-				throw new BusinessException(ServiceError.NotFound, "Drug Strength Not Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Deleting Drug Strength");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug Strength");
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
 	public DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request) {
 
 		DrugDosageAddEditResponse response = null;
@@ -1390,9 +1249,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(drugDosageCollection.getDoctorId())) {
 				UserCollection userCollection = userRepository.findOne(drugDosageCollection.getDoctorId());
 				if (userCollection != null)
-					drugDosageCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName());
+					drugDosageCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 			} else {
 				drugDosageCollection.setCreatedBy("ADMIN");
 			}
@@ -1416,7 +1273,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugDosageCollection drugDosageCollection = new DrugDosageCollection();
 		BeanUtil.map(request, drugDosageCollection);
 		try {
-			DrugDosageCollection oldDrugDosage = drugDosageRepository.findOne(request.getId());
+			DrugDosageCollection oldDrugDosage = drugDosageRepository.findOne(new ObjectId(request.getId()));
 			drugDosageCollection.setCreatedBy(oldDrugDosage.getCreatedBy());
 			drugDosageCollection.setCreatedTime(oldDrugDosage.getCreatedTime());
 			drugDosageCollection.setDiscarded(oldDrugDosage.getDiscarded());
@@ -1437,7 +1294,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugDosageAddEditResponse response = null;
 		DrugDosageCollection drugDosageCollection = null;
 		try {
-			drugDosageCollection = drugDosageRepository.findOne(drugDosageId);
+			drugDosageCollection = drugDosageRepository.findOne(new ObjectId(drugDosageId));
 			if (drugDosageCollection != null) {
 				drugDosageCollection.setDiscarded(discarded);
 				drugDosageCollection.setUpdatedTime(new Date());
@@ -1495,7 +1352,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugDirectionCollection drugDirectionCollection = new DrugDirectionCollection();
 		BeanUtil.map(request, drugDirectionCollection);
 		try {
-			DrugDirectionCollection oldDrugDirection = drugDirectionRepository.findOne(request.getId());
+			DrugDirectionCollection oldDrugDirection = drugDirectionRepository.findOne(new ObjectId(request.getId()));
 			drugDirectionCollection.setCreatedBy(oldDrugDirection.getCreatedBy());
 			drugDirectionCollection.setCreatedTime(oldDrugDirection.getCreatedTime());
 			drugDirectionCollection.setDiscarded(oldDrugDirection.getDiscarded());
@@ -1517,7 +1374,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugDirectionAddEditResponse response = null;
 		DrugDirectionCollection drugDirectionCollection = null;
 		try {
-			drugDirectionCollection = drugDirectionRepository.findOne(drugDirectionId);
+			drugDirectionCollection = drugDirectionRepository.findOne(new ObjectId(drugDirectionId));
 			if (drugDirectionCollection != null) {
 				drugDirectionCollection.setDiscarded(discarded);
 				drugDirectionCollection.setUpdatedTime(new Date());
@@ -1575,7 +1432,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugDurationUnitCollection drugDurationUnitCollection = new DrugDurationUnitCollection();
 		BeanUtil.map(request, drugDurationUnitCollection);
 		try {
-			DrugDurationUnitCollection oldDrugDuration = drugDurationUnitRepository.findOne(request.getId());
+			DrugDurationUnitCollection oldDrugDuration = drugDurationUnitRepository.findOne(new ObjectId(request.getId()));
 			drugDurationUnitCollection.setCreatedBy(oldDrugDuration.getCreatedBy());
 			drugDurationUnitCollection.setCreatedTime(oldDrugDuration.getCreatedTime());
 			drugDurationUnitCollection.setDiscarded(oldDrugDuration.getDiscarded());
@@ -1597,7 +1454,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DrugDurationUnitAddEditResponse response = null;
 		DrugDurationUnitCollection drugDurationUnitCollection = null;
 		try {
-			drugDurationUnitCollection = drugDurationUnitRepository.findOne(drugDurationUnitId);
+			drugDurationUnitCollection = drugDurationUnitRepository.findOne(new ObjectId(drugDurationUnitId));
 			if (drugDurationUnitCollection != null) {
 				drugDurationUnitCollection.setDiscarded(discarded);
 				drugDurationUnitCollection.setUpdatedTime(new Date());
@@ -1621,18 +1478,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public Prescription getPrescriptionById(String prescriptionId) {
 		Prescription prescription = null;
 		try {
-			List<PrescriptionCollection> prescriptionCollections = new ArrayList<PrescriptionCollection>();
-			PrescriptionCollection prescriptionCl = prescriptionRepository.findOne(prescriptionId);
-			if (prescriptionCl != null) {
-				prescriptionCollections.add(prescriptionCl);
-			}
-
-			if (prescriptionCollections.isEmpty()) {
-				prescriptionCollections = prescriptionRepository.findAll(prescriptionId);
-			}
-
-			if (prescriptionCollections != null && !prescriptionCollections.isEmpty()) {
-				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+			PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
+			
+			if (prescriptionCollection != null) {
 					prescription = new Prescription();
 					List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
 					prescriptionCollection.setDiagnosticTests(null);
@@ -1642,7 +1490,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+							DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 							if (drugCollection != null) {
 								Drug drug = new Drug();
 								BeanUtil.map(drugCollection, drug);
@@ -1652,17 +1500,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setItems(prescriptionItemDetails);
 					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescription.getId());
+					PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
 					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId());
+						prescription.setVisitId(patientVisitCollection.getId().toString());
 
 					if (tests != null && !tests.isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : tests) {
 							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(data.getTestId());
+								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -1672,28 +1518,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setDiagnosticTests(diagnosticTests);
 					}
-				}
 
 			} else {
-				throw new BusinessException(ServiceError.NotFound,
-						"No Prescription Found For the Given Prescription or Patient Id");
+				throw new BusinessException(ServiceError.NotFound,"No Prescription Found For the Given Prescription or Patient Id");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
-			throw new BusinessException(ServiceError.Unknown,
-					"Error while getting prescription : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,"Error while getting prescription : " + e.getCause().getMessage());
 		}
 		return prescription;
 	}
 
 	@Override
 	@Transactional
-	public List<Object> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
+	public List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, Boolean isAdmin,
 			String searchTerm) {
 
-		List<Object> response = new ArrayList<Object>();
+		List<?> response = new ArrayList<Object>();
 
 		switch (PrescriptionItems.valueOf(type.toUpperCase())) {
 
@@ -1930,35 +1773,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //		return response;
 //	}
 
-	private List<Object> getCustomLabTests(int page, int size, String locationId, String hospitalId, String updatedTime,
-			boolean discarded) {
+	private List<Object> getCustomLabTests(int page, int size, String locationId, String hospitalId, String updatedTime, boolean discarded) {
 		List<Object> response = null;
 		List<LabTestCollection> labTestCollections = null;
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
 		try {
-			if (discarded)
-				discards[1] = true;
+			if (discarded)discards[1] = true;
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			if (locationId == null && hospitalId == null) {
 				labTestCollections = new ArrayList<LabTestCollection>();
 			} else {
 				if (size > 0)
-					labTestCollections = labTestRepository.getCustomLabTests(hospitalId, locationId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
+					labTestCollections = labTestRepository.getCustomLabTests(new ObjectId(hospitalId), new ObjectId(locationId), new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
 				else
-					labTestCollections = labTestRepository.getCustomLabTests(hospitalId, locationId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+					labTestCollections = labTestRepository.getCustomLabTests(new ObjectId(hospitalId), new ObjectId(locationId), new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
 			}
 			if (!labTestCollections.isEmpty()) {
 				response = new ArrayList<Object>();
 				for (LabTestCollection labTestCollection : labTestCollections) {
 					LabTest labTest = new LabTest();
 					BeanUtil.map(labTestCollection, labTest);
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(labTestCollection.getTestId());
+					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
 					DiagnosticTest diagnosticTest = new DiagnosticTest();
 					BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					labTest.setTest(diagnosticTest);
@@ -2023,28 +1860,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //		return response;
 //	}
 
-	private List<Object> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugCollection> drugCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<Drug> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded) {
+		List<Drug> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (size > 0)
-				drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), discards,
-						new PageRequest(page, size, Direction.DESC, "updatedTime"));
-
-			else
-				drugCollections = drugRepository.getGlobalDrugs(new Date(createdTimeStamp), discards,
-						new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			if (!drugCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugCollections, response);
-			}
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -2053,40 +1873,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugs(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugCollection> drugCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<Drug> getCustomDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Drug> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null)
-				drugCollections = new ArrayList<DrugCollection>();
-
-			if (locationId == null && hospitalId == null) {
-				if (size > 0)
-					drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugCollections = drugRepository.getCustomDrugs(doctorId, new Date(createdTimeStamp), discards,
-							new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)
-					drugCollections = drugRepository.getCustomDrugs(doctorId, hospitalId, locationId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugCollections = drugRepository.getCustomDrugs(doctorId, hospitalId, locationId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugCollections, response);
-			}
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -2095,47 +1886,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugCollection> drugCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<Drug> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Drug> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null) {
-				if (size > 0)
-					drugCollections = drugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugCollections = drugRepository.getCustomGlobalDrugs(new Date(createdTimeStamp), discards,
-							new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			} else {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp),
-								discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, new Date(createdTimeStamp),
-								discards, new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugCollections = drugRepository.getCustomGlobalDrugs(doctorId, hospitalId, locationId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugCollections, response);
-			}
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -2144,27 +1899,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDrugType(int page, int size, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugTypeCollection> drugTypeCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugType> getGlobalDrugType(int page, int size, String updatedTime, boolean discarded) {
+		List<DrugType> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (size > 0)
-				drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), discards,
-						new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-				drugTypeCollections = drugTypeRepository.getGlobalDrugType(new Date(createdTimeStamp), discards,
-						new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			if (!drugTypeCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugTypeCollections, response);
-			}
+			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null), DrugTypeCollection.class, DrugType.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Type");
@@ -2173,41 +1912,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugType(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugTypeCollection> drugTypeCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugType> getCustomDrugType(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugType> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null)
-				drugTypeCollections = new ArrayList<DrugTypeCollection>();
-			else {
-				if (locationId == null & hospitalId == null) {
-					if (size > 0)
-						drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, new Date(createdTimeStamp),
-								discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, new Date(createdTimeStamp),
-								discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				} else {
-					if (size > 0)
-						drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugTypeCollections = drugTypeRepository.getCustomDrugType(doctorId, hospitalId, locationId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugTypeCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugTypeCollections, response);
-			}
+			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), DrugTypeCollection.class, DrugType.class); 
+			response = results.getMappedResults();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Type");
@@ -2216,48 +1926,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugType(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugTypeCollection> drugTypeCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugType> getCustomGlobalDrugType(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugType> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null) {
-				if (size > 0)
-					drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(new Date(createdTimeStamp),
-							discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(new Date(createdTimeStamp),
-							discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				} else {
-					if (size > 0)
-						drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId,
-								locationId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugTypeCollections = drugTypeRepository.getCustomGlobalDrugType(doctorId, hospitalId,
-								locationId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugTypeCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugTypeCollections, response);
-			}
+			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), DrugTypeCollection.class, DrugType.class); 
+			response = results.getMappedResults();		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Type");
@@ -2266,27 +1939,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDrugDirection(int page, int size, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDirectionCollection> drugDirectionCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDirection> getGlobalDrugDirection(int page, int size, String updatedTime, boolean discarded) {
+		List<DrugDirection> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (size > 0)
-				drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(new Date(createdTimeStamp),
-						discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-				drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirection(new Date(createdTimeStamp),
-						discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			if (!drugDirectionCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDirectionCollections, response);
-			}
+			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null), DrugDirectionCollection.class, DrugDirection.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Direction");
@@ -2295,43 +1952,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugDirection(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDirectionCollection> drugDirectionCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDirection> getCustomDrugDirection(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugDirection> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null)
-				drugDirectionCollections = new ArrayList<DrugDirectionCollection>();
-			else {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				} else {
-					if (size > 0)
-						drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId,
-								locationId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDirectionCollections = drugDirectionRepository.getCustomDrugDirection(doctorId, hospitalId,
-								locationId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugDirectionCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDirectionCollections, response);
-			}
+			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), DrugDirectionCollection.class, DrugDirection.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Direction");
@@ -2340,50 +1965,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugDirection(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDirectionCollection> drugDirectionCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDirection> getCustomGlobalDrugDirection(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugDirection> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null) {
-				if (size > 0)
-					drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			} else {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				} else {
-					if (size > 0)
-						drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId,
-								hospitalId, locationId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirection(doctorId,
-								hospitalId, locationId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugDirectionCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDirectionCollections, response);
-			}
+			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), DrugDirectionCollection.class, DrugDirection.class); 
+			response = results.getMappedResults();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Direction");
@@ -2392,26 +1979,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDrugDosage(int page, int size, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDosageCollection> drugDosageCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDosage> getGlobalDrugDosage(int page, int size, String updatedTime, boolean discarded) {
+		List<DrugDosage> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if (size > 0)
-				drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), discards,
-						new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-				drugDosageCollections = drugDosageRepository.getGlobalDrugDosage(new Date(createdTimeStamp), discards,
-						new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			if (!drugDosageCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDosageCollections, response);
-			}
+			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null), DrugDosageCollection.class, DrugDosage.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -2420,43 +1992,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugDosage(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDosageCollection> drugDosageCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDosage> getCustomDrugDosage(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugDosage> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null) {
-				drugDosageCollections = new ArrayList<DrugDosageCollection>();
-			} else {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				} else {
-					if (size > 0)
-						drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId,
-								locationId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDosageCollections = drugDosageRepository.getCustomDrugDosage(doctorId, hospitalId,
-								locationId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugDosageCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDosageCollections, response);
-			}
+			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), DrugDosageCollection.class, DrugDosage.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -2465,47 +2005,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugDosage(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDosageCollection> drugDosageCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDosage> getCustomGlobalDrugDosage(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugDosage> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null) {
-				if (size > 0)
-					drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(new Date(createdTimeStamp),
-							discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(new Date(createdTimeStamp),
-							discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else if (locationId == null && hospitalId == null) {
-				if (size > 0)
-					drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)
-					drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId,
-							locationId, new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosage(doctorId, hospitalId,
-							locationId, new Date(createdTimeStamp), discards,
-							new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			}
-			if (!drugDosageCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDosageCollections, response);
-			}
+			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), DrugDosageCollection.class, DrugDosage.class); 
+			response = results.getMappedResults();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -2514,27 +2019,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDrugDurationUnit(int page, int size, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDurationUnit> getGlobalDrugDurationUnit(int page, int size, String updatedTime, boolean discarded) {
+		List<DrugDurationUnit> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if (size > 0)
-				drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnit(
-						new Date(createdTimeStamp), discards,
-						new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else
-				drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnit(
-						new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			if (!drugDurationUnitCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDurationUnitCollections, response);
-			}
+			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
@@ -2543,44 +2032,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugDurationUnit(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDurationUnit> getCustomDrugDurationUnit(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugDurationUnit> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null)
-				drugDurationUnitCollections = new ArrayList<DrugDurationUnitCollection>();
-
-			else {
-				if (locationId == null && hospitalId == null) {
-					if (size > 0)
-						drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId,
-								new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId,
-								new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-				} else {
-					if (size > 0)
-						drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId,
-								hospitalId, locationId, new Date(createdTimeStamp), discards,
-								new PageRequest(page, size, Direction.DESC, "updatedTime"));
-					else
-						drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnit(doctorId,
-								hospitalId, locationId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "updatedTime"));
-				}
-			}
-			if (!drugDurationUnitCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDurationUnitCollections, response);
-			}
+			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
@@ -2589,48 +2045,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugDurationUnit(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDurationUnit> getCustomGlobalDrugDurationUnit(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DrugDurationUnit> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (doctorId == null) {
-				if (size > 0)
-					drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else if (locationId == null && hospitalId == null) {
-				if (size > 0)
-					drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)
-					drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId,
-							hospitalId, locationId, new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnit(doctorId,
-							hospitalId, locationId, new Date(createdTimeStamp), discards,
-							new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!drugDurationUnitCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDurationUnitCollections, response);
-			}
+			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
@@ -3014,8 +2433,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
-			Boolean response = mailService.sendEmail(emailAddress,
-					mailResponse.getDoctorName() + " sent you a Prescription", body, mailResponse.getMailAttachment());
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you a Prescription", body, mailResponse.getMailAttachment());
 			if (mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -3041,20 +2459,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
-			prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 						&& prescriptionCollection.getLocationId() != null) {
-					if (prescriptionCollection.getDoctorId().equals(doctorId)
-							&& prescriptionCollection.getHospitalId().equals(hospitalId)
-							&& prescriptionCollection.getLocationId().equals(locationId)) {
+					if (prescriptionCollection.getDoctorId().equals(doctorId) && prescriptionCollection.getHospitalId().equals(hospitalId) && prescriptionCollection.getLocationId().equals(locationId)) {
 
 						user = userRepository.findOne(prescriptionCollection.getPatientId());
-						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-								prescriptionCollection.getPatientId(), doctorId, locationId, hospitalId);
-						emailTrackCollection.setDoctorId(doctorId);
-						emailTrackCollection.setHospitalId(hospitalId);
-						emailTrackCollection.setLocationId(locationId);
+						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
+						emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(prescriptionCollection.getHospitalId());
+						emailTrackCollection.setLocationId(prescriptionCollection.getLocationId());
 						emailTrackCollection.setType(ComponentType.PRESCRIPTIONS.getType());
 						emailTrackCollection.setSubject("Prescription");
 						if (user != null) {
@@ -3066,8 +2481,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
-						UserCollection doctorUser = userRepository.findOne(doctorId);
-						LocationCollection locationCollection = locationRepository.findOne(locationId);
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 
 						response = new MailResponse();
 						response.setMailAttachment(mailAttachment);
@@ -3118,7 +2533,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Boolean response = false;
 		PrescriptionCollection prescriptionCollection = null;
 		try {
-			prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+			prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 						&& prescriptionCollection.getLocationId() != null) {
@@ -3127,15 +2542,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							&& prescriptionCollection.getLocationId().equals(locationId)) {
 
 						UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
-										doctorId, locationId, hospitalId);
+						PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 						if (patientCollection != null) {
 							String prescriptionDetails = "";
 							int i = 0;
 							for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 								if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-									DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+									DrugCollection drug = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 									if (drug != null) {
 										i++;
 
@@ -3184,17 +2597,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									? patientCollection.getFirstName().split(" ")[0] : "", doctorName = "",
 									clinicContactNum = "";
 
-							UserCollection doctor = userRepository.findOne(doctorId);
+							UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
 							if (doctor != null)
 								doctorName = doctor.getTitle() + " " + doctor.getFirstName();
 
-							LocationCollection locationCollection = locationRepository.findOne(locationId);
+							LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
 							if (locationCollection != null && locationCollection.getClinicNumber() != null)
 								clinicContactNum = " " + locationCollection.getClinicNumber();
 
-							smsTrackDetail.setDoctorId(doctorId);
-							smsTrackDetail.setHospitalId(hospitalId);
-							smsTrackDetail.setLocationId(locationId);
+							smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+							smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+							smsTrackDetail.setLocationId(new ObjectId(locationId));
 							smsTrackDetail.setType(type);
 							SMSDetail smsDetail = new SMSDetail();
 							smsDetail.setUserId(prescriptionCollection.getPatientId());
@@ -3252,16 +2665,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				DiagnosticTestCollection diagnosticTestCollection = null;
 				if (request.getTest().getId() != null)
-					diagnosticTestCollection = diagnosticTestRepository.findOne(request.getTest().getId());
+					diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(request.getTest().getId()));
 				if (diagnosticTestCollection == null && request.getTest().getTestName() != null) {
 					diagnosticTestCollection = new DiagnosticTestCollection();
-					diagnosticTestCollection.setLocationId(request.getLocationId());
-					diagnosticTestCollection.setHospitalId(request.getHospitalId());
+					diagnosticTestCollection.setLocationId(new ObjectId(request.getLocationId()));
+					diagnosticTestCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					diagnosticTestCollection.setTestName(request.getTest().getTestName());
 					diagnosticTestCollection.setCreatedTime(createdTime);
 					if (locationCollection != null)
 						diagnosticTestCollection.setCreatedBy(locationCollection.getLocationName());
-					diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
+						diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
 				} else {
 					logger.error("Cannt create lab test without diagnostic test");
 					throw new BusinessException(ServiceError.Unknown, "Cannt create lab test without diagnostic test");
@@ -3300,18 +2713,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		BeanUtil.map(request, labTestCollection);
 		try {
 			if (request.getTest() != null) {
-				LabTestCollection oldLabTest = labTestRepository.findOne(request.getId());
+				LabTestCollection oldLabTest = labTestRepository.findOne(new ObjectId(request.getId()));
 				labTestCollection.setCreatedBy(oldLabTest.getCreatedBy());
 				labTestCollection.setCreatedTime(oldLabTest.getCreatedTime());
 				labTestCollection.setDiscarded(oldLabTest.getDiscarded());
 				DiagnosticTestCollection diagnosticTestCollection = null;
 
 				if (request.getTest().getId() != null)
-					diagnosticTestCollection = diagnosticTestRepository.findOne(request.getTest().getId());
+					diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(request.getTest().getId()));
 				if (diagnosticTestCollection == null) {
 					diagnosticTestCollection = new DiagnosticTestCollection();
-					diagnosticTestCollection.setLocationId(request.getLocationId());
-					diagnosticTestCollection.setHospitalId(request.getHospitalId());
+					diagnosticTestCollection.setLocationId(new ObjectId(request.getLocationId()));
+					diagnosticTestCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					diagnosticTestCollection.setTestName(request.getTest().getTestName());
 					diagnosticTestCollection.setCreatedTime(new Date());
 					diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
@@ -3349,7 +2762,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		LabTest response = null;
 		LabTestCollection labTestCollection = null;
 		try {
-			labTestCollection = labTestRepository.findOne(labTestId);
+			labTestCollection = labTestRepository.findOne(new ObjectId(labTestId));
 			if (labTestCollection != null) {
 				if (labTestCollection.getHospitalId() != null && labTestCollection.getLocationId() != null) {
 					if (labTestCollection.getHospitalId().equals(hospitalId)
@@ -3386,7 +2799,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		LabTest response = null;
 		LabTestCollection labTestCollection = null;
 		try {
-			labTestCollection = labTestRepository.findOne(labTestId);
+			labTestCollection = labTestRepository.findOne(new ObjectId(labTestId));
 			if (labTestCollection != null) {
 				labTestCollection.setUpdatedTime(new Date());
 				labTestCollection.setDiscarded(discarded);
@@ -3410,7 +2823,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public LabTest getLabTestById(String labTestId) {
 		LabTest response = null;
 		try {
-			LabTestCollection labTestCollection = labTestRepository.findOne(labTestId);
+			LabTestCollection labTestCollection = labTestRepository.findOne(new ObjectId(labTestId));
 			if (labTestCollection != null) {
 				response = new LabTest();
 				BeanUtil.map(labTestCollection, response);
@@ -3470,12 +2883,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				discards[1] = true;
 
 			long createdTimestamp = Long.parseLong(updatedTime);
-			if (size > 0)
-				prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp),
-						discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-				prescriptionCollections = prescriptionRepository.getPrescription(patientId, new Date(createdTimestamp),
-						discards, new Sort(Sort.Direction.DESC, "createdTime"));
+			if (size > 0)prescriptionCollections = prescriptionRepository.getPrescription(new ObjectId(patientId), new Date(createdTimestamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else prescriptionCollections = prescriptionRepository.getPrescription(new ObjectId(patientId), new Date(createdTimestamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 			if (prescriptionCollections != null) {
 				prescriptions = new ArrayList<Prescription>();
@@ -3491,7 +2900,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 							if (prescriptionItem.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
+								DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 								Drug drug = new Drug();
 								if (drugCollection != null)
 									BeanUtil.map(drugCollection, drug);
@@ -3501,16 +2910,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setItems(prescriptionItemDetailsList);
 					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescription.getId());
+					PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
 					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId());
+						prescription.setVisitId(patientVisitCollection.getId().toString());
 					if (tests != null && !tests.isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : tests) {
 							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(data.getTestId());
+								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -3544,16 +2951,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (request.getId() == null) {
 				diagnosticTestCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(diagnosticTestCollection.getLocationId())) {
-					LocationCollection locationCollection = locationRepository
-							.findOne(diagnosticTestCollection.getLocationId());
+					LocationCollection locationCollection = locationRepository.findOne(diagnosticTestCollection.getLocationId());
 					if (locationCollection != null)
 						diagnosticTestCollection.setCreatedBy(locationCollection.getLocationName());
 				} else {
 					diagnosticTestCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				DiagnosticTestCollection oldDiagnosticTestCollection = diagnosticTestRepository
-						.findOne(request.getId());
+				DiagnosticTestCollection oldDiagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(request.getId()));
 				oldDiagnosticTestCollection.setCreatedBy(oldDiagnosticTestCollection.getCreatedBy());
 				oldDiagnosticTestCollection.setCreatedTime(oldDiagnosticTestCollection.getCreatedTime());
 				oldDiagnosticTestCollection.setDiscarded(oldDiagnosticTestCollection.getDiscarded());
@@ -3576,7 +2981,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public DiagnosticTest getDiagnosticTest(String diagnosticTestId) {
 		DiagnosticTest response = null;
 		try {
-			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(diagnosticTestId);
+			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(diagnosticTestId));
 			if (diagnosticTestCollection != null) {
 				response = new DiagnosticTest();
 				BeanUtil.map(diagnosticTestCollection, response);
@@ -3601,7 +3006,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DiagnosticTest response = null;
 		DiagnosticTestCollection diagnosticTestCollection = null;
 		try {
-			diagnosticTestCollection = diagnosticTestRepository.findOne(diagnosticTestId);
+			diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(diagnosticTestId));
 			if (diagnosticTestCollection != null) {
 				if (diagnosticTestCollection.getHospitalId() != null
 						&& diagnosticTestCollection.getLocationId() != null) {
@@ -3638,7 +3043,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		DiagnosticTest response = null;
 		DiagnosticTestCollection diagnosticTestCollection = null;
 		try {
-			diagnosticTestCollection = diagnosticTestRepository.findOne(diagnosticTestId);
+			diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(diagnosticTestId));
 			if (diagnosticTestCollection != null) {
 				diagnosticTestCollection.setUpdatedTime(new Date());
 				diagnosticTestCollection.setDiscarded(discarded);
@@ -3657,27 +3062,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDiagnosticTests(int page, int size, String updatedTime, Boolean discarded) {
-		List<Object> response = null;
-		List<DiagnosticTestCollection> diagnosticTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DiagnosticTest> getGlobalDiagnosticTests(int page, int size, String updatedTime, Boolean discarded) {
+		List<DiagnosticTest> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if (size > 0)
-				diagnosticTestCollections = diagnosticTestRepository.getGlobal(new Date(createdTimeStamp), discards,
-						new PageRequest(page, size, Direction.DESC, "updatedTime"));
-
-			else
-				diagnosticTestCollections = diagnosticTestRepository.getGlobal(new Date(createdTimeStamp), discards,
-						new Sort(Sort.Direction.DESC, "updatedTime"));
-
-			if (!diagnosticTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(diagnosticTestCollections, response);
-			}
+			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, null), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting LabTests");
@@ -3686,32 +3075,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDiagnosticTests(int page, int size, String locationId, String hospitalId,
-			String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DiagnosticTestCollection> diagnosticTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DiagnosticTest> getCustomDiagnosticTests(int page, int size, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<DiagnosticTest> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (locationId == null && hospitalId == null) {
-				diagnosticTestCollections = new ArrayList<DiagnosticTestCollection>();
-			} else {
-				if (size > 0)
-					diagnosticTestCollections = diagnosticTestRepository.getCustom(hospitalId, locationId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					diagnosticTestCollections = diagnosticTestRepository.getCustom(hospitalId, locationId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!diagnosticTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(diagnosticTestCollections, response);
-			}
+			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, null, locationId, hospitalId, updatedTime, discarded, null, null), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
@@ -3720,37 +3088,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDiagnosticTests(int page, int size, String locationId, String hospitalId,
+	private List<DiagnosticTest> getCustomGlobalDiagnosticTests(int page, int size, String locationId, String hospitalId,
 			String updatedTime, boolean discarded) {
-		List<Object> response = null;
-		List<DiagnosticTestCollection> diagnosticTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+		List<DiagnosticTest> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (locationId == null && hospitalId == null) {
-				if (size > 0)
-					diagnosticTestCollections = diagnosticTestRepository.getCustomGlobal(new Date(createdTimeStamp),
-							discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					diagnosticTestCollections = diagnosticTestRepository.getCustomGlobal(new Date(createdTimeStamp),
-							discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)
-					diagnosticTestCollections = diagnosticTestRepository.getCustomGlobal(hospitalId, locationId,
-							new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else
-					diagnosticTestCollections = diagnosticTestRepository.getCustomGlobal(hospitalId, locationId,
-							new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!diagnosticTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(diagnosticTestCollections, response);
-			}
+			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, null, locationId, hospitalId, updatedTime, discarded, null, null, null), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
@@ -3765,15 +3108,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrescriptionTestAndRecord response = null;
 		List<TestAndRecordDataResponse> tests = null;
 		try {
-			PrescriptionCollection prescriptionCollection = prescriptionRepository
-					.findByUniqueIdAndPatientId(uniqueEmrId, patientId);
+			PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(uniqueEmrId, new ObjectId(patientId));
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDiagnosticTests() != null
 						&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 					tests = new ArrayList<TestAndRecordDataResponse>();
 					for (TestAndRecordData recordData : prescriptionCollection.getDiagnosticTests()) {
-						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-								.findOne(recordData.getTestId());
+						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(recordData.getTestId()));
 						if (diagnosticTestCollection != null) {
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -3894,12 +3235,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public String getPrescriptionFile(String prescriptionId) {
 		String response = null;
 		try {
-			PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+			PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 
 			if (prescriptionCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
-						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
+				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(prescriptionCollection.getPatientId());
 
 				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user);
@@ -3929,7 +3268,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 				if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-					DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+					DrugCollection drug = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
 					if (drug != null) {
 						String drugType = drug.getDrugType() != null
 								? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "") : "";
@@ -3971,7 +3310,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				parameters.put("prescriptionItems", prescriptionItems);
 			}
 
-		parameters.put("prescriptionId", prescriptionCollection.getId());
+		parameters.put("prescriptionId", prescriptionCollection.getId().toString());
 		parameters.put("advice",
 				prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
 		String labTest = "";
@@ -3980,8 +3319,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			int i = 1;
 			for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 				if (tests.getTestId() != null) {
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(tests.getTestId());
+					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(tests.getTestId()));
 					if (diagnosticTestCollection != null) {
 						labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
 						i++;
@@ -4213,7 +3551,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			if (discarded)discards[1] = true;
 			long createdTimeStamp = Long.parseLong(updatedTime);
-			Collection<String> testIds = null;
+			Collection<ObjectId> testIds = null;
 			if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
 				List<DiagnosticTestCollection> diagnosticTestCollections = null;
 				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
@@ -4222,22 +3560,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    if(testIds == null || testIds.isEmpty())return response;
 			}
 			
-			if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalId, locationId, new Date(createdTimeStamp), discards,	testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else labTestCollections = labTestRepository.getCustomLabTests(hospitalId, locationId, new Date(createdTimeStamp), discards, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
+			ObjectId locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+	    	
+			if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards,	testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+			else labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
 			
 			if (!labTestCollections.isEmpty()) {
 				response = new ArrayList<Object>();
 				for (LabTestCollection labTestCollection : labTestCollections) {
 					LabTest labTest = new LabTest();
 					BeanUtil.map(labTestCollection, labTest);
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(labTestCollection.getTestId());
+					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
 					DiagnosticTest diagnosticTest = new DiagnosticTest();
 					BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					labTest.setTest(diagnosticTest);
 					response.add(labTest);
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4247,28 +3587,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugCollection> drugCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<Drug> getGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugCollections = drugRepository.getGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugCollections = drugRepository.getGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugCollections = drugRepository.getGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugCollections = drugRepository.getGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!drugCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugCollections, response);
-			}
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -4277,288 +3600,118 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugCollection> drugCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<Drug> getCustomDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
 		try {
-			if (discarded)discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				if (size > 0)drugCollections = drugRepository.getCustomDrugsForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugCollections = drugRepository.getCustomDrugsForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)drugCollections = drugRepository.getCustomDrugsForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugCollections = drugRepository.getCustomDrugsForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<Object> getCustomGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugCollection> drugCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				if (size > 0)drugCollections = drugRepository.getCustomGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugCollections = drugRepository.getCustomGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)drugCollections = drugRepository.getCustomGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugCollections = drugRepository.getCustomGlobalDrugsForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<Object> getGlobalDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugTypeCollection> drugTypeCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugTypeCollections = drugTypeRepository.getGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugTypeCollections = drugTypeRepository.getGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugTypeCollections = drugTypeRepository.getGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugTypeCollections = drugTypeRepository.getGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();		
 			
-
-			if (!drugTypeCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugTypeCollections, response);
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Type");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
 		}
 		return response;
 	}
 
-	private List<Object> getCustomDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugTypeCollection> drugTypeCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<Drug> getCustomGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-    		if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				if (size > 0)drugTypeCollections = drugTypeRepository.getCustomDrugTypeForAdmin(new Date(createdTimeStamp),	discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugTypeCollections = drugTypeRepository.getCustomDrugTypeForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)drugTypeCollections = drugTypeRepository.getCustomDrugTypeForAdmin(new Date(createdTimeStamp),	discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugTypeCollections = drugTypeRepository.getCustomDrugTypeForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugTypeCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugTypeCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Type");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
-		}
-		return response;
-	}
-
-	private List<Object> getCustomGlobalDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugTypeCollection> drugTypeCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				if (size > 0)drugTypeCollections = drugTypeRepository.getCustomGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugTypeCollections = drugTypeRepository.getCustomGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)drugTypeCollections = drugTypeRepository.getCustomGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugTypeCollections = drugTypeRepository.getCustomGlobalDrugTypeForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugTypeCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugTypeCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Type");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
-		}
-		return response;
-	}
-
-	private List<Object> getGlobalDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDirectionCollection> drugDirectionCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDirectionCollections = drugDirectionRepository.getGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!drugDirectionCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDirectionCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Direction");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
-		}
-		return response;
-	}
-
-	private List<Object> getCustomDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDirectionCollection> drugDirectionCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				if (size > 0)drugDirectionCollections = drugDirectionRepository.getCustomDrugDirectionForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDirectionCollections = drugDirectionRepository.getCustomDrugDirectionForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)drugDirectionCollections = drugDirectionRepository.getCustomDrugDirectionForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDirectionCollections = drugDirectionRepository.getCustomDrugDirectionForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugDirectionCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDirectionCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Direction");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
-		}
-		return response;
-	}
-
-	private List<Object> getCustomGlobalDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDirectionCollection> drugDirectionCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if (DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				if (size > 0)drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			} else {
-				if (size > 0)drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDirectionCollections = drugDirectionRepository.getCustomGlobalDrugDirectionForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugDirectionCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDirectionCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Direction");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
-		}
-		return response;
-	}
-
-	private List<Object> getGlobalDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDosageCollection> drugDosageCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDosageCollections = drugDosageRepository.getGlobalDrugDosageForAdmin(new Date(createdTimeStamp), discards,	new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDosageCollections = drugDosageRepository.getGlobalDrugDosageForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDosageCollections = drugDosageRepository.getGlobalDrugDosageForAdmin(new Date(createdTimeStamp), discards,	searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDosageCollections = drugDosageRepository.getGlobalDrugDosageForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!drugDosageCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDosageCollections, response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Dosage");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
-		}
-		return response;
-	}
-
-	private List<Object> getCustomDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDosageCollection> drugDosageCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDosageCollections = drugDosageRepository.getCustomDrugDosageForAdmin(new Date(createdTimeStamp), discards,	new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDosageCollections = drugDosageRepository.getCustomDrugDosageForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDosageCollections = drugDosageRepository.getCustomDrugDosageForAdmin(new Date(createdTimeStamp), discards,	searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDosageCollections = drugDosageRepository.getCustomDrugDosageForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
 			
-			if (!drugDosageCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDosageCollections, response);
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+
+	private List<DrugType> getGlobalDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugType> response = null;
+		try {
+			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "type"), DrugTypeCollection.class, DrugType.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Type");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+		}
+		return response;
+	}
+
+	private List<DrugType> getCustomDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugType> response = null;
+		try {
+			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "type"), DrugTypeCollection.class, DrugType.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Type");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+		}
+		return response;
+	}
+
+	private List<DrugType> getCustomGlobalDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugType> response = null;
+		try {
+			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "type"), DrugTypeCollection.class, DrugType.class); 
+			response = results.getMappedResults();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Type");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
+		}
+		return response;
+	}
+
+	private List<DrugDirection> getGlobalDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDirection> response = null;
+		try {
+			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "direction"), DrugDirectionCollection.class, DrugDirection.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Direction");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
+		}
+		return response;
+	}
+
+	private List<DrugDirection> getCustomDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDirection> response = null;
+		try {
+			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "direction"), DrugDirectionCollection.class, DrugDirection.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Direction");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
+		}
+		return response;
+	}
+
+	private List<DrugDirection> getCustomGlobalDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDirection> response = null;
+		try {
+			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "direction"), DrugDirectionCollection.class, DrugDirection.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Direction");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
+		}
+		return response;
+	}
+
+	private List<DrugDosage> getGlobalDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDosage> response = null;
+		try {
+			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "dosage"), DrugDosageCollection.class, DrugDosage.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -4567,28 +3720,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDosageCollection> drugDosageCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDosage> getCustomDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDosage> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosageForAdmin(new Date(createdTimeStamp),	discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosageForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosageForAdmin(new Date(createdTimeStamp),	discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDosageCollections = drugDosageRepository.getCustomGlobalDrugDosageForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!drugDosageCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDosageCollections, response);
-			}
+			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "dosage"), DrugDosageCollection.class, DrugDosage.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Dosage");
@@ -4597,26 +3733,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getGlobalDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDosage> getCustomGlobalDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDosage> response = null;
 		try {
-			if (discarded)discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards,searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDurationUnitCollections = drugDurationUnitRepository.getGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
+			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "dosage"), DrugDosageCollection.class, DrugDosage.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drug Dosage");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
+		}
+		return response;
+	}
 
-			if (!drugDurationUnitCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDurationUnitCollections, response);
-			}
+	private List<DrugDurationUnit> getGlobalDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDurationUnit> response = null;
+		try {
+			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "unit"), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
@@ -4625,26 +3759,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDurationUnit> getCustomDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDurationUnit> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDurationUnitCollections = drugDurationUnitRepository.getCustomDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!drugDurationUnitCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDurationUnitCollections, response);
-			}
+			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "unit"), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
@@ -4653,28 +3772,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DrugDurationUnitCollection> drugDurationUnitCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DrugDurationUnit> getCustomGlobalDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugDurationUnit> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else drugDurationUnitCollections = drugDurationUnitRepository.getCustomGlobalDrugDurationUnitForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!drugDurationUnitCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(drugDurationUnitCollections, response);
-			}
+			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "unit"), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
+			response = results.getMappedResults();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
@@ -4682,27 +3785,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	private List<Object> getGlobalDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DiagnosticTestCollection> diagnosticTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DiagnosticTest> getGlobalDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DiagnosticTest> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getGlobalForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getGlobalForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getGlobalForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getGlobalForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-
-			if (!diagnosticTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(diagnosticTestCollections, response);
-			}
+			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
@@ -4711,27 +3798,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DiagnosticTestCollection> diagnosticTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DiagnosticTest> getCustomDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DiagnosticTest> response = null;
 		try {
-			if (discarded)
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			if (!diagnosticTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(diagnosticTestCollections, response);
-			}
+			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
@@ -4740,27 +3811,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Object> getCustomGlobalDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<DiagnosticTestCollection> diagnosticTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
+	private List<DiagnosticTest> getCustomGlobalDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DiagnosticTest> response = null;
 		try {
-			if (discarded)discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getCustomGlobalForAdmin(new Date(createdTimeStamp), discards,	new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getCustomGlobalForAdmin(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getCustomGlobalForAdmin(new Date(createdTimeStamp), discards,	searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getCustomGlobalForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			
-			if (!diagnosticTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				BeanUtil.map(diagnosticTestCollections, response);
-			}
+			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Diagnostic Tests");

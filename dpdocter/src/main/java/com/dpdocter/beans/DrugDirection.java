@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class DrugDirection {
+import com.dpdocter.collections.GenericCollection;
+
+public class DrugDirection extends GenericCollection{
     private String id;
 
     private String direction;
@@ -10,6 +12,8 @@ public class DrugDirection {
     private String locationId;
 
     private String hospitalId;
+
+    private Boolean discarded = false;
 
     public String getId() {
 	return id;
@@ -51,10 +55,17 @@ public class DrugDirection {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "DrugDirection [id=" + id + ", direction=" + direction + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ "]";
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DrugDirection [id=" + id + ", direction=" + direction + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+	}
 }

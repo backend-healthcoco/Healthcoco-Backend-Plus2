@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,8 +98,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), tokenCollection.getId());
 		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(),
-			    RoleEnum.DOCTOR);
+		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
 		} else {
 		    logger.warn("Email address is empty.");
 		    throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
@@ -236,7 +236,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Transactional
     public String resetPassword(ResetPasswordRequest request) {
 	try {
-	    TokenCollection tokenCollection = tokenRepository.findOne(request.getUserId());
+	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
 		return "Link is already Used";
 	    } else {
@@ -276,7 +276,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Transactional
     public String checkLinkIsAlreadyUsed(String userId) {
 	try {
-	    TokenCollection tokenCollection = tokenRepository.findOne(userId);
+	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(userId));
 	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
 		return "ALREADY_USED";
 	    } else {

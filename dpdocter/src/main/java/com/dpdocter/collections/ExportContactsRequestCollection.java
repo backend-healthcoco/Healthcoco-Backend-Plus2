@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -10,7 +11,7 @@ import com.dpdocter.enums.ExportRequestData;
 @Document(collection = "export_contacts_request_cl")
 public class ExportContactsRequestCollection {
     @Field
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
     private String emailAddress;
@@ -21,11 +22,11 @@ public class ExportContactsRequestCollection {
     @Field
     private String specialComments;
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 

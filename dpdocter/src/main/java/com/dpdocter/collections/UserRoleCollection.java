@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,15 +9,15 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "user_role_cl")
 public class UserRoleCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Indexed
-    private String userId;
+    private ObjectId userId;
 
     @Field
-    private String roleId;
+    private ObjectId roleId;
 
-    public UserRoleCollection(String userId, String roleId) {
+    public UserRoleCollection(ObjectId userId, ObjectId roleId) {
 	this.userId = userId;
 	this.roleId = roleId;
     }
@@ -24,27 +25,27 @@ public class UserRoleCollection extends GenericCollection {
     public UserRoleCollection() {
     }
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getUserId() {
+    public ObjectId getUserId() {
 	return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(ObjectId userId) {
 	this.userId = userId;
     }
 
-    public String getRoleId() {
+    public ObjectId getRoleId() {
 	return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(ObjectId roleId) {
 	this.roleId = roleId;
     }
 

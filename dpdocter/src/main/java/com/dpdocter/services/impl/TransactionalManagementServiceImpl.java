@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,8 +90,6 @@ import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
-import com.dpdocter.services.MailBodyGenerator;
-import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
@@ -182,12 +180,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Value(value = "${mail.appointment.details.subject}")
     private String appointmentDetailsSub;
 
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private MailBodyGenerator mailBodyGenerator;
-
     @Scheduled(fixedDelay = 1800000)
     @Override
     @Transactional
@@ -201,57 +193,26 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    if (transactionalCollection.getResourceId() != null)
 			switch (transactionalCollection.getResource()) {
 
-			case PATIENT:
-			    checkPatient(transactionalCollection.getResourceId());
-			    break;
-			case DRUG:
-			    checkDrug(transactionalCollection.getResourceId());
-			    break;
-			case LABTEST:
-			    checkLabTest(transactionalCollection.getResourceId());
-			    break;
-			case COMPLAINT:
-			    checkComplaint(transactionalCollection.getResourceId());
-			    break;
-			case DIAGNOSIS:
-			    checkDiagnosis(transactionalCollection.getResourceId());
-			    break;
-			case DIAGRAM:
-			    checkDiagrams(transactionalCollection.getResourceId());
-			    break;
-			case INVESTIGATION:
-			    checkInvestigation(transactionalCollection.getResourceId());
-			    break;
-			case NOTES:
-			    checkNotes(transactionalCollection.getResourceId());
-			    break;
-			case OBSERVATION:
-			    checkObservation(transactionalCollection.getResourceId());
-			    break;
-			case CITY:
-			    checkCity(transactionalCollection.getResourceId());
-			    break;
-			case LANDMARKLOCALITY:
-			    checkLandmarkLocality(transactionalCollection.getResourceId());
-			    break;
-			case DOCTOR:
-			    checkDoctor(transactionalCollection.getResourceId(), null);
-			    break;
-			case LOCATION:
-			    checkLocation(transactionalCollection.getResourceId());
-			    break;
-			case REFERENCE:
-			    checkReference(transactionalCollection.getResourceId());
-			    break;
-   
-			default:
-			    break;
+			case PATIENT: checkPatient(transactionalCollection.getResourceId()); break;
+			case DRUG: checkDrug(transactionalCollection.getResourceId()); break;
+			case LABTEST: checkLabTest(transactionalCollection.getResourceId()); break;
+			case COMPLAINT: checkComplaint(transactionalCollection.getResourceId()); break;
+			case DIAGNOSIS: checkDiagnosis(transactionalCollection.getResourceId()); break;
+			case DIAGRAM: checkDiagrams(transactionalCollection.getResourceId()); break;
+			case INVESTIGATION: checkInvestigation(transactionalCollection.getResourceId()); break;
+			case NOTES: checkNotes(transactionalCollection.getResourceId()); break;
+			case OBSERVATION: checkObservation(transactionalCollection.getResourceId()); break;
+			case CITY: checkCity(transactionalCollection.getResourceId()); break;
+			case LANDMARKLOCALITY: checkLandmarkLocality(transactionalCollection.getResourceId()); break;
+			case DOCTOR: checkDoctor(transactionalCollection.getResourceId(), null); break;
+			case LOCATION: checkLocation(transactionalCollection.getResourceId()); break;
+			case REFERENCE: checkReference(transactionalCollection.getResourceId()); break;
+   			default: break;
 			}
 		}
 	    }
 	    //Expire invalid otp
 	    checkOTP();
-	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -288,10 +249,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     		if(appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
     		for(AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses){
-    			UserCollection userCollection = userRepository.findOne(appointmentDoctorReminderResponse.getDoctorId());
-//    			LocationCollection locationCollection = locationRepository.findOne(appointmentDoctorReminderResponse.get)
-    			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-    			String dateTime = sdf.format(new Date());
+    			UserCollection userCollection = userRepository.findOne(new ObjectId(appointmentDoctorReminderResponse.getDoctorId()));
+//    			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+//    			String dateTime = sdf.format(new Date());
     			if(appointmentDoctorReminderResponse.getTotal() > 0){
     				
         			if(userCollection != null){
@@ -355,7 +315,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void addResource(String resourceId, Resource resource, boolean isCached) {
+    public void addResource(ObjectId resourceId, Resource resource, boolean isCached) {
 	TransactionalCollection transactionalCollection = null;
 	try {
 	    transactionalCollection = transnationalRepositiory.findByResourceIdAndResource(resourceId, resource.getType());
@@ -378,7 +338,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkPatient(String id) {
+    public void checkPatient(ObjectId id) {
 	try {
 	    UserCollection userCollection = userRepository.findOne(id);
 	    List<PatientCollection> patientCollections = patientRepository.findByUserId(id);
@@ -391,7 +351,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			BeanUtil.map(patientCollection, patientDocument);
 	
 		    if (patientCollection != null)
-			patientDocument.setId(patientCollection.getId());
+			patientDocument.setId(patientCollection.getId().toString());
 
 		    if (patientCollection != null)
 			esRegistrationService.addPatient(patientDocument);
@@ -405,7 +365,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkDrug(String id) {
+    public void checkDrug(ObjectId id) {
 	try {
 	    DrugCollection drugCollection = drugRepository.findOne(id);
 	    if (drugCollection != null) {
@@ -425,7 +385,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkLabTest(String id) {
+    public void checkLabTest(ObjectId id) {
 	try {
 	    LabTestCollection labTestCollection = labTestRepository.findOne(id);
 	    if (labTestCollection != null) {
@@ -441,7 +401,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkComplaint(String id) {
+    public void checkComplaint(ObjectId id) {
 	try {
 	    ComplaintCollection complaintCollection = complaintRepository.findOne(id);
 	    if (complaintCollection != null) {
@@ -457,7 +417,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkObservation(String id) {
+    public void checkObservation(ObjectId id) {
 	try {
 	    ObservationCollection observationCollection = observationRepository.findOne(id);
 	    if (observationCollection != null) {
@@ -473,7 +433,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkInvestigation(String id) {
+    public void checkInvestigation(ObjectId id) {
 	try {
 	    InvestigationCollection investigationCollection = investigationRepository.findOne(id);
 	    if (investigationCollection != null) {
@@ -489,7 +449,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkDiagnosis(String id) {
+    public void checkDiagnosis(ObjectId id) {
 	try {
 	    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(id);
 	    if (diagnosisCollection != null) {
@@ -505,7 +465,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkNotes(String id) {
+    public void checkNotes(ObjectId id) {
 	try {
 	    NotesCollection notesCollection = notesRepository.findOne(id);
 	    if (notesCollection != null) {
@@ -521,7 +481,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkDiagrams(String id) {
+    public void checkDiagrams(ObjectId id) {
 	try {
 	    DiagramsCollection diagramsCollection = diagramsRepository.findOne(id);
 	    if (diagramsCollection != null) {
@@ -537,13 +497,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkLocation(String resourceId) {
+    public void checkLocation(ObjectId resourceId) {
 	try {
 	    LocationCollection locationCollection = locationRepository.findOne(resourceId);
 	    if (locationCollection != null) {
 		DoctorLocation doctorLocation = new DoctorLocation();
 		BeanUtil.map(locationCollection, doctorLocation);
-		doctorLocation.setLocationId(locationCollection.getId());
+		doctorLocation.setLocationId(locationCollection.getId().toString());
 		if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
 		    List<String> images = new ArrayList<String>();
 		    for (ClinicImage clinicImage : locationCollection.getImages()) {
@@ -561,7 +521,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Override
     @Transactional
-    public void checkDoctor(String resourceId, String locationId) {
+    public void checkDoctor(ObjectId resourceId, ObjectId locationId) {
 	try {
 	    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
 	    UserCollection userCollection = userRepository.findOne(resourceId);
@@ -585,7 +545,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    if (doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
 		    if (clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
 		    if (locationCollection != null)
-			doctorDocument.setLocationId(locationCollection.getId());
+			doctorDocument.setLocationId(locationCollection.getId().toString());
 		    if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
 			List<String> images = new ArrayList<String>();
 			for (ClinicImage clinicImage : locationCollection.getImages()) {
@@ -602,7 +562,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
     }
 
-    private void checkLandmarkLocality(String resourceId) {
+    private void checkLandmarkLocality(ObjectId resourceId) {
 	try {
 	    LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findOne(resourceId);
 	    if (landmarkLocalityCollection != null) {
@@ -616,7 +576,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
     }
 
-    private void checkCity(String resourceId) {
+    private void checkCity(ObjectId resourceId) {
 	try {
 	    CityCollection cityCollection = cityRepository.findOne(resourceId);
 	    if (cityCollection != null) {
@@ -630,7 +590,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
     }
     
-    private void checkReference(String resourceId) {
+    private void checkReference(ObjectId resourceId) {
     	try {
     	    ReferencesCollection referenceCollection = referenceRepository.findOne(resourceId);
     	    if (referenceCollection != null) {

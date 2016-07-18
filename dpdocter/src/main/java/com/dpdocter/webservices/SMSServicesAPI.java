@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.SMSDeliveryReports;
 import com.dpdocter.beans.SMSFormat;
 import com.dpdocter.beans.SMSTrack;
-import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
@@ -43,17 +42,17 @@ public class SMSServicesAPI {
     @Autowired
     private SMSServices smsServices;
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SMSUrls.SEND_SMS)
-    @POST
-    @ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
-    public Response<Boolean> sendSMS(SMSTrackDetail request) {
-	smsServices.sendSMS(request, true);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(true);
-	return response;
-    }
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Path(value = PathProxy.SMSUrls.SEND_SMS)
+//    @POST
+//    @ApiOperation(value = PathProxy.SMSUrls.SEND_SMS, notes = PathProxy.SMSUrls.SEND_SMS)
+//    public Response<Boolean> sendSMS(SMSTrackDetail request) {
+//	smsServices.sendSMS(request, true);
+//	Response<Boolean> response = new Response<Boolean>();
+//	response.setData(true);
+//	return response;
+//    }
 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -79,7 +78,7 @@ public class SMSServicesAPI {
     public Response<SMSTrack> getSMSDetails(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "patientId") String patientId,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId) {
-    	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId)){
+    	if(DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)){
     		logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
@@ -135,11 +134,6 @@ public class SMSServicesAPI {
 	response.setData(true);
 	return response;
     }
-
-    /**
-     * SMS Content : Pass whichever option is selected as string : PATIENT_NAME,
-     * DOCTOR_NAME, APPOINTMENT_ID ,DATE_TIME ,CLINIC_NAME,CLINIC_CONTACT_NUMBER
-     */
 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

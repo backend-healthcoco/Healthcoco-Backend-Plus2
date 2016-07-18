@@ -12,8 +12,10 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -162,9 +164,6 @@ public class SignUpServiceImpl implements SignUpService {
     @Autowired
     private SpecialityRepository specialityRepository;
 
-//    @Autowired
-//    private SMSFormatRepository sMSFormatRepository;
-
     @Autowired
     private GenerateUniqueUserNameService generateUniqueUserNameService;
 
@@ -189,27 +188,11 @@ public class SignUpServiceImpl implements SignUpService {
     @Value(value = "${Signup.unlockPatientBasedOn80PercentMatch}")
     private String unlockPatientBasedOn80PercentMatch;
     
-    /**
-     * @param UserTemp
-     *            Id
-     * @return Boolean This method activates the user account.
-     */
     @Override
     @Transactional
     public String verifyUser(String tokenId) {
 	try {
-//	    String startText = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'><html><head><title>verification</title><meta charset='utf-8'>"
-//		    + "<meta name='viewport' content='width=device-width, initial-scale=1'><link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600' rel='stylesheet' type='text/css'>"
-//		    + "</head><body>"
-//		    + "<div><div style='margin-top:130px'><div style='padding:20px 30px;border-radius:3px;background-color:#fefefe;border:1px solid #f1f1f1;line-height:30px;margin-bottom:30px;font-family:&#39;Open Sans&#39;,sans-serif;margin:0px auto;min-width:200px;max-width:500px'>"
-//		    + "<div align='center'><h2 style='font-size:20px;color:#2c3335;text-align:center;letter-spacing:1px'>Account Verification</h2><br><p style='color:#2c3335;font-size:15px;text-align:left'>";
-//
-//	    String endText = "</p><br><p style='color:#8a6d3b;font-size:15px;text-align:left'>lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>"
-//		    + "<br/><a href='" + LOGIN_WEB_LINK
-//		    + "' style='border-radius: 3px;color: white;font-size: 15px;font-weight:bold;padding: 11px 7px;max-width: 200px;border: 1px #1373b5 solid;text-align: center;text-decoration: none;width: 200px;margin: 10px auto;display: block;background-color: #007ee6;'>"
-//		    + "Click here to Login</a>" + "</div></div></div></div></body></html>";
-
-	    TokenCollection tokenCollection = tokenRepository.findOne(tokenId);
+	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
 	    if (tokenCollection == null) {
 	    	return "Invalid token";
 	    } else if(tokenCollection.getIsUsed()){
@@ -218,7 +201,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    else {
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
-		    return "Invalid Url.";
+		    return "Invalid Url";
 		}
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsVerified(true);
@@ -249,7 +232,7 @@ public class SignUpServiceImpl implements SignUpService {
 	UserCollection userCollection = null;
 	Boolean response = false;
 	try {
-	    userCollection = userRepository.findOne(userId);
+	    userCollection = userRepository.findOne(new ObjectId(userId));
 	    if (userCollection != null) {
 	    
 	    if(userCollection.getUserState().getState().equalsIgnoreCase(UserState.USERSTATEINCOMPLETE.getState())){
@@ -269,7 +252,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 			List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
 			@SuppressWarnings("unchecked")
-		    Collection<String> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
+		    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
 		    if(roleIds != null && !roleIds.isEmpty()){
 		    	List<RoleCollection> roleCollections = roleRepository.findByIdAndRole(roleIds, RoleEnum.LOCATION_ADMIN.getRole());
 		    	if(roleCollections != null && !roleCollections.isEmpty()){
@@ -315,7 +298,7 @@ public class SignUpServiceImpl implements SignUpService {
 			    sMSServices.sendSMS(smsTrackDetail, true);
 			    
 			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), null, "accountActivateTemplate.vm", null, null);
-				mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+				mailService.sendEmail(userCollection.getEmailAddress(), accountActivateSubject, body, null);
 			}
 		} 
 	    else {
@@ -336,12 +319,12 @@ public class SignUpServiceImpl implements SignUpService {
 		LocationCollection locationCollection = null;
 		Boolean response = false;
 		try {
-			locationCollection = locationRepository.findOne(locationId);
+			locationCollection = locationRepository.findOne(new ObjectId(locationId));
 		    if (locationCollection != null) {
 		    	locationCollection.setUpdatedTime(new Date());
 		    	locationCollection.setIsActivate(activate);
     			locationRepository.save(locationCollection);
-		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationId);
+		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(locationCollection.getId());
 		    if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 		    	for(UserLocationCollection userLocationCollection : userLocationCollections){
 		    		userLocationCollection.setUpdatedTime(new Date());
@@ -497,13 +480,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    }
 
 	    List<String> roleIds = new ArrayList<String>();
-	    roleIds.add(hospitalAdmin.getId());
-	    roleIds.add(locationAdmin.getId());
-	    roleIds.add(doctorRole.getId());
+	    roleIds.add(hospitalAdmin.getId().toString());
+	    roleIds.add(locationAdmin.getId().toString());
+	    roleIds.add(doctorRole.getId().toString());
 
 	    response = new DoctorSignUp();
-	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId(),
-		    roleIds);
+	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId().toString(), locationCollection.getId().toString(), locationCollection.getHospitalId().toString(), roleIds);
 	    List<Role> roles = new ArrayList<Role>();
 	    for (AccessControl accessControl : accessControls) {
 		Role role = new Role();
@@ -639,7 +621,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (request.getSpecialities() != null && !request.getSpecialities().isEmpty()) {
 			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpecialities());
 		    @SuppressWarnings("unchecked")
-			Collection<String> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+			Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
 		    if(specialityIds != null && !specialityIds.isEmpty())doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 		    else doctorCollection.setSpecialities(null);
 	    }else{
@@ -694,11 +676,11 @@ public class SignUpServiceImpl implements SignUpService {
 		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    // save user
-	    UserCollection userCollection = userRepository.findOne(request.getUserId());
+	    UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
 	    userCollection.setUserState(UserState.NOTVERIFIED);
 	    userCollection = userRepository.save(userCollection);
 
-	    DoctorCollection doctorCollection = doctorRepository.findByUserId(request.getUserId());
+	    DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getUserId()));
 	    if(doctorCollection != null){
 	    	doctorCollection.setRegisterNumber(request.getRegisterNumber());
 	    	doctorCollection = doctorRepository.save(doctorCollection);
@@ -779,13 +761,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    }
 
 	    List<String> roleIds = new ArrayList<String>();
-	    roleIds.add(hospitalAdmin.getId());
-	    roleIds.add(locationAdmin.getId());
-	    roleIds.add(doctorRole.getId());
+	    roleIds.add(hospitalAdmin.getId().toString());
+	    roleIds.add(locationAdmin.getId().toString());
+	    roleIds.add(doctorRole.getId().toString());
 
 	    response = new DoctorSignUp();
-	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId(),
-		    roleIds);
+	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId().toString(), locationCollection.getId().toString(), locationCollection.getHospitalId().toString(), roleIds);
 	    List<Role> roles = new ArrayList<Role>();
 	    for (AccessControl accessControl : accessControls) {
 		Role role = new Role();
@@ -805,7 +786,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    user.setEmailAddress(userCollection.getEmailAddress());
 	    if(doctorCollection != null){
 	    	if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-				List<SpecialityCollection> specialityCollections = specialityRepository.findById(doctorCollection.getSpecialities());
+				@SuppressWarnings("unchecked")
+				List<SpecialityCollection> specialityCollections = IteratorUtils.toList(specialityRepository.findAll(doctorCollection.getSpecialities()).iterator());
 			    @SuppressWarnings("unchecked")
 				Collection<String> specialities = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("superSpeciality"));
 			    if(specialities != null && !specialities.isEmpty()){
@@ -893,7 +875,6 @@ public class SignUpServiceImpl implements SignUpService {
 	    patientCollection = patientRepository.save(patientCollection);
 	    user = new User();
 	    BeanUtil.map(userCollection, user);
-	    // user.setPassword(null);
 	} catch (BusinessException be) {
 	    logger.warn(be);
 	    throw be;
@@ -972,8 +953,12 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn("User not found");
 		throw new BusinessException(ServiceError.NotFound, "User not found");
 	    } else {
-	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),
-	    		request.getDoctorId(), request.getLocationId(), request.getHospitalId());	
+	    	ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
+	    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
+	    	if(!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))hospitalObjectId = new ObjectId(request.getHospitalId());
+	    	
+	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), doctorObjectId, locationObjectId, hospitalObjectId);	
 		if(patientCollection != null){
 			if (request.getImage() != null) {
 			    String path = "profile-image";
@@ -1188,7 +1173,7 @@ public class SignUpServiceImpl implements SignUpService {
     }
     BeanUtil.map(userCollection, esPatientDocument);
     BeanUtil.map(patientCollection, esPatientDocument);
-    esPatientDocument.setUserId(userCollection.getId());
+    esPatientDocument.setUserId(userCollection.getId().toString());
     
     } catch (NoSuchAlgorithmException e) {
 		e.printStackTrace();
@@ -1246,8 +1231,8 @@ public class SignUpServiceImpl implements SignUpService {
 			        }
 			        BeanUtil.map(userCollection, esPatientDocument);
 			        BeanUtil.map(patientCollection, esPatientDocument);
-			        esPatientDocument.setUserId(userCollection.getId());
-			        transnationalService.addResource(esPatientDocument.getUserId(), Resource.PATIENT, false);
+			        esPatientDocument.setUserId(userCollection.getId().toString());
+			        transnationalService.addResource(patientCollection.getUserId(), Resource.PATIENT, false);
 				    esRegistrationService.addPatient(esPatientDocument);
 		    	}
 		    User user = new User();
@@ -1284,21 +1269,6 @@ public class SignUpServiceImpl implements SignUpService {
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
 
-	    /*if (request.getImage() != null) {
-		String path = "profile-image";
-		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
-		userCollection.setImageUrl(imageURLResponse.getImageUrl());
-		userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-	    }*/
-	    /*char[] salt = DPDoctorUtils.generateSalt();
-		userCollection.setSalt(salt);
-	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
-	    for(int i = 0; i < request.getPassword().length; i++)
-	        passwordWithSalt[i] = request.getPassword()[i];
-	    for(int i = 0; i < salt.length; i++)
-	    	passwordWithSalt[i+request.getPassword().length] = salt[i];*/
-	   // userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setUserName(request.getEmailAddress());
 		userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
 	    userCollection.setIsVerified(true);

@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -104,12 +105,12 @@ public class RegistrationApi {
 	if (request.getUserId() == null) {
 		registrationService.checkPatientCount(request.getMobileNumber());
 	    registeredPatientDetails = registrationService.registerNewPatient(request);
-	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
+	    transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 	    esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
 
 	} else {
 	    registeredPatientDetails = registrationService.registerExistingPatient(request);
-	    transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
+	    transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 	    esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
 	}
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
@@ -128,7 +129,7 @@ public class RegistrationApi {
 	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
-	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
+	transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 	esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
 
 	registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
@@ -142,7 +143,7 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
     public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @PathParam("doctorId") String doctorId,
 	    @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-	if (DPDoctorUtils.anyStringEmpty(mobileNumber, locationId, hospitalId)) {
+	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -203,12 +204,12 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.ADD_REFERRENCE, notes = PathProxy.RegistrationUrls.ADD_REFERRENCE, response = Response.class)
     public Response<Reference> addReference(Reference request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getReference())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getReference(), request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
 		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Reference reference = registrationService.addEditReference(request);
-	transnationalService.addResource(reference.getId(), Resource.REFERENCE, false);
+	transnationalService.addResource(new ObjectId(reference.getId()), Resource.REFERENCE, false);
 	ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
 	BeanUtil.map(reference, esReferenceDocument);
 	esRegistrationService.addEditReference(esReferenceDocument);
@@ -220,14 +221,13 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE)
     @DELETE
     @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_REFERRENCE, notes = PathProxy.RegistrationUrls.DELETE_REFERRENCE, response = Response.class)
-    public Response<Reference> deleteReferrence(@PathParam("referrenceId") String referrenceId,
-	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    public Response<Reference> deleteReferrence(@PathParam("referrenceId") String referrenceId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 	if (referrenceId == null) {
 		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Reference reference = registrationService.deleteReferrence(referrenceId, discarded);
-	transnationalService.addResource(reference.getId(), Resource.REFERENCE, false);
+	transnationalService.addResource(new ObjectId(reference.getId()), Resource.REFERENCE, false);
 	ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
 	BeanUtil.map(reference, esReferenceDocument);
 	esRegistrationService.addEditReference(esReferenceDocument);
@@ -345,9 +345,9 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfile(request);
-	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
+	transnationalService.addResource(new ObjectId(clinicProfileUpdateResponse.getId()), Resource.LOCATION, false);
 
-	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(new ObjectId(request.getId()));
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -362,8 +362,8 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicProfile clinicProfileUpdateResponse = registrationService.updateClinicProfileHandheld(request);
-	transnationalService.addResource(clinicProfileUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	transnationalService.addResource(new ObjectId(clinicProfileUpdateResponse.getId()), Resource.LOCATION, false);
+	if (clinicProfileUpdateResponse != null)transnationalService.checkLocation(new ObjectId(request.getId()));
 	Response<ClinicProfile> response = new Response<ClinicProfile>();
 	response.setData(clinicProfileUpdateResponse);
 	return response;
@@ -378,8 +378,8 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicAddress clinicAddressUpdateResponse = registrationService.updateClinicAddress(request);
-	transnationalService.addResource(clinicAddressUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicAddressUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	transnationalService.addResource(new ObjectId(clinicAddressUpdateResponse.getId()), Resource.LOCATION, false);
+	if (clinicAddressUpdateResponse != null)transnationalService.checkLocation(new ObjectId(request.getId()));
 	Response<ClinicAddress> response = new Response<ClinicAddress>();
 	response.setData(clinicAddressUpdateResponse);
 	return response;
@@ -394,8 +394,8 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicTiming clinicTimingUpdateResponse = registrationService.updateClinicTiming(request);
-	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-	if (clinicTimingUpdateResponse != null)transnationalService.checkLocation(request.getId());
+	transnationalService.addResource(new ObjectId(request.getId()), Resource.LOCATION, false);
+	if (clinicTimingUpdateResponse != null)transnationalService.checkLocation(new ObjectId(request.getId()));
 	Response<ClinicTiming> response = new Response<ClinicTiming>();
 	response.setData(clinicTimingUpdateResponse);
 	return response;
@@ -410,9 +410,8 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	ClinicSpecialization clinicSpecializationUpdateResponse = registrationService.updateClinicSpecialization(request);
-	transnationalService.addResource(clinicSpecializationUpdateResponse.getId(), Resource.LOCATION, false);
-	if (clinicSpecializationUpdateResponse != null)
-	    transnationalService.checkLocation(request.getId());
+	transnationalService.addResource(new ObjectId(clinicSpecializationUpdateResponse.getId()), Resource.LOCATION, false);
+	if (clinicSpecializationUpdateResponse != null)transnationalService.checkLocation(new ObjectId(request.getId()));
 	Response<ClinicSpecialization> response = new Response<ClinicSpecialization>();
 	response.setData(clinicSpecializationUpdateResponse);
 	return response;
@@ -428,8 +427,8 @@ public class RegistrationApi {
     	}
 	ClinicLabProperties clinicLabProperties = registrationService.updateLabProperties(request);
 	if (clinicLabProperties != null) {
-	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-	    transnationalService.checkLocation(request.getId());
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.LOCATION, false);
+	    transnationalService.checkLocation(new ObjectId(request.getId()));
 	}
 	Response<ClinicLabProperties> response = new Response<ClinicLabProperties>();
 	response.setData(clinicLabProperties);
@@ -453,8 +452,8 @@ public class RegistrationApi {
 		clinicLogoResponse.setLogoThumbnailURL(getFinalImageURL(clinicLogoResponse.getLogoThumbnailURL()));
 	    }
 	}
-	transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-	transnationalService.checkLocation(request.getId());
+	transnationalService.addResource(new ObjectId(request.getId()), Resource.LOCATION, false);
+	transnationalService.checkLocation(new ObjectId(request.getId()));
 	Response<ClinicLogo> response = new Response<ClinicLogo>();
 	response.setData(clinicLogoResponse);
 	return response;
@@ -484,8 +483,8 @@ public class RegistrationApi {
 		    clinicalImage.setThumbnailUrl(getFinalImageURL(clinicalImage.getThumbnailUrl()));
 		}
 	    }
-	    transnationalService.addResource(request.getId(), Resource.LOCATION, false);
-	    transnationalService.checkLocation(request.getId());
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.LOCATION, false);
+	    transnationalService.checkLocation(new ObjectId(request.getId()));
 	}
 	Response<ClinicImage> response = new Response<ClinicImage>();
 	response.setDataList(clinicImageResponse);
@@ -505,8 +504,8 @@ public class RegistrationApi {
 	}
 
 	Boolean deleteImage = registrationService.deleteClinicImage(locationId, counter);
-	transnationalService.addResource(locationId, Resource.LOCATION, false);
-	transnationalService.checkLocation(locationId);
+	transnationalService.addResource(new ObjectId(locationId), Resource.LOCATION, false);
+	transnationalService.checkLocation(new ObjectId(locationId));
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(deleteImage);
 	return response;
@@ -561,7 +560,7 @@ public class RegistrationApi {
 	else
 	    doctorResponse = registrationService.registerExisitingUser(request);
 
-	transnationalService.addResource(doctorResponse.getUserId(), Resource.DOCTOR, false);
+	transnationalService.addResource(new ObjectId(doctorResponse.getUserId()), Resource.DOCTOR, false);
 	if (doctorResponse != null)esRegistrationService.addDoctor(registrationService.getESDoctorDocument(doctorResponse));
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
@@ -663,7 +662,7 @@ public class RegistrationApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	registrationService.deleteUser(userId, locationId, discarded);
-	transnationalService.checkDoctor(userId, null);
+	transnationalService.checkDoctor(new ObjectId(userId), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
@@ -678,7 +677,7 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
 	}
 	Feedback feedback = registrationService.addFeedback(request);
-	transnationalService.checkDoctor(request.getDoctorId(), feedback.getLocationId());
+	transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), new ObjectId(feedback.getLocationId()));
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
 	return response;
@@ -690,7 +689,7 @@ public class RegistrationApi {
     public Response<Feedback> visibleFeedback(@PathParam("feedbackId") String feedbackId, @DefaultValue("true") @QueryParam("isVisible") Boolean isVisible) {
 
 	Feedback feedback = registrationService.visibleFeedback(feedbackId, isVisible);
-	transnationalService.checkDoctor(feedback.getDoctorId(), feedback.getLocationId());
+	transnationalService.checkDoctor(new ObjectId(feedback.getDoctorId()), new ObjectId(feedback.getLocationId()));
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
 	return response;

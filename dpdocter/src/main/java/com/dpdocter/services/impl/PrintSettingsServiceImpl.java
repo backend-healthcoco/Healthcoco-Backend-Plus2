@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,8 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PrintSettingsDefaultDataRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.services.PrintSettingsService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class PrintSettingsServiceImpl implements PrintSettingsService {
@@ -81,35 +84,36 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	PrintSettings response = new PrintSettings();
 	PrintSettingsCollection printSettingsCollection = new PrintSettingsCollection();
 	try {
+		ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
+    	if(!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))hospitalObjectId = new ObjectId(request.getHospitalId());
+    	
 	    if (request.getId() == null) {
-		PrintSettingsCollection collection = printSettingsRepository.getSettings(request.getDoctorId(), request.getLocationId(),
-			request.getHospitalId());
+		PrintSettingsCollection collection = printSettingsRepository.getSettings(doctorObjectId, locationObjectId, hospitalObjectId);
 		if (collection != null && !collection.getDiscarded() && request.getComponentType().equals(collection.getComponentType()))
-		    request.setId(collection.getId());
+		    request.setId(collection.getId().toString());
 	    }
 	    BeanUtil.map(request, printSettingsCollection);
 	    if (request.getId() == null) {
 		printSettingsCollection.setCreatedTime(new Date());
 	    } else {
-		PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository.findOne(request.getId());
+		PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository.findOne(new ObjectId(request.getId()));
 		if (oldPrintSettingsCollection != null) {
 		    printSettingsCollection.setCreatedTime(oldPrintSettingsCollection.getCreatedTime());
 		    printSettingsCollection.setCreatedBy(oldPrintSettingsCollection.getCreatedBy());
 		    printSettingsCollection.setDiscarded(oldPrintSettingsCollection.getDiscarded());
 
-		    if (request.getPageSetup() == null)
-			printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
+		    if (request.getPageSetup() == null)printSettingsCollection.setPageSetup(oldPrintSettingsCollection.getPageSetup());
 
-		    if (request.getHeaderSetup() == null)
-			printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
+		    if (request.getHeaderSetup() == null)printSettingsCollection.setHeaderSetup(oldPrintSettingsCollection.getHeaderSetup());
 
-		    if (request.getFooterSetup() == null)
-			printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
+		    if (request.getFooterSetup() == null)printSettingsCollection.setFooterSetup(oldPrintSettingsCollection.getFooterSetup());
 		}
 
 	    }
 
-	    LocationCollection locationCollection = locationRepository.findOne(request.getLocationId());
+	    LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 	    if (locationCollection != null) {
 		printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 	    }
@@ -133,56 +137,38 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	boolean[] discards = new boolean[2];
 	discards[0] = false;
 	try {
-	    if (discarded)
-		discards[1] = true;
+	    if (discarded)discards[1] = true;
+	    
+	    ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
 	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (doctorId == null) {
-		if (size > 0)
-		    printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards,
-			    new PageRequest(page, size, Direction.DESC, "createdTime"));
-		else
-		    printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards,
-			    new Sort(Sort.Direction.DESC, "createdTime"));
+	    if (doctorObjectId == null) {
+		if (size > 0)printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		else printSettingsCollections = printSettingsRepository.findAll(new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 
 	    } else {
-		if (locationId == null && hospitalId == null) {
-		    if (size > 0)
-			printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
-		    else
-			printSettingsCollections = printSettingsRepository.getSettings(doctorId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+		if (locationObjectId == null && hospitalObjectId == null) {
+		    if (size > 0) printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		    else printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		} else {
-		    if (size > 0)
-			printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
-		    else
-			printSettingsCollections = printSettingsRepository.getSettings(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
+		    if (size > 0) printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
+		    else printSettingsCollections = printSettingsRepository.getSettings(doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
 		}
 	    }
 	    if (printSettingsCollections != null) {
 		response = new ArrayList<PrintSettings>();
 
-		if (PrintFilter.PAGESETUP.getFilter().equalsIgnoreCase(printFilter)) {
-		    for (PrintSettingsCollection collection : printSettingsCollections) {
-			collection.setFooterSetup(null);
-			collection.setHeaderSetup(null);
-		    }
-		} else if (PrintFilter.HEADERSETUP.getFilter().equalsIgnoreCase(printFilter)) {
-		    for (PrintSettingsCollection collection : printSettingsCollections) {
-			collection.setFooterSetup(null);
-			collection.setPageSetup(null);
-		    }
-		} else if (PrintFilter.FOOTERSETUP.getFilter().equalsIgnoreCase(printFilter)) {
-		    for (PrintSettingsCollection collection : printSettingsCollections) {
-			collection.setPageSetup(null);
-			collection.setHeaderSetup(null);
-		    }
-		} else
-		    ;
-
-		BeanUtil.map(printSettingsCollections, response);
+		for (PrintSettingsCollection collection : printSettingsCollections) {
+			PrintSettings printSettings = new PrintSettings();
+			if (PrintFilter.PAGESETUP.getFilter().equalsIgnoreCase(printFilter)){collection.setFooterSetup(null);collection.setHeaderSetup(null);}
+			if (PrintFilter.HEADERSETUP.getFilter().equalsIgnoreCase(printFilter)) {collection.setFooterSetup(null);collection.setPageSetup(null);}
+			if (PrintFilter.FOOTERSETUP.getFilter().equalsIgnoreCase(printFilter)) {collection.setPageSetup(null);collection.setHeaderSetup(null);}
+			BeanUtil.map(collection, printSettings);
+			response.add(printSettings);
+		} 
 	    }
 
 	} catch (Exception e) {
@@ -199,17 +185,15 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     public PrintSettings deletePrintSettings(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
     	PrintSettings response = null;
 	try {
-	    PrintSettingsCollection printSettingsCollection = printSettingsRepository.findOne(id);
+	    PrintSettingsCollection printSettingsCollection = printSettingsRepository.findOne(new ObjectId(id));
 	    if (printSettingsCollection != null) {
-		if (printSettingsCollection.getDoctorId() != null && printSettingsCollection.getHospitalId() != null
-			&& printSettingsCollection.getLocationId() != null) {
-		    if (printSettingsCollection.getDoctorId().equals(doctorId) && printSettingsCollection.getHospitalId().equals(hospitalId)
-			    && printSettingsCollection.getLocationId().equals(locationId)) {
-			printSettingsCollection.setDiscarded(discarded);
-			printSettingsCollection.setUpdatedTime(new Date());
-			printSettingsRepository.save(printSettingsCollection);
-			response = new PrintSettings();
-			BeanUtil.map(printSettingsCollection, response);
+		if (printSettingsCollection.getDoctorId() != null && printSettingsCollection.getHospitalId() != null && printSettingsCollection.getLocationId() != null) {
+		    if (printSettingsCollection.getDoctorId().equals(doctorId) && printSettingsCollection.getHospitalId().equals(hospitalId) && printSettingsCollection.getLocationId().equals(locationId)) {
+				printSettingsCollection.setDiscarded(discarded);
+				printSettingsCollection.setUpdatedTime(new Date());
+				printSettingsRepository.save(printSettingsCollection);
+				response = new PrintSettings();
+				BeanUtil.map(printSettingsCollection, response);
 		    } else {
 			logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");

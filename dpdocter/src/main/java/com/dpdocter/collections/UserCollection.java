@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.apache.commons.lang.WordUtils;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,7 +16,7 @@ import com.dpdocter.enums.UserState;
 public class UserCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String title;
@@ -77,11 +78,11 @@ public class UserCollection extends GenericCollection {
     @Field
     private String userUId;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 

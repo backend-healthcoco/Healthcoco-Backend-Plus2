@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,10 +12,10 @@ import com.dpdocter.enums.Resource;
 public class TransactionalCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
-    private String resourceId;
+    private ObjectId resourceId;
 
     @Field
     private Resource resource;
@@ -22,19 +23,19 @@ public class TransactionalCollection {
     @Indexed
     private Boolean isCached = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getResourceId() {
+    public ObjectId getResourceId() {
 	return resourceId;
     }
 
-    public void setResourceId(String resourceId) {
+    public void setResourceId(ObjectId resourceId) {
 	this.resourceId = resourceId;
     }
 

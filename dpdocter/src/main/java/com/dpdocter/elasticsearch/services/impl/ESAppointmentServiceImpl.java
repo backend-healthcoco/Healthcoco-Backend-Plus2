@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
-import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -34,7 +33,6 @@ import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
-import com.dpdocter.elasticsearch.repository.ESLabTestRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
@@ -43,7 +41,6 @@ import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.SpecialityRepository;
 
 import common.util.web.DPDoctorUtils;
 
@@ -63,12 +60,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
     @Autowired
     private ESDiagnosticTestRepository esDiagnosticTestRepository;
-
-    @Autowired
-    private ESLabTestRepository esLabTestRepository;
-    
-    @Autowired
-    private SpecialityRepository specialityRepository;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -298,7 +289,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		    if (doctorDocument.getSpecialities() != null) {
 			List<String> specialities = new ArrayList<>();
 			for (String specialityId : doctorDocument.getSpecialities()) {
-			    SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+			    ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
 			    if (specialityCollection != null)
 				specialities.add(specialityCollection.getSuperSpeciality());
 			}

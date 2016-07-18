@@ -1,34 +1,36 @@
 package com.dpdocter.services;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.enums.Resource;
 
 public interface TransactionalManagementService {
 
-    void addResource(String resourceId, Resource resource, boolean isCached);
+    void addResource(ObjectId resourceId, Resource resource, boolean isCached);
 
-    void checkPatient(String id);
+    void checkPatient(ObjectId id);
 
-    void checkDrug(String id);
+    void checkDrug(ObjectId id);
 
-    void checkLabTest(String id);
+    void checkLabTest(ObjectId id);
 
-    void checkComplaint(String id);
+    void checkComplaint(ObjectId id);
 
-    void checkObservation(String id);
+    void checkObservation(ObjectId id);
 
-    void checkInvestigation(String id);
+    void checkInvestigation(ObjectId id);
 
-    void checkDiagnosis(String id);
+    void checkDiagnosis(ObjectId id);
 
-    void checkNotes(String id);
+    void checkNotes(ObjectId id);
 
-    void checkDiagrams(String id);
+    void checkDiagrams(ObjectId id);
 
     void checkResources();
 
-    void checkLocation(String resourceId);
+    void checkLocation(ObjectId resourceId);
 
-    void checkDoctor(String resourceId, String locationId);
+    void checkDoctor(ObjectId resourceId, ObjectId locationId);
 
 	void sendReminderToDoctor();
 

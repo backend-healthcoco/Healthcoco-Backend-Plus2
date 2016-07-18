@@ -3,7 +3,6 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorContactsResponse;
-import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.request.AddMultipleDataRequest;

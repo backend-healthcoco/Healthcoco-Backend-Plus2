@@ -3,6 +3,7 @@ package com.dpdocter.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -10,7 +11,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.dpdocter.collections.DiagnosticTestCollection;
 
-public interface DiagnosticTestRepository extends MongoRepository<DiagnosticTestCollection, String> {
+public interface DiagnosticTestRepository extends MongoRepository<DiagnosticTestCollection, ObjectId> {
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagnosticTestCollection> getCustomGlobal(Date date, boolean[] discards, Pageable pageable);
@@ -19,16 +20,16 @@ public interface DiagnosticTestRepository extends MongoRepository<DiagnosticTest
     List<DiagnosticTestCollection> getCustomGlobal(Date date, boolean[] discards, Sort sort);
 
     @Query("{'$or': [{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
-    List<DiagnosticTestCollection> getCustomGlobal(String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
+    List<DiagnosticTestCollection> getCustomGlobal(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'$or': [{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
-    List<DiagnosticTestCollection> getCustomGlobal(String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
+    List<DiagnosticTestCollection> getCustomGlobal(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}}")
-    List<DiagnosticTestCollection> getCustom(String hospitalId, String locationId, Date date, boolean[] discards, Pageable pageable);
+    List<DiagnosticTestCollection> getCustom(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Pageable pageable);
 
     @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}}")
-    List<DiagnosticTestCollection> getCustom(String hospitalId, String locationId, Date date, boolean[] discards, Sort sort);
+    List<DiagnosticTestCollection> getCustom(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
     List<DiagnosticTestCollection> getGlobal(Date date, boolean[] discards, Pageable pageable);

@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -14,7 +15,7 @@ public class TokenCollection extends GenericCollection {
     private Boolean isUsed = false;
 
     @Field
-    private String resourceId;
+    private ObjectId resourceId;
 
     public String getId() {
 	return id;
@@ -32,11 +33,11 @@ public class TokenCollection extends GenericCollection {
 	this.isUsed = isUsed;
     }
 
-    public String getResourceId() {
+    public ObjectId getResourceId() {
 	return resourceId;
     }
 
-    public void setResourceId(String resourceId) {
+    public void setResourceId(ObjectId resourceId) {
 	this.resourceId = resourceId;
     }
 

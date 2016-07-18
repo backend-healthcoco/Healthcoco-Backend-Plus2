@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -63,7 +64,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 	    esDrugRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.DRUG, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.DRUG, true);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Saving Drug in ES");
@@ -82,7 +83,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		    	}
 		    }
 		    response = true;
-		    transnationalService.addResource(drugTypeId, Resource.DRUGSDRUGTYPE, true);
+		    transnationalService.addResource(new ObjectId(drugTypeId), Resource.DRUGSDRUGTYPE, true);
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Saving Drug in ES");
@@ -96,7 +97,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 	    esLabTestRepository.save(request);
 	    response = true;
-	    transnationalService.addResource(request.getId(), Resource.LABTEST, true);
+	    transnationalService.addResource(new ObjectId(request.getId()), Resource.LABTEST, true);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -281,7 +282,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	try {
 	    esDiagnosticTestRepository.save(ESDiagnosticTestDocument);
 	    response = true;
-	    transnationalService.addResource(ESDiagnosticTestDocument.getId(), Resource.DIAGNOSTICTEST, true);
+	    transnationalService.addResource(new ObjectId(ESDiagnosticTestDocument.getId()), Resource.DIAGNOSTICTEST, true);
 
 	} catch (Exception e) {
 	    e.printStackTrace();

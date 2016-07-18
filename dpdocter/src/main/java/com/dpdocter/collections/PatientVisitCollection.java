@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -18,22 +19,22 @@ import com.dpdocter.enums.VisitedFor;
 })
 public class PatientVisitCollection extends GenericCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String uniqueEmrId;
 
     @Indexed
-    private String patientId;
+    private ObjectId patientId;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
     private Date visitedTime;
@@ -44,54 +45,54 @@ public class PatientVisitCollection extends GenericCollection {
     private long total;
 
     @Field
-    private List<String> prescriptionId;
+    private List<ObjectId> prescriptionId;
 
     @Field
-    private List<String> clinicalNotesId;
+    private List<ObjectId> clinicalNotesId;
 
     @Field
-    private List<String> recordId;
+    private List<ObjectId> recordId;
 
     @Field
     private Boolean discarded = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getPatientId() {
+    public ObjectId getPatientId() {
 	return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(ObjectId patientId) {
 	this.patientId = patientId;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
@@ -119,27 +120,27 @@ public class PatientVisitCollection extends GenericCollection {
 	this.total = total;
     }
 
-    public List<String> getPrescriptionId() {
+    public List<ObjectId> getPrescriptionId() {
 	return prescriptionId;
     }
 
-    public void setPrescriptionId(List<String> prescriptionId) {
+    public void setPrescriptionId(List<ObjectId> prescriptionId) {
 	this.prescriptionId = prescriptionId;
     }
 
-    public List<String> getClinicalNotesId() {
+    public List<ObjectId> getClinicalNotesId() {
 	return clinicalNotesId;
     }
 
-    public void setClinicalNotesId(List<String> clinicalNotesId) {
+    public void setClinicalNotesId(List<ObjectId> clinicalNotesId) {
 	this.clinicalNotesId = clinicalNotesId;
     }
 
-    public List<String> getRecordId() {
+    public List<ObjectId> getRecordId() {
 	return recordId;
     }
 
-    public void setRecordId(List<String> recordId) {
+    public void setRecordId(List<ObjectId> recordId) {
 	this.recordId = recordId;
     }
 

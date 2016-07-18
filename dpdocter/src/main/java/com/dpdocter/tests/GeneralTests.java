@@ -6,9 +6,12 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.dpdocter.beans.PrintSettingsText;
+import org.bson.types.ObjectId;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
+import common.util.web.DPDoctorUtils;
 
 
 
@@ -81,8 +84,8 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-	    			 Collection<String> specialities = Collections.EMPTY_LIST;
-	    			 System.out.println(specialities);
+	    			 String doctorId = null;
+	    			 System.out.println(new ObjectId(doctorId));
 	    		 }
 	    		 
 }  	

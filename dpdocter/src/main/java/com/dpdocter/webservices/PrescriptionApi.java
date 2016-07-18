@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
+import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -86,13 +88,13 @@ public class PrescriptionApi {
     @POST
     @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG, notes = PathProxy.PrescriptionUrls.ADD_DRUG)
     public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDrugName()) || request.getDrugType() == null || DPDoctorUtils.anyStringEmpty(request.getDrugType().getType())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDrugName())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
 
-	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
+	transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
 	if (drugAddEditResponse != null) {
 	    ESDrugDocument esDrugDocument = new ESDrugDocument();
 	    BeanUtil.map(drugAddEditResponse, esDrugDocument);
@@ -112,14 +114,14 @@ public class PrescriptionApi {
     @PUT
     @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG, notes = PathProxy.PrescriptionUrls.EDIT_DRUG)
     public Response<DrugAddEditResponse> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(drugId, request.getDoctorId(), request.getHospitalId(), request.getLocationId())|| request.getDrugType() == null || DPDoctorUtils.anyStringEmpty(request.getDrugType().getType())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(drugId, request.getDoctorId(), request.getHospitalId(), request.getLocationId())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	request.setId(drugId);
 	DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
 
-	transnationalService.addResource(drugAddEditResponse.getId(), Resource.DRUG, false);
+	transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
 	if (drugAddEditResponse != null) {
 	    ESDrugDocument esDrugDocument = new ESDrugDocument();
 	    BeanUtil.map(drugAddEditResponse, esDrugDocument);
@@ -146,7 +148,7 @@ public class PrescriptionApi {
 	}
 	Drug drugDeleteResponse = prescriptionServices.deleteDrug(drugId, doctorId, hospitalId, locationId, discarded);
 
-	transnationalService.addResource(drugId, Resource.DRUG, false);
+	transnationalService.addResource(new ObjectId(drugId), Resource.DRUG, false);
 	if (drugDeleteResponse != null) {
 	    ESDrugDocument esDrugDocument = new ESDrugDocument();
 	    BeanUtil.map(drugDeleteResponse, esDrugDocument);
@@ -180,12 +182,12 @@ public class PrescriptionApi {
     @POST
     @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_LAB_TEST, notes = PathProxy.PrescriptionUrls.ADD_LAB_TEST)
     public Response<LabTest> addLabTest(LabTest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())  || request.getTest() == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	LabTest labTestResponse = prescriptionServices.addLabTest(request);
-	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
+	transnationalService.addResource(new ObjectId(labTestResponse.getId()), Resource.LABTEST, false);
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestResponse, esLabTestDocument);
 	if (labTestResponse.getTest() != null)esLabTestDocument.setTestId(labTestResponse.getTest().getId());
@@ -199,13 +201,13 @@ public class PrescriptionApi {
     @PUT
     @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_LAB_TEST, notes = PathProxy.PrescriptionUrls.EDIT_LAB_TEST)
     public Response<LabTest> editLabTest(@PathParam(value = "labTestId") String labTestId, LabTest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(labTestId, request.getLocationId(), request.getHospitalId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	request.setId(labTestId);
 	LabTest labTestResponse = prescriptionServices.editLabTest(request);
-	transnationalService.addResource(labTestResponse.getId(), Resource.LABTEST, false);
+	transnationalService.addResource(new ObjectId(labTestResponse.getId()), Resource.LABTEST, false);
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestResponse, esLabTestDocument);
 	if (labTestResponse.getTest() != null)esLabTestDocument.setTestId(labTestResponse.getTest().getId());
@@ -220,12 +222,12 @@ public class PrescriptionApi {
     @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_LAB_TEST, notes = PathProxy.PrescriptionUrls.DELETE_LAB_TEST)
     public Response<LabTest> deleteLabTest(@PathParam(value = "labTestId") String labTestId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-	if (StringUtils.isEmpty(labTestId) || StringUtils.isEmpty(hospitalId) || StringUtils.isEmpty(locationId)) {
+	if (DPDoctorUtils.anyStringEmpty(labTestId, hospitalId, locationId)) {
 	    logger.warn("Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Lab Test Id, Hospital Id, Location Id Cannot Be Empty");
 	}
 	LabTest labTestDeleteResponse = prescriptionServices.deleteLabTest(labTestId, hospitalId, locationId, discarded);
-	transnationalService.addResource(labTestDeleteResponse.getId(), Resource.LABTEST, false);
+	transnationalService.addResource(new ObjectId(labTestDeleteResponse.getId()), Resource.LABTEST, false);
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestDeleteResponse, esLabTestDocument);
 	if (labTestDeleteResponse.getTest() != null)esLabTestDocument.setTestId(labTestDeleteResponse.getTest().getId());
@@ -253,7 +255,7 @@ public class PrescriptionApi {
     @POST
     @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE, notes = PathProxy.PrescriptionUrls.ADD_TEMPLATE)
     public Response<TemplateAddEditResponse> addTemplate(TemplateAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getName())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getName()) || request.getItems() == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -267,7 +269,7 @@ public class PrescriptionApi {
     @POST
     @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD, notes = PathProxy.PrescriptionUrls.ADD_TEMPLATE_HANDHELD)
     public Response<TemplateAddEditResponseDetails> addTemplateHandheld(TemplateAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getName())|| request.getItems() != null) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getName())|| request.getItems() == null) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
@@ -335,17 +337,12 @@ public class PrescriptionApi {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	return getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded != null ? discarded : true);
+    	List<TemplateAddEditResponseDetails> templates = prescriptionServices.getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime, discarded);
+    	Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
+    	response.setDataList(templates);
+    	return response;
     }
 
-    private Response<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
-	    boolean discarded) {
-	List<TemplateAddEditResponseDetails> templates = prescriptionServices.getTemplates(page, size, doctorId, hospitalId, locationId, updatedTime,
-		discarded);
-	Response<TemplateAddEditResponseDetails> response = new Response<TemplateAddEditResponseDetails>();
-	response.setDataList(templates);
-	return response;
-    }
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_PRESCRIPTION)
     @POST
@@ -400,7 +397,7 @@ public class PrescriptionApi {
     @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EDIT_PRESCRIPTION)
     public Response<PrescriptionAddEditResponseDetails> editPrescription(@PathParam(value = "prescriptionId") String prescriptionId,
 	    PrescriptionAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(prescriptionId, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}else if((request.getItems() == null || request.getItems().isEmpty()) && (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty())){
@@ -460,8 +457,7 @@ public class PrescriptionApi {
     	}
 	List<Prescription> prescriptions = null;
 
-	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime,
-		otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
+	prescriptions = prescriptionServices.getPrescriptions(page, size, doctorId, hospitalId, locationId, patientId, updatedTime, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
 
 	Response<Prescription> response = new Response<Prescription>();
 	response.setDataList(prescriptions);
@@ -496,60 +492,11 @@ public class PrescriptionApi {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
-	Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
+	Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId, hospitalId, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
 	Response<Integer> response = new Response<Integer>();
 	response.setData(prescriptionCount);
 	return response;
     }
-
-//    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH)
-//    @POST
-//    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH, notes = PathProxy.PrescriptionUrls.ADD_DRUG_STRENGTH)
-//    public Response<DrugStrengthAddEditResponse> addDrugStrength(DrugStrengthAddEditRequest request) {
-//	if (request == null) {
-//	    logger.warn("Request Sent Is NULL");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-//	}
-//	DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.addDrugStrength(request);
-//
-//	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
-//	response.setData(drugStrengthAddEditResponse);
-//	return response;
-//    }
-//
-//    @Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
-//    @PUT
-//    @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_STRENGTH)
-//    public Response<DrugStrengthAddEditResponse> editDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
-//	    DrugStrengthAddEditRequest request) {
-//	if (StringUtils.isEmpty(drugStrengthId) || request == null) {
-//	    logger.warn("Request Sent Is NULL");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
-//	}
-//	request.setId(drugStrengthId);
-//	DrugStrengthAddEditResponse drugStrengthAddEditResponse = prescriptionServices.editDrugStrength(request);
-//
-//	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
-//	response.setData(drugStrengthAddEditResponse);
-//	return response;
-//    }
-//
-//    @Path(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
-//    @DELETE
-//    @ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH, notes = PathProxy.PrescriptionUrls.DELETE_DRUG_STRENGTH)
-//    public Response<DrugStrengthAddEditResponse> deleteDrugStrength(@PathParam(value = "drugStrengthId") String drugStrengthId,
-//	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-//	if (StringUtils.isEmpty(drugStrengthId)) {
-//	    logger.warn("Drug Strength Id Cannot Be Empty");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Drug Strength Id Cannot Be Empty");
-//	}
-//	DrugStrengthAddEditResponse drugStrengthDeleteResponse = prescriptionServices.deleteDrugStrength(drugStrengthId, discarded);
-//
-//	Response<DrugStrengthAddEditResponse> response = new Response<DrugStrengthAddEditResponse>();
-//	response.setData(drugStrengthDeleteResponse);
-//	return response;
-//    }
 
     @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
     @POST
@@ -707,11 +654,23 @@ public class PrescriptionApi {
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-	if (DPDoctorUtils.anyStringEmpty(type, range, doctorId)) {
+	if (DPDoctorUtils.anyStringEmpty(type, range)) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	}else{
+		if(type.equalsIgnoreCase(PrescriptionItems.LABTEST.getItem()) || type.equalsIgnoreCase(PrescriptionItems.DIAGNOSTICTEST.getItem())){
+			if(DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+				logger.warn("Invalid Input");
+			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+		}else{
+			if(DPDoctorUtils.anyStringEmpty(doctorId)){
+				logger.warn("Invalid Input");
+			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+		}
 	}
-	List<Object> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
+	List<?> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
 
 	Response<Object> response = new Response<Object>();
 	response.setDataList(clinicalItems);
@@ -764,7 +723,7 @@ public class PrescriptionApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	DiagnosticTest diagnosticTest = prescriptionServices.addEditDiagnosticTest(request);
-	transnationalService.addResource(diagnosticTest.getId(), Resource.DIAGNOSTICTEST, false);
+	transnationalService.addResource(new ObjectId(diagnosticTest.getId()), Resource.DIAGNOSTICTEST, false);
 
 	ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
 	BeanUtil.map(diagnosticTest, esDiagnosticTestDocument);

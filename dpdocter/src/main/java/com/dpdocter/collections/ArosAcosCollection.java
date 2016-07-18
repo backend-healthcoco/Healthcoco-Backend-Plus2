@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -9,35 +10,35 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "aros_acos_cl")
 public class ArosAcosCollection {
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
-    private String arosId;
+    private ObjectId arosId;
 
     @Field
-    private List<String> acosIds;
+    private List<ObjectId> acosIds;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getArosId() {
+    public ObjectId getArosId() {
 	return arosId;
     }
 
-    public void setArosId(String arosId) {
+    public void setArosId(ObjectId arosId) {
 	this.arosId = arosId;
     }
 
-    public List<String> getAcosIds() {
+    public List<ObjectId> getAcosIds() {
 	return acosIds;
     }
 
-    public void setAcosIds(List<String> acosIds) {
+    public void setAcosIds(List<ObjectId> acosIds) {
 	this.acosIds = acosIds;
     }
 

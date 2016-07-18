@@ -1,8 +1,8 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.collections.TagsCollection;
+import com.dpdocter.collections.GenericCollection;
 
-public class Tags extends TagsCollection{
+public class Tags extends GenericCollection{
     private String id;
 
     private String tag;

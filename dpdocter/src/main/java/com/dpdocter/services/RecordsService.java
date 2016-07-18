@@ -2,9 +2,10 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
-import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.request.RecordsAddRequest;
@@ -25,7 +26,7 @@ public interface RecordsService {
     List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
 	    boolean isOTPVerified, boolean discarded, boolean inHistory);
 
-    List<Records> getRecordsByIds(List<String> recordIds);
+    List<Records> getRecordsByIds(List<ObjectId> recordIds);
 
     Records getRecordById(String recordId);
 

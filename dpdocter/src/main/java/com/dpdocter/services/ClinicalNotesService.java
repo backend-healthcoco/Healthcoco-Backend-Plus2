@@ -53,7 +53,7 @@ public interface ClinicalNotesService {
 
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
-    List<Object> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, Boolean isAdmin, String searchTerm);
 
     void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);

@@ -15,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.stereotype.Component;
@@ -71,7 +72,7 @@ public class AppointmentApi {
 	}
 	Boolean isActivated = false;
 	isActivated = appointmentService.activateDeactivateCity(cityId, activate);
-	transnationalService.addResource(cityId, Resource.CITY, false);
+	transnationalService.addResource(new ObjectId(cityId), Resource.CITY, false);
 	esCityService.activateDeactivateCity(cityId, activate);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(isActivated);
@@ -134,7 +135,7 @@ public class AppointmentApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	LandmarkLocality locality = appointmentService.addLandmaklLocality(request);
-	transnationalService.addResource(request.getId(), Resource.LANDMARKLOCALITY, false);
+	transnationalService.addResource(new ObjectId(request.getId()), Resource.LANDMARKLOCALITY, false);
 	ESLandmarkLocalityDocument esLandmarkLocalityDocument = new ESLandmarkLocalityDocument();
 	BeanUtil.map(locality, esLandmarkLocalityDocument);
 	esLandmarkLocalityDocument.setGeoPoint(new GeoPoint(locality.getLatitude(), locality.getLongitude()));

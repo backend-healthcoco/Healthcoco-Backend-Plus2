@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -111,7 +112,13 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 					BeanUtil.map(request, userDeviceCollection);
 					userDeviceCollection.setCreatedTime(new Date());
 				}else{
-					userDeviceCollection.setUserIds(request.getUserIds());
+					if(request.getUserIds() != null && !request.getUserIds().isEmpty()){
+						List<ObjectId> userIds = new ArrayList<ObjectId>();
+						for(String userId : request.getUserIds()){
+							userIds.add(new ObjectId(userId));
+						}
+						userDeviceCollection.setUserIds(userIds);
+					}
 					userDeviceCollection.setDeviceId(request.getDeviceId());
 					userDeviceCollection.setPushToken(request.getPushToken());
 					userDeviceCollection.setDeviceType(request.getDeviceType());
@@ -121,7 +128,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				if(request.getRole().getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole()) && !DPDoctorUtils.anyStringEmpty(request.getMobileNumber())){
 					List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
 					if(userCollections != null){
-						List<String> userIds = new ArrayList<String>();
+						List<ObjectId> userIds = new ArrayList<ObjectId>();
 						for(UserCollection userCollection : userCollections){
 							if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())){
 								userIds.add(userCollection.getId());
@@ -150,7 +157,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	public void notifyUser(String userId, String message, String componentType, String componentTypeId) {
 //		Boolean response = false;
 		try{
-			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(userId);
+			ObjectId userObjectId = new ObjectId(userId);
+			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(userObjectId);
 			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
 					if(userDeviceCollection.getDeviceType() != null){

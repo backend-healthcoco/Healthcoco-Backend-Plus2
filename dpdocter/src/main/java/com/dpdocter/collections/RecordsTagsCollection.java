@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,35 +9,35 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class RecordsTagsCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
-    private String recordsId;
+    private ObjectId recordsId;
 
     @Field
-    private String tagsId;
+    private ObjectId tagsId;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
-    public String getrecordsId() {
+    public ObjectId getrecordsId() {
 	return recordsId;
     }
 
-    public void setrecordsId(String recordsId) {
+    public void setrecordsId(ObjectId recordsId) {
 	this.recordsId = recordsId;
     }
 
-    public String getTagsId() {
+    public ObjectId getTagsId() {
 	return tagsId;
     }
 
-    public void setTagsId(String tagsId) {
+    public void setTagsId(ObjectId tagsId) {
 	this.tagsId = tagsId;
     }
 

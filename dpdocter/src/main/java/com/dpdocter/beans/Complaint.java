@@ -39,7 +39,7 @@ public class Complaint extends GenericCollection {
     }
 
     public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
+		this.doctorId = doctorId;
     }
 
     public String getLocationId() {

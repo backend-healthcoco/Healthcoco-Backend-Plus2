@@ -16,6 +16,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,6 @@ import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
-import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.HistoryFilter;
@@ -82,19 +82,19 @@ public class HistoryApi {
     @Path(value = PathProxy.HistoryUrls.ADD_DISEASE)
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.ADD_DISEASE, notes = PathProxy.HistoryUrls.ADD_DISEASE)
-    public Response<DiseasesCollection> addDiseases(List<DiseaseAddEditRequest> request) {
-    	if (request == null || !request.isEmpty() || DPDoctorUtils.anyStringEmpty(request.get(0).getDoctorId(), request.get(0).getLocationId(), request.get(0).getHospitalId())) {
+    public Response<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
+    	if (request == null || request.isEmpty() || DPDoctorUtils.anyStringEmpty(request.get(0).getDoctorId(), request.get(0).getLocationId(), request.get(0).getHospitalId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	List<DiseasesCollection> diseases = historyServices.addDiseases(request);
-	for(DiseasesCollection addEditResponse : diseases){
-		transactionalManagementService.addResource(addEditResponse.getId(), Resource.DISEASE, false);
+	List<DiseaseAddEditResponse> diseases = historyServices.addDiseases(request);
+	for(DiseaseAddEditResponse addEditResponse : diseases){
+		transactionalManagementService.addResource(new ObjectId(addEditResponse.getId()), Resource.DISEASE, false);
 		ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
 		BeanUtil.map(addEditResponse, esDiseasesDocument);
 		esMasterService.addEditDisease(esDiseasesDocument);
 	}
-	Response<DiseasesCollection> response = new Response<DiseasesCollection>();
+	Response<DiseaseAddEditResponse> response = new Response<DiseaseAddEditResponse>();
 	response.setDataList(diseases);
 	return response;
     }
@@ -103,13 +103,13 @@ public class HistoryApi {
     @PUT
     @ApiOperation(value = PathProxy.HistoryUrls.EDIT_DISEASE, notes = PathProxy.HistoryUrls.EDIT_DISEASE)
     public Response<DiseaseAddEditResponse> editDisease(@PathParam(value = "diseaseId") String diseaseId, DiseaseAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(diseaseId, request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	request.setId(diseaseId);
 	DiseaseAddEditResponse diseases = historyServices.editDiseases(request);
-	transactionalManagementService.addResource(diseases.getId(), Resource.DISEASE, false);
+	transactionalManagementService.addResource(new ObjectId(diseases.getId()), Resource.DISEASE, false);
 	ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
 	BeanUtil.map(diseases, esDiseasesDocument);
 	esMasterService.addEditDisease(esDiseasesDocument);
@@ -266,8 +266,7 @@ public class HistoryApi {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
-	boolean addSpecialNotesResponse = historyServices.addSpecialNotes(request.getSpecialNotes(), request.getPatientId(), request.getDoctorId(),
-		request.getHospitalId(), request.getLocationId());
+	boolean addSpecialNotesResponse = historyServices.addSpecialNotes(request.getSpecialNotes(), request.getPatientId(), request.getDoctorId(), request.getHospitalId(), request.getLocationId());
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(addSpecialNotesResponse);
@@ -384,20 +383,17 @@ public class HistoryApi {
 	}
 	List<HistoryDetailsResponse> historyDetailsResponses = null;
 	if (otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId)) {
-	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page,
-		    size, updatedTime);
+	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page, size, updatedTime);
 	} else {
-	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter,
-		    page, size, updatedTime);
+	    historyDetailsResponses = historyServices.getPatientHistoryDetailsWithoutVerifiedOTP(patientId, doctorId, hospitalId, locationId, historyFilter, page, size, updatedTime);
 	}
 	if (historyDetailsResponses != null && !historyDetailsResponses.isEmpty())
 	    for (HistoryDetailsResponse historyDetailsResponse : historyDetailsResponses) {
 		if (historyDetailsResponse.getGeneralRecords() != null) {
 		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
 			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
-			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
-			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
-			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
+				if(((ClinicalNotes) generalData.getData()).getDiagrams() !=  null)
+					((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
 			}
 		    }
 		}
@@ -422,9 +418,8 @@ public class HistoryApi {
 		if (historyDetailsResponse.getGeneralRecords() != null) {
 		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
 			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
-			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
-			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
-			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
+				if(((ClinicalNotes) generalData.getData()).getDiagrams() !=  null)
+					((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
 			}
 		    }
 		}
@@ -438,7 +433,7 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY)
     public Response<Boolean> handleMedicalHistory(MedicalHistoryHandler request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
 	    logger.warn("Request Cannot Be Null");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Null");
 	}
@@ -474,7 +469,7 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_FAMILY_HISTORY)
     public Response<Boolean> handleFamilyHistory(MedicalHistoryHandler request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -493,7 +488,7 @@ public class HistoryApi {
     @POST
     @ApiOperation(value = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA, notes = PathProxy.HistoryUrls.MAIL_MEDICAL_DATA)
     public Response<Boolean> mailMedicalData(MedicalData medicalData) {
-	if (medicalData == null || DPDoctorUtils.anyStringEmpty(medicalData.getDoctorId())) {
+	if (medicalData == null || DPDoctorUtils.anyStringEmpty(medicalData.getDoctorId(), medicalData.getLocationId(), medicalData.getHospitalId())) {
 		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
@@ -555,23 +550,6 @@ public class HistoryApi {
     // return response;
     // }
 
-    private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
-	for (Diagram diagram : diagrams) {
-	    if (diagram.getDiagramUrl() != null) {
-		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
-	    }
-	}
-	return diagrams;
-    }
-
-    private String getFinalImageURL(String imageURL) {
-	if (imageURL != null) {
-	    return imagePath + imageURL;
-	} else
-	    return null;
-
-    }
-
     @GET
     @ApiOperation(value = "GET_MULTIPLE_DATA", notes = "GET_MULTIPLE_DATA")
     public Response<HistoryDetailsResponse> getMultipleData(@QueryParam(value = "doctorId") String doctorId,
@@ -592,9 +570,8 @@ public class HistoryApi {
 		if (historyDetailsResponse.getGeneralRecords() != null) {
 		    for (GeneralData generalData : historyDetailsResponse.getGeneralRecords()) {
 			if (generalData.getDataType().equals(HistoryFilter.CLINICAL_NOTES)) {
-			    ((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
-			} else if (generalData.getDataType().equals(HistoryFilter.REPORTS)) {
-			    ((Records) generalData.getData()).setRecordsUrl(getFinalImageURL(((Records) generalData.getData()).getRecordsUrl()));
+			    if(((ClinicalNotes) generalData.getData()).getDiagrams() !=  null)
+			    	((ClinicalNotes) generalData.getData()).setDiagrams(getFinalDiagrams(((ClinicalNotes) generalData.getData()).getDiagrams()));
 			}
 		    }
 		}
@@ -602,6 +579,23 @@ public class HistoryApi {
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setDataList(historyDetailsResponses);
 	return response;
+
+    }
+
+    private List<Diagram> getFinalDiagrams(List<Diagram> diagrams) {
+	for (Diagram diagram : diagrams) {
+	    if (diagram.getDiagramUrl() != null) {
+		diagram.setDiagramUrl(getFinalImageURL(diagram.getDiagramUrl()));
+	    }
+	}
+	return diagrams;
+    }
+
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null) {
+	    return imagePath + imageURL;
+	} else
+	    return null;
 
     }
 }

@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,7 +14,7 @@ import com.dpdocter.enums.AppointmentState;
 public class AppointmentWorkFlowCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String appointmentId;
@@ -30,11 +31,11 @@ public class AppointmentWorkFlowCollection extends GenericCollection {
     @Field
     private String cancelledBy;
     
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 

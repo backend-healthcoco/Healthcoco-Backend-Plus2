@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -14,7 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class RecordsCollection extends GenericCollection {
 
     @Id
-    private String id;
+    private ObjectId id;
 
     @Field
     private String uniqueEmrId;
@@ -35,16 +36,16 @@ public class RecordsCollection extends GenericCollection {
     private String explanation;
 
     @Indexed
-    private String patientId;
+    private ObjectId patientId;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
     private Boolean discarded = false;
@@ -59,25 +60,25 @@ public class RecordsCollection extends GenericCollection {
     private String prescriptionId;
 
     @Field
-    private String prescribedByDoctorId;
+    private ObjectId prescribedByDoctorId;
 
     @Field
-    private String prescribedByLocationId;
+    private ObjectId prescribedByLocationId;
 
     @Field
-    private String prescribedByHospitalId;
+    private ObjectId prescribedByHospitalId;
 
     @Field
-    private String diagnosticTestId;
+    private ObjectId diagnosticTestId;
 
     @Field
     private Boolean isFeedbackAvailable = false;
 
-    public String getId() {
+    public ObjectId getId() {
 	return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
 	this.id = id;
     }
 
@@ -121,35 +122,35 @@ public class RecordsCollection extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	public String getPatientId() {
+	public ObjectId getPatientId() {
 	return patientId;
     }
 
-    public void setPatientId(String patientId) {
+    public void setPatientId(ObjectId patientId) {
 	this.patientId = patientId;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 
@@ -185,35 +186,35 @@ public class RecordsCollection extends GenericCollection {
 	this.prescriptionId = prescriptionId;
     }
 
-    public String getPrescribedByDoctorId() {
+    public ObjectId getPrescribedByDoctorId() {
 	return prescribedByDoctorId;
     }
 
-    public void setPrescribedByDoctorId(String prescribedByDoctorId) {
+    public void setPrescribedByDoctorId(ObjectId prescribedByDoctorId) {
 	this.prescribedByDoctorId = prescribedByDoctorId;
     }
 
-    public String getPrescribedByLocationId() {
+    public ObjectId getPrescribedByLocationId() {
 	return prescribedByLocationId;
     }
 
-    public void setPrescribedByLocationId(String prescribedByLocationId) {
+    public void setPrescribedByLocationId(ObjectId prescribedByLocationId) {
 	this.prescribedByLocationId = prescribedByLocationId;
     }
 
-    public String getPrescribedByHospitalId() {
+    public ObjectId getPrescribedByHospitalId() {
 	return prescribedByHospitalId;
     }
 
-    public void setPrescribedByHospitalId(String prescribedByHospitalId) {
+    public void setPrescribedByHospitalId(ObjectId prescribedByHospitalId) {
 	this.prescribedByHospitalId = prescribedByHospitalId;
     }
 
-    public String getDiagnosticTestId() {
+    public ObjectId getDiagnosticTestId() {
 		return diagnosticTestId;
 	}
 
-	public void setDiagnosticTestId(String diagnosticTestId) {
+	public void setDiagnosticTestId(ObjectId diagnosticTestId) {
 		this.diagnosticTestId = diagnosticTestId;
 	}
 

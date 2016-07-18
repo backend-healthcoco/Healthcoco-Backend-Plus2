@@ -1,14 +1,16 @@
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +25,6 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.IssueTrackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.IssueTrackService;
-import com.dpdocter.services.MailBodyGenerator;
-import com.dpdocter.services.MailService;
 import com.dpdocter.services.PushNotificationServices;
 
 import common.util.web.DPDoctorUtils;
@@ -38,16 +38,13 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     private IssueTrackRepository issueTrackRepository;
 
     @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private MailBodyGenerator mailBodyGenerator;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
 	PushNotificationServices pushNotificationServices;
+
+    @Autowired
+	MongoTemplate mongoTemplate;
 
     @Override
     @Transactional
@@ -60,7 +57,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 			issueTrackCollection.setIssueCode(UniqueIdInitial.ISSUETRACK.getInitial()+DPDoctorUtils.generateRandomId());
 			issueTrackCollection.setCreatedTime(new Date());
 	    } else {
-			IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(request.getId());
+			IssueTrackCollection oldIssueTrackCollection = issueTrackRepository.findOne(new ObjectId(request.getId()));
 			issueTrackCollection.setCreatedTime(oldIssueTrackCollection.getCreatedTime());
 			issueTrackCollection.setCreatedBy(oldIssueTrackCollection.getCreatedBy());
 			issueTrackCollection.setDiscarded(oldIssueTrackCollection.getDiscarded());
@@ -69,10 +66,10 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	    }
 
 	    if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-		UserCollection userCollection = userRepository.findOne(request.getDoctorId());
+		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 //		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 //		mailService.sendEmail(userCollection.getEmailAddress(), addIssueSubject, body, null);
-		pushNotificationServices.notifyUser(userCollection.getId(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null);
+		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null);
 	    }
 	    issueTrackCollection = issueTrackRepository.save(issueTrackCollection);
 	    
@@ -94,79 +91,26 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     public List<IssueTrack> getIssues(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
 	    List<String> scope) {
 	List<IssueTrack> response = null;
-	List<IssueTrackCollection> issueTrackCollections = null;
-	boolean[] discards = new boolean[2];
-	discards[0] = false;
 	try {
-	    if (discarded)
-		discards[1] = true;
-	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (scope.isEmpty()) {
-		if (doctorId == null) {
-		    if (size > 0)
-			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards,
-				new PageRequest(page, size, Direction.DESC, "createdTime"));
-		    else
-			issueTrackCollections = issueTrackRepository.findAll(new Date(createdTimeStamp), discards,
-				new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    if (locationId == null && hospitalId == null) {
-			if (size > 0)
-			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards,
-				    new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-			    issueTrackCollections = issueTrackRepository.findAll(doctorId, new Date(createdTimeStamp), discards,
-				    new Sort(Sort.Direction.DESC, "createdTime"));
-		    } else {
-			if (size > 0)
-			    issueTrackCollections = issueTrackRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				    new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-			    issueTrackCollections = issueTrackRepository.findAll(doctorId, locationId, hospitalId, new Date(createdTimeStamp), discards,
-				    new Sort(Sort.Direction.DESC, "createdTime"));
-		    }
-		}
-	    } else {
-		issueTrackCollections = new ArrayList<IssueTrackCollection>();
-		for (String status : scope) {
-		    List<IssueTrackCollection> localCollection = null;
-		    status = status.toUpperCase();
-		    if (doctorId == null) {
-			if (size > 0)
-			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards,
-				    new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-			    localCollection = issueTrackRepository.findByStatus(status, new Date(createdTimeStamp), discards,
-				    new Sort(Sort.Direction.DESC, "createdTime"));
-		    } else {
-			if (locationId == null && hospitalId == null) {
-			    if (size > 0)
-				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards,
-					new PageRequest(page, size, Direction.DESC, "createdTime"));
-			    else
-				localCollection = issueTrackRepository.findAll(doctorId, status, new Date(createdTimeStamp), discards,
-					new Sort(Sort.Direction.DESC, "createdTime"));
-			} else {
-			    if (size > 0)
-				localCollection = issueTrackRepository.findAll(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), discards,
-					new PageRequest(page, size, Direction.DESC, "createdTime"));
-			    else
-				localCollection = issueTrackRepository.findAll(doctorId, locationId, hospitalId, status, new Date(createdTimeStamp), discards,
-					new Sort(Sort.Direction.DESC, "createdTime"));
+		long createdTimeStamp = Long.parseLong(updatedTime);
+		ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
+		Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+		if(!discarded)criteria.and("discarded").is(discarded);
+		if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);
+    	if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+		if (!scope.isEmpty())criteria.and("status").in(scope);
+		Aggregation aggregation = null;
+		    if(size > 0){
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			}else{
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			}
-		    }
-		    issueTrackCollections.addAll(localCollection);
-		}
-	    }
-
-	    if (issueTrackCollections != null) {
-		response = new ArrayList<IssueTrack>();
-		BeanUtil.map(issueTrackCollections, response);
-	    } else {
-		logger.warn("No Issues Found");
-		throw new BusinessException(ServiceError.NotFound, "No Issues Found");
-	    }
-
+		    AggregationResults<IssueTrack> aggregationResults = mongoTemplate.aggregate(aggregation, IssueTrackCollection.class, IssueTrack.class);
+		    response = aggregationResults.getMappedResults();
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Occurred While Getting Issue");
@@ -181,7 +125,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	Boolean response = false;
 	IssueTrackCollection issueTrackCollection = null;
 	try {
-	    issueTrackCollection = issueTrackRepository.findOne(issueId);
+	    issueTrackCollection = issueTrackRepository.findOne(new ObjectId(issueId));
 	    if (issueTrackCollection != null) {
 		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
 			&& issueTrackCollection.getLocationId() != null) {
@@ -226,16 +170,16 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	Boolean response = false;
 	IssueTrackCollection issueTrackCollection = null;
 	try {
-	    issueTrackCollection = issueTrackRepository.findOne(issueId);
+	    issueTrackCollection = issueTrackRepository.findOne(new ObjectId(issueId));
 	    if (issueTrackCollection != null) {
 		if (!IssueStatus.valueOf(status.toUpperCase()).equals(IssueStatus.REOPEN)) {
 		    issueTrackCollection.setStatus(IssueStatus.valueOf(status.toUpperCase()));
 		    UserCollection userCollection = userRepository.findOne(issueTrackCollection.getDoctorId());
 		    if(userCollection != null){
 		    	if(status.equalsIgnoreCase(IssueStatus.INPROGRESS.getStatus()))
-			    	pushNotificationServices.notifyUser(userCollection.getId(), "We have started working on the issue "+issueTrackCollection.getIssueCode()+", we will keep you upadated on the progress of the issue", null, null);
+			    	pushNotificationServices.notifyUser(userCollection.getId().toString(), "We have started working on the issue "+issueTrackCollection.getIssueCode()+", we will keep you upadated on the progress of the issue", null, null);
 		    	else if(status.equalsIgnoreCase(IssueStatus.COMPLETED.getStatus()))
-		    		pushNotificationServices.notifyUser(userCollection.getId(), "Your issue "+issueTrackCollection.getIssueCode()+" has been resolved, please let us know if you are not satisfied; we will be happy to look at it again", null, null);
+		    		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been resolved, please let us know if you are not satisfied; we will be happy to look at it again", null, null);
 		    
 		    }
 		    issueTrackRepository.save(issueTrackCollection);
@@ -263,7 +207,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
     public IssueTrack deleteIssue(String issueId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
     	IssueTrack response = null;
 	try {
-	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(issueId);
+	    IssueTrackCollection issueTrackCollection = issueTrackRepository.findOne(new ObjectId(issueId));
 	    if (issueTrackCollection != null) {
 		if (issueTrackCollection.getDoctorId() != null && issueTrackCollection.getHospitalId() != null
 			&& issueTrackCollection.getLocationId() != null) {

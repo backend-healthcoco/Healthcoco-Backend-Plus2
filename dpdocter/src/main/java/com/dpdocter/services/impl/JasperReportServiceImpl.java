@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.File;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
