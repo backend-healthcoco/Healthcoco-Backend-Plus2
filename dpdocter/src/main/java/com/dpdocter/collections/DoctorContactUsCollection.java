@@ -33,9 +33,9 @@ public class DoctorContactUsCollection {
 	@Field
 	private DoctorContactStateType contactState;
 	@Field
-	private Boolean isVerified;
+	private Boolean isVerified = Boolean.FALSE;
 	@Field
-	private Boolean toList;
+	private Boolean toList = Boolean.FALSE;
 
 	public ObjectId getId() {
 		return id;
