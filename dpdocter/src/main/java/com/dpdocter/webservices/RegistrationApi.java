@@ -125,10 +125,7 @@ public class RegistrationApi {
 	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 		logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-		logger.warn("Mobile Number cannot be null");
-		throw new BusinessException(ServiceError.InvalidInput, "Mobile Number cannot be null");
-	 }
+	}
 	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 	transnationalService.addResource(registeredPatientDetails.getUserId(), Resource.PATIENT, false);
