@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.GenderType;
 
@@ -11,7 +12,7 @@ import com.dpdocter.enums.GenderType;
  *
  */
 
-public class DoctorContactUs {
+public class DoctorContactUs extends GenericCollection{
 
 	/*
 	 * title, firstName, userName,gender, emailAddress, mobileNumber,

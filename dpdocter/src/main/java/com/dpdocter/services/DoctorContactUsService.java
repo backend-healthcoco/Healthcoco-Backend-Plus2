@@ -7,7 +7,7 @@ import com.dpdocter.enums.DoctorContactStateType;
 
 public interface DoctorContactUsService {
 
-	public DoctorContactUs submitDoctorContactUSInfo(DoctorContactUs doctorContactUs);
+	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs);
 
 	public List<DoctorContactUs> getDoctorContactList(int page, int size);
 

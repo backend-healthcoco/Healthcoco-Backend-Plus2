@@ -433,7 +433,7 @@ public class SignUpApi {
     @Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
-    public Response<DoctorContactUs> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs)
+    public Response<String> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs)
     {
     	if(doctorContactUs == null)
     	{
@@ -441,7 +441,7 @@ public class SignUpApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact data is null");
     	}
     	
-    	Response<DoctorContactUs> response = new Response<DoctorContactUs>();
+    	Response<String> response = new Response<String>();
     	response.setData(doctorContactUsService.submitDoctorContactUSInfo(doctorContactUs));
     	return response;
     }

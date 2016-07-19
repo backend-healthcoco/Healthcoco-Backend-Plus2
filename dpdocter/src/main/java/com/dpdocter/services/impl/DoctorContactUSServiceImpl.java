@@ -5,10 +5,14 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +32,17 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	
 	@Autowired
 	DoctorContactUsRepository doctorContactUsRepository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
+	@Value(value = "${doctor.welcome.message}")
+	private String doctorWelcomeMessage;
 
 	@Override
 	@Transactional
-	public DoctorContactUs submitDoctorContactUSInfo(DoctorContactUs doctorContactUs) {
-		DoctorContactUs response = null;
+	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs) {
+		String response = null;
 		DoctorContactUsCollection doctorContactUsCollection = new DoctorContactUsCollection();
 		if(doctorContactUs != null)
 		{
@@ -42,8 +52,8 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 				if(doctorContactUsCollection != null)
 				{
-					response = new DoctorContactUs();
-					BeanUtil.map(doctorContactUsCollection, response);
+					response = doctorWelcomeMessage;
+					
 				}
 			} catch (DuplicateKeyException de) {
 			    logger.error(de);
@@ -65,19 +75,11 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	public List<DoctorContactUs> getDoctorContactList(int page, int size) {
 		List<DoctorContactUs> response = null;
 		try{
-			List<DoctorContactUsCollection> doctorContactUsCollections = null;
-			if(size > 0)
-			{
-				doctorContactUsCollections = doctorContactUsRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
-			}
-			else 
-			{
-				doctorContactUsCollections = doctorContactUsRepository.findAll(new Sort(Direction.DESC, "createdTime"));
-			}
-			if(doctorContactUsCollections != null){
-				response = new ArrayList<DoctorContactUs>();
-				BeanUtil.map(doctorContactUsCollections, response);
-			}
+			Aggregation aggregation = null;
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<DoctorContactUs> aggregationResults = mongoTemplate.aggregate(aggregation, DoctorContactUsCollection.class, DoctorContactUs.class);
+			response = aggregationResults.getMappedResults();
 		}catch(Exception e){
 			logger.error("Error while getting hospitals "+ e.getMessage());
 			e.printStackTrace();

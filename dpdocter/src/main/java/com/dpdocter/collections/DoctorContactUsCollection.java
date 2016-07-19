@@ -12,7 +12,7 @@ import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.GenderType;
 
 @Document(collection = "doctor_contact_us_cl")
-public class DoctorContactUsCollection {
+public class DoctorContactUsCollection extends GenericCollection{
 
 	@Id
 	private ObjectId id;
