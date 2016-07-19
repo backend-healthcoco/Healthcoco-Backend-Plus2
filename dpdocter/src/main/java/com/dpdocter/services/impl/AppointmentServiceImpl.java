@@ -217,7 +217,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    CityCollection cityCollection = new CityCollection();
 	    BeanUtil.map(city, cityCollection);
 	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(city.getCity() + " "
-		    + (cityCollection.getState() != null ? cityCollection.getState() : "")+ " "
+		    + ((cityCollection.getState() != null ? cityCollection.getState() : "")+ " ")
 				    + (cityCollection.getCountry() != null ? cityCollection.getCountry() : ""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
@@ -292,11 +292,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 		cityCollection = cityRepository.findOne(new ObjectId(landmarkLocality.getCityId()));
 	    }
 	   
-	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(landmarkLocality.getLandmark() != null ? landmarkLocality.getLandmark()
-		    + " " : "" + landmarkLocality.getLocality() != null ? landmarkLocality.getLocality() + " "
-		    : "" + cityCollection.getCity() != null ? cityCollection.getCity() + " " : "" + 
-		    		cityCollection.getState() != null ? cityCollection.getState(): "" +
-		    		cityCollection.getCountry() != null ? cityCollection.getCountry(): "");
+	    List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+	    		(!DPDoctorUtils.anyStringEmpty(landmarkLocalityCollection.getLandmark()) ? landmarkLocalityCollection.getLandmark()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(landmarkLocalityCollection.getLocality()) ? landmarkLocalityCollection.getLocality()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(cityCollection.getCity()) ? cityCollection.getCity()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(cityCollection.getState()) ? cityCollection.getState()+", ":"")+
+    			(!DPDoctorUtils.anyStringEmpty(cityCollection.getCountry()) ? cityCollection.getCountry()+", ":""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), landmarkLocalityCollection);
@@ -867,13 +868,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 	try {
 		long updatedTimeStamp = Long.parseLong(updatedTime);
 		
-		
 		Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
-	    if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(locationId);
+	    if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
 	    
-	    if(doctorId != null && !doctorId.isEmpty())criteria.and("doctorId").in(doctorId);
+	    if(doctorId != null && !doctorId.isEmpty()){
+	    	List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
+	    	for(String id : doctorId)doctorObjectIds.add(new ObjectId(id));
+	    	criteria.and("doctorId").in(doctorObjectIds);
+	    }
 	    
-	    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(patientId);
+	    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(new ObjectId(patientId));
 	    
 	    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 	        	

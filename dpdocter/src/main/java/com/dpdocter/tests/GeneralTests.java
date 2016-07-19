@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import org.bson.types.ObjectId;
 
+import com.amazonaws.regions.Regions;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -85,7 +86,7 @@ public class GeneralTests {
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
 	    			 String doctorId = null;
-	    			 System.out.println(new ObjectId(doctorId));
+	    			 System.out.println(Regions.fromName("us-west-2"));
 	    		 }
 	    		 
 }  	

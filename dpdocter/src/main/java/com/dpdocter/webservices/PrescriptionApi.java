@@ -231,7 +231,7 @@ public class PrescriptionApi {
 	ESLabTestDocument esLabTestDocument = new ESLabTestDocument();
 	BeanUtil.map(labTestDeleteResponse, esLabTestDocument);
 	if (labTestDeleteResponse.getTest() != null)esLabTestDocument.setTestId(labTestDeleteResponse.getTest().getId());
-	esPrescriptionService.addLabTest(esLabTestDocument);
+	if(esLabTestDocument.getId() != null)transnationalService.checkLabTest(new ObjectId(esLabTestDocument.getId()));
 	Response<LabTest> response = new Response<LabTest>();
 	response.setData(labTestDeleteResponse);
 	return response;
@@ -502,7 +502,7 @@ public class PrescriptionApi {
     @POST
     @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.ADD_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDosage())) {
+    	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDosage().getDosage())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
@@ -517,7 +517,7 @@ public class PrescriptionApi {
     @PUT
     @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE, notes = PathProxy.PrescriptionUrls.EDIT_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDosage())) {
+    	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getDosage().getDosage())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}

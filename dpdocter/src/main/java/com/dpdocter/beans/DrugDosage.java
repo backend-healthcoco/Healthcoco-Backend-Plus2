@@ -6,7 +6,7 @@ public class DrugDosage extends GenericCollection{
 
     String id;
 
-    String dosage;
+    DosageWithTime dosage;
 
     String doctorId;
 
@@ -24,11 +24,11 @@ public class DrugDosage extends GenericCollection{
 	this.id = id;
     }
 
-    public String getDosage() {
+    public DosageWithTime getDosage() {
 	return dosage;
     }
 
-    public void setDosage(String dosage) {
+    public void setDosage(DosageWithTime dosage) {
 	this.dosage = dosage;
     }
 

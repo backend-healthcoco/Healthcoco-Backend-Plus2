@@ -1010,7 +1010,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else
 				    duration = durationValue + " " + durationUnit;
 				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
-					prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration,
+					prescriptionItem.getDosage() != null && prescriptionItem.getDosage().getDosage() != null? prescriptionItem.getDosage().getDosage() : "----", duration,
 					directions.isEmpty() ? "----" : directions,
 					prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
 

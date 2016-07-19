@@ -1,12 +1,13 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.DosageWithTime;
 import com.dpdocter.collections.GenericCollection;
 
 public class DrugDosageAddEditResponse extends GenericCollection {
 
     private String id;
 
-    private String dosage;
+    private DosageWithTime dosage;
 
     private String doctorId;
 
@@ -24,11 +25,11 @@ public class DrugDosageAddEditResponse extends GenericCollection {
 	this.id = id;
     }
 
-    public String getDosage() {
+    public DosageWithTime getDosage() {
 	return dosage;
     }
 
-    public void setDosage(String dosage) {
+    public void setDosage(DosageWithTime dosage) {
 	this.dosage = dosage;
     }
 

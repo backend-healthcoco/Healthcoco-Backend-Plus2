@@ -95,7 +95,6 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.FeedbackRepository;
-import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -158,8 +157,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     private MailBodyGenerator mailBodyGenerator;
 
-    @Autowired
-    private GroupRepository groupRepository;
+//    @Autowired
+//    private GroupRepository groupRepository;
 
     @Autowired
     private PatientGroupRepository patientGroupRepository;
@@ -336,9 +335,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
 
 	    if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
-		ProfessionCollection professionCollection = professionRepository.findOne(new ObjectId(request.getProfession()));
-		if (professionCollection != null)
-		    patientCollection.setProfession(professionCollection.getProfession());
+		    patientCollection.setProfession(request.getProfession());
 	    }
 	    patientCollection.setNotes(request.getNotes());
 	    if (request.getImage() != null) {
@@ -551,9 +548,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    patientCollection.setPID(patientIdGenerator(request.getDoctorId(), request.getLocationId(), request.getHospitalId()));
 		}
 		if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
-		    ProfessionCollection professionCollection = professionRepository.findOne(new ObjectId(request.getProfession()));
-		    if (professionCollection != null)
-			patientCollection.setProfession(professionCollection.getProfession());
+			patientCollection.setProfession(request.getProfession());
 		}
 		
 
@@ -1124,15 +1119,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	LocationCollection locationCollection = null;
 	try {
 	    locationCollection = locationRepository.findOne(new ObjectId(request.getId()));
-	    List<GeocodedLocation> geocodedLocations = locationServices
-		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
-			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
-			    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
-			    + (locationCollection.getState() != null ? locationCollection.getState() : "")
-			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
 
-	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-		BeanUtil.map(geocodedLocations.get(0), locationCollection);
 	    locationCollection.setTagLine(request.getTagLine());
 	    locationCollection.setWebsiteUrl(request.getWebsiteUrl());
 	    locationCollection.setLocationName(request.getLocationName());
@@ -1162,11 +1149,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    }
 		
 	    List<GeocodedLocation> geocodedLocations = locationServices
-		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() + " " : "")
-			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() + " " : "")
-			    + (locationCollection.getCity() != null ? locationCollection.getCity() + " " : "")
-			    + (locationCollection.getState() != null ? locationCollection.getState() + " " : "")
-			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
+		    .geocodeLocation((!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails()) ? locationCollection.getLandmarkDetails()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():""));
 
 	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
 		BeanUtil.map(geocodedLocations.get(0), locationCollection);

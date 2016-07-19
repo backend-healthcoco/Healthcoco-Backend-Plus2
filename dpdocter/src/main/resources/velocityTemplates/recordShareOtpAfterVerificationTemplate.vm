@@ -20,7 +20,7 @@
         <p style="margin:20px 0px; line-height: 20px;">Healthcoco ${fName}!<br><br>
         ${doctorName} can now access your health records. The health records can be accessed for only 6 hours.
         <br><br> Stop share. Please follow the link to stop access of your health records.
-        <br><br> If you have any questions or need help you can contact us anytime at <a style="color:#0077b5; text-decoration:none;" href="" target="_blank"> usersfirst@healthcoco.com</a>
+        <br><br> If you have any questions or need help you can contact us anytime at <a style="color:#0077b5; text-decoration:none;" href="" target="_blank">${contactUsEmail}</a>
         <br><br>Stay Healthy and Happy,<br>The Healthcoco Team.
       </div>
      </div>

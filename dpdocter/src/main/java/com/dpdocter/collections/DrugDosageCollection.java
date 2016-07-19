@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DosageWithTime;
+
 @Document(collection = "drug_dosage_cl")
 public class DrugDosageCollection extends GenericCollection {
 
@@ -12,7 +14,7 @@ public class DrugDosageCollection extends GenericCollection {
     private ObjectId id;
 
     @Field
-    private String dosage;
+    private DosageWithTime dosage;
 
     @Field
     private ObjectId doctorId;
@@ -34,11 +36,11 @@ public class DrugDosageCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public String getDosage() {
+    public DosageWithTime getDosage() {
 	return dosage;
     }
 
-    public void setDosage(String dosage) {
+    public void setDosage(DosageWithTime dosage) {
 	this.dosage = dosage;
     }
 

@@ -35,6 +35,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Value(value = "${image.path}")
     private String imagePath;
 
+    @Value(value = "${contact.us.email}")
+    private String contactUsEmail;
+
     @Override
     @Transactional
     public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,String clinicName) throws Exception {
@@ -46,6 +49,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("link", link+"/"+tokenId);
 	model.put("loginLink", loginLink);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -57,6 +61,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", fName);
 	model.put("link", RESET_PASSWORD_LINK + "?uid=" + tokenId);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -79,6 +84,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     	model.put("fName", firstName);
     	model.put("link", RESET_PASSWORD_WEB_LINK);
     	model.put("imageURL", imagePath + "templatesImage");
+    	model.put("contactUsEmail", contactUsEmail);
     	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "addIssueTemplate.vm", "UTF-8", model);
     	return text;
     }
@@ -90,6 +96,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", firstName);
 	model.put("link", RESET_PASSWORD_WEB_LINK);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8", model);
 	return text;
     }
@@ -101,6 +108,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", firstName);
 	model.put("doctorName", doctorName);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -112,6 +120,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", firstName);
 	model.put("doctorName", doctorName);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -125,6 +134,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("dateTime", dateTime);
 	model.put("clinicName", clinicName);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -137,6 +147,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("fName", userName);
 	model.put("resumeType", resumeType);
 	model.put("imageURL", imagePath + "templatesImage");
+	model.put("contactUsEmail", contactUsEmail);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -151,6 +162,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("mailRecordCreatedDate", mailRecordCreatedDate);
 		model.put("medicalRecordType", medicalRecordType);
 		model.put("imageURL", imagePath + "templatesImage");
+		model.put("contactUsEmail", contactUsEmail);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
@@ -163,6 +175,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("clinicName", clinicName);
 		model.put("uniqueFeedbackId", uniqueFeedbackId);
 		model.put("imageURL", imagePath + "templatesImage");
+		model.put("contactUsEmail", contactUsEmail);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 

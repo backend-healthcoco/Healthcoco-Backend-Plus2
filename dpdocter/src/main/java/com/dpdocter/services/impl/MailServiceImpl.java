@@ -12,6 +12,7 @@ import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
@@ -22,22 +23,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.services.MailService;
 
-/***
- * 
- * @author veeraj
- *
- */
 @Service
 public class MailServiceImpl implements MailService {
 
     @Value(value = "${mail.from}")
     private String FROM;
+
+    @Value(value = "${mail.from.name}")
+    private String FROM_NAME;
 
     @Value(value = "${mail.port}")
     private String PORT;
@@ -50,7 +51,10 @@ public class MailServiceImpl implements MailService {
 
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
-    
+
+    @Value(value = "${mail.aws.region}")
+    private String AWS_REGION;
+
     @Override
     @Transactional
     public Boolean sendEmail(String to, String subject, String body, MailAttachment mailAttachment) throws MessagingException {
@@ -59,7 +63,7 @@ public class MailServiceImpl implements MailService {
 	    Session session = Session.getInstance(new Properties());
 	    MimeMessage mimeMessage = new MimeMessage(session);
 	    mimeMessage.setSubject(subject);
-
+	    mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
 	    Multipart mainMultipart = new MimeMultipart("related");
 	    Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
 	    MimeBodyPart htmlBodyPart = new MimeBodyPart();
@@ -88,13 +92,15 @@ public class MailServiceImpl implements MailService {
 	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 	    mimeMessage.writeTo(outputStream);
 	    RawMessage rawMessage = new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-
+	    
 	    List<String> list = Arrays.asList(to);
 	    SendRawEmailRequest rawEmailRequest = new SendRawEmailRequest(rawMessage);
 	    rawEmailRequest.setDestinations(list);
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	    AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(credentials);
+	    amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
+	    amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 	    outputStream.close();
 	    respone = true;
 	} catch (Exception ex) {
@@ -112,7 +118,7 @@ public class MailServiceImpl implements MailService {
 	    Session session = Session.getInstance(new Properties());
 	    MimeMessage mimeMessage = new MimeMessage(session);
 	    mimeMessage.setSubject(subject);
-
+	    mimeMessage.setFrom(new InternetAddress(FROM, FROM_NAME));
 	    Multipart mainMultipart = new MimeMultipart("related");
 	    Multipart htmlAndTextMultipart = new MimeMultipart("alternative");
 	    MimeBodyPart htmlBodyPart = new MimeBodyPart();
@@ -148,7 +154,9 @@ public class MailServiceImpl implements MailService {
 	    rawEmailRequest.setDestinations(list);
 	    rawEmailRequest.setSource(FROM);
 	    BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	    new AmazonSimpleEmailServiceClient(credentials).sendRawEmail(rawEmailRequest);
+	    AmazonSimpleEmailServiceClient amazonSimpleEmailServiceClient = new AmazonSimpleEmailServiceClient(credentials);
+	    amazonSimpleEmailServiceClient.setRegion(Region.getRegion(Regions.fromName(AWS_REGION)));
+	    amazonSimpleEmailServiceClient.sendRawEmail(rawEmailRequest);
 	    outputStream.close();
 	    respone = true;
 	} catch (Exception ex) {

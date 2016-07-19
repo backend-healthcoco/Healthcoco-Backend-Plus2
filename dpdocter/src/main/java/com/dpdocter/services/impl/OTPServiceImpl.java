@@ -118,7 +118,7 @@ public class OTPServiceImpl implements OTPService {
 		doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
 
 		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patient.getFirstName(),
-				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+".Pls don't share this with anyone.Stay Healthy & Happy!!",
+				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy & Happy!!",
 			patient.getMobileNumber(), "OTPVerification");
 		sMSServices.sendSMS(smsTrackDetail, false);
 
@@ -243,7 +243,7 @@ public class OTPServiceImpl implements OTPService {
 	try {
 	    OTP = LoginUtils.generateOTP();
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
-	    	OTP+" is your Healthcoco verification code. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy!", mobileNumber,
+	    	OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy!", mobileNumber,
 		    "OTPVerification");
 	    response = sMSServices.sendSMS(smsTrackDetail, false);
 

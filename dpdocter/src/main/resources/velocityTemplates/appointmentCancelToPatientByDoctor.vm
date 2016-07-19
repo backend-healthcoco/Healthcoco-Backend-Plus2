@@ -22,7 +22,7 @@
          Hello ${patientName},<br><br>Your appointment with ${doctorName} scheduled on ${dateTime} has been cancelled by the doctor.
          Kindly use the Healthcoco app to book another appointment as per your need.<br><br>
          We regret the inconvenience caused.<br><br>
-         For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >usersfirst@healthcoco.com</a>
+         For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
 
              <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>

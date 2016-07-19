@@ -22,7 +22,7 @@
          This is to inform you that you have been added as a Doctor to ${clinicName} by ${doctorName}. 
          You can continue to use your registered email ID to access this clinic as well.<br><br>
          For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at 
-         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >usersfirst@healthcoco.com</a>
+         <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
              <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>
         </div>

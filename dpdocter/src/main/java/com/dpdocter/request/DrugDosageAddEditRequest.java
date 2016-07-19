@@ -1,10 +1,12 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.DosageWithTime;
+
 public class DrugDosageAddEditRequest {
 
     private String id;
 
-    private String dosage;
+    private DosageWithTime dosage;
 
     private String doctorId;
 
@@ -20,11 +22,11 @@ public class DrugDosageAddEditRequest {
 	this.id = id;
     }
 
-    public String getDosage() {
+    public DosageWithTime getDosage() {
 	return dosage;
     }
 
-    public void setDosage(String dosage) {
+    public void setDosage(DosageWithTime dosage) {
 	this.dosage = dosage;
     }
 

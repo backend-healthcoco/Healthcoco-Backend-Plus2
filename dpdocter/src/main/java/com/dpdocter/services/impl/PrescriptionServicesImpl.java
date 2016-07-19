@@ -415,7 +415,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			templateCollection.setItems(items);
 			if (!DPDoctorUtils.anyStringEmpty(templateCollection.getDoctorId())) {
-				UserCollection userCollection = userRepository.findOne(new ObjectId(templateCollection.getDoctorId()));
+				UserCollection userCollection = userRepository.findOne(templateCollection.getDoctorId());
 				if (userCollection != null)
 					templateCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 			}
@@ -2616,7 +2616,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							SMS sms = new SMS();
 							sms.setSmsText("Hi " + patientName + ", your prescription "
 									+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
-									+ prescriptionDetails + ".For queries,contact Doctor" + clinicContactNum + ".");
+									+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum + ".");
 
 							SMSAddress smsAddress = new SMSAddress();
 							smsAddress.setRecipient(mobileNumber);
@@ -3299,7 +3299,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							duration = durationValue + " " + durationUnit;
 						no = no + 1;
 						PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-								drugName, prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----",
+								drugName, prescriptionItem.getDosage() != null && prescriptionItem.getDosage().getDosage() != null? prescriptionItem.getDosage().getDosage() : "----",
 								duration, directions.isEmpty() ? "----" : directions,
 								prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions()
 										: "----");

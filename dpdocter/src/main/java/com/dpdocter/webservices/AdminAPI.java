@@ -805,7 +805,7 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG_DOSAGE, notes = PathProxy.AdminUrls.ADD_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDosage())) {
+	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(request.getDosage().getDosage())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -820,7 +820,7 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG_DOSAGE, notes = PathProxy.AdminUrls.EDIT_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDosage())) {
+	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDosage().getDosage())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}

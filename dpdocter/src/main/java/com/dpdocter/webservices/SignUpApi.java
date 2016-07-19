@@ -11,9 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -70,9 +68,6 @@ public class SignUpApi {
     @Autowired
     private DoctorContactUsService doctorContactUsService;
 
-    @Context
-    private UriInfo uriInfo;
-
     @Value(value = "${image.path}")
     private String imagePath;
 
@@ -109,7 +104,7 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
 	}
 
-	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request, uriInfo);
+	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
 	if (doctorSignUp != null) {
 	    if (doctorSignUp.getUser() != null) {
 		if (doctorSignUp.getUser().getImageUrl() != null) {
@@ -170,7 +165,7 @@ public class SignUpApi {
     	    logger.warn("Inavlid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
     	}
-	DoctorSignUp doctorSignUp = signUpService.doctorHandheldContinue(request, uriInfo);
+	DoctorSignUp doctorSignUp = signUpService.doctorHandheldContinue(request);
 	if (doctorSignUp != null) {
 	    if (doctorSignUp.getUser() != null) {
 		if (doctorSignUp.getUser().getImageUrl() != null) {
@@ -431,7 +426,7 @@ public class SignUpApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	Response<Boolean> response = new Response<Boolean>();
-	response.setData(signUpService.resendVerificationEmail(emailaddress, uriInfo));
+	response.setData(signUpService.resendVerificationEmail(emailaddress));
 	return response;
     }
     

@@ -7,7 +7,7 @@ public class TemplateItemDetail {
 
     private Duration duration;
 
-    private String dosage;
+    private DosageWithTime dosage;
 
     private List<DrugDirection> direction;
 
@@ -29,11 +29,11 @@ public class TemplateItemDetail {
 	this.duration = duration;
     }
 
-    public String getDosage() {
+    public DosageWithTime getDosage() {
 	return dosage;
     }
 
-    public void setDosage(String dosage) {
+    public void setDosage(DosageWithTime dosage) {
 	this.dosage = dosage;
     }
 

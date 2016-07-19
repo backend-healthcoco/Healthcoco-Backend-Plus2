@@ -8,8 +8,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
@@ -94,9 +92,6 @@ import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
-/**
- * @author veeraj
- */
 @Service
 public class SignUpServiceImpl implements SignUpService {
 
@@ -284,7 +279,7 @@ public class SignUpServiceImpl implements SignUpService {
 			    smsDetail.setUserId(userCollection.getId());
 			    smsDetail.setUserName(userCollection.getFirstName());
 			    SMS sms = new SMS();
-			    sms.setSmsText("Healthcoco "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+", Your Healthcoco+ account has been activated,Download the Healthcoco+ app now: https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
+			    sms.setSmsText("Healthcoco "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+", Your Healthcoco+ account has been activated, Download the Healthcoco+ app now: https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
 
 			    SMSAddress smsAddress = new SMSAddress();
 			    smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -346,7 +341,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     @Transactional
-    public DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo) {
+    public DoctorSignUp doctorSignUp(DoctorSignupRequest request) {
 	DoctorSignUp response = null;
 
 	try {
@@ -354,28 +349,28 @@ public class SignUpServiceImpl implements SignUpService {
 			logger.warn("Email Address cannot be null");
 			throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
 		 }
-	    // get role of specified type
+		
 	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
 	    if (hospitalAdmin == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+			logger.warn("Role Collection in database is either empty or not defind properly");
+			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
 	    if (locationAdmin == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+			logger.warn("Role Collection in database is either empty or not defind properly");
+			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
 	    if (doctorRole == null) {
-		logger.warn("Role Collection in database is either empty or not defind properly");
-		throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
+			logger.warn("Role Collection in database is either empty or not defind properly");
+			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (request.getDob() != null && request.getDob().getAge() != null && request.getDob().getAge().getYears() < 0) {
+	    if (request.getDob() != null && request.getDob().getAge() != null & request.getDob().getAge().getYears() < 0) {
 		logger.warn("Incorrect Date of Birth");
-		throw new BusinessException(ServiceError.NotAcceptable, "Incorrect Date of Birth");
+		throw new BusinessException(ServiceError.InvalidInput, "Incorrect Date of Birth");
 	    }
 	    char[] salt = DPDoctorUtils.generateSalt();
 	    userCollection.setSalt(salt);
@@ -386,58 +381,63 @@ public class SignUpServiceImpl implements SignUpService {
 	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
 	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setUserName(request.getEmailAddress());
-	    userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
 	    userCollection.setTitle("Dr.");
-	    if (request.getImage() != null) {
-		String path = "profile-pic";
-		// save image
-		request.getImage().setFileName(request.getImage().getFileName() + new Date().getTime());
-		ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
-		userCollection.setImageUrl(imageURLResponse.getImageUrl());
-		userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-	    }
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-	    userCollection.setUserState(UserState.USERSTATECOMPLETE);
+	    userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
+	    userCollection.setUserState(UserState.NOTVERIFIED);
 	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
 	    BeanUtil.map(request, doctorCollection);
+	    if (request.getSpecialities() != null && !request.getSpecialities().isEmpty()) {
+			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpecialities());
+		    @SuppressWarnings("unchecked")
+			Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
+		    if(specialityIds != null && !specialityIds.isEmpty())doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+		    else doctorCollection.setSpecialities(null);
+	    }else{
+	    	doctorCollection.setSpecialities(null);	
+	    }
+	    doctorCollection.setRegisterNumber(request.getRegisterNumber());
 	    doctorCollection.setUserId(userCollection.getId());
 	    doctorCollection.setCreatedTime(new Date());
 	    doctorCollection = doctorRepository.save(doctorCollection);
 
-	    // Save hospital
+	    userCollection = userRepository.save(userCollection);
+
 	    HospitalCollection hospitalCollection = new HospitalCollection();
 	    BeanUtil.map(request, hospitalCollection);
-	    hospitalCollection.setHospitalUId(UniqueIdInitial.HOSPITAL.getInitial()+DPDoctorUtils.generateRandomId());
 	    hospitalCollection.setCreatedTime(new Date());
+	    hospitalCollection.setHospitalUId(UniqueIdInitial.HOSPITAL.getInitial()+DPDoctorUtils.generateRandomId());
 	    hospitalCollection = hospitalRepository.save(hospitalCollection);
 
 	    // save location for hospital
 	    LocationCollection locationCollection = new LocationCollection();
 	    BeanUtil.map(request, locationCollection);
-	    List<GeocodedLocation> geocodedLocations = locationServices
-		    .geocodeLocation((locationCollection.getLocationName() != null ? locationCollection.getLocationName() : "")
-			    + (locationCollection.getStreetAddress() != null ? locationCollection.getStreetAddress() : "")
-			    + (locationCollection.getCity() != null ? locationCollection.getCity() : "")
-			    + (locationCollection.getState() != null ? locationCollection.getState() : "")
-			    + (locationCollection.getCountry() != null ? locationCollection.getCountry() : ""));
-
-	    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-		BeanUtil.map(geocodedLocations.get(0), locationCollection);
 	    if (locationCollection.getId() == null) {
 		locationCollection.setCreatedTime(new Date());
 	    }
-	    locationCollection.setHospitalId(hospitalCollection.getId());
 	    locationCollection.setLocationUId(UniqueIdInitial.LOCATION.getInitial()+DPDoctorUtils.generateRandomId());
+	    locationCollection.setHospitalId(hospitalCollection.getId());
+	    List<GeocodedLocation> geocodedLocations = locationServices
+			    .geocodeLocation((!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails()) ? locationCollection.getLandmarkDetails()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():""));
+
+		if (geocodedLocations != null && !geocodedLocations.isEmpty())
+		BeanUtil.map(geocodedLocations.get(0), locationCollection);
+
 	    locationCollection = locationRepository.save(locationCollection);
 	    // save user location.
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), locationCollection.getId());
 	    userLocationCollection.setCreatedTime(new Date());
 	    userLocationRepository.save(userLocationCollection);
 
-	    // assign role to doctor
 	    RoleCollection roleCollection = new RoleCollection(hospitalAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
 	    roleCollection.setCreatedTime(new Date());
 	    roleRepository.save(roleCollection);
@@ -458,6 +458,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
+	    
 	    // save token
 	    TokenCollection tokenCollection = new TokenCollection();
 	    tokenCollection.setResourceId(userLocationCollection.getId());
@@ -465,18 +466,31 @@ public class SignUpServiceImpl implements SignUpService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
+	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null ,null);
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
 
 	    if (userCollection.getMobileNumber() != null) {
-		// SMSTrackDetail smsTrackDetail =
-		// sMSServices.createSMSTrackDetail(doctorCollection.getUserId(),
-		// locationCollection.getId(),
-		// hospitalCollection.getId(), doctorCollection.getUserId(),
-		// "OTP Verification", userCollection.getMobileNumber());
-		// sMSServices.sendSMS(smsTrackDetail, false);
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
+		smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR");
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(userCollection.getId());
+		smsDetail.setUserName(userCollection.getFirstName());
+		SMS sms = new SMS();
+		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com");
+
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(userCollection.getMobileNumber());
+		sms.setSmsAddress(smsAddress);
+
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		sMSServices.sendSMS(smsTrackDetail, true);
 	    }
 
 	    List<String> roleIds = new ArrayList<String>();
@@ -485,6 +499,13 @@ public class SignUpServiceImpl implements SignUpService {
 	    roleIds.add(doctorRole.getId().toString());
 
 	    response = new DoctorSignUp();
+	    User user = new User();
+	    userCollection.setPassword(null);
+	    BeanUtil.map(userCollection, user);
+	    user.setEmailAddress(userCollection.getEmailAddress());
+	    user.setSpecialities(request.getSpecialities());
+	    response.setUser(user);
+
 	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId().toString(), locationCollection.getId().toString(), locationCollection.getHospitalId().toString(), roleIds);
 	    List<Role> roles = new ArrayList<Role>();
 	    for (AccessControl accessControl : accessControls) {
@@ -495,15 +516,10 @@ public class SignUpServiceImpl implements SignUpService {
 		    role.setRole(RoleEnum.LOCATION_ADMIN.getRole());
 		if (accessControl.getRoleOrUserId().equals(doctorRole.getId()))
 		    role.setRole(RoleEnum.DOCTOR.getRole());
-		BeanUtil.map(accessControl, role);
+		BeanUtil.map(accessControl.getAccessModules(), role);
 		roles.add(role);
 	    }
 
-	    User user = new User();
-	    userCollection.setPassword(null);
-	    BeanUtil.map(userCollection, user);
-	    user.setEmailAddress(userCollection.getEmailAddress());
-	    response.setUser(user);
 	    Hospital hospital = new Hospital();
 	    BeanUtil.map(hospitalCollection, hospital);
 	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();
@@ -515,6 +531,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    locations.add(locationAndAccessControl);
 	    hospital.setLocationsAndAccessControl(locations);
 	    response.setHospital(hospital);
+
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
 	    throw new BusinessException(ServiceError.Unknown, "Email address already registerd. Please login");
@@ -655,7 +672,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     @Transactional
-    public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request, UriInfo uriInfo) {
+    public DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request) {
 	DoctorSignUp response = null;
 
 	try {
@@ -746,7 +763,7 @@ public class SignUpServiceImpl implements SignUpService {
 		smsDetail.setUserId(userCollection.getId());
 		smsDetail.setUserName(userCollection.getFirstName());
 		SMS sms = new SMS();
-		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now:https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com.");
+		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com");
 
 		SMSAddress smsAddress = new SMSAddress();
 		smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -1297,7 +1314,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Override
 	@Transactional
-	public Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo) {
+	public Boolean resendVerificationEmail(String emailaddress) {
 		UserCollection userCollection = null;
 		Boolean response = false;
 		try {

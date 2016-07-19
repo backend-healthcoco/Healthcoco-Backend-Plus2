@@ -25,13 +25,13 @@ public class TemplateCollection extends GenericCollection {
     private String name;
 
     @Indexed
-    private String doctorId;
+    private ObjectId doctorId;
 
     @Field
-    private String locationId;
+    private ObjectId locationId;
 
     @Field
-    private String hospitalId;
+    private ObjectId hospitalId;
 
     @Field
     private Boolean discarded = false;
@@ -55,27 +55,27 @@ public class TemplateCollection extends GenericCollection {
 	this.name = name;
     }
 
-    public String getDoctorId() {
+    public ObjectId getDoctorId() {
 	return doctorId;
     }
 
-    public void setDoctorId(String doctorId) {
+    public void setDoctorId(ObjectId doctorId) {
 	this.doctorId = doctorId;
     }
 
-    public String getLocationId() {
+    public ObjectId getLocationId() {
 	return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(ObjectId locationId) {
 	this.locationId = locationId;
     }
 
-    public String getHospitalId() {
+    public ObjectId getHospitalId() {
 	return hospitalId;
     }
 
-    public void setHospitalId(String hospitalId) {
+    public void setHospitalId(ObjectId hospitalId) {
 	this.hospitalId = hospitalId;
     }
 

@@ -19,7 +19,7 @@ public interface SignUpService {
 
     Boolean activateUser(String tokenId, Boolean activate);
 
-    DoctorSignUp doctorSignUp(DoctorSignupRequest request, UriInfo uriInfo);
+    DoctorSignUp doctorSignUp(DoctorSignupRequest request);
 
     User patientSignUp(PatientSignUpRequest request);
 
@@ -33,7 +33,7 @@ public interface SignUpService {
 
     DoctorSignUp doctorHandheld(DoctorSignupHandheldRequest request);
 
-    DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request, UriInfo uriInfo);
+    DoctorSignUp doctorHandheldContinue(DoctorSignupHandheldContinueRequest request);
 
     String verifyUser(String tokenId);
 
@@ -51,7 +51,7 @@ public interface SignUpService {
 
     User adminSignUp(AdminSignupRequest request);
 
-	Boolean resendVerificationEmail(String emailaddress, UriInfo uriInfo);
+	Boolean resendVerificationEmail(String emailaddress);
 
 	Boolean activateLocation(String locationId, Boolean activate);
 }

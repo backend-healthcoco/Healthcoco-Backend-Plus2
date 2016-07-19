@@ -69,7 +69,7 @@ public class FileManagerImpl implements FileManager {
 	    s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
 	    response.setImageUrl(imageUrl);
 	    if(createThumbnail){
-	    	BufferedImage originalImage = ImageIO.read(fis);
+	    	BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(base64));
 		    double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
 		    int height = originalImage.getHeight();	
 
@@ -106,7 +106,9 @@ public class FileManagerImpl implements FileManager {
 		    metadata.setContentEncoding(fileDetails.getFileExtension());
 		    metadata.setContentType(contentType);
 		    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-		    s3client.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, objectMetadata));
+		    
+		    AmazonS3 s3clientOther = new AmazonS3Client(credentials);
+		    s3clientOther.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, objectMetadata));
 	    	response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrl(fileDetails, path));
 	    }
 	} catch (AmazonServiceException ase) {

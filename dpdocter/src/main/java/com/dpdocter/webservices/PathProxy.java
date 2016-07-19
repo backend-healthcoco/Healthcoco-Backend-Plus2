@@ -343,19 +343,19 @@ public interface PathProxy {
 
 		public static final String EDIT_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/update";
 
-		public static final String DELETE_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/delete";
+		public static final String DELETE_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_DRUG_DIRECTION = "/drugDirection/add";
 
 		public static final String EDIT_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/update";
 
-		public static final String DELETE_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/delete";
+		public static final String DELETE_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_DRUG_DURATION_UNIT = "/drugDurationUnit/add";
 
 		public static final String EDIT_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/update";
 
-		public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
+		public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String EMAIL_PRESCRIPTION = "/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 

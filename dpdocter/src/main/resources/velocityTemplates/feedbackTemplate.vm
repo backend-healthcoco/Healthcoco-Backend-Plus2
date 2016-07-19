@@ -8,13 +8,13 @@
     <div style="background-color:#ffffff;line-height:25px;margin-bottom:30px;font-family:'Open Sans',sans-serif;margin:0px auto;min-width:200px;max-width:600px">
 
       <div align="center">
-        <img src="images/logo1.png" style="width:280px; display:block; margin-left:auto; margin-right:auto;">
+        <img src="${imageURL}/logo1.png" style="width:280px; display:block; margin-left:auto; margin-right:auto;">
       </div>
 
       <div style="background-color: #faf8f8; padding:20px;">
 
         <div align="center" style="margin-top: 10px">
-          <img src="images/feedback.png" style="margin-top: 5px">
+          <img src="${imageURL}/feedback.png" style="margin-top: 5px">
         </div>
 
         <div>
@@ -30,10 +30,10 @@
              <span>This message was sent to you by Healthcoco.</span>
           </p>
           <p style="display:inline;float: right; margin-top: -5px;">
-             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="images/f_icn.png" style=""></a>
-              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="images/t_icn.png" style=""></a>
-             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="images/l_icn.png" style=""></a>
-              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="images/g_icn.png" style=""></a>
+             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/f_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/t_icn.png" style=""></a>
+             <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/l_icn.png" style=""></a>
+              <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"><img src="${imageURL}/g_icn.png" style=""></a>
           </p>
         </div> 
 
