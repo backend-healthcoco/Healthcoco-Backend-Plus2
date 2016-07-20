@@ -13,7 +13,7 @@ public class DoctorMultipleDataAddEditRequest {
 
     private String firstName;
 
-    private String experience;
+    private int experience;
 
     private List<String> specialities;
 
@@ -49,11 +49,11 @@ public class DoctorMultipleDataAddEditRequest {
 	this.firstName = firstName;
     }
 
-    public String getExperience() {
+    public int getExperience() {
 	return experience;
     }
 
-    public void setExperience(String experience) {
+    public void setExperience(int experience) {
 	this.experience = experience;
     }
 

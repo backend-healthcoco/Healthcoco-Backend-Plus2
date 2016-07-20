@@ -4,7 +4,7 @@ public class DoctorExperienceAddEditRequest {
 
     private String doctorId;
 
-    private String experience;
+    private int experience;
 
     public String getDoctorId() {
 	return doctorId;
@@ -14,11 +14,11 @@ public class DoctorExperienceAddEditRequest {
 	this.doctorId = doctorId;
     }
 
-    public String getExperience() {
+    public int getExperience() {
 	return experience;
     }
 
-    public void setExperience(String experience) {
+    public void setExperience(int experience) {
 	this.experience = experience;
     }
 

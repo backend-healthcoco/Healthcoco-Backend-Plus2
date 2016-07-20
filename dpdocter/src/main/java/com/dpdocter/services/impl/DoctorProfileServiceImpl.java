@@ -776,13 +776,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		response = new DoctorMultipleDataAddEditResponse();
 		response.setDoctorId(request.getDoctorId());
 
-		if (request.getExperience() != null) {
-		    DoctorExperience doctorExperience = new DoctorExperience();
-		    doctorExperience.setExperience(request.getExperience());
-		    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
-		    doctorCollection.setExperience(doctorExperience);
-		}
-
+		DoctorExperience doctorExperience = new DoctorExperience();
+		doctorExperience.setExperience(request.getExperience());
+		doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
+		doctorCollection.setExperience(doctorExperience);
+		
 		if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
 		    if(specialityCollections != null && !specialityCollections.isEmpty()){
