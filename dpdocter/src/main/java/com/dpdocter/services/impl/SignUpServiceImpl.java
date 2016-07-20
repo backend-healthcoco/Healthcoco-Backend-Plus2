@@ -37,6 +37,7 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -52,6 +53,7 @@ import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
+import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.Module;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
@@ -62,6 +64,7 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -170,6 +173,9 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private TransactionalManagementService transnationalService;
+
+    @Autowired
+    private DoctorContactUsRepository doctorContactUsRepository;
 
     @Value(value = "${Signup.role}")
     private String role;
@@ -365,6 +371,7 @@ public class SignUpServiceImpl implements SignUpService {
 			logger.warn("Role Collection in database is either empty or not defind properly");
 			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
+	    
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
@@ -372,14 +379,6 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn("Incorrect Date of Birth");
 		throw new BusinessException(ServiceError.InvalidInput, "Incorrect Date of Birth");
 	    }
-	    char[] salt = DPDoctorUtils.generateSalt();
-	    userCollection.setSalt(salt);
-	    char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
-	    for(int i = 0; i < request.getPassword().length; i++)
-	        passwordWithSalt[i] = request.getPassword()[i];
-	    for(int i = 0; i < salt.length; i++)
-	    	passwordWithSalt[i+request.getPassword().length] = salt[i];
-	    userCollection.setPassword(DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt));
 	    userCollection.setUserName(request.getEmailAddress());
 	    userCollection.setTitle("Dr.");
 	    userCollection.setCreatedTime(new Date());
@@ -520,6 +519,9 @@ public class SignUpServiceImpl implements SignUpService {
 		roles.add(role);
 	    }
 
+	    DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findByEmailIdAndUserName(request.getEmailAddress());
+	    if(doctorContactUsCollection != null)doctorContactUsCollection.setContactState(DoctorContactStateType.SIGNED_UP);
+	    
 	    Hospital hospital = new Hospital();
 	    BeanUtil.map(hospitalCollection, hospital);
 	    List<LocationAndAccessControl> locations = new ArrayList<LocationAndAccessControl>();

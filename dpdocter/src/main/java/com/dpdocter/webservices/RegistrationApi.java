@@ -293,8 +293,8 @@ public class RegistrationApi {
     public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 	    @PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial, new Integer(patientCounter).toString())) {
-		logger.warn("Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Dcotor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
+		logger.warn("Invalid Input. Doctor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Doctor Id, ,Location Id, Patient Initial, Patient Counter Cannot Be Empty");
 	}
 	else if(patientInitial.matches(".*\\d+.*")){
 		logger.warn("Invalid Patient Initial");

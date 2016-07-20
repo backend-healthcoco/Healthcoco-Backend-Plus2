@@ -9,8 +9,10 @@ public class TemplateGetItem {
 
     private Duration duration;
 
-    private DosageWithTime dosage;
+    private String dosage;
 
+    private List<Long> dosageTime;
+    
     private List<DirectionEnum> direction;
 
     private String instructions;
@@ -31,15 +33,23 @@ public class TemplateGetItem {
 	this.duration = duration;
     }
 
-    public DosageWithTime getDosage() {
-	return dosage;
-    }
+    public String getDosage() {
+		return dosage;
+	}
 
-    public void setDosage(DosageWithTime dosage) {
-	this.dosage = dosage;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public List<DirectionEnum> getDirection() {
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public List<DirectionEnum> getDirection() {
 	return direction;
     }
 
@@ -55,10 +65,9 @@ public class TemplateGetItem {
 	this.instructions = instructions;
     }
 
-    @Override
-    public String toString() {
-	return "TemplateGetItem [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", direction=" + direction + ", instructions=" + instructions
-		+ "]";
-    }
-
+	@Override
+	public String toString() {
+		return "TemplateGetItem [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+	}
 }

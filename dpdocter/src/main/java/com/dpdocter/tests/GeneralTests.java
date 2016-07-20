@@ -3,16 +3,10 @@ package com.dpdocter.tests;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.bson.types.ObjectId;
 
 import com.amazonaws.regions.Regions;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
-import common.util.web.DPDoctorUtils;
 
 
 

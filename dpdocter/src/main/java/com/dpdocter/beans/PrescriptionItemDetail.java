@@ -7,56 +7,65 @@ public class PrescriptionItemDetail {
 
     private Duration duration;
 
-    private DosageWithTime dosage;
+    private String dosage;
 
+    private List<Long> dosageTime;
+    
     private List<DrugDirection> direction;
 
     private String instructions;
 
-    public Drug getDrug() {
-	return drug;
-    }
+	public Drug getDrug() {
+		return drug;
+	}
 
-    public void setDrug(Drug drug) {
-	this.drug = drug;
-    }
+	public void setDrug(Drug drug) {
+		this.drug = drug;
+	}
 
-    public Duration getDuration() {
-	return duration;
-    }
+	public Duration getDuration() {
+		return duration;
+	}
 
-    public void setDuration(Duration duration) {
-	this.duration = duration;
-    }
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
 
-    public DosageWithTime getDosage() {
-	return dosage;
-    }
+	public String getDosage() {
+		return dosage;
+	}
 
-    public void setDosage(DosageWithTime dosage) {
-	this.dosage = dosage;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public List<DrugDirection> getDirection() {
-	return direction;
-    }
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
 
-    public void setDirection(List<DrugDirection> direction) {
-	this.direction = direction;
-    }
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
 
-    public String getInstructions() {
-	return instructions;
-    }
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
 
-    public void setInstructions(String instructions) {
-	this.instructions = instructions;
-    }
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
 
-    @Override
-    public String toString() {
-	return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage + ", direction=" + direction + ", instructions="
-		+ instructions + "]";
-    }
+	public String getInstructions() {
+		return instructions;
+	}
 
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+	}
 }

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.User;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.LoginPatientRequest;

@@ -27,7 +27,6 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
-import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;

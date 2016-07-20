@@ -1,18 +1,22 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class DrugDosage extends GenericCollection{
 
-    String id;
+	private String id;
 
-    DosageWithTime dosage;
+	private String dosage;
 
-    String doctorId;
+    private List<Long> dosageTime;
+    
+    private String doctorId;
 
-    String locationId;
+    private String locationId;
 
-    String hospitalId;
+    private String hospitalId;
 
     private Boolean discarded = false;
 
@@ -24,15 +28,23 @@ public class DrugDosage extends GenericCollection{
 	this.id = id;
     }
 
-    public DosageWithTime getDosage() {
-	return dosage;
-    }
+    public String getDosage() {
+		return dosage;
+	}
 
-    public void setDosage(DosageWithTime dosage) {
-	this.dosage = dosage;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public String getDoctorId() {
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -66,7 +78,7 @@ public class DrugDosage extends GenericCollection{
 
 	@Override
 	public String toString() {
-		return "DrugDosage [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
+		return "DrugDosage [id=" + id + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
 	}
 }

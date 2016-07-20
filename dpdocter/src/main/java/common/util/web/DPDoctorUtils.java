@@ -287,12 +287,17 @@ public class DPDoctorUtils {
 		
 	    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
 	    if(!discarded)criteria.and("discarded").is(discarded);	    
-	    if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)), new Criteria("doctorId").is(null));
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+	    		criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
+	    				new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null));
+	    	}
+	    	else{
+	    		criteria.orOperator(new Criteria("doctorId").is(new ObjectId(doctorId)), new Criteria("doctorId").is(null));
+	    	}
+	    }
 	    else criteria.and("doctorId").is(null);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
-    		criteria.orOperator(new Criteria("locationId").is(new ObjectId(locationId)), new Criteria("locationId").is(null));
-    		criteria.orOperator(new Criteria("hospitalId").is(new ObjectId(hospitalId)), new Criteria("hospitalId").is(null));
-    	}
+    	
     	
 	    if(specialities != null && !specialities.isEmpty())criteria.and("speciality").in(specialities);
 		Aggregation aggregation = null;

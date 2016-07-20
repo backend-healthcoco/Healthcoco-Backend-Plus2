@@ -54,6 +54,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 	BeanUtil.map(request, issueTrackCollection);
 	try {
 	    if (request.getId() == null) {
+	    	issueTrackCollection.setStatus(IssueStatus.OPEN);
 			issueTrackCollection.setIssueCode(UniqueIdInitial.ISSUETRACK.getInitial()+DPDoctorUtils.generateRandomId());
 			issueTrackCollection.setCreatedTime(new Date());
 	    } else {
@@ -67,6 +68,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 
 	    if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+		if (request.getId() == null && userCollection != null)issueTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 //		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 //		mailService.sendEmail(userCollection.getEmailAddress(), addIssueSubject, body, null);
 		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null);

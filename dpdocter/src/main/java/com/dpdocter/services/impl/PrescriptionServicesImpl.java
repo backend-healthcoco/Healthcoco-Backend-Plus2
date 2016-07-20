@@ -226,10 +226,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(drugCollection.getDoctorId())) {
 				UserCollection userCollection = userRepository.findOne(drugCollection.getDoctorId());
-				if (userCollection != null)
-					drugCollection
-							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
-									+ userCollection.getFirstName());
+				if (userCollection != null)drugCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 			} else {
 				drugCollection.setCreatedBy("ADMIN");
 			}
@@ -3299,7 +3296,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							duration = durationValue + " " + durationUnit;
 						no = no + 1;
 						PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-								drugName, prescriptionItem.getDosage() != null && prescriptionItem.getDosage().getDosage() != null? prescriptionItem.getDosage().getDosage() : "----",
+								drugName, prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----",
 								duration, directions.isEmpty() ? "----" : directions,
 								prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions()
 										: "----");

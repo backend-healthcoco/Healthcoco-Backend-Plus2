@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.AdminSignupRequest;
 import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.User;

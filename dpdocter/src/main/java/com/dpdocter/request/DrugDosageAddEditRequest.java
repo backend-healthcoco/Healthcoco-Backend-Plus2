@@ -1,13 +1,15 @@
 package com.dpdocter.request;
 
-import com.dpdocter.beans.DosageWithTime;
+import java.util.List;
 
 public class DrugDosageAddEditRequest {
 
     private String id;
 
-    private DosageWithTime dosage;
+    private String dosage;
 
+    private List<Long> dosageTime;
+    
     private String doctorId;
 
     private String locationId;
@@ -22,15 +24,23 @@ public class DrugDosageAddEditRequest {
 	this.id = id;
     }
 
-    public DosageWithTime getDosage() {
-	return dosage;
-    }
+    public String getDosage() {
+		return dosage;
+	}
 
-    public void setDosage(DosageWithTime dosage) {
-	this.dosage = dosage;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public String getDoctorId() {
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -54,10 +64,9 @@ public class DrugDosageAddEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-    @Override
-    public String toString() {
-	return "DrugDosageAddEditRequest [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-		+ hospitalId + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DrugDosageAddEditRequest [id=" + id + ", dosage=" + dosage + ", dosageTime=" + dosageTime
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	}
 }

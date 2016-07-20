@@ -9,4 +9,7 @@ public interface DoctorContactUsRepository extends MongoRepository<DoctorContact
 	
 	@Query("{'id': ?0}")
 	public DoctorContactUsCollection findByContactId(String contactId);
+
+	@Query("{'userName': ?0, 'emailAddress': ?0}")
+	public DoctorContactUsCollection findByEmailIdAndUserName(String emailAddress);
 }

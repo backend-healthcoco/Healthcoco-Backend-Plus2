@@ -324,14 +324,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (size > 0)
 		aggregation = Aggregation.newAggregation(
 			Aggregation.match((Criteria.where("doctorId").is(doctorObjectId)
-				.andOperator(Criteria.where("locationId").is(locationObjectId).andOperator(Criteria.where("hospitalId").is(hospitalObjectId))))),
+				.and("locationId").is(locationObjectId)
+				.and("hospitalId").is(hospitalObjectId))),
 			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")),
 			Aggregation.skip((page) * size), Aggregation.limit(size));
 
 	    else
 		aggregation = Aggregation.newAggregation(
 			Aggregation.match((Criteria.where("doctorId").is(doctorObjectId)
-				.andOperator(Criteria.where("locationId").is(locationObjectId).andOperator(Criteria.where("hospitalId").is(hospitalObjectId))))),
+				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))),
 			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
 
 	    AggregationResults<PatientVisit> groupResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisit.class);
@@ -1010,7 +1011,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else
 				    duration = durationValue + " " + durationUnit;
 				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
-					prescriptionItem.getDosage() != null && prescriptionItem.getDosage().getDosage() != null? prescriptionItem.getDosage().getDosage() : "----", duration,
+					prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration,
 					directions.isEmpty() ? "----" : directions,
 					prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
 
@@ -1174,7 +1175,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-    	Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("visitedFor").is(visitedFors).and("patientId").is(patientObjectId);
+    	Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("visitedFor").in(visitedFors).and("patientId").is(patientObjectId);
 	    if (!isOTPVerified) {
 	    	criteria.and("doctorId").is(doctorObjectId);
 		if (!DPDoctorUtils.anyStringEmpty(locationObjectId,hospitalObjectId)) {

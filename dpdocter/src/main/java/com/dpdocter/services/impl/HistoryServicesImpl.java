@@ -1913,23 +1913,23 @@ public class HistoryServicesImpl implements HistoryServices {
 		matchForFilter = Aggregation.match(Criteria.where("generalRecords.dataType").in(historyFilter));
 		if (size > 0)
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.skip(page * size), Aggregation.limit(size),
 			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), matchForFilter, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 	    } else {
 		if (size > 0)
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), Aggregation.skip(page * size), Aggregation.limit(size),
 			    Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 		else
 		    aggregation = Aggregation.newAggregation(
-			    Aggregation.match(Criteria.where("patientId").is(patientId).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
+			    Aggregation.match(Criteria.where("patientId").is(new ObjectId(patientId)).andOperator(Criteria.where("updatedTime").gte(new Date(createdTime)))),
 			    Aggregation.unwind("generalRecords"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 	    }

@@ -409,7 +409,10 @@ public class HistoryApi {
     public Response<HistoryDetailsResponse> getPatientHistory(@PathParam(value = "patientId") String patientId,
 	    @MatrixParam("historyFilter") List<String> historyFilter, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
-
+    	if (DPDoctorUtils.anyStringEmpty(patientId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
 	List<HistoryDetailsResponse> historyDetailsResponses = null;
 	historyDetailsResponses = historyServices.getPatientHistory(patientId, historyFilter, page, size, updatedTime);
 
@@ -434,8 +437,8 @@ public class HistoryApi {
     @ApiOperation(value = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY, notes = PathProxy.HistoryUrls.HANDLE_MEDICAL_HISTORY)
     public Response<Boolean> handleMedicalHistory(MedicalHistoryHandler request) {
 	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
-	    logger.warn("Request Cannot Be Null");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request Cannot Be Null");
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	boolean handleMedicalHistoryResponse = historyServices.handleMedicalHistory(request);
 

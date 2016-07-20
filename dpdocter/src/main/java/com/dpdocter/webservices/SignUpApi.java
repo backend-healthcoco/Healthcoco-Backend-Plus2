@@ -99,9 +99,9 @@ public class SignUpApi {
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.DOCTOR_SIGNUP, notes = PathProxy.SignUpUrls.DOCTOR_SIGNUP)
     public Response<DoctorSignUp> doctorSignup(DoctorSignupRequest request) {
-	if (request == null) {
-	    logger.warn("Request send  is NULL");
-	    throw new BusinessException(ServiceError.InvalidInput, "Request send is NULL");
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(), request.getMobileNumber(), request.getCity())) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);

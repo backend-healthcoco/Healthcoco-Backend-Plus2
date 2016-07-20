@@ -1,11 +1,11 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.beans.DosageWithTime;
 
 @Document(collection = "drug_dosage_cl")
 public class DrugDosageCollection extends GenericCollection {
@@ -14,8 +14,11 @@ public class DrugDosageCollection extends GenericCollection {
     private ObjectId id;
 
     @Field
-    private DosageWithTime dosage;
+    private String dosage;
 
+    @Field
+    private List<Long> dosageTime;
+    
     @Field
     private ObjectId doctorId;
 
@@ -36,15 +39,23 @@ public class DrugDosageCollection extends GenericCollection {
 	this.id = id;
     }
 
-    public DosageWithTime getDosage() {
-	return dosage;
-    }
+    public String getDosage() {
+		return dosage;
+	}
 
-    public void setDosage(DosageWithTime dosage) {
-	this.dosage = dosage;
-    }
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
 
-    public ObjectId getDoctorId() {
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public ObjectId getDoctorId() {
 	return doctorId;
     }
 
@@ -76,10 +87,10 @@ public class DrugDosageCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "DrugDosageCollection [id=" + id + ", dosage=" + dosage + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", discarded=" + discarded + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "DrugDosageCollection [id=" + id + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ "]";
+	}
 }

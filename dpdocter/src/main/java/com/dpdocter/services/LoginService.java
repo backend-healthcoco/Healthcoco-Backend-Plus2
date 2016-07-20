@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.User;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 

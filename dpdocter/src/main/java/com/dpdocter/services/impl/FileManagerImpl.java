@@ -69,47 +69,7 @@ public class FileManagerImpl implements FileManager {
 	    s3client.putObject(new PutObjectRequest(bucketName, imageUrl, fis, metadata));
 	    response.setImageUrl(imageUrl);
 	    if(createThumbnail){
-	    	BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(base64));
-		    double ratio = (double) originalImage.getWidth() / originalImage.getHeight();
-		    int height = originalImage.getHeight();	
-
-		    int width = originalImage.getWidth();
-		    int max = 120;
-		    if (width == height) {
-		    	width = max;
-		    	height = max;
-		    } 
-		    else if (width > height) {
-		    	height = max;
-		    	width = (int) (ratio * max);
-		    }
-		    else {
-		    	width = max;
-		    	height = (int) (max / ratio);
-		    }
-		    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		    img.createGraphics().drawImage(originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
-		    fileName = fileDetails.getFileName() + "_thumb." + fileDetails.getFileExtension();
-		    String thumbnailUrl = path + "/" + fileName;
-
-		    originalImage.flush();
-		    originalImage = null;
-		    
-		    ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-		    ImageIO.write(img, fileDetails.getFileExtension(), outstream);
-		    byte[] buffer = outstream.toByteArray();
-		    InputStream objectData = new ByteArrayInputStream(buffer);
-
-		    contentType = URLConnection.guessContentTypeFromStream(objectData);
-		    ObjectMetadata objectMetadata = new ObjectMetadata();
-		    metadata.setContentLength(buffer.length);
-		    metadata.setContentEncoding(fileDetails.getFileExtension());
-		    metadata.setContentType(contentType);
-		    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-		    
-		    AmazonS3 s3clientOther = new AmazonS3Client(credentials);
-		    s3clientOther.putObject(new PutObjectRequest(bucketName, thumbnailUrl, objectData, objectMetadata));
-	    	response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrl(fileDetails, path));
+	    		response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrl(fileDetails, path));
 	    }
 	} catch (AmazonServiceException ase) {
 	    System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode() + " AWS Error Code:   "

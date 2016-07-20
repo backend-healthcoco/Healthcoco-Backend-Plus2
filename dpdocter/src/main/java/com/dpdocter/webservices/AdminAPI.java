@@ -36,7 +36,6 @@ import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -298,7 +297,7 @@ public class AdminAPI {
 	List<?> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, true, searchTerm);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
-		((DiagramsCollection) clinicalItem).setDiagramUrl(getFinalImageURL(((DiagramsCollection) clinicalItem).getDiagramUrl()));
+		((Diagram) clinicalItem).setDiagramUrl(getFinalImageURL(((Diagram) clinicalItem).getDiagramUrl()));
 	    }
 	}
 	Response<Object> response = new Response<Object>();
@@ -805,7 +804,7 @@ public class AdminAPI {
     @POST
     @ApiOperation(value = PathProxy.AdminUrls.ADD_DRUG_DOSAGE, notes = PathProxy.AdminUrls.ADD_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> addDrugDosage(DrugDosageAddEditRequest request) {
-	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(request.getDosage().getDosage())) {
+	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(request.getDosage())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}
@@ -820,7 +819,7 @@ public class AdminAPI {
     @PUT
     @ApiOperation(value = PathProxy.AdminUrls.EDIT_DRUG_DOSAGE, notes = PathProxy.AdminUrls.EDIT_DRUG_DOSAGE)
     public Response<DrugDosageAddEditResponse> editDrugDosage(@PathParam(value = "drugDosageId") String drugDosageId, DrugDosageAddEditRequest request) {
-	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDosage().getDosage())) {
+	if (request == null || request.getDosage() == null || DPDoctorUtils.anyStringEmpty(drugDosageId, request.getDosage())) {
 	    logger.warn("Request Sent Is NULL");
 	    throw new BusinessException(ServiceError.InvalidInput, "Request Sent Is NULL");
 	}

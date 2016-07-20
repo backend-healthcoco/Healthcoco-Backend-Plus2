@@ -359,8 +359,8 @@ public class AdminServicesImpl implements AdminServices {
 			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
 			CityCollection cityCollection = new CityCollection();
-			cityCollection.setCity(obj[1]);
-			cityCollection.setState(obj[2]);
+			cityCollection.setCity(obj[0]);
+			cityCollection.setState(obj[1]);
 			cityCollection.setCountry("India");
 			List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(cityCollection.getCity() + " "
 				    + cityCollection.getState() + " "+cityCollection.getCountry());
@@ -593,7 +593,7 @@ public class AdminServicesImpl implements AdminServices {
 			 if(!DPDoctorUtils.anyStringEmpty(locationId)){
 				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId));
 				 @SuppressWarnings("unchecked")
-				 Collection<String> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
+				 Collection<ObjectId> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
 				 if(criteria == null)criteria = new Criteria("id").in(userIds);
 			 }
 			 if(!DPDoctorUtils.anyStringEmpty(state)){

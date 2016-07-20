@@ -1052,7 +1052,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    + DPDoctorUtils.getPrefixedNumber(currentYear % 100);
 	    String generatedId = patientInitial + date;
 
-	    Criteria criteria = new Criteria("doctorId").is(doctorId).and("locationId").is(locationId).and("PID").regex(generatedId + ".*");
+	    Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId)).and("PID").regex(generatedId + ".*");
 
 	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
 		    Aggregation.limit(1));
