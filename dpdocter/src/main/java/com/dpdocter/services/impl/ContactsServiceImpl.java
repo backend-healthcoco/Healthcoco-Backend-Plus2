@@ -560,7 +560,6 @@ public class ContactsServiceImpl implements ContactsService {
 	    boolean discarded) {
 	List<RegisteredPatientDetails> registeredPatientDetails = null;
 	List<PatientCollection> patientCollections = null;
-	List<GroupCollection> groupCollections = null;
 	List<Group> groups = null;
 	boolean[] discards = new boolean[2];
 	discards[0] = false;

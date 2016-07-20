@@ -589,16 +589,15 @@ public class AdminServicesImpl implements AdminServices {
 		try{
 			 Aggregation aggregation = null;
 			 
-			 Criteria criteria = null;
+			 Criteria criteria = new Criteria("userState").ne("ADMIN");
 			 if(!DPDoctorUtils.anyStringEmpty(locationId)){
 				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId));
 				 @SuppressWarnings("unchecked")
 				 Collection<ObjectId> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
-				 if(criteria == null)criteria = new Criteria("id").in(userIds);
+				 criteria = new Criteria("id").in(userIds);
 			 }
 			 if(!DPDoctorUtils.anyStringEmpty(state)){
-				 if(criteria == null)criteria = new Criteria("userState").is(state);
-				 else criteria.and("userState").is(state);
+				 criteria.and("userState").is(state);
 			 }
 			 if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
 				 if(criteria == null)

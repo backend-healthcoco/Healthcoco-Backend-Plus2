@@ -388,9 +388,11 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection = userRepository.save(userCollection);
 	    // save doctor specific details
 	    DoctorCollection doctorCollection = new DoctorCollection();
+	    List<String> specialities = request.getSpecialities();
+	    request.setSpecialities(null);
 	    BeanUtil.map(request, doctorCollection);
-	    if (request.getSpecialities() != null && !request.getSpecialities().isEmpty()) {
-			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpecialities());
+	    if (specialities != null && !specialities.isEmpty()) {
+			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(specialities);
 		    @SuppressWarnings("unchecked")
 			Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections, new BeanToPropertyValueTransformer("id"));
 		    if(specialityIds != null && !specialityIds.isEmpty())doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
@@ -502,7 +504,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection.setPassword(null);
 	    BeanUtil.map(userCollection, user);
 	    user.setEmailAddress(userCollection.getEmailAddress());
-	    user.setSpecialities(request.getSpecialities());
+	    user.setSpecialities(specialities);
 	    response.setUser(user);
 
 	    List<AccessControl> accessControls = assignAllAccessControl(userCollection.getId().toString(), locationCollection.getId().toString(), locationCollection.getHospitalId().toString(), roleIds);

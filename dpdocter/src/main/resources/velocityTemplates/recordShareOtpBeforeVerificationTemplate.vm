@@ -12,7 +12,7 @@
     <div style="margin-top:5px">
 
       <div style="margin: 10px -20px;">
-       <img src="${imageURL}logo1.png" style="width:280px;">
+       <img src="${imageURL}/logo1.png" style="width:280px;">
       </div>
       <div style="border-bottom: 2px solid #0077b5;"></div>
       

@@ -2663,18 +2663,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				DiagnosticTestCollection diagnosticTestCollection = null;
 				if (request.getTest().getId() != null)
 					diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(request.getTest().getId()));
-				if (diagnosticTestCollection == null && request.getTest().getTestName() != null) {
+				if (diagnosticTestCollection == null) {
+					
+					 if(request.getTest().getTestName() == null) {
+							logger.error("Cannot create lab test without diagnostic test");
+							throw new BusinessException(ServiceError.Unknown, "Cannot create lab test without diagnostic test");
+					}
 					diagnosticTestCollection = new DiagnosticTestCollection();
 					diagnosticTestCollection.setLocationId(new ObjectId(request.getLocationId()));
 					diagnosticTestCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					diagnosticTestCollection.setTestName(request.getTest().getTestName());
 					diagnosticTestCollection.setCreatedTime(createdTime);
-					if (locationCollection != null)
-						diagnosticTestCollection.setCreatedBy(locationCollection.getLocationName());
+					if (locationCollection != null)diagnosticTestCollection.setCreatedBy(locationCollection.getLocationName());
 						diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
-				} else {
-					logger.error("Cannt create lab test without diagnostic test");
-					throw new BusinessException(ServiceError.Unknown, "Cannt create lab test without diagnostic test");
 				}
 				transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST, false);
 				ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
@@ -2691,8 +2692,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					response.setTest(diagnosticTest);
 				}
 			} else {
-				logger.error("Cannt create lab test without diagnostic test");
-				throw new BusinessException(ServiceError.Unknown, "Cannt create lab test without diagnostic test");
+				logger.error("Cannot create lab test without diagnostic test");
+				throw new BusinessException(ServiceError.Unknown, "Cannot create lab test without diagnostic test");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2719,6 +2720,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (request.getTest().getId() != null)
 					diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(request.getTest().getId()));
 				if (diagnosticTestCollection == null) {
+					 if(request.getTest().getTestName() == null) {
+							logger.error("Cannot create lab test without diagnostic test");
+							throw new BusinessException(ServiceError.Unknown, "Cannot create lab test without diagnostic test");
+					}
 					diagnosticTestCollection = new DiagnosticTestCollection();
 					diagnosticTestCollection.setLocationId(new ObjectId(request.getLocationId()));
 					diagnosticTestCollection.setHospitalId(new ObjectId(request.getHospitalId()));
@@ -2741,8 +2746,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					response.setTest(diagnosticTest);
 				}
 			} else {
-				logger.error("Cannt create lab test without diagnostic test");
-				throw new BusinessException(ServiceError.Unknown, "Cannt create lab test without diagnostic test");
+				logger.error("Cannot create lab test without diagnostic test");
+				throw new BusinessException(ServiceError.Unknown, "Cannot create lab test without diagnostic test");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1797,14 +1797,10 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		    if (discarded)discards[1] = true;
 		    long createdTimestamp = Long.parseLong(updatedTime);
 		    ObjectId patientObjectId = null;
-			if(!DPDoctorUtils.anyStringEmpty(patientObjectId))patientObjectId = new ObjectId(patientId);
+			if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
 	    	
-			if (size > 0)
-			    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-				    new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-			    clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId, new Date(createdTimestamp), discards, inHistorys, new Sort(
-				    Sort.Direction.DESC, "createdTime"));
+			if (size > 0)clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId, new Date(createdTimestamp), discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else  clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId, new Date(createdTimestamp), discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
 		    
 		    if(clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()){
 		    	clinicalNotes = new ArrayList<ClinicalNotes>();

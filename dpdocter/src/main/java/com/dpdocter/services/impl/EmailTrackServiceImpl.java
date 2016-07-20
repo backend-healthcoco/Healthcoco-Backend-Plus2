@@ -52,8 +52,8 @@ public class EmailTrackServiceImpl implements EmailTackService {
 			    criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("smsDetails.userId").is(patientObjectId);
 			}
 		    } else {
-				if (DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("doctorId").is(doctorObjectId).and("smsDetails.userId").is(patientObjectId);
-				else criteria.and("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("smsDetails.userId").is(patientObjectId);
+				if (DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("doctorId").is(doctorObjectId).and("patientId").is(patientObjectId);
+				else criteria.and("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("patientId").is(patientObjectId);
 		    }
 		    Aggregation aggregation = null;
 		    if(size > 0){

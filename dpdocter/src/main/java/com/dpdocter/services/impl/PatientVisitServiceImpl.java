@@ -323,7 +323,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    int totalSize = 0;
 	    if (size > 0)
 		aggregation = Aggregation.newAggregation(
-			Aggregation.match((Criteria.where("doctorId").is(doctorObjectId)
+			Aggregation.match((new Criteria("doctorId").is(doctorObjectId)
 				.and("locationId").is(locationObjectId)
 				.and("hospitalId").is(hospitalObjectId))),
 			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")),
@@ -331,12 +331,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    else
 		aggregation = Aggregation.newAggregation(
-			Aggregation.match((Criteria.where("doctorId").is(doctorObjectId)
+			Aggregation.match((new Criteria("doctorId").is(doctorObjectId)
 				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId))),
 			Aggregation.group("patientId").max("visitedTime").as("visitedTime"), Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
 
-	    AggregationResults<PatientVisit> groupResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisit.class);
-	    List<PatientVisit> results = groupResults.getMappedResults();
+	    AggregationResults<PatientVisitCollection> groupResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisitCollection.class);
+	    List<PatientVisitCollection> results = groupResults.getMappedResults();
 
 	    if (results != null && !results.isEmpty()) {
 		@SuppressWarnings("unchecked")
@@ -348,7 +348,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				.andOperator(Criteria.where("locationId").is(locationObjectId).andOperator(Criteria.where("hospitalId").is(hospitalObjectId))))),
 			Aggregation.group("patientId"));
 
-		groupResults = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisit.class);
+		groupResults = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisitCollection.class);
 		results = groupResults.getMappedResults();
 
 		totalSize = results.size();
@@ -502,7 +502,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    visitedFors.add(VisitedFor.REPORTS);
 
 	    ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
-	    if(!DPDoctorUtils.anyStringEmpty(patientId))doctorObjectId = new ObjectId(patientId);
+	    if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);

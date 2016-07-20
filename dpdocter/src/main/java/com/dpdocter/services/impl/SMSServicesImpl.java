@@ -287,9 +287,9 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 	    Aggregation aggregation = null;
 	    if(size > 0){
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "smsDetails.sentTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
 		}else{
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "sentTime")));
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "smsDetails.sentTime")));
 		}
 	    AggregationResults<SMSTrack> aggregationResults = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, SMSTrack.class);
 	    response = aggregationResults.getMappedResults();
@@ -389,12 +389,12 @@ public class SMSServicesImpl implements SMSServices {
 	    String mobileNumber, String type) {
 	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 	try {
-	    smsTrackDetail.setDoctorId(new ObjectId(doctorId));
-	    smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
-	    smsTrackDetail.setLocationId(new ObjectId(locationId));
+	    smsTrackDetail.setDoctorId(!DPDoctorUtils.anyStringEmpty(doctorId) ? new ObjectId(doctorId) : null);
+	    smsTrackDetail.setHospitalId(!DPDoctorUtils.anyStringEmpty(locationId) ? new ObjectId(hospitalId) : null);
+	    smsTrackDetail.setLocationId(!DPDoctorUtils.anyStringEmpty(hospitalId) ? new ObjectId(locationId) : null);
 	    smsTrackDetail.setType(type);
 	    SMSDetail smsDetail = new SMSDetail();
-	    smsDetail.setUserId(new ObjectId(patientId));
+	    smsDetail.setUserId(!DPDoctorUtils.anyStringEmpty(patientId) ? new ObjectId(patientId) : null);
 	    smsDetail.setUserName(patientName);
 	    SMS sms = new SMS();
 	    sms.setSmsText(message);

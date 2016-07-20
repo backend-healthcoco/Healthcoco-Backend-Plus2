@@ -181,7 +181,8 @@ public class ClinicalNotesApi {
     @GET
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_PATIENT_ID)
     public Response<ClinicalNotes> getNotes(@PathParam(value = "patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, 
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
     	if (DPDoctorUtils.anyStringEmpty(patientId)) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");

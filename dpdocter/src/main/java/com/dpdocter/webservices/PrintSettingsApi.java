@@ -101,7 +101,7 @@ public class PrintSettingsApi {
 	List<PrintSettings> printSettings = printSettingsService.getSettings(printFilter, doctorId, locationId, hospitalId, page, size, updatedTime, discarded);
 	if (printSettings != null) {
 	    for (Object pSettings : printSettings) {
-		((PrintSettingsCollection) pSettings).setClinicLogoUrl(getFinalImageURL(((PrintSettingsCollection) pSettings).getClinicLogoUrl()));
+		((PrintSettings) pSettings).setClinicLogoUrl(getFinalImageURL(((PrintSettings) pSettings).getClinicLogoUrl()));
 	    }
 	}
 	Response<PrintSettings> response = new Response<PrintSettings>();

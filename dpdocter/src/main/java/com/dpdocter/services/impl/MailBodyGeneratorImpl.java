@@ -38,6 +38,18 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Value(value = "${contact.us.email}")
     private String contactUsEmail;
 
+    @Value(value = "${fb.link}")
+    private String fbLink;
+
+    @Value(value = "${twitter.link}")
+    private String twitterLink;
+
+    @Value(value = "${linkedIn.link}")
+    private String linkedInLink;
+
+    @Value(value = "${googlePlus.link}")
+    private String googlePlusLink;
+
     @Override
     @Transactional
     public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,String clinicName) throws Exception {
@@ -50,6 +62,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("loginLink", loginLink);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -62,6 +78,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("link", RESET_PASSWORD_LINK + "?uid=" + tokenId);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "forgotPasswordTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -85,6 +105,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     	model.put("link", RESET_PASSWORD_WEB_LINK);
     	model.put("imageURL", imagePath + "templatesImage");
     	model.put("contactUsEmail", contactUsEmail);
+    	model.put("fbLink", fbLink);
+    	model.put("twitterLink", twitterLink);
+    	model.put("linkedInLink", linkedInLink);
+    	model.put("googlePlusLink", googlePlusLink);
     	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "addIssueTemplate.vm", "UTF-8", model);
     	return text;
     }
@@ -97,6 +121,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("link", RESET_PASSWORD_WEB_LINK);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "resetPasswordSuccess.vm", "UTF-8", model);
 	return text;
     }
@@ -109,6 +137,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("doctorName", doctorName);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpBeforeVerificationTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -121,6 +153,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("doctorName", doctorName);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "recordShareOtpAfterVerificationTemplate.vm", "UTF-8", model);
 	return text;
     }
@@ -135,6 +171,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("clinicName", clinicName);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -148,6 +188,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("resumeType", resumeType);
 	model.put("imageURL", imagePath + "templatesImage");
 	model.put("contactUsEmail", contactUsEmail);
+	model.put("fbLink", fbLink);
+	model.put("twitterLink", twitterLink);
+	model.put("linkedInLink", linkedInLink);
+	model.put("googlePlusLink", googlePlusLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -163,6 +207,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("medicalRecordType", medicalRecordType);
 		model.put("imageURL", imagePath + "templatesImage");
 		model.put("contactUsEmail", contactUsEmail);
+		model.put("fbLink", fbLink);
+		model.put("twitterLink", twitterLink);
+		model.put("linkedInLink", linkedInLink);
+		model.put("googlePlusLink", googlePlusLink);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 	}
@@ -176,6 +224,10 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("uniqueFeedbackId", uniqueFeedbackId);
 		model.put("imageURL", imagePath + "templatesImage");
 		model.put("contactUsEmail", contactUsEmail);
+		model.put("fbLink", fbLink);
+		model.put("twitterLink", twitterLink);
+		model.put("linkedInLink", linkedInLink);
+		model.put("googlePlusLink", googlePlusLink);
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 		return text;
 

@@ -60,7 +60,7 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = "GET_DOCTOR_CONTACTS", notes = "GET_DOCTOR_CONTACTS")
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId()) || request.getGroups() == null || !request.getGroups().isEmpty()) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId()) || request.getGroups() == null || request.getGroups().isEmpty()) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
