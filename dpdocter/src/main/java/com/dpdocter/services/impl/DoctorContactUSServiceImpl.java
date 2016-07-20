@@ -53,7 +53,6 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				if(doctorContactUsCollection != null)
 				{
 					response = doctorWelcomeMessage;
-					
 				}
 			} catch (DuplicateKeyException de) {
 			    logger.error(de);

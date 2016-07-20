@@ -3,23 +3,23 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.DoctorExperienceUnit;
 
 public class DoctorExperience {
-    private String experience;
+    private int experience;
 
     private DoctorExperienceUnit period;
 
     public DoctorExperience() {
 	}
 
-	public DoctorExperience(String experience, DoctorExperienceUnit period) {
+	public DoctorExperience(int experience, DoctorExperienceUnit period) {
 		this.experience = experience;
 		this.period = period;
 	}
 
-	public String getExperience() {
+	public Integer getExperience() {
 	return experience;
     }
 
-    public void setExperience(String experience) {
+    public void setExperience(Integer experience) {
 	this.experience = experience;
     }
 
