@@ -35,6 +35,7 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.DrugWithGenericCodes;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
@@ -3421,7 +3422,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					ComponentType.ALL.getType());
 		}
 
-		parameters.put("printSettingsId", printSettings != null ? printSettings.getId() : "");
+		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
 		if (printSettings != null) {
@@ -3597,8 +3598,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Collection<ObjectId> testIds = null;
 			if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
 				List<DiagnosticTestCollection> diagnosticTestCollections = null;
-				if (size > 0)diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else diagnosticTestCollections = diagnosticTestRepository.getCustomForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
+				diagnosticTestCollections = diagnosticTestRepository.getCustomGlobalForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
 				testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 			    if(testIds == null || testIds.isEmpty())return response;
 			}
@@ -3630,10 +3630,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Drug> getGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3643,10 +3643,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Drug> getCustomDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getCustomDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();		
 			
 		} catch (Exception e) {
@@ -3657,10 +3657,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Drug> getCustomGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getCustomGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();
 			
 		} catch (Exception e) {
@@ -3671,10 +3671,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 	
-	private List<Drug> getGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3685,10 +3685,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 	
 
-	private List<Drug> getCustomDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getCustomDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();		
 			
 		} catch (Exception e) {
@@ -3699,10 +3699,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Drug> getCustomGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getCustomGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();
 			
 		} catch (Exception e) {
@@ -3713,10 +3713,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 	
-	private List<Drug> getGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3727,10 +3727,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 	
 
-	private List<Drug> getCustomDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getCustomDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();		
 			
 		} catch (Exception e) {
@@ -3741,10 +3741,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private List<Drug> getCustomGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<Drug> response = null;
+	private List<DrugWithGenericCodes> getCustomGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<DrugWithGenericCodes> response = null;
 		try {
-			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, Drug.class); 
+			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
 			response = results.getMappedResults();
 			
 		} catch (Exception e) {

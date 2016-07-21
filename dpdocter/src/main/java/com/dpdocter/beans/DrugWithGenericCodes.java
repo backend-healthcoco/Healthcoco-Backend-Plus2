@@ -1,14 +1,10 @@
-package com.dpdocter.response;
+package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonManagedReference;
-
-import com.dpdocter.beans.DrugType;
-import com.dpdocter.beans.Strength;
 import com.dpdocter.collections.GenericCollection;
 
-public class DrugAddEditResponse extends GenericCollection {
+public class DrugWithGenericCodes extends GenericCollection{
     private String id;
 
     private DrugType drugType;
@@ -17,18 +13,25 @@ public class DrugAddEditResponse extends GenericCollection {
 
     private String explanation;
 
-    @JsonManagedReference
     private Strength strength;
 
     private List<String> genericCodes;
+
+    private String drugCode;
+
+    private Boolean discarded;
+
+    private String companyName;
+
+    private String packSize;
+
+    private String MRP;
 
     private String doctorId;
 
     private String hospitalId;
 
     private String locationId;
-
-    private String drugCode;
 
     public String getId() {
 	return id;
@@ -70,7 +73,7 @@ public class DrugAddEditResponse extends GenericCollection {
 	this.strength = strength;
     }
 
-    public List<String> getGenericCodes() {
+	public List<String> getGenericCodes() {
 		return genericCodes;
 	}
 
@@ -78,7 +81,47 @@ public class DrugAddEditResponse extends GenericCollection {
 		this.genericCodes = genericCodes;
 	}
 
-	public String getDoctorId() {
+	public String getDrugCode() {
+	return drugCode;
+    }
+
+    public void setDrugCode(String drugCode) {
+	this.drugCode = drugCode;
+    }
+
+    public Boolean getDiscarded() {
+	return discarded;
+    }
+
+    public void setDiscarded(Boolean discarded) {
+	this.discarded = discarded;
+    }
+
+    public String getCompanyName() {
+	return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+	this.companyName = companyName;
+    }
+
+    public String getPackSize() {
+	return packSize;
+    }
+
+    public void setPackSize(String packSize) {
+	this.packSize = packSize;
+    }
+
+    public String getMRP() {
+	return MRP;
+    }
+
+    public void setMRP(String mRP) {
+	MRP = mRP;
+    }
+
+    public String getDoctorId() {
 	return doctorId;
     }
 
@@ -102,18 +145,11 @@ public class DrugAddEditResponse extends GenericCollection {
 	this.locationId = locationId;
     }
 
-    public String getDrugCode() {
-	return drugCode;
-    }
-
-    public void setDrugCode(String drugCode) {
-	this.drugCode = drugCode;
-    }
-
 	@Override
 	public String toString() {
-		return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
-				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
-				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode + "]";
+		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
+				+ ", strength=" + strength + ", genericCodes=" + genericCodes + ", drugCode=" + drugCode
+				+ ", discarded=" + discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
+				+ MRP + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
 	}
 }

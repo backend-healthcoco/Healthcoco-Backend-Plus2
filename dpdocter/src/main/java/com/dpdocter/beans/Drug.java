@@ -1,11 +1,10 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class Drug extends GenericCollection{
-    private String id;
+   
+	private String id;
 
     private DrugType drugType;
 
@@ -15,17 +14,7 @@ public class Drug extends GenericCollection{
 
     private Strength strength;
 
-    private List<String> genericCodes;
-
-    private String drugCode;
-
     private Boolean discarded;
-
-    private String companyName;
-
-    private String packSize;
-
-    private String MRP;
 
     private String doctorId;
 
@@ -33,31 +22,31 @@ public class Drug extends GenericCollection{
 
     private String locationId;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public DrugType getDrugType() {
-	return drugType;
-    }
+	public DrugType getDrugType() {
+		return drugType;
+	}
 
-    public void setDrugType(DrugType drugType) {
-	this.drugType = drugType;
-    }
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
 
-    public String getDrugName() {
-	return drugName;
-    }
+	public String getDrugName() {
+		return drugName;
+	}
 
-    public void setDrugName(String drugName) {
-	this.drugName = drugName;
-    }
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -66,90 +55,49 @@ public class Drug extends GenericCollection{
 	}
 
 	public Strength getStrength() {
-	return strength;
-    }
-
-    public void setStrength(Strength strength) {
-	this.strength = strength;
-    }
-
-	public List<String> getGenericCodes() {
-		return genericCodes;
+		return strength;
 	}
 
-	public void setGenericCodes(List<String> genericCodes) {
-		this.genericCodes = genericCodes;
+	public void setStrength(Strength strength) {
+		this.strength = strength;
 	}
 
-	public String getDrugCode() {
-	return drugCode;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDrugCode(String drugCode) {
-	this.drugCode = drugCode;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getCompanyName() {
-	return companyName;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setCompanyName(String companyName) {
-	this.companyName = companyName;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getPackSize() {
-	return packSize;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setPackSize(String packSize) {
-	this.packSize = packSize;
-    }
-
-    public String getMRP() {
-	return MRP;
-    }
-
-    public void setMRP(String mRP) {
-	MRP = mRP;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
-
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
-
-    public String getLocationId() {
-	return locationId;
-    }
-
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
-				+ ", strength=" + strength + ", genericCodes=" + genericCodes + ", drugCode=" + drugCode
-				+ ", discarded=" + discarded + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
-				+ MRP + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + "]";
+				+ ", strength=" + strength + ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId="
+				+ hospitalId + ", locationId=" + locationId + "]";
 	}
 }
