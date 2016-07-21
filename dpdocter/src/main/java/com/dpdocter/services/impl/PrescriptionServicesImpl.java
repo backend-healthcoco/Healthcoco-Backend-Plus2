@@ -3387,6 +3387,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
 		if (printSettings != null) {
 			if (printSettings.getHeaderSetup() != null) {
+				if(printSettings.getHeaderSetup().getTopLeftText() != null)
 				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
 					if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt")
@@ -3413,6 +3414,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									+ "'>" + text + "</span>";
 					}
 				}
+				if(printSettings.getHeaderSetup().getTopRightText() != null)
 				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 					if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt")
 							&& !str.getFontSize().equalsIgnoreCase("11pt")

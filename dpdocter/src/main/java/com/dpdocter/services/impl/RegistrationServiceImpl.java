@@ -287,11 +287,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 	RegisteredPatientDetails registeredPatientDetails = new RegisteredPatientDetails();
 	List<Group> groups = null;
 	try {
-
-		if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-			logger.warn("Mobile Number cannot be null");
-			throw new BusinessException(ServiceError.InvalidInput, "Mobile Number cannot be null");
-		 }
 	    // get role of specified type
 	    RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	    if (roleCollection == null) {

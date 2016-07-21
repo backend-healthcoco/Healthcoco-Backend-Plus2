@@ -71,6 +71,9 @@ public class SignUpApi {
     @Value(value = "${image.path}")
     private String imagePath;
 
+    @Value(value = "${register.first.name.validation}")
+    private String firstNameValidaton;
+    
     @Path(value = PathProxy.SignUpUrls.ADMIN_SIGNUP)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.ADMIN_SIGNUP, notes = PathProxy.SignUpUrls.ADMIN_SIGNUP)
@@ -102,7 +105,10 @@ public class SignUpApi {
 	if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName(), request.getEmailAddress(), request.getMobileNumber(), request.getCity())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
+	}else if (request.getFirstName().length() < 2) {
+		logger.warn(firstNameValidaton);
+		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+	 }
 
 	DoctorSignUp doctorSignUp = signUpService.doctorSignUp(request);
 	if (doctorSignUp != null) {
@@ -229,7 +235,10 @@ public class SignUpApi {
     	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
     	    logger.warn("Inavlid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
-    	}
+    	}else if (request.getName().length() < 2) {
+    		logger.warn(firstNameValidaton);
+    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+    	 }
 	List<User> users = new ArrayList<>();
 
 	if (request.isNewPatientNeedToBeCreated()) {
@@ -439,7 +448,13 @@ public class SignUpApi {
     	{
     		logger.warn("Doctor contact data is null");
     	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact data is null");
-    	}
+    	}else if(DPDoctorUtils.anyStringEmpty(doctorContactUs.getFirstName(), doctorContactUs.getEmailAddress(), doctorContactUs.getTitle(),
+    			doctorContactUs.getCity(), doctorContactUs.getMobileNumber()) || doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null || doctorContactUs.getSpecialities().isEmpty()){
+    		
+    	}else if (doctorContactUs.getFirstName().length() < 2) {
+    		logger.warn(firstNameValidaton);
+    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+    	 }
     	
     	Response<String> response = new Response<String>();
     	response.setData(doctorContactUsService.submitDoctorContactUSInfo(doctorContactUs));

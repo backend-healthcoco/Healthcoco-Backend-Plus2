@@ -1996,6 +1996,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		int  headerLeftTextLength = 0, headerRightTextLength = 0;
 		if (printSettings != null) {
 		    if (printSettings.getHeaderSetup() != null) {
+		    if(printSettings.getHeaderSetup().getTopLeftText() != null)
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
 			    if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
@@ -2017,6 +2018,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 					headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
 			    }
 			}
+		    
+		    if(printSettings.getHeaderSetup().getTopRightText() != null)
 			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
 			    if ((str.getFontSize() != null) && str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
 			    		&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")

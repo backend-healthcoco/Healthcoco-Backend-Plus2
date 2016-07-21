@@ -10,6 +10,8 @@ import com.dpdocter.beans.DOB;
 
 public class DoctorSignupRequest {
    
+	private String title;
+	
 	private String firstName;
 
     private char[] password;
@@ -140,12 +142,21 @@ public class DoctorSignupRequest {
 		this.emailAddress = emailAddress;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	@Override
 	public String toString() {
-		return "DoctorSignupRequest [firstName=" + firstName + ", password=" + Arrays.toString(password)
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
-				+ dob + ", specialities=" + specialities + ", locationName=" + locationName + ", country=" + country
-				+ ", state=" + state + ", city=" + city + ", streetAddress=" + streetAddress + ", registerNumber="
-				+ registerNumber + "]";
+		return "DoctorSignupRequest [title=" + title + ", firstName=" + firstName + ", password="
+				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", gender=" + gender + ", dob=" + dob + ", specialities=" + specialities + ", locationName="
+				+ locationName + ", country=" + country + ", state=" + state + ", city=" + city + ", streetAddress="
+				+ streetAddress + ", registerNumber=" + registerNumber + "]";
 	}
+
 }

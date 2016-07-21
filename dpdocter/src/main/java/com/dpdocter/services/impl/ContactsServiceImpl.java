@@ -308,7 +308,9 @@ public class ContactsServiceImpl implements ContactsService {
 
     private Collection<ObjectId> getPatientIdsForGroups(List<String> groups) throws Exception {
 	Query query = new Query();
-	query.addCriteria(Criteria.where("groupId").in(groups));
+	List<ObjectId> groupObjectIds = new ArrayList<ObjectId>();
+	for(String groupId : groups)groupObjectIds.add(new ObjectId(groupId));
+	query.addCriteria(Criteria.where("groupId").in(groupObjectIds));
 	List<PatientGroupCollection> patientGroupCollections = mongoTemplate.find(query, PatientGroupCollection.class);
 	if (patientGroupCollections != null) {
 	    @SuppressWarnings("unchecked")

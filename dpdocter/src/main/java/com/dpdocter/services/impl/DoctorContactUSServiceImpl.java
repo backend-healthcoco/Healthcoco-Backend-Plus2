@@ -21,6 +21,8 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.services.DoctorContactUsService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 
 @Service
 public class DoctorContactUSServiceImpl implements DoctorContactUsService {
@@ -36,6 +38,15 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	@Value(value = "${doctor.welcome.message}")
 	private String doctorWelcomeMessage;
 
+    @Autowired
+    private MailService mailService;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
+    
+    @Value(value = "${mail.contact.us.welcome.subject}")
+	private String doctorWelcomeSubject;
+
 	@Override
 	@Transactional
 	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs) {
@@ -47,6 +58,10 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 			try {
 				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
+				
+				String body = mailBodyGenerator.generateActivationEmailBody(doctorContactUs.getFirstName(), null, "doctorWelcomeTemplate.vm", null ,null);
+			    mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
+			    
 				if(doctorContactUsCollection != null)
 				{
 					response = doctorWelcomeMessage;
@@ -89,7 +104,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	public DoctorContactUs updateDoctorContactState(String contactId, DoctorContactStateType contactState)
 	{
 		DoctorContactUs response = null;
-		if(contactId != null || !(contactId.isEmpty()))
+		if(contactId != null && !(contactId.isEmpty()))
 		{
 			try {
 				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findByContactId(contactId);

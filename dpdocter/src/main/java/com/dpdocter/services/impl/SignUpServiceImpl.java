@@ -380,7 +380,7 @@ public class SignUpServiceImpl implements SignUpService {
 		throw new BusinessException(ServiceError.InvalidInput, "Incorrect Date of Birth");
 	    }
 	    userCollection.setUserName(request.getEmailAddress());
-	    userCollection.setTitle("Dr.");
+	    if(DPDoctorUtils.allStringsEmpty(request.getTitle()))userCollection.setTitle("Dr.");
 	    userCollection.setCreatedTime(new Date());
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	    userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
