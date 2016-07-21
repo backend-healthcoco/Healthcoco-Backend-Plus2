@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,8 @@ import com.dpdocter.repository.DoctorContactUsRepository;
 import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class DoctorContactUSServiceImpl implements DoctorContactUsService {
@@ -83,12 +86,24 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	
 	@Override
 	@Transactional
-	public List<DoctorContactUs> getDoctorContactList(int page, int size) {
+	public List<DoctorContactUs> getDoctorContactList(int page, int size ,String searchTerm) {
 		List<DoctorContactUs> response = null;
+		//String searchTerm = null;
+		Criteria criteria = null;
 		try{
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria = new Criteria().orOperator(new Criteria("firstName").regex("^"+searchTerm,"i"),(new Criteria("emailAddress").regex("^"+searchTerm,"i")));
 			Aggregation aggregation = null;
-			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-			else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			if(criteria != null)
+			{
+				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+				else aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			}
+			else
+			{
+				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+				else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			}
+			
 			AggregationResults<DoctorContactUs> aggregationResults = mongoTemplate.aggregate(aggregation, DoctorContactUsCollection.class, DoctorContactUs.class);
 			response = aggregationResults.getMappedResults();
 		}catch(Exception e){

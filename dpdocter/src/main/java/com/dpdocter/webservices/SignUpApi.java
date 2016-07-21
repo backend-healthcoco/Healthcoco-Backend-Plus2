@@ -464,9 +464,9 @@ public class SignUpApi {
     @Path(value = PathProxy.SignUpUrls.GET_DOCTOR_CONTACT_LIST)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.GET_DOCTOR_CONTACT_LIST, notes = PathProxy.SignUpUrls.GET_DOCTOR_CONTACT_LIST)
-    public Response<DoctorContactUs> getDoctorContactList(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size)
+    public Response<DoctorContactUs> getDoctorContactList(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size , @QueryParam (value="searchTerm") String searchTerm)
     {
-    	List<DoctorContactUs> doctorContactUsList = doctorContactUsService.getDoctorContactList(page, size);
+    	List<DoctorContactUs> doctorContactUsList = doctorContactUsService.getDoctorContactList(page, size,searchTerm);
 		Response<DoctorContactUs> response = new Response<DoctorContactUs>();
 		response.setDataList(doctorContactUsList);
 		return response;
