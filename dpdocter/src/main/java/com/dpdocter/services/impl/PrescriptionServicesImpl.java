@@ -1725,6 +1725,45 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			break;
 		}
+		
+		case DRUGCODE: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				if (isAdmin)
+					response = getGlobalDrugCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+				break;
+			case CUSTOM:
+				if (isAdmin)
+					response = getCustomDrugCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+				break;
+			case BOTH:
+				if (isAdmin)
+					response = getCustomGlobalDrugCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+				break;
+			}
+			break;
+		}
+		
+		case GENERICCODE: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				if (isAdmin)
+					response = getGlobalDrugGenericCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+				break;
+			case CUSTOM:
+				if (isAdmin)
+					response = getCustomDrugGenericCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+				break;
+			case BOTH:
+				if (isAdmin)
+					response = getCustomGlobalDrugGenericCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+				break;
+			}
+			break;
+		}
+		
 		default:
 			break;
 		}
@@ -3622,6 +3661,90 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		List<Drug> response = null;
 		try {
 			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+	private List<Drug> getGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+
+	private List<Drug> getCustomDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();		
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+
+	private List<Drug> getCustomGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+	private List<Drug> getGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+	
+
+	private List<Drug> getCustomDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, Drug.class); 
+			response = results.getMappedResults();		
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+
+	private List<Drug> getCustomGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+		List<Drug> response = null;
+		try {
+			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, Drug.class); 
 			response = results.getMappedResults();
 			
 		} catch (Exception e) {
