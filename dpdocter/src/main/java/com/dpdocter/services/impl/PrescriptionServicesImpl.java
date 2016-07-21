@@ -3607,8 +3607,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
 	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
 	    	
-			if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards,	testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-			else labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
+			if(testIds != null){
+				if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards,	new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}else{
+				if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards,	testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
+				else labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
+			}
 			
 			if (!labTestCollections.isEmpty()) {
 				response = new ArrayList<Object>();
