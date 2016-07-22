@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -42,7 +43,7 @@ public class DrugCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-//    @Indexed(unique = true)
+    @Indexed(unique = true)
     @Field
     private String drugCode;
 

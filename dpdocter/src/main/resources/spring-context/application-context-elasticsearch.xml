@@ -9,7 +9,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 <context:property-placeholder location="classpath:application.properties" />
-    <elasticsearch:transport-client id="client" cluster-nodes="${elasticesearch.cluster.nodes}" cluster-name="${elasticesearch.cluster.name}"/>
+    <elasticsearch:transport-client id="client" cluster-nodes="${elasticesearch.cluster.nodes}" cluster-name="${elasticesearch.cluster.name}" shield-transport-ssl="true"/>
     <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
         <constructor-arg name="client" ref="client"/>
     </bean>

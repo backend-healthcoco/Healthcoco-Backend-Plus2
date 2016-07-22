@@ -43,9 +43,6 @@ public class MailServiceImpl implements MailService {
     @Value(value = "${mail.port}")
     private String PORT;
 
-    @Value(value = "${mail.host}")
-    private String HOST;
-
     @Value(value = "${mail.aws.key.id}")
     private String AWS_KEY;
 

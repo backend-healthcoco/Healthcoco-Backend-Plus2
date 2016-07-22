@@ -37,6 +37,9 @@ public class DoctorContactUsCollection extends GenericCollection{
 	@Field
 	private Boolean toList = Boolean.FALSE;
 
+	@Field
+	private String city;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -126,14 +129,19 @@ public class DoctorContactUsCollection extends GenericCollection{
 		this.toList = toList;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorContactUsCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName="
 				+ userName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
 				+ ", specialities=" + specialities + ", contactState=" + contactState + ", isVerified=" + isVerified
-				+ ", toList=" + toList + "]";
+				+ ", toList=" + toList + ", city=" + city + "]";
 	}
-
-	
-
 }

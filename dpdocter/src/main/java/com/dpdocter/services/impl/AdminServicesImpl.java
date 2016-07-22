@@ -62,6 +62,7 @@ import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -589,40 +590,33 @@ public class AdminServicesImpl implements AdminServices {
 		try{
 			 Aggregation aggregation = null;
 			 
-			 Criteria criteria = new Criteria("userState").ne("ADMIN");
+			 Criteria criteria = null;
+			 if(!DPDoctorUtils.anyStringEmpty(state)){
+				 criteria = new Criteria("userState").is(state);
+			 }else{
+				 criteria = new Criteria("userState").ne(UserState.ADMIN);
+			 }
+			 
 			 if(!DPDoctorUtils.anyStringEmpty(locationId)){
 				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId));
 				 @SuppressWarnings("unchecked")
 				 Collection<ObjectId> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
-				 criteria = new Criteria("id").in(userIds);
+				 criteria.and("id").in(userIds);
 			 }
-			 if(!DPDoctorUtils.anyStringEmpty(state)){
-				 criteria.and("userState").is(state);
-			 }
+			 
 			 if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-				 if(criteria == null)
-					 criteria = new Criteria().orOperator(new Criteria("emailAddress").regex("^"+searchTerm,"i"), new Criteria("firstName").regex("^"+searchTerm,"i"));
-				 else
 					 criteria = new Criteria().orOperator(new Criteria("emailAddress").regex("^"+searchTerm,"i").andOperator(criteria), new Criteria("firstName").regex("^"+searchTerm).andOperator(criteria));
 			 }
-			 if(criteria != null){
-				 if(size > 0){
+	
+			 if(size > 0){
 					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
 							 new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
 				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
-				 }else{
+			 }else{
 					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
 			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
-				 }
-		}else{
-			if(size > 0){
-				 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
-			 }else{
-				 aggregation = Aggregation.newAggregation(new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-		              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 			 }
-		}
+		
 	    AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class);
 	    List<UserCollection> userCollections = results.getMappedResults();
 	    if(userCollections != null && !userCollections.isEmpty()){

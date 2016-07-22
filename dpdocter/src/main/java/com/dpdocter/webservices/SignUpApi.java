@@ -444,13 +444,12 @@ public class SignUpApi {
     @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
     public Response<String> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs)
     {
-    	if(doctorContactUs == null)
-    	{
+    	if(doctorContactUs == null){
     		logger.warn("Doctor contact data is null");
     	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact data is null");
-    	}else if(DPDoctorUtils.anyStringEmpty(doctorContactUs.getFirstName(), doctorContactUs.getEmailAddress(), doctorContactUs.getTitle(),
-    			doctorContactUs.getCity(), doctorContactUs.getMobileNumber()) || doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null || doctorContactUs.getSpecialities().isEmpty()){
-    		
+    	}else if(DPDoctorUtils.anyStringEmpty(doctorContactUs.getFirstName(), doctorContactUs.getEmailAddress(), doctorContactUs.getTitle(),doctorContactUs.getCity(), doctorContactUs.getMobileNumber()) || doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null || doctorContactUs.getSpecialities().isEmpty()){
+    		logger.warn("Invalid Input");
+    		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}else if (doctorContactUs.getFirstName().length() < 2) {
     		logger.warn(firstNameValidaton);
     		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
