@@ -46,6 +46,8 @@ import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.MedicalCouncilCollection;
+import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
@@ -56,10 +58,14 @@ import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESEducationInstituteDocument;
 import com.dpdocter.elasticsearch.document.ESEducationQualificationDocument;
+import com.dpdocter.elasticsearch.document.ESMedicalCouncilDocument;
+import com.dpdocter.elasticsearch.document.ESProfessionalMembershipDocument;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationInstituteRepository;
 import com.dpdocter.elasticsearch.repository.ESEducationQualificationRepository;
+import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
+import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
@@ -75,6 +81,8 @@ import com.dpdocter.repository.EducationInstituteRepository;
 import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.MedicalCouncilRepository;
+import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserLocationRepository;
@@ -167,6 +175,18 @@ public class AdminServicesImpl implements AdminServices {
 
     @Autowired
     private UserLocationRepository userLocationRepository;
+
+    @Autowired
+    private ProfessionalMembershipRepository professionalMembershipRepository;
+
+    @Autowired
+    private ESProfessionalMembershipRepository esProfessionalMembershipRepository;
+
+    @Autowired
+    private MedicalCouncilRepository medicalCouncilRepository;
+
+    @Autowired
+    private ESMedicalCouncilRepository esMedicalCouncilRepository;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -355,9 +375,7 @@ public class AdminServicesImpl implements AdminServices {
 
 		try {
 			br = new BufferedReader(new FileReader(csvFile));
-		    int i = 0;
 		    while ((line = br.readLine()) != null) {
-			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
 			CityCollection cityCollection = new CityCollection();
 			cityCollection.setCity(obj[0]);
@@ -387,7 +405,6 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		    }
 		}
-		System.out.println("Done");
 	}
 
 	@Override
@@ -399,13 +416,8 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = ",";
 
 		try {
-
 		    br = new BufferedReader(new FileReader(csvFile));
-		    int i = 0;
 		    while ((line = br.readLine()) != null) {
-		    	i=i++;
-		    	
-			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
 			String drugType = obj[2];
 			 DrugTypeCollection drugTypeCollection = drugTypeRepository.findByType(drugType);
@@ -455,8 +467,6 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		    }
 		}
-		System.out.println("Drugs done");
-		
 	}
 
 	@Override
@@ -469,9 +479,7 @@ public class AdminServicesImpl implements AdminServices {
 
 		try {
 		    br = new BufferedReader(new FileReader(csvFile));
-		    int i = 0;
 		    while ((line = br.readLine()) != null) {
-			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
 			DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
 			diagnosticTestCollection.setTestName(obj[0]);
@@ -493,7 +501,6 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		    }
 		}
-		System.out.println("Diagnostic test done");		
 	}
 
 	@Override
@@ -506,12 +513,10 @@ public class AdminServicesImpl implements AdminServices {
 
 		try {
 		    br = new BufferedReader(new FileReader(csvFile));
-		    int i = 0;
 		    while ((line = br.readLine()) != null) {
-			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
 			EducationInstituteCollection educationInstituteCollection = new EducationInstituteCollection();
-			educationInstituteCollection.setName(obj[1]);
+			educationInstituteCollection.setName(obj[0]);
 			educationInstituteCollection.setCreatedBy("ADMIN");
 			educationInstituteCollection.setCreatedTime(new Date());
 			educationInstituteCollection.setUpdatedTime(new Date());
@@ -534,22 +539,19 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		    }
 		}
-		System.out.println("Education Institute test done");		
 	}
 
 	@Override
 	@Transactional
 	public void importEducationQualification() {
-		String csvFile = "/home/suresh/EducationQualification.csv";
+		String csvFile = "/home/ubuntu/EducationQualification.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = "\\?";
 
 		try {
 		    br = new BufferedReader(new FileReader(csvFile));
-		    int i = 0;
 		    while ((line = br.readLine()) != null) {
-			System.out.println(i++);
 			String[] obj = line.split(cvsSplitBy);
 			EducationQualificationCollection educationQualificationCollection = new EducationQualificationCollection();
 			educationQualificationCollection.setName(obj[0]);
@@ -575,7 +577,6 @@ public class AdminServicesImpl implements AdminServices {
 			}
 		    }
 		}
-		System.out.println("Education Qualification done");				
 	}
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
@@ -748,6 +749,80 @@ public class AdminServicesImpl implements AdminServices {
 		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public void importProfessionalMembership() {
+		String csvFile = "/home/ubuntu/Memberships.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "\\?";
+
+		try {
+		    br = new BufferedReader(new FileReader(csvFile));
+		    while ((line = br.readLine()) != null) {
+			String[] obj = line.split(cvsSplitBy);
+			ProfessionalMembershipCollection professionalMembershipCollection = new ProfessionalMembershipCollection();
+			professionalMembershipCollection.setMembership(obj[0]);
+			professionalMembershipCollection.setCreatedBy("ADMIN");
+			professionalMembershipCollection.setCreatedTime(new Date());
+			professionalMembershipCollection.setUpdatedTime(new Date());
+			
+			professionalMembershipRepository.save(professionalMembershipCollection);
+			ESProfessionalMembershipDocument document = new  ESProfessionalMembershipDocument();
+			BeanUtil.map(professionalMembershipCollection, document);
+			esProfessionalMembershipRepository.save(document);
+		    }
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} 
+		finally {
+		    if (br != null) {
+			try {
+			    br.close();
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+		    }
+		}
+	}
+
+	@Override
+	public void importMedicalCouncil() {
+		String csvFile = "/home/ubuntu/medicalCouncil.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "\\?";
+
+		try {
+		    br = new BufferedReader(new FileReader(csvFile));
+		    while ((line = br.readLine()) != null) {
+			String[] obj = line.split(cvsSplitBy);
+			MedicalCouncilCollection medicalCouncilCollection = new MedicalCouncilCollection();
+			medicalCouncilCollection.setMedicalCouncil(obj[0]);
+			medicalCouncilCollection.setCreatedBy("ADMIN");
+			medicalCouncilCollection.setCreatedTime(new Date());
+			medicalCouncilCollection.setUpdatedTime(new Date());
+			
+			medicalCouncilRepository.save(medicalCouncilCollection);
+			ESMedicalCouncilDocument esMedicalCouncilDocument = new ESMedicalCouncilDocument();
+			BeanUtil.map(medicalCouncilCollection, esMedicalCouncilDocument);
+			esMedicalCouncilRepository.save(esMedicalCouncilDocument);
+		    }
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} 
+		finally {
+		    if (br != null) {
+			try {
+			    br.close();
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+		    }
+		}				
 	}
 
 }

@@ -45,10 +45,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
-import com.dpdocter.repository.EducationInstituteRepository;
-import com.dpdocter.repository.EducationQualificationRepository;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserLocationRepository;
@@ -90,8 +87,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Autowired
     private DoctorRepository doctorRepository;
 
-    @Autowired
-    private MedicalCouncilRepository medicalCouncilRepository;
+//    @Autowired
+//    private MedicalCouncilRepository medicalCouncilRepository;
 
     @Autowired
     private ProfessionalMembershipRepository professionalMembershipRepository;
@@ -108,11 +105,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Autowired
     private FileManager fileManager;
 
-    @Autowired
-    private EducationQualificationRepository educationQualificationRepository;
-
-    @Autowired
-    private EducationInstituteRepository educationInstituteRepository;
+//    @Autowired
+//    private EducationQualificationRepository educationQualificationRepository;
+//
+//    @Autowired
+//    private EducationInstituteRepository educationInstituteRepository;
 
     @Autowired
     private UserLocationRepository userLocationRepository;
@@ -378,7 +375,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId) {
+    public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, Boolean isAdmin) {
 	DoctorProfile doctorProfile = null;
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
@@ -396,7 +393,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    throw new BusinessException(ServiceError.NoRecord, "No user found");	
 	    }
 	    if (locationId == null) {
-		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
+		List<UserLocationCollection> userLocationCollections = null;
+		
+		if(isAdmin)userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
+		else userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
+		
 		if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 			for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 			    UserLocationCollection userLocationCollection = iterator.next();
