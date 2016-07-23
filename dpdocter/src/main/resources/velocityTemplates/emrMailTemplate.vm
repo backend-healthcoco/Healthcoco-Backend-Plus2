@@ -26,7 +26,7 @@
          Date of consultation:${mailRecordCreatedDate}<br><br>
          For any concerns regarding the ${medicalRecordType} kindly contact ${doctorName} or ${clinicName}.
          <a style="color: #0077b5;text-decoration:none;"href="" target="_blank"></a><br><br>
-         For any feedback regarding our services or the Healthcoco+ app, please feel free to contact us at 
+         For any feedback regarding our services or the Healthcoco app, please feel free to contact us at 
          <a style="color: #0077b5;text-decoration:none;"href="" target="_blank" >${contactUsEmail}</a>
 
  

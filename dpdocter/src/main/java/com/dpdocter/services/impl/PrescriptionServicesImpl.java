@@ -1727,7 +1727,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			break;
 		}
 		
-		case DRUGCODE: {
+		case DRUGBYGCODE: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
@@ -1746,7 +1746,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			break;
 		}
 		
-		case GENERICCODE: {
+		case DRUGBYICODE: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
@@ -1764,7 +1764,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			break;
 		}
-		
+
+		case GCODE: {
+			if (isAdmin)response = getGenericCodeForAdmin(page, size, updatedTime, searchTerm);
+			break;
+		}
 		default:
 			break;
 		}
@@ -3947,6 +3951,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		List<DiagnosticTest> response = null;
 		try {
 			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
+		}
+		return response;
+	}
+
+	private List<GenericCode> getGenericCodeForAdmin(int page, int size, String updatedTime, String searchTerm) {
+		List<GenericCode> response = null;
+		try {
+			AggregationResults<GenericCode> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, true, searchTerm, "code"), GenericCodeCollection.class, GenericCode.class); 
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -17,7 +17,7 @@ public class DrugAddEditRequest {
 
     private Strength strength;
 
-    private List<String> genericNames;
+    private List<String> genericCodes;
 
     private String doctorId;
 
@@ -67,15 +67,15 @@ public class DrugAddEditRequest {
 	this.strength = strength;
     }
 
-    public List<String> getGenericNames() {
-	return genericNames;
-    }
+    public List<String> getGenericCodes() {
+		return genericCodes;
+	}
 
-    public void setGenericNames(List<String> genericNames) {
-	this.genericNames = genericNames;
-    }
+	public void setGenericCodes(List<String> genericCodes) {
+		this.genericCodes = genericCodes;
+	}
 
-    public String getDoctorId() {
+	public String getDoctorId() {
 	return doctorId;
     }
 
@@ -107,11 +107,11 @@ public class DrugAddEditRequest {
 	this.drugCode = drugCode;
     }
 
-    @Override
-    public String toString() {
-	return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation + ", strength=" + strength
-		+ ", genericNames=" + genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode="
-		+ drugCode + "]";
-    }
+	@Override
+	public String toString() {
+		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
+				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
+				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode + "]";
+	}
 
 }

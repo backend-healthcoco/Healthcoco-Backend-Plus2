@@ -50,6 +50,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
     @Value(value = "${googlePlus.link}")
     private String googlePlusLink;
 
+    @Value(value = "${set.password.link}")
+    private String setPasswordLink;
+
     @Override
     @Transactional
     public String generateActivationEmailBody(String fName, String tokenId, String templatePath, String doctorName,String clinicName) throws Exception {
@@ -66,6 +69,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("twitterLink", twitterLink);
 	model.put("linkedInLink", linkedInLink);
 	model.put("googlePlusLink", googlePlusLink);
+	model.put("setPasswordLink", setPasswordLink);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }

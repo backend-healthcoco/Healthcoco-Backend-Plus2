@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class GenericCode {
+import com.dpdocter.collections.GenericCollection;
+
+public class GenericCode extends GenericCollection{
 	
     private String id;
 

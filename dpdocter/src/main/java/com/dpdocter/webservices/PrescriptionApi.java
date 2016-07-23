@@ -780,38 +780,7 @@ public class PrescriptionApi {
 		response.setData(dataResponse);
 	return response;
     }
-    
-    @Path(value = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE)
-    @POST
-    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE, notes = PathProxy.PrescriptionUrls.ADD_EDIT_GENERIC_CODE)
-    public Response<GenericCode> addEditGenericCode(GenericCode request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getCode(), request.getName())) {
-    	    logger.error("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	GenericCode genericCode = prescriptionServices.addEditGenericCode(request);
-	
-	Response<GenericCode> response = new Response<GenericCode>();
-	response.setData(genericCode);
-	return response;
-    }
-
-    /**action = ADD OR REMOVE**/		
-    @Path(value = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG)
-    @GET
-    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG, notes = PathProxy.PrescriptionUrls.ADD_REMOVE_GENERIC_CODE_TO_DRUG)
-    public Response<Boolean> addRemoveGenericCode(@PathParam(value = "action") String action,
-	    @PathParam(value = "genericCode") String genericCode, @PathParam(value = "drugCode") String drugCode) {
-	if (DPDoctorUtils.anyStringEmpty(action, genericCode, drugCode)) {
-	    logger.warn("Action, Generic Code, Drug Code Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Action, Generic Id, Drug Code Cannot Be Empty");
-	}
-	Boolean addRemoveGenericCodeResponse = prescriptionServices.addRemoveGenericCode(action, genericCode, drugCode);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(addRemoveGenericCodeResponse);
-	return response;
-    }
-    
+        
     @Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
     @GET
     @ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)

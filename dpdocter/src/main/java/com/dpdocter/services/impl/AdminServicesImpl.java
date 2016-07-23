@@ -443,6 +443,17 @@ public class AdminServicesImpl implements AdminServices {
 			 drugCollection.setDrugCode(obj[0]);
 			 drugCollection.setPackSize(obj[3]);
 			 drugCollection.setCompanyName(obj[4]);
+			 
+			 if(obj.length > 5){
+				 String[] genericCodesArray = obj[5].split("\\+");
+				 
+				 if(genericCodesArray.length > 0){
+					 List<String> genericCodes = new ArrayList<String>();
+					 for(String code : genericCodesArray)genericCodes.add(code);
+					 drugCollection.setGenericCodes(genericCodes);
+				 }
+			 }
+			 
 			 drugCollection = drugRepository.save(drugCollection);
 	
 			 ESDrugDocument esDrugDocument = new ESDrugDocument();
