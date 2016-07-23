@@ -27,6 +27,12 @@ public class DrugAddEditRequest {
 
     private UUID drugCode;
 
+    private String companyName;
+
+    private String packSize;
+
+    private String MRP;
+
     public String getId() {
 	return id;
     }
@@ -107,11 +113,36 @@ public class DrugAddEditRequest {
 	this.drugCode = drugCode;
     }
 
+	public String getCompanyName() {
+		return companyName;
+	}
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+
+	public String getPackSize() {
+		return packSize;
+	}
+
+	public void setPackSize(String packSize) {
+		this.packSize = packSize;
+	}
+
+	public String getMRP() {
+		return MRP;
+	}
+
+	public void setMRP(String mRP) {
+		MRP = mRP;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
-				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode + "]";
+				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode
+				+ ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + "]";
 	}
 
 }

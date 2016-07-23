@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -283,7 +282,7 @@ public class PrescriptionApi {
     @PUT
     @ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_TEMPLATE, notes = PathProxy.PrescriptionUrls.EDIT_TEMPLATE)
     public Response<TemplateAddEditResponseDetails> editTemplate(@PathParam(value = "templateId") String templateId, TemplateAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(templateId, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getName()) || request.getItems() != null) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(templateId, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getName()) || request.getItems() == null) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
