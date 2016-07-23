@@ -234,7 +234,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Date createdTime = new Date();
 			drugCollection.setCreatedTime(createdTime);
 			if (drugCollection.getDrugType() != null) {
-				if (drugCollection.getDrugType().getId() == null)
+				if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 					drugCollection.setDrugType(null);
 				else {
 					DrugTypeCollection drugTypeCollection = drugTypeRepository.findOne(new ObjectId(drugCollection.getDrugType().getId()));

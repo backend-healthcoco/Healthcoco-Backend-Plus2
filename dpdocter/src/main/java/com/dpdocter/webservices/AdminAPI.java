@@ -21,12 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactUs;
+import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Investigation;
@@ -72,6 +75,7 @@ import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DoctorContactUsService;
+import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
@@ -117,6 +121,9 @@ public class AdminAPI {
     @Autowired
     private DoctorContactUsService doctorContactUsService;
 
+    @Autowired
+    private DoctorProfileService doctorProfileService;
+    
     @Value(value = "${image.path}")
     private String imagePath;
 	
@@ -264,6 +271,26 @@ public class AdminAPI {
     @GET
     public Response<Boolean> importEducationQualification() {
 	adminServices.importEducationQualification();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_PROFESSIONAL_MEMBERSHIP)
+    @GET
+    public Response<Boolean> importProfessionalMembership() {
+	adminServices.importProfessionalMembership();
+
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(true);
+	return response;
+    }
+
+	@Path(value = PathProxy.AdminUrls.IMPORT_MEDICAL_COUNCIL)
+    @GET
+    public Response<Boolean> importMedicalCouncil() {
+	adminServices.importMedicalCouncil();
 
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
@@ -1011,4 +1038,46 @@ public class AdminAPI {
 		if (imageURL != null) return imagePath + imageURL;
 		else return null;
 	 }
+	
+	@Path(value = PathProxy.AdminUrls.GET_DOCTOR_PROFILE)
+    @GET
+    @ApiOperation(value = PathProxy.AdminUrls.GET_DOCTOR_PROFILE, notes = PathProxy.AdminUrls.GET_DOCTOR_PROFILE)
+    public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+	    @QueryParam("hospitalId") String hospitalId) {
+	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    logger.warn("Doctor Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+	}
+	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, true);
+	if (doctorProfile != null) {
+	    if (doctorProfile.getImageUrl() != null) {
+		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
+	    }
+	    if (doctorProfile.getThumbnailUrl() != null) {
+		doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
+	    }
+	    if (doctorProfile.getCoverImageUrl() != null) {
+		doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+	    }
+	    if (doctorProfile.getCoverThumbnailImageUrl() != null) {
+		doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+	    }
+	    if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
+		for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
+		    if (clinicProfile.getImages() != null) {
+			for (ClinicImage clinicImage : clinicProfile.getImages()) {
+			    if (clinicImage.getImageUrl() != null)
+				clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+			    if (clinicImage.getThumbnailUrl() != null)
+				clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+			}
+		    }
+		}
+	    }
+	}
+	Response<DoctorProfile> response = new Response<DoctorProfile>();
+	response.setData(doctorProfile);
+	return response;
+    }
+
 }

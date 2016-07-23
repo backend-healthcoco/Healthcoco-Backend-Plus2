@@ -275,7 +275,7 @@ public class DoctorProfileApi {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 	}
-	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId);
+	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, false);
 	if (doctorProfile != null) {
 	    if (doctorProfile.getImageUrl() != null) {
 		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));

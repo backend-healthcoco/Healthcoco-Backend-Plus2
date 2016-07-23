@@ -206,7 +206,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		    	String[] dob = searchValue.split("/");
 		    	DateTime start = new DateTime(Integer.parseInt(dob[2]), Integer.parseInt(dob[0]), Integer.parseInt(dob[1]), 0, 0, 0);
 		    	DateTime end = new DateTime(Integer.parseInt(dob[2]), Integer.parseInt(dob[0]), Integer.parseInt(dob[1]), 23, 59, 59);
-		    	builder = QueryBuilders.rangeQuery(AdvancedSearchType.REGISTRATION_DATE.getSearchType()).from(start).to(end);
+		    	builder = QueryBuilders.rangeQuery(AdvancedSearchType.CREATED_TIME.getSearchType()).from(start).to(end);
 		    	
 		    } else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType())){
 		    	BoolQueryBuilder queryBuilderForReference = new BoolQueryBuilder();

@@ -432,7 +432,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		SMSDetail smsDetail = new SMSDetail();
 		smsDetail.setUserId(patientCollection.getUserId());
-
+		smsDetail.setUserName(patientCollection.getFirstName());
 		SMS sms = new SMS();
 		sms.setSmsText("OTP Verification");
 

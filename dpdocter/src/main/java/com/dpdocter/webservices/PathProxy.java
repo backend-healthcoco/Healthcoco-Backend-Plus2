@@ -874,6 +874,12 @@ public interface PathProxy {
 
 		public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
 
+		public static final String IMPORT_PROFESSIONAL_MEMBERSHIP = "/importProfessionalMembership";
+		
+		public static final String IMPORT_MEDICAL_COUNCIL = "/importMedicalCouncil";
+
+		public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";

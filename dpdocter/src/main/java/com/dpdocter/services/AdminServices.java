@@ -42,4 +42,7 @@ public interface AdminServices {
 
 	List<Speciality> getUniqueSpecialities(String searchTerm, String updatedTime, int page, int size);
 
+	void importProfessionalMembership();
+
+	void importMedicalCouncil();
 }

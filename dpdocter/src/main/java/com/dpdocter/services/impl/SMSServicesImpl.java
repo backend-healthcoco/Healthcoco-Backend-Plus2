@@ -291,8 +291,22 @@ public class SMSServicesImpl implements SMSServices {
 		}else{
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "smsDetails.sentTime")));
 		}
-	    AggregationResults<SMSTrack> aggregationResults = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, SMSTrack.class);
-	    response = aggregationResults.getMappedResults();
+	    AggregationResults<SMSTrackDetail> aggregationResults = mongoTemplate.aggregate(aggregation, SMSTrackDetail.class, SMSTrackDetail.class);
+	    List<SMSTrackDetail> smsTrackDetails = aggregationResults.getMappedResults();
+	    if(smsTrackDetails != null && !smsTrackDetails.isEmpty()){
+	    	response = new ArrayList<SMSTrack>();
+	    	for(SMSTrackDetail smsTrackDetail : smsTrackDetails){
+	    		SMSTrack smsTrack = new SMSTrack();
+	    		BeanUtil.map(smsTrackDetail, smsTrack);
+	    		if(smsTrackDetail.getSmsDetails() != null && !smsTrackDetail.getSmsDetails().isEmpty()){
+	    			smsTrack.setDeliveredTime(smsTrackDetail.getSmsDetails().get(0).getDeliveredTime());
+	    			smsTrack.setDeliveryStatus(smsTrackDetail.getSmsDetails().get(0).getDeliveryStatus().getSmsStatus());
+	    			smsTrack.setPatientName(smsTrackDetail.getSmsDetails().get(0).getUserName());
+	    			smsTrack.setSentTime(smsTrackDetail.getSmsDetails().get(0).getSentTime());
+	    		}
+	    		response.add(smsTrack);
+	    	}
+	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
