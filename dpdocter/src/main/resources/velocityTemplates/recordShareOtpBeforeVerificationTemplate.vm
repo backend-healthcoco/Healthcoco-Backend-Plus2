@@ -19,7 +19,9 @@
       <div>
         <p style="margin:20px 0px; line-height: 20px;">Healthcoco ${fName}!<br><br>
         ${doctorName} has requested you to share your health records with him.<br> 
-        Please share One Time Password that was sent on your registered mobile number with ${doctorName} to share your health records. <br><br>If you have any questions or need help you can contact us anytime at<a style="color:#0077b5; text-decoration:none;" href="" target="_blank">${contactUsEmail}</a>
+        Please share One Time Password that was sent on your registered mobile number with ${doctorName} to share your health records. 
+        <br><br>If you have any questions or need help you can contact us anytime at
+        <a style="color:#0077b5; text-decoration:none;" href="" target="_blank">${contactUsEmail}</a>
         <br><br>Stay Healthy and Happy,<br>The Healthcoco Team.
       </div>
      </div>

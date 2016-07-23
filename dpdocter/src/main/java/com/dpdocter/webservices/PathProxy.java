@@ -363,10 +363,6 @@ public interface PathProxy {
 
 		public static final String CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT = "/prescriptionExist/{uniqueEmrId}/{patientId}";
 
-		public static final String ADD_REMOVE_GENERIC_CODE_TO_DRUG = "/genericCode/{action}/{genericId}/{drugCode}";
-
-		public static final String ADD_EDIT_GENERIC_CODE = "/genericCode/addEdit";
-
 		public static final String DOWNLOAD_PRESCRIPTION = "/download/{prescriptionId}";
 	}
 
@@ -878,7 +874,11 @@ public interface PathProxy {
 		
 		public static final String IMPORT_MEDICAL_COUNCIL = "/importMedicalCouncil";
 
-		public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
+		public static final String GET_DOCTOR_PROFILE = "/doctorProfile/{doctorId}/view";
+
+		public static final String ADD_REMOVE_GENERIC_CODE_TO_DRUG = "/genericCode/{action}/{genericId}/{drugCode}";
+
+		public static final String ADD_EDIT_GENERIC_CODE = "/genericCode/addEdit";
 
 	}
 
