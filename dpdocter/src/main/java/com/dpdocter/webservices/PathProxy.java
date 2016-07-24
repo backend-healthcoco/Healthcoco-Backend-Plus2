@@ -13,21 +13,9 @@ public interface PathProxy {
 
 	public interface SignUpUrls {
 
-		public static final String ADMIN_SIGNUP = "/admin";
-
-		public static final String DOCTOR_SIGNUP = "/doctor";
-
-		public static final String DOCTOR_SIGNUP_HANDHELD = "/doctorHandheld";
-
-		public static final String DOCTOR_SIGNUP_HANDHELD_CONTINUE = "/doctorHandheldContinue";
-
 		public static final String PATIENT_SIGNUP = "/patient";
 
 		public static final String PATIENT_SIGNUP_MOBILE = "/patient/mobile";
-
-		public static final String ACTIVATE_USER = "/activate/{userId}";
-
-		public static final String ACTIVATE_LOCATION = "/activate/location/{locationId}";
 
 		public static final String VERIFY_USER = "/verify/{tokenId}";
 
@@ -42,19 +30,14 @@ public interface PathProxy {
 		public static final String PATIENT_PROFILE_PIC_CHANGE = "/patientProfilePicChange";
 
 		public static final String VERIFY_UNLOCK_PATIENT = "/patient/verifyorunlock";
-
-		public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
 		
 		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
-		
-		public static final String GET_DOCTOR_CONTACT_LIST = "/getDoctorContactList";
-		
+				
 	}
 
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
 
 	public interface LoginUrls {
-		public static final String LOGIN_ADMIN = "/admin/{mobileNumber}";
 
 		public static final String LOGIN_USER = "/user";
 
@@ -87,8 +70,6 @@ public interface PathProxy {
 
 		public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
 		
-		public static final String SEND_APP_LINK = "/sendLink";
-
 	}
 
 	public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";
@@ -733,155 +714,15 @@ public interface PathProxy {
 		public static final String SEARCH_SPECIALITY = "/speciality";
 	}
 
-	public static final String ADMIN_BASE_URL = BASE_URL + "/admin";
+	public static final String ADMIN_BASE_URL = BASE_URL;
 
 	public interface AdminUrls {
 		
-		public static final String UPDATE_DOCTOR_CONTACT_STATE = "/updateDoctorContactState/{contactId}/{contactState}";
-
-		public static final String GET_INACTIVE_USERS = "/inactiveUsers";
-
-		public static final String GET_HOSPITALS = "/hospitals";
-
-		public static final String GET_CLINICS_AND_LABS = "/clinics";
-
-		public static final String GET_DOCTORS = "/doctors";
-
-		// public static final String GET_USERS =
-		// "/users/{locationId}/{hospitalId}"; this API is in RegsiterAPI
-
-		// public static final String GET_FEEDBACKS = "/feedbacks"; API is
-		// already there
-
-		// public static final String EDIT_FEEDBACK =
-		// "/feedback/{feedbackId}/edit"; visible API is already there
-
-		// public static final String GET_HELPUS_DATA = "/helpUsData";API is
-		// already there
-
-		public static final String GET_SMS_COUNT = "/smsCount/{doctorId}/{locationId}/{hospitalId}";
-
-		public static final String EDIT_SMS_COUNT = "/smsCount/{doctorId}/{locationId}/{hospitalId}/edit";
-
 		public static final String ADD_RESUMES = "/resumes/add";
-
-		public static final String GET_RESUMES = "/resumes";
 
 		public static final String ADD_CONTACT_US = "/contactUs/add";
 
-		public static final String GET_CONTACT_US = "/contactUs";
-
-		public static final String GET_PATIENT = "/patients";
-
-		public static final String SEARCH_CLINIC_BY_NAME = "/clinic";
-
-		public static final String SEARCH_DOCTOR_BY_NAME = "/doctor";
-
-		public static final String GET_UNIQUE_SPECIALITY = "/speciality";
-
-		public static final String IMPORT_DRUG = "/importDrug";
-
-		public static final String IMPORT_CITY = "/importCity";
-
-		public static final String IMPORT_DIAGNOSTIC_TEST = "/importDiagnosticTest";
-
-		public static final String IMPORT_EDUCATION_QUALIFICATION = "/importEducationQualification";
-
-		public static final String IMPORT_EDUCATION_INSTITUTE = "/importEducationInstitute";
-
-		public static final String GET_CINICAL_ITEMS = "/clinicalNotes/{type}/{range}";
-
-		public static final String ADD_COMPLAINT = "/complaint/add";
-
-		public static final String ADD_OBSERVATION = "/observation/add";
-
-		public static final String ADD_INVESTIGATION = "/investigation/add";
-
-		public static final String ADD_DIAGNOSIS = "/diagnosis/add";
-
-		public static final String ADD_NOTES = "/notes/add";
-
-		public static final String ADD_DIAGRAM = "/diagram/add";
-
-		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String DELETE_OBSERVATION = "/observation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String DELETE_INVESTIGATION = "/investigation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String DELETE_DIAGNOSIS = "/diagnosis/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String DELETE_NOTE = "/notes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String DELETE_DIAGRAM = "/diagram/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String ADD_DISEASE = "/disease/add";
-
-		public static final String EDIT_DISEASE = "/disease/{diseaseId}/update";
-
-		public static final String DELETE_DISEASE = "/disease/{diseaseId}/{doctorId}/{locationId}/{hospitalId}/delete";
-
-		public static final String GET_DISEASES = "/diseases/{range}";
-
-		public static final String ADD_DRUG = "/drug/add";
-
-		public static final String EDIT_DRUG = "/drug/{drugId}/update";
-
-		public static final String DELETE_GLOBAL_DRUG = "/drug/{drugId}/delete";
-
-		public static final String ADD_LAB_TEST = "/labTest/add";
-
-		public static final String EDIT_LAB_TEST = "/labTest/{labTestId}/update";
-
-		public static final String DELETE_GLOBAL_LAB_TEST = "/labTest/{labTestId}/delete";
-
-		public static final String GET_DIAGNOSTIC_TEST = "/diagnosticTest";
-
-		public static final String ADD_EDIT_DIAGNOSTIC_TEST = "/diagnosticTest/addEdit";
-
-		public static final String DELETE_GLOBAL_DIAGNOSTIC_TEST = "/diagnosticTest/{diagnosticTestId}/delete";
-
-		public static final String GET_PRESCRIPTION_ITEMS = "/prescription/{type}/{range}";
-
-		public static final String ADD_DRUG_TYPE = "/drugType/add";
-
-		public static final String EDIT_DRUG_TYPE = "/drugType/{drugTypeId}/update";
-
-		public static final String DELETE_DRUG_TYPE = "/drugType/{drugTypeId}/delete";
-
-		public static final String ADD_DRUG_STRENGTH = "/drugStrength/add";
-
-		public static final String EDIT_DRUG_STRENGTH = "/drugStrength/{drugStrengthId}/update";
-
-		public static final String DELETE_DRUG_STRENGTH = "/drugStrength/{drugStrengthId}/delete";
-
-		public static final String ADD_DRUG_DOSAGE = "/drugDosage/add";
-
-		public static final String EDIT_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/update";
-
-		public static final String DELETE_DRUG_DOSAGE = "/drugDosage/{drugDosageId}/delete";
-
-		public static final String ADD_DRUG_DIRECTION = "/drugDirection/add";
-
-		public static final String EDIT_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/update";
-
-		public static final String DELETE_DRUG_DIRECTION = "/drugDirection/{drugDirectionId}/delete";
-
-		public static final String ADD_DRUG_DURATION_UNIT = "/drugDurationUnit/add";
-
-		public static final String EDIT_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/update";
-
-		public static final String DELETE_DRUG_DURATION_UNIT = "/drugDurationUnit/{drugDurationUnitId}/delete";
-
-		public static final String IMPORT_PROFESSIONAL_MEMBERSHIP = "/importProfessionalMembership";
-		
-		public static final String IMPORT_MEDICAL_COUNCIL = "/importMedicalCouncil";
-
-		public static final String GET_DOCTOR_PROFILE = "/doctorProfile/{doctorId}/view";
-
-		public static final String ADD_REMOVE_GENERIC_CODE_TO_DRUG = "/genericCode/{action}/{genericId}/{drugCode}";
-
-		public static final String ADD_EDIT_GENERIC_CODE = "/genericCode/addEdit";
+		public static final String SEND_APP_LINK = "/sendLink";
 
 	}
 
