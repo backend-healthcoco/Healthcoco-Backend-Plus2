@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>dpdocter</groupId>
-	<artifactId>dpdocter</artifactId>
+	<groupId>healthco2admin</groupId>
+	<artifactId>healthco2admin</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-mongodb Maven Webapp</name>
@@ -14,7 +14,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
-				<finalName>dpdocter</finalName>
+				<finalName>healthco2admin</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources/spring-context</directory>
@@ -34,7 +34,7 @@
 		<profile>
 			<id>dev</id>
 			<build>
-				<finalName>dpdocter</finalName>
+				<finalName>healthco2admin</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources/spring-context</directory>
@@ -54,7 +54,7 @@
 		<profile>
 			<id>qa</id>
 			<build>
-				<finalName>dpdocter</finalName>
+				<finalName>healthco2admin</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources/spring-context</directory>
@@ -74,7 +74,7 @@
 		<profile>
 			<id>production</id>
 			<build>
-				<finalName>dpdocter</finalName>
+				<finalName>healthco2admin</finalName>
 				<resources>
 					<resource>
 						<directory>src/main/resources/spring-context</directory>

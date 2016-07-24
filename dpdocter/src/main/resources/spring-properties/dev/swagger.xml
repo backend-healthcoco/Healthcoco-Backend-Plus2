@@ -15,7 +15,7 @@
          <property name="version" value="1.0.0" /> 
          <property name="schemes" value="http" /> 
          <property name="host" value="52.90.6.21" /> 
-         <property name="basePath" value="/dpdocter/api"/> 
+         <property name="basePath" value="/healthco2admin/api"/> 
          <property name="resourcePackage" value="com.dpdocter.webservices"/> 
          <property name="scan" value="true"/> 
  </bean> 
