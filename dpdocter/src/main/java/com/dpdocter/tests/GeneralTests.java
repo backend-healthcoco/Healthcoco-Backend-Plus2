@@ -8,6 +8,8 @@ import com.amazonaws.regions.Regions;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import common.util.web.DPDoctorUtils;
+
 
 
 public class GeneralTests {
@@ -80,7 +82,7 @@ public class GeneralTests {
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
 	    			 String doctorId = null;
-	    			 System.out.println(Regions.fromName("us-west-2"));
+	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword("healthcoco".toCharArray()));
 	    		 }
 	    		 
 }  	
