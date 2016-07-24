@@ -15,7 +15,7 @@ public class ESDrugDocument {
     @Id
     private String id;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
     private String drugName;
 
     @Field(type = FieldType.String)
