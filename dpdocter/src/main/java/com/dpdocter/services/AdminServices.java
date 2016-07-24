@@ -6,6 +6,7 @@ import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
+import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.User;
 import com.dpdocter.response.DoctorResponse;
@@ -45,4 +46,6 @@ public interface AdminServices {
 	void importProfessionalMembership();
 
 	void importMedicalCouncil();
+
+	Boolean sendLink(SendAppLink request);
 }

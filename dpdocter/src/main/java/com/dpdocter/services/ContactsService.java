@@ -39,6 +39,4 @@ public interface ContactsService {
     DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page,
 	    int size);
 
-	Boolean sendLink(SendAppLink request);
-
 }

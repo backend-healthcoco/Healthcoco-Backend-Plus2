@@ -24,8 +24,6 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.Resume;
-import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.enums.ContactsSearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -294,20 +292,5 @@ public class ContactsApi {
 	} else
 	    return null;
     }
-
-	@Path(value = PathProxy.ContactsUrls.SEND_APP_LINK)
-	@POST
-	@ApiOperation(value = PathProxy.ContactsUrls.SEND_APP_LINK, notes = PathProxy.ContactsUrls.SEND_APP_LINK)
-	public Response<Boolean> sendLink(SendAppLink request){
-	    if (request == null || request.getAppType() == null) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	    }
-
-	    Boolean sendLinkresponse = contactsService.sendLink(request);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(sendLinkresponse);
-		return response;
-	}
 
 }
