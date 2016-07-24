@@ -52,7 +52,7 @@ public class ESPatientDocument {
     @Field(type = FieldType.String)
     private String mobileNumber;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
     private String profession;
 
     @Field(type = FieldType.String)
@@ -64,7 +64,7 @@ public class ESPatientDocument {
     @Field(type = FieldType.String)
     private String hospitalId;
 
-    @Field(type = FieldType.String)
+    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
     private String referredBy;
 
     @Field(type = FieldType.Date)
