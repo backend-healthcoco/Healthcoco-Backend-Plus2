@@ -1,5 +1,7 @@
 package com.dpdocter.services;
 
+import java.util.Date;
+
 import com.dpdocter.request.ForgotUsernamePasswordRequest;
 import com.dpdocter.request.ResetPasswordRequest;
 import com.dpdocter.response.ForgotPasswordResponse;
@@ -18,5 +20,7 @@ public interface ForgotPasswordService {
     String checkLinkIsAlreadyUsed(String userId);
 
     Boolean resetPasswordPatient(ResetPasswordRequest request);
+
+	boolean isLinkValid(Date createdTime);
 
 }

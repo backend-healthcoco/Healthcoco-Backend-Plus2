@@ -792,6 +792,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
 		BeanUtil.map(recordCollection, record);
+		record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
 		if (patientVisitCollection != null)
 		    record.setVisitId(patientVisitCollection.getId().toString());

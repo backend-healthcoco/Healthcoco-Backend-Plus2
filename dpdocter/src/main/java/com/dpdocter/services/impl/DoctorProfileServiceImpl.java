@@ -145,14 +145,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     public DoctorExperience addEditExperience(DoctorExperienceAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	DoctorExperience response = new DoctorExperience();
-	try {
-	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
-	    DoctorExperience doctorExperience = new DoctorExperience();
-	    doctorExperience.setExperience(request.getExperience());
-	    doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
-	    doctorCollection.setExperience(doctorExperience);
-	    doctorRepository.save(doctorCollection);
-	    BeanUtil.map(doctorExperience, response);
+	try {	
+		if(request.getExperience() > 0){
+			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+			DoctorExperience doctorExperience = new DoctorExperience();
+			doctorExperience.setExperience(request.getExperience());
+			doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
+			doctorCollection.setExperience(doctorExperience);
+			doctorRepository.save(doctorCollection);
+		    BeanUtil.map(doctorExperience, response);
+		}
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -777,11 +779,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		response = new DoctorMultipleDataAddEditResponse();
 		response.setDoctorId(request.getDoctorId());
 
-		DoctorExperience doctorExperience = new DoctorExperience();
-		doctorExperience.setExperience(request.getExperience());
-		doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
-		doctorCollection.setExperience(doctorExperience);
-		
+		if(request.getExperience() > 0){
+			DoctorExperience doctorExperience = new DoctorExperience();
+			doctorExperience.setExperience(request.getExperience());
+			doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
+			doctorCollection.setExperience(doctorExperience);
+		}
 		if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
 		    if(specialityCollections != null && !specialityCollections.isEmpty()){

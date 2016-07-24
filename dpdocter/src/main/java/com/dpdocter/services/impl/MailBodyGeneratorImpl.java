@@ -69,7 +69,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("twitterLink", twitterLink);
 	model.put("linkedInLink", linkedInLink);
 	model.put("googlePlusLink", googlePlusLink);
-	model.put("setPasswordLink", setPasswordLink);
+	model.put("setPasswordLink", setPasswordLink+"/"+tokenId);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }
@@ -236,4 +236,21 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 
 	}
+
+	@Override
+	public String generateAppLinkEmailBody(String appType, String bitLink, String templatePath) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("appType", appType);
+		model.put("bitLink", bitLink);
+		model.put("imageURL", imagePath + "templatesImage");
+		model.put("contactUsEmail", contactUsEmail);
+		model.put("fbLink", fbLink);
+		model.put("twitterLink", twitterLink);
+		model.put("linkedInLink", linkedInLink);
+		model.put("googlePlusLink", googlePlusLink);
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
+
+	}
+
 }

@@ -86,6 +86,9 @@ public interface PathProxy {
 		public static final String EXPORT_CONTACTS = "/exportContacts";
 
 		public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
+		
+		public static final String SEND_APP_LINK = "/sendLink";
+
 	}
 
 	public static final String REGISTRATION_BASE_URL = BASE_URL + "/register";

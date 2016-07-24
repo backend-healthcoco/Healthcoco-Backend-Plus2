@@ -28,20 +28,25 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AppType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.ClinicalNotesRepository;
+import com.dpdocter.repository.DoctorOTPRepository;
 import com.dpdocter.repository.ExportContactsRequestRepository;
 import com.dpdocter.repository.GroupRepository;
 import com.dpdocter.repository.ImportContactsRequestRepository;
+import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -55,7 +60,10 @@ import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.SMSServices;
 
 import common.util.web.DPDoctorUtils;
 
@@ -103,11 +111,35 @@ public class ContactsServiceImpl implements ContactsService {
     @Autowired
     private OTPService otpService;
 
+    @Autowired
+    private SMSServices sMSServices;
+
+    @Autowired
+    private MailBodyGenerator mailBodyGenerator;
+
+    @Autowired
+    private MailService mailService;
+
     @Value(value = "${Contacts.checkIfGroupIsExistWithSameName}")
     private String checkIfGroupIsExistWithSameName;
     
     @Value(value = "${Contacts.GroupNotFound}")
     private String groupNotFound;
+   
+    @Value(value = "${app.link.message}")
+    private String appLinkMessage;
+   
+    @Value(value = "${patient.app.bit.link}")
+    private String patientAppBitLink;
+   
+    @Value(value = "${doctor.app.bit.link}")
+    private String doctorAppBitLink;
+   
+    @Value(value = "${ipad.app.bit.link}")
+    private String ipadAppBitLink;
+   
+    @Value(value = "${mail.get.app.link.subject}")
+    private String getAppLinkSubject;
    
     /**
      * This method returns all unblocked or blocked patients (based on param
@@ -699,4 +731,35 @@ public class ContactsServiceImpl implements ContactsService {
 	}
 	return response;
     }
+
+	@Override
+	public Boolean sendLink(SendAppLink request) {
+
+		Boolean response = false;
+		try {
+			String appType = "", appBitLink = "";  
+			if(request.getAppType().getType().equals(AppType.HEALTHCOCO)){
+				appType = "Healthcoco"; appBitLink = patientAppBitLink;
+			}else if(request.getAppType().getType().equals(AppType.HEALTHCOCO_PLUS)){
+				appType = "Healthcoco +"; appBitLink = doctorAppBitLink;
+			}else if(request.getAppType().getType().equals(AppType.HEALTHCOCO_PAD)){
+				appType = "Healthcoco Pad"; appBitLink = ipadAppBitLink;
+			} 
+		
+			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())){
+				appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink);
+				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, appLinkMessage, request.getMobileNumber(), "Get App Link");
+				sMSServices.sendSMS(smsTrackDetail, false);
+			}else if(!DPDoctorUtils.anyStringEmpty(request.getEmailAddress())){
+			    String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, "appLinkTemplate.vm");
+				mailService.sendEmail(request.getEmailAddress(), getAppLinkSubject.replace("{appType}", appType), body, null);
+			} 		
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
 }

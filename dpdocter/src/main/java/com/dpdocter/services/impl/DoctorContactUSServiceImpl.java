@@ -62,7 +62,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 				
-				String body = mailBodyGenerator.generateActivationEmailBody(doctorContactUs.getFirstName(), null, "doctorWelcomeTemplate.vm", null ,null);
+				String body = mailBodyGenerator.generateActivationEmailBody(doctorContactUs.getTitle()+" "+doctorContactUs.getFirstName(), null, "doctorWelcomeTemplate.vm", null ,null);
 			    mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 			    
 				if(doctorContactUsCollection != null)
