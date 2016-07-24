@@ -237,14 +237,14 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
-	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
-		return "Link is already Used";
-	    } else {
+	    if (tokenCollection == null)return "Invalid Url";
+	    else if(tokenCollection.getIsUsed()) return "Link is already Used";
+	    else {
 		if (!isLinkValid(tokenCollection.getCreatedTime()))
 		    return "Link is Expired";
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		if (userCollection == null) {
-		    return "Invalid Url.";
+		    return "Invalid Url";
 		}
 		char[] salt = DPDoctorUtils.generateSalt();
 	    userCollection.setSalt(salt);
@@ -277,9 +277,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String checkLinkIsAlreadyUsed(String userId) {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(userId));
-	    if (tokenCollection == null || tokenCollection.getIsUsed()) {
-		return "ALREADY_USED";
-	    } else {
+	    if (tokenCollection == null)return "INVALID"; 	
+	    else if(tokenCollection.getIsUsed())return "ALREADY_USED";
+	    
+	    else {
 		if (!isLinkValid(tokenCollection.getCreatedTime()))
 		    return "EXPIRED";
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
@@ -295,7 +296,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	}
     }
 
-    private boolean isLinkValid(Date createdTime) {
+    @Override
+    public boolean isLinkValid(Date createdTime) {
 	return Minutes.minutesBetween(new DateTime(createdTime), new DateTime()).isLessThan(Minutes.minutes(Integer.parseInt(forgotPasswordValidTime)));
     }
 

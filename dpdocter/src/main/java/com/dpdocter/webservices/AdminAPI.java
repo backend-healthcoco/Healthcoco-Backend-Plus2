@@ -80,6 +80,7 @@ import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.webservices.PathProxy;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -1111,5 +1112,4 @@ public class AdminAPI {
 	response.setData(addRemoveGenericCodeResponse);
 	return response;
     }
-
 }

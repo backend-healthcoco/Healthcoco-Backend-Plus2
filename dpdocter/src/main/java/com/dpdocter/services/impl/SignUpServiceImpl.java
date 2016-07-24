@@ -85,6 +85,7 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
+import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
@@ -177,6 +178,9 @@ public class SignUpServiceImpl implements SignUpService {
     @Autowired
     private DoctorContactUsRepository doctorContactUsRepository;
 
+    @Autowired
+    private ForgotPasswordService forgotPasswordService;
+
     @Value(value = "${Signup.role}")
     private String role;
     
@@ -200,6 +204,8 @@ public class SignUpServiceImpl implements SignUpService {
 	    	return "Link is already Used";
 	    }
 	    else {
+	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
+	    	return "We were unable to verify your Healthcoco account. Please contact support@healthcoco.com for completing your account verification";
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
 		    return "Invalid Url";
@@ -298,7 +304,12 @@ public class SignUpServiceImpl implements SignUpService {
 			    smsTrackDetail.setSmsDetails(smsDetails);
 			    sMSServices.sendSMS(smsTrackDetail, true);
 			    
-			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), null, "accountActivateTemplate.vm", null, null);
+			    TokenCollection tokenCollection = new TokenCollection();
+			    tokenCollection.setResourceId(userCollection.getId());
+			    tokenCollection.setCreatedTime(new Date());
+			    tokenCollection = tokenRepository.save(tokenCollection);
+
+			    String body = mailBodyGenerator.generateActivationEmailBody((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+userCollection.getFirstName(), tokenCollection.getId(), "accountActivateTemplate.vm", null, null);
 				mailService.sendEmail(userCollection.getEmailAddress(), accountActivateSubject, body, null);
 			}
 		} 
@@ -754,7 +765,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null ,null);
+	    String body = mailBodyGenerator.generateActivationEmailBody((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null ,null);
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
@@ -1330,20 +1341,22 @@ public class SignUpServiceImpl implements SignUpService {
 			if (userCollection != null) {
 				List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
 				UserLocationCollection userLocationCollection = null;
-				if(userLocationCollections != null && !userLocationCollections.isEmpty())
+				if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 					userLocationCollection = userLocationCollections.get(0);
-			    // save token
-			    TokenCollection tokenCollection = new TokenCollection();
-			    tokenCollection.setResourceId(userLocationCollection.getId());
-			    tokenCollection.setCreatedTime(new Date());
-			    tokenCollection = tokenRepository.save(tokenCollection);
+				    // save token
+				    TokenCollection tokenCollection = new TokenCollection();
+				    tokenCollection.setResourceId(userLocationCollection.getId());
+				    tokenCollection.setCreatedTime(new Date());
+				    tokenCollection = tokenRepository.save(tokenCollection);
 
-			    // send activation email
-			    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
-			    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-				
-			    response = true;
-		    } else {
+				    // send activation email
+				    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
+				    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
+					
+				    response = true;
+				}
+	
+			} else {
 			logger.error("User Not Found For The Given User Id");
 			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
 		    }

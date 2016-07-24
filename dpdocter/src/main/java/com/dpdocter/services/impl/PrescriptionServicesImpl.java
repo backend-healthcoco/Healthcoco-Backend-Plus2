@@ -3256,11 +3256,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (genericCodeCollection == null) {
 					genericCodeCollection = new GenericCodeCollection();
 					BeanUtil.map(request, genericCodeCollection);
+					genericCodeCollection.setUpdatedTime(new Date());
+					genericCodeCollection.setCreatedBy("ADMIN");
 					genericCodeCollection = genericCodeRepository.save(genericCodeCollection);
 					response = new GenericCode();
 					BeanUtil.map(genericCodeCollection, response);
 				} else {
 					genericCodeCollection.setName(request.getName());
+					genericCodeCollection.setCreatedTime(new Date());
 					genericCodeCollection = genericCodeRepository.save(genericCodeCollection);
 					response = new GenericCode();
 					BeanUtil.map(genericCodeCollection, response);

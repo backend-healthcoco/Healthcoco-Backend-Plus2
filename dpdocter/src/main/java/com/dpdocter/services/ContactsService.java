@@ -6,6 +6,7 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
@@ -37,5 +38,7 @@ public interface ContactsService {
 
     DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page,
 	    int size);
+
+	Boolean sendLink(SendAppLink request);
 
 }
