@@ -141,6 +141,7 @@ public class SMSServicesImpl implements SMSServices {
 		} else {
 		    SMS sms = new SMS();
 		    BeanUtil.map(smsDetails.getSms(), sms);
+		    if(sms.getSmsText() != null)sms.setSmsText(URLEncoder.encode(sms.getSmsText()));
 		    smsList.add(sms);
 		    message.setSms(smsList);
 		    String xmlSMSData = createXMLData(message);
