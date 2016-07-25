@@ -199,16 +199,16 @@ public class SignUpServiceImpl implements SignUpService {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
 	    if (tokenCollection == null) {
-	    	return "Invalid token";
+	    	return "INVALID";
 	    } else if(tokenCollection.getIsUsed()){
-	    	return "Link is already Used";
+	    	return "ALREADY_USED";
 	    }
 	    else {
 	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
-	    	return "We were unable to verify your Healthcoco account. Please contact support@healthcoco.com for completing your account verification";
+	    	return "EXPIRED";
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
-		    return "Invalid Url";
+		    return "INVALID";
 		}
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsVerified(true);
@@ -219,7 +219,7 @@ public class SignUpServiceImpl implements SignUpService {
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
-		return "Account is Verfied";
+		return "VALID";
 	    }
 
 	} catch (BusinessException be) {
@@ -1350,7 +1350,7 @@ public class SignUpServiceImpl implements SignUpService {
 				    tokenCollection = tokenRepository.save(tokenCollection);
 
 				    // send activation email
-				    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
+				    String body = mailBodyGenerator.generateActivationEmailBody((userCollection.getTitle() != null?userCollection.getTitle()+" ":"")+userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
 				    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 					
 				    response = true;

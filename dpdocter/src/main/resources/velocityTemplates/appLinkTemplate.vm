@@ -17,7 +17,8 @@
          <p style="color:#2c3335;font-size:25px;text-align: center;">
          Hey there,</p><p style="color:#2c3335;font-size:15px;text-align: center;">Here's the link you requested to download the ${appType} app</p><p style="color:#2c3335;font-size:15px;text-align: center;font-weight: bold;">Open this email on your phone and tap on button below</p><br>
 
-            <a style="border-radius:3px;color:white;font-size:15px;padding:11px 7px;max-width:200px;border:1px #1373b5 solid;text-align:center;text-decoration:none;width:200px;margin:-21px auto;display:block;background-color:#007ee6" href="${bitLink}" target="_blank">Get the ${appType} App</a><br>
+ <a style="border-radius:3px;color:white;font-size:15px;padding:11px 7px;max-width:200px;border:1px #1373b5 solid;text-align:center;
+ text-decoration:none;width:200px;margin:-21px auto;display:block;background-color:#007ee6; margin-left: auto; margin-right: auto;" href="${bitLink}" target="_blank">Get the ${appType} App</a><br>
 
             <p style="color:#2c3335;font-size:15px;text-align: center;">
             Stay Healthy and Happy!!<br><a style="color: #0077b5;text-decoration:none;"href="www.healthcoco.com" target="_blank">www.healthcoco.com</a>
