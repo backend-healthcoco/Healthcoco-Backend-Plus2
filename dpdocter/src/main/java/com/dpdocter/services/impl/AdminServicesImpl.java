@@ -873,12 +873,13 @@ public class AdminServicesImpl implements AdminServices {
 			} 
 		
 			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())){
-				appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink);
-				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, appLinkMessage, request.getMobileNumber(), "Get App Link");
+				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink), request.getMobileNumber(), "Get App Link");
 				sMSServices.sendSMS(smsTrackDetail, false);
+				response = true;
 			}else if(!DPDoctorUtils.anyStringEmpty(request.getEmailAddress())){
 			    String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, "appLinkTemplate.vm");
 				mailService.sendEmail(request.getEmailAddress(), getAppLinkSubject.replace("{appType}", appType), body, null);
+				response = true;
 			} 		
 		} catch (Exception e) {
 		    e.printStackTrace();
