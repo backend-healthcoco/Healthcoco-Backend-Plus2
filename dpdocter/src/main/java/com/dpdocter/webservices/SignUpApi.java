@@ -227,22 +227,17 @@ public class SignUpApi {
 	return imagePath + imageURL;
     }
 
-    private ESDoctorDocument getESDoctorDocument(DoctorSignUp doctor) {
-    	ESDoctorDocument esDoctorDocument = null;
-	try {
-		esDoctorDocument = new ESDoctorDocument();
-	    BeanUtil.map(doctor.getUser(), esDoctorDocument);
-	    esDoctorDocument.setUserId(doctor.getUser().getId());
-	    if (doctor.getHospital() != null && doctor.getHospital().getLocationsAndAccessControl() != null) {
-		for (LocationAndAccessControl locationAndAccessControl : doctor.getHospital().getLocationsAndAccessControl()) {
-		    BeanUtil.map(locationAndAccessControl, esDoctorDocument);
-		    esDoctorDocument.setLocationId(locationAndAccessControl.getId());
-		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
+    @Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+    @GET
+    @ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+    public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
+	if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
+	    logger.warn("Invalid Input");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	return esDoctorDocument;
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(signUpService.resendVerificationEmail(emailaddress));
+	return response;
     }
 
     @Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)

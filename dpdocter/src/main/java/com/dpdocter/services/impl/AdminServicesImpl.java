@@ -864,11 +864,11 @@ public class AdminServicesImpl implements AdminServices {
 		Boolean response = false;
 		try {
 			String appType = "", appBitLink = "";  
-			if(request.getAppType().getType().equals(AppType.HEALTHCOCO)){
+			if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO.getType())){
 				appType = "Healthcoco"; appBitLink = patientAppBitLink;
-			}else if(request.getAppType().getType().equals(AppType.HEALTHCOCO_PLUS)){
-				appType = "Healthcoco +"; appBitLink = doctorAppBitLink;
-			}else if(request.getAppType().getType().equals(AppType.HEALTHCOCO_PAD)){
+			}else if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PLUS.getType())){
+				appType = "Healthcoco+"; appBitLink = doctorAppBitLink;
+			}else if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PAD.getType())){
 				appType = "Healthcoco Pad"; appBitLink = ipadAppBitLink;
 			} 
 		
