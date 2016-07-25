@@ -118,7 +118,7 @@ public class OTPServiceImpl implements OTPService {
 		doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
 
 		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patient.getFirstName(),
-				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy & Happy!!",
+				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy and Happy!!",
 			patient.getMobileNumber(), "OTPVerification");
 		sMSServices.sendSMS(smsTrackDetail, false);
 

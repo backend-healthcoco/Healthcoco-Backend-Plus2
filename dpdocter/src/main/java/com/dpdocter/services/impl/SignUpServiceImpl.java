@@ -478,7 +478,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    tokenCollection = tokenRepository.save(tokenCollection);
 
 	    // send activation email
-	    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null ,null);
+	    String body = mailBodyGenerator.generateActivationEmailBody((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null ,null);
 	    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 
 	    // user.setPassword(null);
@@ -1350,7 +1350,7 @@ public class SignUpServiceImpl implements SignUpService {
 				    tokenCollection = tokenRepository.save(tokenCollection);
 
 				    // send activation email
-				    String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
+				    String body = mailBodyGenerator.generateActivationEmailBody((userCollection.getTitle() != null?userCollection.getTitle()+" ":"")+userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
 				    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
 					
 				    response = true;

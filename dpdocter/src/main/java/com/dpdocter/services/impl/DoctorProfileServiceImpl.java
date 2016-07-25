@@ -146,15 +146,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	DoctorCollection doctorCollection = null;
 	DoctorExperience response = new DoctorExperience();
 	try {	
+		doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 		if(request.getExperience() > 0){
-			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			DoctorExperience doctorExperience = new DoctorExperience();
 			doctorExperience.setExperience(request.getExperience());
 			doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 			doctorCollection.setExperience(doctorExperience);
-			doctorRepository.save(doctorCollection);
-		    BeanUtil.map(doctorExperience, response);
+			response = new DoctorExperience();
+			BeanUtil.map(doctorExperience, response);
+		}else{
+			doctorCollection.setExperience(null);
 		}
+		doctorRepository.save(doctorCollection);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -784,6 +787,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorExperience.setExperience(request.getExperience());
 			doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 			doctorCollection.setExperience(doctorExperience);
+		}else{
+			doctorCollection.setExperience(null);
 		}
 		if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 			List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
