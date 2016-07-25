@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -98,7 +99,8 @@ public class SMSServicesImpl implements SMSServices {
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     @Transactional
     public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
     	Boolean response = false;
@@ -110,7 +112,7 @@ public class SMSServicesImpl implements SMSServices {
 	    message.setCountryCode(COUNTRY_CODE);
 	    message.setRoute(ROUTE);
 	    message.setSenderId(SENDER_ID);
-
+	    
 	    UserMobileNumbers userNumber = null;
 
 	    if (!isEnvProduction) {
@@ -128,6 +130,7 @@ public class SMSServicesImpl implements SMSServices {
 			    smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
 			    SMS sms = new SMS();
 			    BeanUtil.map(smsDetails.getSms(), sms);
+			    if(sms.getSmsText() != null)sms.setSmsText(URLEncoder.encode(sms.getSmsText()));
 			    smsList.add(sms);
 			    message.setSms(smsList);
 			    String xmlSMSData = createXMLData(message);
