@@ -11,15 +11,17 @@ import com.dpdocter.collections.PatientGroupCollection;
 
 @Repository
 public interface PatientGroupRepository extends MongoRepository<PatientGroupCollection, ObjectId> {
-    List<PatientGroupCollection> findByGroupId(String groupId);
+    
+	@Query("{'groupId':?0}")
+	List<PatientGroupCollection> findByGroupId(ObjectId groupId);
 
-    @Query("{'groupId':?0,'patientId':?1}")
+    @Query("{'groupId':?0,'patientId':?1, 'discarded':false}")
     PatientGroupCollection findByGroupIdAndPatientId(ObjectId groupId, ObjectId patientId);
 
-    @Query("{'patientId':?0}")
+    @Query("{'patientId':?0, 'discarded':false}")
     List<PatientGroupCollection> findByPatientId(ObjectId patientId);
 
-    @Query("{'patientId': {'$in': ?0}}")
+    @Query("{'patientId': {'$in': ?0}, 'discarded':false}")
     List<PatientGroupCollection> findByPatientId(List<ObjectId> patientIds);
 
 }

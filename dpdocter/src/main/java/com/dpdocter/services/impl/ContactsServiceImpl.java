@@ -415,7 +415,7 @@ public class ContactsServiceImpl implements ContactsService {
 		groupCollection.setDiscarded(discarded);
 		groupCollection.setUpdatedTime(new Date());
 		groupCollection = groupRepository.save(groupCollection);
-		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId().toString());
+		patientGroupCollection = patientGroupRepository.findByGroupId(groupCollection.getId());
 		if (patientGroupCollection != null) {
 		    for (PatientGroupCollection patientGroup : patientGroupCollection) {
 			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientGroup.getPatientId(),
