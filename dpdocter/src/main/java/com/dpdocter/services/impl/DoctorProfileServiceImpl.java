@@ -467,7 +467,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorProfile = new DoctorProfile();
 	    BeanUtil.map(userCollection, doctorProfile);
 	    BeanUtil.map(doctorCollection, doctorProfile);
-
+	    doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
 	    doctorProfile.setClinicProfile(clinicProfile);
 	    // set specialities using speciality ids
 	    if (doctorCollection.getSpecialities() != null) {

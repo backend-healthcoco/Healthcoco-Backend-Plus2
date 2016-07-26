@@ -27,10 +27,11 @@ public class FileDetails {
     }
 
     public String getFileName() {
-	return fileName;
+	    return fileName;
     }
 
     public void setFileName(String fileName) {
+    if(fileName!= null)fileName = fileName.replaceAll("\\W", "");
 	this.fileName = fileName;
     }
 

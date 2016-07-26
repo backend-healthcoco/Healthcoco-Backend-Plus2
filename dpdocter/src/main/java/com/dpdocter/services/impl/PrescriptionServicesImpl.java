@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -2543,6 +2544,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						response.setClinicAddress(address);
 						response.setClinicName(locationCollection.getLocationName());
 						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 						response.setMailRecordCreatedDate(sdf.format(prescriptionCollection.getCreatedTime()));
 						response.setPatientName(user.getFirstName());
 						emailTackService.saveEmailTrack(emailTrackCollection);

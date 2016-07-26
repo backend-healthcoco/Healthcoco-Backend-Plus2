@@ -78,7 +78,7 @@ public class AdminAPI {
 	@POST
 	@ApiOperation(value = PathProxy.AdminUrls.SEND_APP_LINK, notes = PathProxy.AdminUrls.SEND_APP_LINK)
 	public Response<Boolean> sendLink(SendAppLink request){
-	    if (request == null || request.getAppType() == null) {
+	    if (request == null || request.getAppType() == null || (DPDoctorUtils.anyStringEmpty(request.getEmailAddress()) && DPDoctorUtils.anyStringEmpty(request.getMobileNumber()))) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	    }

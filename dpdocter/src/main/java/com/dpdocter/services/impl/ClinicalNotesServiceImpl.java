@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 
@@ -1739,6 +1740,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
     		    response.setClinicAddress(address);
 				response.setClinicName(locationCollection.getLocationName());
 				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 				response.setMailRecordCreatedDate(sdf.format(clinicalNotesCollection.getCreatedTime()));
 				response.setPatientName(user.getFirstName());
 	

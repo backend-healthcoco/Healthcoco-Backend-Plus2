@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -617,7 +618,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     		    	address = address.substring(0, address.length() - 2);
     		    }
     		    SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-											
+    		    sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 				String body = mailBodyGenerator.generateEMREmailBody(user.getFirstName(), doctorUser.getTitle()+" "+doctorUser.getFirstName(), locationCollection.getLocationName(), address, sdf.format(patientVisitCollection.getCreatedTime()), "Visit Details", "emrMailTemplate.vm");
 			    mailService.sendEmailMultiAttach(emailAddress, doctorUser.getTitle()+" "+doctorUser.getFirstName()+" sent you Visit Details", body, mailAttachments);
 
