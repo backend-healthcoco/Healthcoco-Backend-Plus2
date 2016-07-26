@@ -1012,7 +1012,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (userLocation != null) {
 
 		response = checkIfPatientInitialAndCounterExist(doctorId, locationId, patientInitial, patientCounter);
-		if (response == null) {
+		if (response) {
 		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocation.getId());
 		    if (clinicProfileCollection == null)
 			clinicProfileCollection = new DoctorClinicProfileCollection();
@@ -1062,9 +1062,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 				    + ". Please enter Id greater than " + PID);
 			throw new BusinessException(ServiceError.InvalidInput, "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
 				    + ". Please enter Id greater than " + PID);
-		}
-		else response = true;
-	    }
+		}else response = true;
+		
+	    }else response = true;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	}

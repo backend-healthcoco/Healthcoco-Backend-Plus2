@@ -104,8 +104,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		    throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
 		}
 	    } else {
-		logger.warn("User not Found.");
-		throw new BusinessException(ServiceError.Unknown, "User not Found.");
+		logger.warn("No account present with email address, please sign up");
+		throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
 	    }
 	    return response;
 	} catch (BusinessException be) {

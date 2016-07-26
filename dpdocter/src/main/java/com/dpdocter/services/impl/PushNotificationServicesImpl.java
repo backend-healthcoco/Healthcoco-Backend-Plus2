@@ -118,6 +118,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 							userIds.add(new ObjectId(userId));
 						}
 						userDeviceCollection.setUserIds(userIds);
+					}else{
+						userDeviceCollection.setUserIds(null);
 					}
 					userDeviceCollection.setDeviceId(request.getDeviceId());
 					userDeviceCollection.setPushToken(request.getPushToken());
