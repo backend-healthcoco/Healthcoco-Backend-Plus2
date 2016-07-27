@@ -238,8 +238,9 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	}
 
 	@Override
-	public String generateAppLinkEmailBody(String appType, String bitLink, String templatePath) {
+	public String generateAppLinkEmailBody(String appType, String bitLink, String appDeviceType, String templatePath) {
 		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("appDeviceType", appDeviceType);
 		model.put("appType", appType);
 		model.put("bitLink", bitLink);
 		model.put("imageURL", imagePath + "templatesImage");

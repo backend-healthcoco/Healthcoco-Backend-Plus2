@@ -27,6 +27,6 @@ public interface MailBodyGenerator {
 
 	public String generateFeedbackEmailBody(String patientName, String doctorName, String locationName, String uniqueFeedbackId, String templatePath);
 
-	String generateAppLinkEmailBody(String appType, String bitLink, String templatePath);
+	String generateAppLinkEmailBody(String appType, String bitLink, String appDeviceType, String templatePath);
 
 }
