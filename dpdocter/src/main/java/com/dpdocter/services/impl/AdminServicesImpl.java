@@ -863,13 +863,13 @@ public class AdminServicesImpl implements AdminServices {
 
 		Boolean response = false;
 		try {
-			String appType = "", appBitLink = "";  
+			String appType = "", appBitLink = "", appDeviceType = "";  
 			if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO.getType())){
-				appType = "Healthcoco"; appBitLink = patientAppBitLink;
+				appType = "Healthcoco"; appBitLink = patientAppBitLink; appDeviceType = "phone";
 			}else if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PLUS.getType())){
-				appType = "Healthcoco+"; appBitLink = doctorAppBitLink;
+				appType = "Healthcoco+"; appBitLink = doctorAppBitLink; appDeviceType = "phone";
 			}else if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PAD.getType())){
-				appType = "Healthcoco Pad"; appBitLink = ipadAppBitLink;
+				appType = "Healthcoco Pad"; appBitLink = ipadAppBitLink; appDeviceType = "ipad";
 			} 
 		
 			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())){
@@ -877,7 +877,7 @@ public class AdminServicesImpl implements AdminServices {
 				sMSServices.sendSMS(smsTrackDetail, false);
 				response = true;
 			}else if(!DPDoctorUtils.anyStringEmpty(request.getEmailAddress())){
-			    String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, "appLinkTemplate.vm");
+			    String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, appDeviceType, "appLinkTemplate.vm");
 				mailService.sendEmail(request.getEmailAddress(), getAppLinkSubject.replace("{appType}", appType), body, null);
 				response = true;
 			} 		
