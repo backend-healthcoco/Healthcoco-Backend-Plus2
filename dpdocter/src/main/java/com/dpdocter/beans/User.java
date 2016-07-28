@@ -39,7 +39,15 @@ public class User {
 
     private List<String> specialities;
     
-    public String getImageUrl() {
+    public User(String firstName, String mobileNumber) {
+		this.firstName = firstName;
+		this.mobileNumber = mobileNumber;
+	}
+
+	public User() {
+	}
+
+	public String getImageUrl() {
 	return imageUrl;
     }
 

@@ -2,20 +2,24 @@ package com.dpdocter.elasticsearch.beans;
 
 import java.util.List;
 
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.enums.Day;
 
 public class ESWorkingSchedule {
 
-    private Day workingDay;
+	@Field(type = FieldType.String)
+    private String workingDay;
 
+    @Field(type = FieldType.Nested)
     private List<WorkingHours> workingHours;
 
-    public Day getWorkingDay() {
+    public String getWorkingDay() {
 	return workingDay;
     }
 
-    public void setWorkingDay(Day workingDay) {
+    public void setWorkingDay(String workingDay) {
 	this.workingDay = workingDay;
     }
 
@@ -27,8 +31,8 @@ public class ESWorkingSchedule {
 	this.workingHours = workingHours;
     }
 
-    @Override
-    public String toString() {
-	return "{workingDay=" + workingDay + ", workingHours=" + workingHours + "}";
-    }
+	@Override
+	public String toString() {
+		return "ESWorkingSchedule [workingDay=" + workingDay + ", workingHours=" + workingHours + "]";
+	}
 }

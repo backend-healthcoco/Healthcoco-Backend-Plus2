@@ -1875,7 +1875,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    BeanUtil.map(request, feedbackCollection);
 	    feedbackCollection.setUniqueFeedbackId(UniqueIdInitial.FEEDBACK.getInitial()+DPDoctorUtils.generateRandomId());
 	    feedbackCollection.setCreatedTime(new Date());
-	    feedbackCollection = feedbackRepository.save(feedbackCollection);
+
 	    if (feedbackCollection != null && (feedbackCollection.getType().getType().equals(FeedbackType.APPOINTMENT.getType())
 		    || feedbackCollection.getType().getType().equals(FeedbackType.PRESCRIPTION.getType())
 		    || feedbackCollection.getType().getType().equals(FeedbackType.REPORT.getType()))) {
@@ -1916,11 +1916,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		    }
 		}
-		feedbackCollection = feedbackRepository.findOne(feedbackCollection.getId());
-		UserCollection patient = userRepository.findOne(feedbackCollection.getUserId());
-		UserCollection doctor = userRepository.findOne(feedbackCollection.getDoctorId());
-		LocationCollection locationCollection = locationRepository.findOne(feedbackCollection.getLocationId());
-		if(patient.getEmailAddress() != null){
+		UserCollection patient = null;
+		if(!DPDoctorUtils.anyStringEmpty(feedbackCollection.getUserId()))patient = userRepository.findOne(feedbackCollection.getUserId());
+		
+		UserCollection doctor = null;
+		if(!DPDoctorUtils.anyStringEmpty(feedbackCollection.getDoctorId())) doctor = userRepository.findOne(feedbackCollection.getDoctorId());
+		
+		LocationCollection locationCollection = null;
+		if(!DPDoctorUtils.anyStringEmpty(feedbackCollection.getLocationId()))locationCollection = locationRepository.findOne(feedbackCollection.getLocationId());
+		
+		feedbackCollection.setCreatedBy(patient.getFirstName());
+		feedbackCollection = feedbackRepository.save(feedbackCollection);
+		
+		if(patient != null && doctor != null && locationCollection != null && patient.getEmailAddress() != null){
 			String body = mailBodyGenerator.generateFeedbackEmailBody(patient.getFirstName(), doctor.getTitle()+" "+doctor.getFirstName(), locationCollection.getLocationName(), feedbackCollection.getUniqueFeedbackId(), "feedbackUserToDoctorTemplate.vm");
 			mailService.sendEmail(patient.getEmailAddress(), addFeedbackForDoctorSubject, body, null);
 		}

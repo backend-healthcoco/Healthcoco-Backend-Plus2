@@ -1,5 +1,6 @@
 package com.dpdocter.elasticsearch.document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -163,6 +164,14 @@ public class ESDoctorDocument extends DoctorLocation{
 
 	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
 		this.workingSchedules = workingSchedules;
+		if(workingSchedules != null && !workingSchedules.isEmpty()){
+			List<WorkingSchedule> finalWorkingSchedules = new ArrayList<>();
+			for(WorkingSchedule workingSchedule : workingSchedules){
+				if(workingSchedule.getWorkingHours() != null && !workingSchedule.getWorkingHours().isEmpty())
+					finalWorkingSchedules.add(workingSchedule);
+			}
+			this.workingSchedules = finalWorkingSchedules;
+		}
 	}
 
 	public List<String> getSpecialities() {

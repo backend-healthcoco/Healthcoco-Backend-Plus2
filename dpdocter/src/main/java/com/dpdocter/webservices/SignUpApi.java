@@ -18,14 +18,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DoctorContactUs;
-import com.dpdocter.beans.DoctorSignUp;
-import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
-import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
@@ -79,7 +76,7 @@ public class SignUpApi {
     @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
-    public Response<User> patientSignupMobile(PatientSignupRequestMobile request) {
+    public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {
     	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
     	    logger.warn("Inavlid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
@@ -87,15 +84,15 @@ public class SignUpApi {
     		logger.warn(firstNameValidaton);
     		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
     	 }
-	List<User> users = new ArrayList<>();
+	List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 
 	if (request.isNewPatientNeedToBeCreated()) {
-	    User user = signUpService.signupNewPatient(request);
+		RegisteredPatientDetails user = signUpService.signupNewPatient(request);
 	    users.add(user);
 	} else {
 	    users = signUpService.signupAlreadyRegisteredPatient(request);
 	}
-	for (User user : users) {
+	for (RegisteredPatientDetails user : users) {
 	    if (user.getImageUrl() != null) {
 		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 	    }
@@ -103,7 +100,7 @@ public class SignUpApi {
 		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 	    }
 	}
-	Response<User> response = new Response<User>();
+	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 	response.setDataList(users);
 	return response;
     }

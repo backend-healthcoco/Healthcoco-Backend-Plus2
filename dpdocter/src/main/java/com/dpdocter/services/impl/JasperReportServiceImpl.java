@@ -115,7 +115,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    metadata.setContentEncoding("pdf");
 		    metadata.setContentType("application/pdf");
 		    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-		    PutObjectRequest putObjectRequest =new PutObjectRequest(bucketName, JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf", jasperReportResponse.getFileSystemResource().getFile());
+		    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf", jasperReportResponse.getFileSystemResource().getFile());
 		    putObjectRequest.setMetadata(metadata);
 		    s3client.putObject(putObjectRequest);
 		    return jasperReportResponse;
