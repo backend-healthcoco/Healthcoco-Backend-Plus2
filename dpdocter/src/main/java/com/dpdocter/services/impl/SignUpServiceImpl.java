@@ -31,6 +31,8 @@ import com.dpdocter.beans.DoctorSignUp;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -491,7 +493,7 @@ public class SignUpServiceImpl implements SignUpService {
 		smsDetail.setUserId(userCollection.getId());
 		smsDetail.setUserName(userCollection.getFirstName());
 		SMS sms = new SMS();
-		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: https://healthcoco.com/doctors/app. For queries, please feel free to contact us at support@healthcoco.com");
+		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: http://bit.ly/2aaH4w1. For queries, please feel free to contact us at support@healthcoco.com");
 
 		SMSAddress smsAddress = new SMSAddress();
 		smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -1151,8 +1153,8 @@ public class SignUpServiceImpl implements SignUpService {
      */
     @Override
     @Transactional
-    public User signupNewPatient(PatientSignupRequestMobile request) {
-    User user = null;
+    public RegisteredPatientDetails signupNewPatient(PatientSignupRequestMobile request) {
+    	RegisteredPatientDetails user = null;
     try {
     		RoleCollection roleCollection = roleRepository.findByRole(RoleEnum.PATIENT.getRole());
 	if (roleCollection == null) {
@@ -1176,12 +1178,9 @@ public class SignUpServiceImpl implements SignUpService {
 	userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 	userCollection.setSignedUp(true);
 	userCollection.setUserUId(UniqueIdInitial.USER.getInitial()+DPDoctorUtils.generateRandomId());
-	user = new User();
-	user.setFirstName(userCollection.getFirstName());
-	user.setMobileNumber(userCollection.getMobileNumber());
-	userCollection.setUserName(generateUniqueUserNameService.generate(user));
+	
+	userCollection.setUserName(generateUniqueUserNameService.generate(new User(userCollection.getFirstName(), request.getMobileNumber())));
 	userCollection = userRepository.save(userCollection);
-	BeanUtil.map(userCollection, user);
 	
 	// assign roles
 	UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
@@ -1197,8 +1196,17 @@ public class SignUpServiceImpl implements SignUpService {
 	patientCollection.setHospitalId(null);
 	patientCollection.setCreatedTime(new Date());
 	patientCollection = patientRepository.save(patientCollection);
-
-	BeanUtil.map(userCollection, user);
+	
+	user = new RegisteredPatientDetails();
+	if(patientCollection != null){
+    	Patient patient = new Patient();
+    	BeanUtil.map(patientCollection, patient);
+    	BeanUtil.map(patientCollection, user);
+    	BeanUtil.map(userCollection, user);
+    	patient.setPatientId(patientCollection.getUserId().toString());
+    	user.setPatient(patient);
+    }
+    user.setUserId(userCollection.getId().toString());
 	ESPatientDocument esPatientDocument = new ESPatientDocument();
     if (patientCollection.getAddress() != null) {
 	BeanUtil.map(patientCollection.getAddress(), esPatientDocument);
@@ -1224,9 +1232,9 @@ public class SignUpServiceImpl implements SignUpService {
      */
     @Override
     @Transactional
-    public List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request) {
+    public List<RegisteredPatientDetails> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request) {
 
-	List<User> users = new ArrayList<User>();
+	List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 	try{
 	List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getMobileNumber());
 	char[] salt = DPDoctorUtils.generateSalt();
@@ -1241,6 +1249,7 @@ public class SignUpServiceImpl implements SignUpService {
 	if (userCollections != null && !userCollections.isEmpty()) {
 	    for (UserCollection userCollection : userCollections) {
 	    	if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+	    		RegisteredPatientDetails user = new RegisteredPatientDetails();
 	    		userCollection.setSalt(salt);
 	    		userCollection.setPassword(password);
 		        userCollection.setSignedUp(true);
@@ -1257,6 +1266,15 @@ public class SignUpServiceImpl implements SignUpService {
 			    	patientCollection.setHospitalId(null);
 			    	patientCollection.setCreatedTime(new Date());
 			    	patientCollection = patientRepository.save(patientCollection);
+			    	if(patientCollection != null){
+				    	Patient patient = new Patient();
+				    	BeanUtil.map(patientCollection, patient);
+				    	BeanUtil.map(patientCollection, user);
+				    	BeanUtil.map(userCollection, user);
+				    	patient.setPatientId(patientCollection.getUserId().toString());
+				    	user.setPatient(patient);
+				    }
+				    user.setUserId(userCollection.getId().toString());
 			    	ESPatientDocument esPatientDocument = new ESPatientDocument();
 			        if (patientCollection.getAddress() != null) {
 			    	BeanUtil.map(patientCollection.getAddress(), esPatientDocument);
@@ -1267,13 +1285,11 @@ public class SignUpServiceImpl implements SignUpService {
 			        transnationalService.addResource(patientCollection.getUserId(), Resource.PATIENT, false);
 				    esRegistrationService.addPatient(esPatientDocument);
 		    	}
-		    User user = new User();
-		    BeanUtil.map(userCollection, user);
-		    users.add(user);
+		    	users.add(user);
 	    	}
 		}
 	} else {
-	    User user = signupNewPatient(request);
+	    RegisteredPatientDetails user = signupNewPatient(request);
 	    users.add(user);
 	}
     } catch (NoSuchAlgorithmException e) {

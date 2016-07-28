@@ -11,7 +11,7 @@ import com.dpdocter.collections.AppointmentCollection;
 
 public interface AppointmentRepository extends MongoRepository<AppointmentCollection, ObjectId>, PagingAndSortingRepository<AppointmentCollection, ObjectId> {
 
-    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'time.from': {'$lte': ?2}, 'time.to': {'$gt': ?2}, 'fromDate': {'$gte': ?4}, 'toDate': {'$lte': ?5}, 'state': {'$ne' : ?6}},{'doctorId': ?0, 'locationId': ?1, 'time.from': {'$lt': ?3}, 'time.to': {'$gte': ?3}, 'fromDate': {'$gte': ?4}, 'toDate': {'$lte': ?5}, 'state': {'$ne' : ?6}}]}")
+    @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'time.fromTime': {'$lte': ?2}, 'time.toTime': {'$gt': ?2}, 'fromDate': {'$gte': ?4}, 'toDate': {'$lte': ?5}, 'state': {'$ne' : ?6}},{'doctorId': ?0, 'locationId': ?1, 'time.fromTime': {'$lt': ?3}, 'time.toTime': {'$gte': ?3}, 'fromDate': {'$gte': ?4}, 'toDate': {'$lte': ?5}, 'state': {'$ne' : ?6}}]}")
     AppointmentCollection findAppointmentbyUserLocationIdTimeDate(ObjectId doctorId, ObjectId locationId, int from, int to, Date fromDate, Date toDate, String state);
 
     @Query("{'appointmentId': ?0}")

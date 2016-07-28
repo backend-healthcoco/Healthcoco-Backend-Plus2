@@ -1,5 +1,6 @@
 package com.dpdocter.elasticsearch.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -328,6 +329,14 @@ public class DoctorLocation {
 
 	public void setClinicWorkingSchedules(List<WorkingSchedule> clinicWorkingSchedules) {
 		this.clinicWorkingSchedules = clinicWorkingSchedules;
+		if(clinicWorkingSchedules != null && !clinicWorkingSchedules.isEmpty()){
+			List<WorkingSchedule> finalWorkingSchedules = new ArrayList<>();
+			for(WorkingSchedule workingSchedule : clinicWorkingSchedules){
+				if(workingSchedule.getWorkingHours() != null && !workingSchedule.getWorkingHours().isEmpty())
+					finalWorkingSchedules.add(workingSchedule);
+			}
+			this.clinicWorkingSchedules = finalWorkingSchedules;
+		}
 	}
 
 	@Override

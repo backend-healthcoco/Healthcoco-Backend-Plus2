@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.AdminSignupRequest;
 import com.dpdocter.beans.DoctorSignUp;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.DoctorSignupHandheldContinueRequest;
 import com.dpdocter.request.DoctorSignupHandheldRequest;
@@ -37,9 +38,9 @@ public interface SignUpService {
 
     PateientSignUpCheckResponse checkMobileNumberSignedUp(String mobileNumber);
 
-    User signupNewPatient(PatientSignupRequestMobile request);
+    RegisteredPatientDetails signupNewPatient(PatientSignupRequestMobile request);
 
-    List<User> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request);
+    List<RegisteredPatientDetails> signupAlreadyRegisteredPatient(PatientSignupRequestMobile request);
 
     boolean verifyPatientBasedOn80PercentMatchOfName(String name, String mobileNumber);
 
