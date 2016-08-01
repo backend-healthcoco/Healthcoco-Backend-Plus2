@@ -246,9 +246,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	    	boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
 		   }
 	    if(booking != null && booking){
-	    	boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType(), DoctorFacility.IBS.getType()));
+	    	boolQueryBuilder.must(QueryBuilders.multiMatchQuery("facility", DoctorFacility.BOOK.getType(), DoctorFacility.IBS.getType()));
 	    }
-	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.CALL.getType()));
+	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
 
 	    if (minFee != 0 && maxFee != 0)
 	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))));
@@ -265,7 +265,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").to(maxExperience))));
 
 	    if (!DPDoctorUtils.anyStringEmpty(gender)) {
-	    	boolQueryBuilder.must(QueryBuilders.termQuery("gender", gender));
+	    	boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
 	    }
 
 	    if(minTime != 0 && maxTime != 0) 

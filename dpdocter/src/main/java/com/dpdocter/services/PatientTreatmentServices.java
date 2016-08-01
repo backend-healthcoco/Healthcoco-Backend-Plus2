@@ -2,26 +2,32 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.PatientTreatment;
-import com.dpdocter.beans.ProductAndService;
+import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 
 public interface PatientTreatmentServices {
 
-    boolean addEditProductService(ProductAndService productAndService);
+	TreatmentService addEditService(TreatmentService request);
 
-    boolean addEditProductServiceCost(ProductAndService productAndService);
+	TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request);
 
-    List<ProductAndService> getProductsAndServices(String locationId, String hospitalId, String doctorId);
+    PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request);
 
-    PatientTreatmentResponse addEditPatientTreatment(String treatmentId, String locationId, String hospitalId, String doctorId,
-	    List<PatientTreatment> patientTreatments);
-
-    boolean deletePatientTreatment(String treatmentId, String locationId, String hospitalId, String doctorId);
+    boolean deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
     PatientTreatmentResponse getPatientTreatmentById(String treatmentId);
 
-    List<PatientTreatmentResponse> getPatientTreatments(String locationId, String hospitalId, String doctorId, String patientId, int page, int size,
-	    String updatedTime, Boolean discarded);
+	TreatmentService deleteService(String treatmentServiceId, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	TreatmentServiceCost deleteServiceCost(String treatmentServiceId, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	List<?> getServices(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded);
+
+	PatientTreatmentResponse changePatientTreatmentStatus(String treatmentId, String doctorId, String locationId, String hospitalId, Treatment treatment);
+
+	List<PatientTreatmentResponse> getPatientTreatments(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory, String status);
 
 }

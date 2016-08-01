@@ -98,9 +98,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 		    for (AccessModule accessModule : accessControl.getAccessModules()) {
 			boolean match = false;
 			for (AcosCollection acosCollection : acosCollections) {
-			    if (accessModule.getModule() != null && accessModule.getUrl() != null
-				    && accessModule.getModule().trim().equals(acosCollection.getModule())
-				    && accessModule.getUrl().trim().equals(acosCollection.getUrl())) {
+			    if (accessModule.getModule() != null && accessModule.getUrl() != null  && accessModule.getModule().trim().equals(acosCollection.getModule())  && accessModule.getUrl().trim().equals(acosCollection.getUrl())) {
 				BeanUtil.map(accessModule, acosCollection);
 				match = true;
 				break;
@@ -152,7 +150,11 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	    response = new AccessControl();
 	    BeanUtil.map(arosCollection, response);
 	    List<AccessModule> accessModules = new ArrayList<AccessModule>();
-	    BeanUtil.map(acosCollections, accessModules);
+	    for(AcosCollection acosCollection : acosCollections){
+	    	AccessModule accessModule = new AccessModule();
+	    	BeanUtil.map(acosCollection, accessModule);
+	    	accessModules.add(accessModule);
+	    }
 	    response.setAccessModules(accessModules);
 	} catch (Exception e) {
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());

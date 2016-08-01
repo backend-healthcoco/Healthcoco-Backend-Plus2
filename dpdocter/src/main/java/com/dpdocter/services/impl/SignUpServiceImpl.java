@@ -369,17 +369,17 @@ public class SignUpServiceImpl implements SignUpService {
 			throw new BusinessException(ServiceError.InvalidInput, "Email Address cannot be null");
 		 }
 		
-	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole());
+	    RoleCollection hospitalAdmin = roleRepository.findByRole(RoleEnum.HOSPITAL_ADMIN.getRole(), null, null);
 	    if (hospitalAdmin == null) {
 			logger.warn("Role Collection in database is either empty or not defind properly");
 			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
-	    RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole());
+	    RoleCollection locationAdmin = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole(), null, null);
 	    if (locationAdmin == null) {
 			logger.warn("Role Collection in database is either empty or not defind properly");
 			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
 	    }
-	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole());
+	    RoleCollection doctorRole = roleRepository.findByRole(RoleEnum.DOCTOR.getRole(), null, null);
 	    if (doctorRole == null) {
 			logger.warn("Role Collection in database is either empty or not defind properly");
 			throw new BusinessException(ServiceError.NoRecord, "Role Collection in database is either empty or not defind properly");
@@ -452,23 +452,34 @@ public class SignUpServiceImpl implements SignUpService {
 	    userLocationCollection.setCreatedTime(new Date());
 	    userLocationRepository.save(userLocationCollection);
 
+	    List<String> roleIds = new ArrayList<String>();
+
 	    RoleCollection roleCollection = new RoleCollection(hospitalAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
 	    roleCollection.setCreatedTime(new Date());
-	    roleRepository.save(roleCollection);
+	    roleCollection.setCreatedBy(userCollection.getTitle()+" "+userCollection.getFirstName());
+	    roleCollection = roleRepository.save(roleCollection);
+	    roleIds.add(roleCollection.getId().toString());
+	    
 	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 
 	    roleCollection = new RoleCollection(locationAdmin.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedBy(userCollection.getTitle()+" "+userCollection.getFirstName());
 	    roleCollection.setCreatedTime(new Date());
-	    roleRepository.save(roleCollection);
+	    roleCollection = roleRepository.save(roleCollection);
+	    roleIds.add(roleCollection.getId().toString());
+	    
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 
 	    roleCollection = new RoleCollection(doctorRole.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
+	    roleCollection.setCreatedBy(userCollection.getTitle()+" "+userCollection.getFirstName());
 	    roleCollection.setCreatedTime(new Date());
-	    roleRepository.save(roleCollection);
+	    roleCollection = roleRepository.save(roleCollection);
+	    roleIds.add(roleCollection.getId().toString());
+	    
 	    userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
@@ -486,31 +497,26 @@ public class SignUpServiceImpl implements SignUpService {
 	    // user.setPassword(null);
 
 	    if (userCollection.getMobileNumber() != null) {
-		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-
-		smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR");
-		SMSDetail smsDetail = new SMSDetail();
-		smsDetail.setUserId(userCollection.getId());
-		smsDetail.setUserName(userCollection.getFirstName());
-		SMS sms = new SMS();
-		sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: http://bit.ly/2aaH4w1. For queries, please feel free to contact us at support@healthcoco.com");
-
-		SMSAddress smsAddress = new SMSAddress();
-		smsAddress.setRecipient(userCollection.getMobileNumber());
-		sms.setSmsAddress(smsAddress);
-
-		smsDetail.setSms(sms);
-		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-		smsDetails.add(smsDetail);
-		smsTrackDetail.setSmsDetails(smsDetails);
-		sMSServices.sendSMS(smsTrackDetail, true);
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+	
+			smsTrackDetail.setType("BEFORE_VERIFICATION_TO_DOCTOR");
+			SMSDetail smsDetail = new SMSDetail();
+			smsDetail.setUserId(userCollection.getId());
+			smsDetail.setUserName(userCollection.getFirstName());
+			SMS sms = new SMS();
+			sms.setSmsText("Welcome "+(userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName()+" to Healthcoco. We will contact you shortly to get you started. Download the Healthcoco+ app now: http://bit.ly/2aaH4w1. For queries, please feel free to contact us at support@healthcoco.com");
+	
+			SMSAddress smsAddress = new SMSAddress();
+			smsAddress.setRecipient(userCollection.getMobileNumber());
+			sms.setSmsAddress(smsAddress);
+	
+			smsDetail.setSms(sms);
+			smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			smsDetails.add(smsDetail);
+			smsTrackDetail.setSmsDetails(smsDetails);
+			sMSServices.sendSMS(smsTrackDetail, true);
 	    }
-
-	    List<String> roleIds = new ArrayList<String>();
-	    roleIds.add(hospitalAdmin.getId().toString());
-	    roleIds.add(locationAdmin.getId().toString());
-	    roleIds.add(doctorRole.getId().toString());
 
 	    response = new DoctorSignUp();
 	    User user = new User();

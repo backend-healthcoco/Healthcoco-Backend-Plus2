@@ -7,6 +7,8 @@ import com.dpdocter.beans.DoctorExperience;
 
 public class DoctorMultipleDataAddEditResponse {
 
+	private String id;
+	
     private String doctorId;
 
     private String title;
@@ -17,13 +19,13 @@ public class DoctorMultipleDataAddEditResponse {
 
     private List<String> specialities;
 
-    private String profileImageUrl;
+    private String imageUrl;
 
-    private String thumbnailProfileImageUrl;
+    private String thumbnailUrl;
 
     private String coverImageUrl;
 
-    private String thumbnailCoverImageUrl;
+    private String coverThumbnailImageUrl;
 
     private String gender;
     
@@ -69,37 +71,45 @@ public class DoctorMultipleDataAddEditResponse {
 	this.specialities = specialities;
     }
 
-    public String getProfileImageUrl() {
-	return profileImageUrl;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setProfileImageUrl(String profileImageUrl) {
-	this.profileImageUrl = profileImageUrl;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getCoverImageUrl() {
-	return coverImageUrl;
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-    public void setCoverImageUrl(String coverImageUrl) {
-	this.coverImageUrl = coverImageUrl;
-    }
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-    public String getThumbnailProfileImageUrl() {
-	return thumbnailProfileImageUrl;
-    }
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
 
-    public void setThumbnailProfileImageUrl(String thumbnailProfileImageUrl) {
-	this.thumbnailProfileImageUrl = thumbnailProfileImageUrl;
-    }
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
 
-    public String getThumbnailCoverImageUrl() {
-	return thumbnailCoverImageUrl;
-    }
+	public String getCoverImageUrl() {
+		return coverImageUrl;
+	}
 
-    public void setThumbnailCoverImageUrl(String thumbnailCoverImageUrl) {
-	this.thumbnailCoverImageUrl = thumbnailCoverImageUrl;
-    }
+	public void setCoverImageUrl(String coverImageUrl) {
+		this.coverImageUrl = coverImageUrl;
+	}
+
+	public String getCoverThumbnailImageUrl() {
+		return coverThumbnailImageUrl;
+	}
+
+	public void setCoverThumbnailImageUrl(String coverThumbnailImageUrl) {
+		this.coverThumbnailImageUrl = coverThumbnailImageUrl;
+	}
 
 	public String getGender() {
 		return gender;
@@ -119,10 +129,10 @@ public class DoctorMultipleDataAddEditResponse {
 
 	@Override
 	public String toString() {
-		return "DoctorMultipleDataAddEditResponse [doctorId=" + doctorId + ", title=" + title + ", firstName="
-				+ firstName + ", experience=" + experience + ", specialities=" + specialities + ", profileImageUrl="
-				+ profileImageUrl + ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl + ", coverImageUrl="
-				+ coverImageUrl + ", thumbnailCoverImageUrl=" + thumbnailCoverImageUrl + ", gender=" + gender + ", dob="
-				+ dob + "]";
+		return "DoctorMultipleDataAddEditResponse [id=" + id + ", doctorId=" + doctorId + ", title=" + title
+				+ ", firstName=" + firstName + ", experience=" + experience + ", specialities=" + specialities
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", gender=" + gender + ", dob=" + dob + "]";
 	}
+
 }

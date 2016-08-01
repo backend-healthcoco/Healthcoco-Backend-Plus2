@@ -2,13 +2,12 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.collections.GenericCollection;
 
 public class PatientTreatmentResponse extends GenericCollection {
     private String id;
 
-    private List<PatientTreatment> patientTreatments;
+    private List<TreatmentResponse> treatments;
 
     private String patientId;
 
@@ -20,7 +19,9 @@ public class PatientTreatmentResponse extends GenericCollection {
 
     private double totalCost = 0.0;
 
-    private boolean discarded = false;
+    private Boolean discarded = false;
+
+    private Boolean inHistory = false;
 
     public String getId() {
 	return id;
@@ -30,15 +31,15 @@ public class PatientTreatmentResponse extends GenericCollection {
 	this.id = id;
     }
 
-    public List<PatientTreatment> getPatientTreatments() {
-	return patientTreatments;
-    }
+    public List<TreatmentResponse> getTreatments() {
+		return treatments;
+	}
 
-    public void setPatientTreatments(List<PatientTreatment> patientTreatments) {
-	this.patientTreatments = patientTreatments;
-    }
+	public void setTreatments(List<TreatmentResponse> treatments) {
+		this.treatments = treatments;
+	}
 
-    public String getPatientId() {
+	public String getPatientId() {
 	return patientId;
     }
 
@@ -78,18 +79,26 @@ public class PatientTreatmentResponse extends GenericCollection {
 	this.totalCost = totalCost;
     }
 
-    public boolean isDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    @Override
-    public String toString() {
-	return "PatientTreatmentResponse [id=" + id + ", patientTreatments=" + patientTreatments + ", patientId=" + patientId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", totalCost=" + totalCost + ", discarded=" + discarded + "]";
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
 
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientTreatmentResponse [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", totalCost=" + totalCost + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
+	}
 }

@@ -569,7 +569,7 @@ public class RegistrationApi {
 	}
 	RegisterDoctorResponse doctorResponse = null;
 	if (!registrationService.checktDoctorExistByEmailAddress(request.getEmailAddress()))
-	    doctorResponse = registrationService.registerNewUser(request, uriInfo);
+	    doctorResponse = registrationService.registerNewUser(request);
 	else
 	    doctorResponse = registrationService.registerExisitingUser(request);
 
@@ -608,11 +608,11 @@ public class RegistrationApi {
 	    return null;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.ADD_ROLE)
+    @Path(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
     @POST
-    @ApiOperation(value = PathProxy.RegistrationUrls.ADD_ROLE, notes = PathProxy.RegistrationUrls.ADD_ROLE)
+    @ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE, notes = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
     public Response<Role> addRole(Role request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getRole())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getRole(), request.getLocationId(), request.getHospitalId())) {
 		logger.warn(invalidInput);
 	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 	}

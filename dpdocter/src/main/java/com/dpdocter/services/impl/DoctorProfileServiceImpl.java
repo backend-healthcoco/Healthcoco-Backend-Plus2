@@ -119,19 +119,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     
     @Override
     @Transactional
-    public Boolean addEditName(DoctorNameAddEditRequest request) {
-	UserCollection userCollection = null;
-	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+    public DoctorNameAddEditRequest addEditName(DoctorNameAddEditRequest request) {
+	UserCollection userCollection = null;	
+	DoctorNameAddEditRequest response = null;
 	try {
 	    userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
-	    BeanUtil.map(request, userCollection);
-	    BeanUtil.map(request, doctorCollection);
+	    BeanUtil.map(request, userCollection); 
 	    userRepository.save(userCollection);
-	    doctorRepository.save(doctorCollection);
-
-	    response = true;
+	    response = new DoctorNameAddEditRequest();
+	    BeanUtil.map(request, response);
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -142,9 +139,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public DoctorExperience addEditExperience(DoctorExperienceAddEditRequest request) {
+    public DoctorExperienceAddEditRequest addEditExperience(DoctorExperienceAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	DoctorExperience response = null;
+	DoctorExperienceAddEditRequest response = null;
 	try {	
 		doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 		if(request.getExperience() > 0){
@@ -152,7 +149,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorExperience.setExperience(request.getExperience());
 			doctorExperience.setPeriod(DoctorExperienceUnit.YEAR);
 			doctorCollection.setExperience(doctorExperience);
-			response = new DoctorExperience();
+			response = new DoctorExperienceAddEditRequest();
 			BeanUtil.map(doctorExperience, response);
 		}else{
 			doctorCollection.setExperience(null);
@@ -168,10 +165,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditContact(DoctorContactAddEditRequest request) {
+    public DoctorContactAddEditRequest addEditContact(DoctorContactAddEditRequest request) {
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorContactAddEditRequest response = null;
 	try {
 	    userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
@@ -180,7 +177,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorCollection.setOtherEmailAddresses(request.getOtherEmailAddresses());
 	    userRepository.save(userCollection);
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorContactAddEditRequest();
+	    BeanUtil.map(userCollection, response);
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -191,14 +190,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditEducation(DoctorEducationAddEditRequest request) {
+    public DoctorEducationAddEditRequest addEditEducation(DoctorEducationAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorEducationAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setEducation(request.getEducation());
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorEducationAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -229,11 +229,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request) {
-	DoctorCollection doctorCollection = null;
+    public DoctorSpecialityAddEditRequest addEditSpeciality(DoctorSpecialityAddEditRequest request) {
+    	DoctorSpecialityAddEditRequest response = null;
+    	DoctorCollection doctorCollection = null;
 	try {
 		doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 		if(doctorCollection != null){
+			response = new DoctorSpecialityAddEditRequest();
 			if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
 				List<SpecialityCollection> specialityCollections = specialityRepository.findBySuperSpeciality(request.getSpeciality());
 			    @SuppressWarnings("unchecked")
@@ -244,6 +246,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    	doctorCollection.setSpecialities(null);	
 		    }
 		    doctorRepository.save(doctorCollection);
+		    BeanUtil.map(doctorCollection, response);
 		}
 
 	} catch (Exception e) {
@@ -251,19 +254,20 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    logger.error(e + " Error Editing Doctor Profile");
 	    throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 	}
-	return request.getSpeciality();
+	return response;
     }
 
     @Override
     @Transactional
-    public Boolean addEditAchievement(DoctorAchievementAddEditRequest request) {
+    public DoctorAchievementAddEditRequest addEditAchievement(DoctorAchievementAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorAchievementAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setAchievements(request.getAchievements());
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorAchievementAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -274,14 +278,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
+    public DoctorProfessionalStatementAddEditRequest addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorProfessionalStatementAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setProfessionalStatement(request.getProfessionalStatement());
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorProfessionalStatementAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -292,14 +297,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditRegistrationDetail(DoctorRegistrationAddEditRequest request) {
+    public DoctorRegistrationAddEditRequest addEditRegistrationDetail(DoctorRegistrationAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorRegistrationAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setRegistrationDetails(request.getRegistrationDetails());
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorRegistrationAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -310,14 +316,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
+    public DoctorExperienceDetailAddEditRequest addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorExperienceDetailAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setExperienceDetails(request.getExperienceDetails());
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorExperienceDetailAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -525,11 +532,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
+    public DoctorProfessionalAddEditRequest addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
 	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
 	List<ObjectId> professionalMemberships = null;
-	Boolean response = false;
+	DoctorProfessionalAddEditRequest response = null;
 	try {
 	    professionalMembershipCollections = professionalMembershipRepository.findAll();
 	    professionalMemberships = new ArrayList<ObjectId>();
@@ -554,7 +561,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setProfessionalMemberships(professionalMemberships);
 	    doctorRepository.save(doctorCollection);
-	    response = true;
+	    response = new DoctorProfessionalAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -565,9 +573,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request) {
+    public DoctorAppointmentNumbersAddEditRequest addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	Boolean response = false;
+	DoctorAppointmentNumbersAddEditRequest response = null;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 	    if (userLocationCollection != null) {
@@ -579,7 +587,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		response = true;
+		response = new DoctorAppointmentNumbersAddEditRequest();
+		BeanUtil.map(doctorClinicProfileCollection, response);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -591,9 +600,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
+    public DoctorVisitingTimeAddEditRequest addEditVisitingTime(DoctorVisitingTimeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	Boolean response = false;
+	DoctorVisitingTimeAddEditRequest response = null;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 	    if (userLocationCollection != null) {
@@ -605,7 +614,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		response = true;
+		response = new DoctorVisitingTimeAddEditRequest();
+		BeanUtil.map(doctorClinicProfileCollection, response);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -617,9 +627,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
+    public DoctorConsultationFeeAddEditRequest addEditConsultationFee(DoctorConsultationFeeAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	Boolean response = false;
+	DoctorConsultationFeeAddEditRequest response = null;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 	    if (userLocationCollection != null) {
@@ -631,7 +641,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		response = true;
+		response = new DoctorConsultationFeeAddEditRequest();
+		BeanUtil.map(doctorClinicProfileCollection, response);
 	    }
 
 	} catch (Exception e) {
@@ -644,9 +655,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request) {
+    public DoctorAppointmentSlotAddEditRequest addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	Boolean response = false;
+	DoctorAppointmentSlotAddEditRequest response = null;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 	    if (userLocationCollection != null) {
@@ -658,7 +669,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		response = true;
+		response = new DoctorAppointmentSlotAddEditRequest();
+		BeanUtil.map(doctorClinicProfileCollection, response);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -670,8 +682,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditGeneralInfo(DoctorGeneralInfo request) {
-	boolean response = false;
+    public DoctorGeneralInfo addEditGeneralInfo(DoctorGeneralInfo request) {
+    	DoctorGeneralInfo response = null;
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
@@ -687,7 +699,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
 		doctorClinicProfileCollection.setFacility(request.getFacility());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		response = true;
+		response = new DoctorGeneralInfo();
+		BeanUtil.map(doctorClinicProfileCollection, response);
 	    }
 	} catch (Exception e) {
 	    logger.error(e);
@@ -819,9 +832,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    request.getProfileImage().setFileName(request.getProfileImage().getFileName() + new Date().getTime());
 		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getProfileImage(), path, true);
 		    userCollection.setImageUrl(imageURLResponse.getImageUrl());
-		    userCollection.setThumbnailUrl(imageURLResponse.getImageUrl());
-		    response.setProfileImageUrl(imageURLResponse.getImageUrl());
-		    response.setThumbnailProfileImageUrl(imageURLResponse.getImageUrl());
+		    userCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		}
 
 		if (request.getCoverImage() != null) {
@@ -831,8 +842,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getCoverImage(), path, true);
 		    userCollection.setCoverImageUrl(imageURLResponse.getImageUrl());
 		    userCollection.setCoverThumbnailImageUrl(imageURLResponse.getThumbnailUrl());
-		    response.setCoverImageUrl(imageURLResponse.getImageUrl());
-		    response.setThumbnailCoverImageUrl(imageURLResponse.getThumbnailUrl());
 		}
 		userCollection = userRepository.save(userCollection);
 		doctorCollection = doctorRepository.save(doctorCollection);
@@ -851,9 +860,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditFacility(DoctorAddEditFacilityRequest request) {
+    public DoctorAddEditFacilityRequest addEditFacility(DoctorAddEditFacilityRequest request) {
 	DoctorClinicProfileCollection doctorClinicProfileCollection = null;
-	Boolean response = false;
+	DoctorAddEditFacilityRequest response = null;
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 	    if (userLocationCollection != null) {
@@ -867,7 +876,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		doctorClinicProfileCollection.setFacility(request.getFacility());
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-		response = true;
+		response = new DoctorAddEditFacilityRequest();
+		BeanUtil.map(doctorClinicProfileCollection, response);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -880,15 +890,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditGender(DoctorGenderAddEditRequest request) {
+    public DoctorGenderAddEditRequest addEditGender(DoctorGenderAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorGenderAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setGender(request.getGender());
 	    doctorRepository.save(doctorCollection);
 
-	    response = true;
+	    response = new DoctorGenderAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Gender");
@@ -899,15 +910,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
     @Override
     @Transactional
-    public Boolean addEditDOB(DoctorDOBAddEditRequest request) {
+    public DoctorDOBAddEditRequest addEditDOB(DoctorDOBAddEditRequest request) {
 	DoctorCollection doctorCollection = null;
-	Boolean response = false;
+	DoctorDOBAddEditRequest response = null;
 	try {
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 	    doctorCollection.setDob(request.getDob());
 	    doctorRepository.save(doctorCollection);
 
-	    response = true;
+	    response = new DoctorDOBAddEditRequest();
+	    BeanUtil.map(doctorCollection, response);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");

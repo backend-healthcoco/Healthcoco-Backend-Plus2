@@ -79,7 +79,7 @@ public interface RegistrationService {
 
     Boolean checktDoctorExistByEmailAddress(String emailAddress);
 
-    RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request, UriInfo uriInfo);
+    RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request);
 
     RegisterDoctorResponse registerExisitingUser(DoctorRegisterRequest request);
 

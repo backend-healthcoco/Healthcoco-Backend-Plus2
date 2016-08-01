@@ -1,6 +1,7 @@
 package com.dpdocter.response;
 
 import java.util.Date;
+import java.util.List;
 
 import com.dpdocter.beans.Role;
 
@@ -10,7 +11,7 @@ public class ClinicDoctorResponse {
 
     private String firstName;
 
-    private Role role;
+    private List<Role> role;
 
     private Boolean isActivate;
 
@@ -34,15 +35,15 @@ public class ClinicDoctorResponse {
 	this.firstName = firstName;
     }
 
-    public Role getRole() {
-	return role;
-    }
+    public List<Role> getRole() {
+		return role;
+	}
 
-    public void setRole(Role role) {
-	this.role = role;
-    }
+	public void setRole(List<Role> role) {
+		this.role = role;
+	}
 
-    public Boolean getIsActivate() {
+	public Boolean getIsActivate() {
 	return isActivate;
     }
 

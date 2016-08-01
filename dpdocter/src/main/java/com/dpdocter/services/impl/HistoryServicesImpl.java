@@ -33,7 +33,8 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.MailData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
@@ -49,6 +50,7 @@ import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
 import com.dpdocter.enums.Range;
@@ -65,6 +67,7 @@ import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.RecordsRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
@@ -73,6 +76,7 @@ import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.MailBodyGenerator;
@@ -146,6 +150,9 @@ public class HistoryServicesImpl implements HistoryServices {
     @Autowired
     private MailBodyGenerator mailBodyGenerator;
     
+    @Autowired
+    private TreatmentServicesRepository treatmentServicesRepository;
+
     @Override
     @Transactional
     public List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request) {
@@ -462,10 +469,10 @@ public class HistoryServicesImpl implements HistoryServices {
     @SuppressWarnings("unchecked")
 	@Override
     @Transactional
-    public PatientTreatment addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
-    	PatientTreatment response = null;
+    public PatientTreatmentResponse addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	PatientTreatmentResponse response = null;
     	HistoryCollection historyCollection = null;
-	PatientTreatmentCollection patientTreatmentCollection;
+	    PatientTreatmentCollection patientTreatmentCollection = null;
 	try {
 		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
@@ -512,8 +519,22 @@ public class HistoryServicesImpl implements HistoryServices {
 			patientTreatmentCollection.setUpdatedTime(new Date());
 			patientTreatmentCollection.setInHistory(true);
 			patientTreamentRepository.save(patientTreatmentCollection);
-			response = new PatientTreatment();
+			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+		    for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+		    
+		    	TreatmentResponse treatmentResponse = new TreatmentResponse();
+				BeanUtil.map(treatment, treatmentResponse);
+				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+				if (treatmentServicesCollection != null) {
+				    TreatmentService treatmentService = new TreatmentService();
+				    BeanUtil.map(treatmentServicesCollection, treatmentService);
+				    treatmentResponse.setTreatmentService(treatmentService);
+				}
+				treatmentResponses.add(treatmentResponse);
+		    }
+			response = new PatientTreatmentResponse();	
 			BeanUtil.map(patientTreatmentCollection, response);
+			response.setTreatments(treatmentResponses);
 	    }
 
 	} catch (Exception e) {
@@ -1982,8 +2003,8 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     @Transactional
-    public PatientTreatment removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
-    	PatientTreatment response = null;
+    public PatientTreatmentResponse removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId) {
+    	PatientTreatmentResponse response = null;
     	HistoryCollection historyCollection = null;
 	PatientTreatmentCollection patientTreatmentCollection;
 	try {
@@ -2006,8 +2027,22 @@ public class HistoryServicesImpl implements HistoryServices {
 			    patientTreatmentCollection.setInHistory(false);
 			    patientTreatmentCollection.setUpdatedTime(new Date());
 			    patientTreamentRepository.save(patientTreatmentCollection);
-			    response = new PatientTreatment();
-			    BeanUtil.map(patientTreatmentCollection, response);
+			    List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+			    for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+			    
+			    	TreatmentResponse treatmentResponse = new TreatmentResponse();
+					BeanUtil.map(treatment, treatmentResponse);
+					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+					if (treatmentServicesCollection != null) {
+					    TreatmentService treatmentService = new TreatmentService();
+					    BeanUtil.map(treatmentServicesCollection, treatmentService);
+					    treatmentResponse.setTreatmentService(treatmentService);
+					}
+					treatmentResponses.add(treatmentResponse);
+			    }
+				response = new PatientTreatmentResponse();	
+				BeanUtil.map(patientTreatmentCollection, response);
+				response.setTreatments(treatmentResponses);
 			}
 		    } else {
 			logger.warn("This patient treatment is not found for this patient to remove.");

@@ -6,9 +6,9 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.dpdocter.collections.ProductsAndServicesCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 
-public interface ProductsAndServicesRepository extends MongoRepository<ProductsAndServicesCollection, ObjectId> {
+public interface TreatmentServicesRepository extends MongoRepository<TreatmentServicesCollection, ObjectId> {
     @Query("{'specialityIds' : {$in : ?0}}")
-    public List<ProductsAndServicesCollection> findAll(List<ObjectId> specialityIds);
+    public List<TreatmentServicesCollection> findAll(List<ObjectId> specialityIds);
 }

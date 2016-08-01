@@ -1,24 +1,14 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Treatment;
-
-@Document(collection = "patient_treatment_cl")
-public class PatientTreatmentCollection extends GenericCollection {
+@Document(collection = "treatment_services_costs_cl")
+public class TreatmentServicesCostCollection extends GenericCollection {
     @Id
     private ObjectId id;
-
-    @Field
-    private List<Treatment> treatments;
-
-    @Field
-    private ObjectId patientId;
 
     @Field
     private ObjectId locationId;
@@ -30,13 +20,19 @@ public class PatientTreatmentCollection extends GenericCollection {
     private ObjectId doctorId;
 
     @Field
-    private double totalCost = 0.0;
+    private ObjectId treatmentServiceId;
+
+    @Field
+    private double cost = 0.0;
 
     @Field
     private Boolean discarded = false;
 
     @Field
-    private Boolean inHistory = false;
+    private int ranking = 0;
+
+    @Field
+    private Boolean isFav = false;
 
     public ObjectId getId() {
 	return id;
@@ -44,22 +40,6 @@ public class PatientTreatmentCollection extends GenericCollection {
 
     public void setId(ObjectId id) {
 	this.id = id;
-    }
-
-    public List<Treatment> getTreatments() {
-		return treatments;
-	}
-
-	public void setTreatments(List<Treatment> treatments) {
-		this.treatments = treatments;
-	}
-
-	public ObjectId getPatientId() {
-	return patientId;
-    }
-
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
     }
 
     public ObjectId getLocationId() {
@@ -86,12 +66,24 @@ public class PatientTreatmentCollection extends GenericCollection {
 	this.doctorId = doctorId;
     }
 
-    public double getTotalCost() {
-	return totalCost;
+    public ObjectId getTreatmentServiceId() {
+		return treatmentServiceId;
+	}
+
+	public void setTreatmentServiceId(ObjectId treatmentServiceId) {
+		this.treatmentServiceId = treatmentServiceId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public double getCost() {
+	return cost;
     }
 
-    public void setTotalCost(double totalCost) {
-	this.totalCost = totalCost;
+    public void setCost(double cost) {
+	this.cost = cost;
     }
 
     public Boolean isDiscarded() {
@@ -102,19 +94,27 @@ public class PatientTreatmentCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    public Boolean isInHistory() {
-	return inHistory;
-    }
+	public int getRanking() {
+		return ranking;
+	}
 
-    public void setInHistory(Boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public void setRanking(int ranking) {
+		this.ranking = ranking;
+	}
+
+	public Boolean getIsFav() {
+		return isFav;
+	}
+
+	public void setIsFav(Boolean isFav) {
+		this.isFav = isFav;
+	}
 
 	@Override
 	public String toString() {
-		return "PatientTreatmentCollection [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", totalCost=" + totalCost + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
+		return "TreatmentServicesCostCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", doctorId=" + doctorId + ", treatmentServiceId=" + treatmentServiceId + ", cost=" + cost
+				+ ", discarded=" + discarded + ", ranking=" + ranking + ", isFav=" + isFav + "]";
 	}
 
 }

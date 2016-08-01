@@ -28,6 +28,7 @@ public class RoleCollection extends GenericCollection {
     private Boolean discarded = false;
 
     public RoleCollection(String role, ObjectId locationId, ObjectId hospitalId) {
+    this.id = null;	
 	this.role = role;
 	this.locationId = locationId;
 	this.hospitalId = hospitalId;
