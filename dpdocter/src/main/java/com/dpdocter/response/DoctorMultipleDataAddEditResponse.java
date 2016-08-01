@@ -27,9 +27,19 @@ public class DoctorMultipleDataAddEditResponse {
 
     private String coverThumbnailImageUrl;
 
+    private String profileImageUrl;
+
+    private String thumbnailProfileImageUrl;
+
+    private String thumbnailCoverImageUrl;
+    
     private String gender;
     
     private DOB dob;
+
+    private String colorCode;
+
+    private String userUId;
 
     public String getDoctorId() {
 	return doctorId;
@@ -127,12 +137,55 @@ public class DoctorMultipleDataAddEditResponse {
 		this.dob = dob;
 	}
 
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public void setProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
+	public String getThumbnailProfileImageUrl() {
+		return thumbnailProfileImageUrl;
+	}
+
+	public void setThumbnailProfileImageUrl(String thumbnailProfileImageUrl) {
+		this.thumbnailProfileImageUrl = thumbnailProfileImageUrl;
+	}
+
+	public String getThumbnailCoverImageUrl() {
+		return thumbnailCoverImageUrl;
+	}
+
+	public void setThumbnailCoverImageUrl(String thumbnailCoverImageUrl) {
+		this.thumbnailCoverImageUrl = thumbnailCoverImageUrl;
+	}
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
+	public String getUserUId() {
+		return userUId;
+	}
+
+	public void setUserUId(String userUId) {
+		this.userUId = userUId;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorMultipleDataAddEditResponse [id=" + id + ", doctorId=" + doctorId + ", title=" + title
 				+ ", firstName=" + firstName + ", experience=" + experience + ", specialities=" + specialities
 				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", gender=" + gender + ", dob=" + dob + "]";
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", profileImageUrl=" + profileImageUrl
+				+ ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl + ", thumbnailCoverImageUrl="
+				+ thumbnailCoverImageUrl + ", gender=" + gender + ", dob=" + dob + ", colorCode=" + colorCode
+				+ ", userUId=" + userUId + "]";
 	}
 
 }

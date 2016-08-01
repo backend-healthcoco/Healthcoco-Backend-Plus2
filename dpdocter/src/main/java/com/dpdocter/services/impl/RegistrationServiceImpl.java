@@ -354,9 +354,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (referencesCollection == null) {
 		    referencesCollection = new ReferencesCollection();
 		    BeanUtil.map(request.getReferredBy(), referencesCollection);
-		    referencesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-		    referencesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-		    referencesCollection.setLocationId(new ObjectId(request.getLocationId()));
+		    if(!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))referencesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+		    if(!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))referencesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+		    if(!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))referencesCollection.setLocationId(new ObjectId(request.getLocationId()));
 		    referencesCollection = referrenceRepository.save(referencesCollection);
 		    transnationalService.addResource(referencesCollection.getId(), Resource.REFERENCE, false);
 			ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
@@ -407,9 +407,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setDob(patientCollection.getDob());
 	    registeredPatientDetails.setGender(patientCollection.getGender());
 	    registeredPatientDetails.setPID(patientCollection.getPID());
-	    registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
-	    registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
-	    registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
+	    if(!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
+	    if(!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
+	    if(!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
 	    registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 	    registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
@@ -515,9 +515,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		registeredPatientDetails.setUserId(userCollection.getId().toString());
 		registeredPatientDetails.setGender(patientCollection.getGender());
 		registeredPatientDetails.setPID(patientCollection.getPID());
-		registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
-		registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
-		registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
+		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
+		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
+		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
 		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    registeredPatientDetails.setAddress(patientCollection.getAddress());
 	    
@@ -560,9 +560,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request.getReferredBy(), referencesCollection);
 			BeanUtil.map(request, referencesCollection);
 			referencesCollection.setId(null);
-			referencesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-			referencesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-			referencesCollection.setLocationId(new ObjectId(request.getLocationId()));
+			if(!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))referencesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+			if(!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))referencesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+			if(!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))referencesCollection.setLocationId(new ObjectId(request.getLocationId()));
 			referencesCollection = referrenceRepository.save(referencesCollection);
 			transnationalService.addResource(referencesCollection.getId(), Resource.REFERENCE, false);
 			ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
@@ -645,9 +645,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		registeredPatientDetails.setDob(patientCollection.getDob());
 		registeredPatientDetails.setGender(patientCollection.getGender());
 		registeredPatientDetails.setPID(patientCollection.getPID());
-		registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
-		registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
-		registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
+		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
+		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))registeredPatientDetails.setLocationId(patientCollection.getLocationId().toString());
+		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
 		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 		if (referencesCollection != null) {
 		    Reference reference = new Reference();
