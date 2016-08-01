@@ -207,6 +207,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			case DOCTOR: checkDoctor(transactionalCollection.getResourceId(), null); break;
 			case LOCATION: checkLocation(transactionalCollection.getResourceId()); break;
 			case REFERENCE: checkReference(transactionalCollection.getResourceId()); break;
+//			case DISEASE
    			default: break;
 			}
 		}

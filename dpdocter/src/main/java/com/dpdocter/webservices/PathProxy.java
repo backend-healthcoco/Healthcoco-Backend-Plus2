@@ -127,7 +127,7 @@ public interface PathProxy {
 
 		public static final String GET_PROFESSION = "/settings/profession";
 
-		public static final String ADD_ROLE = "/role/add";
+		public static final String ADD_EDIT_ROLE = "/role/addEdit";
 
 		public static final String GET_ROLE = "/role/{range}";
 
@@ -612,22 +612,33 @@ public interface PathProxy {
 		public static final String GET_PATIENT_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}";
 	}
 
-	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treament";
+	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
 
 	public interface PatientTreatmentURLs {
-		public static final String ADD_EDIT_PRODUCT_SERVICE = "addEditProductService";
+		
+		public static final String ADD_EDIT_SERVICE = "/service/add";
 
-		public static final String ADD_EDIT_PRODUCT_SERVICE_COST = "addEditProductServiceCost";
+		public static final String ADD_EDIT_SERVICE_COST = "/serviceCost/add";
 
-		public static final String GET_PRODUCTS_AND_SERVICES = "getProductsAndServices";
+		public static final String DELETE_SERVICE = "/service/{treatmentServiceId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_SERVICE_COST = "/serviceCost/{treatmentServiceId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String GET_SERVICES = "/{type}/{range}";
+		
+		public static final String ADD_EDIT_PATIENT_TREATMENT = "/add";
+		
+		public static final String CHANGE_SERVICE_STATUS = "/{treatmentId}/{doctorId}/{locationId}/{hospitalId}/changeStatus";
 
-		public static final String ADD_EDIT_PATIENT_TREATMENT = "addEditPatientTreatment";
+		public static final String DELETE_PATIENT_TREATMENT = "/{treatmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
-		public static final String DELETE_PATIENT_TREATMENT = "deletePatientTreatment";
-
-		public static final String GET_PATIENT_TREATMENT_BY_ID = "getPatientTreatment/{treatmentId}";
-
-		public static final String GET_PATIENT_TREATMENTS = "getPatientTreatments";
+		public static final String GET_PATIENT_TREATMENT_BY_ID = "/{treatmentId}/view";
+		
+		public static final String GET_PATIENT_TREATMENT_PATIENT_ID = "/{patientId}";
+		
+		public static final String EMAIL_PATIENT_TREATMENT = "/{treatmentServiceId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+		
+		public static final String DOWNLOAD_PATIENT_TREATMENT = "/download/{treatmentServiceId}";
 
 	}
 

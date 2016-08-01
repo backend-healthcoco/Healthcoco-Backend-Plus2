@@ -1,36 +1,46 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.PatientTreatment;
-import com.dpdocter.beans.ProductAndService;
+import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
-import com.dpdocter.collections.ProductsAndServicesCollection;
-import com.dpdocter.collections.ProductsAndServicesCostCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
+import com.dpdocter.collections.TreatmentServicesCostCollection;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.PatientTreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
+import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
-import com.dpdocter.repository.ProductsAndServicesCostRepository;
-import com.dpdocter.repository.ProductsAndServicesRepository;
+import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.TreatmentServicesCostRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
-import com.dpdocter.services.OTPService;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.PatientTreatmentServices;
 
 import common.util.web.DPDoctorUtils;
@@ -40,10 +50,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     private static Logger logger = Logger.getLogger(PatientTreatmentServicesImpl.class);
 
     @Autowired
-    private ProductsAndServicesRepository productsAndServicesRepository;
+    private TreatmentServicesRepository treatmentServicesRepository;
 
     @Autowired
-    private ProductsAndServicesCostRepository productsAndServicesCostRepository;
+    private TreatmentServicesCostRepository treatmentServicesCostRepository;
 
     @Autowired
     private PatientTreamentRepository patientTreamentRepository;
@@ -52,175 +62,174 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     private DoctorRepository doctorRepository;
 
     @Autowired
-    private OTPService otpService;
+    private UserRepository userRepository;
+    
+    @Autowired
+    private SpecialityRepository specialityRepository;
 
+    @Autowired
+    MongoTemplate mongoTemplate;
+    
     @Override
     @Transactional
-    public boolean addEditProductService(ProductAndService productAndService) {
-	boolean response = false;
-	ProductsAndServicesCollection productsAndServicesCollection;
-	ProductsAndServicesCostCollection productsAndServicesCostCollection;
+    public TreatmentService addEditService(TreatmentService treatmentService) {
+    	TreatmentService response = null;
+	    TreatmentServicesCollection treatmentServicesCollection = null;
 	try {
-	    if (DPDoctorUtils.anyStringEmpty(productAndService.getId())) {
-		productsAndServicesCollection = new ProductsAndServicesCollection();
-		BeanUtil.map(productAndService, productsAndServicesCollection);
-		productsAndServicesCollection.setCreatedTime(new Date());
-		productsAndServicesCollection.setUpdatedTime(new Date());
-		productsAndServicesCollection = productsAndServicesRepository.save(productsAndServicesCollection);
-
-		if (productAndService.getCost() != 0.0) {
-		    productsAndServicesCostCollection = new ProductsAndServicesCostCollection();
-		    BeanUtil.map(productAndService, productsAndServicesCostCollection);
-		    productsAndServicesCostCollection.setProductAndServiceId(productsAndServicesCollection.getId());
-		    productsAndServicesCostCollection.setCreatedTime(new Date());
-		    productsAndServicesCostCollection.setUpdatedTime(new Date());
-		    productsAndServicesCostCollection = productsAndServicesCostRepository.save(productsAndServicesCostCollection);
-		}
-	    } else {
-		productsAndServicesCollection = productsAndServicesRepository.findOne(new ObjectId(productAndService.getId()));
-		if (productsAndServicesCollection != null) {
-		    List<String> specialityIds = productAndService.getSpecialityIds();
-		    if (productAndService.getSpecialityIds() != null && !productAndService.getSpecialityIds().isEmpty()) {
-			specialityIds.addAll(productAndService.getSpecialityIds());
-			Set<String> tempSpecialityIds = new HashSet<String>(specialityIds);
-			specialityIds.clear();
-			specialityIds.addAll(tempSpecialityIds);
-		    }
-		    if (!DPDoctorUtils.anyStringEmpty(productAndService.getName())) {
-			productsAndServicesCollection.setName(productAndService.getName());
-		    }
-		    if (!DPDoctorUtils.anyStringEmpty(productAndService.getLocationId())) {
-			productsAndServicesCollection.setLocationId(new ObjectId(productAndService.getLocationId()));
-		    }
-		    if (!DPDoctorUtils.anyStringEmpty(productAndService.getHospitalId())) {
-			productsAndServicesCollection.setHospitalId(new ObjectId(productAndService.getHospitalId()));
-		    }
-		    if (!DPDoctorUtils.anyStringEmpty(productAndService.getDoctorId())) {
-			productsAndServicesCollection.setDoctorId(new ObjectId(productAndService.getDoctorId()));
-		    }
-
-		    productsAndServicesCostCollection = productsAndServicesCostRepository.findOne(new ObjectId(productAndService.getId()));
-		    if (productsAndServicesCostCollection != null) {
-			ObjectId productsAndServicesCostCollectionId = productsAndServicesCostCollection.getId();
-			if (productAndService.getCost() != 0.0) {
-			    productsAndServicesCostCollection.setCost(productAndService.getCost());
+	    if (DPDoctorUtils.anyStringEmpty(treatmentService.getId())) {
+			treatmentServicesCollection = new TreatmentServicesCollection();
+			BeanUtil.map(treatmentService, treatmentServicesCollection);
+			treatmentServicesCollection.setCreatedTime(new Date());
+			treatmentServicesCollection.setUpdatedTime(new Date());
+			
+			if(!DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId())){
+				UserCollection userCollection = userRepository.findOne(treatmentServicesCollection.getDoctorId());
+			    if (userCollection != null) {
+			    	treatmentServicesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+			    }
+			}else{
+				treatmentServicesCollection.setCreatedBy("ADMIN");
 			}
-			BeanUtil.map(productsAndServicesCollection, productsAndServicesCostCollection);
-			productsAndServicesCostCollection.setId(productsAndServicesCostCollectionId);
-		    }
-
-		    productsAndServicesCollection.setUpdatedTime(new Date());
-		    productsAndServicesCollection = productsAndServicesRepository.save(productsAndServicesCollection);
-
-		    productsAndServicesCostCollection.setUpdatedTime(new Date());
-		    productsAndServicesCostCollection = productsAndServicesCostRepository.save(productsAndServicesCostCollection);
-		} else {
-		    throw new BusinessException(ServiceError.NotFound, "No product or service found for the given Id");
-		}
-	    }
-	    response = true;
-	} catch (Exception e) {
-	    logger.error("Error occurred while adding or editing products and services", e);
-	    throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing products and services");
-	}
-	return response;
-    }
-
-    @Override
-    @Transactional
-    public boolean addEditProductServiceCost(ProductAndService productAndService) {
-	boolean response = false;
-	ProductsAndServicesCostCollection productAndServiceCostCollection;
-	try {
-	    productAndServiceCostCollection = productsAndServicesCostRepository.find(new ObjectId(productAndService.getId()), new ObjectId(productAndService.getLocationId()), new ObjectId(productAndService.getHospitalId()), new ObjectId(productAndService.getDoctorId()));
-	    if (productAndServiceCostCollection != null) {
-	    	productAndServiceCostCollection.setCost(productAndService.getCost());
+			treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
 	    } else {
-			productAndServiceCostCollection = new ProductsAndServicesCostCollection();
-			BeanUtil.map(productAndService, productAndServiceCostCollection);
-			productAndServiceCostCollection.setId(null);
-		if(!DPDoctorUtils.anyStringEmpty(productAndService.getId()))productAndServiceCostCollection.setProductAndServiceId(new ObjectId(productAndService.getId()));
+			treatmentServicesCollection = treatmentServicesRepository.findOne(new ObjectId(treatmentService.getId()));
+			if (treatmentServicesCollection != null) {
+			    if (!DPDoctorUtils.anyStringEmpty(treatmentService.getName())) {
+			    	treatmentServicesCollection.setName(treatmentService.getName());
+			    }
+			    treatmentServicesCollection.setSpeciality(treatmentService.getSpeciality());
+			    treatmentServicesCollection.setUpdatedTime(new Date());
+			    treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
+			 } else {
+				 logger.error("No service found for the given Id");
+			    throw new BusinessException(ServiceError.NotFound, "No service found for the given Id");
+			}
 	    }
-		    productAndServiceCostCollection.setUpdatedTime(new Date());
-		    productAndServiceCostCollection = productsAndServicesCostRepository.save(productAndServiceCostCollection);
-		    response = true;
+	    if(treatmentServicesCollection != null){
+	    	response = new TreatmentService();
+	    	BeanUtil.map(treatmentServicesCollection, response);
+	    }
 	} catch (Exception e) {
-	    logger.error("Error occurred while adding or editing cost for products and services", e);
-	    throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing cost for products and services");
+	    logger.error("Error occurred while adding or editing services", e);
+	    throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing services");
 	}
 	return response;
     }
 
     @Override
     @Transactional
-    public List<ProductAndService> getProductsAndServices(String locationId, String hospitalId, String doctorId) {
-	List<ProductAndService> response = null;
+    public TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request) {
+    	TreatmentServiceCost response = null;
+    	TreatmentServicesCostCollection treatmentServicesCostCollection = null;
 	try {
-	    DoctorCollection doctor = doctorRepository.findByUserId(new ObjectId(doctorId));
-	    List<ObjectId> specialityIds = doctor.getSpecialities();
-	    List<ProductsAndServicesCollection> productsAndServicesCollections = productsAndServicesRepository.findAll(specialityIds);
-	    if (productsAndServicesCollections != null && !productsAndServicesCollections.isEmpty()) {
-		response = new ArrayList<ProductAndService>();
-		for (ProductsAndServicesCollection productAndServiceCollection : productsAndServicesCollections) {
-		    ProductAndService productAndService = new ProductAndService();
-		    BeanUtil.map(productAndServiceCollection, productAndService);
-		    ProductsAndServicesCostCollection productAndServiceCost = productsAndServicesCostRepository.find(productAndServiceCollection.getId(), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(doctorId));
-		    if (productAndServiceCost != null) {
-			productAndService.setCost(productAndServiceCost.getCost());
-		    }
-		    response.add(productAndService);
+		UserCollection userCollection = null;
+		if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId())){
+			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 		}
+		if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+			treatmentServicesCostCollection = new TreatmentServicesCostCollection();
+			BeanUtil.map(request, treatmentServicesCostCollection);
+			treatmentServicesCostCollection.setCreatedTime(new Date());
+			treatmentServicesCostCollection.setUpdatedTime(new Date());
+			
+			    if (userCollection != null) treatmentServicesCostCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+			    else treatmentServicesCostCollection.setCreatedBy("ADMIN");
+			    
 	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No products and services found");
+			treatmentServicesCostCollection = treatmentServicesCostRepository.findOne(new ObjectId(request.getId()));
+			if (treatmentServicesCostCollection != null) {
+				treatmentServicesCostCollection.setCost(request.getCost());
+				treatmentServicesCostCollection.setUpdatedTime(new Date());
+			 } else {
+				 logger.error("No service found for the given Id");
+			    throw new BusinessException(ServiceError.NotFound, "No service found for the given Id");
+			}
+	    }
+	    if(treatmentServicesCostCollection != null){
+	    	TreatmentServicesCollection treatmentServicesCollection = null;
+			if (request.getTreatmentService().getId() != null)treatmentServicesCollection = treatmentServicesRepository.findOne(new ObjectId(request.getTreatmentService().getId()));
+			if (treatmentServicesCollection == null) {				
+				 
+				if(request.getTreatmentService().getName() == null) {
+						logger.error("Cannot add services without treatment service");
+						throw new BusinessException(ServiceError.Unknown, "Cannot add services without treatment service");
+				}
+				treatmentServicesCollection = new TreatmentServicesCollection();
+				treatmentServicesCollection.setLocationId(new ObjectId(request.getLocationId()));
+				treatmentServicesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+				treatmentServicesCollection.setName(request.getTreatmentService().getName());
+				treatmentServicesCollection.setCreatedTime(new Date());
+			    if (userCollection != null) treatmentServicesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+			    else  treatmentServicesCollection.setCreatedBy("ADMIN");
+			}
+			TreatmentService treatmentService = null;
+	    	if(treatmentServicesCollection != null){
+	    		treatmentService = new TreatmentService();
+	    		treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
+	    		BeanUtil.map(treatmentServicesCollection, treatmentService);
+	    	}
+	    	treatmentServicesCostCollection.setTreatmentServiceId(treatmentServicesCollection.getId());
+	    	treatmentServicesCostCollection = treatmentServicesCostRepository.save(treatmentServicesCostCollection);
+	    	response = new TreatmentServiceCost();
+	    	BeanUtil.map(treatmentServicesCostCollection, response);
+	    	response.setTreatmentService(treatmentService);
 	    }
 	} catch (Exception e) {
-	    logger.error("Error occurred getting products and services", e);
-	    throw new BusinessException(ServiceError.Unknown, "Error occurred getting products and services");
+	    logger.error("Error occurred while adding or editing cost for treatment services", e);
+	    throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing cost for treatment services");
 	}
 	return response;
     }
 
     @Override
     @Transactional
-    public PatientTreatmentResponse addEditPatientTreatment(String treatmentId, String locationId, String hospitalId, String doctorId,
-	    List<PatientTreatment> patientTreatments) {
+    public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request) {
 	PatientTreatmentResponse response;
 	PatientTreatmentCollection patientTreatmentCollection;
-	double totalCost = 0.0;
 	try {
-	    if (DPDoctorUtils.anyStringEmpty(treatmentId)) {
-		patientTreatmentCollection = new PatientTreatmentCollection();
-		patientTreatmentCollection.setCreatedTime(new Date());
+	    if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+			patientTreatmentCollection = new PatientTreatmentCollection();
+			patientTreatmentCollection.setCreatedTime(new Date());
+			BeanUtil.map(request, patientTreatmentCollection);
+			UserCollection userCollection = null;
+			if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId())){
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			}if (userCollection != null) patientTreatmentCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+			else {
+				throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
+			}
 	    } else {
-		patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(doctorId));
+	    	patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(request.getId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 		if (patientTreatmentCollection == null) {
 		    throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
+		}else{
+			patientTreatmentCollection.setTotalCost(request.getTotalCost());
+		    patientTreatmentCollection.setUpdatedTime(new Date());
 		}
 	    }
-
-	    patientTreatmentCollection.setLocationId(new ObjectId(locationId));
-	    patientTreatmentCollection.setHospitalId(new ObjectId(hospitalId));
-	    patientTreatmentCollection.setDoctorId(new ObjectId(doctorId));
-
-	    for (PatientTreatment patientTreatment : patientTreatments) {
-		if (patientTreatment.getStatus() == null) {
-		    patientTreatment.setStatus(PatientTreatmentStatus.NOT_STARTED);
+	    List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+	    for (Treatment treatment : request.getTreatments()) {
+	    	
+		if (treatment.getStatus() == null) {
+			treatment.setStatus(PatientTreatmentStatus.NOT_STARTED);
 		}
-		ProductsAndServicesCostCollection productsAndServicesCost = productsAndServicesCostRepository.find(new ObjectId(patientTreatment.getProductAndServiceId()), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(doctorId));
-		if (productsAndServicesCost != null) {
-		    patientTreatment.setCost(productsAndServicesCost.getCost());
-		    totalCost += productsAndServicesCost.getCost();
+		
+		TreatmentResponse treatmentResponse = new TreatmentResponse();
+		BeanUtil.map(treatment, treatmentResponse);
+		TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+		if (treatmentServicesCollection != null) {
+		    TreatmentService treatmentService = new TreatmentService();
+		    BeanUtil.map(treatmentServicesCollection, treatmentService);
+		    treatmentResponse.setTreatmentService(treatmentService);
 		}
+		treatmentResponses.add(treatmentResponse);
 	    }
-	    patientTreatmentCollection.setPatientTreatments(patientTreatments);
-	    patientTreatmentCollection.setTotalCost(totalCost);
-	    patientTreatmentCollection.setUpdatedTime(new Date());
-
+	    patientTreatmentCollection.setTreatments(request.getTreatments());
 	    patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 	    response = new PatientTreatmentResponse();
-
 	    BeanUtil.map(patientTreatmentCollection, response);
+	    response.setTreatments(treatmentResponses);
 	} catch (Exception e) {
 	    logger.error("Error occurred while adding or editing treatment for patients", e);
 	    throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing treatment for patients");
@@ -228,19 +237,63 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	return response;
     }
 
+	@Override
+	public PatientTreatmentResponse changePatientTreatmentStatus(String treatmentId, String doctorId, String locationId, String hospitalId, Treatment treatment) {
+		PatientTreatmentResponse response = null;
+		try {
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+			if (patientTreatmentCollection == null) {
+				logger.warn("No treatment found for the given treatmentId");
+			    throw new BusinessException(ServiceError.NotFound, "No treatment found for the given treatmentId");
+			}
+
+		    List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+		    for (Treatment treatmentObj : patientTreatmentCollection.getTreatments()) {
+		    	if(treatmentObj.getTreatmentServiceId().toString().equalsIgnoreCase(treatment.getTreatmentServiceId().toString())){
+		    		if (treatment.getStatus() == null) treatmentObj.setStatus(PatientTreatmentStatus.NOT_STARTED);
+					else treatmentObj.setStatus(treatment.getStatus());
+		    	}
+			
+		    TreatmentResponse treatmentResponse = new TreatmentResponse();
+			BeanUtil.map(treatment, treatmentResponse);
+			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+			if (treatmentServicesCollection != null) {
+				    TreatmentService treatmentService = new TreatmentService();
+				    BeanUtil.map(treatmentServicesCollection, treatmentService);
+				    treatmentResponse.setTreatmentService(treatmentService);
+			}
+			treatmentResponses.add(treatmentResponse);
+		    }
+		    patientTreatmentCollection.setUpdatedTime(new Date());
+
+		    patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
+
+		    response = new PatientTreatmentResponse();
+		    BeanUtil.map(patientTreatmentCollection, response);
+		    response.setTreatments(treatmentResponses);		
+		    
+		} catch (Exception e) {
+		    logger.error("Error occurred while adding or editing treatment for patients", e);
+		    throw new BusinessException(ServiceError.Unknown, "Error occurred while adding or editing treatment for patients");
+		}
+		return response;
+	}
+
     @Override
     @Transactional
-    public boolean deletePatientTreatment(String treatmentId, String locationId, String hospitalId, String doctorId) {
+    public boolean deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 	boolean response = false;
 	try {
-	    PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(doctorId));
+	    PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
 
 	    if (patientTreatmentCollection != null) {
-		patientTreatmentCollection.setDiscarded(true);
-		patientTreatmentCollection.setUpdatedTime(new Date());
-		patientTreamentRepository.save(patientTreatmentCollection);
+			patientTreatmentCollection.setDiscarded(discarded);
+			patientTreatmentCollection.setUpdatedTime(new Date());
+			patientTreamentRepository.save(patientTreatmentCollection);
+			response = true;
 	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
+	    	logger.warn("No treatment found for the given id");
+		    throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
 	    }
 	} catch (Exception e) {
 	    logger.error("Error while deleting treatment", e);
@@ -256,9 +309,22 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	try {
 	    PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
 	    if (patientTreatmentCollection != null) {
-		response = new PatientTreatmentResponse();
-
-		BeanUtil.map(patientTreatmentCollection, response);
+	    	List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+		    for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+		    
+		    	TreatmentResponse treatmentResponse = new TreatmentResponse();
+				BeanUtil.map(treatment, treatmentResponse);
+				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+				if (treatmentServicesCollection != null) {
+				    TreatmentService treatmentService = new TreatmentService();
+				    BeanUtil.map(treatmentServicesCollection, treatmentService);
+				    treatmentResponse.setTreatmentService(treatmentService);
+				}
+				treatmentResponses.add(treatmentResponse);
+		    }
+			response = new PatientTreatmentResponse();	
+			BeanUtil.map(patientTreatmentCollection, response);
+			response.setTreatments(treatmentResponses);
 	    } else {
 		throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
 	    }
@@ -271,17 +337,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
     @Override
     @Transactional
-    public List<PatientTreatmentResponse> getPatientTreatments(String locationId, String hospitalId, String doctorId, String patientId, int page, int size,
-	    String updatedTime, Boolean discarded) {
-	List<PatientTreatmentResponse> response;
-	List<PatientTreatmentCollection> patientTreatmentCollections;
-	boolean[] discards = { false };
+    public List<PatientTreatmentResponse> getPatientTreatments(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory, String status) {
+	List<PatientTreatmentResponse> response = null;
 	try {
-	    if (discarded) {
-		discards[1] = true;
-	    }
-
-	    boolean otpVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
+	    long createdTimeStamp = Long.parseLong(updatedTime);
 	    
 	    ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
@@ -289,37 +348,222 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    if (size > 0) {
-		if (otpVerified) {
-		    patientTreatmentCollections = patientTreamentRepository.findAll(patientObjectId, discards, new Date(Long.parseLong(updatedTime)),
-			    new PageRequest(page, size, Direction.DESC, "createdTime"));
-		} else {
-		    patientTreatmentCollections = patientTreamentRepository.findAll(patientObjectId, locationObjectId, hospitalObjectId, doctorObjectId, discards,
-			    new Date(Long.parseLong(updatedTime)), new PageRequest(page, size, Direction.DESC, "createdTime"));
-		}
-	    } else {
-		if (otpVerified) {
-		    patientTreatmentCollections = patientTreamentRepository.findAll(patientObjectId, discards, new Date(Long.parseLong(updatedTime)),
-			    new Sort(Sort.Direction.DESC, "createdTime"));
-		} else {
-		    patientTreatmentCollections = patientTreamentRepository.findAll(patientObjectId, locationObjectId, hospitalObjectId, doctorObjectId, discards,
-			    new Date(Long.parseLong(updatedTime)), new Sort(Sort.Direction.DESC, "createdTime"));
-		}
-	    }
-
-	    if (patientTreatmentCollections != null && !patientTreatmentCollections.isEmpty()) {
-		response = new ArrayList<PatientTreatmentResponse>();
-
-		BeanUtil.map(patientTreatmentCollections, response);
-	    } else {
-		throw new BusinessException(ServiceError.NotFound, "No treatment found");
-	    }
-
+    	Criteria criteria = new  Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId").is(patientObjectId);
+    	if(!isOTPVerified){
+    		criteria.and("doctorId").is(doctorObjectId);
+    		if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+        		criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+        	}
+    	}
+		if(!discarded)criteria.and("discarded").is(discarded);
+		if(inHistory)criteria.and("inHistory").is(inHistory);
+		if(!DPDoctorUtils.anyStringEmpty(status))criteria.and("treatments.status").is(status);
+		Aggregation aggregation = null;
+//		Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id", "treatments.treatmentServices")
+		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		
+		AggregationResults<PatientTreatmentCollection> aggregationResults = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatmentCollection.class);
+		List<PatientTreatmentCollection> patientTreatmentCollections = aggregationResults.getMappedResults();
+    	if(patientTreatmentCollections != null && !patientTreatmentCollections.isEmpty()){
+    		response = new ArrayList<PatientTreatmentResponse>();
+    		
+    		for(PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections){
+    			PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
+    			BeanUtil.map(patientTreatmentCollection, patientTreatmentResponse);
+    			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+    		    for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+	    			TreatmentResponse treatmentResponse = new TreatmentResponse();
+	    			BeanUtil.map(treatment, treatmentResponse);
+	    			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+	    			if (treatmentServicesCollection != null) {
+	    			    TreatmentService treatmentService = new TreatmentService();
+	    			    BeanUtil.map(treatmentServicesCollection, treatmentService);
+	    			    treatmentResponse.setTreatmentService(treatmentService);
+	    			}
+	    			treatmentResponses.add(treatmentResponse);
+    		    }
+    		    patientTreatmentResponse.setTreatments(treatmentResponses);
+    		    response.add(patientTreatmentResponse);
+    		}
+    	}
 	} catch (Exception e) {
 	    logger.error("Error while getting patient treatments", e);
 	    throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
 	}
 	return response;
     }
+
+	@Override
+	public TreatmentService deleteService(String treatmentServiceId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		TreatmentService response = null;
+	    try {
+	    	TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(new ObjectId(treatmentServiceId));
+		    if (treatmentServicesCollection != null) {
+			if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCollection.getDoctorId(), treatmentServicesCollection.getHospitalId(), treatmentServicesCollection.getLocationId())) {
+			    if (treatmentServicesCollection.getDoctorId().toString().equals(doctorId) && treatmentServicesCollection.getHospitalId().toString().equals(hospitalId) && treatmentServicesCollection.getLocationId().toString().equals(locationId)) {
+			    	treatmentServicesCollection.setDiscarded(discarded);
+			    	treatmentServicesCollection.setUpdatedTime(new Date());
+					treatmentServicesRepository.save(treatmentServicesCollection);
+					response = new TreatmentService();
+					BeanUtil.map(treatmentServicesCollection, response);
+				} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
+			    }
+			}
+		    } else {
+			logger.warn("Treatment Service not found!");
+			throw new BusinessException(ServiceError.NoRecord, "Treatment Service not found!");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	    	 return response;
+	}
+
+	@Override
+	public TreatmentServiceCost deleteServiceCost(String treatmentServiceId, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		TreatmentServiceCost response = null;
+	    try {
+	    	TreatmentServicesCostCollection treatmentServicesCostCollection = treatmentServicesCostRepository.findOne(new ObjectId(treatmentServiceId));
+		    if (treatmentServicesCostCollection != null) {
+			if (!DPDoctorUtils.anyStringEmpty(treatmentServicesCostCollection.getDoctorId(), treatmentServicesCostCollection.getHospitalId(), treatmentServicesCostCollection.getLocationId())) {
+			    if (treatmentServicesCostCollection.getDoctorId().toString().equals(doctorId) && treatmentServicesCostCollection.getHospitalId().toString().equals(hospitalId) && treatmentServicesCostCollection.getLocationId().toString().equals(locationId)) {
+			    	treatmentServicesCostCollection.setDiscarded(discarded);
+			    	treatmentServicesCostCollection.setUpdatedTime(new Date());
+					treatmentServicesCostRepository.save(treatmentServicesCostCollection);
+					response = new TreatmentServiceCost();
+					BeanUtil.map(treatmentServicesCostCollection, response);
+				} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id, Hospital Id, Or Location Id");
+			    }
+			}
+		    } else {
+			logger.warn("Treatment Service not found!");
+			throw new BusinessException(ServiceError.NoRecord, "Treatment Service not found!");
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	    	 return response;
+	}
+
+	@Override
+	public List<?> getServices(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<?> response = new ArrayList<Object>();
+
+		switch (PatientTreatmentService.valueOf(type.toUpperCase())) {
+
+			case SERVICE: {
+	
+			    switch (Range.valueOf(range.toUpperCase())) {
+	
+			    case GLOBAL: response = getGlobalServices(page, size, doctorId, updatedTime, discarded); break;
+			    case CUSTOM: response = getCustomServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			    case BOTH: response = getCustomGlobalServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+			    
+			    }break;
+			}
+			case SERVICECOST: {
+				  response = getCustomServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);break;
+			    }
+		}
+		return response;
+	}
+
+	private List<?> getCustomServicesCost(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<TreatmentServiceCost> treatmentServicesCosts = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new  Criteria("doctorId").is(new ObjectId(doctorId)).and("updatedTime").gte(new Date(createdTimeStamp));
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+	    		criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+	    	}
+	    	
+			Aggregation aggregation = null;
+			
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			
+			AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCostCollection.class, TreatmentServiceCost.class);
+			treatmentServicesCosts = aggregationResults.getMappedResults();		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting LabTests");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
+		}
+		return treatmentServicesCosts;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<?> getCustomGlobalServices(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<TreatmentService> response = null;
+		try {
+		    DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+		    if(doctorCollection == null){
+		    	logger.warn("No Doctor Found");
+	    		throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+		    }
+		    Collection<String> specialities = null;
+			if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()){
+			    	specialities = CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
+				    specialities.add(null);specialities.add("ALL");
+			}
+			
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, specialities), TreatmentServicesCollection.class, TreatmentService.class); 
+			response = results.getMappedResults();
+			    
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+	}
+
+	private List<?> getCustomServices(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<TreatmentService> response = null;
+		try {
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), TreatmentServicesCollection.class, TreatmentService.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<?> getGlobalServices(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<TreatmentService> response = null;
+		try {
+		    DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+		    if(doctorCollection == null){
+		    	logger.warn("No Doctor Found");
+	    		throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+		    }
+		    Collection<String> specialities = null; 
+		    if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()){
+		    	specialities = CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
+		    	specialities.add("ALL");specialities.add(null);
+		    }
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities), TreatmentServicesCollection.class, TreatmentService.class); 
+			response = results.getMappedResults();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Treatment Services");
+		}
+		return response;
+	}
 
 }

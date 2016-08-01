@@ -2,7 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
@@ -33,25 +32,25 @@ import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 
 public interface DoctorProfileService {
 
-    Boolean addEditName(DoctorNameAddEditRequest request);
+	DoctorNameAddEditRequest addEditName(DoctorNameAddEditRequest request);
 
-    DoctorExperience addEditExperience(DoctorExperienceAddEditRequest request);
+	DoctorExperienceAddEditRequest addEditExperience(DoctorExperienceAddEditRequest request);
 
-    Boolean addEditContact(DoctorContactAddEditRequest request);
+	DoctorContactAddEditRequest addEditContact(DoctorContactAddEditRequest request);
 
-    Boolean addEditEducation(DoctorEducationAddEditRequest request);
+	DoctorEducationAddEditRequest addEditEducation(DoctorEducationAddEditRequest request);
 
     List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime);
 
-    List<String> addEditSpeciality(DoctorSpecialityAddEditRequest request);
+    DoctorSpecialityAddEditRequest addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
-    Boolean addEditAchievement(DoctorAchievementAddEditRequest request);
+    DoctorAchievementAddEditRequest addEditAchievement(DoctorAchievementAddEditRequest request);
 
-    Boolean addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request);
+    DoctorProfessionalStatementAddEditRequest addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request);
 
-    Boolean addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
+    DoctorRegistrationAddEditRequest addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
 
-    Boolean addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request);
+    DoctorExperienceDetailAddEditRequest addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request);
 
     String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
 
@@ -61,17 +60,17 @@ public interface DoctorProfileService {
 
     List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
 
-    Boolean addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
+    DoctorProfessionalAddEditRequest addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
 
-    Boolean addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request);
+    DoctorAppointmentNumbersAddEditRequest addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request);
 
-    Boolean addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
+    DoctorVisitingTimeAddEditRequest addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
 
-    Boolean addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
+    DoctorConsultationFeeAddEditRequest addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
 
-    Boolean addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
+    DoctorAppointmentSlotAddEditRequest addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
 
-    Boolean addEditGeneralInfo(DoctorGeneralInfo request);
+    DoctorGeneralInfo addEditGeneralInfo(DoctorGeneralInfo request);
 
     List<Speciality> getSpecialities(int page, int size, String updatedTime);
 
@@ -81,10 +80,10 @@ public interface DoctorProfileService {
 
     DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
-    Boolean addEditFacility(DoctorAddEditFacilityRequest request);
+    DoctorAddEditFacilityRequest addEditFacility(DoctorAddEditFacilityRequest request);
 
-    Boolean addEditGender(DoctorGenderAddEditRequest request);
+    DoctorGenderAddEditRequest addEditGender(DoctorGenderAddEditRequest request);
 
-    Boolean addEditDOB(DoctorDOBAddEditRequest request);
+    DoctorDOBAddEditRequest addEditDOB(DoctorDOBAddEditRequest request);
 
 }

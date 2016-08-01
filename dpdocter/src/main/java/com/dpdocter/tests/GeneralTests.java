@@ -3,12 +3,12 @@ package com.dpdocter.tests;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
-import com.amazonaws.regions.Regions;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
-import common.util.web.DPDoctorUtils;
 
 
 
@@ -81,8 +81,8 @@ public class GeneralTests {
 //	    	}
 	    		 
 	    		 public static void main(String[] args) throws NoSuchAlgorithmException, JsonGenerationException, JsonMappingException, IOException, ParseException  {
-	    			 String doctorId = null;
-	    			 System.out.println(DPDoctorUtils.getSHA3SecurePassword("healthcoco".toCharArray()));
+	    			 double doctorId = 0;
+	    			 System.out.println(doctorId);
 	    		 }
 	    		 
 }  	

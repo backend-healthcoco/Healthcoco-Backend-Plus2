@@ -600,7 +600,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		boolean[] inHistorys = new boolean[2];
 		inHistorys[0] = true;
-		inHistorys[1] = true;
 
 		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);

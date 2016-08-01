@@ -7,13 +7,14 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.Treatment;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
+import com.dpdocter.response.PatientTreatmentResponse;
 
 public interface HistoryServices {
 
@@ -34,7 +35,7 @@ public interface HistoryServices {
 
     Prescription addPrescriptionToHistory(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    PatientTreatment addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
+    PatientTreatmentResponse addPatientTreatmentToHistory(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
 
     HistoryDetailsResponse assignMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 
@@ -48,7 +49,7 @@ public interface HistoryServices {
 
     Prescription removePrescription(String prescriptionId, String patientId, String doctorId, String hospitalId, String locationId);
 
-    PatientTreatment removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
+    PatientTreatmentResponse removePatientTreatment(String treatmentId, String patientId, String doctorId, String hospitalId, String locationId);
 
     HistoryDetailsResponse removeMedicalHistory(String diseaseId, String patientId, String doctorId, String hospitalId, String locationId);
 

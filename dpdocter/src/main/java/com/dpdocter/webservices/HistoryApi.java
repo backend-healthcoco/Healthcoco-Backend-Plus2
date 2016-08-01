@@ -26,7 +26,6 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
@@ -42,6 +41,7 @@ import com.dpdocter.request.SpecialNotesAddRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
+import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.HistoryServices;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
@@ -203,7 +203,7 @@ public class HistoryApi {
     @Path(value = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY)
     @GET
     @ApiOperation(value = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY, notes = PathProxy.HistoryUrls.ADD_PATIENT_TREATMENT_TO_HISTORY)
-    public Response<PatientTreatment> addPatientTreatmentToHistory(@PathParam(value = "treatmentId") String treatmentId,
+    public Response<PatientTreatmentResponse> addPatientTreatmentToHistory(@PathParam(value = "treatmentId") String treatmentId,
 	    @PathParam(value = "patientId") String patientId, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(treatmentId, patientId, doctorId, hospitalId, locationId)) {
@@ -211,10 +211,10 @@ public class HistoryApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Treatment Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	}
 
-	PatientTreatment addPatientTreatmentToHistoryResponse = historyServices.addPatientTreatmentToHistory(treatmentId, patientId, doctorId, hospitalId, locationId);
+	PatientTreatmentResponse patientTreatmentResponse = historyServices.addPatientTreatmentToHistory(treatmentId, patientId, doctorId, hospitalId, locationId);
 
-	Response<PatientTreatment> response = new Response<PatientTreatment>();
-	response.setData(addPatientTreatmentToHistoryResponse);
+	Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
+	response.setData(patientTreatmentResponse);
 	return response;
     }
 
@@ -324,15 +324,15 @@ public class HistoryApi {
     @Path(value = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT)
     @GET
     @ApiOperation(value = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT, notes = PathProxy.HistoryUrls.REMOVE_PATIENT_TREATMENT)
-    public Response<PatientTreatment> removePatientTreatment(@PathParam(value = "treatmentId") String treatmentId, @PathParam(value = "patientId") String patientId,
+    public Response<PatientTreatmentResponse> removePatientTreatment(@PathParam(value = "treatmentId") String treatmentId, @PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 	    @PathParam(value = "hospitalId") String hospitalId) {
 	if (DPDoctorUtils.anyStringEmpty(treatmentId, patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("TreatmentId Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "TreatmentId Id, Patient Id, Doctor Id, Hosoital Id, Location Id Cannot Be Empty");
 	}
-	PatientTreatment removePrescriptionResponse = historyServices.removePatientTreatment(treatmentId, patientId, doctorId, hospitalId, locationId);
-	Response<PatientTreatment> response = new Response<PatientTreatment>();
+	PatientTreatmentResponse removePrescriptionResponse = historyServices.removePatientTreatment(treatmentId, patientId, doctorId, hospitalId, locationId);
+	Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
 	response.setData(removePrescriptionResponse);
 	return response;
     }

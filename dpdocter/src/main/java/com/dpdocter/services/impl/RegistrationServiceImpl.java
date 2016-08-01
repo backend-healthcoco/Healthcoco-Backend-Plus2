@@ -262,6 +262,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Value(value = "${image.path}")
     private String imagePath;
 
+    @Value(value = "${register.role.not.found}")
+    private String roleNotFoundException;
+
     @Override
     @Transactional
     public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -1400,7 +1403,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request, UriInfo uriInfo) {
+    public RegisterDoctorResponse registerNewUser(DoctorRegisterRequest request) {
 	RegisterDoctorResponse response = null;
 	try {
 	    RoleCollection doctorRole = null;
@@ -1613,20 +1616,32 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     public Role addRole(Role request) {
 	Role role = new Role();
+	RoleCollection roleCollection = null;
 	try {
-	    RoleCollection roleCollection = new RoleCollection();
-	    BeanUtil.map(request, roleCollection);
-	    roleCollection.setCreatedTime(new Date());
-	    roleCollection = roleRepository.save(roleCollection);
-
+		if(DPDoctorUtils.anyStringEmpty(request.getId())){
+			roleCollection = new RoleCollection();
+			BeanUtil.map(request, roleCollection);
+		    roleCollection.setCreatedTime(new Date());
+		    LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+		    roleCollection.setCreatedBy(locationCollection.getLocationName());
+		}else{
+			roleCollection = roleRepository.findOne(new ObjectId(request.getId()));
+			if(roleCollection == null){
+				logger.error(roleNotFoundException);
+			    throw new BusinessException(ServiceError.Unknown, roleNotFoundException);
+			}
+			roleCollection.setRole(request.getRole());
+			roleCollection.setUpdatedTime(new Date());
+		}
+		roleCollection = roleRepository.save(roleCollection);
+	    
 	    if (request.getAccessModules() != null && !request.getAccessModules().isEmpty()) {
-		AccessControl accessControl = new AccessControl();
-		BeanUtil.map(request, accessControl);
-		accessControl.setType(Type.ROLE);
-		accessControl.setRoleOrUserId(roleCollection.getId().toString());
-		accessControl = accessControlServices.setAccessControls(accessControl);
-		if (accessControl != null)
-		    role.setAccessModules(accessControl.getAccessModules());
+			AccessControl accessControl = new AccessControl();
+			BeanUtil.map(request, accessControl);
+			accessControl.setType(Type.ROLE);
+			accessControl.setRoleOrUserId(roleCollection.getId().toString());
+			accessControl = accessControlServices.setAccessControls(accessControl);
+			if (accessControl != null)role.setAccessModules(accessControl.getAccessModules());
 	    }
 	    BeanUtil.map(roleCollection, role);
 	} catch (Exception e) {
@@ -1645,15 +1660,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	try {
 	    switch (Range.valueOf(range.toUpperCase())) {
 
-	    case GLOBAL:
-		response = getGlobalRole(page, size, updatedTime);
-		break;
+//	    case GLOBAL:
+//		response = getGlobalRole(page, size, updatedTime);
+//		break;
 	    case CUSTOM:
 		response = getCustomRole(page, size, locationId, hospitalId, updatedTime);
 		break;
-	    case BOTH:
-		response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime);
-		break;
+//	    case BOTH:
+//		response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime);
+//		break;
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1664,35 +1679,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
-    private List<Role> getCustomGlobalRole(int page, int size, String locationId, String hospitalId, String updatedTime) {
-	List<Role> response = null;
-	List<RoleCollection> roleCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-		if (size > 0) roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
-		else roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-	    } else {
-		if (size > 0)roleCollections = roleRepository.findCustomGlobal(new ObjectId(locationId), new ObjectId(hospitalId), new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
-		else roleCollections = roleRepository.findCustomGlobal(new ObjectId(locationId), new ObjectId(hospitalId), new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-	    }
-	    if (roleCollections != null) {
-		response = new ArrayList<Role>();
-		for (RoleCollection roleCollection : roleCollections) {
-		    Role role = new Role();
-		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
-		    BeanUtil.map(roleCollection, role);
-		    role.setAccessModules(accessControl.getAccessModules());
-		    response.add(role);
-		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return response;
-    }
+//    private List<Role> getCustomGlobalRole(int page, int size, String locationId, String hospitalId, String updatedTime) {
+//	List<Role> response = null;
+//	List<RoleCollection> roleCollections = null;
+//	try {
+//	    long createdTimeStamp = Long.parseLong(updatedTime);
+//	    if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+//		if (size > 0) roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
+//		else roleCollections = roleRepository.findCustomGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+//	    } else {
+//		if (size > 0)roleCollections = roleRepository.findCustomGlobal(new ObjectId(locationId), new ObjectId(hospitalId), new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
+//		else roleCollections = roleRepository.findCustomGlobal(new ObjectId(locationId), new ObjectId(hospitalId), new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+//	    }
+//	    if (roleCollections != null) {
+//		response = new ArrayList<Role>();
+//		for (RoleCollection roleCollection : roleCollections) {
+//		    Role role = new Role();
+//		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
+//		    BeanUtil.map(roleCollection, role);
+//		    role.setAccessModules(accessControl.getAccessModules());
+//		    response.add(role);
+//		}
+//	    }
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e);
+//	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+//	}
+//	return response;
+//    }
 
     private List<Role> getCustomRole(int page, int size, String locationId, String hospitalId, String updatedTime) {
 	List<Role> response = null;
@@ -1720,31 +1735,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
-    private List<Role> getGlobalRole(int page, int size, String updatedTime) {
-	List<Role> response = null;
-	List<RoleCollection> roleCollections = null;
-	try {
-	    long createdTimeStamp = Long.parseLong(updatedTime);
-	    if (size > 0)roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
-	    else roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-
-	    if (roleCollections != null) {
-		response = new ArrayList<Role>();
-		for (RoleCollection roleCollection : roleCollections) {
-		    Role role = new Role();
-		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
-		    BeanUtil.map(roleCollection, role);
-		    role.setAccessModules(accessControl.getAccessModules());
-		    response.add(role);
-		}
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	}
-	return response;
-    }
+//    private List<Role> getGlobalRole(int page, int size, String updatedTime) {
+//	List<Role> response = null;
+//	List<RoleCollection> roleCollections = null;
+//	try {
+//	    long createdTimeStamp = Long.parseLong(updatedTime);
+//	    if (size > 0)roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
+//	    else roleCollections = roleRepository.findGlobal(new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+//
+//	    if (roleCollections != null) {
+//		response = new ArrayList<Role>();
+//		for (RoleCollection roleCollection : roleCollections) {
+//		    Role role = new Role();
+//		    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
+//		    BeanUtil.map(roleCollection, role);
+//		    role.setAccessModules(accessControl.getAccessModules());
+//		    response.add(role);
+//		}
+//	    }
+//	} catch (Exception e) {
+//	    e.printStackTrace();
+//	    logger.error(e);
+//	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+//	}
+//	return response;
+//    }
 
     @Override
     @Transactional
@@ -1763,13 +1778,30 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    if (userCollection != null) {
-			clinicDoctorResponse.setFirstName(userCollection.getFirstName());
-			clinicDoctorResponse.setLastSession(userCollection.getLastSession());
-			clinicDoctorResponse.setUserId(userCollection.getId().toString());
+				clinicDoctorResponse.setFirstName(userCollection.getFirstName());
+				clinicDoctorResponse.setLastSession(userCollection.getLastSession());
+				clinicDoctorResponse.setUserId(userCollection.getId().toString());
+				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
+			
+				@SuppressWarnings("unchecked")
+			    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
+				List<RoleCollection> roleCollections = roleRepository.find(roleIds, new ObjectId(locationId), new ObjectId(hospitalId));
+						
+		    if (roleCollections != null) {
+		    	List<Role> roles = new ArrayList<>();
+			    for(RoleCollection roleCollection : roleCollections){
+			    	Role role = new Role();
+				    AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(), roleCollection.getLocationId(), roleCollection.getHospitalId());
+				    BeanUtil.map(roleCollection, role);
+				    role.setAccessModules(accessControl.getAccessModules());
+				    roles.add(role);
+			    }
+			    clinicDoctorResponse.setRole(roles);
 		    }
+		    }
+		   response.add(clinicDoctorResponse);
 		}
 	    }
-
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
