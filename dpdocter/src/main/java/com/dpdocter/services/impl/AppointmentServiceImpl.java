@@ -1126,6 +1126,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				if (doctorClinicProfileCollection != null) {
 				    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
+				    BeanUtil.map(localtionCollection, doctorClinicProfile);
 				    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
 				    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId().toString());
 				    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId().toString());
@@ -1140,15 +1141,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 			response.setDoctors(doctors);
 			
-			List<LabTestCollection> labTestCollections = labTestRepository.findByLocationId(localtionCollection.getId().toString());
+			List<LabTestCollection> labTestCollections = labTestRepository.findByLocationId(localtionCollection.getHospitalId(), localtionCollection.getId(), new PageRequest(0, 5));
 			List<LabTest> labTests = null;
 			if(labTestCollections != null && !labTestCollections.isEmpty()){
 				labTests = new ArrayList<LabTest>();
-				for(LabTestCollection labTestCollection : labTestCollections){
+				for(int i = 0; i < 5; i++){
 					LabTest labTest = new LabTest();
-					BeanUtil.map(labTestCollection, labTest);
-					if(labTestCollection.getTestId() != null){
-						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
+					BeanUtil.map(labTestCollections.get(i), labTest);
+					if(labTestCollections.get(i).getTestId() != null){
+						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollections.get(i).getTestId());
 						if(diagnosticTestCollection != null){
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -1158,6 +1159,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					labTests.add(labTest);
 				}
 				response.setLabTests(labTests);
+				response.setNoOfLabTest(labTestRepository.getLabTestCount(localtionCollection.getHospitalId(), localtionCollection.getId()));
 			}
 		    }
 		} catch (Exception e) {

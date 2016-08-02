@@ -34,6 +34,9 @@ public class ESLandmarkLocalityDocument {
     @Field(type = FieldType.Double)
     private Double longitude;
 
+    @Field(type = FieldType.String)
+    private String postalCode;
+
     public String getId() {
 	return id;
     }
@@ -98,10 +101,18 @@ public class ESLandmarkLocalityDocument {
 		this.explanation = explanation;
 	}
 
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	@Override
 	public String toString() {
 		return "ESLandmarkLocalityDocument [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark="
-				+ landmark + ", explanation=" + explanation + ", geoPoint=" + geoPoint
-				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ landmark + ", explanation=" + explanation + ", geoPoint=" + geoPoint + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", postalCode=" + postalCode + "]";
 	}
 }

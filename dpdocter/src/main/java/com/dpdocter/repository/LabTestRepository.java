@@ -39,16 +39,16 @@ public interface LabTestRepository extends MongoRepository<LabTestCollection, Ob
     @Query("{'$or': [{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}},{'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?2},'discarded': {$in: ?3}}]}")
     List<LabTestCollection> getCustomGlobalLabTests(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'testName': ?0}")
-    List<LabTestCollection> findByTestName(String testName);
-
     @Query("{'locationId': ?0}")
-    List<LabTestCollection> findByLocationId(String id);
+    List<LabTestCollection> findByLocationId(ObjectId hospitalId, ObjectId locationId, Pageable pageable);
 
     @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}, 'testId': {$in: ?4}}")
 	List<LabTestCollection> getCustomLabTests(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Collection<ObjectId> testIds, Pageable pageable);
 
     @Query("{'hospitalId': ?0, 'locationId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded': {$in: ?3}, 'testId': {$in: ?4}}")
 	List<LabTestCollection> getCustomLabTests(ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Collection<ObjectId> testIds, Sort sort);
+
+    @Query(value = "{'hospitalId' : ?0, 'locationId' : ?1}", count = true)
+    Integer getLabTestCount(ObjectId hospitalId, ObjectId locationId);
 
 }

@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -28,6 +29,9 @@ public class LandmarkLocalityCollection {
 
     @Field
     private Double longitude;
+
+    @Field
+    private String postalCode;
 
     public ObjectId getId() {
 	return id;
@@ -85,9 +89,18 @@ public class LandmarkLocalityCollection {
 	this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-	return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark=" + landmark + ", explanation="
-		+ explanation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
-    }
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	@Override
+	public String toString() {
+		return "LandmarkLocalityCollection [id=" + id + ", cityId=" + cityId + ", locality=" + locality + ", landmark="
+				+ landmark + ", explanation=" + explanation + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", postalCode=" + postalCode + "]";
+	}
 }

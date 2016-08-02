@@ -85,6 +85,7 @@ public class TreatmentServiceCost extends GenericCollection{
 	public List<TreatmentService> getTreatmentServicesList() {
 		if(treatmentServicesList != null && !treatmentServicesList.isEmpty()){
 			this.treatmentService = treatmentServicesList.get(0);
+			this.treatmentServicesList = null;
 		}
 		return treatmentServicesList;
 	}
@@ -93,6 +94,7 @@ public class TreatmentServiceCost extends GenericCollection{
 		this.treatmentServicesList = treatmentServicesList;
 		if(treatmentServicesList != null && !treatmentServicesList.isEmpty()){
 			this.treatmentService = treatmentServicesList.get(0);
+			this.treatmentServicesList = null;
 		}
 	}
 

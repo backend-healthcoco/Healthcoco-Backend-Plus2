@@ -16,6 +16,8 @@ public class LandmarkLocality {
 
     private double longitude;
 
+    private String postalCode;
+    
     public String getId() {
 	return id;
     }
@@ -72,10 +74,18 @@ public class LandmarkLocality {
 	this.longitude = longitude;
     }
 
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
 	@Override
 	public String toString() {
 		return "LandmarkLocality [id=" + id + ", cityId=" + cityId + ", landmark=" + landmark + ", locality=" + locality
-				+ ", explanation=" + explanation + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", explanation=" + explanation + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", postalCode=" + postalCode + "]";
 	}
-
 }

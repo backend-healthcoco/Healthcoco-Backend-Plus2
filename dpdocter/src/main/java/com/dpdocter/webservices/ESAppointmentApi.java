@@ -58,10 +58,11 @@ public class ESAppointmentApi {
 	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @QueryParam("booking") Boolean booking,
 	    @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee, @QueryParam("maxFee") int maxFee,
 	    @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
-	    @QueryParam("gender") String gender, @QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience) {
+	    @QueryParam("gender") String gender, @QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
+	    @QueryParam("service") String service) {
 
 	List<ESDoctorDocument> doctors = solrAppointmentService.getDoctors(page, size, city, location, latitude, longitude, speciality, symptom, booking,
-		calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience);
+		calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience, maxExperience, service);
 
 	Response<ESDoctorDocument> response = new Response<ESDoctorDocument>();
 	response.setDataList(doctors);

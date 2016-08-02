@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,12 +22,18 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
+import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
+import com.dpdocter.elasticsearch.services.ESTreatmentService;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -51,6 +58,12 @@ public class PatientTreamentAPI {
     @Autowired
     private OTPService otpService;
 
+    @Autowired
+    private TransactionalManagementService transactionalManagementService;
+
+    @Autowired
+    private ESTreatmentService esTreatmentService;
+
     @Path(PathProxy.PatientTreatmentURLs.ADD_EDIT_SERVICE)
     @POST
     @ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_EDIT_SERVICE, notes = PathProxy.PatientTreatmentURLs.ADD_EDIT_SERVICE)
@@ -60,7 +73,11 @@ public class PatientTreamentAPI {
 		throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 	}
 	TreatmentService treatmentService = patientTreatmentServices.addEditService(request);
-
+	transactionalManagementService.addResource(new ObjectId(treatmentService.getId()), Resource.TREATMENTSERVICE, false);
+	ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+	BeanUtil.map(treatmentService, esTreatmentServiceDocument);
+	esTreatmentService.addEditService(esTreatmentServiceDocument);
+	
 	Response<TreatmentService> response = new Response<TreatmentService>();
 	response.setData(treatmentService);
 	return response;
@@ -69,13 +86,19 @@ public class PatientTreamentAPI {
     @Path(PathProxy.PatientTreatmentURLs.ADD_EDIT_SERVICE_COST)
     @POST
     @ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_EDIT_SERVICE_COST, notes = PathProxy.PatientTreatmentURLs.ADD_EDIT_SERVICE_COST)
-    public Response<TreatmentServiceCost> addEditProductServiceCost(TreatmentServiceCost request) {
-	if (request == null || request.getTreatmentService() == null || (DPDoctorUtils.anyStringEmpty(request.getTreatmentService().getId()) && DPDoctorUtils.anyStringEmpty(request.getTreatmentService().getName())) || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId(), request.getDoctorId()) || request.getCost() == 0) {
+    public Response<TreatmentServiceCost> addEditServiceCost(TreatmentServiceCost request) {
+	if (request == null || request.getTreatmentService() == null || (DPDoctorUtils.anyStringEmpty(request.getTreatmentService().getId()) && DPDoctorUtils.anyStringEmpty(request.getTreatmentService().getName())) || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId(), request.getDoctorId())) {
 		logger.warn(invalidInput);
 	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 	}
 	TreatmentServiceCost treatmentServiceCost = patientTreatmentServices.addEditServiceCost(request);
-
+	transactionalManagementService.addResource(new ObjectId(treatmentServiceCost.getId()), Resource.TREATMENTSERVICECOST, false);
+	ESTreatmentServiceCostDocument esTreatmentServiceDocument = new ESTreatmentServiceCostDocument();
+	BeanUtil.map(treatmentServiceCost, esTreatmentServiceDocument);
+	if(treatmentServiceCost.getTreatmentService() != null)
+		esTreatmentServiceDocument.setTreatmentServiceId(treatmentServiceCost.getTreatmentService().getId());
+	esTreatmentService.addEditServiceCost(esTreatmentServiceDocument);
+	
 	Response<TreatmentServiceCost> response = new Response<TreatmentServiceCost>();
 	response.setData(treatmentServiceCost);
 	return response;
@@ -91,7 +114,12 @@ public class PatientTreamentAPI {
         	    throw new BusinessException(ServiceError.InvalidInput, "Treatment Service Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
         }
 	TreatmentService treatmentService = patientTreatmentServices.deleteService(treatmentServiceId, doctorId, locationId, hospitalId, discarded);
-
+	if(treatmentService != null){
+		transactionalManagementService.addResource(new ObjectId(treatmentService.getId()), Resource.TREATMENTSERVICE, false);
+		ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+		BeanUtil.map(treatmentService, esTreatmentServiceDocument);
+		esTreatmentService.addEditService(esTreatmentServiceDocument);
+	}
 	Response<TreatmentService> response = new Response<TreatmentService>();
 	response.setData(treatmentService);
 	return response;
@@ -107,7 +135,12 @@ public class PatientTreamentAPI {
         	    throw new BusinessException(ServiceError.InvalidInput, "Treatment Service Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
         }
 	TreatmentServiceCost treatmentServiceCost = patientTreatmentServices.deleteServiceCost(treatmentServiceId, doctorId, locationId, hospitalId, discarded);
-
+	if(treatmentServiceCost != null){
+		transactionalManagementService.addResource(new ObjectId(treatmentServiceCost.getId()), Resource.TREATMENTSERVICECOST, false);
+		ESTreatmentServiceCostDocument esTreatmentServiceDocument = new ESTreatmentServiceCostDocument();
+		BeanUtil.map(treatmentServiceCost, esTreatmentServiceDocument);
+		esTreatmentService.addEditServiceCost(esTreatmentServiceDocument);
+	}
 	Response<TreatmentServiceCost> response = new Response<TreatmentServiceCost>();
 	response.setData(treatmentServiceCost);
 	return response;
