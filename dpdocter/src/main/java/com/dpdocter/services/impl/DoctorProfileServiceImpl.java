@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
@@ -37,6 +39,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.DoctorExperienceUnit;
@@ -438,6 +441,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				BeanUtil.map(doctorClinicCollection, doctorClinic);
 			    doctorClinic.setLocationId(userLocationCollection.getLocationId().toString());
 			    doctorClinic.setDoctorId(doctorId);
+			    
+				Criteria criteria = new  Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());		    	
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((0) * 5), Aggregation.limit(5));
+				
+				AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCostCollection.class, TreatmentServiceCost.class);
+				List<TreatmentServiceCost> treatmentServicesCosts = aggregationResults.getMappedResults();		
+				doctorClinic.setTreatmentServiceCosts(treatmentServicesCosts);
+				doctorClinic.setNoOfServices((int)mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
 			    clinicProfile.add(doctorClinic);
 			}
 		}
@@ -466,9 +477,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    }
 		    doctorClinic.setLocationId(userLocationCollection.getLocationId().toString());
 		    doctorClinic.setDoctorId(userLocationCollection.getUserId().toString());
+		    if (doctorClinicCollection != null)BeanUtil.map(doctorClinicCollection, doctorClinic);
+		    Criteria criteria = new  Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());		    	
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((0) * 5), Aggregation.limit(5));
+			
+			AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCostCollection.class, TreatmentServiceCost.class);
+			List<TreatmentServiceCost> treatmentServicesCosts = aggregationResults.getMappedResults();		
+			doctorClinic.setTreatmentServiceCosts(treatmentServicesCosts);
+			doctorClinic.setNoOfServices((int)mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
 		    clinicProfile.add(doctorClinic);
-		    if (doctorClinicCollection != null)
-			BeanUtil.map(doctorClinicCollection, doctorClinic);
 		}
 	    }
 	    doctorProfile = new DoctorProfile();

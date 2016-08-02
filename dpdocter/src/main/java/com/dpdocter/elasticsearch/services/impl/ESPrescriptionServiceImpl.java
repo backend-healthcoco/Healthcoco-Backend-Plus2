@@ -83,7 +83,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		    	}
 		    }
 		    response = true;
-		    transnationalService.addResource(new ObjectId(drugTypeId), Resource.DRUGSDRUGTYPE, true);
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e + " Error Occurred While Saving Drug in ES");
@@ -237,7 +236,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    else {
 	    	Collection<String> testIds = null;
 			if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-		    	SearchQuery searchQueryForTest = createCustomQueryWithoutDoctorId(0, 0, locationId, hospitalId, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, "testName");
+		    	SearchQuery searchQueryForTest = createCustomGlobalQueryWithoutDoctorId(0, 0, locationId, hospitalId, updatedTime, false, "testName", searchTerm, null, true, ESDiagnosticTestDocument.class, "testName");
 				List<ESDiagnosticTestDocument> diagnosticTestCollections = elasticsearchTemplate.queryForList(searchQueryForTest, ESDiagnosticTestDocument.class);
 			    testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
 			    if(testIds == null || testIds.isEmpty())return response;
@@ -387,7 +386,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		
  	    if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
- 	   if(testIds != null && !testIds.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("testId", testIds));
+ 	    if(testIds != null && !testIds.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("testId", testIds));
  	    if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
         SearchQuery searchQuery = null;
         if(!DPDoctorUtils.anyStringEmpty(sortBy)){

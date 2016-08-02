@@ -14,6 +14,8 @@ public class Lab {
 
     private List<LabTest> labTests;
 
+    private Integer noOfLabTest = 0;
+    
     public String getId() {
 	return id;
     }
@@ -54,8 +56,17 @@ public class Lab {
 	this.labTests = labTests;
     }
 
-    @Override
-    public String toString() {
-	return "Lab [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors + ", labTests=" + labTests + "]";
-    }
+	public Integer getNoOfLabTest() {
+		return noOfLabTest;
+	}
+
+	public void setNoOfLabTest(Integer noOfLabTest) {
+		this.noOfLabTest = noOfLabTest;
+	}
+
+	@Override
+	public String toString() {
+		return "Lab [id=" + id + ", hospital=" + hospital + ", location=" + location + ", doctors=" + doctors
+				+ ", labTests=" + labTests + ", noOfLabTest=" + noOfLabTest + "]";
+	}
 }

@@ -756,4 +756,12 @@ public interface PathProxy {
 		public static final String CHECK_VERSION = "/check";
 		public static final String CHANGE_VERSION = "/change";
 	}
+
+	public static final String SOLR_PATIENT_TREATMENT_BASE_URL = BASE_URL + "/solr/treatment";
+
+	public interface SolrPatientTreatmentUrls {
+		
+		public static final String SEARCH = "/{type}/{range}";
+
+	}
 }

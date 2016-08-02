@@ -67,6 +67,10 @@ public class DoctorClinicProfile {
     
     private String timeZone = "IST";
     		
+    private List<TreatmentServiceCost> treatmentServiceCosts;
+    
+    private Integer noOfServices = 0;
+    
     public String getId() {
 	return id;
     }
@@ -315,6 +319,22 @@ public class DoctorClinicProfile {
 		this.timeZone = timeZone;
 	}
 
+	public List<TreatmentServiceCost> getTreatmentServiceCosts() {
+		return treatmentServiceCosts;
+	}
+
+	public void setTreatmentServiceCosts(List<TreatmentServiceCost> treatmentServiceCosts) {
+		this.treatmentServiceCosts = treatmentServiceCosts;
+	}
+
+	public Integer getNoOfServices() {
+		return noOfServices;
+	}
+
+	public void setNoOfServices(Integer noOfServices) {
+		this.noOfServices = noOfServices;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -328,6 +348,7 @@ public class DoctorClinicProfile {
 				+ ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + ", timeZone="
-				+ timeZone + "]";
+				+ timeZone + ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices
+				+ "]";
 	}
 }

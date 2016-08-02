@@ -27,7 +27,9 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
+import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
@@ -42,13 +44,17 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TransactionalCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
+import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
@@ -58,10 +64,14 @@ import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
+import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
+import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.OTPState;
@@ -73,7 +83,9 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
+import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
+import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
@@ -87,6 +99,8 @@ import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
+import com.dpdocter.repository.TreatmentServicesCostRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
@@ -177,6 +191,24 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private SMSServices sMSServices;
 
+    @Autowired
+    private DiseasesRepository diseasesRepository;
+
+    @Autowired
+    private ESMasterService esMasterService; 
+    
+    @Autowired
+    private DiagnosticTestRepository diagnosticTestRepository;
+    
+    @Autowired
+    private ESTreatmentService esTreatmentService;
+    
+    @Autowired
+    private TreatmentServicesRepository treatmentServicesRepository;
+    
+    @Autowired
+    private TreatmentServicesCostRepository treatmentServicesCostRepository;
+    
     @Value(value = "${mail.appointment.details.subject}")
     private String appointmentDetailsSub;
 
@@ -207,7 +239,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			case DOCTOR: checkDoctor(transactionalCollection.getResourceId(), null); break;
 			case LOCATION: checkLocation(transactionalCollection.getResourceId()); break;
 			case REFERENCE: checkReference(transactionalCollection.getResourceId()); break;
-//			case DISEASE
+			case DISEASE: checkDisease(transactionalCollection.getResourceId()); break;
+			case DIAGNOSTICTEST: checkDiagnosticTest(transactionalCollection.getResourceId()); break;
+			case TREATMENTSERVICE : checkTreatmentService(transactionalCollection.getResourceId()); break;
+			case TREATMENTSERVICECOST : checkTreatmentServiceCost(transactionalCollection.getResourceId()); break;
    			default: break;
 			}
 		}
@@ -598,6 +633,62 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     		ESReferenceDocument esReferenceDocument = new ESReferenceDocument();
     		BeanUtil.map(referenceCollection, esReferenceDocument);
     		esRegistrationService.addEditReference(esReferenceDocument);
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
+	}
+
+	private void checkDisease(ObjectId resourceId) {
+		try {
+    	    DiseasesCollection diseasesCollection = diseasesRepository.findOne(resourceId);
+    	    if (diseasesCollection != null) {
+    		ESDiseasesDocument esDiseasesDocument = new ESDiseasesDocument();
+    		BeanUtil.map(diseasesCollection, esDiseasesDocument);
+    		esMasterService.addEditDisease(esDiseasesDocument);
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
+	}
+
+	private void checkDiagnosticTest(ObjectId resourceId) {
+		try {
+    	    DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(resourceId);
+    	    if (diagnosticTestCollection != null) {
+    		ESDiagnosticTestDocument esDiagnosticTestDocument = new ESDiagnosticTestDocument();
+    		BeanUtil.map(diagnosticTestCollection, esDiagnosticTestDocument);
+    		esPrescriptionService.addEditDiagnosticTest(esDiagnosticTestDocument);
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
+	}
+
+	private void checkTreatmentService(ObjectId resourceId) {
+		try {
+    	    TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(resourceId);
+    	    if (treatmentServicesCollection != null) {
+    		ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+    		BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
+    		esTreatmentService.addEditService(esTreatmentServiceDocument);
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	}
+	}
+
+	private void checkTreatmentServiceCost(ObjectId resourceId) {
+		try {
+    	    TreatmentServicesCostCollection treatmentServicesCostCollection = treatmentServicesCostRepository.findOne(resourceId);
+    	    if (treatmentServicesCostCollection != null) {
+    		ESTreatmentServiceCostDocument esTreatmentServiceCostDocument = new ESTreatmentServiceCostDocument();
+    		BeanUtil.map(treatmentServicesCostCollection, esTreatmentServiceCostDocument);
+    		esTreatmentService.addEditServiceCost(esTreatmentServiceCostDocument);
     	    }
     	} catch (Exception e) {
     	    e.printStackTrace();

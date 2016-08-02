@@ -26,9 +26,12 @@ import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
+import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.PatientTreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.Range;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -42,6 +45,7 @@ import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.PatientTreatmentServices;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -70,6 +74,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
     @Autowired
     MongoTemplate mongoTemplate;
     
+    @Autowired
+    private TransactionalManagementService transactionalManagementService;
+
+    @Autowired
+    private ESTreatmentService esTreatmentService;
+
     @Override
     @Transactional
     public TreatmentService addEditService(TreatmentService treatmentService) {
@@ -147,6 +157,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	    }
 	    if(treatmentServicesCostCollection != null){
 	    	TreatmentServicesCollection treatmentServicesCollection = null;
+	    	TreatmentService treatmentService = null;
 			if (request.getTreatmentService().getId() != null)treatmentServicesCollection = treatmentServicesRepository.findOne(new ObjectId(request.getTreatmentService().getId()));
 			if (treatmentServicesCollection == null) {				
 				 
@@ -161,11 +172,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentServicesCollection.setCreatedTime(new Date());
 			    if (userCollection != null) treatmentServicesCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 			    else  treatmentServicesCollection.setCreatedBy("ADMIN");
+			    
+			    treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
+			    if(treatmentServicesCollection != null){
+					transactionalManagementService.addResource(treatmentServicesCollection.getId(), Resource.TREATMENTSERVICE, false);
+					ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+					BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
+					esTreatmentService.addEditService(esTreatmentServiceDocument);
+				}
 			}
-			TreatmentService treatmentService = null;
+			
 	    	if(treatmentServicesCollection != null){
 	    		treatmentService = new TreatmentService();
-	    		treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
 	    		BeanUtil.map(treatmentServicesCollection, treatmentService);
 	    	}
 	    	treatmentServicesCostCollection.setTreatmentServiceId(treatmentServicesCollection.getId());
