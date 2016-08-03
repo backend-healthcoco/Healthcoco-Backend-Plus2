@@ -4,7 +4,7 @@ public class PateientSignUpCheckResponse {
 
 	private Boolean isPatientExistWithMobileNumber = false;
 	
-	private Boolean canAddNewPatient = true;
+//	private Boolean canAddNewPatient = true;
 
 	public Boolean getIsPatientExistWithMobileNumber() {
 		return isPatientExistWithMobileNumber;
@@ -14,17 +14,17 @@ public class PateientSignUpCheckResponse {
 		this.isPatientExistWithMobileNumber = isPatientExistWithMobileNumber;
 	}
 
-	public Boolean getCanAddNewPatient() {
-		return canAddNewPatient;
-	}
-
-	public void setCanAddNewPatient(Boolean canAddNewPatient) {
-		this.canAddNewPatient = canAddNewPatient;
-	}
-
 	@Override
 	public String toString() {
-		return "PateientSignUpCheckResponse [isPatientExistWithMobileNumber=" + isPatientExistWithMobileNumber
-				+ ", canAddNewPatient=" + canAddNewPatient + "]";
+		return "PateientSignUpCheckResponse [isPatientExistWithMobileNumber=" + isPatientExistWithMobileNumber + "]";
 	}
+
+//	public Boolean getCanAddNewPatient() {
+//		return canAddNewPatient;
+//	}
+//
+//	public void setCanAddNewPatient(Boolean canAddNewPatient) {
+//		this.canAddNewPatient = canAddNewPatient;
+//	}
+
 }

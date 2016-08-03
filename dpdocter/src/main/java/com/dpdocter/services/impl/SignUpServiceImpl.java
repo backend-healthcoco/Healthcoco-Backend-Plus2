@@ -1033,20 +1033,20 @@ public class SignUpServiceImpl implements SignUpService {
     public PateientSignUpCheckResponse checkMobileNumberSignedUp(String mobileNumber) {
     	PateientSignUpCheckResponse response = new PateientSignUpCheckResponse();
 	try {
-		int count = 0;
+//		int count = 0;
 		List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
 	    if (userCollections != null && !userCollections.isEmpty()) {
 		for (UserCollection userCollection : userCollections) {
 			if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
-			count++;
+//			count++;
 			if (userCollection.isSignedUp())
-			    throw new BusinessException(ServiceError.NotAcceptable, "Mobile Number is already registered. Please Login");
+			    throw new BusinessException(ServiceError.NotAcceptable, "Mobile Number is already signed up. Please Login");
 			else{
 				if(!response.getIsPatientExistWithMobileNumber())response.setIsPatientExistWithMobileNumber(true);
 			}
 		    }
 		}
-		if (count >= Integer.parseInt(patientCount))response.setCanAddNewPatient(false);
+//		if (count >= Integer.parseInt(patientCount))response.setCanAddNewPatient(false);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
