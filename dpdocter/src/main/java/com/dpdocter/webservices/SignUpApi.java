@@ -80,13 +80,14 @@ public class SignUpApi {
     	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
     	    logger.warn("Inavlid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
-    	}else if (request.getName().length() < 2) {
-    		logger.warn(firstNameValidaton);
-    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-    	 }
+    	}
 	List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 
 	if (request.isNewPatientNeedToBeCreated()) {
+		if (request.getName().length() < 2) {
+    		logger.warn(firstNameValidaton);
+    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+    	 }
 		RegisteredPatientDetails user = signUpService.signupNewPatient(request);
 	    users.add(user);
 	} else {
