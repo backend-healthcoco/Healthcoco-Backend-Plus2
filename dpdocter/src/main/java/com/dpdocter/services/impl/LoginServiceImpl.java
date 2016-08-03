@@ -284,10 +284,10 @@ public class LoginServiceImpl implements LoginService {
 				    	Patient patient = new Patient();
 				    	BeanUtil.map(patientCollection, patient);
 				    	BeanUtil.map(patientCollection, user);
-				    	BeanUtil.map(userCollection, user);
 				    	patient.setPatientId(patientCollection.getUserId().toString());
 				    	user.setPatient(patient);
 				    }
+				    BeanUtil.map(userCollection, user);
 				    user.setUserId(userCollection.getId().toString());
 				    if(response == null)response = new ArrayList<RegisteredPatientDetails>();
 				    response.add(user);
@@ -309,10 +309,10 @@ public class LoginServiceImpl implements LoginService {
 					Patient patient = new Patient();
 			    	BeanUtil.map(patientCollection, patient);
 			    	BeanUtil.map(patientCollection, user);
-			    	BeanUtil.map(userCollection, user);
 			    	patient.setPatientId(patientCollection.getUserId().toString());
 			    	user.setPatient(patient);
 			    }
+				BeanUtil.map(userCollection, user);
 			    user.setUserId(userCollection.getId().toString());
 				if(response == null)response = new ArrayList<RegisteredPatientDetails>();
 				response.add(user);
