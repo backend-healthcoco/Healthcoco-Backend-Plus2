@@ -276,7 +276,7 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
     public Response<PatientGroupAddEditRequest> addGroupToPatient(PatientGroupAddEditRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getPatientId()) || request.getGroupIds() == null || request.getGroupIds().isEmpty()) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(), request.getLocationId(), request.getPatientId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	    }
