@@ -158,6 +158,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorCollection.setExperience(null);
 		}
 		doctorRepository.save(doctorCollection);
+		response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -183,6 +184,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    response = new DoctorContactAddEditRequest();
 	    BeanUtil.map(userCollection, response);
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -202,6 +204,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorRepository.save(doctorCollection);
 	    response = new DoctorEducationAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -250,6 +253,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		    }
 		    doctorRepository.save(doctorCollection);
 		    BeanUtil.map(doctorCollection, response);
+		    response.setDoctorId(doctorCollection.getUserId().toString());
 		}
 
 	} catch (Exception e) {
@@ -271,6 +275,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorRepository.save(doctorCollection);
 	    response = new DoctorAchievementAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -290,6 +295,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorRepository.save(doctorCollection);
 	    response = new DoctorProfessionalStatementAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -309,6 +315,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorRepository.save(doctorCollection);
 	    response = new DoctorRegistrationAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -328,6 +335,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorRepository.save(doctorCollection);
 	    response = new DoctorExperienceDetailAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -580,6 +588,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    doctorRepository.save(doctorCollection);
 	    response = new DoctorProfessionalAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
@@ -606,6 +615,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = new DoctorAppointmentNumbersAddEditRequest();
 		BeanUtil.map(doctorClinicProfileCollection, response);
+		response.setDoctorId(userLocationCollection.getUserId().toString());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -633,6 +643,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = new DoctorVisitingTimeAddEditRequest();
 		BeanUtil.map(doctorClinicProfileCollection, response);
+		response.setDoctorId(userLocationCollection.getUserId().toString());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -660,6 +671,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = new DoctorConsultationFeeAddEditRequest();
 		BeanUtil.map(doctorClinicProfileCollection, response);
+		response.setDoctorId(userLocationCollection.getUserId().toString());
 	    }
 
 	} catch (Exception e) {
@@ -688,6 +700,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = new DoctorAppointmentSlotAddEditRequest();
 		BeanUtil.map(doctorClinicProfileCollection, response);
+		response.setDoctorId(userLocationCollection.getUserId().toString());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -718,6 +731,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = new DoctorGeneralInfo();
 		BeanUtil.map(doctorClinicProfileCollection, response);
+		response.setDoctorId(userLocationCollection.getUserId().toString());
 	    }
 	} catch (Exception e) {
 	    logger.error(e);
@@ -895,6 +909,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		response = new DoctorAddEditFacilityRequest();
 		BeanUtil.map(doctorClinicProfileCollection, response);
+		response.setDoctorId(userLocationCollection.getUserId().toString());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -917,6 +932,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	    response = new DoctorGenderAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Gender");
@@ -937,6 +953,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	    response = new DoctorDOBAddEditRequest();
 	    BeanUtil.map(doctorCollection, response);
+	    response.setDoctorId(doctorCollection.getUserId().toString());
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");
