@@ -10,8 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -1063,7 +1061,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if (patientCounter <= Integer.parseInt(PID)) {
 			logger.warn("Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
 				    + ". Please enter Id greater than " + PID);
-			throw new BusinessException(ServiceError.InvalidInput, "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
+			throw new BusinessException(ServiceError.Unknown, "Patient already exist for Prefix: " + patientInitial + " , Date: " + date + " Id Number: " + patientCounter
 				    + ". Please enter Id greater than " + PID);
 		}else response = true;
 		
