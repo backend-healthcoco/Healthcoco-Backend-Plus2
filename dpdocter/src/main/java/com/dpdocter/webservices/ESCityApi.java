@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.City;
 import com.dpdocter.elasticsearch.beans.ESCityLandmarkLocalityResponse;
 import com.dpdocter.elasticsearch.services.ESCityService;
 
@@ -41,4 +42,13 @@ public class ESCityApi {
 	return response;
     }
 
+    @GET
+    @ApiOperation(value = "SEARCH_CITY", notes = "SEARCH_CITY")
+    public Response<City> searchCity(@QueryParam(value = "searchTerm") String searchTerm) {
+
+	List<City> searchResonse = esCityService.searchCity(searchTerm);
+	Response<City> response = new Response<City>();
+	response.setDataList(searchResonse);
+	return response;
+    }
 }

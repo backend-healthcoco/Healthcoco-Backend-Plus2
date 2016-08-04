@@ -14,6 +14,7 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.City;
 import com.dpdocter.elasticsearch.beans.ESCityLandmarkLocalityResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
@@ -204,5 +205,35 @@ public class ESCityServiceImpl  implements ESCityService{
 	}
 	return response;
     }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<City> searchCity(String searchTerm) {
+		List<City> response = new ArrayList<City>();
+		try {
+		    List<ESCityDocument> cities = null;
+		    
+		    int citySize = (int) esCityRepository.count();
+		    if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				if(citySize > 0){
+					cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+				}
+			} else {
+				if(citySize > 0)cities = IteratorUtils.toList(esCityRepository.findAll(new PageRequest(0, citySize)).iterator());
+			}
+		    
+		    if (cities != null && !cities.isEmpty()) {
+			for (ESCityDocument document : cities) {
+			    City city = new City();
+			    BeanUtil.map(document, city);
+			    response.add(city);
+		    }
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Searching Landmark Locality");
+		}
+		return response;
+	}
 
 }
