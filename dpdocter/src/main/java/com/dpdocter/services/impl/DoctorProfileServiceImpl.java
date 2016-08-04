@@ -747,8 +747,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	try {
 		long createdTimeStamp = Long.parseLong(updatedTime);
 		Aggregation aggregation = null;
-		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-		else aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))), Aggregation.sort(new Sort(Sort.Direction.ASC, "superSpeciality")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		else aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("updatedTime").gte(new Date(createdTimeStamp))), Aggregation.sort(new Sort(Sort.Direction.ASC, "superSpeciality")));
 		AggregationResults<Speciality> aggregationResults = mongoTemplate.aggregate(aggregation, SpecialityCollection.class, Speciality.class);
 		specialities = aggregationResults.getMappedResults();
 	} catch (Exception e) {

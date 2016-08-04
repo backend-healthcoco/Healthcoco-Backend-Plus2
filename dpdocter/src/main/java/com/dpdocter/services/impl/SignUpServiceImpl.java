@@ -1272,6 +1272,15 @@ public class SignUpServiceImpl implements SignUpService {
 			    	patientCollection.setHospitalId(null);
 			    	patientCollection.setCreatedTime(new Date());
 			    	patientCollection = patientRepository.save(patientCollection);
+			    	if(patientCollection != null){
+				    	Patient patient = new Patient();
+				    	BeanUtil.map(patientCollection, patient);
+				    	BeanUtil.map(patientCollection, user);
+				    	BeanUtil.map(userCollection, user);
+				    	patient.setPatientId(patientCollection.getUserId().toString());
+				    	user.setPatient(patient);
+				    }
+				    user.setUserId(userCollection.getId().toString());
 			    	ESPatientDocument esPatientDocument = new ESPatientDocument();
 			        if (patientCollection.getAddress() != null) {
 			    	BeanUtil.map(patientCollection.getAddress(), esPatientDocument);
@@ -1282,17 +1291,6 @@ public class SignUpServiceImpl implements SignUpService {
 			        transnationalService.addResource(patientCollection.getUserId(), Resource.PATIENT, false);
 				    esRegistrationService.addPatient(esPatientDocument);
 		    	}
-		    	
-		    	if(patientCollection != null){
-			    	Patient patient = new Patient();
-			    	BeanUtil.map(patientCollection, patient);
-			    	BeanUtil.map(patientCollection, user);
-			    	BeanUtil.map(userCollection, user);
-			    	patient.setPatientId(patientCollection.getUserId().toString());
-			    	user.setPatient(patient);
-			    }
-			    user.setUserId(userCollection.getId().toString());
-		    	
 		    	users.add(user);
 	    	}
 		}

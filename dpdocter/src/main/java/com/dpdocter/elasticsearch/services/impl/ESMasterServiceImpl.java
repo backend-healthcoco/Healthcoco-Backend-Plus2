@@ -499,8 +499,8 @@ public class ESMasterServiceImpl implements ESMasterService {
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("superSpeciality", searchTerm));
 		   
 	    SearchQuery searchQuery = null;
-	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+	    if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, "superSpeciality")).build();
+	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("superSpeciality").order(SortOrder.ASC)).build();
 	       
 	    specialityDocuments = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
 
