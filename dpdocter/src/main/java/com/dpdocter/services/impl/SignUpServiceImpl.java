@@ -201,16 +201,18 @@ public class SignUpServiceImpl implements SignUpService {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(tokenId));
 	    if (tokenCollection == null) {
-	    	return "INVALID";
+	    	return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 	    } else if(tokenCollection.getIsUsed()){
-	    	return "ALREADY_USED";
+	    	return "Your verification link has already been used.</br>"+
+	    			"Please contact support@healthcoco.com for completing your email verification";
 	    }
 	    else {
 	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
-	    	return "EXPIRED";
+	    	return "We were unable to verify your Healthcoco+ account.</br>"
+	    			+ "Please contact support@healthcoco.com for completing your account verification.";
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
-		    return "INVALID";
+		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 		}
 		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		userCollection.setIsVerified(true);
@@ -221,9 +223,12 @@ public class SignUpServiceImpl implements SignUpService {
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
-		return "VALID";
+		return "You have successfully verified your email address.</br>"
+				+ "If you haven't already done so, download the Healthcoco+ app - Every Doctor's Pocket Clinic.</br>"
+				+ "Stay Healthy and Happy!";
 	    }
-
+	} catch (IllegalArgumentException argumentException) {
+		return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 	} catch (BusinessException be) {
 	    logger.error(be);
 	    throw be;

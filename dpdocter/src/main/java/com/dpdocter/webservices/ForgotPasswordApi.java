@@ -63,6 +63,7 @@ public class ForgotPasswordApi {
 	return response;
     }
 
+    @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
@@ -91,6 +92,7 @@ public class ForgotPasswordApi {
 	return response;
     }
 
+    @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     @GET
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)

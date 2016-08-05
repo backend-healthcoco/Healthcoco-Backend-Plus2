@@ -69,7 +69,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 	model.put("twitterLink", twitterLink);
 	model.put("linkedInLink", linkedInLink);
 	model.put("googlePlusLink", googlePlusLink);
-	model.put("setPasswordLink", setPasswordLink+"/"+tokenId);
+	model.put("setPasswordLink", setPasswordLink+"?uid=" + tokenId);
 	String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
 	return text;
     }

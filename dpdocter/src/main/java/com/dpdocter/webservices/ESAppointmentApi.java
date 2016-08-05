@@ -79,19 +79,19 @@ public class ESAppointmentApi {
 
 	List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude, test, booking, calling, minTime, maxTime, days);
 
-	if (doctors != null && !doctors.isEmpty()) {
-	    for (LabResponse doctorDocument : doctors) {
-		if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
-			List<String> images = new ArrayList<String>();
-			for (String clinicImage : doctorDocument.getImages()) {
-			    images.add(clinicImage);
-			}
-			doctorDocument.setImages(images);
-		}
-		if (doctorDocument.getLogoUrl() != null)
-		    doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
-	    }
-	}
+//	if (doctors != null && !doctors.isEmpty()) {
+//	    for (LabResponse doctorDocument : doctors) {
+//		if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
+//			List<String> images = new ArrayList<String>();
+//			for (String clinicImage : doctorDocument.getImages()) {
+//			    images.add(clinicImage);
+//			}
+//			doctorDocument.setImages(images);
+//		}
+//		if (doctorDocument.getLogoUrl() != null)
+//		    doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
+//	    }
+//	}
 	Response<LabResponse> response = new Response<LabResponse>();
 	response.setDataList(doctors);
 	return response;
