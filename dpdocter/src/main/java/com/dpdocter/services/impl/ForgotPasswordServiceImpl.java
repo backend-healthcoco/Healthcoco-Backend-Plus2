@@ -74,6 +74,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Value(value = "${forgot.password.link}")
+    private String forgotPasswordLink;
+
     @Override
     @Transactional
     public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
@@ -237,14 +240,17 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String resetPassword(ResetPasswordRequest request) {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
-	    if (tokenCollection == null)return "Invalid Url";
-	    else if(tokenCollection.getIsUsed()) return "Link is already Used";
+	    if (tokenCollection == null)return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
+	    else if(tokenCollection.getIsUsed()) 
+	    	return "Your password has already been reset.</br>"
+		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
 	    else {
 		if (!isLinkValid(tokenCollection.getCreatedTime()))
-		    return "Link is Expired";
+		    return "Your reset password link has expired.</br>"
+		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		if (userCollection == null) {
-		    return "Invalid Url";
+		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 		}
 		char[] salt = DPDoctorUtils.generateSalt();
 	    userCollection.setSalt(salt);
@@ -263,8 +269,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		String body = mailBodyGenerator.generateResetPasswordSuccessEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName());
 		mailService.sendEmail(userCollection.getEmailAddress(), resetPasswordSub, body, null);
 
-		return "Password Changed Successfully";
+		return "You have successfully changed your password.";
 	    }
+	} catch (IllegalArgumentException argumentException) {
+		return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -277,18 +285,23 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public String checkLinkIsAlreadyUsed(String userId) {
 	try {
 	    TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(userId));
-	    if (tokenCollection == null)return "INVALID"; 	
-	    else if(tokenCollection.getIsUsed())return "ALREADY_USED";
+	    if (tokenCollection == null)return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you."; 	
+	    else if(tokenCollection.getIsUsed())
+	    	return "Your password has already been reset.</br>"
+		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
 	    
 	    else {
 		if (!isLinkValid(tokenCollection.getCreatedTime()))
-		    return "EXPIRED";
+		    return "Your reset password link has expired.</br>"
+		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		if (userCollection == null) {
-		    return "INVALID";
+		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 		}
 		return "VALID";
 	    }
+	} catch (IllegalArgumentException argumentException) {
+		return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);

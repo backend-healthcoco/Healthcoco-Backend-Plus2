@@ -463,7 +463,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						List<String> images = new ArrayList<String>();
 						if(document.getImages() != null)
 						for (String clinicImage : document.getImages()) {
-							    images.add(clinicImage);
+							    images.add(getFinalImageURL(clinicImage));
 						}
 						labResponse.setImages(images);
 						 if (document.getLogoUrl() != null)
