@@ -36,6 +36,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
 import com.dpdocter.beans.Message;
 import com.dpdocter.beans.SMS;
@@ -99,8 +100,7 @@ public class SMSServicesImpl implements SMSServices {
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
 
-    @SuppressWarnings("deprecation")
-	@Override
+ 	@Override
     @Transactional
     public Boolean sendSMS(SMSTrackDetail smsTrackDetail, Boolean save) {
     	Boolean response = false;
@@ -130,7 +130,7 @@ public class SMSServicesImpl implements SMSServices {
 			    smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
 			    SMS sms = new SMS();
 			    BeanUtil.map(smsDetails.getSms(), sms);
-			    if(sms.getSmsText() != null)sms.setSmsText(URLEncoder.encode(sms.getSmsText()));
+			    if(sms.getSmsText() != null)sms.setSmsText(UriUtils.encode(sms.getSmsText(),"UTF-8"));
 			    smsList.add(sms);
 			    message.setSms(smsList);
 			    String xmlSMSData = createXMLData(message);
@@ -141,7 +141,7 @@ public class SMSServicesImpl implements SMSServices {
 		} else {
 		    SMS sms = new SMS();
 		    BeanUtil.map(smsDetails.getSms(), sms);
-		    if(sms.getSmsText() != null)sms.setSmsText(URLEncoder.encode(sms.getSmsText()));
+		    if(sms.getSmsText() != null)sms.setSmsText(UriUtils.encode(sms.getSmsText(),"UTF-8"));
 		    smsList.add(sms);
 		    message.setSms(smsList);
 		    String xmlSMSData = createXMLData(message);

@@ -243,11 +243,11 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    if (tokenCollection == null)return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 	    else if(tokenCollection.getIsUsed()) 
 	    	return "Your password has already been reset.</br>"
-		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
+		    		+ "To reset your password again, please <a style='color:#0077b5;' href='"+forgotPasswordLink+"'>click here</a>";
 	    else {
 		if (!isLinkValid(tokenCollection.getCreatedTime()))
 		    return "Your reset password link has expired.</br>"
-		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
+		    		+ "To reset your password again, please <a style='color:#0077b5;' href='"+forgotPasswordLink+"'>click here</a>";
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		if (userCollection == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
@@ -288,12 +288,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    if (tokenCollection == null)return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you."; 	
 	    else if(tokenCollection.getIsUsed())
 	    	return "Your password has already been reset.</br>"
-		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
+		    		+ "To reset your password again, please <a style='color:#0077b5;' href='"+forgotPasswordLink+"'>click here</a>";
 	    
 	    else {
 		if (!isLinkValid(tokenCollection.getCreatedTime()))
 		    return "Your reset password link has expired.</br>"
-		    		+ "To reset your password again, please <a href='"+forgotPasswordLink+"'>click here</a>";
+		    		+ "To reset your password again, please <a style='color:#0077b5;' href='"+forgotPasswordLink+"'>click here</a>";
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		if (userCollection == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";

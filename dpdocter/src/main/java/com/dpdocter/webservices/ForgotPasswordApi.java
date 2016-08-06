@@ -25,7 +25,6 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.FORGOT_PASSWORD_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.FORGOT_PASSWORD_BASE_URL, description = "Endpoint for forgot password")
 public class ForgotPasswordApi {
@@ -36,6 +35,7 @@ public class ForgotPasswordApi {
     private ForgotPasswordService forgotPasswordService;
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
     public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
@@ -50,6 +50,7 @@ public class ForgotPasswordApi {
     }
 
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+    @Produces(MediaType.APPLICATION_JSON)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
     public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
@@ -63,7 +64,7 @@ public class ForgotPasswordApi {
 	return response;
     }
 
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
@@ -78,35 +79,33 @@ public class ForgotPasswordApi {
 	return response;
     }
 
+    @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
-    public Response<String> resetPassword(ResetPasswordRequest request) {
+    public String resetPassword(ResetPasswordRequest request) {
     	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	String string = forgotPasswordService.resetPassword(request);
-	Response<String> response = new Response<String>();
-	response.setData(string);
-	return response;
+	return string;
     }
 
     @Produces(MediaType.TEXT_HTML)
     @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     @GET
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
-    public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
+    public String checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
-	Response<String> response = new Response<String>();
-	response.setData(string);
-	return response;
+	return string;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME, notes = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
