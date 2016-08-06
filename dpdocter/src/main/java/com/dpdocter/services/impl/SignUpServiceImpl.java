@@ -204,12 +204,12 @@ public class SignUpServiceImpl implements SignUpService {
 	    	return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 	    } else if(tokenCollection.getIsUsed()){
 	    	return "Your verification link has already been used.</br>"+
-	    			"Please contact support@healthcoco.com for completing your email verification";
+	    			"Please contact <a style='color:#0077b5;' href=''>support@healthcoco.com</a> for completing your email verification";
 	    }
 	    else {
 	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
 	    	return "We were unable to verify your Healthcoco+ account.</br>"
-	    			+ "Please contact support@healthcoco.com for completing your account verification.";
+	    			+ "Please contact <a style='color:#0077b5;' href=''>support@healthcoco.com</a> for completing your account verification.";
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";

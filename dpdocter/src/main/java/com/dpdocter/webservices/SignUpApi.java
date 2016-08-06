@@ -39,7 +39,6 @@ import io.swagger.annotations.ApiOperation;
 
 @Component
 @Path(PathProxy.SIGNUP_BASE_URL)
-@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "Endpoint for signup")
 public class SignUpApi {
@@ -73,6 +72,7 @@ public class SignUpApi {
      * @param PatientSignupRequestMobile
      * @return User List
      */
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
@@ -113,6 +113,7 @@ public class SignUpApi {
      * false ,no unlock in this case.Also while unlock check 80% match for only
      * lock patients.
      */
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT, notes = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
@@ -129,6 +130,7 @@ public class SignUpApi {
 
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
@@ -167,6 +169,7 @@ public class SignUpApi {
 	return response;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
@@ -180,6 +183,7 @@ public class SignUpApi {
 	return response;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
@@ -193,6 +197,7 @@ public class SignUpApi {
 	return response;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP, notes = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
@@ -208,6 +213,7 @@ public class SignUpApi {
 	return response;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
@@ -225,6 +231,7 @@ public class SignUpApi {
 	return imagePath + imageURL;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
@@ -238,6 +245,7 @@ public class SignUpApi {
 	return response;
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
     @POST
     @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
