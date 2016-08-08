@@ -291,7 +291,7 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 		MailResponse mailResponse = createMailData(recordId, doctorId, locationId, hospitalId);
 	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Report", "emrMailTemplate.vm");
-	    mailService.sendEmail(emailAddress,  mailResponse.getDoctorName()+" sent you a Report", body, mailResponse.getMailAttachment());
+	    mailService.sendEmail(emailAddress,  mailResponse.getDoctorName()+" sent you Report", body, mailResponse.getMailAttachment());
 	} catch (MessagingException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
