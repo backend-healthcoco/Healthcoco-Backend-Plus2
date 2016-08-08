@@ -1145,11 +1145,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 			List<LabTest> labTests = null;
 			if(labTestCollections != null && !labTestCollections.isEmpty()){
 				labTests = new ArrayList<LabTest>();
-				for(int i = 0; i < 5; i++){
+				for(LabTestCollection labTestCollection :  labTestCollections){
 					LabTest labTest = new LabTest();
-					BeanUtil.map(labTestCollections.get(i), labTest);
-					if(labTestCollections.get(i).getTestId() != null){
-						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollections.get(i).getTestId());
+					BeanUtil.map(labTestCollection, labTest);
+					if(labTestCollection.getTestId() != null){
+						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
 						if(diagnosticTestCollection != null){
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							BeanUtil.map(diagnosticTestCollection, diagnosticTest);

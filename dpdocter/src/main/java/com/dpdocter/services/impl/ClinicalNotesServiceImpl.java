@@ -1670,7 +1670,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	try {
 		MailResponse mailResponse = createMailData(clinicalNotesId, doctorId, locationId, hospitalId);
 	    String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(), mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(), mailResponse.getMailRecordCreatedDate(), "Clinical Notes", "emrMailTemplate.vm");
-	    mailService.sendEmail(emailAddress, mailResponse.getDoctorName()+" sent you a Clinical Notes", body, mailResponse.getMailAttachment());
+	    mailService.sendEmail(emailAddress, mailResponse.getDoctorName()+" sent you Clinical Notes", body, mailResponse.getMailAttachment());
 	    
 		if(mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
 	    	if(mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())mailResponse.getMailAttachment().getFileSystemResource().getFile().delete() ;

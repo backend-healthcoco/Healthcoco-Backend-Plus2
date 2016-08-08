@@ -2475,7 +2475,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you a Prescription", body, mailResponse.getMailAttachment());
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Prescription", body, mailResponse.getMailAttachment());
 			if (mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
@@ -2596,31 +2596,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										i++;
 
 										String drugType = drug.getDrugType() != null
-												? (drug.getDrugType().getType() != null ? drug.getDrugType().getType()
+												? (!DPDoctorUtils.anyStringEmpty(drug.getDrugType().getType()) ? drug.getDrugType().getType()
 														: "")
 												: "";
-										String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+										String drugName = !DPDoctorUtils.anyStringEmpty(drug.getDrugName()) ? drug.getDrugName() : "";
 
 										String durationValue = prescriptionItem.getDuration() != null
-												? (prescriptionItem.getDuration().getValue() != null
-														? prescriptionItem.getDuration().getValue() : "")
-												: "";
+												? (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue())? prescriptionItem.getDuration().getValue() : ""): "";
 										String durationUnit = prescriptionItem.getDuration() != null
 												? (prescriptionItem.getDuration().getDurationUnit() != null
 														? prescriptionItem.getDuration().getDurationUnit().getUnit()
 														: "")
 												: "";
 
-										if (durationValue != "")
-											durationValue = "," + durationValue + durationUnit;
-										String dosage = prescriptionItem.getDosage() != null
-												? "," + prescriptionItem.getDosage() : "";
+										if (!DPDoctorUtils.anyStringEmpty(durationValue))durationValue = "," + durationValue + durationUnit;
+										String dosage = !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())	? "," + prescriptionItem.getDosage() : "";
 
 										String directions = "";
 										if (prescriptionItem.getDirection() != null
 												&& !prescriptionItem.getDirection().isEmpty()) {
 											for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-												if (drugDirection.getDirection() != null)
+												if (!DPDoctorUtils.allStringsEmpty(drugDirection.getDirection()))
 													if (directions != "")
 														directions = "," + drugDirection.getDirection();
 													else

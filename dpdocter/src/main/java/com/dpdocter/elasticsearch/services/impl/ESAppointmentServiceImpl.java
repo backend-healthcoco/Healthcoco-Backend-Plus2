@@ -255,7 +255,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	return response;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality, String symptom, 
     		Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience, int maxExperience, String service) {
 	List<ESDoctorDocument> esDoctorDocuments = null;
@@ -300,11 +301,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 			List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
 			if (esSpecialityDocuments != null) {
-			    @SuppressWarnings("unchecked")
 			    Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments, new BeanToPropertyValueTransformer("id"));
-			    if (specialityIds != null && !specialityIds.isEmpty()) {
+			    if (specialityIds == null) specialityIds = CollectionUtils.EMPTY_COLLECTION;
 			    	boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIds));
-				}
+//				}
 			}
 		}
 	    
