@@ -155,17 +155,18 @@ public class SignUpApi {
 	return response;
     }
 
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.SignUpUrls.VERIFY_USER)
     @GET
     @ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
-    public String verifyUser(@PathParam(value = "tokenId") String tokenId) {
+    public Response<String> verifyUser(@PathParam(value = "tokenId") String tokenId) {
 	if (tokenId == null) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	String response = signUpService.verifyUser(tokenId);
-
+	String string = signUpService.verifyUser(tokenId);
+	Response<String> response = new Response<String>();
+	response.setData(string);
 	return response;
     }
 

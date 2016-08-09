@@ -79,30 +79,34 @@ public class ForgotPasswordApi {
 	return response;
     }
 
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
     @POST
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
-    public String resetPassword(ResetPasswordRequest request) {
+    public Response<String> resetPassword(ResetPasswordRequest request) {
     	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 	String string = forgotPasswordService.resetPassword(request);
-	return string;
+	Response<String> response = new Response<String>();
+	response.setData(string);
+	return response;
     }
 
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
     @GET
     @ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
-    public String checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
+    public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
 	if (DPDoctorUtils.anyStringEmpty(userId)) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 	String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
-	return string;
+	Response<String> response = new Response<String>();
+	response.setData(string);
+	return response;
     }
 
     @Produces(MediaType.APPLICATION_JSON)

@@ -203,13 +203,13 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (tokenCollection == null) {
 	    	return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 	    } else if(tokenCollection.getIsUsed()){
-	    	return "Your verification link has already been used.</br>"+
-	    			"Please contact <a style='color:#0077b5;' href=''>support@healthcoco.com</a> for completing your email verification";
+	    	return "Your verification link has already been used."+
+	    			" Please contact support@healthcoco.com for completing your email verification";
 	    }
 	    else {
 	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
-	    	return "We were unable to verify your Healthcoco+ account.</br>"
-	    			+ "Please contact <a style='color:#0077b5;' href=''>support@healthcoco.com</a> for completing your account verification.";
+	    	return "We were unable to verify your Healthcoco+ account."
+	    			+ " Please contact support@healthcoco.com for completing your account verification.";
 		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
 		if (userLocationCollection == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
@@ -223,8 +223,8 @@ public class SignUpServiceImpl implements SignUpService {
 		userLocationRepository.save(userLocationCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
-		return "You have successfully verified your email address.</br>"
-				+ "If you haven't already done so, download the Healthcoco+ app - Every Doctor's Pocket Clinic.</br>"
+		return "You have successfully verified your email address."
+				+ "If you haven't already done so, download the Healthcoco+ app - Every Doctor's Pocket Clinic."
 				+ "Stay Healthy and Happy!";
 	    }
 	} catch (IllegalArgumentException argumentException) {
