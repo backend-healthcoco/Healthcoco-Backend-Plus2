@@ -780,8 +780,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    registeredPatientDetails = new RegisteredPatientDetails();
 		    BeanUtil.map(patientCollection, registeredPatientDetails);
 		    BeanUtil.map(userCollection, registeredPatientDetails);
-		    registeredPatientDetails.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
-		    registeredPatientDetails.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
+		    registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
+		    registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 		    
 		    registeredPatientDetails.setUserId(userCollection.getId().toString());
 		    registeredPatientDetails.setReferredBy(reference);

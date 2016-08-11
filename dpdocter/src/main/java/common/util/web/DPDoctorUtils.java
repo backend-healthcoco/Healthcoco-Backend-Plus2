@@ -170,7 +170,8 @@ public class DPDoctorUtils {
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	   
  	    if(resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION) || resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS) || resource.equals(Resource.NOTES)){
-	    	boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+ 	    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")) , QueryBuilders.termsQuery("speciality", specialities.toString().replace("[", "").replace("]", "").toLowerCase().split(","))));
+	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
@@ -228,7 +229,8 @@ public class DPDoctorUtils {
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
 	    if(resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION) || resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS) || resource.equals(Resource.NOTES)){
-	    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+	    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")) , QueryBuilders.termsQuery("speciality", specialities.toString().replace("[", "").replace("]", "").toLowerCase().split(","))));
+	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){

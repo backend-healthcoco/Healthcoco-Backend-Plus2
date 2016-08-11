@@ -289,16 +289,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+		 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -326,16 +328,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -378,14 +382,16 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-		 			List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 			List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -426,17 +432,19 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    if(doctorCollections != null && !doctorCollections.isEmpty()){
 	 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-	 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-	 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-	 		
-	 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-	 		if(count > 0){
-	 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+	 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
 		 		
-		 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-		 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-		 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-		 			specialities.add("ALL");specialities.add(null);
+		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+		 		if(count > 0){
+		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+			 		
+			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+			 			specialities.add("ALL");
+			 		}
 		 		}
 	 		}
 	 	}
@@ -504,16 +512,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -540,16 +550,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -595,16 +607,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -632,18 +646,20 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 	    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
-		 		}
+		 	    }
 		 	}
 	    }
 
@@ -686,16 +702,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -723,16 +741,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -779,16 +799,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}
@@ -816,16 +838,18 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
 		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
-		 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("id", specialitiesId));
-		 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-		 		
-		 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-		 		if(count > 0){
-		 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-			 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-			 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-			 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-			 			specialities.add("ALL");specialities.add(null);
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
 			 		}
 		 		}
 		 	}

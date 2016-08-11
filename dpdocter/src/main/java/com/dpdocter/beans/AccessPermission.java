@@ -5,9 +5,18 @@ import com.dpdocter.enums.AccessPermissionType;
 public class AccessPermission {
     private AccessPermissionType accessPermissionType;
 
-    private boolean accessPermissionValue;
+    private boolean accessPermissionValue = false;
 
-    public AccessPermissionType getAccessPermissionType() {
+    public AccessPermission() {
+	}
+
+	public AccessPermission(AccessPermissionType accessPermissionType, boolean accessPermissionValue) {
+		this.accessPermissionType = accessPermissionType;
+		this.accessPermissionValue = accessPermissionValue;
+	}
+
+
+	public AccessPermissionType getAccessPermissionType() {
 	return accessPermissionType;
     }
 

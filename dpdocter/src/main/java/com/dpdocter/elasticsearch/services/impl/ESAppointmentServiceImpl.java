@@ -273,17 +273,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	    if (!DPDoctorUtils.anyStringEmpty(service)) {
 			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository.findByName(service);
 			if (esTreatmentServiceDocuments != null) {
-				@SuppressWarnings("unchecked")
-			    Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments, new BeanToPropertyValueTransformer("id"));
+				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments, new BeanToPropertyValueTransformer("id"));
 				int count = (int) elasticsearchTemplate.count(new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)), ESTreatmentServiceCostDocument.class);
 			    if(count > 0)esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds)).withPageable(new PageRequest(0, count)).build(), ESTreatmentServiceCostDocument.class); 
 			}
 		    if(esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()){return null;}		
-	        @SuppressWarnings("unchecked")
-	    	Collection<String> locationIds = CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("locationId"));
+	        Collection<String> locationIds = CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("locationId"));
 	        
-	        @SuppressWarnings("unchecked")
-	    	Collection<String> doctorIds = CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("doctorId"));
+	        Collection<String> doctorIds = CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("doctorId"));
 	    	boolQueryBuilder.must(QueryBuilders.termQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
 		 }
 	    
