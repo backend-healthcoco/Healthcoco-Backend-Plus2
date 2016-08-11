@@ -171,8 +171,7 @@ public class OTPServiceImpl implements OTPService {
 				if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
 				    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCollection.getEmailAddress(),
 					    patient.getFirstName(), doctorName);
-				    mailService.sendEmail(patientCollection.getEmailAddress(),
-					    recordsShareOtpAfterVerification + " " + userCollection.getFirstName(), body, null);
+				    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpAfterVerification + " " + userCollection.getTitle() + " "+ userCollection.getFirstName(), body, null);
 				}
 				pushNotificationServices.notifyUser(patient.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null);
 			    } else {

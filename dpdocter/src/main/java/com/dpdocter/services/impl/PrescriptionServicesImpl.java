@@ -660,7 +660,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			response.setVisitId(request.getVisitId());
-			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),"Your prescription by Dr. " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");

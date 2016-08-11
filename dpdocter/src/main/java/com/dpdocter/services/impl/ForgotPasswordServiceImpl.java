@@ -126,6 +126,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     public Boolean forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
 	Boolean flag = false;
 	Boolean isPatient = false;
+	Boolean isSignedUp = false;
 	try {
 	    List<UserCollection> userCollections = null;
 
@@ -136,12 +137,17 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	    if (userCollections != null) {
 		for (UserCollection userCollection : userCollections) {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
-			isPatient = true;
-			break;
+				isPatient = true;
+				if(userCollection.isSignedUp())isSignedUp = userCollection.isSignedUp(); 
+				break;
 		    }
 		}
 		if (!isPatient) {
 		    logger.warn("No account present with mobile number, please sign up");
+		    throw new BusinessException(ServiceError.Unknown, "No account present with mobile number, please sign up");
+		}
+		if(!isSignedUp){
+			logger.warn("No account present with mobile number, please sign up");
 		    throw new BusinessException(ServiceError.Unknown, "No account present with mobile number, please sign up");
 		}
 		if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {

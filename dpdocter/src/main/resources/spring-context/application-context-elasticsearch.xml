@@ -10,6 +10,7 @@
 
 <context:property-placeholder location="classpath:application.properties" />
     <elasticsearch:transport-client id="client" cluster-nodes="${elasticesearch.cluster.nodes}" cluster-name="${elasticesearch.cluster.name}"/>
+   
     <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
         <constructor-arg name="client" ref="client"/>
     </bean>

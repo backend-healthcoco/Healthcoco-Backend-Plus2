@@ -507,7 +507,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		Patient patient = new Patient();
 		BeanUtil.map(patientCollection, patient);
-		patient.setPatientId(patientCollection.getId().toString());
+		patient.setPatientId(userCollection.getId().toString());
 		registeredPatientDetails.setPatient(patient);
 		registeredPatientDetails.setDob(patientCollection.getDob());
 		registeredPatientDetails.setUserId(userCollection.getId().toString());
@@ -627,7 +627,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 		Patient patient = new Patient();
 		BeanUtil.map(patientCollection, patient);
-		patient.setPatientId(patientCollection.getId().toString());
+		patient.setPatientId(userCollection.getId().toString());
 
 		Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
 		Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
@@ -715,6 +715,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				    	BeanUtil.map(patientCollection, patient);
 				    	BeanUtil.map(patientCollection, user);
 				    	BeanUtil.map(userCollection, user);
+				    	user.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
+				    	user.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
 				    	patient.setPatientId(patientCollection.getUserId().toString());
 				    	user.setPatient(patient);
 				    }
@@ -778,8 +780,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    registeredPatientDetails = new RegisteredPatientDetails();
 		    BeanUtil.map(patientCollection, registeredPatientDetails);
 		    BeanUtil.map(userCollection, registeredPatientDetails);
-		    registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
-		    registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
+		    registeredPatientDetails.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
+		    registeredPatientDetails.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
 		    
 		    registeredPatientDetails.setUserId(userCollection.getId().toString());
 		    registeredPatientDetails.setReferredBy(reference);
@@ -795,7 +797,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			    || (recordsCount != null && recordsCount > 0))
 			patient.setIsDataAvailableWithOtherDoctor(true);
 
-		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(patientCollection.getDoctorId().toString(), patientCollection.getLocationId().toString(), patientCollection.getHospitalId().toString(), userCollection.getId().toString()));
+		    patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId, userCollection.getId().toString()));
 		    registeredPatientDetails.setPatient(patient);
 		    registeredPatientDetails.setAddress(patientCollection.getAddress());
 		    @SuppressWarnings("unchecked")

@@ -472,8 +472,8 @@ public class ClinicalNotesApi {
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
 	if (DPDoctorUtils.anyStringEmpty(type, range, doctorId)) {
-	    logger.warn("Invalid Input. Type or Range Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Type or Range Cannot Be Empty");
+	    logger.warn("Invalid Input.");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.");
 	}
 	List<?> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {

@@ -515,8 +515,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			treatmentServicesCosts = aggregationResults.getMappedResults();		
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting LabTests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
+			logger.error(e + " Error Occurred While Getting Treatment Services With Cost");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Treatment Services With Cost");
 		}
 		return treatmentServicesCosts;
 	}
@@ -542,7 +542,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Treatment Services");
 		}
 		return response;
 	}
@@ -555,7 +555,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Treatment Services");
 		}
 		return response;
 	}

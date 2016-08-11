@@ -52,8 +52,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	private static Logger logger = Logger.getLogger(PushNotificationServicesImpl.class.getName());
 	
-	@Value("${android.google.services.api.key}")
-    private String GEOCODING_SERVICES_API_KEY;
+	@Value("${doctor.android.google.services.api.key}")
+    private String DOCTOR_GEOCODING_SERVICES_API_KEY;
+
+	@Value("${patient.android.google.services.api.key}")
+    private String PATIENT_GEOCODING_SERVICES_API_KEY;
 
 	@Value("${ios.certificate.password.doctorApp}")
 	private String iosCertificatePasswordDoctorApp;
@@ -132,7 +135,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 					if(userCollections != null){
 						List<ObjectId> userIds = new ArrayList<ObjectId>();
 						for(UserCollection userCollection : userCollections){
-							if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())){
+							if(userCollection.getEmailAddress() == null)userIds.add(userCollection.getId());
+							else if(!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())){
 								userIds.add(userCollection.getId());
 							}
 						}
@@ -181,11 +185,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 //		return response;
 	}
 	
-	public void pushNotificationOnAndroidDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String string) {
+	public void pushNotificationOnAndroidDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String role) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
-
+			Sender sender = null;
+			
+			
+			if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+				sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+			}else{
+				sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+			}
 			Notification notification = new Notification();
 //			notification.setTitle("Healthcoco");
 			notification.setText(message);
@@ -221,11 +231,17 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}
 	}
 
-	public void broadcastPushNotificationOnAndroidDevices(List<String> deviceIds, List<String> pushTokens, String message, String imageURL) {
+	public void broadcastPushNotificationOnAndroidDevices(List<String> deviceIds, List<String> pushTokens, String message, String imageURL, String role) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			Sender sender = new Sender(GEOCODING_SERVICES_API_KEY);
-
+			Sender sender = null;
+			
+			if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
+				sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+			}else{
+				sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+			}
+			
 			Notification notification = new Notification();
 //			notification.setTitle("Healthcoco");
 			notification.setText(message);
@@ -444,7 +460,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			    pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));	
 			    deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl);
+					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, RoleEnum.DOCTOR.getRole());
 				}
 				
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(), DeviceType.IOS.getType());			
@@ -465,28 +481,28 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			    pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
 			    deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl);
+					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, RoleEnum.PATIENT.getRole());
 				}
 				
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(), DeviceType.IOS.getType());			
 				pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));	
 				deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IOS.getType(), RoleEnum.DOCTOR.getRole());
+					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IOS.getType(), RoleEnum.PATIENT.getRole());
 				}
 				
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(), DeviceType.IPAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
 				deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IPAD.getType(), RoleEnum.DOCTOR.getRole());
+					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IPAD.getType(), RoleEnum.PATIENT.getRole());
 				}
 			}else{
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(), DeviceType.ANDROID.getType());
 			    pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));	
 			    deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl);
+					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, RoleEnum.DOCTOR.getRole());
 				}
 				
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.DOCTOR.getRole(), DeviceType.IOS.getType());			
@@ -507,21 +523,21 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			    pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));		
 			    deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl);
+					broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, RoleEnum.PATIENT.getRole());
 				}
 				
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(), DeviceType.IOS.getType());			
 				pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
 				deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IOS.getType(), RoleEnum.DOCTOR.getRole());
+					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IOS.getType(), RoleEnum.PATIENT.getRole());
 				}
 				
 				deviceCollections = userDeviceRepository.findByRoleAndType(RoleEnum.PATIENT.getRole(), DeviceType.IPAD.getType());
 				pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
 				deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
 				if(pushTokens != null && !pushTokens.isEmpty()){
-					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IPAD.getType(), RoleEnum.DOCTOR.getRole());
+					broadcastPushNotificationOnIosDevices(new ArrayList<String>(deviceIds), new ArrayList<String>(pushTokens), request.getMessage(), imageUrl, DeviceType.IPAD.getType(), RoleEnum.PATIENT.getRole());
 				}
 			}
 		}catch(Exception e) {

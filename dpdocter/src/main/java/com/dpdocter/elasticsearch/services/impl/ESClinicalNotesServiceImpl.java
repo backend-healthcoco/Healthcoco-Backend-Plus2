@@ -400,7 +400,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
     		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
     		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
     	}
-    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+    	boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
     	if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("tags", searchTerm));
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
@@ -417,12 +417,12 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    @SuppressWarnings({ "unchecked", "unused" })
+    @SuppressWarnings({ "unchecked"})
 	private List<ESDiagramsDocument> getGlobalDiagrams(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESDiagramsDocument> response = null;
 	try {
 		List<ESDoctorDocument> doctorCollections = null;
-	    if(!DPDoctorUtils.anyStringEmpty(doctorId))esDoctorRepository.findByUserId(doctorId);
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorCollections = esDoctorRepository.findByUserId(doctorId);
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    if(doctorCollections != null && !doctorCollections.isEmpty()){
 	 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
@@ -447,7 +447,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
     			.mustNot(QueryBuilders.existsQuery("locationId"))
     			.mustNot(QueryBuilders.existsQuery("hospitalId"));
  	    
-	    if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+	    boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
 	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("tags", searchTerm));
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
