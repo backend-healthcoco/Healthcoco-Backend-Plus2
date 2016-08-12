@@ -113,4 +113,6 @@ public interface RegistrationService {
 
 	Boolean changePatientNumber(String oldMobileNumber, String newMobileNumber, String otpNumber);
 
+	List<RegisteredPatientDetails> getPatientsByPhoneNumber(String mobileNumber);
+
 }

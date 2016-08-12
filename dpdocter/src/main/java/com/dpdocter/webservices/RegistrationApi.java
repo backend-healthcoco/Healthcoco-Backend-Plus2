@@ -174,6 +174,27 @@ public class RegistrationApi {
 	return response;
     }
 
+    @Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
+    @GET
+    @ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
+    public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber) {
+	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+		logger.warn(mobileNumberValidaton);
+	    throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
+	}
+	
+	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+
+	List<RegisteredPatientDetails> users = registrationService.getPatientsByPhoneNumber(mobileNumber);
+	if (users != null && !users.isEmpty()) {
+	    for (RegisteredPatientDetails user : users) {
+		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+	    }
+	}
+	response.setDataList(users);
+	return response;
+    }
     @Path(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT)
     @GET
     @ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM_COUNT, response = Response.class)

@@ -85,6 +85,8 @@ public interface PathProxy {
 
 		public static final String EXISTING_PATIENTS_BY_PHONE_NUM = "/existing_patients/{mobileNumber}/{doctorId}/{locationId}/{hospitalId}";
 
+		public static final String PATIENTS_BY_PHONE_NUM = "/patients/{mobileNumber}";
+
 		public static final String EXISTING_PATIENTS_BY_PHONE_NUM_COUNT = "/existing_patients_count/{mobileNumber}";
 
 		public static final String GET_PATIENT_PROFILE = "/getpatientprofile/{userId}";

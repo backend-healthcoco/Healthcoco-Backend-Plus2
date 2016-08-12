@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -38,6 +39,7 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.GeocodedLocation;
@@ -126,6 +128,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -297,6 +300,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    
 	    LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 	    Date createdTime = new Date();
+	    
+	    Boolean isSignedUp = checkIfPatientIsSignedUp(request.getMobileNumber());
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
@@ -313,6 +318,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(createdTime);
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+	    if(isSignedUp)userCollection.setSignedUp(true);
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles
@@ -320,7 +326,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 
-	    
+	    if(isSignedUp){
+	    	PatientCollection patientCollection = new PatientCollection();
+	    	patientCollection.setCreatedTime(new Date());
+	    	patientCollection.setFirstName(userCollection.getFirstName());
+	    	patientCollection.setUserId(userCollection.getId());
+	    	patientRepository.save(patientCollection);
+	    }
 	    // save Patient Info
 	    PatientCollection patientCollection = new PatientCollection();
 	    BeanUtil.map(request, patientCollection);
@@ -456,7 +468,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
-    @Override
+    private Boolean checkIfPatientIsSignedUp(String MobileNumber) {
+		Boolean isSignedUp = false;
+		try{
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(MobileNumber)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+		              .append("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+			
+			List<UserCollection> userCollections = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+			if(userCollections != null && !userCollections.isEmpty()){
+				isSignedUp = userCollections.get(0).isSignedUp();
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return isSignedUp;
+	}
+
+	@Override
     @Transactional
     public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
 	RegisteredPatientDetails registeredPatientDetails = new RegisteredPatientDetails();
@@ -698,7 +728,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
 		    	RegisteredPatientDetails user = new RegisteredPatientDetails();
 			
-//			if (locationId != null && hospitalId != null) {
+			if (locationId != null && hospitalId != null) {
 			    List<PatientCollection> patientCollections = patientRepository.findByUserId(userCollection.getId());
 			    boolean isPartOfClinic = false;
 			    if (patientCollections != null) {
@@ -715,8 +745,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				    	BeanUtil.map(patientCollection, patient);
 				    	BeanUtil.map(patientCollection, user);
 				    	BeanUtil.map(userCollection, user);
-				    	user.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
-				    	user.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
+				    	user.setImageUrl(patientCollection.getImageUrl());
+				    	user.setThumbnailUrl(patientCollection.getThumbnailUrl());
 				    	patient.setPatientId(patientCollection.getUserId().toString());
 				    	user.setPatient(patient);
 				    }
@@ -731,7 +761,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			    	user.setUserId(userCollection.getId().toString());
 			    }
 			    user.setIsPartOfClinic(isPartOfClinic);
-//			}
+			}
 			users.add(user);
 		    }
 		}
@@ -744,6 +774,40 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 	return users;
     }
+
+	@Override
+	public List<RegisteredPatientDetails> getPatientsByPhoneNumber(String mobileNumber) {
+		List<RegisteredPatientDetails> users = null;
+		try {
+		    List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+		    if (userCollections != null) {
+			users = new ArrayList<RegisteredPatientDetails>();
+			for (UserCollection userCollection : userCollections) {
+			    if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+			    	RegisteredPatientDetails user = new RegisteredPatientDetails();
+			    	Patient patient = new Patient();
+				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+				    if (patientCollection != null) {
+					    	BeanUtil.map(patientCollection, patient);
+					    	BeanUtil.map(patientCollection, user);
+					    	user.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
+					    	user.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
+					  }
+				    BeanUtil.map(userCollection, user);
+				    patient.setPatientId(userCollection.getId().toString());
+			    	user.setPatient(patient);
+				    users.add(user);
+			    }
+			}
+
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return users;
+	}
 
     private char[] generateRandomAlphanumericString(int count) {
 	return RandomStringUtils.randomAlphabetic(count).toCharArray();
