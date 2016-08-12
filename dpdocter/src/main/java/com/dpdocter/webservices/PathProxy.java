@@ -131,11 +131,11 @@ public interface PathProxy {
 
 		public static final String ADD_EDIT_ROLE = "/role/addEdit";
 
-		public static final String GET_ROLE = "/role/{range}";
+		public static final String GET_ROLE = "/role/{range}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_ROLE = "/role/{roleId}/delete";
 
-		public static final String GET_USERS = "/users";
+		public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
 
 		public static final String DELETE_USER = "/user/{userId}/{locationId}/delete";
 

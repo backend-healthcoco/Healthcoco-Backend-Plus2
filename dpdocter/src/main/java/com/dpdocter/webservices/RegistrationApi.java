@@ -646,10 +646,10 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.GET_ROLE)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_ROLE, notes = PathProxy.RegistrationUrls.GET_ROLE)
-    public Response<Role> getRole(@PathParam(value = "range") String range, @QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-    		@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+    public Response<Role> getRole(@PathParam(value = "range") String range, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+    		@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
     		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-    	if (DPDoctorUtils.anyStringEmpty(range)) {
+    	if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
     		logger.warn(invalidInput);
     	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
     	}
@@ -662,10 +662,13 @@ public class RegistrationApi {
     @Path(value = PathProxy.RegistrationUrls.GET_USERS)
     @GET
     @ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
-    public Response<ClinicDoctorResponse> getUsers(@QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+    public Response<ClinicDoctorResponse> getUsers(@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+    		@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
-
+    	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+    		logger.warn(invalidInput);
+    	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+    	}
 	List<ClinicDoctorResponse> professionResponse = registrationService.getDoctors(page, size, locationId, hospitalId, updatedTime);
 	Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 	response.setDataList(professionResponse);

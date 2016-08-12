@@ -468,16 +468,29 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
-    private Boolean checkIfPatientIsSignedUp(String MobileNumber) {
+    private Boolean checkIfPatientIsSignedUp(String mobileNumber) {
 		Boolean isSignedUp = false;
 		try{
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(MobileNumber)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-		              .append("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
+//			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(MobileNumber)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
+//		              .append("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
 			
-			List<UserCollection> userCollections = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
-			if(userCollections != null && !userCollections.isEmpty()){
-				isSignedUp = userCollections.get(0).isSignedUp();
-			}
+			List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+		    if (userCollections != null && !userCollections.isEmpty()) {
+				for (UserCollection userCollection : userCollections) {
+					if(userCollection.getEmailAddress() != null){
+						if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
+							isSignedUp = userCollection.isSignedUp();
+							break;
+						}
+					}
+					else {
+						isSignedUp = userCollection.isSignedUp();
+						break;
+						}
+				}
+					
+//					mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+				}
 		} catch (Exception e) {
 		    e.printStackTrace();
 		    logger.error(e);
@@ -1722,18 +1735,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Role> response = null;
 
 	try {
-	    switch (Range.valueOf(range.toUpperCase())) {
-
-//	    case GLOBAL:
-//		response = getGlobalRole(page, size, updatedTime);
-//		break;
-	    case CUSTOM:
 		response = getCustomRole(page, size, locationId, hospitalId, updatedTime);
-		break;
-//	    case BOTH:
-//		response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime);
-//		break;
-	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
