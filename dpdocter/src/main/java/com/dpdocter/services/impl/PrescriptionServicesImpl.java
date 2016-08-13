@@ -770,7 +770,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
-					"Your prescription by Dr. " + prescriptionCollection.getCreatedBy()
+					"Your prescription by " + prescriptionCollection.getCreatedBy()
 							+ " has changed - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
 		} catch (Exception e) {

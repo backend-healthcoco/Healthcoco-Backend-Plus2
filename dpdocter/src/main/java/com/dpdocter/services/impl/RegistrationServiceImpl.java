@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -39,7 +38,6 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.GeocodedLocation;
@@ -113,6 +111,7 @@ import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
 import com.dpdocter.request.DoctorRegisterRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.response.CheckPatientSignUpResponse;
 import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
@@ -128,7 +127,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -301,7 +299,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 	    Date createdTime = new Date();
 	    
-	    Boolean isSignedUp = checkIfPatientIsSignedUp(request.getMobileNumber());
+	    CheckPatientSignUpResponse checkPatientSignUpResponse = checkIfPatientIsSignedUp(request.getMobileNumber());
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
@@ -318,7 +316,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    userCollection.setIsActive(true);
 	    userCollection.setCreatedTime(createdTime);
 	    userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-	    if(isSignedUp)userCollection.setSignedUp(true);
+	    if(checkPatientSignUpResponse != null){
+	    	userCollection.setSignedUp(checkPatientSignUpResponse.isSignedUp());
+	    	userCollection.setPassword(checkPatientSignUpResponse.getPassword());
+	    	userCollection.setSalt(checkPatientSignUpResponse.getSalt());
+	    }
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles
@@ -326,7 +328,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    userRoleCollection.setCreatedTime(new Date());
 	    userRoleRepository.save(userRoleCollection);
 
-	    if(isSignedUp){
+	    if(checkPatientSignUpResponse != null){
 	    	PatientCollection patientCollection = new PatientCollection();
 	    	patientCollection.setCreatedTime(new Date());
 	    	patientCollection.setFirstName(userCollection.getFirstName());
@@ -468,8 +470,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return registeredPatientDetails;
     }
 
-    private Boolean checkIfPatientIsSignedUp(String mobileNumber) {
-		Boolean isSignedUp = false;
+    private CheckPatientSignUpResponse checkIfPatientIsSignedUp(String mobileNumber) {
+		CheckPatientSignUpResponse response = null;
 		try{
 //			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(MobileNumber)), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
 //		              .append("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))));
@@ -479,12 +481,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 				for (UserCollection userCollection : userCollections) {
 					if(userCollection.getEmailAddress() != null){
 						if (!userCollection.getUserName().equals(userCollection.getEmailAddress())) {
-							isSignedUp = userCollection.isSignedUp();
+							if(userCollection.isSignedUp()){
+								response = new CheckPatientSignUpResponse(userCollection.getPassword(), userCollection.getSalt(), userCollection.isSignedUp());
+							}
 							break;
 						}
 					}
 					else {
-						isSignedUp = userCollection.isSignedUp();
+						if(userCollection.isSignedUp()){
+							response = new CheckPatientSignUpResponse(userCollection.getPassword(), userCollection.getSalt(), userCollection.isSignedUp());
+						}
 						break;
 						}
 				}
@@ -496,7 +502,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    logger.error(e);
 		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return isSignedUp;
+		return response;
 	}
 
 	@Override
