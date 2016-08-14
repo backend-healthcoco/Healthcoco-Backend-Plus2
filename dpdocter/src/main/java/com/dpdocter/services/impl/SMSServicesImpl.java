@@ -11,7 +11,6 @@ import java.io.ObjectOutputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -23,6 +22,8 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,9 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DoctorSMSResponse;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
+import com.twilio.sdk.TwilioRestClient;
+import com.twilio.sdk.TwilioRestException;
+import com.twilio.sdk.resource.factory.MessageFactory;
 
 import common.util.web.DPDoctorUtils;
 
@@ -99,6 +103,18 @@ public class SMSServicesImpl implements SMSServices {
 
     @Autowired
     private SMSFormatRepository sMSFormatRepository;
+
+    @Value(value = "${sms.twilio.account.sid}")
+    private String ACCOUNT_SID;
+
+    @Value(value = "${sms.twilio.auth.token}")
+    private String AUTH_TOKEN;
+
+    @Value(value = "${sms.twilio.country.code}")
+    private String TWILIO_COUNTRY_CODE;
+
+    @Value(value = "${sms.twilio.from.number}")
+    private String TWILIO_FROM_NUMBER;
 
  	@Override
     @Transactional
@@ -478,8 +494,45 @@ public class SMSServicesImpl implements SMSServices {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, "Error while Getting Sms Format");
+	    throw new BusinessException(ServiceError.Unknown, "Error while Sending Sms Format");
 	}
 	return response;
     }
+
+	@Override
+	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) throws TwilioRestException {
+		Boolean response = false;
+		String responseId = null;
+		try{
+			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+				if (!isEnvProduction) {
+				    if (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null) {
+					String recipient = TWILIO_COUNTRY_CODE + smsDetails.getSms().getSmsAddress().getRecipient();
+					smsDetails.getSms().getSmsAddress().setRecipient(recipient);
+					SMS sms = new SMS();
+					BeanUtil.map(smsDetails.getSms(), sms);
+					TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
+					
+					List<NameValuePair> params = new ArrayList<NameValuePair>();
+			    	params.add(new BasicNameValuePair("To", recipient));
+			    	params.add(new BasicNameValuePair("From", TWILIO_FROM_NUMBER));//15005550006
+			    	params.add(new BasicNameValuePair("Body", sms.getSmsText()));
+
+			    	MessageFactory messageFactory = client.getAccount().getMessageFactory();
+			        com.twilio.sdk.resource.instance.Message message = messageFactory.create(params);
+			        responseId = message.getSid();
+			        smsTrackDetail.setResponseId(responseId);
+					}
+				} else {
+				    
+				}
+			    }
+			    if (save)smsTrackRepository.save(smsTrackDetail);
+			    if(!DPDoctorUtils.anyStringEmpty(responseId))response = true;			
+		}catch (BusinessException e) {
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
+		}
+		return response;
+	}
 }

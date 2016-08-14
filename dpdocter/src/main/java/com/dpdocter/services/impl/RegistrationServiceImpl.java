@@ -809,10 +809,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 				    if (patientCollection != null) {
 					    	BeanUtil.map(patientCollection, patient);
 					    	BeanUtil.map(patientCollection, user);
-					    	user.setImageUrl(getFinalImageURL(patientCollection.getImageUrl()));
-					    	user.setThumbnailUrl(getFinalImageURL(patientCollection.getThumbnailUrl()));
+					    	BeanUtil.map(userCollection, user);
+					    	user.setImageUrl(patientCollection.getImageUrl());
+					    	user.setThumbnailUrl(patientCollection.getThumbnailUrl());
 					  }
-				    BeanUtil.map(userCollection, user);
+				    else{
+				    	BeanUtil.map(userCollection, user);
+				    }
 				    patient.setPatientId(userCollection.getId().toString());
 			    	user.setPatient(patient);
 				    users.add(user);
@@ -2213,7 +2216,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					    throw new BusinessException(ServiceError.Unknown, "Patients already exist with this mobile number");
 					}
 				}
-				response = otpService.otpGenerator(newMobileNumber);
+				response = otpService.otpGenerator(newMobileNumber, true);
 			}
 			else{
 				logger.error("No Patients exist with this mobile number");

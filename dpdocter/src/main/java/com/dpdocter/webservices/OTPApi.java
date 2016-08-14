@@ -1,10 +1,12 @@
 package com.dpdocter.webservices;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -50,12 +52,12 @@ public class OTPApi {
     @Path(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
     @GET
     @ApiOperation(value = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE, notes = PathProxy.OTPUrls.OTP_GENERATOR_MOBILE)
-    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber) {
+    public Response<Boolean> otpGenerator(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam(value = "isPatientOTP") Boolean isPatientOTP) {
 	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty");
 	}
-	Boolean OTP = otpService.otpGenerator(mobileNumber);
+	Boolean OTP = otpService.otpGenerator(mobileNumber, isPatientOTP);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(OTP);
 	return response;

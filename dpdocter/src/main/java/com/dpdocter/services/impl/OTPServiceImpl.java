@@ -236,7 +236,7 @@ public class OTPServiceImpl implements OTPService {
 
     @Override
     @Transactional
-    public Boolean otpGenerator(String mobileNumber) {
+    public Boolean otpGenerator(String mobileNumber, Boolean isPatientOTP) {
     	Boolean response = false;
 	String OTP = null;
 	try {
@@ -244,7 +244,8 @@ public class OTPServiceImpl implements OTPService {
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
 	    	OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy!", mobileNumber,
 		    "OTPVerification");
-	    response = sMSServices.sendSMS(smsTrackDetail, false);
+	    if(!isPatientOTP)response = sMSServices.sendSMS(smsTrackDetail, false);
+	    else response = sMSServices.sendOTPSMS(smsTrackDetail, false);
 
 	    OTPCollection otpCollection = new OTPCollection();
 	    otpCollection.setCreatedTime(new Date());

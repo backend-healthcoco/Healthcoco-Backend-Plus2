@@ -6,7 +6,7 @@ public interface OTPService {
 
     String otpGenerator(String doctorId, String locationId, String hospitalId, String patientId);
 
-    Boolean otpGenerator(String mobileNumber);
+    Boolean otpGenerator(String mobileNumber, Boolean isPatientOTP);
 
     Boolean verifyOTP(String doctorId, String locationId, String hospitalId, String patientId, String otpNumber);
 

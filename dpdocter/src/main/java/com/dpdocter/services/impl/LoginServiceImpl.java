@@ -381,7 +381,7 @@ public class LoginServiceImpl implements LoginService {
 		}
 		else
 		{
-			response = otpService.otpGenerator(mobileNumber);
+			response = otpService.otpGenerator(mobileNumber, false);
 		}
 		
 	} catch (Exception e) {

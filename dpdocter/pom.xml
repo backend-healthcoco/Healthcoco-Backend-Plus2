@@ -496,10 +496,10 @@
 					<artifactId>aws-java-sdk-kinesis</artifactId>
 					<groupId>com.amazonaws</groupId>
 				</exclusion>
-				<exclusion>
-					<artifactId>aws-java-sdk-sns</artifactId>
-					<groupId>com.amazonaws</groupId>
-				</exclusion>
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>aws-java-sdk-sns</artifactId> -->
+<!-- 					<groupId>com.amazonaws</groupId> -->
+<!-- 				</exclusion> -->
 				<exclusion>
 					<artifactId>aws-java-sdk-codepipeline</artifactId>
 					<groupId>com.amazonaws</groupId>
@@ -806,6 +806,12 @@
 			<artifactId>spring-data-elasticsearch</artifactId>
 			<version>2.0.2.RELEASE</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
+	<dependency>
+	    <groupId>com.twilio.sdk</groupId>
+	    <artifactId>twilio-java-sdk</artifactId>
+	    <version>5.10.1</version>
+	</dependency>
 	</dependencies>
 	<build>
 		<plugins>
