@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.dpdocter.beans.DOB;
@@ -7,6 +8,7 @@ import com.dpdocter.beans.Role;
 
 public class RegisterDoctorResponse {
 
+	private String title;
     private String userId;
 
     private String firstName;
@@ -177,11 +179,22 @@ public class RegisterDoctorResponse {
 	this.role = role;
     }
 
-    @Override
-    public String toString() {
-	return "RegisterDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName + ", userName="
-		+ userName + ", password=" + password + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
-		+ dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl + ", specialization=" + specialization + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", role=" + role + "]";
-    }
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	@Override
+	public String toString() {
+		return "RegisterDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", middleName=" + middleName + ", userName=" + userName + ", password="
+				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", gender=" + gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
+				+ ", specialization=" + specialization + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", registerNumber=" + registerNumber + ", role=" + role + "]";
+	}
+
 }

@@ -547,13 +547,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getImage(), path, true);
 		    patientCollection.setImageUrl(imageURLResponse.getImageUrl());
 		    userCollection.setImageUrl(null);
-		    registeredPatientDetails.setImageUrl(imageURLResponse.getImageUrl());
 		    patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		    userCollection.setThumbnailUrl(null);
-		    registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		}
 		
-
+		patientCollection = patientRepository.save(patientCollection);
+	    
 		Patient patient = new Patient();
 		BeanUtil.map(patientCollection, patient);
 		patient.setPatientId(userCollection.getId().toString());
@@ -567,8 +566,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		if(!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()))registeredPatientDetails.setHospitalId(patientCollection.getHospitalId().toString());
 		registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 	    registeredPatientDetails.setAddress(patientCollection.getAddress());
-	    
-	    patientCollection = patientRepository.save(patientCollection);
+	    registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
+	    registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 	    } else {
 		patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
 		if (patientCollection != null) {
@@ -1853,6 +1852,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    if (userCollection != null) {
+		    	clinicDoctorResponse.setTitle(userCollection.getTitle());
 				clinicDoctorResponse.setFirstName(userCollection.getFirstName());
 				clinicDoctorResponse.setLastSession(userCollection.getLastSession());
 				clinicDoctorResponse.setUserId(userCollection.getId().toString());

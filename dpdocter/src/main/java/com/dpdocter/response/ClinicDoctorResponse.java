@@ -7,6 +7,7 @@ import com.dpdocter.beans.Role;
 
 public class ClinicDoctorResponse {
 
+	private String title;
     private String userId;
 
     private String firstName;
@@ -67,10 +68,19 @@ public class ClinicDoctorResponse {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicDoctorResponse [userId=" + userId + ", firstName=" + firstName + ", role=" + role + ", isActivate=" + isActivate + ", lastSession="
-		+ lastSession + ", discarded=" + discarded + "]";
-    }
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName + ", role="
+				+ role + ", isActivate=" + isActivate + ", lastSession=" + lastSession + ", discarded=" + discarded
+				+ "]";
+	}
 
 }

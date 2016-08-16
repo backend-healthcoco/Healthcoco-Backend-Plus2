@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 public class DoctorRegisterRequest {
 
+	private String title;
     private String userId;
 
     private String firstName;
@@ -20,7 +21,16 @@ public class DoctorRegisterRequest {
 
     private Boolean isActivate;
 
-    public String getUserId() {
+    
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getUserId() {
 	return userId;
     }
 
@@ -92,10 +102,11 @@ public class DoctorRegisterRequest {
 	this.isActivate = isActivate;
     }
 
-    @Override
-    public String toString() {
-	return "DoctorRegisterRequest [userId=" + userId + ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId + ", isActivate="
-		+ isActivate + "]";
-    }
+	@Override
+	public String toString() {
+		return "DoctorRegisterRequest [title=" + title + ", userId=" + userId + ", firstName=" + firstName
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId
+				+ ", isActivate=" + isActivate + "]";
+	}
 }
