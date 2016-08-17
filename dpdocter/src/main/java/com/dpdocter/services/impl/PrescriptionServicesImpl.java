@@ -2589,6 +2589,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (patientCollection != null) {
 							String prescriptionDetails = "";
 							int i = 0;
+							if(prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 							for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 								if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 									DrugCollection drug = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
