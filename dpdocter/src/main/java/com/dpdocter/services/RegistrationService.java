@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.core.UriInfo;
-
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -85,13 +83,13 @@ public interface RegistrationService {
 
     Role addRole(Role request);
 
-    List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime);
+    List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime, String role);
 
     void checkPatientCount(String mobileNumber);
 
     ESDoctorDocument getESDoctorDocument(RegisterDoctorResponse doctorResponse);
 
-    List<ClinicDoctorResponse> getDoctors(int page, int size, String locationId, String hospitalId, String updatedTime);
+    List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId, String updatedTime, String role);
 
     Role deleteRole(String roleId, Boolean discarded);
 

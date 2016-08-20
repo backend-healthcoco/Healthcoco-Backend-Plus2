@@ -156,6 +156,7 @@ public class DPDoctorUtils {
         return result;
    }
     
+	@SuppressWarnings("deprecation")
 	public static SearchQuery createGlobalQuery(Resource resource, int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))

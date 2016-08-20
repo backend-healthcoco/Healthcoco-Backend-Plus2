@@ -171,7 +171,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 		List<AccessPermission> accessPermissions = accessModule.getAccessPermissions();
     	for(AccessPermission accessPermission : accessPermissions){
     		if(accessPermission.getAccessPermissionType().getAccessPermissionType().equals(AccessPermissionType.WRITE.getAccessPermissionType())){
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.READ, true));
+    			accessPermissions.add(new AccessPermission(AccessPermissionType.READ, false));
     			accessPermissions.add(new AccessPermission(AccessPermissionType.HIDE, false));
     			break;
     		}else if(accessPermission.getAccessPermissionType().getAccessPermissionType().equals(AccessPermissionType.READ.getAccessPermissionType())){

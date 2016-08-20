@@ -406,7 +406,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
     		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
     		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
     	}
-    	boolQueryBuilder.must(QueryBuilders.termsQuery("speciality", specialities));
+    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")) , QueryBuilders.termsQuery("speciality", specialities.toString().replace("[", "").replace("]", "").toLowerCase().split(","))));
+    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
     	if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("tags", searchTerm));
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 

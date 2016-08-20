@@ -648,12 +648,12 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_ROLE, notes = PathProxy.RegistrationUrls.GET_ROLE)
     public Response<Role> getRole(@PathParam(value = "range") String range, @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
     		@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-    		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+    		@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "role") String role) {
     	if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
     		logger.warn(invalidInput);
     	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
     	}
-	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime);
+	List<Role> professionResponse = registrationService.getRole(range, page, size, locationId, hospitalId, updatedTime, role);
 	Response<Role> response = new Response<Role>();
 	response.setDataList(professionResponse);
 	return response;
@@ -664,12 +664,12 @@ public class RegistrationApi {
     @ApiOperation(value = PathProxy.RegistrationUrls.GET_USERS, notes = PathProxy.RegistrationUrls.GET_USERS)
     public Response<ClinicDoctorResponse> getUsers(@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
     		@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime) {
+	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "role") String role) {
     	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
     		logger.warn(invalidInput);
     	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
     	}
-	List<ClinicDoctorResponse> professionResponse = registrationService.getDoctors(page, size, locationId, hospitalId, updatedTime);
+	List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, locationId, hospitalId, updatedTime, role);
 	Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 	response.setDataList(professionResponse);
 	return response;

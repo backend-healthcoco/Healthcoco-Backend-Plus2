@@ -32,22 +32,34 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     public List<RoleCollection> findGlobal(Date date, Sort sort);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}}")
-    public List<RoleCollection> findCustom(ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageRequest);
+    public List<RoleCollection> findCustomRole(ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageRequest);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}}")
-    public List<RoleCollection> findCustom(ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
+    public List<RoleCollection> findCustomRole(ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
 
-    @Query("{'updatedTime': {'$gt': ?0}}")
-    public List<RoleCollection> findCustomGlobal(Date date, Pageable pageRequest);
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role': ?3}")
+    public List<RoleCollection> findCustomDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date, String role, Pageable pageRequest);
 
-    @Query("{'updatedTime': {'$gt': ?0}}")
-    public List<RoleCollection> findCustomGlobal(Date date, Sort sort);
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role': ?3}")
+    public List<RoleCollection> findCustomDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date, String role, Sort sort);
 
-    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gt': ?2}} , {'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?2}}]}")
-    public List<RoleCollection> findCustomGlobal(ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageRequest);
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}")
+    public List<RoleCollection> findCustomStaffRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roles, Pageable pageRequest);
 
-    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gt': ?2}} , {'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?2}}]}")
-    public List<RoleCollection> findCustomGlobal(ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}")
+    public List<RoleCollection> findCustomStaffRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roles, Sort sort);
+
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$in': ?3}}")
+	public List<RoleCollection> findCustomAdminRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roles, Pageable pageable);
+
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$in': ?3}}")
+	public List<RoleCollection> findCustomAdminRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roles, Sort sort);
+
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}")
+	public List<RoleCollection> findCustomRoleAndNotLocationHospitalAdmin(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roles, Pageable pageable);
+
+    @Query("{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}")
+	public List<RoleCollection> findCustomRoleAndNotLocationHospitalAdmin(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roles, Sort sort);
 
     @Query("{'locationId': ?0, 'hospitalId': ?1}")
     public List<RoleCollection> findByLocationIdAndHospitalId(ObjectId locationId, ObjectId hospitalId);
@@ -63,5 +75,17 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
 
     @Query("{'id':{$in :?0}, 'locationId': ?1, 'hospitalId': ?2}")
 	public List<RoleCollection> find(Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+
+    @Query("{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
+	public List<RoleCollection> find(String role, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+
+    @Query("{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
+	public List<RoleCollection> findStaffs(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+
+    @Query("{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
+	public List<RoleCollection> findLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+
+    @Query("{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
+	public List<RoleCollection> findNotLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
 }
