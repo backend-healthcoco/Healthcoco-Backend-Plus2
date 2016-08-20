@@ -62,10 +62,12 @@ import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientQueueCollection;
+import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
@@ -94,10 +96,13 @@ import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.response.SlotDataResponse;
+import com.dpdocter.response.UserLocationWithDoctorClinicProfile;
+import com.dpdocter.response.UserRoleResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
@@ -194,22 +199,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Value(value = "${mail.appointment.cancel.subject}")
     private String appointmentCancelMailSubject;
 
-//    @Value(value = "${Appoinment.appointmentDoesNotExist}")
-//    private String appointmentDoesNotExist;
-//
-//    @Value(value = "${Appoinment.appointmentDoesNotExist}")
-//    private String appointmentDoesNotExist;
-//
-//    @Value(value = "${Appoinment.appointmentDoesNotExist}")
-//    private String appointmentDoesNotExist;
-//
-//    @Value(value = "${Appoinment.appointmentDoesNotExist}")
-//    private String appointmentDoesNotExist;
-//
-//    @Value(value = "${Appoinment.appointmentDoesNotExist}")
-//    private String appointmentDoesNotExist;
-//
-//    
+    @Autowired
+    UserRoleRepository UserRoleRepository;
+
     @Override
     @Transactional
     public City addCity(City city) {
@@ -314,58 +306,92 @@ public class AppointmentServiceImpl implements AppointmentService {
     @SuppressWarnings("unchecked")
 	@Override
     @Transactional
-    public Clinic getClinic(String locationId) {
+    public Clinic getClinic(String locationId, String role) {
 	Clinic response = new Clinic();
-	LocationCollection localtionCollection = null;
+	LocationCollection locationCollection = null;
 	Location location = new Location();
 	HospitalCollection hospitalCollection = null;
 	Hospital hospital = new Hospital();
 
 	List<Doctor> doctors = new ArrayList<Doctor>();
 	try {
-	    localtionCollection = locationRepository.findOne(new ObjectId(locationId));
-	    if (localtionCollection == null) {
+	    locationCollection = locationRepository.findOne(new ObjectId(locationId));
+	    if (locationCollection == null) {
 		return null;
 	    } else {
-		BeanUtil.map(localtionCollection, location);
+		BeanUtil.map(locationCollection, location);
 		response.setLocation(location);
 
-		hospitalCollection = hospitalRepository.findOne(localtionCollection.getHospitalId());
+		hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
 		if (hospitalCollection != null) {
 		    BeanUtil.map(hospitalCollection, hospital);
 		    response.setHospital(hospital);
 		}
 
-		List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(localtionCollection.getId());
-		for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
-		    UserLocationCollection userLocationCollection = iterator.next();
-		    DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
-		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-		    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+		Collection<ObjectId> userIds = null;
+		if(!DPDoctorUtils.anyStringEmpty(role)){
+			List<UserRoleResponse> userRoleResponse = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("role").is(role.toUpperCase()).and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId())),
+							Aggregation.lookup("user_role_cl", "_id", "roleId", "userRoleCollections")), 
+					RoleCollection.class, UserRoleResponse.class).getMappedResults();
+			if(userRoleResponse != null && !userRoleResponse.isEmpty()){
+				List<UserRoleCollection> userRoleCollections = userRoleResponse.get(0).getUserRoleCollections();
+				userIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("userId"));
+				if(userIds == null || userIds.isEmpty()){
+					return response;
+				}
+			}
+		}
+		
+		Aggregation aggregation = null;
+		if(userIds != null && !userIds.isEmpty()){
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationCollection.getId())
+					.and("userId").in(userIds)),
+					Aggregation.lookup("user_cl", "userId", "_id", "users"),
+					Aggregation.lookup("docter_cl", "userId", "userId", "doctors"),
+					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "userLocationId", "doctorClinicProfiles"));
+		}else {
+			aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(locationCollection.getId())),
+					Aggregation.lookup("user_cl", "userId", "_id", "users"),
+					Aggregation.lookup("docter_cl", "userId", "userId", "doctors"),
+					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "userLocationId", "doctorClinicProfiles"));
+		}
+		
+		List<UserLocationWithDoctorClinicProfile> userWithDoctorProfile = mongoTemplate.aggregate(aggregation, UserLocationCollection.class, UserLocationWithDoctorClinicProfile.class).getMappedResults();
+	    
+		for (Iterator<UserLocationWithDoctorClinicProfile> iterator = userWithDoctorProfile.iterator(); iterator.hasNext();) {
+			UserLocationWithDoctorClinicProfile userLocationCollection = iterator.next();
+		    
+//		        DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
+//			    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
+//			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+			DoctorCollection doctorCollection = (userLocationCollection.getDoctors() != null && !userLocationCollection.getDoctors().isEmpty() ? userLocationCollection.getDoctors().get(0):null);
+			UserCollection userCollection = (userLocationCollection.getUsers() != null && !userLocationCollection.getUsers().isEmpty() ? userLocationCollection.getUsers().get(0):null);
+			DoctorClinicProfile doctorClinicProfileCollection = (userLocationCollection.getDoctorClinicProfiles() != null && !userLocationCollection.getDoctorClinicProfiles().isEmpty() ? userLocationCollection.getDoctorClinicProfiles().get(0):null);
+			    if (doctorCollection != null) {
+				Doctor doctor = new Doctor();
+				BeanUtil.map(doctorCollection, doctor);
+				if (userCollection != null) {
+				    BeanUtil.map(userCollection, doctor);
+				}
 
-		    if (doctorCollection != null) {
-			Doctor doctor = new Doctor();
-			BeanUtil.map(doctorCollection, doctor);
-			if (userCollection != null) {
-			    BeanUtil.map(userCollection, doctor);
-			}
-
-			if (doctorClinicProfileCollection != null) {
-			    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
-			    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
-			    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId().toString());
-			    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId().toString());
-			    doctor.setDoctorClinicProfile(doctorClinicProfile);
-			}
-			if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()){
-				List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("superSpeciality"));
-				doctor.setSpecialities(specialities);
-			}
-			doctors.add(doctor);
+				if (doctorClinicProfileCollection != null) {
+				    DoctorClinicProfile doctorClinicProfile = new DoctorClinicProfile();
+				    BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
+				    doctorClinicProfile.setLocationId(userLocationCollection.getLocationId().toString());
+				    doctorClinicProfile.setDoctorId(userLocationCollection.getUserId().toString());
+				    doctor.setDoctorClinicProfile(doctorClinicProfile);
+				}
+				if(doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()){
+					List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("superSpeciality"));
+					doctor.setSpecialities(specialities);
+				}
+				doctors.add(doctor);
+			    }
 		    }
 		}
 		response.setDoctors(doctors);
-	    }
+		response.setId(locationId);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -1186,6 +1212,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
+	@SuppressWarnings("static-access")
 	@Override
 	@Transactional
 	public List<City> getStates(String country) {

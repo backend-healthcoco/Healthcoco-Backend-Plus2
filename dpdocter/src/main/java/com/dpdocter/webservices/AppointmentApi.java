@@ -149,13 +149,13 @@ public class AppointmentApi {
     @Path(value = PathProxy.AppointmentUrls.GET_CLINIC)
     @GET
     @ApiOperation(value = PathProxy.AppointmentUrls.GET_CLINIC, notes = PathProxy.AppointmentUrls.GET_CLINIC)
-    public Response<Clinic> getClinic(@PathParam(value = "locationId") String locationId) {
+    public Response<Clinic> getClinic(@PathParam(value = "locationId") String locationId, @QueryParam(value = "role") String role) {
 
 	if (DPDoctorUtils.anyStringEmpty(locationId)) {
 		logger.warn("Location Id cannot be empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Location Id cannot be empty");
 	}
-	Clinic clinic = appointmentService.getClinic(locationId);
+	Clinic clinic = appointmentService.getClinic(locationId, role);
 	Response<Clinic> response = new Response<Clinic>();
 	response.setData(clinic);
 	return response;

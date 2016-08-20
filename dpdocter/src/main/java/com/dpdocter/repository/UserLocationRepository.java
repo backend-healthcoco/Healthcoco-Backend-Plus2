@@ -33,4 +33,7 @@ public interface UserLocationRepository extends MongoRepository<UserLocationColl
     @Query("{'userId' : ?0}")
 	List<UserLocationCollection> findByUserId(ObjectId userId);
 
+    @Query(value = "{'userId': ?0, 'locationId': ?1}", count = true)
+	Integer countByUserIdAndLocationId(ObjectId userId, ObjectId locationId);
+
 }

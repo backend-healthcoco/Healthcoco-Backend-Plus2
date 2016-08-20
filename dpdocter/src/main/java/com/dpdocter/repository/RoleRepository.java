@@ -88,4 +88,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query("{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
 	public List<RoleCollection> findNotLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
+    @Query(value = "{'role': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
+	public Integer countByRole(String role, ObjectId locationId, ObjectId hospitalId);
+
 }

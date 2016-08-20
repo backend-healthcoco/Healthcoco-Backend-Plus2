@@ -1627,16 +1627,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	    RoleCollection doctorRole = null;
 	    if (request.getRoleId() != null) {
-		doctorRole = roleRepository.findOne(new ObjectId(request.getRoleId()));
+	    	doctorRole = roleRepository.findOne(new ObjectId(request.getRoleId()));
 	    }
 
 	    if (doctorRole == null) {
-		logger.warn(role);
-		throw new BusinessException(ServiceError.NoRecord, role);
+			logger.warn(role);
+			throw new BusinessException(ServiceError.NoRecord, role);
 	    }
 	    UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(), request.getEmailAddress());
-	    userCollection.setFirstName(request.getFirstName());
-
+	    Integer count = userLocationRepository.countByUserIdAndLocationId(userCollection.getId(), new ObjectId(request.getLocationId()));
+	    if (count != null && count > 0) {
+			logger.warn("User is already added in clinic");
+			throw new BusinessException(ServiceError.NoRecord, "User is already added in clinic");
+	    }
+	    
 	    DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
 	    if (doctorCollection.getAdditionalNumbers() != null){
 	    	if (!doctorCollection.getAdditionalNumbers().contains(request.getMobileNumber()))
@@ -1648,6 +1652,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    	doctorCollection = doctorRepository.save(doctorCollection);
 	    }
 
+	    
 	    UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(), new ObjectId(request.getLocationId()));
 	    userLocationCollection.setIsActivate(request.getIsActivate());
 	    userLocationCollection.setCreatedTime(new Date());
@@ -1715,6 +1720,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	RoleCollection roleCollection = null;
 	try {
 		if(DPDoctorUtils.anyStringEmpty(request.getId())){
+			checkIfRoleAlreadyExist(request.getRole(), request.getLocationId(), request.getHospitalId());
 			roleCollection = new RoleCollection();
 			BeanUtil.map(request, roleCollection);
 		    roleCollection.setCreatedTime(new Date());
@@ -1748,7 +1754,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return role;
     }
 
-    @Override
+    private void checkIfRoleAlreadyExist(String role, String locationId, String hospitalId) {
+    	try {
+    		Integer count = roleRepository.countByRole(role, new ObjectId(locationId), new ObjectId(hospitalId));
+    		if(count != null && count > 0){
+    			logger.error("Role already exist with this name");
+        	    throw new BusinessException(ServiceError.Unknown, "Role already exist with this name");
+    		}
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    	}	
+	}
+
+	@Override
     @Transactional
     public List<Role> getRole(String range, int page, int size, String locationId, String hospitalId, String updatedTime, String role) {
 	List<Role> response = null;
