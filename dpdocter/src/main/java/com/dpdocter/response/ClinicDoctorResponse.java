@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Role;
+import com.dpdocter.enums.UserState;
 
 public class ClinicDoctorResponse {
 
 	private String title;
-    private String userId;
+    
+	private String userId;
 
     private String firstName;
 
@@ -20,6 +22,8 @@ public class ClinicDoctorResponse {
 
     private Boolean discarded = false;
 
+    private UserState userState = UserState.USERSTATECOMPLETE;
+    
     public String getUserId() {
 	return userId;
     }
@@ -76,11 +80,19 @@ public class ClinicDoctorResponse {
 		this.title = title;
 	}
 
+	public UserState getUserState() {
+		return userState;
+	}
+
+	public void setUserState(UserState userState) {
+		this.userState = userState;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName + ", role="
 				+ role + ", isActivate=" + isActivate + ", lastSession=" + lastSession + ", discarded=" + discarded
-				+ "]";
+				+ ", userState=" + userState + "]";
 	}
 
 }

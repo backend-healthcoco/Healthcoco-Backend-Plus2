@@ -3,7 +3,8 @@ package com.dpdocter.request;
 public class DoctorRegisterRequest {
 
 	private String title;
-    private String userId;
+   
+	private String userId;
 
     private String firstName;
 

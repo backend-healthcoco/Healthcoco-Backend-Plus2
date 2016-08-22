@@ -79,7 +79,9 @@ public interface PathProxy {
 	public interface RegistrationUrls {
 		public static final String PATIENT_REGISTER = "/patient";
 
-		public static final String USER_REGISTER = "/user";
+		public static final String USER_REGISTER_IN_CLINIC = "/user";
+
+		public static final String EDIT_USER_IN_CLINIC = "/user/{userId}/{locationId}/edit";
 
 		public static final String EDIT_PATIENT_PROFILE = "/patient";
 
@@ -137,7 +139,7 @@ public interface PathProxy {
 
 		public static final String GET_USERS = "/users/{locationId}/{hospitalId}";
 
-		public static final String DELETE_USER = "/user/{userId}/{locationId}/delete";
+		public static final String ACTIVATE_DEACTIVATE_USER = "/user/{userId}/{locationId}/activate";
 
 		public static final String ADD_FEEDBACK = "/feedback/add";
 

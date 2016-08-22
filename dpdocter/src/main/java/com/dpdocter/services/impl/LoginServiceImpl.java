@@ -322,7 +322,9 @@ public class LoginServiceImpl implements LoginService {
 		logger.warn(loginPatient);
 		throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 	    }
-
+	} catch (BusinessException be) {
+	    logger.error(be);
+	    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error occured while login");

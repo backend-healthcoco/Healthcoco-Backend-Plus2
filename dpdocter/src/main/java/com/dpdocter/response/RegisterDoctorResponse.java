@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Role;
+import com.dpdocter.enums.UserState;
 
 public class RegisterDoctorResponse {
 
@@ -43,6 +44,8 @@ public class RegisterDoctorResponse {
 
     private Role role;
 
+    private UserState userState = UserState.USERSTATECOMPLETE;
+    
     public String getUserId() {
 	return userId;
     }
@@ -187,6 +190,14 @@ public class RegisterDoctorResponse {
 		this.title = title;
 	}
 
+	public UserState getUserState() {
+		return userState;
+	}
+
+	public void setUserState(UserState userState) {
+		this.userState = userState;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisterDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName
@@ -194,7 +205,6 @@ public class RegisterDoctorResponse {
 				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
 				+ ", gender=" + gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
 				+ ", specialization=" + specialization + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", registerNumber=" + registerNumber + ", role=" + role + "]";
+				+ ", registerNumber=" + registerNumber + ", role=" + role + ", userState=" + userState + "]";
 	}
-
 }

@@ -580,11 +580,11 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.USER_REGISTER)
+    @Path(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
     @POST
-    @ApiOperation(value = PathProxy.RegistrationUrls.USER_REGISTER, notes = PathProxy.RegistrationUrls.USER_REGISTER)
+    @ApiOperation(value = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC, notes = PathProxy.RegistrationUrls.USER_REGISTER_IN_CLINIC)
     public Response<RegisterDoctorResponse> userRegister(DoctorRegisterRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getFirstName())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress(), request.getFirstName(),request.getLocationId(), request.getHospitalId())) {
 	    logger.warn(invalidInput);
 	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 	}
@@ -596,6 +596,24 @@ public class RegistrationApi {
 
 	transnationalService.addResource(new ObjectId(doctorResponse.getUserId()), Resource.DOCTOR, false);
 	if (doctorResponse != null)esRegistrationService.addDoctor(registrationService.getESDoctorDocument(doctorResponse));
+	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
+	response.setData(doctorResponse);
+	return response;
+    }
+
+    @Path(value = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC)
+    @PUT
+    @ApiOperation(value = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC, notes = PathProxy.RegistrationUrls.EDIT_USER_IN_CLINIC)
+    public Response<RegisterDoctorResponse> editUserInClinic(@PathParam("userId") String userId, @PathParam("locationId") String locationId, DoctorRegisterRequest request) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(userId, locationId, request.getFirstName(), request.getHospitalId())) {
+	    logger.warn(invalidInput);
+	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+	}
+	request.setUserId(userId);
+	request.setLocationId(locationId);
+	RegisterDoctorResponse doctorResponse = registrationService.editUserInClinic(request);
+
+	transnationalService.checkDoctor(new ObjectId(request.getUserId()), null);
 	Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 	response.setData(doctorResponse);
 	return response;
@@ -689,16 +707,16 @@ public class RegistrationApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RegistrationUrls.DELETE_USER)
+    @Path(value = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER)
     @DELETE
-    @ApiOperation(value = PathProxy.RegistrationUrls.DELETE_USER, notes = PathProxy.RegistrationUrls.DELETE_USER)
-    public Response<Boolean> deleteUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
-	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    @ApiOperation(value = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER, notes = PathProxy.RegistrationUrls.ACTIVATE_DEACTIVATE_USER)
+    public Response<Boolean> activateDeactivateUser(@PathParam(value = "userId") String userId, @PathParam(value = "locationId") String locationId,
+	    @DefaultValue("true") @QueryParam("isActivate") Boolean isActivate) {
     	if (DPDoctorUtils.anyStringEmpty(userId, locationId)) {
     		logger.warn(invalidInput);
     	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
     	}
-	registrationService.deleteUser(userId, locationId, discarded);
+	registrationService.activateDeactivateUser(userId, locationId, isActivate);
 	transnationalService.checkDoctor(new ObjectId(userId), null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
@@ -714,7 +732,8 @@ public class RegistrationApi {
 	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 	}
 	Feedback feedback = registrationService.addFeedback(request);
-	transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), new ObjectId(feedback.getLocationId()));
+	if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId()))
+		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), new ObjectId(feedback.getLocationId()));
 	Response<Feedback> response = new Response<Feedback>();
 	response.setData(feedback);
 	return response;

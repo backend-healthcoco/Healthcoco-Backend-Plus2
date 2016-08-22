@@ -79,7 +79,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query("{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
 	public List<RoleCollection> find(String role, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
-    @Query("{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
+    @Query("{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
 	public List<RoleCollection> findStaffs(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
     @Query("{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")

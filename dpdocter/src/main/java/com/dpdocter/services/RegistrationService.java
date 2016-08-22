@@ -93,7 +93,7 @@ public interface RegistrationService {
 
     Role deleteRole(String roleId, Boolean discarded);
 
-    void deleteUser(String userId, String locationId, Boolean discarded);
+    void activateDeactivateUser(String userId, String locationId, Boolean isActivate);
 
     ClinicLabProperties updateLabProperties(ClinicLabProperties request);
 
@@ -112,5 +112,7 @@ public interface RegistrationService {
 	Boolean changePatientNumber(String oldMobileNumber, String newMobileNumber, String otpNumber);
 
 	List<RegisteredPatientDetails> getPatientsByPhoneNumber(String mobileNumber);
+
+	RegisterDoctorResponse editUserInClinic(DoctorRegisterRequest request);
 
 }

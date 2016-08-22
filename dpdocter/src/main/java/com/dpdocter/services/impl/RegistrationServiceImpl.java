@@ -1713,6 +1713,52 @@ public class RegistrationServiceImpl implements RegistrationService {
 	return response;
     }
 
+	@Override
+	public RegisterDoctorResponse editUserInClinic(DoctorRegisterRequest request) {
+		RegisterDoctorResponse response = null;
+		try {
+		    RoleCollection doctorRole = null;
+		    if (request.getRoleId() != null) {
+		    	doctorRole = roleRepository.findOne(new ObjectId(request.getRoleId()));
+		    }
+
+		    UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+		    userCollection.setFirstName(request.getFirstName());
+		    userCollection = userRepository.save(userCollection);
+		    if(doctorRole != null){
+		    	List<RoleCollection> roleCollections = roleRepository.findByLocationIdAndHospitalId(new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+			    @SuppressWarnings("unchecked")
+				List<ObjectId> roleIds = (List<ObjectId>) CollectionUtils.collect(roleCollections, new BeanToPropertyValueTransformer("id"));
+
+			    UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdAndRoleId(userCollection.getId(), roleIds);
+			    if (userRoleCollection != null) {
+					userRoleCollection.setUpdatedTime(new Date());
+					userRoleCollection.setRoleId(new ObjectId(request.getRoleId()));
+					userRoleCollection = userRoleRepository.save(userRoleCollection);
+			    }
+		    }
+		    response = new RegisterDoctorResponse();
+		    BeanUtil.map(userCollection, response);
+		    response.setHospitalId(request.getHospitalId());
+		    response.setLocationId(request.getLocationId());
+		    response.setUserId(userCollection.getId().toString());
+
+		    if (doctorRole != null) {
+				Role role = new Role();
+				BeanUtil.map(doctorRole, role);
+				AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(), doctorRole.getLocationId(), doctorRole.getHospitalId());
+				if (accessControl != null)
+				    role.setAccessModules(accessControl.getAccessModules());
+					response.setRole(role);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
     @Override
     @Transactional
     public Role addRole(Role request) {
@@ -1847,6 +1893,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    	clinicDoctorResponse.setTitle(userCollection.getTitle());
 				clinicDoctorResponse.setFirstName(userCollection.getFirstName());
 				clinicDoctorResponse.setLastSession(userCollection.getLastSession());
+				clinicDoctorResponse.setUserState(userCollection.getUserState());
 				clinicDoctorResponse.setUserId(userCollection.getId().toString());
 				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
 			
@@ -1929,12 +1976,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public void deleteUser(String userId, String locationId, Boolean discarded) {
+    public void activateDeactivateUser(String userId, String locationId, Boolean isActivate) {
 	try {
 	    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(new ObjectId(userId), new ObjectId(locationId));
 	    if (userLocationCollection != null) {
-		userLocationCollection.setDiscarded(discarded);
-		userLocationRepository.save(userLocationCollection);
+			userLocationCollection.setIsActivate(isActivate);
+			userLocationRepository.save(userLocationCollection);
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -2267,4 +2314,5 @@ public class RegistrationServiceImpl implements RegistrationService {
 		} else
 		    return null;
 	    }
+
 }
