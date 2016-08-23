@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -171,8 +172,15 @@ public class DPDoctorUtils {
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	   
  	    if(resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION) || resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS) || resource.equals(Resource.NOTES)){
- 	    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")) , QueryBuilders.termsQuery("speciality", specialities.toString().replace("[", "").replace("]", "").toLowerCase().split(","))));
-	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
+ 	    	if(specialities != null && !specialities.isEmpty()){
+ 	    		OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
+ 	    		orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+ 	    		for(String speciality : specialities){
+ 	    			orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+ 	    		}
+ 	    		boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder));
+ 	    	}	
+ 	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
@@ -230,7 +238,14 @@ public class DPDoctorUtils {
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
 	    if(resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION) || resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS) || resource.equals(Resource.NOTES)){
-	    	if(specialities != null && !specialities.isEmpty())boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")) , QueryBuilders.termsQuery("speciality", specialities.toString().replace("[", "").replace("]", "").toLowerCase().split(","))));
+	    	if(specialities != null && !specialities.isEmpty()){
+	    		OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
+	    		orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
+	    		for(String speciality : specialities){
+	    			orQueryBuilder.add(QueryBuilders.matchQuery("speciality", speciality));
+	    		}
+	    		boolQueryBuilder.must(QueryBuilders.orQuery(orQueryBuilder)).minimumNumberShouldMatch(1);
+	    	}	
 	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 	    }
         SearchQuery searchQuery = null;
