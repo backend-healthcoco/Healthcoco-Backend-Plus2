@@ -1600,12 +1600,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // }
 
 	    if (doctorRole != null) {
-		Role role = new Role();
-		BeanUtil.map(doctorRole, role);
-		AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(), doctorRole.getLocationId(), doctorRole.getHospitalId());
-		if (accessControl != null)
-		    role.setAccessModules(accessControl.getAccessModules());
-		response.setRole(role);
+	    	List<Role> roles = new ArrayList<Role>();
+			Role role = new Role();
+			BeanUtil.map(doctorRole, role);
+			AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(), doctorRole.getLocationId(), doctorRole.getHospitalId());
+			if (accessControl != null)
+			    role.setAccessModules(accessControl.getAccessModules());
+			roles.add(role);
+			response.setRole(roles);
 	    }
 	} catch (DuplicateKeyException de) {
 	    logger.error(de);
@@ -1680,12 +1682,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    response.setUserId(userCollection.getId().toString());
 
 	    if (doctorRole != null) {
-		Role role = new Role();
-		BeanUtil.map(doctorRole, role);
-		AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(), doctorRole.getLocationId(), doctorRole.getHospitalId());
-		if (accessControl != null)
-		    role.setAccessModules(accessControl.getAccessModules());
-		response.setRole(role);
+	    	List<Role> roles = new ArrayList<Role>();
+			Role role = new Role();
+			BeanUtil.map(doctorRole, role);
+			AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(), doctorRole.getLocationId(), doctorRole.getHospitalId());
+			if (accessControl != null)
+			    role.setAccessModules(accessControl.getAccessModules());
+			roles.add(role);
+		    response.setRole(roles);
 		
 		LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 	    RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole(), locationCollection.getId(), locationCollection.getHospitalId());
@@ -1744,12 +1748,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    response.setUserId(userCollection.getId().toString());
 
 		    if (doctorRole != null) {
+		    	List<Role> roles = new ArrayList<Role>();
 				Role role = new Role();
 				BeanUtil.map(doctorRole, role);
 				AccessControl accessControl = accessControlServices.getAccessControls(doctorRole.getId(), doctorRole.getLocationId(), doctorRole.getHospitalId());
 				if (accessControl != null)
 				    role.setAccessModules(accessControl.getAccessModules());
-					response.setRole(role);
+				roles.add(role);	
+				response.setRole(roles);
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();

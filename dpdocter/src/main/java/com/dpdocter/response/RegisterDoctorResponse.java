@@ -42,7 +42,7 @@ public class RegisterDoctorResponse {
 
     private String registerNumber;
 
-    private Role role;
+    private List<Role> role;
 
     private UserState userState = UserState.USERSTATECOMPLETE;
     
@@ -174,20 +174,20 @@ public class RegisterDoctorResponse {
 	this.registerNumber = registerNumber;
     }
 
-    public Role getRole() {
-	return role;
-    }
-
-    public void setRole(Role role) {
-	this.role = role;
-    }
-
 	public String getTitle() {
 		return title;
 	}
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public List<Role> getRole() {
+		return role;
+	}
+
+	public void setRole(List<Role> role) {
+		this.role = role;
 	}
 
 	public UserState getUserState() {
