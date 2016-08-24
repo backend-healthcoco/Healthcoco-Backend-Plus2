@@ -495,7 +495,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsRepository.save(recordsCollection);
 	    response = new Records();
 	    BeanUtil.map(recordsCollection, response);
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" is discarded", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	    pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" has been removed by "+recordsCollection.getCreatedBy(), ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	} catch (BusinessException e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());

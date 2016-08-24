@@ -10,13 +10,13 @@ public class Notification {
 	
 	private String notificationType;
 	
-	private String XI;
+	private String xi;
 	
-	private String RI;
+	private String ri;
 	
-	private String PI;
+	private String pi;
 	
-	private String DI;
+	private String di;
 
 	public String getTitle() {
 		return title;
@@ -50,42 +50,41 @@ public class Notification {
 		this.img = img;
 	}
 
-	public String getXI() {
-		return XI;
+	public String getXi() {
+		return xi;
 	}
 
-	public void setXI(String xI) {
-		XI = xI;
+	public void setXi(String xi) {
+		this.xi = xi;
 	}
 
-	public String getRI() {
-		return RI;
+	public String getRi() {
+		return ri;
 	}
 
-	public void setRI(String rI) {
-		RI = rI;
+	public void setRi(String ri) {
+		this.ri = ri;
 	}
 
-	public String getPI() {
-		return PI;
+	public String getPi() {
+		return pi;
 	}
 
-	public void setPI(String pI) {
-		PI = pI;
+	public void setPi(String pi) {
+		this.pi = pi;
 	}
 
-	public String getDI() {
-		return DI;
+	public String getDi() {
+		return di;
 	}
 
-	public void setDI(String dI) {
-		DI = dI;
+	public void setDi(String di) {
+		this.di = di;
 	}
 
 	@Override
 	public String toString() {
 		return "Notification [title=" + title + ", text=" + text + ", img=" + img + ", notificationType="
-				+ notificationType + ", XI=" + XI + ", RI=" + RI + ", PI=" + PI + ", DI=" + DI + "]";
+				+ notificationType + ", xi=" + xi + ", ri=" + ri + ", pi=" + pi + ", di=" + di + "]";
 	}
-
 }

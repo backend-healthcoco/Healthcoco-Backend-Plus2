@@ -169,9 +169,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
 					if(userDeviceCollection.getDeviceType() != null){
 						if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType()))
-							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getRole().getRole());
+							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getRole().getRole(), userId);
 						else if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IOS.getType()) || userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IPAD.getType())){
-							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getDeviceType().getType(), userDeviceCollection.getRole().getRole());
+							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getDeviceType().getType(), userDeviceCollection.getRole().getRole(), userId);
 							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount()+1);
 							userDeviceRepository.save(userDeviceCollection);
 						}	
@@ -185,7 +185,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 //		return response;
 	}
 	
-	public void pushNotificationOnAndroidDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String role) {
+	public void pushNotificationOnAndroidDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String role, String userId) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = null;
@@ -201,16 +201,18 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			notification.setText(message);
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
-					notification.setXI(componentTypeId);notification.setNotificationType(componentType);
+					notification.setXi(componentTypeId);notification.setNotificationType(componentType);
+					notification.setPi(userId);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())){
-					notification.setRI(componentTypeId);notification.setNotificationType(componentType);
+					notification.setRi(componentTypeId);notification.setNotificationType(componentType);
+					notification.setPi(userId);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())){
-					notification.setPI(componentTypeId);notification.setNotificationType(componentType);
+					notification.setPi(componentTypeId);notification.setNotificationType(componentType);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
-					notification.setDI(componentTypeId);notification.setNotificationType(componentType);
+					notification.setDi(componentTypeId);notification.setNotificationType(componentType);
 				}
 			}
 					String jsonOutput = mapper.writeValueAsString(notification);
@@ -262,7 +264,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}
 	}
 
-	public void pushNotificationOnIosDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String deviceType, String role) {
+	public void pushNotificationOnIosDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String deviceType, String role, String userId) {
 		try {
 			ApnsService service = null;
 			if(isEnvProduction){
@@ -332,9 +334,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
 					customValues.put("XI", componentTypeId);customValues.put("T", "X");
+					customValues.put("PI", userId);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())){
 					customValues.put("RI", componentTypeId);customValues.put("T", "R");
+					customValues.put("PI", userId);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())){
 					customValues.put("PI", componentTypeId);customValues.put("T", "P");

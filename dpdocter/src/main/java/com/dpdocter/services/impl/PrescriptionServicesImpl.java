@@ -832,14 +832,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
-									diagnosticTests
-											.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+									diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
 								}
 							}
 							response.setDiagnosticTests(diagnosticTests);
 						}
 
-						pushNotificationServices.notifyUser(patientId,"Your prescription has been discarded by Dr. " + prescriptionCollection.getCreatedBy()+ ", for further details contact " + locationCollection.getLocationName(), ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+						pushNotificationServices.notifyUser(patientId,"Please discontinue " +prescriptionCollection.getUniqueEmrId()+" prescribed by "+ prescriptionCollection.getCreatedBy()+ ", for further details please contact " + locationCollection.getLocationName(), ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 						throw new BusinessException(ServiceError.NotAuthorized,"Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
