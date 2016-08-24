@@ -8,7 +8,7 @@ import com.dpdocter.collections.ArosCollection;
 
 public interface ArosRepository extends MongoRepository<ArosCollection, ObjectId> {
 
-    @Query(value = "{'roleOrUserId' : ?0, 'locationId' : ?1, 'hospitalId' : ?2}")
-    ArosCollection findOne(ObjectId roleOrUserId, ObjectId locationId, ObjectId hospitalId);
+    @Query("{'roleOrUserId' : ?0, 'locationId' : ?1, 'hospitalId' : ?2}")
+    ArosCollection find(ObjectId roleOrUserId, ObjectId locationId, ObjectId hospitalId);
 
 }

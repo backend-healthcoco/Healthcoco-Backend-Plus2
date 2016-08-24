@@ -15,11 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.AccessModule;
-import com.dpdocter.beans.AccessPermission;
 import com.dpdocter.collections.AcosCollection;
 import com.dpdocter.collections.ArosAcosCollection;
 import com.dpdocter.collections.ArosCollection;
-import com.dpdocter.enums.AccessPermissionType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -48,7 +46,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	AccessControl response = null;
 	try {	
 	    response = new AccessControl();
-	    ArosCollection arosCollection = arosRepository.findOne(roleOrUserId, locationId, hospitalId);
+	    ArosCollection arosCollection = arosRepository.find(roleOrUserId, locationId, hospitalId);
 	    if (arosCollection != null) {
 		ArosAcosCollection arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
 		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
@@ -86,7 +84,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
     	if(!DPDoctorUtils.anyStringEmpty(accessControl.getLocationId()))locationObjectId = new ObjectId(accessControl.getLocationId());
     	if(!DPDoctorUtils.anyStringEmpty(accessControl.getHospitalId()))hospitalObjectId = new ObjectId(accessControl.getHospitalId());
     	
-	    ArosCollection arosCollection = arosRepository.findOne(roleOrUserObjectId, locationObjectId, hospitalObjectId);
+	    ArosCollection arosCollection = arosRepository.find(roleOrUserObjectId, locationObjectId, hospitalObjectId);
 	    ArosAcosCollection arosAcosCollection = null;
 	    List<AcosCollection> acosCollections = null;
 	    if (arosCollection != null) {
@@ -98,8 +96,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 
 		if (acosCollections != null) {
 		    for (AccessModule accessModule : accessControl.getAccessModules()) {
-			    checkAndAssignAccessPermission(accessModule);	
-				boolean match = false;
+			    boolean match = false;
 				for (AcosCollection acosCollection : acosCollections) {
 				    if (accessModule.getModule() != null && accessModule.getUrl() != null  && accessModule.getModule().trim().equals(acosCollection.getModule())  && accessModule.getUrl().trim().equals(acosCollection.getUrl())) {
 					BeanUtil.map(accessModule, acosCollection);
@@ -117,8 +114,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 		    acosCollections = new ArrayList<AcosCollection>();
 		    if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
 			for (AccessModule accessModule : accessControl.getAccessModules()) {
-				checkAndAssignAccessPermission(accessModule);
-			    AcosCollection acosCollection = new AcosCollection();
+				AcosCollection acosCollection = new AcosCollection();
 			    BeanUtil.map(accessModule, acosCollection);
 			    acosCollections.add(acosCollection);
 			}
@@ -131,8 +127,7 @@ public class AccessControlServicesImpl implements AccessControlServices {
 		arosAcosCollection = new ArosAcosCollection();
 		if (accessControl.getAccessModules() != null && !accessControl.getAccessModules().isEmpty()) {
 		    for (AccessModule accessModule : accessControl.getAccessModules()) {
-		    	checkAndAssignAccessPermission(accessModule);
-				AcosCollection acosCollection = new AcosCollection();
+		    	AcosCollection acosCollection = new AcosCollection();
 				BeanUtil.map(accessModule, acosCollection);
 				acosCollections.add(acosCollection);
 		    }
@@ -166,23 +161,4 @@ public class AccessControlServicesImpl implements AccessControlServices {
 	}
 	return response;
     }
-
-	private void checkAndAssignAccessPermission(AccessModule accessModule) {
-		List<AccessPermission> accessPermissions = accessModule.getAccessPermissions();
-    	for(AccessPermission accessPermission : accessPermissions){
-    		if(accessPermission.getAccessPermissionType().getAccessPermissionType().equals(AccessPermissionType.WRITE.getAccessPermissionType())){
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.READ, false));
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.HIDE, false));
-    			break;
-    		}else if(accessPermission.getAccessPermissionType().getAccessPermissionType().equals(AccessPermissionType.READ.getAccessPermissionType())){
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.WRITE, false));
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.HIDE, false));
-    			break;
-    		}else if(accessPermission.getAccessPermissionType().getAccessPermissionType().equals(AccessPermissionType.HIDE.getAccessPermissionType())){
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.READ, false));
-    			accessPermissions.add(new AccessPermission(AccessPermissionType.WRITE, false));
-    			break;
-    		}
-    	}		
-	}
 }

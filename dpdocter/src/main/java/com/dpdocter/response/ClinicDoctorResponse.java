@@ -24,6 +24,12 @@ public class ClinicDoctorResponse {
 
     private UserState userState = UserState.USERSTATECOMPLETE;
     
+    private String emailAddress;
+
+    private String mobileNumber;
+
+    private String registerNumber;
+
     public String getUserId() {
 	return userId;
     }
@@ -88,11 +94,35 @@ public class ClinicDoctorResponse {
 		this.userState = userState;
 	}
 
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
+
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName + ", role="
 				+ role + ", isActivate=" + isActivate + ", lastSession=" + lastSession + ", discarded=" + discarded
-				+ ", userState=" + userState + "]";
+				+ ", userState=" + userState + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", registerNumber=" + registerNumber + "]";
 	}
-
 }

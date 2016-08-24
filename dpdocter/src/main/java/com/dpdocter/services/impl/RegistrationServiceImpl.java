@@ -1892,15 +1892,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 		response = new ArrayList<ClinicDoctorResponse>();
 		for (UserLocationCollection userLocationCollection : userLocationCollections) {
 		    ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
-		    clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
-		    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    if (userCollection != null) {
-		    	clinicDoctorResponse.setTitle(userCollection.getTitle());
-				clinicDoctorResponse.setFirstName(userCollection.getFirstName());
-				clinicDoctorResponse.setLastSession(userCollection.getLastSession());
-				clinicDoctorResponse.setUserState(userCollection.getUserState());
-				clinicDoctorResponse.setUserId(userCollection.getId().toString());
+		    	BeanUtil.map(userCollection, clinicDoctorResponse);
+		    	clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
+			    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
 				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
 			
 				@SuppressWarnings("unchecked")

@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.AccessPermissionType;
+
 public class AccessModule {
 
     private String id;
@@ -10,7 +12,7 @@ public class AccessModule {
 
     private String url;
 
-    private List<AccessPermission> accessPermissions;
+    private List<AccessPermissionType> accessPermissionTypes;
 
     public String getId() {
 	return id;
@@ -36,17 +38,17 @@ public class AccessModule {
 	this.url = url;
     }
 
-    public List<AccessPermission> getAccessPermissions() {
-	return accessPermissions;
-    }
+	public List<AccessPermissionType> getAccessPermissionTypes() {
+		return accessPermissionTypes;
+	}
 
-    public void setAccessPermissions(List<AccessPermission> accessPermissions) {
-	this.accessPermissions = accessPermissions;
-    }
+	public void setAccessPermissionTypes(List<AccessPermissionType> accessPermissionTypes) {
+		this.accessPermissionTypes = accessPermissionTypes;
+	}
 
-    @Override
-    public String toString() {
-	return "AccessModule [id=" + id + ", module=" + module + ", url=" + url + ", accessPermissions=" + accessPermissions + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "AccessModule [id=" + id + ", module=" + module + ", url=" + url + ", accessPermissionTypes="
+				+ accessPermissionTypes + "]";
+	}
 }
