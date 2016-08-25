@@ -505,7 +505,7 @@ public class SMSServicesImpl implements SMSServices {
 		String responseId = null;
 		try{
 			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-				if (!isEnvProduction) {
+//				if (!isEnvProduction) {
 				    if (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null) {
 					String recipient = TWILIO_COUNTRY_CODE + smsDetails.getSms().getSmsAddress().getRecipient();
 					smsDetails.getSms().getSmsAddress().setRecipient(recipient);
@@ -523,9 +523,9 @@ public class SMSServicesImpl implements SMSServices {
 			        responseId = message.getSid();
 			        smsTrackDetail.setResponseId(responseId);
 					}
-				} else {
-				    
-				}
+//				} else {
+//				    
+//				}
 			    }
 			    if (save)smsTrackRepository.save(smsTrackDetail);
 			    if(!DPDoctorUtils.anyStringEmpty(responseId))response = true;			

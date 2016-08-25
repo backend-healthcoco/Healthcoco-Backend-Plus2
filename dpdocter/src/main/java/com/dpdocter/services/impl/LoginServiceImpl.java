@@ -277,7 +277,7 @@ public class LoginServiceImpl implements LoginService {
 						    	passwordWithSalt[i+request.getPassword().length] = salt[i];
 					if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
 						    	logger.warn(login);
-								throw new BusinessException(ServiceError.InvalidInput, login);
+								throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 				    }
 				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
 				    if(patientCollection != null){
@@ -302,7 +302,7 @@ public class LoginServiceImpl implements LoginService {
 					    	passwordWithSalt[i+request.getPassword().length] = salt[i];
 				if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
 					    	logger.warn(login);
-							throw new BusinessException(ServiceError.InvalidInput, login);
+							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 			    }
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 				if(patientCollection != null){
