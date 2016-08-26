@@ -267,12 +267,12 @@ public class DoctorProfileApi {
     @GET
     @ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE)
     public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-	    @QueryParam("hospitalId") String hospitalId) {
+	    @QueryParam("hospitalId") String hospitalId, @DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp) {
 	if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 	    logger.warn("Doctor Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 	}
-	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, false);
+	DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, isMobileApp);
 	if (doctorProfile != null) {
 	    if (doctorProfile.getImageUrl() != null) {
 		doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));

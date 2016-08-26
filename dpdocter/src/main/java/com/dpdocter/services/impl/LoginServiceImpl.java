@@ -107,9 +107,10 @@ public class LoginServiceImpl implements LoginService {
     /**
      * This method is used for login purpose.
      */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     @Transactional
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
 	LoginResponse response = null;
 	try {
 		Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
@@ -119,20 +120,25 @@ public class LoginServiceImpl implements LoginService {
 		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
 
 	    if (userCollection == null) {
-		logger.warn(login);
-		throw new BusinessException(ServiceError.InvalidInput, login);
+			logger.warn(login);
+			throw new BusinessException(ServiceError.InvalidInput, login);
 	    }
 	    else{
 	    	char[] salt = userCollection.getSalt();
-	        char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
-		    for(int i = 0; i < request.getPassword().length; i++)
-		        passwordWithSalt[i] = request.getPassword()[i];
-		    for(int i = 0; i < salt.length; i++)
-		    	passwordWithSalt[i+request.getPassword().length] = salt[i];
-		    if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
-		    	logger.warn(login);
+	        if(salt != null && salt.length>0){
+	        	char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+			    for(int i = 0; i < request.getPassword().length; i++)
+			        passwordWithSalt[i] = request.getPassword()[i];
+			    for(int i = 0; i < salt.length; i++)
+			    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+			    if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+			    	logger.warn(login);
+					throw new BusinessException(ServiceError.InvalidInput, login);
+			    }
+	        }else{
+	        	logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
-		    }
+	        }
 	    }
 	    User user = new User();
 	    BeanUtil.map(userCollection, user);
@@ -170,9 +176,7 @@ public class LoginServiceImpl implements LoginService {
 		    userCollection = userRepository.save(userCollection);
 		    List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
 		    if (userLocationCollections != null) {
-			@SuppressWarnings("unchecked")
 			Collection<ObjectId> locationIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("locationId"));
-			@SuppressWarnings("unchecked")
 			List<LocationCollection> locationCollections = IteratorUtils.toList(locationRepository.findAll(locationIds).iterator());
 			List<Hospital> hospitals = new ArrayList<Hospital>();
 			Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
@@ -184,8 +188,19 @@ public class LoginServiceImpl implements LoginService {
 			    locationAndAccessControl.setLogoThumbnailUrl(getFinalImageURL(locationAndAccessControl.getLogoThumbnailUrl()));
 			    locationAndAccessControl.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
 			    List<Role> roles = null;
-			    for (UserRoleCollection collection : userRoleCollections) {
-				RoleCollection otherRoleCollection = roleRepository.find(collection.getRoleId(), locationCollection.getId(), locationCollection.getHospitalId());
+			    
+			    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("roleId"));
+			    List<RoleCollection> roleCollections = roleRepository.find(roleIds, locationCollection.getId(), locationCollection.getHospitalId());
+			    for (RoleCollection otherRoleCollection : roleCollections) {
+			    	
+			    if(isMobileApp && locationCollections.size() == 1 && (!otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))){
+			    	logger.warn("You are staff member so please login from website.");
+				    throw new BusinessException(ServiceError.NotAuthorized, "You are staff member so please login from website.");
+			    }else if(isMobileApp && (!otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))){
+			    	break;
+			    }
+			    	
+//				RoleCollection otherRoleCollection = roleRepository.find(collection.getRoleId(), locationCollection.getId(), locationCollection.getHospitalId());
 				if (otherRoleCollection != null) {
 				    AccessControl accessControl = accessControlServices.getAccessControls(otherRoleCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId());
 
@@ -197,22 +212,21 @@ public class LoginServiceImpl implements LoginService {
 					roles = new ArrayList<Role>();
 				    roles.add(role);
 				}
-			    }
-
-			    locationAndAccessControl.setRoles(roles);
+				locationAndAccessControl.setRoles(roles);
 
 			    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
-				hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
-				Hospital hospital = new Hospital();
-				BeanUtil.map(hospitalCollection, hospital);
-				hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
-				hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
-				checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
-				hospitals.add(hospital);
+					hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
+					Hospital hospital = new Hospital();
+					BeanUtil.map(hospitalCollection, hospital);
+					hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
+					hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
+					checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+					hospitals.add(hospital);
 			    } else {
-				Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
-				hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
-				hospitals.add(hospital);
+					Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
+					hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
+					hospitals.add(hospital);
+				    }    
 			    }
 			}
 			response = new LoginResponse();
@@ -220,8 +234,10 @@ public class LoginServiceImpl implements LoginService {
 			response.setUser(user);
 			response.setHospitals(hospitals);
 
+		    }else{
+		    	logger.warn("None of your clinic is active");
+			    throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
 		    }
-//		    break;
 		}
 	    }
 	} catch (BusinessException be) {
@@ -276,8 +292,8 @@ public class LoginServiceImpl implements LoginService {
 					for(int i = 0; i < salt.length; i++)
 						    	passwordWithSalt[i+request.getPassword().length] = salt[i];
 					if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
-						    	logger.warn(login);
-								throw new BusinessException(ServiceError.InvalidInput, login);
+						    	logger.warn(loginPatient);
+								throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 				    }
 				    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),null,null, null);
 				    if(patientCollection != null){
@@ -295,15 +311,21 @@ public class LoginServiceImpl implements LoginService {
 			}else{
 				RegisteredPatientDetails user = new RegisteredPatientDetails();
 				char[] salt = userCollection.getSalt();
-				char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
-				for(int i = 0; i < request.getPassword().length; i++)
-					        passwordWithSalt[i] = request.getPassword()[i];
-				for(int i = 0; i < salt.length; i++)
-					    	passwordWithSalt[i+request.getPassword().length] = salt[i];
-				if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
-					    	logger.warn(login);
-							throw new BusinessException(ServiceError.InvalidInput, login);
-			    }
+				if(salt != null && salt.length > 0){
+					char[] passwordWithSalt = new char[request.getPassword().length + salt.length]; 
+					for(int i = 0; i < request.getPassword().length; i++)
+						        passwordWithSalt[i] = request.getPassword()[i];
+					for(int i = 0; i < salt.length; i++)
+						    	passwordWithSalt[i+request.getPassword().length] = salt[i];
+					if(!Arrays.equals(userCollection.getPassword(), DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))){
+				    	logger.warn(loginPatient);
+						throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+					}
+				}else{
+					logger.warn(loginPatient);
+					throw new BusinessException(ServiceError.InvalidInput, loginPatient);
+				}
+				
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
 				if(patientCollection != null){
 					Patient patient = new Patient();

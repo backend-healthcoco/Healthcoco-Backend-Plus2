@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
@@ -29,6 +30,7 @@ import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
@@ -38,11 +40,14 @@ import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
+import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.DoctorExperienceUnit;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -50,9 +55,11 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
+import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -74,6 +81,7 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 
@@ -108,14 +116,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @Autowired
     private FileManager fileManager;
 
-//    @Autowired
-//    private EducationQualificationRepository educationQualificationRepository;
-//
-//    @Autowired
-//    private EducationInstituteRepository educationInstituteRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private UserLocationRepository userLocationRepository;
+
+    @Autowired
+    private AccessControlServices accessControlServices;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -398,16 +409,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, Boolean isAdmin) {
+    public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, Boolean isMobileApp) {
 	DoctorProfile doctorProfile = null;
 	UserCollection userCollection = null;
 	DoctorCollection doctorCollection = null;
-	LocationCollection locationCollection = null;
 	List<String> specialities = null;
 	List<DoctorRegistrationDetail> registrationDetails = null;
 	List<String> professionalMemberships = null;
 	List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
-	DoctorClinicProfile doctorClinic = new DoctorClinicProfile();
 	try {
 	    userCollection = userRepository.findOne(new ObjectId(doctorId));
 	    doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -418,82 +427,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	    if (locationId == null) {
 		List<UserLocationCollection> userLocationCollections = null;
 		
-		if(isAdmin)userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
-		else userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
+		userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(userCollection.getId());
 		
 		if(userLocationCollections != null && !userLocationCollections.isEmpty()){
 			for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator.hasNext();) {
 			    UserLocationCollection userLocationCollection = iterator.next();
-			    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-
-			    locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
-			    
-			    if (locationCollection != null) {
-			    	String address = 
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails()) ? locationCollection.getLandmarkDetails()+", ":"")+
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
-			    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
-			    	
-			    if(address.charAt(address.length() - 2) == ','){
-			    	address = address.substring(0, address.length() - 2);
-			    }
-			    
-				doctorClinic.setClinicAddress(address);
-				BeanUtil.map(locationCollection, doctorClinic);
-			    }
-			    if (doctorClinicCollection != null)
-				BeanUtil.map(doctorClinicCollection, doctorClinic);
-			    doctorClinic.setLocationId(userLocationCollection.getLocationId().toString());
-			    doctorClinic.setDoctorId(doctorId);
-			    
-				Criteria criteria = new  Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());		    	
-				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((0) * 5), Aggregation.limit(5));
-				
-				AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCostCollection.class, TreatmentServiceCost.class);
-				List<TreatmentServiceCost> treatmentServicesCosts = aggregationResults.getMappedResults();		
-				doctorClinic.setTreatmentServiceCosts(treatmentServicesCosts);
-				doctorClinic.setNoOfServices((int)mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
-			    clinicProfile.add(doctorClinic);
+			    clinicProfile.add(getDoctorClinic(userLocationCollection, isMobileApp, userLocationCollections.size()));
 			}
 		}
 	    } else {
 		UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(userCollection.getId(), new ObjectId(locationId));
 		if (userLocationCollection != null) {
-		    DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
-
-		    locationCollection = locationRepository.findOne(new ObjectId(locationId));
-		    if (locationCollection != null) {
-		    	String address = 
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails()) ? locationCollection.getLandmarkDetails()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
-		    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
-		    	
-		    if(address.charAt(address.length() - 2) == ','){
-		    	address = address.substring(0, address.length() - 2);
-		    }
-		    	
-			BeanUtil.map(locationCollection, doctorClinic);
-			doctorClinic.setClinicAddress(address);
-		    }
-		    doctorClinic.setLocationId(userLocationCollection.getLocationId().toString());
-		    doctorClinic.setDoctorId(userLocationCollection.getUserId().toString());
-		    if (doctorClinicCollection != null)BeanUtil.map(doctorClinicCollection, doctorClinic);
-		    Criteria criteria = new  Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());		    	
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((0) * 5), Aggregation.limit(5));
-			
-			AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCostCollection.class, TreatmentServiceCost.class);
-			List<TreatmentServiceCost> treatmentServicesCosts = aggregationResults.getMappedResults();		
-			doctorClinic.setTreatmentServiceCosts(treatmentServicesCosts);
-			doctorClinic.setNoOfServices((int)mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
-		    clinicProfile.add(doctorClinic);
+			clinicProfile.add(getDoctorClinic(userLocationCollection, isMobileApp, 1));
 		}
 	    }
 	    doctorProfile = new DoctorProfile();
@@ -528,6 +473,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	    // set clinic profile details
 	    doctorProfile.setClinicProfile(clinicProfile);
+	}catch (BusinessException be) {
+		    logger.error(be);
+		    throw be;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Getting Doctor Profile");
@@ -536,7 +484,78 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return doctorProfile;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	private DoctorClinicProfile getDoctorClinic(UserLocationCollection userLocationCollection, Boolean isMobileApp, int locationSize) {
+    	DoctorClinicProfile doctorClinic = new DoctorClinicProfile();
+    	try{
+	    	DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
+	    	List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userLocationCollection.getUserId());
+		    LocationCollection locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
+	    
+	    if (locationCollection != null) {
+	    	String address = 
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails()) ? locationCollection.getLandmarkDetails()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+	    	
+	    if(address.charAt(address.length() - 2) == ','){
+	    	address = address.substring(0, address.length() - 2);
+	    }
+	    
+		doctorClinic.setClinicAddress(address);
+		BeanUtil.map(locationCollection, doctorClinic);
+	    }
+	    if (doctorClinicCollection != null)
+		BeanUtil.map(doctorClinicCollection, doctorClinic);
+	    doctorClinic.setLocationId(userLocationCollection.getLocationId().toString());
+	    doctorClinic.setDoctorId(userLocationCollection.getUserId().toString());
+	    
+		Criteria criteria = new  Criteria("doctorId").is(userLocationCollection.getUserId()).and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());		    	
+		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((0) * 5), Aggregation.limit(5));
+		
+		AggregationResults<TreatmentServiceCost> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCostCollection.class, TreatmentServiceCost.class);
+		List<TreatmentServiceCost> treatmentServicesCosts = aggregationResults.getMappedResults();		
+		doctorClinic.setTreatmentServiceCosts(treatmentServicesCosts);
+		doctorClinic.setNoOfServices((int)mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
+	
+	    List<Role> roles = null;
+	    
+	    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("roleId"));
+	    List<RoleCollection> roleCollections = roleRepository.find(roleIds, locationCollection.getId(), locationCollection.getHospitalId());
+	    for (RoleCollection otherRoleCollection : roleCollections) {
+	    	
+	    if(isMobileApp && locationSize == 1 && (!otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))){
+	    	logger.warn("You are staff member so please login from website.");
+		    throw new BusinessException(ServiceError.NotAuthorized, "You are staff member so please login from website.");
+	    }else if(isMobileApp && (!otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))){
+	    	return null;
+	    }
+	    	
+		if (otherRoleCollection != null) {
+		    AccessControl accessControl = accessControlServices.getAccessControls(otherRoleCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId());
+
+		    Role role = new Role();
+		    BeanUtil.map(otherRoleCollection, role);
+		    role.setAccessModules(accessControl.getAccessModules());
+
+		    if (roles == null)
+			roles = new ArrayList<Role>();
+		    roles.add(role);
+		}
+		doctorClinic.setRoles(roles);  
+	    }	 
+    	}catch (BusinessException be) {
+		    logger.error(be);
+		    throw be;
+		}
+		return doctorClinic;
+    }
+
+	@Override
     @Transactional
     public List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime) {
 	List<ProfessionalMembership> professionalMemberships = null;

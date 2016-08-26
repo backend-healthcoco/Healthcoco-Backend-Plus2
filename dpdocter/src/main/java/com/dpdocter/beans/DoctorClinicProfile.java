@@ -70,6 +70,8 @@ public class DoctorClinicProfile {
     private List<TreatmentServiceCost> treatmentServiceCosts;
     
     private Integer noOfServices = 0;
+
+    private List<Role> roles;
     
     public String getId() {
 	return id;
@@ -335,6 +337,14 @@ public class DoctorClinicProfile {
 		this.noOfServices = noOfServices;
 	}
 
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -349,6 +359,6 @@ public class DoctorClinicProfile {
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + ", timeZone="
 				+ timeZone + ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices
-				+ "]";
+				+ ", roles=" + roles + "]";
 	}
 }

@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.dpdocter.beans.AccessPermission;
+import com.dpdocter.enums.AccessPermissionType;
 
 @Document(collection = "acos_cl")
 public class AcosCollection {
@@ -17,7 +17,7 @@ public class AcosCollection {
 
     private String url;
 
-    private List<AccessPermission> accessPermissions;
+    private List<AccessPermissionType> accessPermissionTypes;
 
     public ObjectId getId() {
 	return id;
@@ -43,17 +43,18 @@ public class AcosCollection {
 	this.url = url;
     }
 
-    public List<AccessPermission> getAccessPermissions() {
-	return accessPermissions;
-    }
+	public List<AccessPermissionType> getAccessPermissionTypes() {
+		return accessPermissionTypes;
+	}
 
-    public void setAccessPermissions(List<AccessPermission> accessPermissions) {
-	this.accessPermissions = accessPermissions;
-    }
+	public void setAccessPermissionTypes(List<AccessPermissionType> accessPermissionTypes) {
+		this.accessPermissionTypes = accessPermissionTypes;
+	}
 
-    @Override
-    public String toString() {
-	return "AcosCollection [id=" + id + ", module=" + module + ", url=" + url + ", accessPermissions=" + accessPermissions + "]";
-    }
+	@Override
+	public String toString() {
+		return "AcosCollection [id=" + id + ", module=" + module + ", url=" + url + ", accessPermissionTypes="
+				+ accessPermissionTypes + "]";
+	}
 
 }

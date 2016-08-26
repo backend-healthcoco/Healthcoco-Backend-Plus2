@@ -3,9 +3,11 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -45,12 +47,12 @@ public class LoginApi {
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_USER, notes = PathProxy.LoginUrls.LOGIN_USER)
-    public Response<LoginResponse> login(LoginRequest request) {
+    public Response<LoginResponse> login(LoginRequest request, @DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp) {
 	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	LoginResponse loginResponse = loginService.login(request);
+	LoginResponse loginResponse = loginService.login(request, isMobileApp);
 	if (loginResponse != null) {
 	    if (!DPDoctorUtils.anyStringEmpty(loginResponse.getUser().getImageUrl())) {
 		loginResponse.getUser().setImageUrl(getFinalImageURL(loginResponse.getUser().getImageUrl()));

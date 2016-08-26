@@ -153,7 +153,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		if (request.getMobileNumber() != null && !request.getMobileNumber().isEmpty()) {
 		    String OTP = LoginUtils.generateOTP();
 		    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
-			    "Your Healthcoco account OTP is: " + OTP + ". Enter this in Healthcoco app to confirm your account.",
+		    		OTP +" is your Healthcoco account OTP. Enter this in Healthcoco app to confirm your account.",
 			    request.getMobileNumber(), "OTPVerification");
 		    sMSServices.sendSMS(smsTrackDetail, false);
 

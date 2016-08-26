@@ -8,7 +8,7 @@ import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 
 public interface LoginService {
-    LoginResponse login(LoginRequest request);
+    LoginResponse login(LoginRequest request, Boolean isMobileApp);
 
     List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request);
 

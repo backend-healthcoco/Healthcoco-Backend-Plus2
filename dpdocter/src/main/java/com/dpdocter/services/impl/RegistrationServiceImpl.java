@@ -1727,8 +1727,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    }
 
 		    UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
-		    userCollection.setFirstName(request.getFirstName());
-		    userCollection = userRepository.save(userCollection);
 		    if(doctorRole != null){
 		    	List<RoleCollection> roleCollections = roleRepository.findByLocationIdAndHospitalId(new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 			    @SuppressWarnings("unchecked")
