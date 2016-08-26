@@ -487,8 +487,8 @@ public class RecordsServiceImpl implements RecordsService {
 	try {
 	    RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 	    if (recordsCollection == null) {
-		logger.warn("Record Not found.Check RecordId");
-		throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
+			logger.warn("Record Not found.Check RecordId");
+			throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
 	    }
 	    recordsCollection.setDiscarded(discarded);
 	    recordsCollection.setUpdatedTime(new Date());

@@ -1893,6 +1893,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    if (userCollection != null) {
 		    	BeanUtil.map(userCollection, clinicDoctorResponse);
+		    	clinicDoctorResponse.setUserId(userCollection.getId().toString());
 		    	clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
 			    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
 				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());

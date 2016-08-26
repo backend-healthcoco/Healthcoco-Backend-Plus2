@@ -287,11 +287,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {
 			List<ESComplaintsDocument> esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom);
 		    if(esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()){return null;}		
-	        @SuppressWarnings("unchecked")
-	    	Collection<String> locationIds = CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("locationId"));
+	        Collection<String> locationIds = CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("locationId"));
 	        
-	        @SuppressWarnings("unchecked")
-	    	Collection<String> doctorIds = CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId"));
+	        Collection<String> doctorIds = CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId"));
 	    	boolQueryBuilder.must(QueryBuilders.termQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
 		 }
 	    

@@ -3,7 +3,9 @@ package com.dpdocter.request;
 import java.util.List;
 import java.util.UUID;
 
+import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.Strength;
 
 public class DrugAddEditRequest {
@@ -33,6 +35,16 @@ public class DrugAddEditRequest {
 
     private String MRP;
 
+    private Duration duration;
+
+    private String dosage;
+
+    private List<Long> dosageTime;
+    
+    private List<DrugDirection> direction;
+
+    private List<String> categories;
+    
     public String getId() {
 	return id;
     }
@@ -137,12 +149,53 @@ public class DrugAddEditRequest {
 		MRP = mRP;
 	}
 
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
+
+	public List<String> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<String> categories) {
+		this.categories = categories;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode
-				+ ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + "]";
+				+ ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
+				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
+				+ categories + "]";
 	}
-
 }

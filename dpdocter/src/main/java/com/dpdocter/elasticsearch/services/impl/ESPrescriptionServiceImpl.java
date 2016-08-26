@@ -107,19 +107,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
     @Override
     public List<ESDrugDocument> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    Boolean discarded, String searchTerm) {
+	    Boolean discarded, String searchTerm, String category) {
 	List<ESDrugDocument> response = new ArrayList<ESDrugDocument>();
 	if(!DPDoctorUtils.anyStringEmpty(searchTerm))searchTerm = searchTerm.toUpperCase();
 	switch (Range.valueOf(range.toUpperCase())) {
 
 	case GLOBAL:
-	    response = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm);
+	    response = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category);
 	    break;
 	case CUSTOM:
-	    response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category);
 	    break;
 	case BOTH:
-	    response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category);
 	    break;
 	}
 	return response;
@@ -127,10 +127,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     }
 
     private List<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    boolean discarded, String searchTerm) {
+	    boolean discarded, String searchTerm, String category) {
 	List<ESDrugDocument> response = null;
 	try {
-	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "drugName");
+	    SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -140,10 +140,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	return response;
     }
 
-    private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
+    private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded, String searchTerm, String category) {
 	List<ESDrugDocument> response = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null, searchTerm, null, "drugName");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null, searchTerm, null, category, "drugName");
 	    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -154,12 +154,12 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     }
 
     private List<ESDrugDocument> getCustomDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    boolean discarded, String searchTerm) {
+	    boolean discarded, String searchTerm, String category) {
 	List<ESDrugDocument> response = null;
 	try {
 	    if (doctorId == null)response = new ArrayList<ESDrugDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, "drugName");
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, category, "drugName");
 		    response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 			}
 	} catch (Exception e) {

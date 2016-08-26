@@ -10,6 +10,9 @@ import org.springframework.data.elasticsearch.annotations.FieldIndex;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.MultiField;
 
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.Duration;
+
 @Document(indexName = "drugs_in", type ="drugs")
 public class ESDrugDocument {
     @Id
@@ -57,6 +60,21 @@ public class ESDrugDocument {
     @MultiField(mainField = @Field(type = FieldType.String))
     private List<String> genericCodes;
 
+    @Field(type = FieldType.Nested)
+    private Duration duration;
+
+    @Field(type = FieldType.String)
+    private String dosage;
+
+    @MultiField(mainField = @Field(type = FieldType.Long))
+    private List<Long> dosageTime;
+    
+    @Field(type = FieldType.Nested)
+    private List<DrugDirection> direction;
+
+    @MultiField(mainField = @Field(type = FieldType.String))
+    private List<String> categories;
+    
     public String getId() {
 	return id;
     }
@@ -177,12 +195,54 @@ public class ESDrugDocument {
 		this.genericCodes = genericCodes;
 	}
 
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
+
+	public List<String> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<String> categories) {
+		this.categories = categories;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
 				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
-				+ MRP + ", genericCodes=" + genericCodes + "]";
+				+ MRP + ", genericCodes=" + genericCodes + ", duration=" + duration + ", dosage=" + dosage
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories + "]";
 	}
+
 }

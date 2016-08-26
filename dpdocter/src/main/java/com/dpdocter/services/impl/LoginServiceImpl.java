@@ -191,16 +191,16 @@ public class LoginServiceImpl implements LoginService {
 			    
 			    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("roleId"));
 			    List<RoleCollection> roleCollections = roleRepository.find(roleIds, locationCollection.getId(), locationCollection.getHospitalId());
+			    Boolean isStaff = false;
 			    for (RoleCollection otherRoleCollection : roleCollections) {
 			    	
 			    if(isMobileApp && locationCollections.size() == 1 && (!otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))){
 			    	logger.warn("You are staff member so please login from website.");
 				    throw new BusinessException(ServiceError.NotAuthorized, "You are staff member so please login from website.");
 			    }else if(isMobileApp && (!otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || !otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))){
-			    	break;
+			    	isStaff = true;
 			    }
 			    	
-//				RoleCollection otherRoleCollection = roleRepository.find(collection.getRoleId(), locationCollection.getId(), locationCollection.getHospitalId());
 				if (otherRoleCollection != null) {
 				    AccessControl accessControl = accessControlServices.getAccessControls(otherRoleCollection.getId(), locationCollection.getId(), locationCollection.getHospitalId());
 
@@ -212,21 +212,22 @@ public class LoginServiceImpl implements LoginService {
 					roles = new ArrayList<Role>();
 				    roles.add(role);
 				}
-				locationAndAccessControl.setRoles(roles);
-
-			    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
-					hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
-					Hospital hospital = new Hospital();
-					BeanUtil.map(hospitalCollection, hospital);
-					hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
-					hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
-					checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
-					hospitals.add(hospital);
-			    } else {
-					Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
-					hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
-					hospitals.add(hospital);
-				    }    
+				locationAndAccessControl.setRoles(roles);    
+			    }
+			    if(!isStaff){
+				    if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
+						hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
+						Hospital hospital = new Hospital();
+						BeanUtil.map(hospitalCollection, hospital);
+						hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
+						hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
+						checkHospitalId.put(locationCollection.getHospitalId().toString(), hospital);
+						hospitals.add(hospital);
+				    } else {
+						Hospital hospital = checkHospitalId.get(locationCollection.getHospitalId());
+						hospital.getLocationsAndAccessControl().add(locationAndAccessControl);
+						hospitals.add(hospital);
+					    }
 			    }
 			}
 			response = new LoginResponse();

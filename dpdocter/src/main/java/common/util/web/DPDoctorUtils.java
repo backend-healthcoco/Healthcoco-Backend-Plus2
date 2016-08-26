@@ -158,7 +158,7 @@ public class DPDoctorUtils {
    }
     
 	@SuppressWarnings("deprecation")
-	public static SearchQuery createGlobalQuery(Resource resource, int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
+	public static SearchQuery createGlobalQuery(Resource resource, int page, int size, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String category, String... searchTermFieldName){
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
 				.mustNot(QueryBuilders.existsQuery("doctorId"))
@@ -182,6 +182,10 @@ public class DPDoctorUtils {
  	    	}	
  	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 	    }
+ 	    
+ 	    if(!DPDoctorUtils.anyStringEmpty(category)){
+ 	    	boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
+ 	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
         	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
@@ -194,7 +198,7 @@ public class DPDoctorUtils {
         return searchQuery;
 	}
 	
-	public static SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String... searchTermFieldName){
+	public static SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, String category, String... searchTermFieldName){
 		
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
     			.must(QueryBuilders.termQuery("doctorId", doctorId));
@@ -205,7 +209,9 @@ public class DPDoctorUtils {
 	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
 	    }
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
- 	    
+ 	   if(!DPDoctorUtils.anyStringEmpty(category)){
+	    	boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
+	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
         	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
@@ -219,7 +225,7 @@ public class DPDoctorUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static SearchQuery createCustomGlobalQuery(Resource resource, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String... searchTermFieldName){
+	public static SearchQuery createCustomGlobalQuery(Resource resource, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy, String searchTerm, Collection<String> specialities, String category, String... searchTermFieldName){
 
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
     	
@@ -248,6 +254,9 @@ public class DPDoctorUtils {
 	    	}	
 	    	else boolQueryBuilder.mustNot(QueryBuilders.existsQuery("speciality"));
 	    }
+	    if(!DPDoctorUtils.anyStringEmpty(category)){
+ 	    	boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
+ 	    }
         SearchQuery searchQuery = null;
         if(anyStringEmpty(sortBy)){
         	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();

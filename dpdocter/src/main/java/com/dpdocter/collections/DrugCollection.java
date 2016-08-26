@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.Strength;
 
 @Document(collection = "drug_cl")
@@ -56,6 +58,21 @@ public class DrugCollection extends GenericCollection {
     @Field
     private String MRP;
 
+    @Field
+    private Duration duration;
+
+    @Field
+    private String dosage;
+
+    @Field
+    private List<Long> dosageTime;
+    
+    @Field
+    private List<DrugDirection> direction;
+
+    @Field
+    private List<String> categories;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -169,12 +186,53 @@ public class DrugCollection extends GenericCollection {
 	MRP = mRP;
     }
 
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
+
+	public List<String> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<String> categories) {
+		this.categories = categories;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
 				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
 				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
-				+ "]";
+				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
+				+ direction + ", categories=" + categories + "]";
 	}
 }

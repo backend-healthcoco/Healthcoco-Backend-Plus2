@@ -45,17 +45,18 @@ public class ESPrescriptionApi {
     public Response<ESDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm,
+	    @QueryParam(value = "category") String category) {
 
     	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 
-	List<ESDrugDocument> complaints = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-		searchTerm);
+	List<ESDrugDocument> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+		searchTerm, category);
 	Response<ESDrugDocument> response = new Response<ESDrugDocument>();
-	response.setDataList(complaints);
+	response.setDataList(drugDocuments);
 	return response;
     }
 

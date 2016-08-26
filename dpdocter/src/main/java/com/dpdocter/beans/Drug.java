@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class Drug extends GenericCollection{
@@ -22,6 +24,16 @@ public class Drug extends GenericCollection{
 
     private String locationId;
 
+    private Duration duration;
+
+    private String dosage;
+
+    private List<Long> dosageTime;
+    
+    private List<DrugDirection> direction;
+
+    private List<String> categories;
+    
 	public String getId() {
 		return id;
 	}
@@ -94,10 +106,51 @@ public class Drug extends GenericCollection{
 		this.locationId = locationId;
 	}
 
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
+
+	public List<String> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<String> categories) {
+		this.categories = categories;
+	}
+
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
 				+ ", strength=" + strength + ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId="
-				+ hospitalId + ", locationId=" + locationId + "]";
+				+ hospitalId + ", locationId=" + locationId + ", duration=" + duration + ", dosage=" + dosage
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories + "]";
 	}
 }

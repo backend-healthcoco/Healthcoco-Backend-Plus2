@@ -2,9 +2,9 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonManagedReference;
-
+import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.Strength;
 import com.dpdocter.collections.GenericCollection;
 
@@ -17,7 +17,6 @@ public class DrugAddEditResponse extends GenericCollection {
 
     private String explanation;
 
-    @JsonManagedReference
     private Strength strength;
 
     private List<String> genericCodes;
@@ -30,6 +29,16 @@ public class DrugAddEditResponse extends GenericCollection {
 
     private String drugCode;
 
+    private Duration duration;
+
+    private String dosage;
+
+    private List<Long> dosageTime;
+    
+    private List<DrugDirection> direction;
+
+    private List<String> categories;
+    
     public String getId() {
 	return id;
     }
@@ -110,10 +119,52 @@ public class DrugAddEditResponse extends GenericCollection {
 	this.drugCode = drugCode;
     }
 
+	public Duration getDuration() {
+		return duration;
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
+
+	public String getDosage() {
+		return dosage;
+	}
+
+	public void setDosage(String dosage) {
+		this.dosage = dosage;
+	}
+
+	public List<Long> getDosageTime() {
+		return dosageTime;
+	}
+
+	public void setDosageTime(List<Long> dosageTime) {
+		this.dosageTime = dosageTime;
+	}
+
+	public List<DrugDirection> getDirection() {
+		return direction;
+	}
+
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
+
+	public List<String> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(List<String> categories) {
+		this.categories = categories;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditResponse [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
-				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode + "]";
+				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode + ", duration="
+				+ duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction
+				+ ", categories=" + categories + "]";
 	}
 }
