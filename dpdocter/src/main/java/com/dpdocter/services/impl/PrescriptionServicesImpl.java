@@ -3580,9 +3580,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				: "PORTRAIT";
 		String pageSize = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		String margins = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
-
+		//String margins = printSettings != null
+			//	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
+		String margins = null;
 		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId();
 		response = jasperReportService.createPDF(parameters, "mongo-prescription", layout, pageSize, margins,
