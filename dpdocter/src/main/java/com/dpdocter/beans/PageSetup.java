@@ -6,7 +6,13 @@ public class PageSetup {
 
     private String color;
 
-    private String margins;
+    private String leftMargin;
+    
+    private String rightMargin;
+    
+    private String topMargin;
+    
+    private String bottomMargin;
 
     private String pageSize;
 
@@ -25,16 +31,40 @@ public class PageSetup {
     public void setColor(String color) {
 	this.color = color;
     }
+    
+    public String getLeftMargin() {
+		return leftMargin;
+	}
 
-    public String getMargins() {
-	return margins;
-    }
+	public void setLeftMargin(String leftMargin) {
+		this.leftMargin = leftMargin;
+	}
 
-    public void setMargins(String margins) {
-	this.margins = margins;
-    }
+	public String getRightMargin() {
+		return rightMargin;
+	}
 
-    public String getPageSize() {
+	public void setRightMargin(String rightMargin) {
+		this.rightMargin = rightMargin;
+	}
+
+	public String getTopMargin() {
+		return topMargin;
+	}
+
+	public void setTopMargin(String topMargin) {
+		this.topMargin = topMargin;
+	}
+
+	public String getBottomMargin() {
+		return bottomMargin;
+	}
+
+	public void setBottomMargin(String bottomMargin) {
+		this.bottomMargin = bottomMargin;
+	}
+
+	public String getPageSize() {
 	return pageSize;
     }
 
@@ -42,8 +72,12 @@ public class PageSetup {
 	this.pageSize = pageSize;
     }
 
-    @Override
-    public String toString() {
-	return "PageSetup [layout=" + layout + ", color=" + color + ", margins=" + margins + ", pageSize=" + pageSize + "]";
-    }
+	@Override
+	public String toString() {
+		return "PageSetup [layout=" + layout + ", color=" + color + ", leftMargin=" + leftMargin + ", rightMargin="
+				+ rightMargin + ", topMargin=" + topMargin + ", bottomMargin=" + bottomMargin + ", pageSize=" + pageSize
+				+ "]";
+	}
+
+    
 }
