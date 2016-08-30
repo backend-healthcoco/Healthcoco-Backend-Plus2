@@ -7,5 +7,5 @@ import com.dpdocter.response.JasperReportResponse;
 
 public interface JasperReportService {
 
-    JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, String margins, String pdfName) throws IOException;
+    JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, Integer topMargin, Integer bottonMargin, String pdfName) throws IOException;
 }

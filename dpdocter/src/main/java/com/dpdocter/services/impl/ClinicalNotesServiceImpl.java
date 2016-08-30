@@ -2128,10 +2128,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 			: "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		//String margins = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getMargins() : null) : null;
-		String margins = null;
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"+ clinicalNotesCollection.getUniqueEmrId();
-		response = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, margins, pdfName.replaceAll("\\s+", ""));
+		response = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, null, null, pdfName.replaceAll("\\s+", ""));
 
 		return response;
 	}

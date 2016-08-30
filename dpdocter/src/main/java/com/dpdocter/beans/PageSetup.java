@@ -6,13 +6,13 @@ public class PageSetup {
 
     private String color;
 
-    private String leftMargin;
+    private Integer leftMargin;
     
-    private String rightMargin;
+    private Integer rightMargin;
     
-    private String topMargin;
+    private Integer topMargin;
     
-    private String bottomMargin;
+    private Integer bottomMargin;
 
     private String pageSize;
 
@@ -32,35 +32,35 @@ public class PageSetup {
 	this.color = color;
     }
     
-    public String getLeftMargin() {
+    public Integer getLeftMargin() {
 		return leftMargin;
 	}
 
-	public void setLeftMargin(String leftMargin) {
+	public void setLeftMargin(Integer leftMargin) {
 		this.leftMargin = leftMargin;
 	}
 
-	public String getRightMargin() {
+	public Integer getRightMargin() {
 		return rightMargin;
 	}
 
-	public void setRightMargin(String rightMargin) {
+	public void setRightMargin(Integer rightMargin) {
 		this.rightMargin = rightMargin;
 	}
 
-	public String getTopMargin() {
+	public Integer getTopMargin() {
 		return topMargin;
 	}
 
-	public void setTopMargin(String topMargin) {
+	public void setTopMargin(Integer topMargin) {
 		this.topMargin = topMargin;
 	}
 
-	public String getBottomMargin() {
+	public Integer getBottomMargin() {
 		return bottomMargin;
 	}
 
-	public void setBottomMargin(String bottomMargin) {
+	public void setBottomMargin(Integer bottomMargin) {
 		this.bottomMargin = bottomMargin;
 	}
 

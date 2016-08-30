@@ -4,9 +4,9 @@ import java.util.List;
 
 public class HeaderSetup {
 
-    private Boolean customHeader;
+    private Boolean customHeader = true;
 
-    private Boolean customLogo;
+    private Boolean customLogo = true;
 
     private String logoType;
 

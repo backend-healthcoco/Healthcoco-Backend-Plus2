@@ -2,21 +2,21 @@ package com.dpdocter.beans;
 
 public class PatientDetails {
 
-    private Boolean showName;
+    private Boolean showName = true;
 
-    private Boolean showPID;
+    private Boolean showPID = true;
 
-    private Boolean showMobileNumber;
+    private Boolean showMobileNumber = true;
 
-    private Boolean showDOB;
+    private Boolean showDOB = true;
 
-    private Boolean showGender;
+    private Boolean showGender = true;
 
-    private Boolean showReferedBy;
+    private Boolean showReferedBy = true;
 
-    private Boolean showDate;
+    private Boolean showDate = true;
 
-    private Boolean showBloodGroup;
+    private Boolean showBloodGroup = true;
 
     private Boolean showResourceId = true;
 

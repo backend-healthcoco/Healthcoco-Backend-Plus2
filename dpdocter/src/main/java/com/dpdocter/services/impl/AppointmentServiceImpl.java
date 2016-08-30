@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
+import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.beans.DoctorClinicProfile;
@@ -202,6 +203,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     UserRoleRepository UserRoleRepository;
 
+    @Value(value = "${image.path}")
+    private String imagePath;
+
     @Override
     @Transactional
     public City addCity(City city) {
@@ -320,6 +324,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return null;
 	    } else {
 		BeanUtil.map(locationCollection, location);
+		if (!DPDoctorUtils.anyStringEmpty(location.getLogoUrl()))location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
+		if (!DPDoctorUtils.anyStringEmpty(location.getLogoThumbnailUrl()))location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
+		if (location.getImages() != null && !location.getImages().isEmpty()) {
+			for (ClinicImage clinicImage : location.getImages()) {
+			    if (!DPDoctorUtils.anyStringEmpty(clinicImage.getImageUrl()))clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+			    if (!DPDoctorUtils.anyStringEmpty(clinicImage.getThumbnailUrl()))clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+			}
+		}
 		response.setLocation(location);
 
 		hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
@@ -362,9 +374,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		for (Iterator<UserLocationWithDoctorClinicProfile> iterator = userWithDoctorProfile.iterator(); iterator.hasNext();) {
 			UserLocationWithDoctorClinicProfile userLocationCollection = iterator.next();
 		    
-//		        DoctorCollection doctorCollection = doctorRepository.findByUserId(userLocationCollection.getUserId());
-//			    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
-//			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByLocationId(userLocationCollection.getId());
 			DoctorCollection doctorCollection = (userLocationCollection.getDoctors() != null && !userLocationCollection.getDoctors().isEmpty() ? userLocationCollection.getDoctors().get(0):null);
 			UserCollection userCollection = (userLocationCollection.getUsers() != null && !userLocationCollection.getUsers().isEmpty() ? userLocationCollection.getUsers().get(0):null);
 			DoctorClinicProfile doctorClinicProfileCollection = (userLocationCollection.getDoctorClinicProfiles() != null && !userLocationCollection.getDoctorClinicProfiles().isEmpty() ? userLocationCollection.getDoctorClinicProfiles().get(0):null);
@@ -386,6 +395,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 					List<String> specialities = (List<String>) CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("superSpeciality"));
 					doctor.setSpecialities(specialities);
 				}
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getImageUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getImageUrl()));
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getThumbnailUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getThumbnailUrl()));
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getCoverThumbnailImageUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getCoverThumbnailImageUrl()));
 				doctors.add(doctor);
 			    }
 		    }
@@ -1677,4 +1690,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return response;
 	}
+
+    private String getFinalImageURL(String imageURL) {
+	if (imageURL != null) {
+	    return imagePath + imageURL;
+	} else
+	    return null;
+    }
+
 }

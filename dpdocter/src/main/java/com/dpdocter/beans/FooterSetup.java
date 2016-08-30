@@ -4,9 +4,9 @@ import java.util.List;
 
 public class FooterSetup {
 
-    private Boolean customFooter;
+    private Boolean customFooter  = true;
 
-    private Boolean showSignature;
+    private Boolean showSignature  = true;
 
     private List<PrintSettingsText> bottomText;
 
