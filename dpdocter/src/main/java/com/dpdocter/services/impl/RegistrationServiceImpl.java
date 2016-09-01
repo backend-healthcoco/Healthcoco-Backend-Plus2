@@ -1892,10 +1892,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
 		    UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 		    if (userCollection != null) {
+		    	DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
 		    	BeanUtil.map(userCollection, clinicDoctorResponse);
 		    	clinicDoctorResponse.setUserId(userCollection.getId().toString());
 		    	clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
 			    clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
+			    if(doctorCollection != null)clinicDoctorResponse.setRegisterNumber(doctorCollection.getRegisterNumber());
 				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
 			
 				@SuppressWarnings("unchecked")

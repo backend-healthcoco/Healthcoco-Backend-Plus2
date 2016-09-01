@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
@@ -213,6 +211,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Value(value = "${Prescription.checkPrescriptionExists}")
 	private String checkPrescriptionExists;
+
+    @Value(value = "${jasper.print.prescription.a4.fileName}")
+	private String prescriptionA4FileName;
+
+	@Value(value = "${jasper.print.prescription.subreport.a4.fileName}")
+    private String prescriptionSubReportA4FileName;
+
+    @Value(value = "${jasper.print.prescription.a5.fileName}")
+	private String prescriptionA5FileName;
+
+	@Value(value = "${jasper.print.prescription.subreport.a5.fileName}")
+    private String prescriptionSubReportA5FileName;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
@@ -2479,7 +2489,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
 				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
@@ -3358,8 +3368,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 
 		parameters.put("prescriptionId", prescriptionCollection.getId().toString());
-		parameters.put("advice",
-				prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
+		parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
 		String labTest = "";
 		if (prescriptionCollection.getDiagnosticTests() != null
 				&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
@@ -3374,29 +3383,34 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 		}
-		if (labTest != null && !labTest.isEmpty())
-			parameters.put("labTest", labTest);
-		else
-			parameters.put("labTest", null);
+		if (labTest != null && !labTest.isEmpty())parameters.put("labTest", labTest);
+		else parameters.put("labTest", null);
 
-		
-		
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-				prescriptionCollection.getHospitalId(), ComponentType.PRESCRIPTIONS.getType());
-
-		if (printSettings == null) {
-			printSettings = printSettingsRepository.getSettings(prescriptionCollection.getDoctorId(),
-					prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
-					ComponentType.ALL.getType());
-		}
-
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, prescriptionCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
+		generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-" + prescriptionCollection.getUniqueEmrId();
+		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
+		String pageSize = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
+		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
+		if(pageSize.equalsIgnoreCase("A5")){
+			response = jasperReportService.createPDF(parameters, prescriptionA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), prescriptionSubReportA5FileName);	
+		}else {
+			response = jasperReportService.createPDF(parameters, prescriptionA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), prescriptionSubReportA4FileName);
+		}	
+		return response;
+	}
+
+	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId) {
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
+		Integer contentFontSize = 10;
 		if (printSettings != null) {
-	
+			if(printSettings.getContentSetup() != null){
+				contentFontSize = !DPDoctorUtils.anyStringEmpty(printSettings.getContentSetup().getFontSize()) ? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", "")) : 10;
+			}
 			if (printSettings.getHeaderSetup() != null &&  printSettings.getHeaderSetup().getCustomHeader()) {
 				if(printSettings.getHeaderSetup().getTopLeftText() != null)
 				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
@@ -3449,11 +3463,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
-				UserCollection doctorUser = userRepository.findOne(prescriptionCollection.getDoctorId());
+				UserCollection doctorUser = userRepository.findOne(doctorId);
 				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
 			}	
 		}
-
+		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
@@ -3463,19 +3477,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} else {
 			parameters.put("showTableOne", false);
 		}
-		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-" + prescriptionCollection.getUniqueEmrId();
-		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
-		String pageSize = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
-		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
-		if(pageSize.equalsIgnoreCase("A5")){
-			response = jasperReportService.createPDF(parameters, "mongo-prescription-A5", layout, pageSize, topMargin, bottonMargin, pdfName.replaceAll("\\s+", ""));	
-		}else {
-			response = jasperReportService.createPDF(parameters, "mongo-prescription-A4", layout, pageSize, topMargin, bottonMargin, pdfName.replaceAll("\\s+", ""));
-		}
-		
-		
-		return response;
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {

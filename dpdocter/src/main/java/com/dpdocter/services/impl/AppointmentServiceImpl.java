@@ -396,9 +396,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					doctor.setSpecialities(specialities);
 				}
 				if(!DPDoctorUtils.anyStringEmpty(doctor.getImageUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getImageUrl()));
-				if(!DPDoctorUtils.anyStringEmpty(doctor.getThumbnailUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getThumbnailUrl()));
-				if(!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
-				if(!DPDoctorUtils.anyStringEmpty(doctor.getCoverThumbnailImageUrl()))doctor.setImageUrl(getFinalImageURL(doctor.getCoverThumbnailImageUrl()));
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getThumbnailUrl()))doctor.setThumbnailUrl(getFinalImageURL(doctor.getThumbnailUrl()));
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))doctor.setCoverImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+				if(!DPDoctorUtils.anyStringEmpty(doctor.getCoverThumbnailImageUrl()))doctor.setCoverThumbnailImageUrl(getFinalImageURL(doctor.getCoverThumbnailImageUrl()));
 				doctors.add(doctor);
 			    }
 		    }

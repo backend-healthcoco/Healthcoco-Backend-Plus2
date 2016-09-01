@@ -20,13 +20,16 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
+import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRStyle;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.base.JRBaseStyle;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -57,7 +60,7 @@ public class JasperReportServiceImpl implements JasperReportService {
     @SuppressWarnings("deprecation")
     @Override
     @Transactional
-    public JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, Integer topMargin, Integer bottonMargin, String pdfName) {
+    public JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, Integer topMargin, Integer bottonMargin, Integer contentFontSize, String pdfName, String... subReportFileName) {
     	JasperReportResponse jasperReportResponse = null;
     	BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
     	AmazonS3 s3client = new AmazonS3Client(credentials);
@@ -69,12 +72,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 	
 		    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
-		    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb",
-			    "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
+		    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 		    
 		    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
-		    JasperDesign design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
-	
+		    JasperDesign design = null;
+		    JRStyle style = new JRBaseStyle();
+		    style.setFontSize(contentFontSize);
+	 	    if(!DPDoctorUtils.anyStringEmpty(subReportFileName)){
+		    	for(String subReport : subReportFileName){
+		    		design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + subReport +".jrxml"));	    
+			 	    design.setDefaultStyle(style);
+				    JasperCompileManager.compileReportToFile(design, JASPER_TEMPLATES_RESOURCE + subReportFileName+ ".jasper");
+		    	}
+		    }
+		    design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
+	 	    design.setDefaultStyle(style);
 		    if(topMargin != null)design.setTopMargin(topMargin);
 		    if(bottonMargin != null)design.setBottomMargin(bottonMargin);
 		    JasperReport jasperReport = JasperCompileManager.compileReport(design);

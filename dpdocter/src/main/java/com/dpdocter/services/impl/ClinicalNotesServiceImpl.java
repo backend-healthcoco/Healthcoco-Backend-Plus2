@@ -188,7 +188,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
      
      @Value(value = "${ClinicalNotes.getPatientsClinicalNotesWithVerifiedOTP}")
      private String getPatientsClinicalNotesWithVerifiedOTP;
-    
+
+    @Value(value = "${jasper.print.clinicalnotes.a4.fileName}")
+    private String clinicalNotesA4FileName;
+
+ 	@Value(value = "${jasper.print.clinicalnotes.a5.fileName}")
+    private String clinicalNotesA5FileName;
+
     @Override
     @Transactional
     public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
@@ -1956,184 +1962,176 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	    } else
 		parameters.put("vitalSigns", null);
 
-	    String patientName = "", dob = "", bloodGroup = "", gender = "", mobileNumber = "", refferedBy = "", pid = "", date = "", resourceId = "", logoURL = "";
-		if (patient.getReferredBy() != null) {
-		    ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
-		    if (referencesCollection != null)
-			refferedBy = referencesCollection.getReference();
-		}
-		patientName = "Patient Name: " + (user != null ? user.getFirstName() : "--") + "<br>";
-		String age = "--";
-		if(patient != null && patient.getDob() != null){
-			Age ageObj = patient.getDob().getAge();
-			if(ageObj.getYears() > 14)age = ageObj.getYears()+" years";
-			else {
-				int months = 0, days = ageObj.getDays();
-				if(ageObj.getMonths() > 0){
-					months = ageObj.getMonths();
-					if(ageObj.getYears() > 0)months = months + 12 * ageObj.getYears();
-				}
-				if(months == 0)age = days +" days";
-				else age = months +" months "+days +" days";
-			}
-		}
-		dob = "Age: " + age + "<br>";
-		gender = "Gender: " + (patient != null && patient.getGender() != null? patient.getGender() : "--") + "<br>";
-		bloodGroup = "Blood Group: " + (patient != null && patient.getBloodGroup() != null? patient.getBloodGroup() : "--") + "<br>";
-		mobileNumber = "Mobile: " + (user != null && user.getMobileNumber() != null ? user.getMobileNumber() : "--") + "<br>";
-		pid = "Patient Id: " + (patient != null && patient.getPID() != null? patient.getPID() : "--") + "<br>";
-		refferedBy = "Referred By: " + (refferedBy != "" ? refferedBy : "--") + "<br>";
-		date = "Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + "<br>";
-		resourceId = "CID: " + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--") + "<br>";
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(),
-			ComponentType.CLINICAL_NOTES.getType());
+	    PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
+		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, clinicalNotesCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
+		generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"+ clinicalNotesCollection.getUniqueEmrId();
 
-		if (printSettings == null) {
-		    printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
+		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
+		String pageSize = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
+		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
+		if(pageSize.equalsIgnoreCase("A5")){
+			response = jasperReportService.createPDF(parameters, clinicalNotesA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));	
+		}else {
+			response = jasperReportService.createPDF(parameters, clinicalNotesA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		}
-
+		return response;
+	}
+	
+	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId) {
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
-		String headerLeftText = "", headerRightText = "", footerBottomText = "";
-		int  headerLeftTextLength = 0, headerRightTextLength = 0;
+		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
+		int headerLeftTextLength = 0, headerRightTextLength = 0;
+		Integer contentFontSize = 10;
 		if (printSettings != null) {
-		    if (printSettings.getHeaderSetup() != null) {
-		    if(printSettings.getHeaderSetup().getTopLeftText() != null)
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
-
-			    if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
-			    		&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
-				    && !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
-				str.setFontSize("10pt");
-			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-			    if(!DPDoctorUtils.anyStringEmpty(str.getText())){headerLeftTextLength++;
-			    	String text = str.getText();
-				    if (isItalic)
-					text = "<i>" + text + "</i>";
-				    if (isBold)
-					text = "<b>" + text + "</b>";
-
-				    if (headerLeftText.isEmpty())
-					headerLeftText = "<span style='font-size:" + str.getFontSize() + ";'>" + text + "</span>";
-				    else
-					headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-			    }
+			if(printSettings.getContentSetup() != null){
+				contentFontSize = !DPDoctorUtils.anyStringEmpty(printSettings.getContentSetup().getFontSize()) ? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", "")) : 10;
 			}
-		    
-		    if(printSettings.getHeaderSetup().getTopRightText() != null)
-			for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
-			    if ((str.getFontSize() != null) && str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
-			    		&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
-			    		&& !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
-				str.setFontSize("10pt");
-			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-			    if(!DPDoctorUtils.anyStringEmpty(str.getText())){headerRightTextLength++;
-			    	String text = str.getText();
-				    if (isItalic)
-					text = "<i>" + text + "</i>";
-				    if (isBold)
-					text = "<b>" + text + "</b>";
+			if (printSettings.getHeaderSetup() != null &&  printSettings.getHeaderSetup().getCustomHeader()) {
+				if(printSettings.getHeaderSetup().getTopLeftText() != null)
+				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 
-				    if (headerRightText.isEmpty())
-					headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-				    else
-					headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-			    }
+					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+					if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
+						headerLeftTextLength++;
+						String text = str.getText();
+						if (isItalic)text = "<i>" + text + "</i>";
+						if (isBold)text = "<b>" + text + "</b>";
+
+						if (headerLeftText.isEmpty())headerLeftText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+						else headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+					}
+				}
+				if(printSettings.getHeaderSetup().getTopRightText() != null)
+				for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
+
+					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+					
+					if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
+						headerRightTextLength++;
+						String text = str.getText();
+						if (isItalic)text = "<i>" + text + "</i>";
+						if (isBold)text = "<b>" + text + "</b>";
+
+						if (headerRightText.isEmpty())headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+						else headerRightText = headerRightText + "<br/>" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+					}
+				}
 			}
+			
+			if (printSettings.getHeaderSetup() != null &&  printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
+				logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 			}
-		    if (printSettings.getFooterSetup() != null) {
-			if (printSettings.getFooterSetup().getCustomFooter())
-			    for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
-				if ((str.getFontSize() != null) && !str.getFontSize().equalsIgnoreCase("10pt") && !str.getFontSize().equalsIgnoreCase("11pt")
-						&& !str.getFontSize().equalsIgnoreCase("12pt") && !str.getFontSize().equalsIgnoreCase("13pt")
-						&& !str.getFontSize().equalsIgnoreCase("14pt") && !str.getFontSize().equalsIgnoreCase("15pt"))
-				    str.setFontSize("10pt");
+			
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter()) {
+				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
+					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
+					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
+					String text = str.getText();
+					if (isItalic)text = "<i>" + text + "</i>";
+					if (isBold)text = "<b>" + text + "</b>";
 
-				boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-				boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-				String text = str.getText();
-				if (isItalic)
-				    text = "<i>" + text + "</i>";
-				if (isBold)
-				    text = "<b>" + text + "</b>";
-
-				if (footerBottomText.isEmpty())
-				    footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-				else
-				    footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-			    }
-		    }
-			if(printSettings.getClinicLogoUrl() != null)logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
-
-			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getPatientDetails() != null
-				&& printSettings.getHeaderSetup().getPatientDetails().getStyle() != null) {
-			    PatientDetails patientDetails = printSettings.getHeaderSetup().getPatientDetails();
-			    boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle());
-			    boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle());
-			    String fontSize = patientDetails.getStyle().getFontSize();
-			    if ((fontSize != null)  && !fontSize.equalsIgnoreCase("10pt") && !fontSize.equalsIgnoreCase("11pt") && !fontSize.equalsIgnoreCase("12pt")
-			    		&& !fontSize.equalsIgnoreCase("13pt") && !fontSize.equalsIgnoreCase("14pt") && !fontSize.equalsIgnoreCase("15pt"))
-				fontSize = "10pt";
-
-			    if (isItalic) {
-				patientName = "<i>" + patientName + "</i>";
-				pid = "<i>" + pid + "</i>";
-				dob = "<i>" + dob + "</i>";
-				bloodGroup = "<i>" + bloodGroup + "</i>";
-				gender = "<i>" + gender + "</i>";
-				mobileNumber = "<i>" + mobileNumber + "</i>";
-				refferedBy = "<i>" + refferedBy + "</i>";
-				date = "<i>" + date + "</i>";
-				resourceId = "<i>" + resourceId + "</i>";
-			    }
-			    if (isBold) {
-				patientName = "<b>" + patientName + "</b>";
-				pid = "<b>" + pid + "</b>";
-				dob = "<b>" + dob + "</b>";
-				bloodGroup = "<b>" + bloodGroup + "</b>";
-				gender = "<b>" + gender + "</b>";
-				mobileNumber = "<b>" + mobileNumber + "</b>";
-				refferedBy = "<b>" + refferedBy + "</b>";
-				date = "<b>" + date + "</b>";
-				resourceId = "<b>" + resourceId + "</b>";
-			    }
-			    patientName = "<span style='font-size:" + fontSize + "'>" + patientName + "</span>";
-			    pid = "<span style='font-size:" + fontSize + "'>" + pid + "</span>";
-			    bloodGroup = "<span style='font-size:" + fontSize + "'>" + bloodGroup + "</span>";
-			    dob = "<span style='font-size:" + fontSize + "'>" + dob + "</span>";
-			    gender = "<span style='font-size:" + fontSize + "'>" + gender + "</span>";
-			    mobileNumber = "<span style='font-size:" + fontSize + "'>" + mobileNumber + "</span>";
-			    refferedBy = "<span style='font-size:" + fontSize + "'>" + refferedBy + "</span>";
-			    date = "<span style='font-size:" + fontSize + "'>" + date + "</span>";
-			    resourceId = "<span style='font-size:" + fontSize + "'>" + resourceId + "</span>";
+					if (footerBottomText.isEmpty())	footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+					else footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
+				}
 			}
+			
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
+				UserCollection doctorUser = userRepository.findOne(doctorId);
+				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
+			}	
 		}
-
-		UserCollection doctorUser = userRepository.findOne(clinicalNotesCollection.getDoctorId());
-		if (doctorUser != null)
-		    parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-
-		parameters.put("patientLeftText", patientName + pid + dob + gender+bloodGroup);
-		parameters.put("patientRightText", mobileNumber + refferedBy + date + resourceId);
+		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
 		parameters.put("logoURL", logoURL);
-		if(headerLeftTextLength > 2 || headerRightTextLength > 2){
+		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
-		}else {
+		} else {
 			parameters.put("showTableOne", false);
 		}
-		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-			: "PORTRAIT";
-		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"+ clinicalNotesCollection.getUniqueEmrId();
-		response = jasperReportService.createPDF(parameters, "mongo-clinical-notes", layout, pageSize, null, null, pdfName.replaceAll("\\s+", ""));
-
-		return response;
 	}
-	
+
+	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
+		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), refferedBy = "", patientLeftText = "", patientRightText = "";
+		if(patientDetails == null){
+			patientDetails = new PatientDetails();
+		}
+		List<String> patientDetailList = new ArrayList<String>();
+		patientDetailList.add("Patient Name: " + firstName);
+		patientDetailList.add("Patient Id: " + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
+		patientDetailList.add("Mobile: " + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("CID: "+ (uniqueEMRId != null ? uniqueEMRId : "--"));
+		
+		if (patient != null && patient.getDob() != null) {
+			Age ageObj = patient.getDob().getAge();
+			if (ageObj.getYears() > 14)age = ageObj.getYears() + " years";
+			else {
+				int months = 0, days = ageObj.getDays();
+				if (ageObj.getMonths() > 0) {
+					months = ageObj.getMonths();
+					if (ageObj.getYears() > 0)
+						months = months + 12 * ageObj.getYears();
+				}
+				if (months == 0)
+					age = days + " days";
+				else
+					age = months + " months " + days + " days";
+			}
+		}
+		
+        if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
+			if(DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("Age | Gender: -- | --");
+			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("Age | Gender: "+age+" | --");
+			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("Age | Gender: -- | "+gender);
+		}else if(patientDetails.getShowDOB()){
+			patientDetailList.add("Age | Gender: "+(!DPDoctorUtils.anyStringEmpty(age) ? age : "--")+" | --");
+		}else if(patientDetails.getShowGender()){
+			patientDetailList.add("Age | Gender: -- | "+(!DPDoctorUtils.anyStringEmpty(gender)?gender:"--"));
+		}
+        
+        if(patientDetails.getShowBloodGroup()){
+        	patientDetailList.add("Blood Group: " + (patient != null && patient.getBloodGroup() != null ? patient.getBloodGroup() : "--"));
+        }
+        if(patientDetails.getShowReferedBy()){
+        	if (patient != null && patient.getReferredBy() != null) {
+    			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
+    			if (referencesCollection != null)
+    				refferedBy = referencesCollection.getReference();
+    		}
+        	patientDetailList.add("Referred By: " + (refferedBy != "" ? refferedBy : "--"));
+        }
+        if(patientDetails.getShowDate()){
+        	patientDetailList.add("Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+        }
+		
+		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
+		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
+		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null ? patientDetails.getStyle().getFontSize() : "";
+
+		for(int i = 0; i < patientDetailList.size();i++){
+			String text = patientDetailList.get(i);
+			if(isItalic)text = "<i>"+text+"</i>";
+			if(isBold)text = "<b>"+text+"</b>";
+			text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
+			
+			if (i % 2 == 0){
+				if(!DPDoctorUtils.anyStringEmpty(patientLeftText))patientLeftText = patientLeftText+"<br>"+text;
+				else patientLeftText = text;
+			}
+			else {
+				if(!DPDoctorUtils.anyStringEmpty(patientRightText))patientRightText = patientRightText+"<br>"+text;
+				else patientRightText = text;
+			}
+		}
+		parameters.put("patientLeftText", patientLeftText);
+		parameters.put("patientRightText", patientRightText);
+	}
+
    private List<Complaint> getCustomGlobalComplaintsForAdmin(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
 	List<Complaint> response = null;
 	try {
