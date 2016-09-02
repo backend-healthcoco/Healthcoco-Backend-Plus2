@@ -54,6 +54,7 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -307,6 +308,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    if (request.getDob() != null && request.getDob().getAge().getYears() < 0) {
 		logger.warn(DOB);
 		throw new BusinessException(ServiceError.InvalidInput, DOB);
+	    }
+	    else if(request.getDob() == null && request.getAge() != null){
+	    	Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+	    	 int currentDay = localCalendar.get(Calendar.DATE);
+	    	 int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+	    	 int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
+	    	 request.setDob(new DOB(currentDay,currentMonth,currentYear));
 	    }
 	    User user = new User();
 	    BeanUtil.map(request, user);

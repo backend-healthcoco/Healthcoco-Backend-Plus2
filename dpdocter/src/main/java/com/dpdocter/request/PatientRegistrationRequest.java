@@ -7,285 +7,300 @@ import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Relations;
+
 public class PatientRegistrationRequest {
-    private String userId;
+	private String userId;
 
-    private String firstName;
+	private String firstName;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String gender;
+	private String gender;
 
-    private DOB dob;
+	private DOB dob;
 
-    private FileDetails image;
+	private Integer age;
 
-    private String emailAddress;
+	private FileDetails image;
 
-    private List<String> groups;
+	private String emailAddress;
 
-    private String bloodGroup;
+	private List<String> groups;
 
-    private String profession;
+	private String bloodGroup;
 
-    private List<Relations> relations;
+	private String profession;
 
-    private String secMobile;
+	private List<Relations> relations;
 
-    private String adhaarId;
+	private String secMobile;
 
-    private String panCardNumber;
+	private String adhaarId;
 
-    private String drivingLicenseId;
+	private String panCardNumber;
 
-    private String insuranceId;
+	private String drivingLicenseId;
 
-    private String insuranceName;
+	private String insuranceId;
 
-    private List<String> notes;
+	private String insuranceName;
 
-    private Address address;
+	private List<String> notes;
 
-    private Long dateOfVisit;
+	private Address address;
 
-    private String pastHistoryId;
+	private Long dateOfVisit;
 
-    private String medicalHistoryId;
+	private String pastHistoryId;
 
-    private String patientNumber;
+	private String medicalHistoryId;
 
-    private Reference referredBy;
+	private String patientNumber;
 
-    private String locationId;
+	private Reference referredBy;
 
-    private String hospitalId;
+	private String locationId;
 
-    private String doctorId;
+	private String hospitalId;
 
-    public String getUserId() {
-	return userId;
-    }
+	private String doctorId;
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getEmailAddress() {
-	return emailAddress;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public String getGender() {
-	return gender;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public DOB getDob() {
-	return dob;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
-
-    public List<String> getGroups() {
-	return groups;
-    }
-
-    public void setGroups(List<String> groups) {
-	this.groups = groups;
-    }
-
-    public String getBloodGroup() {
-	return bloodGroup;
-    }
-
-    public void setBloodGroup(String bloodGroup) {
-	this.bloodGroup = bloodGroup;
-    }
-
-    public String getProfession() {
-	return profession;
-    }
-
-    public void setProfession(String profession) {
-	this.profession = profession;
-    }
-
-    public List<Relations> getRelations() {
-	return relations;
-    }
-
-    public void setRelations(List<Relations> relations) {
-	this.relations = relations;
-    }
-
-    public Address getAddress() {
-	return address;
-    }
-
-    public void setAddress(Address address) {
-	this.address = address;
-    }
-
-    public Long getDateOfVisit() {
-	return dateOfVisit;
-    }
-
-    public void setDateOfVisit(Long dateOfVisit) {
-	this.dateOfVisit = dateOfVisit;
-    }
-
-    public String getPastHistoryId() {
-	return pastHistoryId;
-    }
-
-    public void setPastHistoryId(String pastHistoryId) {
-	this.pastHistoryId = pastHistoryId;
-    }
-
-    public String getMedicalHistoryId() {
-	return medicalHistoryId;
-    }
-
-    public void setMedicalHistoryId(String medicalHistoryId) {
-	this.medicalHistoryId = medicalHistoryId;
-    }
-
-    public String getPatientNumber() {
-	return patientNumber;
-    }
-
-    public void setPatientNumber(String patientNumber) {
-	this.patientNumber = patientNumber;
-    }
-
-    public Reference getReferredBy() {
-	return referredBy;
-    }
-
-    public void setReferredBy(Reference referredBy) {
-	this.referredBy = referredBy;
-    }
-
-    public String getLocationId() {
-	return locationId;
-    }
-
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
-
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
-
-    public String getSecMobile() {
-	return secMobile;
-    }
-
-    public void setSecMobile(String secMobile) {
-	this.secMobile = secMobile;
-    }
-
-    public String getAdhaarId() {
-	return adhaarId;
-    }
-
-    public void setAdhaarId(String adhaarId) {
-	this.adhaarId = adhaarId;
-    }
-
-    public String getPanCardNumber() {
-	return panCardNumber;
-    }
-
-    public void setPanCardNumber(String panCardNumber) {
-	this.panCardNumber = panCardNumber;
-    }
-
-    public String getDrivingLicenseId() {
-	return drivingLicenseId;
-    }
-
-    public void setDrivingLicenseId(String drivingLicenseId) {
-	this.drivingLicenseId = drivingLicenseId;
-    }
-
-    public String getInsuranceId() {
-	return insuranceId;
-    }
-
-    public void setInsuranceId(String insuranceId) {
-	this.insuranceId = insuranceId;
-    }
-
-    public String getInsuranceName() {
-	return insuranceName;
-    }
-
-    public void setInsuranceName(String insuranceName) {
-	this.insuranceName = insuranceName;
-    }
-
-    public List<String> getNotes() {
-	return notes;
-    }
-
-    public void setNotes(List<String> notes) {
-	this.notes = notes;
-    }
-
-    public FileDetails getImage() {
-	return image;
-    }
-
-    public void setImage(FileDetails image) {
-	this.image = image;
-    }
-
-    @Override
-    public String toString() {
-	return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
-		+ dob + ", image=" + image + ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup=" + bloodGroup + ", profession="
-		+ profession + ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
-		+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
-		+ ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId + ", medicalHistoryId=" + medicalHistoryId
-		+ ", patientNumber=" + patientNumber + ", referredBy=" + referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-		+ ", doctorId=" + doctorId + "]";
-    }
+	public DOB getDob() {
+		return dob;
+	}
+
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
+
+	public List<String> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
+
+	public String getBloodGroup() {
+		return bloodGroup;
+	}
+
+	public void setBloodGroup(String bloodGroup) {
+		this.bloodGroup = bloodGroup;
+	}
+
+	public String getProfession() {
+		return profession;
+	}
+
+	public void setProfession(String profession) {
+		this.profession = profession;
+	}
+
+	public List<Relations> getRelations() {
+		return relations;
+	}
+
+	public void setRelations(List<Relations> relations) {
+		this.relations = relations;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Long getDateOfVisit() {
+		return dateOfVisit;
+	}
+
+	public void setDateOfVisit(Long dateOfVisit) {
+		this.dateOfVisit = dateOfVisit;
+	}
+
+	public String getPastHistoryId() {
+		return pastHistoryId;
+	}
+
+	public void setPastHistoryId(String pastHistoryId) {
+		this.pastHistoryId = pastHistoryId;
+	}
+
+	public String getMedicalHistoryId() {
+		return medicalHistoryId;
+	}
+
+	public void setMedicalHistoryId(String medicalHistoryId) {
+		this.medicalHistoryId = medicalHistoryId;
+	}
+
+	public String getPatientNumber() {
+		return patientNumber;
+	}
+
+	public void setPatientNumber(String patientNumber) {
+		this.patientNumber = patientNumber;
+	}
+
+	public Reference getReferredBy() {
+		return referredBy;
+	}
+
+	public void setReferredBy(Reference referredBy) {
+		this.referredBy = referredBy;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getSecMobile() {
+		return secMobile;
+	}
+
+	public void setSecMobile(String secMobile) {
+		this.secMobile = secMobile;
+	}
+
+	public String getAdhaarId() {
+		return adhaarId;
+	}
+
+	public void setAdhaarId(String adhaarId) {
+		this.adhaarId = adhaarId;
+	}
+
+	public String getPanCardNumber() {
+		return panCardNumber;
+	}
+
+	public void setPanCardNumber(String panCardNumber) {
+		this.panCardNumber = panCardNumber;
+	}
+
+	public String getDrivingLicenseId() {
+		return drivingLicenseId;
+	}
+
+	public void setDrivingLicenseId(String drivingLicenseId) {
+		this.drivingLicenseId = drivingLicenseId;
+	}
+
+	public String getInsuranceId() {
+		return insuranceId;
+	}
+
+	public void setInsuranceId(String insuranceId) {
+		this.insuranceId = insuranceId;
+	}
+
+	public String getInsuranceName() {
+		return insuranceName;
+	}
+
+	public void setInsuranceName(String insuranceName) {
+		this.insuranceName = insuranceName;
+	}
+
+	public List<String> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(List<String> notes) {
+		this.notes = notes;
+	}
+
+	public FileDetails getImage() {
+		return image;
+	}
+
+	public void setImage(FileDetails image) {
+		this.image = image;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", mobileNumber="
+				+ mobileNumber + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", image=" + image
+				+ ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup=" + bloodGroup
+				+ ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId="
+				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
+				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
+				+ ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
+				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
+				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ "]";
+	}
+
 }
