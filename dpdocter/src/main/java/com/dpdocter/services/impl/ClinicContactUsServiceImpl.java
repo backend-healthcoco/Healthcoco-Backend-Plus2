@@ -11,11 +11,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicContactUs;
-import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.collections.ClinicContactUsCollection;
-import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -25,6 +24,7 @@ import com.dpdocter.services.ClinicContactUsService;
 
 import common.util.web.DPDoctorUtils;
 
+@Service
 public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 	
 	private static Logger logger = Logger.getLogger(ClinicContactUsServiceImpl.class.getName());
