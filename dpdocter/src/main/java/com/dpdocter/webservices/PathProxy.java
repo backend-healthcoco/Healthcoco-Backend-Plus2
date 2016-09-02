@@ -33,6 +33,8 @@ public interface PathProxy {
 		
 		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
 		
+		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
+		
 		public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
 
 	}
