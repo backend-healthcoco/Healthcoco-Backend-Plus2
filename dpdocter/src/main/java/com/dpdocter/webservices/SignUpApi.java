@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.ClinicContactUs;
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
@@ -28,6 +29,7 @@ import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
 import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
 import com.dpdocter.response.PateientSignUpCheckResponse;
+import com.dpdocter.services.ClinicContactUsService;
 import com.dpdocter.services.DoctorContactUsService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -53,6 +55,9 @@ public class SignUpApi {
     
     @Autowired
     private DoctorContactUsService doctorContactUsService;
+    
+    @Autowired
+    private ClinicContactUsService clinicContactUsService;
 
     @Value(value = "${image.path}")
     private String imagePath;
@@ -267,5 +272,27 @@ public class SignUpApi {
     	response.setData(doctorContactUsService.submitDoctorContactUSInfo(doctorContactUs));
     	return response;
     }
+    
+    /*@Produces(MediaType.APPLICATION_JSON)
+    @Path(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
+    @POST
+    @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
+    public Response<String> submitClinicContactUsInfo(ClinicContactUs clinicContactUs)
+    {
+    	if(clinicContactUs == null){
+    		logger.warn("Clinic contact data is null");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Clinic Contact data is null");
+    	}else if(DPDoctorUtils.anyStringEmpty(clinicContactUs.getl, doctorContactUs.getEmailAddress(), doctorContactUs.getTitle(),doctorContactUs.getCity(), doctorContactUs.getMobileNumber()) || doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null || doctorContactUs.getSpecialities().isEmpty()){
+    		logger.warn("Invalid Input");
+    		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}else if (doctorContactUs.getFirstName().length() < 2) {
+    		logger.warn(firstNameValidaton);
+    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+    	 }
+    	
+    	Response<String> response = new Response<String>();
+    	response.setData(clinicContactUsService.submitClinicContactUSInfo(clinicContactUs));
+    	return response;
+    }*/
     
 }
