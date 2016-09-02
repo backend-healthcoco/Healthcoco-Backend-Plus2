@@ -26,8 +26,7 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, Ob
     Integer getRecordCount(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId, ObjectId locationId, boolean discarded);
 
     @Query("{'$or': [{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}},{'patientId': ?0, 'prescribedByDoctorId': ?1, 'prescribedByLocationId': ?2, 'prescribedByHospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}}]}")
-    List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards,
-	    Pageable pageRequest);
+    List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, Pageable pageRequest);
 
     @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
     List<RecordsCollection> findRecords(ObjectId patientId, Date date, boolean[] discards, Pageable pageRequest);
@@ -36,18 +35,16 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, Ob
     List<RecordsCollection> findRecords(ObjectId patientId, Date date, boolean[] discards, Sort sort);
 
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}, 'inHistory' : {$in: ?6}}")
-    List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards,
-	    boolean[] inHistorys, Pageable pageRequest);
+    List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, boolean[] inHistorys, Pageable pageRequest);
 
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}, 'inHistory' : {$in: ?6}}")
-    List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards,
-	    boolean[] inHistorys, Sort sort);
+    List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
 
-    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Pageable pageRequest);
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'isApproved': ?3}")
+    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Boolean isApproved, Pageable pageRequest);
 
-    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Sort sort);
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'isApproved': ?3}")
+    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Boolean isApproved, Sort sort);
 
     @Query("{'patientId': ?0}")
     List<RecordsCollection> findRecords(ObjectId patientId);

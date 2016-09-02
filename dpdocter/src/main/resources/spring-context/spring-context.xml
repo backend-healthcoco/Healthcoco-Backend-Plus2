@@ -21,12 +21,13 @@
 	
 	<context:component-scan base-package="com.dpdocter"/>
 	<context:property-placeholder
-		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties"
+		location="classpath:jdbc.properties,classpath:mail.properties,classpath:commons.properties,classpath:sms.properties,classpath:jasperreports_extension.properties,classpath:exceptions.properties,classpath:message.properties"
 		ignore-unresolvable="true" />
 	<import resource="application-context-elasticsearch.xml" />
 	<import resource="classpath:database-connection.xml" />
 	<import resource="mail-config.xml" />
 	<import resource="application-context-velocity.xml" />
+	<import resource="swagger.xml"/>
 	<import resource="swagger.xml"/>
 	<mongo:repositories	base-package="com.dpdocter.repository, com.dpdocter.sms.repository" />
 	<elasticsearch:repositories base-package="com.dpdocter.elasticsearch.repository"/>

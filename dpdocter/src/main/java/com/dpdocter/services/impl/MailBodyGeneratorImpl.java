@@ -254,4 +254,23 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 
 	}
 
+	@Override
+	public String generateRecordEmailBody(String doctorName, String clinicName, String patientName, String recordName, String uniqueRecordId, String templatePath) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("doctorName", doctorName);
+		model.put("clinicName", clinicName);
+		model.put("patientName", patientName);
+		model.put("recordName", recordName);
+		model.put("uniqueRecordId", uniqueRecordId);
+		model.put("imageURL", imagePath + "templatesImage");
+		model.put("contactUsEmail", contactUsEmail);
+		model.put("fbLink", fbLink);
+		model.put("twitterLink", twitterLink);
+		model.put("linkedInLink", linkedInLink);
+		model.put("googlePlusLink", googlePlusLink);
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, templatePath, "UTF-8", model);
+		return text;
+
+	}
+
 }

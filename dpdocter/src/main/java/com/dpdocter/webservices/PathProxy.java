@@ -254,6 +254,8 @@ public interface PathProxy {
 		public static final String ADD_RECORDS_MULTIPART = "/add";
 
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
+		
+		public static final String APPROVE_RECORD = "/{recordId}/approve";
 	}
 
 	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";

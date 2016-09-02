@@ -43,6 +43,8 @@ public class Records extends GenericCollection {
 
     private Boolean isFeedbackAvailable = false;
 
+    private Boolean isApproved = true;
+    
     public String getId() {
 	return id;
     }
@@ -203,6 +205,14 @@ public class Records extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	public Boolean getIsApproved() {
+		return isApproved;
+	}
+
+	public void setIsApproved(Boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
 	@Override
 	public String toString() {
 		return "Records [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId + ", locationId="
@@ -211,7 +221,7 @@ public class Records extends GenericCollection {
 				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", uploadedByLocation=" + uploadedByLocation
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
 				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
-				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId + ", isFeedbackAvailable="
-				+ isFeedbackAvailable + "]";
+				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", isApproved=" + isApproved + "]";
 	}
 }

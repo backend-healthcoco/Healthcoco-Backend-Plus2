@@ -38,6 +38,9 @@ import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.EmailTrackCollection;
@@ -46,9 +49,11 @@ import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.RecordsTagsCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TagsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -78,6 +83,7 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RecordsService;
+import com.dpdocter.services.SMSServices;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -151,8 +157,23 @@ public class RecordsServiceImpl implements RecordsService {
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
 
+    @Value(value = "${mail.discard.record.to.lab.subject}")
+    private String discardRecordMailToLabSubject;
+
+    @Value(value = "${mail.approved.record.to.doctor.subject}")
+    private String approvedRecordToDoctorSubject;
+
+    @Value(value = "${mail.not.approved.record.to.doctor.subject}")
+    private String notApprovedRecordToDoctorSubject;
+
+    @Value(value = "${sms.add.record.to.patient}")
+    private String addecordSMSToPatient;
+
     @Autowired
     private PatientVisitRepository patientVisitRepository;
+
+    @Autowired
+    private SMSServices smsServices;
 
     @Override
     @Transactional
@@ -216,10 +237,24 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionCollection.setUpdatedTime(new Date());
 		prescriptionRepository.save(prescriptionCollection);
 	    }
-	    if(prescriptionCollection != null)
-	        pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), patientCollection.getFirstName()+"'s report has been uploaded by "+recordsCollection.getUploadedByLocation()+" - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
-
-	   	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	    String body = null;
+	    if(prescriptionCollection != null){
+	    	if(recordsCollection.getIsApproved()){
+	    		approvedRecordToDoctorSubject = approvedRecordToDoctorSubject.replace("${patientName}", patientCollection.getFirstName()).replace("${reportName}", recordsCollection.getRecordsLabel());
+	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), approvedRecordToDoctorSubject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "approvedRecordToDoctorTemplate.vm");
+			    mailService.sendEmail(userCollection.getEmailAddress(), approvedRecordToDoctorSubject, body, null);
+	    	}else{
+	    		notApprovedRecordToDoctorSubject = notApprovedRecordToDoctorSubject.replace("${patientName}", patientCollection.getFirstName()).replace("${reportName}", recordsCollection.getRecordsLabel());
+	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), notApprovedRecordToDoctorSubject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "notApprovedRecordToDoctorTemplate.vm");
+			    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject, body, null);
+	    	}
+	    }
+	    if(recordsCollection.getIsApproved()){
+	    	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	        sendRecordSmsToPatient(patientCollection.getFirstName(), patientCollection.getMobileNumber(), recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(), recordsCollection.getLocationId(), recordsCollection.getHospitalId(), recordsCollection.getPatientId());
+	    }
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
 
@@ -232,7 +267,32 @@ public class RecordsServiceImpl implements RecordsService {
 
     }
 
-    @Override
+    private void sendRecordSmsToPatient(String patientName, String patientMobileNumber, String recordName, String clinicName, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
+    	SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(doctorId);
+		smsTrackDetail.setHospitalId(hospitalId);
+		smsTrackDetail.setLocationId(locationId);
+		smsTrackDetail.setType(ComponentType.REPORTS.getType());
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(patientId);
+		smsDetail.setUserName(patientName);
+		SMS sms = new SMS();
+		if(DPDoctorUtils.anyStringEmpty(recordName))recordName = "";
+		sms.setSmsText(addecordSMSToPatient.replace("{patientName}", patientName).replace("{reportName}", recordName).replace("{clinicName}", clinicName));
+
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(patientMobileNumber);
+		sms.setSmsAddress(smsAddress);
+
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		smsServices.sendSMS(smsTrackDetail, true);
+	}
+
+	@Override
     @Transactional
     public Records editRecord(RecordsEditRequest request) {
 
@@ -473,6 +533,10 @@ public class RecordsServiceImpl implements RecordsService {
 		throw new BusinessException(ServiceError.InvalidInput, "Record not found.Please check recordId.");
 	    }
 
+	} catch (BusinessException e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw e;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -493,12 +557,31 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setDiscarded(discarded);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
+	    if(discarded && !DPDoctorUtils.anyStringEmpty(recordsCollection.getPrescriptionId())){
+	    	PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(new ObjectId(recordsCollection.getPrescriptionId()));
+	    	if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null || !prescriptionCollection.getDiagnosticTests().isEmpty())) {
+	    		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
+	    		for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
+	    		    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
+	    		    	data.setRecordId(null);
+	    		    }
+	    		    tests.add(data);
+	    		}
+	    		prescriptionCollection.setDiagnosticTests(tests);
+	    		prescriptionCollection.setUpdatedTime(new Date());
+	    		prescriptionRepository.save(prescriptionCollection);
+	    	}
+	    	UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
+	    	UserCollection patient = userRepository.findOne(recordsCollection.getPatientId());
+	    	String body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getUploadedByLocation(), null, recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "discardedRecordToLabTemplate.vm");
+		    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject.replace("${patientName}", patient.getFirstName()).replace("${reportName}", recordsCollection.getRecordsLabel()).replace("${drName}", prescriptionCollection.getCreatedBy()), body, null);
+	    }
 	    response = new Records();
 	    BeanUtil.map(recordsCollection, response);
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" has been removed by "+recordsCollection.getCreatedBy(), ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	    
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw e;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -713,7 +796,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    }
 	} catch (BusinessException e) {
 	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	    throw e;
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -822,8 +905,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    ObjectId patientObjectId = null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
 		
-	    if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-	    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+	    if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, true, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+	    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, true, new Sort(Sort.Direction.DESC, "createdTime"));
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
@@ -921,8 +1004,10 @@ public class RecordsServiceImpl implements RecordsService {
 		    if(prescriptionCollection != null && prescriptionCollection.getDoctorId().equals(recordsCollection.getDoctorId()) && prescriptionCollection.getLocationId().equals(recordsCollection.getLocationId()) && prescriptionCollection.getHospitalId().equals(recordsCollection.getHospitalId()))
 		    pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	    }
-	    pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" is uploaded by lab", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
-
+	    if(recordsCollection.getIsApproved()){
+	    	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+	    	//email to patient
+	    }
 	    recordsCollection = recordsRepository.save(recordsCollection);
 	    Records records = new Records();
 	    BeanUtil.map(recordsCollection, records);
@@ -954,5 +1039,35 @@ public class RecordsServiceImpl implements RecordsService {
 		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return recordPath;
+	}
+
+	@Override
+	public Records approveRecords(String recordId, Boolean isApproved) {
+		Records response = null;
+		try {
+		    RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+		    if (recordsCollection == null) {
+				logger.warn("Record Not found.Check RecordId");
+				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
+		    }
+		    recordsCollection.setIsApproved(isApproved);
+		    recordsCollection.setUpdatedTime(new Date());
+		    recordsRepository.save(recordsCollection);
+		    response = new Records();
+		    BeanUtil.map(recordsCollection, response);
+		    if(isApproved){
+		    	UserCollection patientCollection = userRepository.findOne(recordsCollection.getPatientId());
+		    	sendRecordSmsToPatient(patientCollection.getFirstName(), patientCollection.getMobileNumber(), recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(), recordsCollection.getLocationId(), recordsCollection.getHospitalId(), recordsCollection.getPatientId());
+		    	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+		    }
+		} catch (BusinessException e) {
+		    logger.error(e);
+		    throw e;
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 }

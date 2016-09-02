@@ -30,6 +30,8 @@ public class RecordsAddRequest {
 
     private String recordsLabel;
     
+    private Boolean isApproved = true;
+    
     public String getPatientId() {
 	return patientId;
     }
@@ -134,13 +136,20 @@ public class RecordsAddRequest {
 		this.recordsLabel = recordsLabel;
 	}
 
+	public Boolean getIsApproved() {
+		return isApproved;
+	}
+
+	public void setIsApproved(Boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
 				+ ", explanation=" + explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId="
-				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + "]";
+				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + ", isApproved=" + isApproved + "]";
 	}
-
 }

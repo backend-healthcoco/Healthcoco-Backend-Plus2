@@ -29,4 +29,6 @@ public interface MailBodyGenerator {
 
 	String generateAppLinkEmailBody(String appType, String bitLink, String appDeviceType, String templatePath);
 
+	String generateRecordEmailBody(String doctorName, String clinicName, String patientName, String recordName, String uniqueRecordId, String templatePath);
+
 }

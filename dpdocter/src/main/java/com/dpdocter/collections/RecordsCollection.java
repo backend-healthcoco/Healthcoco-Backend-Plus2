@@ -74,6 +74,9 @@ public class RecordsCollection extends GenericCollection {
     @Field
     private Boolean isFeedbackAvailable = false;
 
+    @Field
+    private Boolean isApproved = true;
+
     public ObjectId getId() {
 	return id;
     }
@@ -234,6 +237,14 @@ public class RecordsCollection extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
+	public Boolean getIsApproved() {
+		return isApproved;
+	}
+
+	public void setIsApproved(Boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
@@ -242,8 +253,9 @@ public class RecordsCollection extends GenericCollection {
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
 				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
-				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId
-				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
+				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isApproved=" + isApproved
+				+ "]";
 	}
 
 }

@@ -2676,8 +2676,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 							smsDetails.add(smsDetail);
 							smsTrackDetail.setSmsDetails(smsDetails);
-							sMSServices.sendSMS(smsTrackDetail, true);
-							response = false;
+							response = sMSServices.sendSMS(smsTrackDetail, true);
 						}
 					} else {
 						logger.warn("Prescription not found.Please check prescriptionId.");

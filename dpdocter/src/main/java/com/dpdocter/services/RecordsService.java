@@ -60,4 +60,6 @@ public interface RecordsService {
 
 	String saveRecordsImage(FormDataBodyPart file, String patientIdString);
 
+	Records approveRecords(String recordId, Boolean isApproved);
+
 }
