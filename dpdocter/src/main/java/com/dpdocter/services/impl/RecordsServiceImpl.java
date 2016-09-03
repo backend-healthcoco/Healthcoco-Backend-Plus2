@@ -228,7 +228,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null || !prescriptionCollection.getDiagnosticTests().isEmpty())) {
 		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 		for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
-		    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
+		    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId().toString())) {
 			data.setRecordId(recordsCollection.getId().toString());
 		    }
 		    tests.add(data);

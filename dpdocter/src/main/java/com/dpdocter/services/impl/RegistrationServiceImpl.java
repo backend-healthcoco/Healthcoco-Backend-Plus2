@@ -39,6 +39,7 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.GeocodedLocation;
@@ -54,7 +55,6 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
-import com.dpdocter.beans.DOB;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -305,9 +305,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    // save user
 	    UserCollection userCollection = new UserCollection();
 	    BeanUtil.map(request, userCollection);
-	    if (request.getDob() != null && request.getDob().getAge().getYears() < 0) {
-		logger.warn(DOB);
-		throw new BusinessException(ServiceError.InvalidInput, DOB);
+	    if (request.getDob() != null && request.getDob().getAge() != null && request.getDob().getAge().getYears() < 0) {
+			logger.warn(DOB);
+			throw new BusinessException(ServiceError.InvalidInput, DOB);
 	    }
 	    else if(request.getDob() == null && request.getAge() != null){
 	    	Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -522,6 +522,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 	List<Group> groups = null;
 	try {
 
+		if (request.getDob() != null && request.getDob().getAge() != null && request.getDob().getAge().getYears() < 0) {
+			logger.warn(DOB);
+			throw new BusinessException(ServiceError.InvalidInput, DOB);
+		}else if(request.getDob() == null && request.getAge() != null){
+		    	Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		    	 int currentDay = localCalendar.get(Calendar.DATE);
+		    	 int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		    	 int currentYear = localCalendar.get(Calendar.YEAR) - request.getAge();
+		    	 request.setDob(new DOB(currentDay,currentMonth,currentYear));
+		 }
 		ObjectId userObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(request.getUserId()))userObjectId = new ObjectId(request.getUserId());
 		if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
@@ -981,6 +991,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    case BOTH:
 		response = getCustomGlobalReferences(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
