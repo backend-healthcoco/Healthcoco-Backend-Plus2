@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,18 +22,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.DoctorDrug;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
-import com.dpdocter.beans.DrugWithGenericCodes;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
@@ -51,6 +52,7 @@ import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.DiagnosticTestCollection;
+import com.dpdocter.collections.DoctorDrugCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugDirectionCollection;
 import com.dpdocter.collections.DrugDosageCollection;
@@ -69,7 +71,9 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.repository.ESDoctorDrugRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
@@ -82,6 +86,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DiagnosticTestRepository;
+import com.dpdocter.repository.DoctorDrugRepository;
 import com.dpdocter.repository.DrugDirectionRepository;
 import com.dpdocter.repository.DrugDosageRepository;
 import com.dpdocter.repository.DrugDurationUnitRepository;
@@ -136,6 +141,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private DrugRepository drugRepository;
+
+	@Autowired
+	private DoctorDrugRepository doctorDrugRepository;
 
 	@Autowired
 	private DrugDirectionRepository drugDirectionRepository;
@@ -227,6 +235,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
+	@Autowired
+	private ESDoctorDrugRepository esDoctorDrugRepository;
+
 	@Override
 	@Transactional
 	public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
@@ -239,8 +250,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(drugCollection.getDoctorId())) {
 				UserCollection userCollection = userRepository.findOne(drugCollection.getDoctorId());
 				if (userCollection != null)drugCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
-			} else {
-				drugCollection.setCreatedBy("ADMIN");
 			}
 			Date createdTime = new Date();
 			drugCollection.setCreatedTime(createdTime);
@@ -261,6 +270,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					drugCollection.getStrength().setStrengthUnit(null);
 			}
 			drugCollection = drugRepository.save(drugCollection);
+			
+			DoctorDrugCollection doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(), drugCollection.getDoctorId(), drugCollection.getLocationId(), drugCollection.getHospitalId(), 1, false, drugCollection.getGenericCodes());
+			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+			if (doctorDrugCollection != null) {
+			    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+			    BeanUtil.map(drugCollection, esDoctorDrugDocument);
+			    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+			    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+			}
 			response = new DrugAddEditResponse();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -324,6 +343,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						drugCollection = drugRepository.save(drugCollection);
 						response = new Drug();
 						BeanUtil.map(drugCollection, response);
+						
+						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(), new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+						if(doctorDrugCollection != null){
+							doctorDrugCollection.setDiscarded(discarded);
+							doctorDrugCollection.setUpdatedTime(new Date());
+							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+							if (doctorDrugCollection != null) {
+							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
+							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+							}
+						}
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.NotAuthorized,"Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -332,31 +364,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					logger.warn("Cannot Delete Global Drug");
 					throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Drug");
 				}
-			} else {
-				logger.warn("Drug Not Found");
-				throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Deleting Drug");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public Drug deleteDrug(String drugId, Boolean discarded) {
-		Drug response = null;
-		DrugCollection drugCollection = null;
-		try {
-			drugCollection = drugRepository.findOne(new ObjectId(drugId));
-			if (drugCollection != null) {
-				drugCollection.setUpdatedTime(new Date());
-				drugCollection.setDiscarded(discarded);
-				drugCollection = drugRepository.save(drugCollection);
-				response = new Drug();
-				BeanUtil.map(drugCollection, response);
 			} else {
 				logger.warn("Drug Not Found");
 				throw new BusinessException(ServiceError.NotFound, "Drug Not Found");
@@ -613,6 +620,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (items == null)
 							items = new ArrayList<PrescriptionItem>();
 						items.add(item);
+						
+						DoctorDrugCollection doctorDrugCollection =  doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+						if(doctorDrugCollection != null){
+							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount()+1);
+							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+							esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
+							esDoctorDrugRepository.save(esDoctorDrugDocument);
+						}
 					}
 				}
 				prescriptionCollection.setItems(items);
@@ -622,8 +638,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for (DiagnosticTest diagnosticTest : diagnosticTests) {
 
 					if (diagnosticTest.getId() != null) {
-						if (tests == null)
-							tests = new ArrayList<TestAndRecordData>();
+						if (tests == null)tests = new ArrayList<TestAndRecordData>();
 						tests.add(new TestAndRecordData(diagnosticTest.getId(), null));
 					} else if (diagnosticTest.getTestName() != null) {
 						DiagnosticTestCollection diagnosticTestCollection = null;
@@ -1553,18 +1568,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				if (isAdmin)response = getGlobalDrugsForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else response = getGlobalDrugs(page, size, updatedTime, discarded);
+				response = getGlobalDrugs(page, size, updatedTime, discarded);
 				break;
 				
 			case CUSTOM:
-				if (isAdmin)response = getCustomDrugsForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 				
 			case BOTH:
-				if (isAdmin)response = getCustomGlobalDrugsForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime,	discarded);
+				response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			
+			case FAVOURITES:
+				response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			}
 			break;
@@ -1573,23 +1589,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDrugTypeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getGlobalDrugType(page, size, updatedTime, discarded);
+				response = getGlobalDrugType(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDrugTypeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDrugTypeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomGlobalDrugType(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded);
+				response = getCustomGlobalDrugType(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
 				break;
 			}
 			break;
@@ -1598,24 +1606,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDrugDirectionForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getGlobalDrugDirection(page, size, updatedTime, discarded);
+				response = getGlobalDrugDirection(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDrugDirectionForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomDrugDirection(page, size, doctorId, locationId, hospitalId, updatedTime,
+				response = getCustomDrugDirection(page, size, doctorId, locationId, hospitalId, updatedTime,
 							discarded);
 				break;
 			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDrugDirectionForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomGlobalDrugDirection(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded);
+				response = getCustomGlobalDrugDirection(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
 				break;
 			}
 			break;
@@ -1624,24 +1624,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDrugDosageForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getGlobalDrugDosage(page, size, updatedTime, discarded);
+				response = getGlobalDrugDosage(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDrugDosageForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomDrugDosage(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded);
+				response = getCustomDrugDosage(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDrugDosageForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomGlobalDrugDosage(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded);
+				response = getCustomGlobalDrugDosage(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
 				break;
 			}
 			break;
@@ -1650,62 +1641,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDrugDurationUnitForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getGlobalDrugDurationUnit(page, size, updatedTime, discarded);
+				response = getGlobalDrugDurationUnit(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDrugDurationUnitForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded);
+				response = getCustomDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime,	discarded);
 				break;
 			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDrugDurationUnitForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomGlobalDrugDurationUnit(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded);
+				response = getCustomGlobalDrugDurationUnit(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
 				break;
 			}
 			break;
 		}
-			// case DRUGSTRENGTHUNIT: {
-			// switch (Range.valueOf(range.toUpperCase())) {
-			//
-			// case GLOBAL:
-			// if(isAdmin)response = getGlobalDrugStrengthUnit(page, size,
-			// updatedTime, discarded);
-			// else response = getGlobalDrugStrengthUnit(page, size,
-			// updatedTime, discarded);
-			// break;
-			// case CUSTOM:
-			// if(isAdmin)response = getCustomDrugStrengthUnit(page, size,
-			// doctorId, locationId, hospitalId, updatedTime, discarded);
-			// else response = getCustomDrugStrengthUnit(page, size, doctorId,
-			// locationId, hospitalId, updatedTime, discarded);
-			// break;
-			// case BOTH:
-			// if(isAdmin)response = getCustomGlobalDrugStrengthUnit(page, size,
-			// doctorId, locationId, hospitalId, updatedTime, discarded);
-			// else response = getCustomGlobalDrugStrengthUnit(page, size,
-			// doctorId, locationId, hospitalId, updatedTime, discarded);
-			// break;
-			// }
-			// break;
-			// }
+
 		case LABTEST: {
 
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL: break;
 			case CUSTOM:
-				if (isAdmin)response = getCustomLabTestsForAdmin(page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
-				else response = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomLabTests(page, size, locationId, hospitalId, updatedTime, discarded);
 				break;
-			case BOTH: break;	
+			case BOTH: break;
+			default:
+				break;	
 			}
 			break;
 		}
@@ -1715,68 +1675,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDiagnosticTestsForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getGlobalDiagnosticTests(page, size, updatedTime, discarded);
+				response = getGlobalDiagnosticTests(page, size, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDiagnosticTestsForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDiagnosticTestsForAdmin(page, size, updatedTime, discarded, searchTerm);
-				else
-					response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime,
+				response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime,
 							discarded);
 				break;
-			}
-			break;
-		}
-		
-		case DRUGBYGCODE: {
-			switch (Range.valueOf(range.toUpperCase())) {
-
-			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDrugCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				break;
-			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDrugCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				break;
-			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDrugCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
+			default:
 				break;
 			}
-			break;
-		}
-		
-		case DRUGBYICODE: {
-			switch (Range.valueOf(range.toUpperCase())) {
-
-			case GLOBAL:
-				if (isAdmin)
-					response = getGlobalDrugGenericCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				break;
-			case CUSTOM:
-				if (isAdmin)
-					response = getCustomDrugGenericCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				break;
-			case BOTH:
-				if (isAdmin)
-					response = getCustomGlobalDrugGenericCodeForAdmin(page, size, updatedTime, discarded, searchTerm);
-				break;
-			}
-			break;
-		}
-
-		case GCODE: {
-			if (isAdmin)response = getGenericCodeForAdmin(page, size, updatedTime, searchTerm);
 			break;
 		}
 		default:
@@ -1784,45 +1694,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-
-//	private List<Object> getGlobalLabTests(int page, int size, String updatedTime, Boolean discarded) {
-//		List<Object> response = null;
-//		List<LabTestCollection> labTestCollections = null;
-//		boolean[] discards = new boolean[2];
-//		discards[0] = false;
-//		try {
-//			if (discarded)
-//				discards[1] = true;
-//			long createdTimeStamp = Long.parseLong(updatedTime);
-//			if (size > 0)
-//				labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discards,
-//						new PageRequest(page, size, Direction.DESC, "updatedTime"));
-//
-//			else
-//				labTestCollections = labTestRepository.getGlobalLabTests(new Date(createdTimeStamp), discards,
-//						new Sort(Sort.Direction.DESC, "updatedTime"));
-//
-//			if (!labTestCollections.isEmpty()) {
-//				response = new ArrayList<Object>();
-//				for (LabTestCollection labTestCollection : labTestCollections) {
-//					LabTest labTest = new LabTest();
-//					BeanUtil.map(labTestCollection, labTest);
-//					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-//							.findOne(labTestCollection.getTestId());
-//					DiagnosticTest diagnosticTest = new DiagnosticTest();
-//					BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-//					labTest.setTest(diagnosticTest);
-//					response.add(labTest);
-//				}
-//
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e + " Error Occurred While Getting LabTests");
-//			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
-//		}
-//		return response;
-//	}
 
 	private List<Object> getCustomLabTests(int page, int size, String locationId, String hospitalId, String updatedTime, boolean discarded) {
 		List<Object> response = null;
@@ -1942,6 +1813,35 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			AggregationResults<Drug> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), DrugCollection.class, Drug.class); 
 			response = results.getMappedResults();		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Drug> getFavouritesDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded) {
+		List<Drug> response = null;
+		try {
+			
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			
+		    Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+		    if(!discarded)criteria.and("discarded").is(discarded);
+		    if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(new ObjectId(doctorId));
+	    	if(!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
+	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))criteria.and("hospitalId").is(new ObjectId(hospitalId));
+	    	
+		    Aggregation aggregation = null;
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("drug_cl", "drugId", "_id", "drugs"), Aggregation.sort(new Sort(Sort.Direction.DESC, "rankingCount")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("drug_cl", "drugId", "_id", "drugs"), Aggregation.sort(new Sort(Sort.Direction.DESC, "rankingCount")));
+						
+			AggregationResults<DoctorDrug> results = mongoTemplate.aggregate(aggregation, DoctorDrugCollection.class, DoctorDrug.class); 
+			List<DoctorDrug> doctorDrugs = results.getMappedResults();		
+			CollectionUtils.collect(doctorDrugs, new BeanToPropertyValueTransformer("drugs"));
+			response = (List<Drug>) CollectionUtils.collect(doctorDrugs, new BeanToPropertyValueTransformer("drug"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -3554,387 +3454,30 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		parameters.put("patientRightText", patientRightText);
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Object> getCustomLabTestsForAdmin(int page, int size, String locationId, String hospitalId, String updatedTime, boolean discarded, String searchTerm) {
-		List<Object> response = null;
-		List<LabTestCollection> labTestCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-		try {
-			if (discarded)discards[1] = true;
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			Collection<ObjectId> testIds = null;
-			if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-				List<DiagnosticTestCollection> diagnosticTestCollections = null;
-				diagnosticTestCollections = diagnosticTestRepository.getCustomGlobalForAdmin(new Date(createdTimeStamp), discards, searchTerm, new Sort(Sort.Direction.DESC, "updatedTime"));
-				testIds = CollectionUtils.collect(diagnosticTestCollections, new BeanToPropertyValueTransformer("id"));
-			    if(testIds == null || testIds.isEmpty())return response;
-			}
-			
-			ObjectId locationObjectId = null , hospitalObjectId= null;
-			if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
-	    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
-	    	
-			if(testIds != null){
-				if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards,	testIds, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, testIds, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}else{
-				if (size > 0)labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-				else labTestCollections = labTestRepository.getCustomLabTests(hospitalObjectId, locationObjectId, new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC, "updatedTime"));
-			}
-			
-			if (!labTestCollections.isEmpty()) {
-				response = new ArrayList<Object>();
-				for (LabTestCollection labTestCollection : labTestCollections) {
-					LabTest labTest = new LabTest();
-					BeanUtil.map(labTestCollection, labTest);
-					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(labTestCollection.getTestId());
-					DiagnosticTest diagnosticTest = new DiagnosticTest();
-					BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-					labTest.setTest(diagnosticTest);
-					response.add(labTest);
+	@Override
+	public Boolean makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		try{
+			ObjectId drugObjectId = new ObjectId(drugId), doctorObjectId = new ObjectId(doctorId), locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+			DrugCollection drugCollection = drugRepository.findOne(drugObjectId);
+			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+			if(doctorDrugCollection == null){
+				doctorDrugCollection = new DoctorDrugCollection(drugObjectId, doctorObjectId, locationObjectId, hospitalObjectId, 1, false, drugCollection.getGenericCodes());
+				doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+				transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+				if (doctorDrugCollection != null) {
+				    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+				    BeanUtil.map(drugCollection, esDoctorDrugDocument);
+				    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+				    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 				}
 			}
+			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting LabTests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting LabTests");
+			logger.error(e + " Error Occurred While Saving Drug");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
 		}
 		return response;
 	}
-
-	private List<DrugWithGenericCodes> getGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<DrugWithGenericCodes> getCustomDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();		
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<DrugWithGenericCodes> getCustomGlobalDrugsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugName"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-	
-	private List<DrugWithGenericCodes> getGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-	
-
-	private List<DrugWithGenericCodes> getCustomDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "drugCode"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();		
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<DrugWithGenericCodes> getCustomGlobalDrugCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-	
-	private List<DrugWithGenericCodes> getGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-	
-
-	private List<DrugWithGenericCodes> getCustomDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();		
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<DrugWithGenericCodes> getCustomGlobalDrugGenericCodeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugWithGenericCodes> response = null;
-		try {
-			AggregationResults<DrugWithGenericCodes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "genericCodes"), DrugCollection.class, DrugWithGenericCodes.class); 
-			response = results.getMappedResults();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	private List<DrugType> getGlobalDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugType> response = null;
-		try {
-			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "type"), DrugTypeCollection.class, DrugType.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Type");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
-		}
-		return response;
-	}
-
-	private List<DrugType> getCustomDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugType> response = null;
-		try {
-			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "type"), DrugTypeCollection.class, DrugType.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Type");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
-		}
-		return response;
-	}
-
-	private List<DrugType> getCustomGlobalDrugTypeForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugType> response = null;
-		try {
-			AggregationResults<DrugType> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "type"), DrugTypeCollection.class, DrugType.class); 
-			response = results.getMappedResults();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Type");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Type");
-		}
-		return response;
-	}
-
-	private List<DrugDirection> getGlobalDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDirection> response = null;
-		try {
-			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "direction"), DrugDirectionCollection.class, DrugDirection.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Direction");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
-		}
-		return response;
-	}
-
-	private List<DrugDirection> getCustomDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDirection> response = null;
-		try {
-			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "direction"), DrugDirectionCollection.class, DrugDirection.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Direction");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
-		}
-		return response;
-	}
-
-	private List<DrugDirection> getCustomGlobalDrugDirectionForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDirection> response = null;
-		try {
-			AggregationResults<DrugDirection> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "direction"), DrugDirectionCollection.class, DrugDirection.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Direction");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Direction");
-		}
-		return response;
-	}
-
-	private List<DrugDosage> getGlobalDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDosage> response = null;
-		try {
-			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "dosage"), DrugDosageCollection.class, DrugDosage.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Dosage");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
-		}
-		return response;
-	}
-
-	private List<DrugDosage> getCustomDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDosage> response = null;
-		try {
-			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "dosage"), DrugDosageCollection.class, DrugDosage.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Dosage");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
-		}
-		return response;
-	}
-
-	private List<DrugDosage> getCustomGlobalDrugDosageForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDosage> response = null;
-		try {
-			AggregationResults<DrugDosage> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "dosage"), DrugDosageCollection.class, DrugDosage.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Dosage");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Dosage");
-		}
-		return response;
-	}
-
-	private List<DrugDurationUnit> getGlobalDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDurationUnit> response = null;
-		try {
-			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "unit"), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
-		}
-		return response;
-	}
-
-	private List<DrugDurationUnit> getCustomDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDurationUnit> response = null;
-		try {
-			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "unit"), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug Duration Unit");
-		}
-		return response;
-	}
-
-	private List<DrugDurationUnit> getCustomGlobalDrugDurationUnitForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DrugDurationUnit> response = null;
-		try {
-			AggregationResults<DrugDurationUnit> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "unit"), DrugDurationUnitCollection.class, DrugDurationUnit.class); 
-			response = results.getMappedResults();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drug Duration Unit");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug DurationUnit");
-		}
-		return response;
-	}
-	private List<DiagnosticTest> getGlobalDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DiagnosticTest> response = null;
-		try {
-			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
-		}
-		return response;
-	}
-
-	private List<DiagnosticTest> getCustomDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DiagnosticTest> response = null;
-		try {
-			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
-		}
-		return response;
-	}
-
-	private List<DiagnosticTest> getCustomGlobalDiagnosticTestsForAdmin(int page, int size, String updatedTime, boolean discarded, String searchTerm) {
-		List<DiagnosticTest> response = null;
-		try {
-			AggregationResults<DiagnosticTest> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, discarded, searchTerm, "testName"), DiagnosticTestCollection.class, DiagnosticTest.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
-		}
-		return response;
-	}
-
-	private List<GenericCode> getGenericCodeForAdmin(int page, int size, String updatedTime, String searchTerm) {
-		List<GenericCode> response = null;
-		try {
-			AggregationResults<GenericCode> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregationForAdmin(page, size, updatedTime, true, searchTerm, "code"), GenericCodeCollection.class, GenericCode.class); 
-			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Diagnostic Tests");
-		}
-		return response;
-	}
-
 }

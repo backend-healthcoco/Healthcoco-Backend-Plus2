@@ -16,7 +16,7 @@ public class Drug extends GenericCollection{
 
     private Strength strength;
 
-    private Boolean discarded;
+    private Boolean discarded = false;
 
     private String doctorId;
 

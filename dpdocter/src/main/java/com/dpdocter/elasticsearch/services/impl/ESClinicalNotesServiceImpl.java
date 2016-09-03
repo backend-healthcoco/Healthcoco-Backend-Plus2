@@ -46,6 +46,7 @@ import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 
+@SuppressWarnings("deprecation")
 @Service
 public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
@@ -368,7 +369,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings({ "unchecked" })
 	private List<ESDiagramsDocument> getCustomGlobalDiagrams(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm) {
 	List<ESDiagramsDocument> response = null;
@@ -431,7 +432,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation"})
+    @SuppressWarnings({ "unchecked"})
 	private List<ESDiagramsDocument> getGlobalDiagrams(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
 	List<ESDiagramsDocument> response = null;
 	try {

@@ -82,7 +82,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    	for(String subReport : subReportFileName){
 		    		design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + subReport +".jrxml"));	    
 			 	    design.setDefaultStyle(style);
-				    JasperCompileManager.compileReportToFile(design, JASPER_TEMPLATES_RESOURCE + subReportFileName+ ".jasper");
+				    JasperCompileManager.compileReportToFile(design, JASPER_TEMPLATES_RESOURCE + subReport+ ".jasper");
 		    	}
 		    }
 		    design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));

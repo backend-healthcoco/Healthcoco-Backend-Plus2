@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum Range {
-    GLOBAL("GLOBAL"), CUSTOM("CUSTOM"), BOTH("BOTH");
+    GLOBAL("GLOBAL"), CUSTOM("CUSTOM"), BOTH("BOTH"), FAVOURITES("FAVOURITES");
 
     private String range;
 

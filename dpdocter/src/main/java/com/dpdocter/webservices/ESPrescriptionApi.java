@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -42,7 +41,7 @@ public class ESPrescriptionApi {
     @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
     @GET
     @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
-    public Response<ESDrugDocument> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+    public Response<Object> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
 	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm,
@@ -53,9 +52,9 @@ public class ESPrescriptionApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 
-	List<ESDrugDocument> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+	List<?> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 		searchTerm, category);
-	Response<ESDrugDocument> response = new Response<ESDrugDocument>();
+	Response<Object> response = new Response<Object>();
 	response.setDataList(drugDocuments);
 	return response;
     }

@@ -32,6 +32,7 @@ import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorDrugCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
@@ -56,6 +57,7 @@ import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
@@ -87,6 +89,7 @@ import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorDrugRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.InvestigationRepository;
@@ -127,6 +130,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Autowired
     private DrugRepository drugRepository;
+
+    @Autowired
+    private DoctorDrugRepository doctorDrugRepository;
 
     @Autowired
     private LabTestRepository labTestRepository;
@@ -227,6 +233,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 			case PATIENT: checkPatient(transactionalCollection.getResourceId()); break;
 			case DRUG: checkDrug(transactionalCollection.getResourceId()); break;
+			case DOCTORDRUG: checkDoctorDrug(transactionalCollection.getResourceId()); break;
 			case LABTEST: checkLabTest(transactionalCollection.getResourceId()); break;
 			case COMPLAINT: checkComplaint(transactionalCollection.getResourceId()); break;
 			case DIAGNOSIS: checkDiagnosis(transactionalCollection.getResourceId()); break;
@@ -418,6 +425,22 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    logger.error(e);
 	}
     }
+
+	private void checkDoctorDrug(ObjectId resourceId) {
+		try {
+		    DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findOne(resourceId);
+		    if (doctorDrugCollection != null) {
+		    	DrugCollection drugCollection = drugRepository.findOne(doctorDrugCollection.getDrugId());
+				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+				BeanUtil.map(drugCollection, esDoctorDrugDocument);
+				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+		    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e);
+		}
+	}
 
     @Override
     @Transactional

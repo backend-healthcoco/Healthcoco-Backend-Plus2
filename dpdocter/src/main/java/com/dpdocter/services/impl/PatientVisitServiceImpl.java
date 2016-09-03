@@ -230,17 +230,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 		UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
 		if (userCollection != null) {
-		    patientVisitCollection
-			    .setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+		    patientVisitCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 		}
 	    }
 
 	    if (patientVisitCollection.getVisitedFor() != null) {
-		patientVisitCollection.getVisitedFor().add(visitedFor);
+	    	if(!patientVisitCollection.getVisitedFor().contains(visitedFor))patientVisitCollection.getVisitedFor().add(visitedFor);
 	    } else {
-		List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
-		visitedforList.add(visitedFor);
-		patientVisitCollection.setVisitedFor(visitedforList);
+			List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+			visitedforList.add(visitedFor);
+			patientVisitCollection.setVisitedFor(visitedforList);
 	    }
 
 	    patientVisitCollection.setVisitedTime(new Date());
@@ -250,7 +249,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    prescriptionId.add(id);
 		    patientVisitCollection.setPrescriptionId(prescriptionId);
 		} else {
-		    patientVisitCollection.getPrescriptionId().add(id);
+			if(!patientVisitCollection.getPrescriptionId().contains(id))patientVisitCollection.getPrescriptionId().add(id);
 		}
 	    } else if (visitedFor.equals(VisitedFor.CLINICAL_NOTES)) {
 		if (patientVisitCollection.getClinicalNotesId() == null) {
@@ -258,7 +257,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    clinicalNotes.add(id);
 		    patientVisitCollection.setClinicalNotesId(clinicalNotes);
 		} else {
-		    patientVisitCollection.getClinicalNotesId().add(id);
+			if(!patientVisitCollection.getClinicalNotesId().contains(id))patientVisitCollection.getClinicalNotesId().add(id);
 		}
 	    } else if (visitedFor.equals(VisitedFor.REPORTS)) {
 		if (patientVisitCollection.getRecordId() == null) {
@@ -266,7 +265,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    recordId.add(id);
 		    patientVisitCollection.setRecordId(recordId);
 		} else {
-		    patientVisitCollection.getRecordId().add(id);
+			if(!patientVisitCollection.getRecordId().contains(id))patientVisitCollection.getRecordId().add(id);
 		}
 	    }
 	    patientVisitCollection.setUpdatedTime(new Date());

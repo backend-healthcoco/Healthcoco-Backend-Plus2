@@ -240,12 +240,12 @@ public class RecordsServiceImpl implements RecordsService {
 	    String body = null;
 	    if(prescriptionCollection != null){
 	    	if(recordsCollection.getIsApproved()){
-	    		approvedRecordToDoctorSubject = approvedRecordToDoctorSubject.replace("${patientName}", patientCollection.getFirstName()).replace("${reportName}", recordsCollection.getRecordsLabel());
+	    		approvedRecordToDoctorSubject = approvedRecordToDoctorSubject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel());
 	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), approvedRecordToDoctorSubject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "approvedRecordToDoctorTemplate.vm");
 			    mailService.sendEmail(userCollection.getEmailAddress(), approvedRecordToDoctorSubject, body, null);
 	    	}else{
-	    		notApprovedRecordToDoctorSubject = notApprovedRecordToDoctorSubject.replace("${patientName}", patientCollection.getFirstName()).replace("${reportName}", recordsCollection.getRecordsLabel());
+	    		notApprovedRecordToDoctorSubject = notApprovedRecordToDoctorSubject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel());
 	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), notApprovedRecordToDoctorSubject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "notApprovedRecordToDoctorTemplate.vm");
 			    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject, body, null);
@@ -574,7 +574,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    	UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 	    	UserCollection patient = userRepository.findOne(recordsCollection.getPatientId());
 	    	String body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getUploadedByLocation(), null, recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "discardedRecordToLabTemplate.vm");
-		    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject.replace("${patientName}", patient.getFirstName()).replace("${reportName}", recordsCollection.getRecordsLabel()).replace("${drName}", prescriptionCollection.getCreatedBy()), body, null);
+		    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject.replace("{patientName}", patient.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{drName}", prescriptionCollection.getCreatedBy()), body, null);
 	    }
 	    response = new Records();
 	    BeanUtil.map(recordsCollection, response);

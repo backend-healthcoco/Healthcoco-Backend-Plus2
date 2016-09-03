@@ -792,4 +792,17 @@ public class PrescriptionApi {
     	response.setData(prescriptionServices.getPrescriptionFile(prescriptionId));
     	return response;
     }
+
+    @Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
+    @GET
+    @ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR, notes = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
+    public Response<Boolean> makeDrugFavourite(@PathParam("drugId") String drugId, @PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+    	if (DPDoctorUtils.anyStringEmpty(drugId, doctorId, locationId, hospitalId)) {
+    	    logger.error("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+    	Response<Boolean> response = new Response<Boolean>();
+    	response.setData(prescriptionServices.makeDrugFavourite(drugId, doctorId, locationId, hospitalId));
+    	return response;
+    }
 }

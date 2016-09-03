@@ -36,8 +36,6 @@ public interface PrescriptionServices {
 
     Drug deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
 
-    Drug deleteDrug(String drugId, Boolean discarded);
-
     DrugAddEditResponse getDrugById(String drugId);
 
     TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
@@ -132,5 +130,7 @@ public interface PrescriptionServices {
 	GenericCode addEditGenericCode(GenericCode request);
 
 	String getPrescriptionFile(String prescriptionId);
+
+	Boolean makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
 
 }

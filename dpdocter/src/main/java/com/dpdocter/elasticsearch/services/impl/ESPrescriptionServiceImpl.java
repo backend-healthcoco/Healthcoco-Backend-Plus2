@@ -23,9 +23,11 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
+import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
+import com.dpdocter.elasticsearch.repository.ESDoctorDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESLabTestRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
@@ -45,6 +47,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
     @Autowired
     private ESDrugRepository esDrugRepository;
+
+    @Autowired
+    private ESDoctorDrugRepository esDoctorDrugRepository;
 
     @Autowired
     private ESLabTestRepository esLabTestRepository;
@@ -106,9 +111,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     }
 
     @Override
-    public List<ESDrugDocument> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm, String category) {
-	List<ESDrugDocument> response = new ArrayList<ESDrugDocument>();
+	List<?> response = null;
 	if(!DPDoctorUtils.anyStringEmpty(searchTerm))searchTerm = searchTerm.toUpperCase();
 	switch (Range.valueOf(range.toUpperCase())) {
 
@@ -121,12 +126,33 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	case BOTH:
 	    response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category);
 	    break;
+	case FAVOURITES:
+	    response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm, category);
+	    break;
+	default:
+		break;
 	}
 	return response;
 
     }
 
-    private List<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+    private List<ESDoctorDrugDocument> getFavouritesDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category) {
+    	List<ESDoctorDrugDocument> response = null;
+    	try {
+    	    if (doctorId == null)response = new ArrayList<ESDoctorDrugDocument>();
+    	    else {
+    	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "rankingCount", searchTerm, category, "drugName");
+    		    response = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDrugDocument.class);
+    			}
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e + " Error Occurred While Getting Drugs");
+    	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+    	}
+    	return response;
+	}
+
+	private List<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    boolean discarded, String searchTerm, String category) {
 	List<ESDrugDocument> response = null;
 	try {
@@ -429,5 +455,16 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
         
 
         return searchQuery;
+	}
+
+	@Override
+	public void addDoctorDrug(ESDoctorDrugDocument request) {
+		try {
+			esDoctorDrugRepository.save(request);
+		    transnationalService.addResource(new ObjectId(request.getId()), Resource.DOCTORDRUG, true);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    logger.error(e + " Error Occurred While Saving Doctor Drug in ES");
+		}
 	}
 }

@@ -358,6 +358,8 @@ public interface PathProxy {
 		public static final String CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT = "/prescriptionExist/{uniqueEmrId}/{patientId}";
 
 		public static final String DOWNLOAD_PRESCRIPTION = "/download/{prescriptionId}";
+		
+		public static final String ADD_DRUG_TO_DOCTOR = "/drug/{drugId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
