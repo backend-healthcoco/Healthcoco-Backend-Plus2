@@ -1233,7 +1233,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     @Override
     @Transactional
     public String editRecord(String id, VisitedFor visitedFor) {
-	PatientVisitCollection patientVisitCollection = null;
+	PatientVisitCollection patientTrackCollection = null;
 	try {
 	    switch (visitedFor) {
 	    case PRESCRIPTION:
