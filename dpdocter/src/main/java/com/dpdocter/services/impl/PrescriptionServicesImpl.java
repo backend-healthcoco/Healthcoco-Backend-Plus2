@@ -770,15 +770,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response = new PrescriptionAddEditResponseDetails();
 				BeanUtil.map(prescription, response);
 				List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
-					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
-					Drug drug = new Drug();
-					if (drugCollection != null)
-						BeanUtil.map(drugCollection, drug);
-					prescriptionItemDetail.setDrug(drug);
-					prescriptionItemDetails.add(prescriptionItemDetail);
+				if(prescription.getItems() != null && !prescription.getItems().isEmpty()){
+					for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+						DrugCollection drugCollection = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
+						Drug drug = new Drug();
+						if (drugCollection != null)
+							BeanUtil.map(drugCollection, drug);
+						prescriptionItemDetail.setDrug(drug);
+						prescriptionItemDetails.add(prescriptionItemDetail);
+					}
 				}
 				response.setItems(prescriptionItemDetails);
 			}

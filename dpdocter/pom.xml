@@ -10,9 +10,6 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -53,6 +50,9 @@
 		</profile>
 		<profile>
 			<id>qa</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -812,6 +812,13 @@
 	    <artifactId>twilio-java-sdk</artifactId>
 	    <version>5.10.1</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
+<dependency>
+    <groupId>net.sf.jasperreports</groupId>
+    <artifactId>jasperreports-fonts</artifactId>
+    <version>4.0.0</version>
+</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>

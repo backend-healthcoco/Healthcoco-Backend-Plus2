@@ -226,12 +226,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientVisitCollection.setId(null);
 
 	    if (patientVisitCollection.getId() == null) {
-		patientVisitCollection.setCreatedTime(new Date());
-		patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
-		UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
-		if (userCollection != null) {
-		    patientVisitCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
-		}
+			patientVisitCollection.setCreatedTime(new Date());
+			patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+			UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
+			if (userCollection != null) {
+			    patientVisitCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+			}
 	    }
 
 	    if (patientVisitCollection.getVisitedFor() != null) {
@@ -474,7 +474,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		if (prescriptionResponse != null) {
 		    String visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
-		    prescriptionResponse.setVisitId(visitId);
+		    prescription.setVisitId(visitId);
 		    request.setVisitId(visitId);
 		    List<Prescription> list = new ArrayList<Prescription>();
 		    list.add(prescription);
@@ -498,9 +498,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	    PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(request.getVisitId()));
 	    if (patientVisitCollection != null) {
-		response.setId(patientVisitCollection.getId().toString());
-		response.setVisitedFor(patientVisitCollection.getVisitedFor());
-		response.setVisitedTime(patientVisitCollection.getVisitedTime());
+			response.setId(patientVisitCollection.getId().toString());
+			response.setVisitedFor(patientVisitCollection.getVisitedFor());
+			response.setVisitedTime(patientVisitCollection.getVisitedTime());
+			response.setUniqueEmrId(patientVisitCollection.getUniqueEmrId());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -1232,7 +1233,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     @Override
     @Transactional
     public String editRecord(String id, VisitedFor visitedFor) {
-	PatientVisitCollection patientTrackCollection = new PatientVisitCollection();
+	PatientVisitCollection patientVisitCollection = null;
 	try {
 	    switch (visitedFor) {
 	    case PRESCRIPTION:

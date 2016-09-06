@@ -332,6 +332,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    if (!DPDoctorUtils.anyStringEmpty(clinicImage.getThumbnailUrl()))clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
 			}
 		}
+		String address = 
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress()) ? locationCollection.getStreetAddress()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails()) ? locationCollection.getLandmarkDetails()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality()) ? locationCollection.getLocality()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCity()) ? locationCollection.getCity()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getState()) ? locationCollection.getState()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry()) ? locationCollection.getCountry()+", ":"")+
+	    			(!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode()) ? locationCollection.getPostalCode():"");
+	    	
+	    if(address.charAt(address.length() - 2) == ','){
+	    	address = address.substring(0, address.length() - 2);
+	    }
+	    location.setClinicAddress(address);
+		
 		response.setLocation(location);
 
 		hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
