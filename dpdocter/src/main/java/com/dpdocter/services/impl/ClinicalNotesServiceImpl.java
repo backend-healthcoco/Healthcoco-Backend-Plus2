@@ -1934,16 +1934,16 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	    parameters.put("clinicalNotesId", clinicalNotesCollection.getId().toString());
 	    if (clinicalNotesCollection.getVitalSigns() != null) {
 		String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-		pulse =  "Pulse: " + (pulse != null && !pulse.isEmpty() ?pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "--    ");
+		pulse =  (pulse != null && !pulse.isEmpty() ? "Pulse: "+pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "");
 
 		String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-		temp = "Temperature: " + (temp != null && !temp.isEmpty() ? temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "--    ");
+		temp = (temp != null && !temp.isEmpty() ? "Temperature: " + temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "");
 
 		String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-		breathing = "Breathing: " + (breathing != null && !breathing.isEmpty() ? breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "--    ");
+		breathing = (breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "");
 
 		String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-		weight = "Weight: " + (weight != null && !weight.isEmpty() ? weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "--    ");
+		weight = (weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "");
 		
 		String bloodPressure = "";
 		if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
@@ -1953,9 +1953,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 		    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-		    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
-		}else{
-			bloodPressure = "Blood Pressure: --    ";
+		    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
+		    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
 		}
 		String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 		parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);

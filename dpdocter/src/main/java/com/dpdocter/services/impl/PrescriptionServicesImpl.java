@@ -3223,6 +3223,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
 		int no = 0;
+		Boolean showIntructions = false, showDirection = false;
 		if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 				if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
@@ -3242,7 +3243,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								: "";
 
 						String directions = "";
-						if (prescriptionItem.getDirection() != null)
+						if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()){
+							showDirection = true;
 							for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
 								if (drugDirection.getDirection() != null)
 									if (directions == "")
@@ -3250,6 +3252,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									else
 										directions = directions + "," + (drugDirection.getDirection());
 							}
+						}
+						if(!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())){
+							showIntructions = true;
+						}
 						String duration = "";
 						if (durationValue == "" && durationValue == "")
 							duration = "----";
@@ -3257,15 +3263,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							duration = durationValue + " " + durationUnit;
 						no = no + 1;
 						PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-								drugName, prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----",
+								drugName, !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage()) ? prescriptionItem.getDosage() : "----",
 								duration, directions.isEmpty() ? "----" : directions,
-								prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions()
+										!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions()) ? prescriptionItem.getInstructions()
 										: "----");
-
 						prescriptionItems.add(prescriptionJasperDetails);
 					}
 				}
 				parameters.put("prescriptionItems", prescriptionItems);
+				parameters.put("showIntructions", showIntructions);
+				parameters.put("showDirection", showDirection);
 			}
 
 		parameters.put("prescriptionId", prescriptionCollection.getId().toString());

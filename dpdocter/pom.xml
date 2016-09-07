@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -23,6 +26,10 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/velocityTemplates</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/files</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -45,14 +52,15 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
+					<resource>
+						<directory>src/main/resources/files</directory>
+						<filtering>true</filtering>
+					</resource>
 				</resources>
 			</build>
 		</profile>
 		<profile>
 			<id>qa</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -66,6 +74,10 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/velocityTemplates</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/files</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -86,6 +98,10 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/velocityTemplates</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/resources/files</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -816,7 +832,7 @@
 <dependency>
     <groupId>net.sf.jasperreports</groupId>
     <artifactId>jasperreports-fonts</artifactId>
-    <version>4.0.0</version>
+    <version>6.0.0</version>
 </dependency>
 
 	</dependencies>

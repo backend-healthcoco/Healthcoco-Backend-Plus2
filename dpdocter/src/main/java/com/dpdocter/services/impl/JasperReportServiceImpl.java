@@ -57,6 +57,9 @@ public class JasperReportServiceImpl implements JasperReportService {
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
 
+    @Value(value = "${jasper.print.pdf.font.file.name}")
+    private String JASPER_PDF_FONT_FILE;
+
     @SuppressWarnings("deprecation")
     @Override
     @Transactional
@@ -75,6 +78,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 		    
 		    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
+		    JRProperties.setProperty("net.sf.jasperreports.default.pdf.font.name", JASPER_PDF_FONT_FILE);
+		    JRProperties.setProperty("net.sf.jasperreports.default.pdf.encoding","Identity-H");
+		    JRProperties.setProperty("net.sf.jasperreports.default.pdf.embedded","true");
+
 		    JasperDesign design = null;
 		    JRStyle style = new JRBaseStyle();
 		    style.setFontSize(contentFontSize);

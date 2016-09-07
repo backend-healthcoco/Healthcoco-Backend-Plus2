@@ -675,10 +675,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
 		    if(!DPDoctorUtils.anyStringEmpty(prescriptionId)){
 		    	DBObject prescriptionItems = new BasicDBObject();
-			    List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId.toString(), prescriptionItems);
+			    List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(prescriptionId.toString(), prescriptionItems, parameters);
 			    prescriptionItems.put("items", prescriptionJasperDetails);
 			    resourceId = (String) prescriptionItems.get("resourceId");
-			    if(DPDoctorUtils.anyStringEmpty(resourceId))resourceId = "";
 			    prescriptions.add(prescriptionItems);
 		    }
 		}
@@ -877,16 +876,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
 		    if (clinicalNotesCollection.getVitalSigns() != null) {
 				String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-				pulse =  "Pulse: " + (pulse != null && !pulse.isEmpty() ?pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "--    ");
+				pulse =  (pulse != null && !pulse.isEmpty() ?"Pulse: " + pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "");
 
 				String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-				temp = "Temperature: " + (temp != null && !temp.isEmpty() ? temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "--    ");
+				temp = (temp != null && !temp.isEmpty() ? "Temperature: " + temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "");
 
 				String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-				breathing = "Breathing: " + (breathing != null && !breathing.isEmpty() ? breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "--    ");
+				breathing = (breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "");
 
 				String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-				weight = "Weight: " + (weight != null && !weight.isEmpty() ? weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "--    ");
+				weight = (weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "");
 				
 				String bloodPressure = "";
 				if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
@@ -896,9 +895,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 				    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 
-				    bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
-				}else{
-					bloodPressure = "Blood Pressure: --    ";
+				    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
+				    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
 				}
 			String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
 			clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
@@ -993,7 +991,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	return clinicalNotesJasperDetails;
     }
 
-    private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId, DBObject prescriptionItemsObj) {
+    private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId, DBObject prescriptionItemsObj, Map<String, Object> parameters) {
 	PrescriptionCollection prescriptionCollection = null;
 	List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 	try {
@@ -1018,6 +1016,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 			&& prescriptionCollection.getLocationId() != null) {
 		    int no = 0;
+		    Boolean showIntructions = false, showDirection = false;
 		    if(prescriptionCollection.getItems() != null)
 		    for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 			if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
@@ -1032,29 +1031,35 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					? prescriptionItem.getDuration().getDurationUnit().getUnit() : "") : "";
 
 				String directions = "";
-				if (prescriptionItem.getDirection() != null)
-				    for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-					if (drugDirection.getDirection() != null)
-					    if (directions == "")
-						directions = directions + (drugDirection.getDirection());
-					    else
-						directions = directions + "," + (drugDirection.getDirection());
-				    }
+				if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()){
+					showDirection = true;
+					for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
+						if (drugDirection.getDirection() != null)
+							if (directions == "")
+								directions = directions + (drugDirection.getDirection());
+							else
+								directions = directions + "," + (drugDirection.getDirection());
+					}
+				}
+				if(!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())){
+					showIntructions = true;
+				}
 				String duration = "";
 				if (durationValue == "" && durationValue == "")
 				    duration = "----";
 				else
 				    duration = durationValue + " " + durationUnit;
 				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
-					prescriptionItem.getDosage() != null ? prescriptionItem.getDosage() : "----", duration,
+						!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage()) ? prescriptionItem.getDosage() : "----", duration,
 					directions.isEmpty() ? "----" : directions,
-					prescriptionItem.getInstructions() != null ? prescriptionItem.getInstructions() : "----");
+							!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions()) ? prescriptionItem.getInstructions() : "----");
 
 				prescriptionItems.add(prescriptionJasperDetails);
 			    }
 			}
 		    }
-		}
+		    parameters.put("showIntructions", showIntructions);
+			parameters.put("showDirection", showDirection);		}
 	    } else {
 		logger.warn("Prescription not found.Please check prescriptionId.");
 		throw new BusinessException(ServiceError.Unknown, "Prescription not found.Please check prescriptionId.");
