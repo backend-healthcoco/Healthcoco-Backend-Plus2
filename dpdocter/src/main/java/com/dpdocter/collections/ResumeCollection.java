@@ -6,25 +6,27 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "resume_cl")
-public class ResumeCollection extends GenericCollection{
+public class ResumeCollection extends GenericCollection {
 
 	@Id
-    private ObjectId id;
+	private ObjectId id;
 
-    @Field
-    private String type;
+	@Field
+	private String type;
 
-    @Field
-    private String name;
+	@Field
+	private String name;
 
-    @Field
-    private String emailAddress;
+	@Field
+	private String emailAddress;
+	@Field
+	private String countryCode;
 
-    @Field
-    private String mobileNumber;
+	@Field
+	private String mobileNumber;
 
-    @Field
-    private String path;
+	@Field
+	private String path;
 
 	public ObjectId getId() {
 		return id;
@@ -73,6 +75,7 @@ public class ResumeCollection extends GenericCollection{
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
 	}
+	
 
 	@Override
 	public String toString() {

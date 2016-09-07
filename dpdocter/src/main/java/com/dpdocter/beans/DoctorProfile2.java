@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class DoctorProfile {
+public class DoctorProfile2 {
     private String id;
 
     private String userId;
@@ -14,7 +14,7 @@ public class DoctorProfile {
     private String firstName;
 
     private String emailAddress;
-	private String countryCode;
+    
 
     private String mobileNumber;
 
@@ -265,13 +265,5 @@ public class DoctorProfile {
 				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
 				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
 				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-	}
-
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
 	}
 }

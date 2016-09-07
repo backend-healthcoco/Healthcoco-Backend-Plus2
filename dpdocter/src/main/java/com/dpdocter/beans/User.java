@@ -14,6 +14,8 @@ public class User {
     private String userName;
 
     private String emailAddress;
+    
+	private String countryCode;
 
     private String mobileNumber;
 
@@ -191,6 +193,14 @@ public class User {
 				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
 				+ colorCode + ", userState=" + userState + ", userUId=" + userUId + ", specialities=" + specialities
 				+ "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 }

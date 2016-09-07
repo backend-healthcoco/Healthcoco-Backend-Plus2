@@ -27,6 +27,7 @@ public class DoctorContactUs extends GenericCollection{
 	private String userName;
 	private GenderType gender;
 	private String emailAddress;
+	private String countryCode;
 	private String mobileNumber;
 	private String city;
 	private List<String> specialities;
@@ -136,6 +137,14 @@ public class DoctorContactUs extends GenericCollection{
 				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", city="
 				+ city + ", specialities=" + specialities + ", contactState=" + contactState + ", isVerified="
 				+ isVerified + ", toList=" + toList + "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	

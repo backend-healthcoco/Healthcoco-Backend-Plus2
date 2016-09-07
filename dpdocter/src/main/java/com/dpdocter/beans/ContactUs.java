@@ -2,17 +2,18 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class ContactUs extends GenericCollection{
+public class ContactUs extends GenericCollection {
 
 	private String id;
 
-    private String name;
+	private String name;
 
-    private String mobileNumber;
+	private String countryCode;
+	private String mobileNumber;
 
-    private String emailAddress;
+	private String emailAddress;
 
-    private String message;
+	private String message;
 
 	public String getId() {
 		return id;
@@ -58,5 +59,13 @@ public class ContactUs extends GenericCollection{
 	public String toString() {
 		return "ContactUs [id=" + id + ", name=" + name + ", mobileNumber=" + mobileNumber + ", emailAddress="
 				+ emailAddress + ", message=" + message + "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 }

@@ -6,21 +6,22 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DeviceType;
 import com.dpdocter.enums.RoleEnum;
 
-public class UserDevice extends GenericCollection{
+public class UserDevice extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private List<String> userIds;
+	private List<String> userIds;
 
-    private DeviceType deviceType;
+	private DeviceType deviceType;
 
-    private String deviceId;
+	private String deviceId;
 
-    private String pushToken;
-    
-    private RoleEnum role;
-    
-    private String mobileNumber;
+	private String pushToken;
+
+	private RoleEnum role;
+	private String countryCode;
+
+	private String mobileNumber;
 
 	public String getId() {
 		return id;
@@ -82,5 +83,13 @@ public class UserDevice extends GenericCollection{
 	public String toString() {
 		return "UserDevice [id=" + id + ", userIds=" + userIds + ", deviceType=" + deviceType + ", deviceId=" + deviceId
 				+ ", pushToken=" + pushToken + ", role=" + role + ", mobileNumber=" + mobileNumber + "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 }

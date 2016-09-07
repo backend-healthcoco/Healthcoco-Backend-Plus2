@@ -5,6 +5,8 @@ public class AdminSignupRequest {
 	private String Id;
 	private String firstName;
 	private String emailAddress;
+	private String countryCode;
+	
 	private String mobileNumber;
 
 	public String getId() {
@@ -37,6 +39,14 @@ public class AdminSignupRequest {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 }

@@ -11,6 +11,8 @@ public class Resume extends GenericCollection{
     private String name;
 
     private String emailAddress;
+    
+	private String countryCode;
 
     private String mobileNumber;
 
@@ -78,6 +80,14 @@ public class Resume extends GenericCollection{
 	public String toString() {
 		return "Resume [id=" + id + ", type=" + type + ", name=" + name + ", emailAddress=" + emailAddress
 				+ ", mobileNumber=" + mobileNumber + ", path=" + path + ", file=" + file + "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 }
