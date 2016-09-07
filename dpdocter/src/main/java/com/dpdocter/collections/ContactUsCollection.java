@@ -6,22 +6,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "contact_us_cl")
-public class ContactUsCollection extends GenericCollection{
+public class ContactUsCollection extends GenericCollection {
 
 	@Id
-    private ObjectId id;
+	private ObjectId id;
 
-    @Field
-    private String name;
+	@Field
+	private String name;
 
-    @Field
-    private String mobileNumber;
+	@Field
+	private String countryCode;
 
-    @Field
-    private String emailAddress;
+	@Field
+	private String mobileNumber;
 
-    @Field
-    private String message;
+	@Field
+	private String emailAddress;
+
+	@Field
+	private String message;
 
 	public ObjectId getId() {
 		return id;
@@ -61,6 +64,14 @@ public class ContactUsCollection extends GenericCollection{
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override

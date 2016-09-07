@@ -7,85 +7,85 @@ import java.util.List;
  */
 
 public class Doctor {
-    private String id;
+	private String id;
 
-    private String firstName;
+	private String firstName;
 
-    private String lastName;
+	private String lastName;
+	private String countryCode;
+	private String mobileNumber;
 
-    private String mobileNumber;
+	private String emailAddress;
 
-    private String emailAddress;
+	private String imageUrl;
 
-    private String imageUrl;
+	private String thumbnailUrl;
 
-    private String thumbnailUrl;
-    
-    private String colorCode;
-    
-    private String coverImageUrl;
+	private String colorCode;
 
-    private String coverThumbnailImageUrl;
+	private String coverImageUrl;
 
-    private List<String> specialities;
+	private String coverThumbnailImageUrl;
 
-    private DoctorClinicProfile doctorClinicProfile;
+	private List<String> specialities;
 
-    public String getId() {
-	return id;
-    }
+	private DoctorClinicProfile doctorClinicProfile;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public String getLastName() {
-	return lastName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(String lastName) {
-	this.lastName = lastName;
-    }
+	public String getLastName() {
+		return lastName;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public String getEmailAddress() {
-	return emailAddress;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public String getImageUrl() {
-	return imageUrl;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-    public DoctorClinicProfile getDoctorClinicProfile() {
-	return doctorClinicProfile;
-    }
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-    public void setDoctorClinicProfile(DoctorClinicProfile doctorClinicProfile) {
-	this.doctorClinicProfile = doctorClinicProfile;
-    }
+	public DoctorClinicProfile getDoctorClinicProfile() {
+		return doctorClinicProfile;
+	}
+
+	public void setDoctorClinicProfile(DoctorClinicProfile doctorClinicProfile) {
+		this.doctorClinicProfile = doctorClinicProfile;
+	}
 
 	public List<String> getSpecialities() {
 		return specialities;
@@ -134,5 +134,13 @@ public class Doctor {
 				+ thumbnailUrl + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
 				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities=" + specialities
 				+ ", doctorClinicProfile=" + doctorClinicProfile + "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 }

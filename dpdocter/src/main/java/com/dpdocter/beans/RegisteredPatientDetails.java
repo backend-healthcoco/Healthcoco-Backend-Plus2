@@ -21,6 +21,7 @@ public class RegisteredPatientDetails extends GenericCollection {
     private String userId;
 
     private String userName;
+	private String countryCode;
 
     private String mobileNumber;
 
@@ -215,6 +216,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", PID=" + PID
 				+ ", colorCode=" + colorCode + ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic
 				+ "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 }

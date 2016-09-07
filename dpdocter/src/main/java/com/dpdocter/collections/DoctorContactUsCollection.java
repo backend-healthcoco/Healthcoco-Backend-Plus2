@@ -12,7 +12,7 @@ import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.GenderType;
 
 @Document(collection = "doctor_contact_us_cl")
-public class DoctorContactUsCollection extends GenericCollection{
+public class DoctorContactUsCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
@@ -27,6 +27,8 @@ public class DoctorContactUsCollection extends GenericCollection{
 	@Field
 	private String emailAddress;
 	@Field
+	private String countryCode;
+	@Field
 	private String mobileNumber;
 	@Field
 	private List<String> specialities;
@@ -39,7 +41,7 @@ public class DoctorContactUsCollection extends GenericCollection{
 
 	@Field
 	private String city;
-	
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -104,7 +106,6 @@ public class DoctorContactUsCollection extends GenericCollection{
 		this.specialities = specialities;
 	}
 
-	
 	public DoctorContactStateType getContactState() {
 		return contactState;
 	}
@@ -135,6 +136,14 @@ public class DoctorContactUsCollection extends GenericCollection{
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	@Override

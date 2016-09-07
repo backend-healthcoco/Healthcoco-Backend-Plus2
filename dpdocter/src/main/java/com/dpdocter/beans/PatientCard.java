@@ -22,6 +22,7 @@ public class PatientCard {
     private String PID;
 
     private String gender;
+	private String countryCode;
 
     private String mobileNumber;
 
@@ -243,5 +244,13 @@ public class PatientCard {
 				+ locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
 				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
 				+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 }

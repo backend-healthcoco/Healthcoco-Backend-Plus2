@@ -3,6 +3,8 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.AppType;
 
 public class SendAppLink {
+	
+	private String countryCode;
 
 	private String mobileNumber;
 	
@@ -38,5 +40,13 @@ public class SendAppLink {
 	public String toString() {
 		return "SendAppLink [mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress + ", appType=" + appType
 				+ "]";
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 }
