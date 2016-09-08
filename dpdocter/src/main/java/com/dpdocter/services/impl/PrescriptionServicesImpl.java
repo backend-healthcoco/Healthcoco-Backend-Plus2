@@ -628,6 +628,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 							esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
 							esDoctorDrugRepository.save(esDoctorDrugDocument);
+						}else{
+							DrugCollection  drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
+							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1, false, drugCollection != null ? drugCollection.getGenericCodes():null);
+							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+							transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+							if (doctorDrugCollection != null) {
+							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
+							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+							}
 						}
 					}
 				}
@@ -713,22 +724,43 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setUniqueEmrId(oldPrescription.getUniqueEmrId());
 			if (prescriptionCollection.getItems() != null) {
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
-					List<DrugDirection> directions = null;
-					if (item.getDirection() != null && !item.getDirection().isEmpty()) {
-						for (DrugDirection drugDirection : item.getDirection()) {
-							if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
-								if (directions == null)
-									directions = new ArrayList<DrugDirection>();
-								directions.add(drugDirection);
+					if (item.getDrugId() != null) {
+						List<DrugDirection> directions = null;
+						if (item.getDirection() != null && !item.getDirection().isEmpty()) {
+							for (DrugDirection drugDirection : item.getDirection()) {
+								if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+									if (directions == null)
+										directions = new ArrayList<DrugDirection>();
+									directions.add(drugDirection);
+								}
+							}
+							item.setDirection(directions);
+						}
+						if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+							if (item.getDuration().getDurationUnit().getId() == null)
+								item.setDuration(null);
+						} else {
+							item.setDuration(null);
+						}
+						DoctorDrugCollection doctorDrugCollection =  doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+						if(doctorDrugCollection != null){
+							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount()+1);
+							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+							esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
+							esDoctorDrugRepository.save(esDoctorDrugDocument);
+						}else{
+							DrugCollection  drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
+							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1, false, drugCollection != null ? drugCollection.getGenericCodes():null);
+							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+							transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+							if (doctorDrugCollection != null) {
+							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
+							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 							}
 						}
-						item.setDirection(directions);
-					}
-					if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
-						if (item.getDuration().getDurationUnit().getId() == null)
-							item.setDuration(null);
-					} else {
-						item.setDuration(null);
 					}
 				}
 			}
@@ -3413,26 +3445,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		}
 		
-        if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
-			if(DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("Age | Gender: -- | --");
+        if(patientDetails.getShowDOB()){
+			if(DPDoctorUtils.allStringsEmpty(age, gender));
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("Age | Gender: "+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("Age | Gender: -- | "+gender);
-		}else if(patientDetails.getShowDOB()){
-			patientDetailList.add("Age | Gender: "+(!DPDoctorUtils.anyStringEmpty(age) ? age : "--")+" | --");
-		}else if(patientDetails.getShowGender()){
-			patientDetailList.add("Age | Gender: -- | "+(!DPDoctorUtils.anyStringEmpty(gender)?gender:"--"));
 		}
+		
         
-        if(patientDetails.getShowBloodGroup()){
-        	patientDetailList.add("Blood Group: " + (patient != null && patient.getBloodGroup() != null ? patient.getBloodGroup() : "--"));
+        if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
+        	patientDetailList.add("Blood Group: " + patient.getBloodGroup());
         }
         if(patientDetails.getShowReferedBy()){
         	if (patient != null && patient.getReferredBy() != null) {
     			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
-    			if (referencesCollection != null)
-    				refferedBy = referencesCollection.getReference();
+    			if(referencesCollection != null && !DPDoctorUtils.anyStringEmpty(referencesCollection.getReference()))
+    				patientDetailList.add("Referred By: " + referencesCollection.getReference());
     		}
-        	patientDetailList.add("Referred By: " + (refferedBy != "" ? refferedBy : "--"));
         }
         if(patientDetails.getShowDate()){
         	patientDetailList.add("Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));

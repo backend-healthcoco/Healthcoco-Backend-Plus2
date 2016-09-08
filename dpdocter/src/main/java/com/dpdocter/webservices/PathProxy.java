@@ -257,7 +257,7 @@ public interface PathProxy {
 
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
 		
-		public static final String APPROVE_RECORD = "/{recordId}/approve";
+		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
 	}
 
 	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";

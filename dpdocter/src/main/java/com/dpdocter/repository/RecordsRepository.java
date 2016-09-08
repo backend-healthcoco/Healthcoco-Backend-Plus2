@@ -40,11 +40,11 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, Ob
     @Query("{'patientId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded': {$in: ?5}, 'inHistory' : {$in: ?6}}")
     List<RecordsCollection> findRecords(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, boolean[] inHistorys, Sort sort);
 
-    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'isApproved': ?3}")
-    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Boolean isApproved, Pageable pageRequest);
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'recordsState': {'$in' : ?3}}")
+    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, List<String> recordStates, Pageable pageRequest);
 
-    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'isApproved': ?3}")
-    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Boolean isApproved, Sort sort);
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'recordsState': {'$in' : ?3}}")
+    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, List<String> recordStates, Sort sort);
 
     @Query("{'patientId': ?0}")
     List<RecordsCollection> findRecords(ObjectId patientId);

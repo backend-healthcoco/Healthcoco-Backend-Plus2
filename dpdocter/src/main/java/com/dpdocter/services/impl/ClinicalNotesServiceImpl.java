@@ -2087,23 +2087,16 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			if(DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("Age | Gender: -- | --");
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("Age | Gender: "+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("Age | Gender: -- | "+gender);
-		}else if(patientDetails.getShowDOB()){
-			patientDetailList.add("Age | Gender: "+(!DPDoctorUtils.anyStringEmpty(age) ? age : "--")+" | --");
-		}else if(patientDetails.getShowGender()){
-			patientDetailList.add("Age | Gender: -- | "+(!DPDoctorUtils.anyStringEmpty(gender)?gender:"--"));
 		}
         
-        if(patientDetails.getShowBloodGroup()){
-        	patientDetailList.add("Blood Group: " + (patient != null && patient.getBloodGroup() != null ? patient.getBloodGroup() : "--"));
+        if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
+        	patientDetailList.add("Blood Group: " + patient.getBloodGroup());
         }
-        if(patientDetails.getShowReferedBy()){
-        	if (patient != null && patient.getReferredBy() != null) {
-    			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
-    			if (referencesCollection != null)
-    				refferedBy = referencesCollection.getReference();
+        if(patientDetails.getShowReferedBy() && patient != null && patient.getReferredBy() != null){
+        	ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
+    		if (referencesCollection != null && !DPDoctorUtils.anyStringEmpty(referencesCollection.getReference()))
+    			patientDetailList.add("Referred By: " + referencesCollection.getReference());
     		}
-        	patientDetailList.add("Referred By: " + (refferedBy != "" ? refferedBy : "--"));
-        }
         if(patientDetails.getShowDate()){
         	patientDetailList.add("Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
         }

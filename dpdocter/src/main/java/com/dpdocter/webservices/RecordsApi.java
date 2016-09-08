@@ -364,15 +364,15 @@ public class RecordsApi {
 	return response;
     }
 
-    @Path(value = PathProxy.RecordsUrls.APPROVE_RECORD)
-    @DELETE
-    @ApiOperation(value = PathProxy.RecordsUrls.APPROVE_RECORD, notes = PathProxy.RecordsUrls.APPROVE_RECORD)
-    public Response<Records> approveRecords(@PathParam("recordId") String recordId, @DefaultValue("true") @QueryParam("isApproved") Boolean isApproved) {
+    @Path(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
+    @GET
+    @ApiOperation(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE, notes = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
+    public Response<Records> changeRecordState(@PathParam("recordId") String recordId, @PathParam("recordsState") String recordsState) {
     	if (DPDoctorUtils.anyStringEmpty(recordId)) {
     		logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-    	Records records = recordsService.approveRecords(recordId, isApproved);
+    	Records records = recordsService.changeRecordState(recordId, recordsState);
 		Response<Records> response = new Response<Records>();
 		response.setData(records);
 	return response;

@@ -43,7 +43,7 @@ public class Records extends GenericCollection {
 
     private Boolean isFeedbackAvailable = false;
 
-    private Boolean isApproved = true;
+    private String recordsState;
     
     public String getId() {
 	return id;
@@ -205,12 +205,12 @@ public class Records extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public Boolean getIsApproved() {
-		return isApproved;
+	public String getRecordsState() {
+		return recordsState;
 	}
 
-	public void setIsApproved(Boolean isApproved) {
-		this.isApproved = isApproved;
+	public void setRecordsState(String recordsState) {
+		this.recordsState = recordsState;
 	}
 
 	@Override
@@ -222,6 +222,6 @@ public class Records extends GenericCollection {
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId="
 				+ prescribedByDoctorId + ", prescribedByLocationId=" + prescribedByLocationId
 				+ ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId
-				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", isApproved=" + isApproved + "]";
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState + "]";
 	}
 }

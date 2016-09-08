@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.RecordsState;
+
 @Document(collection = "records_cl")
 @CompoundIndexes({
     @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
@@ -75,7 +77,7 @@ public class RecordsCollection extends GenericCollection {
     private Boolean isFeedbackAvailable = false;
 
     @Field
-    private Boolean isApproved = true;
+    private String recordsState;
 
     public ObjectId getId() {
 	return id;
@@ -237,12 +239,12 @@ public class RecordsCollection extends GenericCollection {
 	this.isFeedbackAvailable = isFeedbackAvailable;
     }
 
-	public Boolean getIsApproved() {
-		return isApproved;
+	public String getRecordsState() {
+		return recordsState;
 	}
 
-	public void setIsApproved(Boolean isApproved) {
-		this.isApproved = isApproved;
+	public void setRecordsState(String recordsState) {
+		this.recordsState = recordsState;
 	}
 
 	@Override
@@ -254,7 +256,7 @@ public class RecordsCollection extends GenericCollection {
 				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
 				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
 				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
-				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", isApproved=" + isApproved
+				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
 				+ "]";
 	}
 
