@@ -997,16 +997,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 	    if (prescriptionCollection != null) {
-	    	prescriptionItemsObj.put("resourceId","PID: " + prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--");
-	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
+	    	prescriptionItemsObj.put("resourceId", "PID: " + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--"));
+	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
 		if (prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 		    String labTest = "";
-		    int i = 1;
 		    for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(tests.getTestId()));
 			    if (diagnosticTestCollection != null) {
-				labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
-				i++;
+			    	if(DPDoctorUtils.anyStringEmpty(labTest))labTest = diagnosticTestCollection.getTestName();
+					else labTest = labTest + ", " + diagnosticTestCollection.getTestName();
 			    }
 			}
 		    prescriptionItemsObj.put("labTest", labTest);

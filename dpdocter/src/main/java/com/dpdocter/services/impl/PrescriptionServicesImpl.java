@@ -3276,17 +3276,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 
 		parameters.put("prescriptionId", prescriptionCollection.getId().toString());
-		parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : "----");
+		parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
 		String labTest = "";
-		if (prescriptionCollection.getDiagnosticTests() != null
-				&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
-			int i = 1;
+		if (prescriptionCollection.getDiagnosticTests() != null	&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 			for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 				if (tests.getTestId() != null) {
 					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(tests.getTestId()));
 					if (diagnosticTestCollection != null) {
-						labTest = labTest + i + ") " + diagnosticTestCollection.getTestName() + "<br>";
-						i++;
+						if(DPDoctorUtils.anyStringEmpty(labTest))labTest = diagnosticTestCollection.getTestName();
+						else labTest = labTest + ", " + diagnosticTestCollection.getTestName();
 					}
 				}
 			}
