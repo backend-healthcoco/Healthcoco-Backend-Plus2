@@ -368,7 +368,7 @@ public class RecordsApi {
     @GET
     @ApiOperation(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE, notes = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
     public Response<Records> changeRecordState(@PathParam("recordId") String recordId, @PathParam("recordsState") String recordsState) {
-    	if (DPDoctorUtils.anyStringEmpty(recordId)) {
+    	if (DPDoctorUtils.anyStringEmpty(recordId, recordsState)) {
     		logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}

@@ -434,6 +434,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
 				BeanUtil.map(drugCollection, esDoctorDrugDocument);
 				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+				esDoctorDrugDocument.setId(drugCollection.getId().toString());
 				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 		    }
 		} catch (Exception e) {

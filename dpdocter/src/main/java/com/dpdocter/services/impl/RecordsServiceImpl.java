@@ -239,7 +239,7 @@ public class RecordsServiceImpl implements RecordsService {
 		prescriptionRepository.save(prescriptionCollection);
 	    }
 	    String body = null;
-	    if(prescriptionCollection != null){
+	    if(prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())){
 	    	if(recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
 	    		approvedRecordToDoctorSubject = approvedRecordToDoctorSubject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{clinicName}", recordsCollection.getUploadedByLocation());
 	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), approvedRecordToDoctorSubject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
@@ -252,7 +252,7 @@ public class RecordsServiceImpl implements RecordsService {
 			    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject, body, null);
 	    	}
 	    }
-	    if(recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
+	    if(!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
 	    	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	        sendRecordSmsToPatient(patientCollection.getFirstName(), patientCollection.getMobileNumber(), recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(), recordsCollection.getLocationId(), recordsCollection.getHospitalId(), recordsCollection.getPatientId());
 	    }
@@ -1005,7 +1005,7 @@ public class RecordsServiceImpl implements RecordsService {
 			    }
 		    
 		    String body = null;
-		    if(prescriptionCollection != null){
+		    if(prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())){
 		    	if(recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
 		    		approvedRecordToDoctorSubject = approvedRecordToDoctorSubject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{clinicName}", recordsCollection.getUploadedByLocation());
 		    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), approvedRecordToDoctorSubject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
@@ -1019,7 +1019,7 @@ public class RecordsServiceImpl implements RecordsService {
 		    	}
 		    }
 	    }
-		if(recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
+		if(!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
 		    	pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Your Report from "+recordsCollection.getUploadedByLocation()+" is here - Tap to view it!", ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 		        sendRecordSmsToPatient(patientCollection.getFirstName(), patientCollection.getMobileNumber(), recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(), recordsCollection.getDoctorId(), recordsCollection.getLocationId(), recordsCollection.getHospitalId(), recordsCollection.getPatientId());
 		}

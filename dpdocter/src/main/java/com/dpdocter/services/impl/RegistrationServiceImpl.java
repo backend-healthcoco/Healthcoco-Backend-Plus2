@@ -1582,7 +1582,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    		admindoctorName = doctorUser.getTitle()+" "+doctorUser.getFirstName();
 	    	}
 	    }
-	    if(doctorRole.getRole().equals(RoleEnum.DOCTOR) || doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN) || doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN) || doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN)){
+	    if(doctorRole.getRole().equals(RoleEnum.DOCTOR.getRole()) || doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole()) || doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole()) || doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())){
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), null, "addDoctorToClinicVerifyTemplate.vm", admindoctorName, locationCollection.getLocationName());
 		    mailService.sendEmail(userCollection.getEmailAddress(), addDoctorToClinicVerifySub, body, null);
 		}else{
@@ -1723,7 +1723,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    		admindoctorName = doctorUser.getTitle()+" "+doctorUser.getFirstName();
 	    	}
 	    }
-		if(doctorRole.getRole().equals(RoleEnum.DOCTOR) || doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN) || doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN) || doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN)){
+		if(doctorRole.getRole().equals(RoleEnum.DOCTOR.getRole()) || doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole()) || doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole()) || doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())){
 			String body = mailBodyGenerator.generateActivationEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), null, "addExistingDoctorToClinicTemplate.vm", admindoctorName, locationCollection.getLocationName());
 		    mailService.sendEmail(userCollection.getEmailAddress(), addExistingDoctorToClinicSub+" "+locationCollection.getLocationName(), body, null);
 		}

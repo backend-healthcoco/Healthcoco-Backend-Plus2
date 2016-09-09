@@ -211,6 +211,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Value(value = "${jasper.print.visit.diagrams.a5.fileName}")
     private String visitDiagramsA5FileName;
 
+	@Value(value = "${jasper.print.prescription.subreport.a4.fileName}")
+    private String prescriptionSubReportA4FileName;
+
+	@Value(value = "${jasper.print.prescription.subreport.a5.fileName}")
+    private String prescriptionSubReportA5FileName;
+
     @Override
     @Transactional
     public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
@@ -669,7 +675,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     	JasperReportResponse response = null;
     	Map<String, Object> parameters = new HashMap<String, Object>();
     	
-    	String resourceId = "VID: " + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--") + "<br>";
+    	String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--") + "<br>";
 		List<DBObject> prescriptions = new ArrayList<DBObject>();
 	    if (patientVisitCollection.getPrescriptionId() != null) {
 		for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
@@ -704,9 +710,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
 		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
 		if(pageSize.equalsIgnoreCase("A5")){
-			response = jasperReportService.createPDF(parameters, visitA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA5FileName, visitPrescriptionA5FileName, visitDiagramsA5FileName);	
+			response = jasperReportService.createPDF(parameters, visitA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA5FileName, visitPrescriptionA5FileName, visitDiagramsA5FileName, prescriptionSubReportA5FileName);	
 		}else {
-			response = jasperReportService.createPDF(parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName);
+			response = jasperReportService.createPDF(parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName, prescriptionSubReportA4FileName);
 		}
 		return response;
     }
@@ -789,51 +795,48 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
-		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), refferedBy = "", patientLeftText = "", patientRightText = "";
+		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), patientLeftText = "", patientRightText = "";
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("Patient Name: " + firstName);
-		patientDetailList.add("Patient Id: " + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
-		patientDetailList.add("Mobile: " + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("<b>Patient Name: </b>" + firstName);
+		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 		patientDetailList.add(uniqueEMRId);
+		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
-			if (ageObj.getYears() > 14)age = ageObj.getYears() + " years";
+			if (ageObj.getYears() > 14)age = ageObj.getYears() + "yrs";
 			else {
-				int months = 0, days = ageObj.getDays();
-				if (ageObj.getMonths() > 0) {
-					months = ageObj.getMonths();
-					if (ageObj.getYears() > 0)
-						months = months + 12 * ageObj.getYears();
+				if(ageObj.getYears()>0)age = ageObj.getYears() + "yrs";
+				if(ageObj.getMonths()>0){
+					if(DPDoctorUtils.anyStringEmpty(age))age = ageObj.getMonths()+ "months";
+					else age = age+" "+ageObj.getMonths()+ " months";
 				}
-				if (months == 0)
-					age = days + " days";
-				else
-					age = months + " months " + days + " days";
+				if(ageObj.getDays()>0){
+					if(DPDoctorUtils.anyStringEmpty(age))age = ageObj.getDays()+ "days";
+					else age = age+" "+ageObj.getDays()+ "days";
+				}
 			}
 		}
 		
-        if(patientDetails.getShowDOB()){
-			if(DPDoctorUtils.allStringsEmpty(age, gender));
-			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("Age | Gender: "+age+" | --");
-			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("Age | Gender: -- | "+gender);
+        if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
+			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
+			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
+			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
-        
+                
         if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
-        	patientDetailList.add("Blood Group: " + patient.getBloodGroup());
+        	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
         if(patientDetails.getShowReferedBy() && patient != null && patient.getReferredBy() != null){
         		ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
     			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
-    				patientDetailList.add("Referred By: " + referencesCollection.getReference());
+    				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
     	}
-        if(patientDetails.getShowDate()){
-        	patientDetailList.add("Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-        }
-		
+        
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null ? patientDetails.getStyle().getFontSize() : "";
@@ -868,31 +871,50 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		    clinicalNotesJasperDetails = new ClinicalNotesJasperDetails();
 		    if (clinicalNotesCollection.getVitalSigns() != null) {
+		    	String vitalSigns = null;
+		    	
 				String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-				pulse =  (pulse != null && !pulse.isEmpty() ?"Pulse: " + pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "");
-
+				pulse =  (pulse != null && !pulse.isEmpty() ? "Pulse("+VitalSignsUnit.PULSE.getUnit()+"): "+pulse: "");
+				if(!DPDoctorUtils.allStringsEmpty(pulse))vitalSigns = pulse;
+		
 				String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-				temp = (temp != null && !temp.isEmpty() ? "Temperature: " + temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "");
-
+				temp = (temp != null && !temp.isEmpty() ? "Temperature("+VitalSignsUnit.TEMPERATURE.getUnit() +"): " + temp: "");
+				if(!DPDoctorUtils.allStringsEmpty(temp)){
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+temp;
+					else vitalSigns = temp;
+				}
+		
 				String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-				breathing = (breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "");
-
+				breathing = (breathing != null && !breathing.isEmpty() ? "Breathing("+VitalSignsUnit.BREATHING.getUnit() + "): " + breathing: "");
+				if(!DPDoctorUtils.allStringsEmpty(breathing)){
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+breathing;
+					else vitalSigns = breathing;
+				}
+				
 				String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-				weight = (weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "");
+				weight = (weight != null && !weight.isEmpty() ? "Weight("+VitalSignsUnit.WEIGHT.getUnit() +"): " + weight: "");
+				if(!DPDoctorUtils.allStringsEmpty(temp)){
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+weight;
+					else vitalSigns = weight;
+				}
 				
 				String bloodPressure = "";
 				if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
 				    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
 				    systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
-
+		
 				    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 				    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
-
+		
 				    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
-				    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
+				    	bloodPressure = "Blood Pressure("+VitalSignsUnit.BLOODPRESSURE.getUnit()+"): " + systolic + "/" + diastolic;
+				    if(!DPDoctorUtils.allStringsEmpty(bloodPressure)){
+						if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+bloodPressure;
+						else vitalSigns = bloodPressure;
+					}
 				}
-			String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
-			clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+
+				clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 		    }
 		    String observations = "";
 		    for (ObjectId observationId : clinicalNotesCollection.getObservations()) {
@@ -990,7 +1012,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	try {
 	    prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 	    if (prescriptionCollection != null) {
-	    	prescriptionItemsObj.put("resourceId", "PID: " + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--"));
+	    	prescriptionItemsObj.put("resourceId", "<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--"));
 	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
 		if (prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 		    String labTest = "";

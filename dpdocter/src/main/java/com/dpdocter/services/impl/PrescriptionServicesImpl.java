@@ -278,6 +278,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
 			    BeanUtil.map(drugCollection, esDoctorDrugDocument);
 			    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+			    esDoctorDrugDocument.setId(drugCollection.getId().toString());
 			    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 			}
 			response = new DrugAddEditResponse();
@@ -626,8 +627,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount()+1);
 							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-							esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
-							esDoctorDrugRepository.save(esDoctorDrugDocument);
+							if(esDoctorDrugDocument != null){
+								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
+								esDoctorDrugRepository.save(esDoctorDrugDocument);
+							}
 						}else{
 							DrugCollection  drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
 							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1, false, drugCollection != null ? drugCollection.getGenericCodes():null);
@@ -637,6 +640,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
 							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
 							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+							    esDoctorDrugDocument.setId(drugCollection.getId().toString());
 							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 							}
 						}
@@ -747,8 +751,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount()+1);
 							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-							esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
-							esDoctorDrugRepository.save(esDoctorDrugDocument);
+							if(esDoctorDrugDocument != null){
+								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
+								esDoctorDrugRepository.save(esDoctorDrugDocument);
+							}
 						}else{
 							DrugCollection  drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
 							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1, false, drugCollection != null ? drugCollection.getGenericCodes():null);
@@ -758,6 +764,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
 							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
 							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+							    esDoctorDrugDocument.setId(drugCollection.getId().toString());
 							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 							}
 						}
@@ -3302,11 +3309,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						prescriptionItems.add(prescriptionJasperDetails);
 					}
 				}
-				parameters.put("prescriptionItems", prescriptionItems);
-				parameters.put("showIntructions", showIntructions);
-				parameters.put("showDirection", showDirection);
 			}
-
+		parameters.put("prescriptionItems", prescriptionItems);
+		parameters.put("showIntructions", showIntructions);
+		parameters.put("showDirection", showDirection);
+	
 		parameters.put("prescriptionId", prescriptionCollection.getId().toString());
 		parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
 		String labTest = "";
@@ -3418,54 +3425,50 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
-		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), refferedBy = "", patientLeftText = "", patientRightText = "";
+		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), patientLeftText = "", patientRightText = "";
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("Patient Name: " + firstName);
-		patientDetailList.add("Patient Id: " + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
-		patientDetailList.add("Mobile: " + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-		patientDetailList.add("PID: "+ (uniqueEMRId != null ? uniqueEMRId : "--"));
+		patientDetailList.add("<b>Patient Name: </b>" + firstName);
+		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
+		patientDetailList.add("<b>RxID: </b>"+ (uniqueEMRId != null ? uniqueEMRId : "--"));
+		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
-			if (ageObj.getYears() > 14)age = ageObj.getYears() + " years";
+			if (ageObj.getYears() > 14)age = ageObj.getYears() + "yrs";
 			else {
-				int months = 0, days = ageObj.getDays();
-				if (ageObj.getMonths() > 0) {
-					months = ageObj.getMonths();
-					if (ageObj.getYears() > 0)
-						months = months + 12 * ageObj.getYears();
+				if(ageObj.getYears()>0)age = ageObj.getYears() + "yrs";
+				if(ageObj.getMonths()>0){
+					if(DPDoctorUtils.anyStringEmpty(age))age = ageObj.getMonths()+ "months";
+					else age = age+" "+ageObj.getMonths()+ " months";
 				}
-				if (months == 0)
-					age = days + " days";
-				else
-					age = months + " months " + days + " days";
+				if(ageObj.getDays()>0){
+					if(DPDoctorUtils.anyStringEmpty(age))age = ageObj.getDays()+ "days";
+					else age = age+" "+ageObj.getDays()+ "days";
+				}
 			}
 		}
 		
-        if(patientDetails.getShowDOB()){
-			if(DPDoctorUtils.allStringsEmpty(age, gender));
-			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("Age | Gender: "+age+" | --");
-			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("Age | Gender: -- | "+gender);
+        if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
+			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
+			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
+			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
-		
-        
+                
         if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
-        	patientDetailList.add("Blood Group: " + patient.getBloodGroup());
+        	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
         if(patientDetails.getShowReferedBy()){
         	if (patient != null && patient.getReferredBy() != null) {
     			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
     			if(referencesCollection != null && !DPDoctorUtils.anyStringEmpty(referencesCollection.getReference()))
-    				patientDetailList.add("Referred By: " + referencesCollection.getReference());
+    				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
     		}
         }
-        if(patientDetails.getShowDate()){
-        	patientDetailList.add("Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-        }
-		
+        
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null ? patientDetails.getStyle().getFontSize() : "";

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -1174,6 +1172,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    	if(isAdmin)response = getCustomGlobalComplaintsForAdmin(page, size, updatedTime, discarded, searchTerm);
 	    	else response = getCustomGlobalComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	    break;
 	}
@@ -1192,6 +1192,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    	if(isAdmin)response = getCustomGlobalInvestigationsForAdmin(page, size, updatedTime, discarded, searchTerm);
 	    	else response = getCustomGlobalInvestigations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	    break;
 	}
@@ -1210,6 +1212,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    	if(isAdmin)response = getCustomGlobalObservationsForAdmin(page, size, updatedTime, discarded, searchTerm);
 	    	else response = getCustomGlobalObservations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	    break;
 	}
@@ -1228,6 +1232,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    	if(isAdmin)response = getCustomGlobalDiagnosisForAdmin(page, size, updatedTime, discarded, searchTerm);
 	    	else response = getCustomGlobalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	    break;
 	}
@@ -1246,6 +1252,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    	if(isAdmin)response = getCustomGlobalNotesForAdmin(page, size, updatedTime, discarded, searchTerm);
 	    	else response = getCustomGlobalNotes(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	    break;
 	}
@@ -1264,6 +1272,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    	if(isAdmin)response = getCustomGlobalDiagramsForAdmin(page, size, updatedTime, discarded, searchTerm);
 	    	else response = getCustomGlobalDiagrams(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 		break;
+		default:
+			break;
 	    }
 	    break;
 	}
@@ -1680,7 +1690,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	    
 		if(mailResponse.getMailAttachment() != null && mailResponse.getMailAttachment().getFileSystemResource() != null)
 	    	if(mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())mailResponse.getMailAttachment().getFileSystemResource().getFile().delete() ;
-	} catch (MessagingException e) {
+	} catch (Exception e) {
 	    logger.error(e);
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
@@ -1933,31 +1943,50 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	    
 	    parameters.put("clinicalNotesId", clinicalNotesCollection.getId().toString());
 	    if (clinicalNotesCollection.getVitalSigns() != null) {
-		String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-		pulse =  (pulse != null && !pulse.isEmpty() ? "Pulse: "+pulse +" " +VitalSignsUnit.PULSE.getUnit() + "    " : "");
-
-		String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-		temp = (temp != null && !temp.isEmpty() ? "Temperature: " + temp +" " +VitalSignsUnit.TEMPERATURE.getUnit() +"    " : "");
-
-		String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-		breathing = (breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing + " "+VitalSignsUnit.BREATHING.getUnit() + "    " : "");
-
-		String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-		weight = (weight != null && !weight.isEmpty() ? "Weight: " + weight +" " +VitalSignsUnit.WEIGHT.getUnit() + "    " : "");
-		
-		String bloodPressure = "";
-		if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
-		    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
-		    systolic = systolic != null && !systolic.isEmpty() ? systolic : "";
-
-		    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
-		    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
-
-		    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
-		    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic + " "+VitalSignsUnit.BLOODPRESSURE.getUnit()+ "    ";
-		}
-		String vitalSigns = pulse + temp + breathing + bloodPressure+ weight;
-		parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+	    	String vitalSigns = null;
+	    	
+			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
+			pulse =  (pulse != null && !pulse.isEmpty() ? "Pulse("+VitalSignsUnit.PULSE.getUnit()+"): "+pulse.trim(): "");
+			if(!DPDoctorUtils.allStringsEmpty(pulse))vitalSigns = pulse;
+	
+			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
+			temp = (temp != null && !temp.isEmpty() ? "Temperature("+VitalSignsUnit.TEMPERATURE.getUnit() +"): " + temp.trim(): "");
+			if(!DPDoctorUtils.allStringsEmpty(temp)){
+				if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+temp;
+				else vitalSigns = temp;
+			}
+	
+			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
+			breathing = (breathing != null && !breathing.isEmpty() ? "Breathing("+VitalSignsUnit.BREATHING.getUnit() + "): " + breathing.trim(): "");
+			if(!DPDoctorUtils.allStringsEmpty(breathing)){
+				if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+breathing;
+				else vitalSigns = breathing;
+			}
+			
+			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
+			weight = (weight != null && !weight.isEmpty() ? "Weight("+VitalSignsUnit.WEIGHT.getUnit() +"): " + weight.trim(): "");
+			if(!DPDoctorUtils.allStringsEmpty(temp)){
+				if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+weight;
+				else vitalSigns = weight;
+			}
+			
+			String bloodPressure = "";
+			if (clinicalNotesCollection.getVitalSigns().getBloodPressure() != null) {
+			    String systolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getSystolic();
+			    systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+	
+			    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
+			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+	
+			    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
+			    	bloodPressure = "Blood Pressure("+VitalSignsUnit.BLOODPRESSURE.getUnit()+"): " + systolic + "/" + diastolic;
+			    if(!DPDoctorUtils.allStringsEmpty(bloodPressure)){
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+bloodPressure;
+					else vitalSigns = bloodPressure;
+				}
+			}
+			
+			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 	    } else
 		parameters.put("vitalSigns", null);
 
@@ -2056,51 +2085,48 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
-		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), refferedBy = "", patientLeftText = "", patientRightText = "";
+		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), patientLeftText = "", patientRightText = "";
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("Patient Name: " + firstName);
-		patientDetailList.add("Patient Id: " + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
-		patientDetailList.add("Mobile: " + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-		patientDetailList.add("CID: "+ (uniqueEMRId != null ? uniqueEMRId : "--"));
+		patientDetailList.add("<b>Patient Name:</b> " + firstName);
+		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
+		patientDetailList.add("<b>CID: </b>"+ (uniqueEMRId != null ? uniqueEMRId : "--"));
+		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
-			if (ageObj.getYears() > 14)age = ageObj.getYears() + " years";
+			if (ageObj.getYears() > 14)age = ageObj.getYears() + "yrs";
 			else {
-				int months = 0, days = ageObj.getDays();
-				if (ageObj.getMonths() > 0) {
-					months = ageObj.getMonths();
-					if (ageObj.getYears() > 0)
-						months = months + 12 * ageObj.getYears();
+				if(ageObj.getYears()>0)age = ageObj.getYears() + "yrs";
+				if(ageObj.getMonths()>0){
+					if(DPDoctorUtils.anyStringEmpty(age))age = ageObj.getMonths()+ "months";
+					else age = age+" "+ageObj.getMonths()+ " months";
 				}
-				if (months == 0)
-					age = days + " days";
-				else
-					age = months + " months " + days + " days";
+				if(ageObj.getDays()>0){
+					if(DPDoctorUtils.anyStringEmpty(age))age = ageObj.getDays()+ "days";
+					else age = age+" "+ageObj.getDays()+ "days";
+				}
 			}
 		}
 		
         if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
-			if(DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("Age | Gender: -- | --");
-			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("Age | Gender: "+age+" | --");
-			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("Age | Gender: -- | "+gender);
+			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
+			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
+			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
         
         if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
-        	patientDetailList.add("Blood Group: " + patient.getBloodGroup());
+        	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
         if(patientDetails.getShowReferedBy() && patient != null && patient.getReferredBy() != null){
         	ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
     		if (referencesCollection != null && !DPDoctorUtils.anyStringEmpty(referencesCollection.getReference()))
-    			patientDetailList.add("Referred By: " + referencesCollection.getReference());
+    			patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
     		}
-        if(patientDetails.getShowDate()){
-        	patientDetailList.add("Date: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-        }
-		
+    	
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null ? patientDetails.getStyle().getFontSize() : "";
