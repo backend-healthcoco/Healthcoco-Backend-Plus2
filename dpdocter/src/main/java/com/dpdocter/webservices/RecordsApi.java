@@ -25,6 +25,7 @@ import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
+import com.dpdocter.enums.RecordsState;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -144,13 +145,14 @@ public class RecordsApi {
     @GET
     @ApiOperation(value = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_RECORDS_PATIENT_ID)
     public Response<Records> getRecordsByPatientId(@PathParam("patientId") String patientId, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+	    @DefaultValue("false") @QueryParam("isDoctorApp") Boolean isDoctorApp) {
 	if (DPDoctorUtils.anyStringEmpty(patientId)) {
 		logger.warn("Patient Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
 	}
 
-	List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded);
+	List<Records> records = recordsService.getRecordsByPatientId(patientId, page, size, updatedTime, discarded, isDoctorApp);
 
 	Response<Records> response = new Response<Records>();
 	response.setDataList(records);
@@ -369,6 +371,10 @@ public class RecordsApi {
     @ApiOperation(value = PathProxy.RecordsUrls.CHANGE_RECORD_STATE, notes = PathProxy.RecordsUrls.CHANGE_RECORD_STATE)
     public Response<Records> changeRecordState(@PathParam("recordId") String recordId, @PathParam("recordsState") String recordsState) {
     	if (DPDoctorUtils.anyStringEmpty(recordId, recordsState)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+    	if (!recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString()) && !recordsState.equalsIgnoreCase(RecordsState.DECLINED_BY_DOCTOR.toString())) {
     		logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}

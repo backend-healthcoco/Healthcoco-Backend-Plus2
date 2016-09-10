@@ -54,7 +54,7 @@ public interface RecordsService {
 
     void changeLabelAndDescription(String recordId, String label, String explanation);
 
-    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded);
+    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, Boolean isDoctorApp);
 
     Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 

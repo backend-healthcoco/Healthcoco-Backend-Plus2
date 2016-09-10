@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.enums.UserState;
+
 /**
  * @author veeraj
  */
@@ -12,7 +14,9 @@ public class Doctor {
 	private String firstName;
 
 	private String lastName;
+	
 	private String countryCode;
+	
 	private String mobileNumber;
 
 	private String emailAddress;
@@ -31,6 +35,8 @@ public class Doctor {
 
 	private DoctorClinicProfile doctorClinicProfile;
 
+	private UserState userState = UserState.USERSTATECOMPLETE;
+	
 	public String getId() {
 		return id;
 	}
@@ -127,15 +133,6 @@ public class Doctor {
 		this.coverThumbnailImageUrl = coverThumbnailImageUrl;
 	}
 
-	@Override
-	public String toString() {
-		return "Doctor [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", mobileNumber="
-				+ mobileNumber + ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities=" + specialities
-				+ ", doctorClinicProfile=" + doctorClinicProfile + "]";
-	}
-
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -143,4 +140,22 @@ public class Doctor {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
+
+	public UserState getUserState() {
+		return userState;
+	}
+
+	public void setUserState(UserState userState) {
+		this.userState = userState;
+	}
+
+	@Override
+	public String toString() {
+		return "Doctor [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", countryCode="
+				+ countryCode + ", mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress + ", imageUrl="
+				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", coverImageUrl="
+				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities="
+				+ specialities + ", doctorClinicProfile=" + doctorClinicProfile + ", userState=" + userState + "]";
+	}
+
 }

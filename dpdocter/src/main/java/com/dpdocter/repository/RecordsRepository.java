@@ -46,6 +46,12 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, Ob
     @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}, 'recordsState': {'$in' : ?3}}")
     List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, List<String> recordStates, Sort sort);
 
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Pageable pageRequest);
+
+    @Query("{'patientId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+    List<RecordsCollection> findRecordsByPatientId(ObjectId patientId, Date date, boolean[] discards, Sort sort);
+
     @Query("{'patientId': ?0}")
     List<RecordsCollection> findRecords(ObjectId patientId);
 

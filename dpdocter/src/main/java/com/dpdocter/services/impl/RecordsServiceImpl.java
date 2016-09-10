@@ -891,7 +891,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     @Transactional
-    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded) {
+    public List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, Boolean isDoctorApp) {
 	List<Records> records = null;
 	List<RecordsCollection> recordsCollections = null;
 	boolean[] discards = new boolean[2];
@@ -903,12 +903,18 @@ public class RecordsServiceImpl implements RecordsService {
 	    ObjectId patientObjectId = null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
 		
-		List<String> recordStates = new ArrayList<String>();
-		recordStates.add(RecordsState.APPROVAL_NOT_REQUIRED.toString());
-		recordStates.add(RecordsState.APPROVED_BY_DOCTOR.toString());
+		if(isDoctorApp){
+			List<String> recordStates = new ArrayList<String>();
+			recordStates.add(RecordsState.APPROVAL_NOT_REQUIRED.toString());
+			recordStates.add(RecordsState.APPROVED_BY_DOCTOR.toString());
+			
+		    if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+		    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new Sort(Sort.Direction.DESC, "createdTime"));	
+		}else{
+			if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+		    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		}
 		
-	    if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-	    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new Sort(Sort.Direction.DESC, "createdTime"));
 	    records = new ArrayList<Records>();
 	    for (RecordsCollection recordCollection : recordsCollections) {
 		Records record = new Records();
