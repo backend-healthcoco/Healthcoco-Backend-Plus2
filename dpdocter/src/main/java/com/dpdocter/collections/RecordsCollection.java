@@ -77,7 +77,7 @@ public class RecordsCollection extends GenericCollection {
     private Boolean isFeedbackAvailable = false;
 
     @Field
-    private String recordsState;
+    private String recordsState = RecordsState.APPROVAL_NOT_REQUIRED.toString();
 
     public ObjectId getId() {
 	return id;

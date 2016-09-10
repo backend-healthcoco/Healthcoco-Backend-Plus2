@@ -329,6 +329,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setPrescribedByLocationId(oldRecord.getLocationId());
 	    recordsCollection.setPrescribedByHospitalId(oldRecord.getHospitalId());
 	    recordsCollection.setPrescriptionId(oldRecord.getPrescriptionId());
+	    recordsCollection.setRecordsState(oldRecord.getRecordsState());
 	    recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
 
 	    recordsCollection = recordsRepository.save(recordsCollection);
@@ -559,7 +560,7 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
 	    if(discarded && !DPDoctorUtils.anyStringEmpty(recordsCollection.getPrescriptionId())){
-	    	PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(new ObjectId(recordsCollection.getPrescriptionId()));
+	    	PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
 	    	if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null || !prescriptionCollection.getDiagnosticTests().isEmpty())) {
 	    		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 	    		for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
@@ -904,15 +905,15 @@ public class RecordsServiceImpl implements RecordsService {
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
 		
 		if(isDoctorApp){
+			if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
+		    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		}else{
 			List<String> recordStates = new ArrayList<String>();
 			recordStates.add(RecordsState.APPROVAL_NOT_REQUIRED.toString());
 			recordStates.add(RecordsState.APPROVED_BY_DOCTOR.toString());
 			
 		    if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-		    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new Sort(Sort.Direction.DESC, "createdTime"));	
-		}else{
-			if (size > 0)recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-		    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+		    else recordsCollections = recordsRepository.findRecordsByPatientId(patientObjectId, new Date(updatedTimeLong), discards, recordStates, new Sort(Sort.Direction.DESC, "createdTime"));				
 		}
 		
 	    records = new ArrayList<Records>();

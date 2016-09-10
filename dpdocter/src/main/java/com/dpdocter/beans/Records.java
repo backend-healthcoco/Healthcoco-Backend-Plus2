@@ -1,6 +1,7 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.RecordsState;
 
 public class Records extends GenericCollection {
     private String id;
@@ -43,7 +44,7 @@ public class Records extends GenericCollection {
 
     private Boolean isFeedbackAvailable = false;
 
-    private String recordsState;
+    private String recordsState = RecordsState.APPROVAL_NOT_REQUIRED.toString();
     
     public String getId() {
 	return id;

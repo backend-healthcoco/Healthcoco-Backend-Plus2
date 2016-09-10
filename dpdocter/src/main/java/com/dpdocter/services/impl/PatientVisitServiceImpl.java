@@ -675,7 +675,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     	JasperReportResponse response = null;
     	Map<String, Object> parameters = new HashMap<String, Object>();
     	
-    	String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--") + "<br>";
+    	String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
 		List<DBObject> prescriptions = new ArrayList<DBObject>();
 	    if (patientVisitCollection.getPrescriptionId() != null) {
 		for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
@@ -804,7 +804,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 		patientDetailList.add(uniqueEMRId);
 		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
@@ -836,7 +835,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
     				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
     	}
-        
+        patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null ? patientDetails.getStyle().getFontSize() : "";
@@ -893,7 +893,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				
 				String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 				weight = (weight != null && !weight.isEmpty() ? "Weight("+VitalSignsUnit.WEIGHT.getUnit() +"): " + weight: "");
-				if(!DPDoctorUtils.allStringsEmpty(temp)){
+				if(!DPDoctorUtils.allStringsEmpty(weight)){
 					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+weight;
 					else vitalSigns = weight;
 				}
