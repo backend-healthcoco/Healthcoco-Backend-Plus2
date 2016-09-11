@@ -2050,7 +2050,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 				}
 			}
 			
-			if (printSettings.getHeaderSetup() != null &&  printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
+			if (printSettings.getHeaderSetup() != null  && printSettings.getHeaderSetup().getCustomHeader() &&  printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
 				logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 			}
 			

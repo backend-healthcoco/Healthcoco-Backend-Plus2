@@ -18,7 +18,7 @@
         </div>
 
         <div>
-         <p style="color:#2c3335;font-size:15px;">Hello ${doctorName},<br><br>${clinicName} has uploaded ${reportName} report(RID: ${uniqueRecordId}) of ${patientName}.
+         <p style="color:#2c3335;font-size:15px;">Hello ${doctorName},<br><br>${clinicName} has uploaded ${recordName} report(RID: ${uniqueRecordId}) of ${patientName}.
          <br>The reports are present under ${patientName} report section in healthcoco+.
          <br><br>If reports are accurate and don't require a re-test, please APPROVE.
          <br>On Approval reports will be sent to patient and ${clinicName} will be notified regarding the acceptance of report.

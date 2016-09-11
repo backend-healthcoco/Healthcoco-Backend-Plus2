@@ -19,7 +19,7 @@
 
         <div>
          <p style="color:#2c3335;font-size:15px;">Hello ${doctorName},
-         <br><br>${clinicName} has uploaded ${reportName} report(RID: ${uniqueRecordId}) of ${patientName}.
+         <br><br>${clinicName} has uploaded ${recordName} report(RID: ${uniqueRecordId}) of ${patientName}.
          <br><br>The reports are present under ${patientName} report section in healthcoco+.
          <br>Now you can view all your reports on Healthcoco+ app as well!<br><br></p>
          
