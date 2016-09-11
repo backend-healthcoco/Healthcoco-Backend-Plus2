@@ -821,13 +821,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		
-        if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
+        if(patientDetails.getShowDOB()){
 			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
                 
-        if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
+        if(patientDetails.getShowBloodGroup() && patient != null && !DPDoctorUtils.anyStringEmpty(patient.getBloodGroup())){
         	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
         if(patientDetails.getShowReferedBy() && patient != null && patient.getReferredBy() != null){

@@ -3434,7 +3434,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 		patientDetailList.add("<b>RxID: </b>"+ (uniqueEMRId != null ? uniqueEMRId : "--"));
 		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
@@ -3452,13 +3451,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 		}
 		
-        if(patientDetails.getShowDOB() && patientDetails.getShowDOB()){
+		if(patientDetails.getShowDOB()){
 			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
                 
-        if(patientDetails.getShowBloodGroup() && patient != null && patient.getBloodGroup() != null){
+        if(patientDetails.getShowBloodGroup() && patient != null && !DPDoctorUtils.anyStringEmpty(patient.getBloodGroup())){
         	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
         if(patientDetails.getShowReferedBy()){
