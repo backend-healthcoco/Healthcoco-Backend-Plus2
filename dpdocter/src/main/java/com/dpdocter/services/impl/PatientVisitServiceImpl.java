@@ -508,6 +508,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			response.setVisitedFor(patientVisitCollection.getVisitedFor());
 			response.setVisitedTime(patientVisitCollection.getVisitedTime());
 			response.setUniqueEmrId(patientVisitCollection.getUniqueEmrId());
+			response.setCreatedTime(patientVisitCollection.getCreatedTime());
+			response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
+			response.setCreatedBy(patientVisitCollection.getCreatedBy());
 	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
