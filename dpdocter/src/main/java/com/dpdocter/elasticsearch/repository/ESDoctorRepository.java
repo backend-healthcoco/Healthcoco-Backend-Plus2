@@ -2,18 +2,23 @@ package com.dpdocter.elasticsearch.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 
-public interface ESDoctorRepository extends ElasticsearchRepository<ESDoctorDocument, String> {
+public interface ESDoctorRepository extends ElasticsearchRepository<ESDoctorDocument, String>, PagingAndSortingRepository<ESDoctorDocument, String> {
     
     @Query("{\"bool\": {\"must\": [{\"match\": {\"userId\": \"?0\"}},{\"match\": {\"locationId\": \"?1\"}}]}}")
     ESDoctorDocument findByUserIdAndLocationId(String userId, String locationId);
 
 	@Query("{\"bool\": {\"must\": [{\"match\": {\"userId\": \"?0\"}}]}}")
     List<ESDoctorDocument> findByUserId(String userId);
+
+	@Query("{\"bool\": {\"must\": [{\"match\": {\"userId\": \"?0\"}}]}}")
+    List<ESDoctorDocument> findByUserId(String userId, Pageable pageable);
 
 	@Query("{\"bool\": {\"must\": [{\"match\": {\"locationId\": \"?0\"}}]}}")
     List<ESDoctorDocument> findByLocationId(String locationId);

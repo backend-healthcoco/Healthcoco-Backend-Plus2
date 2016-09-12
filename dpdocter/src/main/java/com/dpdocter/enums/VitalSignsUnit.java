@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum VitalSignsUnit {
-    PULSE("beats/min"), BREATHING("breaths/min"), BLOODPRESSURE("mmHg"), HEIGHT("feet"), TEMPERATURE("°C"), WEIGHT("Kg");
+    PULSE("beats/min"), BREATHING("breaths/min"), BLOODPRESSURE("mmHg"), HEIGHT("feet"), TEMPERATURE("°F"), WEIGHT("Kg");
 
     private String unit;
 

@@ -181,6 +181,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	case BOTH:
 	    response = getCustomGlobalObservations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 
 	return response;
@@ -201,6 +203,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	case BOTH:
 	    response = getCustomGlobalInvestigations(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 
 	return response;
@@ -220,6 +224,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	case BOTH:
 	    response = getCustomGlobalDiagrams(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 	return response;
     }
@@ -238,6 +244,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	case BOTH:
 	    response = getCustomGlobalNotes(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 	return response;
     }
@@ -256,6 +264,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	case BOTH:
 	    response = getCustomGlobalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 	return response;
     }
@@ -275,6 +285,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	case BOTH:
 	    response = getCustomGlobalComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	    break;
+	default:
+		break;
 	}
 	return response;
     }
@@ -288,9 +300,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+		 		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 		 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
@@ -325,9 +337,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -379,9 +391,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -440,9 +452,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -530,9 +542,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -567,9 +579,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -623,9 +635,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -661,9 +673,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 	    Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -716,9 +728,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -754,9 +766,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -811,9 +823,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		
@@ -849,9 +861,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Collection<String> specialities = Collections.EMPTY_LIST;
 	    
 	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-	    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-		 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 			 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 			 		

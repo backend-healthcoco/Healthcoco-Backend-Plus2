@@ -94,6 +94,8 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			case GLOBAL: response = getGlobalTreatmentServices(page, size, doctorId, updatedTime, discarded, searchTerm); break;
 			case CUSTOM: response = getCustomTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm); break;
 			case BOTH: response = getCustomGlobalTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm); break;
+			default:
+				break;
 			}
 			break;
 		}
@@ -114,9 +116,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 		    Collection<String> specialities = Collections.EMPTY_LIST;
 		    
 		    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-		    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+		    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 		    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-			 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+			 		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 			 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 				 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 				 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
@@ -165,9 +167,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 		    Collection<String> specialities = Collections.EMPTY_LIST;
 		    
 		    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-		    	doctorCollections = esDoctorRepository.findByUserId(doctorId);
+		    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
 		    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-			 		Collection<String> specialitiesId = CollectionUtils.collect(doctorCollections, new BeanToPropertyValueTransformer("specialities"));
+			 		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
 			 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
 				 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
 				 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));

@@ -883,21 +883,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
 				temp = (temp != null && !temp.isEmpty() ? "Temperature("+VitalSignsUnit.TEMPERATURE.getUnit() +"): " + temp: "");
 				if(!DPDoctorUtils.allStringsEmpty(temp)){
-					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+temp;
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+temp;
 					else vitalSigns = temp;
 				}
 		
 				String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
 				breathing = (breathing != null && !breathing.isEmpty() ? "Breathing("+VitalSignsUnit.BREATHING.getUnit() + "): " + breathing: "");
 				if(!DPDoctorUtils.allStringsEmpty(breathing)){
-					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+breathing;
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+breathing;
 					else vitalSigns = breathing;
 				}
 				
 				String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 				weight = (weight != null && !weight.isEmpty() ? "Weight("+VitalSignsUnit.WEIGHT.getUnit() +"): " + weight: "");
 				if(!DPDoctorUtils.allStringsEmpty(weight)){
-					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+weight;
+					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+weight;
 					else vitalSigns = weight;
 				}
 				
@@ -912,7 +912,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
 				    	bloodPressure = "Blood Pressure("+VitalSignsUnit.BLOODPRESSURE.getUnit()+"): " + systolic + "/" + diastolic;
 				    if(!DPDoctorUtils.allStringsEmpty(bloodPressure)){
-						if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+", "+bloodPressure;
+						if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+bloodPressure;
 						else vitalSigns = bloodPressure;
 					}
 				}
