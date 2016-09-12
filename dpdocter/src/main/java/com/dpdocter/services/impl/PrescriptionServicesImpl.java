@@ -3334,7 +3334,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, prescriptionCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-" + prescriptionCollection.getUniqueEmrId();
+		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-" + prescriptionCollection.getUniqueEmrId()+new Date().getTime();
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
 		String pageSize = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;

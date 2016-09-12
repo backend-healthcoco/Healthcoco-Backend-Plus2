@@ -559,22 +559,8 @@ public class RecordsServiceImpl implements RecordsService {
 	    recordsCollection.setDiscarded(discarded);
 	    recordsCollection.setUpdatedTime(new Date());
 	    recordsRepository.save(recordsCollection);
-	    if(discarded && !DPDoctorUtils.anyStringEmpty(recordsCollection.getPrescriptionId())){
-	    	PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
-	    	if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null || !prescriptionCollection.getDiagnosticTests().isEmpty())) {
-	    		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
-	    		for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
-	    		    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
-	    		    	data.setRecordId(null);
-	    		    }
-	    		    tests.add(data);
-	    		}
-	    		prescriptionCollection.setDiagnosticTests(tests);
-	    		prescriptionCollection.setUpdatedTime(new Date());
-	    		prescriptionRepository.save(prescriptionCollection);
-	    	}	
-	    	if(discarded)pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" has been removed by "+recordsCollection.getCreatedBy(), ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
-	    }
+	    
+	    if(discarded)pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(), "Report:"+recordsCollection.getUniqueEmrId()+" has been removed by "+recordsCollection.getCreatedBy(), ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 	    response = new Records();
 	    BeanUtil.map(recordsCollection, response);
 	    
@@ -1087,7 +1073,19 @@ public class RecordsServiceImpl implements RecordsService {
 		    	UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 		    	UserCollection patient = userRepository.findOne(recordsCollection.getPatientId());
 		    	PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
-		    	String body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getUploadedByLocation(), null, recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "discardedRecordToLabTemplate.vm");
+		    	if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null || !prescriptionCollection.getDiagnosticTests().isEmpty())) {
+			    		List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
+			    		for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
+			    		    if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
+			    		    	data.setRecordId(null);
+			    		    }
+			    		    tests.add(data);
+			    		}
+			    		prescriptionCollection.setDiagnosticTests(tests);
+			    		prescriptionCollection.setUpdatedTime(new Date());
+			    		prescriptionRepository.save(prescriptionCollection);
+			    	}		
+			    String body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getUploadedByLocation(), null, recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "discardedRecordToLabTemplate.vm");
 			    mailService.sendEmail(userCollection.getEmailAddress(), notApprovedRecordToDoctorSubject.replace("{patientName}", patient.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{drName}", prescriptionCollection.getCreatedBy()).replace("{clinicName}", recordsCollection.getUploadedByLocation()), body, null);	
 		    }
 		} catch (BusinessException e) {
