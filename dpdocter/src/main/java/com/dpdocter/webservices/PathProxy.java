@@ -774,4 +774,19 @@ public interface PathProxy {
 		public static final String SEARCH = "/{type}/{range}";
 
 	}
+	
+	public static final String REPORTS_BASE_URL = BASE_URL + "/reports";
+	
+	public interface ReportsUrls {
+		public static final String GET_IPD_REPORTS = "/getIPDReports";
+		public static final String GET_OPD_REPORTS = "/getOPDReports";
+		public static final String GET_OT_REPORTS = "/getOTReports";
+		public static final String GET_DELIVERY_REPORTS = "/getDeliveryReports";
+		
+		public static final String SUBMIT_IPD_REPORTS = "/submitIPDReports";
+		public static final String SUBMIT_OPD_REPORTS = "/submitOPDReports";
+		public static final String SUBMIT_OT_REPORTS = "/submitOTReports";
+		public static final String SUBMIT_DELIVERY_REPORTS = "/submitDeliveryReports";
+		
+	}
 }

@@ -1,10 +1,41 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-public class IPDReportsCollection extends GenericCollection{
-	
+@Document(collection = "ipd_reports_cl")
+public class IPDReportsCollection extends GenericCollection {
+
+	@Id
 	private ObjectId id;
+	@Field
+	private String serialNo;
+	@Field
+	private ObjectId patientId;
+	@Field
+	private String admissionTime;
+	@Field
+	private String doctorIncharge;
+	@Field
+	private String diagnosis;
+	@Field
+	private String natureOfProfessionalServiceRendered;
+	@Field
+	private String amountReceived;
+	@Field
+	private String receiptNo;
+	@Field
+	private String receiptDate;
+	@Field
+	private String remarks;
+	@Field
+	private ObjectId doctorId;
+	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
 
 	public ObjectId getId() {
 		return id;
@@ -13,7 +44,118 @@ public class IPDReportsCollection extends GenericCollection{
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-	
-	
+
+	public String getSerialNo() {
+		return serialNo;
+	}
+
+	public void setSerialNo(String serialNo) {
+		this.serialNo = serialNo;
+	}
+
+	public ObjectId getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getAdmissionTime() {
+		return admissionTime;
+	}
+
+	public void setAdmissionTime(String admissionTime) {
+		this.admissionTime = admissionTime;
+	}
+
+	public String getDoctorIncharge() {
+		return doctorIncharge;
+	}
+
+	public void setDoctorIncharge(String doctorIncharge) {
+		this.doctorIncharge = doctorIncharge;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getNatureOfProfessionalServiceRendered() {
+		return natureOfProfessionalServiceRendered;
+	}
+
+	public void setNatureOfProfessionalServiceRendered(String natureOfProfessionalServiceRendered) {
+		this.natureOfProfessionalServiceRendered = natureOfProfessionalServiceRendered;
+	}
+
+	public String getAmountReceived() {
+		return amountReceived;
+	}
+
+	public void setAmountReceived(String amountReceived) {
+		this.amountReceived = amountReceived;
+	}
+
+	public String getReceiptNo() {
+		return receiptNo;
+	}
+
+	public void setReceiptNo(String receiptNo) {
+		this.receiptNo = receiptNo;
+	}
+
+	public String getReceiptDate() {
+		return receiptDate;
+	}
+
+	public void setReceiptDate(String receiptDate) {
+		this.receiptDate = receiptDate;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "IPDReportsCollection [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId
+				+ ", admissionTime=" + admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
+				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
+				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+	}
 
 }
