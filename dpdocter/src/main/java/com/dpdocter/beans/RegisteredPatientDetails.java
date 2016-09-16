@@ -140,7 +140,8 @@ public class RegisteredPatientDetails extends GenericCollection {
     }
 
     public void setDob(DOB dob) {
-	this.dob = dob;
+    	if(this.dob != null)dob.getAge();
+    	this.dob = dob;
     }
 
     public String getDoctorId() {

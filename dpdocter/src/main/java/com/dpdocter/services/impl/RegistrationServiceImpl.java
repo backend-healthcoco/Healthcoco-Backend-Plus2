@@ -412,7 +412,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	    registeredPatientDetails.setUserId(userCollection.getId().toString());
 	    Patient patient = new Patient();
 	    BeanUtil.map(patientCollection, patient);
-	    patient.setPatientId(patientCollection.getId().toString());
+	    patient.setPatientId(userCollection.getId().toString());
 
 	    Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
 	    Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
