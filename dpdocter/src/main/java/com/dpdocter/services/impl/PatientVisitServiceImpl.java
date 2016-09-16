@@ -99,6 +99,8 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+import com.itextpdf.text.pdf.languages.DevanagariLigaturizer;
+import com.itextpdf.text.pdf.languages.IndicLigaturizer;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -677,8 +679,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     private JasperReportResponse createJasper(PatientVisitCollection patientVisitCollection, PatientCollection patient, UserCollection user) throws IOException{
     	JasperReportResponse response = null;
     	Map<String, Object> parameters = new HashMap<String, Object>();
-    	
-    	String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
+    	IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
+	    String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
 		List<DBObject> prescriptions = new ArrayList<DBObject>();
 	    if (patientVisitCollection.getPrescriptionId() != null) {
 		for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
@@ -721,6 +723,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     }
     
 	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId) {
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
@@ -782,13 +785,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
-				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
+				if (doctorUser != null)	parameters.put("footerSignature", indicLigaturizer.process(doctorUser.getTitle() + " " + doctorUser.getFirstName()));	
 			}	
 		}
 		parameters.put("contentFontSize", contentFontSize);
-		parameters.put("headerLeftText", headerLeftText);
-		parameters.put("headerRightText", headerRightText);
-		parameters.put("footerBottomText", footerBottomText);
+		parameters.put("headerLeftText", indicLigaturizer.process(headerLeftText));
+		parameters.put("headerRightText", indicLigaturizer.process(headerRightText));
+		parameters.put("footerBottomText", indicLigaturizer.process(footerBottomText));
 		parameters.put("logoURL", logoURL);
 		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
@@ -802,6 +805,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
 		}
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		List<String> patientDetailList = new ArrayList<String>();
 		patientDetailList.add("<b>Patient Name: </b>" + firstName);
 		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
@@ -859,14 +863,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				else patientRightText = text;
 			}
 		}
-		parameters.put("patientLeftText", patientLeftText);
-		parameters.put("patientRightText", patientRightText);
+		parameters.put("patientLeftText", indicLigaturizer.process(patientLeftText));
+		parameters.put("patientRightText", indicLigaturizer.process(patientRightText));
 	}
 
     private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId) {
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 	try {
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 	    clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 	    if (clinicalNotesCollection != null) {
 		if (clinicalNotesCollection.getDoctorId() != null && clinicalNotesCollection.getHospitalId() != null
@@ -917,7 +922,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 				}
 
-				clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+				clinicalNotesJasperDetails.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? indicLigaturizer.process(vitalSigns) : null);
 		    }
 		    String observations = "";
 		    for (ObjectId observationId : clinicalNotesCollection.getObservations()) {
@@ -929,7 +934,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				observations = observations + ", " + observationCollection.getObservation();
 			}
 		    }
-		    clinicalNotesJasperDetails.setObservations(observations);
+		    clinicalNotesJasperDetails.setObservations(indicLigaturizer.process(observations));
 
 		    String notes = "";
 		    for (ObjectId noteId : clinicalNotesCollection.getNotes()) {
@@ -953,7 +958,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				investigations = investigations + ", " + investigation.getInvestigation();
 			}
 		    }
-		    clinicalNotesJasperDetails.setInvestigations(investigations);
+		    clinicalNotesJasperDetails.setInvestigations(indicLigaturizer.process(investigations));
 
 		    String diagnosis = "";
 		    for (ObjectId diagnosisId : clinicalNotesCollection.getDiagnoses()) {
@@ -965,7 +970,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				diagnosis = diagnosis + ", " + diagnosisCollection.getDiagnosis();
 			}
 		    }
-		    clinicalNotesJasperDetails.setDiagnosis(diagnosis);
+		    clinicalNotesJasperDetails.setDiagnosis(indicLigaturizer.process(diagnosis));
 
 		    String complaints = "";
 		    for (ObjectId complaintId : clinicalNotesCollection.getComplaints()) {
@@ -977,7 +982,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				complaints = complaints + ", " + complaint.getComplaint();
 			}
 		    }
-		    clinicalNotesJasperDetails.setComplaints(complaints);
+		    clinicalNotesJasperDetails.setComplaints(indicLigaturizer.process(complaints));
 
 		    List<DBObject> diagramIds = new ArrayList<DBObject>();
 		    if (clinicalNotesCollection.getDiagrams() != null)
@@ -988,7 +993,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (diagramsCollection.getDiagramUrl() != null) {
 					diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 				}
-				diagram.put("tags", diagramsCollection.getTags());
+				diagram.put("tags", indicLigaturizer.process(diagramsCollection.getTags()));
 				diagramIds.add(diagram);
 			    }
 			}
@@ -1013,10 +1018,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	PrescriptionCollection prescriptionCollection = null;
 	List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 	try {
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 	    prescriptionCollection = prescriptionRepository.findOne(new ObjectId(prescriptionId));
 	    if (prescriptionCollection != null) {
 	    	prescriptionItemsObj.put("resourceId", "<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--"));
-	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
+	    	prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice() != null ? indicLigaturizer.process(prescriptionCollection.getAdvice()) : null);
 		if (prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 		    String labTest = "";
 		    for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
@@ -1026,7 +1032,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					else labTest = labTest + ", " + diagnosticTestCollection.getTestName();
 			    }
 			}
-		    prescriptionItemsObj.put("labTest", labTest);
+		    prescriptionItemsObj.put("labTest", indicLigaturizer.process(labTest));
 		} else {
 		    prescriptionItemsObj.put("labTest", null);
 		}
@@ -1066,10 +1072,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    duration = "----";
 				else
 				    duration = durationValue + " " + durationUnit;
-				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, drugName,
-						!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage()) ? prescriptionItem.getDosage() : "----", duration,
-					directions.isEmpty() ? "----" : directions,
-							!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions()) ? prescriptionItem.getInstructions() : "----");
+				PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(++no, indicLigaturizer.process(drugName),
+						!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage()) ? indicLigaturizer.process(prescriptionItem.getDosage()) : "----", 
+						indicLigaturizer.process(duration),
+						directions.isEmpty() ? "----" : indicLigaturizer.process(directions),
+						!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions()) ? indicLigaturizer.process(prescriptionItem.getInstructions()) : "----");
 
 				prescriptionItems.add(prescriptionJasperDetails);
 			    }

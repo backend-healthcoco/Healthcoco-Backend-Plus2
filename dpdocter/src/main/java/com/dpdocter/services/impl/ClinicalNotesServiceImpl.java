@@ -102,6 +102,8 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.itextpdf.text.pdf.languages.DevanagariLigaturizer;
+import com.itextpdf.text.pdf.languages.IndicLigaturizer;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -1861,6 +1863,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection, PatientCollection patient, UserCollection user) throws IOException {
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String observations = "";
@@ -1873,7 +1876,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    observations = observations + ", " + observationCollection.getObservation();
 		    }
 		}
-		parameters.put("observationIds", observations);
+		parameters.put("observationIds", indicLigaturizer.process(observations));
 
 		String notes = "";
 		for (ObjectId noteId : clinicalNotesCollection.getNotes()) {
@@ -1885,7 +1888,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    notes = notes + ", " + note.getNote();
 		    }
 		}
-		parameters.put("noteIds", notes);
+		parameters.put("noteIds", indicLigaturizer.process(notes));
 
 		String investigations = "";
 		for (ObjectId investigationId : clinicalNotesCollection.getInvestigations()) {
@@ -1897,7 +1900,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    investigations = investigations + ", " + investigation.getInvestigation();
 		    }
 		}
-		parameters.put("investigationIds", investigations);
+		parameters.put("investigationIds", indicLigaturizer.process(investigations));
 
 		String diagnosis = "";
 		for (ObjectId diagnosisId : clinicalNotesCollection.getDiagnoses()) {
@@ -1909,7 +1912,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    diagnosis = diagnosis + ", " + diagnosisCollection.getDiagnosis();
 		    }
 		}
-		parameters.put("diagnosesIds", diagnosis);
+		parameters.put("diagnosesIds", indicLigaturizer.process(diagnosis));
 
 		String complaints = "";
 		for (ObjectId complaintId : clinicalNotesCollection.getComplaints()) {
@@ -1921,7 +1924,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    complaints = complaints + ", " + complaint.getComplaint();
 		    }
 		}
-		parameters.put("complaintIds", complaints);
+		parameters.put("complaintIds", indicLigaturizer.process(complaints));
 
 		List<DBObject> diagramIds = new ArrayList<DBObject>();
 		if (clinicalNotesCollection.getDiagrams() != null)
@@ -1932,7 +1935,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    if (diagramsCollection.getDiagramUrl() != null) {
 				diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 			    }
-			    diagram.put("tags", diagramsCollection.getTags());
+			    diagram.put("tags", indicLigaturizer.process(diagramsCollection.getTags()));
 			    diagramIds.add(diagram);
 			}
 		    }
@@ -1986,7 +1989,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 				}
 			}
 			
-			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? indicLigaturizer.process(vitalSigns) : null);
 	    } else
 		parameters.put("vitalSigns", null);
 
@@ -2008,6 +2011,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 	
 	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId) {
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
@@ -2069,13 +2073,13 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
-				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
+				if (doctorUser != null)	parameters.put("footerSignature", indicLigaturizer.process(doctorUser.getTitle() + " " + doctorUser.getFirstName()));	
 			}	
 		}
 		parameters.put("contentFontSize", contentFontSize);
-		parameters.put("headerLeftText", headerLeftText);
-		parameters.put("headerRightText", headerRightText);
-		parameters.put("footerBottomText", footerBottomText);
+		parameters.put("headerLeftText", indicLigaturizer.process(headerLeftText));
+		parameters.put("headerRightText", indicLigaturizer.process(headerRightText));
+		parameters.put("footerBottomText", indicLigaturizer.process(footerBottomText));
 		parameters.put("logoURL", logoURL);
 		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
@@ -2085,6 +2089,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
+		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), patientLeftText = "", patientRightText = "";
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
@@ -2147,8 +2152,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 				else patientRightText = text;
 			}
 		}
-		parameters.put("patientLeftText", patientLeftText);
-		parameters.put("patientRightText", patientRightText);
+		parameters.put("patientLeftText", indicLigaturizer.process(patientLeftText));
+		parameters.put("patientRightText", indicLigaturizer.process(patientRightText));
 	}
 
    private List<Complaint> getCustomGlobalComplaintsForAdmin(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {

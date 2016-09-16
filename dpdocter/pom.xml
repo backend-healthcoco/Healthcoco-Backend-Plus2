@@ -28,10 +28,6 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
-					<resource>
-						<directory>src/main/resources/files</directory>
-						<filtering>true</filtering>
-					</resource>
 				</resources>
 			</build>
 		</profile>
@@ -50,10 +46,6 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/velocityTemplates</directory>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
-						<directory>src/main/resources/files</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -76,10 +68,6 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
-					<resource>
-						<directory>src/main/resources/files</directory>
-						<filtering>true</filtering>
-					</resource>
 				</resources>
 			</build>
 		</profile>
@@ -98,10 +86,6 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources/velocityTemplates</directory>
-						<filtering>true</filtering>
-					</resource>
-					<resource>
-						<directory>src/main/resources/files</directory>
 						<filtering>true</filtering>
 					</resource>
 				</resources>
@@ -332,7 +316,7 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-fonts</artifactId>
-			<version>4.0.0</version>
+			<version>6.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ar.com.fdvs</groupId>
@@ -829,12 +813,17 @@
 	    <version>5.10.1</version>
 	</dependency>
 	<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
-<dependency>
-    <groupId>net.sf.jasperreports</groupId>
-    <artifactId>jasperreports-fonts</artifactId>
-    <version>6.0.0</version>
-</dependency>
-
+	<dependency>
+	    <groupId>net.sf.jasperreports</groupId>
+	    <artifactId>jasperreports-fonts</artifactId>
+	    <version>6.0.0</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.itextpdf/itextpdf -->
+	<dependency>
+	    <groupId>com.itextpdf</groupId>
+	    <artifactId>itextpdf</artifactId>
+	    <version>5.5.6</version>
+	</dependency>
 	</dependencies>
 	<build>
 		<plugins>
