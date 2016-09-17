@@ -2,9 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
-public class OTReports {
+public class OTReports extends GenericCollection{
 
 	private String id;
 	private String serialNo;
@@ -22,8 +23,11 @@ public class OTReports {
 	private Boolean materialForHPE;
 	private String remarks;
 	private String doctorId;
+	private String doctorName;
 	private String locationId;
+	private String locationName;
 	private String hospitalId;
+	private String hospitalName;
 
 	public String getId() {
 		return id;
@@ -129,7 +133,6 @@ public class OTReports {
 		this.materialForHPE = materialForHPE;
 	}
 
-	
 	public String getRemarks() {
 		return remarks;
 	}
@@ -170,15 +173,40 @@ public class OTReports {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
-				+ ", operationDate=" + operationDate + ", anaesthesiaType=" + anaesthesiaType + ", provisionalDiagnosis="
-				+ provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis=" + finalDiagnosis
-				+ ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors="
-				+ assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE
-				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + "]";
+				+ ", operationDate=" + operationDate + ", anaesthesiaType=" + anaesthesiaType
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis="
+				+ finalDiagnosis + ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist
+				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
+				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName
+				+ ", locationId=" + locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId
+				+ ", hospitalName=" + hospitalName + "]";
 	}
 
 }

@@ -1,0 +1,119 @@
+package com.dpdocter.collections;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.dpdocter.enums.GenderType;
+@Document(collection = "delivery_report_cl")
+public class DeliveryReportsCollection extends GenericCollection {
+
+	private ObjectId id;
+	private String serialNo;
+	private Long deliveryDate;
+	private ObjectId patientId;
+	private String mobileNumber;
+	private GenderType babyGender;
+	private String deliveryType;
+	private String formNo;
+	private String remarks;
+	private ObjectId doctorId;
+	private ObjectId locationId;
+	private ObjectId hospitalId;
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getSerialNo() {
+		return serialNo;
+	}
+
+	public void setSerialNo(String serialNo) {
+		this.serialNo = serialNo;
+	}
+
+	public Long getDeliveryDate() {
+		return deliveryDate;
+	}
+
+	public void setDeliveryDate(Long deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public GenderType getBabyGender() {
+		return babyGender;
+	}
+
+	public void setBabyGender(GenderType babyGender) {
+		this.babyGender = babyGender;
+	}
+
+	public String getDeliveryType() {
+		return deliveryType;
+	}
+
+	public void setDeliveryType(String deliveryType) {
+		this.deliveryType = deliveryType;
+	}
+
+	public String getFormNo() {
+		return formNo;
+	}
+
+	public void setFormNo(String formNo) {
+		this.formNo = formNo;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public ObjectId getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+}

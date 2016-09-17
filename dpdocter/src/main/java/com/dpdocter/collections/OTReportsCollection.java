@@ -5,11 +5,12 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Surgery;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
-
+@Document(collection = "ot_report_cl")
 public class OTReportsCollection extends GenericCollection {
 
 	@Id
@@ -39,7 +40,7 @@ public class OTReportsCollection extends GenericCollection {
 	@Field
 	private Boolean materialForHPE;
 	@Field
-	private String remark;
+	private String remarks;
 	@Field
 	private ObjectId doctorId;
 	@Field
@@ -151,12 +152,12 @@ public class OTReportsCollection extends GenericCollection {
 		this.materialForHPE = materialForHPE;
 	}
 
-	public String getRemark() {
-		return remark;
+	public String getRemarks() {
+		return remarks;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 
 	public ObjectId getDoctorId() {
@@ -190,7 +191,7 @@ public class OTReportsCollection extends GenericCollection {
 				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis="
 				+ finalDiagnosis + ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist
 				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
-				+ materialForHPE + ", remark=" + remark + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + "]";
 	}
 

@@ -9,7 +9,7 @@ import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.DeviceType;
 
 @Document(collection = "version_control_cl")
-public class VersionControlCollection {
+public class VersionControlCollection extends GenericCollection{
 	@Id
 	private ObjectId id;
 	@Field

@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
@@ -14,13 +15,18 @@ public interface ReportsService {
 
 	public OTReports submitOTReport(OTReports otReports);
 
-	public List<OPDReports> getOPDReportsList(Long startDate, Long endDate, String doctorId, String LocationId,
-			String hospitalId);
+	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports);
 
-	public List<IPDReports> getIPDReportsList(Long startDate, Long endDate, String doctorId, String LocationId,
-			String hospitalId);
+	List<IPDReports> getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
+			int page, int size, String updatedTime);
 
-	public List<OTReports> getOTReportsList(Long startDate, Long endDate, String doctorId, String LocationId,
-			String hospitalId);
+	List<OPDReports> getOPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
+			int page, int size, String updatedTime);
+
+	List<OTReports> getOTReportsList(String locationId, String doctorId, String patientId, String from, String to,
+			int page, int size, String updatedTime);
+
+	List<DeliveryReports> getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
+			String to, int page, int size, String updatedTime);
 
 }

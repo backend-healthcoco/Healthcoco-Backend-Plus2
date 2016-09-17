@@ -2,7 +2,9 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class OPDReports {
+import com.dpdocter.collections.GenericCollection;
+
+public class OPDReports  extends GenericCollection{
 
 	private String id;
 	private String serialNo;
@@ -16,8 +18,11 @@ public class OPDReports {
 	private Long receiptDate;
 	private String remarks;
 	private String doctorId;
+	private String doctorName;
 	private String locationId;
+	private String locationName;
 	private String hospitalId;
+	private String hospitalName;
 
 	public String getId() {
 		return id;
@@ -131,12 +136,38 @@ public class OPDReports {
 		this.patient = patient;
 	}
 
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
 	@Override
 	public String toString() {
-		return "OPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", prescriptionId="
-				+ prescriptionId + ", amountReceived=" + amountReceived + ", receiptNo=" + receiptNo + ", receiptDate="
-				+ receiptDate + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "OPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
+				+ ", prescriptionId=" + prescriptionId + ", drugName=" + drugName + ", drugId=" + drugId
+				+ ", amountReceived=" + amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate
+				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId="
+				+ locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName="
+				+ hospitalName + "]";
 	}
 
 }

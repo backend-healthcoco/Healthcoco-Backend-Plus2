@@ -1,15 +1,28 @@
 package com.dpdocter.services.impl;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.VersionControl;
+import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.VersionControlCollection;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.VersionControlRepository;
 import com.dpdocter.services.VersionControlService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class VersionControlServiceImpl implements VersionControlService{
@@ -18,6 +31,9 @@ public class VersionControlServiceImpl implements VersionControlService{
 	
 	@Autowired
 	private VersionControlRepository versionControlRepository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 	@Override
 	@Transactional
@@ -42,6 +58,36 @@ public class VersionControlServiceImpl implements VersionControlService{
 			
 		}
 		return versionControlCode;
+	}
+	
+	@Override
+	@Transactional
+	public List<VersionControl> getVersionsList(int page, int size ,String searchTerm)
+	{
+		List<VersionControl> response = null;
+		Criteria criteria = null;
+		try{
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria = new Criteria().orOperator(new Criteria("deviceType").regex("^"+searchTerm,"i"),(new Criteria("appType").regex("^"+searchTerm,"i")));
+			Aggregation aggregation = null;
+			if(criteria != null)
+			{
+				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+				else aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+			else
+			{
+				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+				else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+			
+			AggregationResults<VersionControl> aggregationResults = mongoTemplate.aggregate(aggregation, VersionControlCollection.class, VersionControl.class);
+			response = aggregationResults.getMappedResults();
+		}catch(Exception e){
+			logger.error("Error while getting versions "+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while getting version control List "+ e.getMessage());
+		}
+		return response;
 	}
 	
 	@Override

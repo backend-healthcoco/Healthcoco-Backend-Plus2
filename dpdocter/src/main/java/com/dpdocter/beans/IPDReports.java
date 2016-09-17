@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class IPDReports {
+import com.dpdocter.collections.GenericCollection;
+
+public class IPDReports extends GenericCollection{
 
 	private String id;
 	private String serialNo;
@@ -15,8 +17,11 @@ public class IPDReports {
 	private Long receiptDate;
 	private String remarks;
 	private String doctorId;
+	private String doctorName;
 	private String locationId;
+	private String locationName;
 	private String hospitalId;
+	private String hospitalName;
 
 	public String getId() {
 		return id;
@@ -138,13 +143,40 @@ public class IPDReports {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
 	@Override
 	public String toString() {
 		return "IPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
 				+ ", admissionTime=" + admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
 				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
 				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
+				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
+				+ "]";
 	}
 
 }

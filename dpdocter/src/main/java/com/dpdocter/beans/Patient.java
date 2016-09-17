@@ -34,8 +34,18 @@ public class Patient {
     private Boolean isDataAvailableWithOtherDoctor = false;
 
     private Boolean isPatientOTPVerified = false;
+    
+    private Address address;
 
-    public String getPatientId() {
+    public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public String getPatientId() {
 	return patientId;
     }
 
