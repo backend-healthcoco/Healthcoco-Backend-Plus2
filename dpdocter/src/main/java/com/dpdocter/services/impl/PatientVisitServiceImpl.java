@@ -447,6 +447,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    BeanUtil.map(request, response);
 	    if (request.getClinicalNote() != null) {
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
+		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+		    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
+		}
 		String visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
 		clinicalNotes.setVisitId(visitId);
 		request.setVisitId(visitId);
@@ -679,8 +682,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     private JasperReportResponse createJasper(PatientVisitCollection patientVisitCollection, PatientCollection patient, UserCollection user) throws IOException{
     	JasperReportResponse response = null;
     	Map<String, Object> parameters = new HashMap<String, Object>();
-    	IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
-	    String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
+    	String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
 		List<DBObject> prescriptions = new ArrayList<DBObject>();
 	    if (patientVisitCollection.getPrescriptionId() != null) {
 		for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
