@@ -354,12 +354,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes = new ClinicalNotes();
 	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 	    
-	    if(complaintIds != null && !complaintIds.isEmpty())clinicalNotes.setComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(complaintIds))), ComplaintCollection.class, Complaint.class).getMappedResults());
-	    if(investigationIds != null && !investigationIds.isEmpty())clinicalNotes.setInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(investigationIds))), InvestigationCollection.class, Investigation.class).getMappedResults());
-	    if(observationIds != null && !observationIds.isEmpty())clinicalNotes.setObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(observationIds))), ObservationCollection.class, Observation.class).getMappedResults());
-	    if(diagnosisIds != null && !diagnosisIds.isEmpty())clinicalNotes.setDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagnosisIds))), DiagnosisCollection.class, Diagnoses.class).getMappedResults());
-	    if(noteIds != null && !noteIds.isEmpty())clinicalNotes.setNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(noteIds))), NotesCollection.class, Notes.class).getMappedResults());
-	    if(diagramIds != null && !diagramIds.isEmpty())clinicalNotes.setDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagramIds))), DiagramsCollection.class, Diagram.class).getMappedResults());
+	    if(complaintIds != null && !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(complaintIds))), ComplaintCollection.class, Complaint.class).getMappedResults(), complaintIds));
+	    if(investigationIds != null && !investigationIds.isEmpty())clinicalNotes.setInvestigations(sortInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(investigationIds))), InvestigationCollection.class, Investigation.class).getMappedResults(),investigationIds));
+	    if(observationIds != null && !observationIds.isEmpty())clinicalNotes.setObservations(sortObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(observationIds))), ObservationCollection.class, Observation.class).getMappedResults(), observationIds));
+	    if(diagnosisIds != null && !diagnosisIds.isEmpty())clinicalNotes.setDiagnoses(sortDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagnosisIds))), DiagnosisCollection.class, Diagnoses.class).getMappedResults(), diagnosisIds));
+	    if(noteIds != null && !noteIds.isEmpty())clinicalNotes.setNotes(sortNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(noteIds))), NotesCollection.class, Notes.class).getMappedResults(), noteIds));
+	    if(diagramIds != null && !diagramIds.isEmpty())clinicalNotes.setDiagrams(sortDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagramIds))), DiagramsCollection.class, Diagram.class).getMappedResults(), diagramIds));
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
@@ -380,17 +380,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		BeanUtil.map(clinicalNotesCollection, clinicalNote);
 
 		if(clinicalNotesCollection.getComplaints() != null && !clinicalNotesCollection.getComplaints().isEmpty())
-			clinicalNote.setComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getComplaints()))), ComplaintCollection.class, Complaint.class).getMappedResults());
+			clinicalNote.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getComplaints()))), ComplaintCollection.class, Complaint.class).getMappedResults(), clinicalNotesCollection.getComplaints()));
 		if(clinicalNotesCollection.getInvestigations() != null && !clinicalNotesCollection.getInvestigations().isEmpty())
-			clinicalNote.setInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getInvestigations()))), InvestigationCollection.class, Investigation.class).getMappedResults());
+			clinicalNote.setInvestigations(sortInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getInvestigations()))), InvestigationCollection.class, Investigation.class).getMappedResults(), clinicalNotesCollection.getInvestigations()));
 		if(clinicalNotesCollection.getObservations() != null && !clinicalNotesCollection.getObservations().isEmpty())
-			clinicalNote.setObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))), ObservationCollection.class, Observation.class).getMappedResults());
+			clinicalNote.setObservations(sortObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))), ObservationCollection.class, Observation.class).getMappedResults(), clinicalNotesCollection.getObservations()));
 		if(clinicalNotesCollection.getDiagnoses() != null && !clinicalNotesCollection.getDiagnoses().isEmpty())
-			clinicalNote.setDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))), DiagnosisCollection.class, Diagnoses.class).getMappedResults());
+			clinicalNote.setDiagnoses(sortDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))), DiagnosisCollection.class, Diagnoses.class).getMappedResults(), clinicalNotesCollection.getDiagnoses()));
 		if(clinicalNotesCollection.getNotes() != null && !clinicalNotesCollection.getNotes().isEmpty())
-			clinicalNote.setNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getNotes()))), NotesCollection.class, Notes.class).getMappedResults());
+			clinicalNote.setNotes(sortNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getNotes()))), NotesCollection.class, Notes.class).getMappedResults(), clinicalNotesCollection.getNotes()));
 		if(clinicalNotesCollection.getDiagrams() != null && !clinicalNotesCollection.getDiagrams().isEmpty())
-			clinicalNote.setDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagrams()))), DiagramsCollection.class, Diagram.class).getMappedResults());
+			clinicalNote.setDiagrams(sortDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagrams()))), DiagramsCollection.class, Diagram.class).getMappedResults(), clinicalNotesCollection.getDiagrams()));
 
 		PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNotesCollection.getId());
 		if (patientVisitCollection != null)
@@ -404,7 +404,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	return clinicalNote;
     }
 
-    @Override
+	@Override
     @Transactional
     public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
 	ClinicalNotes clinicalNotes = null;
@@ -558,12 +558,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	    clinicalNotes = new ClinicalNotes();
 	    BeanUtil.map(clinicalNotesCollection, clinicalNotes);
 
-	    if(complaintIds != null && !complaintIds.isEmpty())clinicalNotes.setComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(complaintIds))), ComplaintCollection.class, Complaint.class).getMappedResults());
-	    if(investigationIds != null && !investigationIds.isEmpty())clinicalNotes.setInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(investigationIds))), InvestigationCollection.class, Investigation.class).getMappedResults());
-	    if(observationIds != null && !observationIds.isEmpty())clinicalNotes.setObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(observationIds))), ObservationCollection.class, Observation.class).getMappedResults());
-	    if(diagnosisIds != null && !diagnosisIds.isEmpty())clinicalNotes.setDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagnosisIds))), DiagnosisCollection.class, Diagnoses.class).getMappedResults());
-	    if(noteIds != null && !noteIds.isEmpty())clinicalNotes.setNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(noteIds))), NotesCollection.class, Notes.class).getMappedResults());
-	    if(diagramIds != null && !diagramIds.isEmpty())clinicalNotes.setDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagramIds))), DiagramsCollection.class, Diagram.class).getMappedResults());	
+	    if(complaintIds != null && !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(complaintIds))), ComplaintCollection.class, Complaint.class).getMappedResults(), complaintIds));
+	    if(investigationIds != null && !investigationIds.isEmpty())clinicalNotes.setInvestigations(sortInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(investigationIds))), InvestigationCollection.class, Investigation.class).getMappedResults(),investigationIds));
+	    if(observationIds != null && !observationIds.isEmpty())clinicalNotes.setObservations(sortObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(observationIds))), ObservationCollection.class, Observation.class).getMappedResults(), observationIds));
+	    if(diagnosisIds != null && !diagnosisIds.isEmpty())clinicalNotes.setDiagnoses(sortDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagnosisIds))), DiagnosisCollection.class, Diagnoses.class).getMappedResults(), diagnosisIds));
+	    if(noteIds != null && !noteIds.isEmpty())clinicalNotes.setNotes(sortNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(noteIds))), NotesCollection.class, Notes.class).getMappedResults(), noteIds));
+	    if(diagramIds != null && !diagramIds.isEmpty())clinicalNotes.setDiagrams(sortDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(diagramIds))), DiagramsCollection.class, Diagram.class).getMappedResults(), diagramIds));	
 	    
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -663,17 +663,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		   ClinicalNotes clinicalNote = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNote);
 			if(clinicalNotesCollection.getComplaints() != null && !clinicalNotesCollection.getComplaints().isEmpty())
-				clinicalNote.setComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getComplaints()))), ComplaintCollection.class, Complaint.class).getMappedResults());
+				clinicalNote.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getComplaints()))), ComplaintCollection.class, Complaint.class).getMappedResults(), clinicalNotesCollection.getComplaints()));
 			if(clinicalNotesCollection.getInvestigations() != null && !clinicalNotesCollection.getInvestigations().isEmpty())
-				clinicalNote.setInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getInvestigations()))), InvestigationCollection.class, Investigation.class).getMappedResults());
+				clinicalNote.setInvestigations(sortInvestigations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getInvestigations()))), InvestigationCollection.class, Investigation.class).getMappedResults(), clinicalNotesCollection.getInvestigations()));
 			if(clinicalNotesCollection.getObservations() != null && !clinicalNotesCollection.getObservations().isEmpty())
-				clinicalNote.setObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))), ObservationCollection.class, Observation.class).getMappedResults());
+				clinicalNote.setObservations(sortObservations(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))), ObservationCollection.class, Observation.class).getMappedResults(), clinicalNotesCollection.getObservations()));
 			if(clinicalNotesCollection.getDiagnoses() != null && !clinicalNotesCollection.getDiagnoses().isEmpty())
-				clinicalNote.setDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))), DiagnosisCollection.class, Diagnoses.class).getMappedResults());
+				clinicalNote.setDiagnoses(sortDiagnoses(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))), DiagnosisCollection.class, Diagnoses.class).getMappedResults(), clinicalNotesCollection.getDiagnoses()));
 			if(clinicalNotesCollection.getNotes() != null && !clinicalNotesCollection.getNotes().isEmpty())
-				clinicalNote.setNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getNotes()))), NotesCollection.class, Notes.class).getMappedResults());
+				clinicalNote.setNotes(sortNotes(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getNotes()))), NotesCollection.class, Notes.class).getMappedResults(), clinicalNotesCollection.getNotes()));
 			if(clinicalNotesCollection.getDiagrams() != null && !clinicalNotesCollection.getDiagrams().isEmpty())
-				clinicalNote.setDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagrams()))), DiagramsCollection.class, Diagram.class).getMappedResults());
+				clinicalNote.setDiagrams(sortDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagrams()))), DiagramsCollection.class, Diagram.class).getMappedResults(), clinicalNotesCollection.getDiagrams()));
 
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findByClinialNotesId(clinicalNotesCollection.getId());
 			if (patientVisitCollection != null) clinicalNote.setVisitId(patientVisitCollection.getId().toString());
@@ -2404,4 +2404,59 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 	return response;
     }
+
+
+    private List<Complaint> sortComplaints(List<Complaint> complaints, List<ObjectId> complaintIds) {
+		List<Complaint> response = new ArrayList<Complaint>();
+		if(complaints != null && !complaints.isEmpty()){
+			for(ObjectId id : complaintIds)
+				for(Complaint complaint : complaints)if(complaint.getId().equalsIgnoreCase(id.toString()))response.add(complaint);
+		}
+		return response;
+	}
+	private List<Diagram> sortDiagrams(List<Diagram> mappedResults, List<ObjectId> diagrams) {
+		List<Diagram> response = new ArrayList<Diagram>();
+		if(mappedResults != null && !mappedResults.isEmpty()){
+			for(ObjectId id : diagrams)
+				for(Diagram diagram : mappedResults)if(diagram.getId().equalsIgnoreCase(id.toString()))response.add(diagram);
+		}
+		return response;
+	}
+
+	private List<Notes> sortNotes(List<Notes> mappedResults, List<ObjectId> notes) {
+		List<Notes> response = new ArrayList<Notes>();
+		if(mappedResults != null && !mappedResults.isEmpty()){
+			for(ObjectId id : notes)
+				for(Notes note : mappedResults)if(note.getId().equalsIgnoreCase(id.toString()))response.add(note);
+		}
+		return response;
+	}
+
+	private List<Diagnoses> sortDiagnoses(List<Diagnoses> mappedResults, List<ObjectId> diagnoses) {
+		List<Diagnoses> response = new ArrayList<Diagnoses>();
+		if(mappedResults != null && !mappedResults.isEmpty()){
+			for(ObjectId id : diagnoses)
+				for(Diagnoses diagnosis : mappedResults)if(diagnosis.getId().equalsIgnoreCase(id.toString()))response.add(diagnosis);
+		}
+		return response;
+	}
+
+	private List<Observation> sortObservations(List<Observation> mappedResults, List<ObjectId> observations) {
+		List<Observation> response = new ArrayList<Observation>();
+		if(mappedResults != null && !mappedResults.isEmpty()){
+			for(ObjectId id : observations)
+				for(Observation observation : mappedResults)if(observation.getId().equalsIgnoreCase(id.toString()))response.add(observation);
+		}
+		return response;
+	}
+
+	private List<Investigation> sortInvestigations(List<Investigation> mappedResults, List<ObjectId> investigations) {
+		List<Investigation> response = new ArrayList<Investigation>();
+		if(mappedResults != null && !mappedResults.isEmpty()){
+			for(ObjectId id : investigations)
+				for(Investigation investigation : mappedResults)if(investigation.getId().equalsIgnoreCase(id.toString()))response.add(investigation);
+		}
+		return response;
+	}
+
 }
