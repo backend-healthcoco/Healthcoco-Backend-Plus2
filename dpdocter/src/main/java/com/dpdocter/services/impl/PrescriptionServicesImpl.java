@@ -39,6 +39,7 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
@@ -128,6 +129,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
 import com.itextpdf.text.pdf.languages.DevanagariLigaturizer;
@@ -209,6 +211,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
+	
+	@Autowired
+	private ReportsService reportsService;
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
@@ -685,6 +690,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				prescriptionCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")+ userCollection.getFirstName());
 			}
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+			
+			if(prescriptionCollection != null)
+			{
+				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()));
+				System.out.println(opdReports);
+				opdReports = reportsService.submitOPDReport(opdReports);
+				System.out.println(opdReports);
+			}
 			response = new PrescriptionAddEditResponse();
 			List<TestAndRecordData> prescriptionTest = prescriptionCollection.getDiagnosticTests();
 			prescriptionCollection.setDiagnosticTests(null);

@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
@@ -28,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 @Component
 @Path(PathProxy.REPORTS_BASE_URL)
 @Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.REPORTS_BASE_URL, description = "Endpoint for Medical Report Register")
 public class ReportsAPI {
 

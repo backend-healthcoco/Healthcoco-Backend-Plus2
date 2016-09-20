@@ -24,7 +24,7 @@ import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.Patient;
-import com.dpdocter.beans.User;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DeliveryReportsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.IPDReportsCollection;
@@ -32,6 +32,7 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OPDReportsCollection;
 import com.dpdocter.collections.OTReportsCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -43,6 +44,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.OPDReportsRepository;
 import com.dpdocter.repository.OTReportsRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.ReportsService;
 
@@ -64,6 +66,9 @@ public class ReportsServiceImpl implements ReportsService {
 	
 	@Autowired
 	DeliveryReportsRepository deliveryReportsRepository;
+	
+	@Autowired
+	PrescriptionRepository prescriptionRepository;
 	
 	@Autowired
 	UserRepository userRepository;
@@ -162,6 +167,7 @@ public class ReportsServiceImpl implements ReportsService {
 	}
 	
 	@Override
+	@Transactional
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
 		DeliveryReports response = null;
 		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
@@ -273,6 +279,7 @@ public class ReportsServiceImpl implements ReportsService {
 	
 
 	@Override
+	@Transactional
 	public List<OPDReports> getOPDReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub
@@ -346,6 +353,17 @@ public class ReportsServiceImpl implements ReportsService {
 			    			opdReports.setPatient(patient);
 			    		}
 			    	}
+			    	
+			    	if(collection.getPrescriptionId() !=null)
+			    	{
+			    		PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(collection.getPrescriptionId());
+			    		if(prescriptionCollection != null){
+			    			Prescription prescription = new Prescription();
+			    			BeanUtil.map(prescriptionCollection, prescription);
+			    			opdReports.setPrescription(prescription);
+			    		}
+			    	}
+			    	
 			    	response.add(opdReports);
 			    }
 			}
@@ -357,6 +375,7 @@ public class ReportsServiceImpl implements ReportsService {
 	}
 
 	@Override
+	@Transactional
 	public List<OTReports> getOTReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub
@@ -444,6 +463,7 @@ public class ReportsServiceImpl implements ReportsService {
 	}
 
 	@Override
+	@Transactional
 	public List<DeliveryReports> getDeliveryReportsList(String locationId, String doctorId, String patientId,
 			String from, String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub

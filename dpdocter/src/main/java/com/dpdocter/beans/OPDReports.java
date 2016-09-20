@@ -4,15 +4,14 @@ import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class OPDReports  extends GenericCollection{
+public class OPDReports extends GenericCollection {
 
 	private String id;
 	private String serialNo;
 	private String patientId;
 	private Patient patient;
 	private String prescriptionId;
-	private List<String> drugName;
-	private List<String> drugId;
+	private Prescription prescription;
 	private String amountReceived;
 	private String receiptNo;
 	private Long receiptDate;
@@ -23,6 +22,19 @@ public class OPDReports  extends GenericCollection{
 	private String locationName;
 	private String hospitalId;
 	private String hospitalName;
+
+	public OPDReports() {
+		super();
+	}
+
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId) {
+		super();
+		this.patientId = patientId;
+		this.prescriptionId = prescriptionId;
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+	}
 
 	public String getId() {
 		return id;
@@ -112,22 +124,6 @@ public class OPDReports  extends GenericCollection{
 		this.hospitalId = hospitalId;
 	}
 
-	public List<String> getDrugName() {
-		return drugName;
-	}
-
-	public void setDrugName(List<String> drugName) {
-		this.drugName = drugName;
-	}
-
-	public List<String> getDrugId() {
-		return drugId;
-	}
-
-	public void setDrugId(List<String> drugId) {
-		this.drugId = drugId;
-	}
-
 	public Patient getPatient() {
 		return patient;
 	}
@@ -160,14 +156,22 @@ public class OPDReports  extends GenericCollection{
 		this.hospitalName = hospitalName;
 	}
 
+	public Prescription getPrescription() {
+		return prescription;
+	}
+
+	public void setPrescription(Prescription prescription) {
+		this.prescription = prescription;
+	}
+
 	@Override
 	public String toString() {
 		return "OPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
-				+ ", prescriptionId=" + prescriptionId + ", drugName=" + drugName + ", drugId=" + drugId
-				+ ", amountReceived=" + amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate
-				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId="
-				+ locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName="
-				+ hospitalName + "]";
+				+ ", prescriptionId=" + prescriptionId + ", prescription=" + prescription + ", amountReceived="
+				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
+				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
+				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
+				+ "]";
 	}
 
 }
