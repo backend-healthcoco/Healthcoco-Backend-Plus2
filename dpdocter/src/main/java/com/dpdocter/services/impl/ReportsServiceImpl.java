@@ -46,6 +46,7 @@ import com.dpdocter.repository.OTReportsRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.ReportsService;
 
 import common.util.web.DPDoctorUtils;
@@ -84,6 +85,9 @@ public class ReportsServiceImpl implements ReportsService {
 	
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Autowired
+	PrescriptionServices prescriptionServices;
 	
 	@Override
 	@Transactional
@@ -356,10 +360,9 @@ public class ReportsServiceImpl implements ReportsService {
 			    	
 			    	if(collection.getPrescriptionId() !=null)
 			    	{
-			    		PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(collection.getPrescriptionId());
-			    		if(prescriptionCollection != null){
-			    			Prescription prescription = new Prescription();
-			    			BeanUtil.map(prescriptionCollection, prescription);
+			    		Prescription prescription = prescriptionServices.getPrescriptionById(collection.getPrescriptionId().toString());
+			    		if(prescription != null){
+			    			
 			    			opdReports.setPrescription(prescription);
 			    		}
 			    	}
