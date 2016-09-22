@@ -1,0 +1,182 @@
+package com.dpdocter.beans;
+
+import com.dpdocter.collections.GenericCollection;
+
+public class IPDReports extends GenericCollection{
+
+	private String id;
+	private String serialNo;
+	private String patientId;
+	private Patient patient;
+	private Long admissionTime;
+	private String doctorIncharge;
+	private String diagnosis;
+	private String natureOfProfessionalServiceRendered;
+	private String amountReceived;
+	private String receiptNo;
+	private Long receiptDate;
+	private String remarks;
+	private String doctorId;
+	private String doctorName;
+	private String locationId;
+	private String locationName;
+	private String hospitalId;
+	private String hospitalName;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getSerialNo() {
+		return serialNo;
+	}
+
+	public void setSerialNo(String serialNo) {
+		this.serialNo = serialNo;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public Long getAdmissionTime() {
+		return admissionTime;
+	}
+
+	public void setAdmissionTime(Long admissionTime) {
+		this.admissionTime = admissionTime;
+	}
+
+	public String getDoctorIncharge() {
+		return doctorIncharge;
+	}
+
+	public void setDoctorIncharge(String doctorIncharge) {
+		this.doctorIncharge = doctorIncharge;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getNatureOfProfessionalServiceRendered() {
+		return natureOfProfessionalServiceRendered;
+	}
+
+	public void setNatureOfProfessionalServiceRendered(String natureOfProfessionalServiceRendered) {
+		this.natureOfProfessionalServiceRendered = natureOfProfessionalServiceRendered;
+	}
+
+	public String getAmountReceived() {
+		return amountReceived;
+	}
+
+	public void setAmountReceived(String amountReceived) {
+		this.amountReceived = amountReceived;
+	}
+
+	public String getReceiptNo() {
+		return receiptNo;
+	}
+
+	public void setReceiptNo(String receiptNo) {
+		this.receiptNo = receiptNo;
+	}
+
+	public Long getReceiptDate() {
+		return receiptDate;
+	}
+
+	public void setReceiptDate(Long receiptDate) {
+		this.receiptDate = receiptDate;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public Patient getPatient() {
+		return patient;
+	}
+
+	public void setPatient(Patient patient) {
+		this.patient = patient;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
+	@Override
+	public String toString() {
+		return "IPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
+				+ ", admissionTime=" + admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
+				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
+				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
+				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
+				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
+				+ "]";
+	}
+
+}
