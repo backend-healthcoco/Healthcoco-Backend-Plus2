@@ -13,6 +13,8 @@ import com.dpdocter.beans.HeaderSetup;
 import com.dpdocter.beans.PageSetup;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.LineStyle;
 
 @Document(collection = "print_settings_cl")
 @CompoundIndexes({
@@ -52,6 +54,12 @@ public class PrintSettingsCollection extends GenericCollection {
 
     @Field
     private PrintSettingsText contentSetup;
+    
+    @Field
+    private String contentLineSpace = LineSpace.SMALL.name();
+    
+    @Field
+    private String contentLineStyle = LineStyle.INLINE.getStyle();
     
     public ObjectId getId() {
 	return id;
@@ -141,11 +149,28 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.contentSetup = contentSetup;
 	}
 
+	public String getContentLineSpace() {
+		return contentLineSpace;
+	}
+
+	public void setContentLineSpace(String contentLineSpace) {
+		this.contentLineSpace = contentLineSpace;
+	}
+
+	public String getContentLineStyle() {
+		return contentLineStyle;
+	}
+
+	public void setContentLineStyle(String contentLineStyle) {
+		this.contentLineStyle = contentLineStyle;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
 				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
-				+ ", clinicLogoUrl=" + clinicLogoUrl + ", contentSetup=" + contentSetup + "]";
+				+ ", clinicLogoUrl=" + clinicLogoUrl + ", contentSetup=" + contentSetup + ", contentLineSpace="
+				+ contentLineSpace + ", contentLineStyle=" + contentLineStyle + "]";
 	}
 }

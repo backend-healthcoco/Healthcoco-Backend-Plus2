@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.LineStyle;
 
 public class PrintSettings extends GenericCollection {
 
@@ -27,6 +29,10 @@ public class PrintSettings extends GenericCollection {
 
     private String clinicLogoUrl;
 
+    private String contentLineSpace = LineSpace.SMALL.name();
+    
+    private String contentLineStyle = LineStyle.INLINE.getStyle();
+    
     public String getId() {
 	return id;
     }
@@ -115,11 +121,28 @@ public class PrintSettings extends GenericCollection {
 		this.contentSetup = contentSetup;
 	}
 
+	public String getContentLineSpace() {
+		return contentLineSpace;
+	}
+
+	public void setContentLineSpace(String contentLineSpace) {
+		this.contentLineSpace = contentLineSpace;
+	}
+
+	public String getContentLineStyle() {
+		return contentLineStyle;
+	}
+
+	public void setContentLineStyle(String contentLineStyle) {
+		this.contentLineStyle = contentLineStyle;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettings [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup + ", headerSetup="
 				+ headerSetup + ", footerSetup=" + footerSetup + ", contentSetup=" + contentSetup + ", discarded="
-				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + "]";
+				+ discarded + ", clinicLogoUrl=" + clinicLogoUrl + ", contentLineSpace=" + contentLineSpace
+				+ ", contentLineStyle=" + contentLineStyle + "]";
 	}
 }

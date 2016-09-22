@@ -14,16 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.PrintSettings;
-import com.dpdocter.beans.PrintSettingsDefaultData;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
-import com.dpdocter.collections.PrintSettingsDefaultDataCollection;
 import com.dpdocter.enums.PrintFilter;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocationRepository;
-import com.dpdocter.repository.PrintSettingsDefaultDataRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.services.PrintSettingsService;
 
@@ -38,45 +35,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
     private PrintSettingsRepository printSettingsRepository;
 
     @Autowired
-    private PrintSettingsDefaultDataRepository printSettingsDefaultDataRepository;
-
-    @Autowired
     private LocationRepository locationRepository;
-
-    @Override
-    @Transactional
-    public PrintSettingsDefaultData saveDefaultSettings(PrintSettingsDefaultData request) {
-	PrintSettingsDefaultData response = null;
-	PrintSettingsDefaultDataCollection printSettingsDefaultDataCollection = new PrintSettingsDefaultDataCollection();
-	try {
-	    BeanUtil.map(request, printSettingsDefaultDataCollection);
-	    printSettingsDefaultDataCollection = printSettingsDefaultDataRepository.save(printSettingsDefaultDataCollection);
-	    response = new PrintSettingsDefaultData();
-	    BeanUtil.map(printSettingsDefaultDataCollection, response);
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error occured while saving default settings");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while saving default settings");
-	}
-	return response;
-    }
-
-    @Override
-    @Transactional
-    public List<PrintSettingsDefaultData> getDefaultSettings() {
-	List<PrintSettingsDefaultData> response = new ArrayList<PrintSettingsDefaultData>();
-	List<PrintSettingsDefaultDataCollection> printSettingsDefaultDataCollection = null;
-	try {
-	    printSettingsDefaultDataCollection = printSettingsDefaultDataRepository.findAll();
-	    BeanUtil.map(printSettingsDefaultDataCollection, response);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e + " Error occured while Getting default settings");
-	    throw new BusinessException(ServiceError.Unknown, "Error occured while Getting default settings");
-	}
-	return response;
-    }
 
     @Override
     @Transactional
@@ -96,7 +55,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 	    }
 	    BeanUtil.map(request, printSettingsCollection);
 	    if (request.getId() == null) {
-		printSettingsCollection.setCreatedTime(new Date());
+	    	printSettingsCollection.setCreatedTime(new Date());
 	    } else {
 		PrintSettingsCollection oldPrintSettingsCollection = printSettingsRepository.findOne(new ObjectId(request.getId()));
 		if (oldPrintSettingsCollection != null) {
@@ -115,7 +74,7 @@ public class PrintSettingsServiceImpl implements PrintSettingsService {
 
 	    LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 	    if (locationCollection != null) {
-		printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
+	    	printSettingsCollection.setClinicLogoUrl(locationCollection.getLogoUrl());
 	    }
 	    printSettingsCollection = printSettingsRepository.save(printSettingsCollection);
 	    BeanUtil.map(printSettingsCollection, response);

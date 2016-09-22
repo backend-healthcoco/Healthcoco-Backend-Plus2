@@ -44,31 +44,6 @@ public class PrintSettingsApi {
     @Value(value = "${image.path}")
     private String imagePath;
 
-//    @Path(value = PathProxy.PrintSettingsUrls.SAVE_SETTINGS_DEFAULT_DATA)
-//    @POST
-//    @ApiOperation(value = "SAVE_SETTINGS_DEFAULT_DATA", notes = "SAVE_SETTINGS_DEFAULT_DATA")
-//    public Response<PrintSettingsDefaultData> saveDefaultSettings(PrintSettingsDefaultData request) {
-//
-//	if (request == null) {
-//	    logger.warn("Request cannot be null");
-//	    throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
-//	}
-//	PrintSettingsDefaultData printSettingsData = printSettingsService.saveDefaultSettings(request);
-//	Response<PrintSettingsDefaultData> response = new Response<PrintSettingsDefaultData>();
-//	response.setData(printSettingsData);
-//	return response;
-//    }
-//
-//    @GET
-//    @ApiOperation(value = "GET_SETTINGS_DEFAULT_DATA", notes = "GET_SETTINGS_DEFAULT_DATA")
-//    public Response<PrintSettingsDefaultData> getDefaultSettings() {
-//
-//	List<PrintSettingsDefaultData> printSettingsData = printSettingsService.getDefaultSettings();
-//	Response<PrintSettingsDefaultData> response = new Response<PrintSettingsDefaultData>();
-//	response.setDataList(printSettingsData);
-//	return response;
-//    }
-
     @Path(value = PathProxy.PrintSettingsUrls.SAVE_PRINT_SETTINGS)
     @POST
     @ApiOperation(value = "SAVE_PRINT_SETTINGS", notes = "SAVE_PRINT_SETTINGS")

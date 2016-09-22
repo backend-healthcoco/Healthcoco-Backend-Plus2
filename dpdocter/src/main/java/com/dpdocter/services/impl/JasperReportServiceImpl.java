@@ -1,6 +1,5 @@
 package com.dpdocter.services.impl;
 
-import java.io.File;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -20,18 +19,16 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
-import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRStyle;
+import net.sf.jasperreports.engine.JRPropertiesUtil;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.base.JRBaseStyle;
+import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.util.JRProperties;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 @Service
@@ -57,10 +54,6 @@ public class JasperReportServiceImpl implements JasperReportService {
     @Value(value = "${mail.aws.secret.key}")
     private String AWS_SECRET_KEY;
 
-    @Value(value = "${jasper.print.pdf.font.file.name}")
-    private String JASPER_PDF_FONT_FILE;
-
-    @SuppressWarnings("deprecation")
     @Override
     @Transactional
     public JasperReportResponse createPDF(Map<String, Object> parameters, String fileName, String layout, String pageSize, Integer topMargin, Integer bottonMargin, Integer contentFontSize, String pdfName, String... subReportFileName) {
@@ -74,34 +67,20 @@ public class JasperReportServiceImpl implements JasperReportService {
 		    parameters.put("REPORT_CONNECTION", mongoConnection);
 		    parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 	
-		    DefaultJasperReportsContext context = DefaultJasperReportsContext.getInstance();
-		    context.setValue("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
-		    
-		    JRProperties.setProperty("net.sf.jasperreports.query.executer.factory.MongoDbQuery", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterFactory");
-		    JRProperties.setProperty("net.sf.jasperreports.default.pdf.font.name", JASPER_PDF_FONT_FILE);
-		    JRProperties.setProperty("net.sf.jasperreports.default.pdf.encoding","Identity-H");
-		    JRProperties.setProperty("net.sf.jasperreports.default.pdf.embedded","true");
+		    JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
+		    JRPropertiesUtil jrPropertiesUtil = JRPropertiesUtil.getInstance(jasperReportsContext);
+		    jrPropertiesUtil.setProperty("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
+		    jrPropertiesUtil.setProperty("net.sf.jasperreports.default.font.size", contentFontSize+"");
 
-		    JasperDesign design = null;
-		    JRStyle style = new JRBaseStyle();
-		    style.setFontSize(contentFontSize);
-	 	    if(!DPDoctorUtils.anyStringEmpty(subReportFileName)){
-		    	for(String subReport : subReportFileName){
-		    		design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + subReport +".jrxml"));	    
-			 	    design.setDefaultStyle(style);
-				    JasperCompileManager.compileReportToFile(design, JASPER_TEMPLATES_RESOURCE + subReport+ ".jasper");
-		    	}
-		    }
-		    design = JRXmlLoader.load(new File(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml"));
-	 	    design.setDefaultStyle(style);
-		    if(topMargin != null)design.setTopMargin(topMargin);
+		    JasperDesign design = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + fileName + ".jrxml");
+		    if(topMargin != null)design.setTopMargin(topMargin+10);
 		    if(bottonMargin != null)design.setBottomMargin(bottonMargin);
+
 		    JasperReport jasperReport = JasperCompileManager.compileReport(design);
-	
+			
 		    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters);
 	
 		    JasperExportManager.exportReportToPdfFile(jasperPrint, JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");
-		    
 		    jasperReportResponse = new JasperReportResponse();
 		    jasperReportResponse.setPath(JASPER_TEMPLATES_ROOT_PATH + pdfName + ".pdf");
 		    FileSystemResource fileSystemResource = new FileSystemResource(JASPER_TEMPLATES_RESOURCE + pdfName + ".pdf");

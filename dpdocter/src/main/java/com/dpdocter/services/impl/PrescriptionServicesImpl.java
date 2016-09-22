@@ -77,6 +77,7 @@ import com.dpdocter.elasticsearch.repository.ESDoctorDrugRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
@@ -130,8 +131,6 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.itextpdf.text.pdf.languages.DevanagariLigaturizer;
-import com.itextpdf.text.pdf.languages.IndicLigaturizer;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
@@ -3260,7 +3259,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	private JasperReportResponse createJasper(PrescriptionCollection prescriptionCollection, PatientCollection patient,
 			UserCollection user) throws IOException {
-		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
@@ -3274,7 +3272,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						String drugType = drug.getDrugType() != null
 								? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "") : "";
 						String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-						drugName = (drugType + drugName) == "" ? "----" : drugType + " " + drugName;
+						drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName;
 						String durationValue = prescriptionItem.getDuration() != null
 								? (prescriptionItem.getDuration().getValue() != null
 										? prescriptionItem.getDuration().getValue() : "")
@@ -3300,15 +3298,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						String duration = "";
 						if (durationValue == "" && durationValue == "")
-							duration = "----";
+							duration = "--";
 						else
 							duration = durationValue + " " + durationUnit;
 						no = no + 1;
 						PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-								indicLigaturizer.process(drugName), 
-								!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage()) ? indicLigaturizer.process(prescriptionItem.getDosage()) : "----",
-								indicLigaturizer.process(duration), directions.isEmpty() ? "----" : indicLigaturizer.process(directions),
-								!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions()) ? indicLigaturizer.process(prescriptionItem.getInstructions()): "----");
+								drugName, 
+								!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage()) ? prescriptionItem.getDosage() : "--",
+								 duration, directions.isEmpty() ? "--" : directions,
+								!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions()) ? prescriptionItem.getInstructions(): "--");
 						prescriptionItems.add(prescriptionJasperDetails);
 					}
 				}
@@ -3318,7 +3316,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		parameters.put("showDirection", showDirection);
 	
 		parameters.put("prescriptionId", prescriptionCollection.getId().toString());
-		parameters.put("advice", prescriptionCollection.getAdvice() != null ? indicLigaturizer.process(prescriptionCollection.getAdvice()) : null);
+		parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
 		String labTest = "";
 		if (prescriptionCollection.getDiagnosticTests() != null	&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 			for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
@@ -3331,10 +3329,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 		}
-		if (labTest != null && !labTest.isEmpty())parameters.put("labTest", indicLigaturizer.process(labTest));
+		if (labTest != null && !labTest.isEmpty())parameters.put("labTest", labTest);
 		else parameters.put("labTest", null);
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
+		parameters.put("contentLineSpace", (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, prescriptionCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-" + prescriptionCollection.getUniqueEmrId()+new Date().getTime();
@@ -3352,7 +3351,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId) {
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
-		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
 		Integer contentFontSize = 10;
@@ -3413,13 +3411,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
-				if (doctorUser != null)	parameters.put("footerSignature", indicLigaturizer.process(doctorUser.getTitle() + " " + doctorUser.getFirstName()));	
+				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
 			}	
 		}
 		parameters.put("contentFontSize", contentFontSize);
-		parameters.put("headerLeftText", indicLigaturizer.process(headerLeftText));
-		parameters.put("headerRightText", indicLigaturizer.process(headerRightText));
-		parameters.put("footerBottomText", indicLigaturizer.process(footerBottomText));
+		parameters.put("headerLeftText", headerLeftText);
+		parameters.put("headerRightText", headerRightText);
+		parameters.put("footerBottomText", footerBottomText);
 		parameters.put("logoURL", logoURL);
 		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
@@ -3429,7 +3427,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
-		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), patientLeftText = "", patientRightText = "";
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
@@ -3457,7 +3454,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		
 		if(patientDetails.getShowDOB()){
-			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
+			if(!DPDoctorUtils.anyStringEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
@@ -3493,8 +3490,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				else patientRightText = text;
 			}
 		}
-		parameters.put("patientLeftText", indicLigaturizer.process(patientLeftText));
-		parameters.put("patientRightText", indicLigaturizer.process(patientRightText));
+		parameters.put("patientLeftText", patientLeftText);
+		parameters.put("patientRightText", patientRightText);
 	}
 
 	@Override

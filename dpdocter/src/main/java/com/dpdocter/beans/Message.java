@@ -16,6 +16,8 @@ public class Message {
 
     private String countryCode;
 
+    private String unicode;
+    
     private List<SMS> sms;
 
     public String getAuthKey() {
@@ -63,9 +65,20 @@ public class Message {
 	this.sms = sms;
     }
 
-    @Override
-    public String toString() {
-	return "Message [authKey=" + authKey + ", route=" + route + ", senderId=" + senderId + ", countryCode=" + countryCode + ", sms=" + sms + "]";
-    }
+
+    @XmlElement(name = "UNICODE")
+    public String getUnicode() {
+		return unicode;
+	}
+
+	public void setUnicode(String unicode) {
+		this.unicode = unicode;
+	}
+
+	@Override
+	public String toString() {
+		return "Message [authKey=" + authKey + ", route=" + route + ", senderId=" + senderId + ", countryCode="
+				+ countryCode + ", unicode=" + unicode + ", sms=" + sms + "]";
+	}
 
 }

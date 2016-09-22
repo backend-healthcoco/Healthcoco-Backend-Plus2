@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+
+	<fontFamily name="Noto Sans">
+		<normal>${jasper.templates.resource}noto/NotoSans-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Devanagari">
+		<normal>${jasper.templates.resource}noto/NotoSansDevanagari-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Bengali">
+		<normal>${jasper.templates.resource}noto/NotoSansBengali-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Telugu">
+		<normal>${jasper.templates.resource}noto/NotoSansTelugu-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Tamil">
+		<normal>${jasper.templates.resource}noto/NotoSansTamil-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Gujarati">
+		<normal>${jasper.templates.resource}noto/NotoSansGujarati-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Kannada">
+		<normal>${jasper.templates.resource}noto/NotoSansKannada-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Malayalam">
+		<normal>${jasper.templates.resource}noto/NotoSansMalayalam-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Odia">
+		<normal>${jasper.templates.resource}noto/NotoSansOriya-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Gurmukhi">
+		<normal>${jasper.templates.resource}noto/NotoSansGurmukhi-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Sinhala">
+		<normal>${jasper.templates.resource}noto/NotoSansSinhala-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Tibetan">
+		<normal>${jasper.templates.resource}noto/NotoSansTibetan-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+	<fontFamily name="Noto Khmer">
+		<normal>${jasper.templates.resource}noto/NotoSansKhmer-Regular.ttf</normal>
+		<pdfEncoding>Identity-H</pdfEncoding>
+		<pdfEmbedded>true</pdfEmbedded>
+	</fontFamily>
+
+</fontFamilies>

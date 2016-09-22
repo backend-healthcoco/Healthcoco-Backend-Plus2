@@ -83,6 +83,9 @@ public class SMSServicesImpl implements SMSServices {
     @Value(value = "${SENDER_ID}")
     private String SENDER_ID;
 
+    @Value(value = "${UNICODE}")
+    private String UNICODE;
+
     @Value(value = "${DEFAULT_ROUTE}")
     private String ROUTE;
 
@@ -131,7 +134,7 @@ public class SMSServicesImpl implements SMSServices {
 	    message.setCountryCode(COUNTRY_CODE);
 	    message.setRoute(ROUTE);
 	    message.setSenderId(SENDER_ID);
-	    
+	    message.setUnicode(UNICODE);
 	    UserMobileNumbers userNumber = null;
 
 	    if (!isEnvProduction) {

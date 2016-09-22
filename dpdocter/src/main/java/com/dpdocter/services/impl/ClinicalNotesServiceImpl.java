@@ -68,6 +68,7 @@ import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
+import com.dpdocter.enums.LineStyle;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -102,8 +103,6 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.itextpdf.text.pdf.languages.DevanagariLigaturizer;
-import com.itextpdf.text.pdf.languages.IndicLigaturizer;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -1862,69 +1861,47 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection, PatientCollection patient, UserCollection user) throws IOException {
-		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-		String observations = "";
-		for (ObjectId observationId : clinicalNotesCollection.getObservations()) {
-		    ObservationCollection observationCollection = observationRepository.findOne(observationId);
-		    if (observationCollection != null) {
-			if (observations.isEmpty())
-			    observations = observationCollection.getObservation();
-			else
-			    observations = observations + ", " + observationCollection.getObservation();
-		    }
-		}
-		parameters.put("observationIds", indicLigaturizer.process(observations));
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
+		String contentLineStyle = (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
+		
+	    String observations = "";
+	    Collection<String> observationList = CollectionUtils.collect(sortObservations(
+	    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))),
+		 ObservationCollection.class, Observation.class).getMappedResults(), clinicalNotesCollection.getObservations()),new BeanToPropertyValueTransformer("observation"));
+		if(observationList != null && !observationList.isEmpty())observations = (observationList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
 
-		String notes = "";
-		for (ObjectId noteId : clinicalNotesCollection.getNotes()) {
-		    NotesCollection note = notesRepository.findOne(noteId);
-		    if (note != null) {
-			if (notes.isEmpty())
-			    notes = note.getNote();
-			else
-			    notes = notes + ", " + note.getNote();
-		    }
-		}
-		parameters.put("noteIds", indicLigaturizer.process(notes));
+	    String notes = "";
+	    Collection<String> noteList = CollectionUtils.collect(sortNotes(
+	    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getNotes()))),
+		 NotesCollection.class, Notes.class).getMappedResults(), clinicalNotesCollection.getNotes()),new BeanToPropertyValueTransformer("note"));
+		if(noteList != null && !noteList.isEmpty())notes = (noteList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
 
-		String investigations = "";
-		for (ObjectId investigationId : clinicalNotesCollection.getInvestigations()) {
-		    InvestigationCollection investigation = investigationRepository.findOne(investigationId);
-		    if (investigation != null) {
-			if (investigations.isEmpty())
-			    investigations = investigation.getInvestigation();
-			else
-			    investigations = investigations + ", " + investigation.getInvestigation();
-		    }
-		}
-		parameters.put("investigationIds", indicLigaturizer.process(investigations));
+	    String investigations = "";
+	    Collection<String> investigationList = CollectionUtils.collect(sortInvestigations(
+	    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getInvestigations()))),
+		 InvestigationCollection.class, Investigation.class).getMappedResults(), clinicalNotesCollection.getInvestigations()),new BeanToPropertyValueTransformer("investigation"));
+		if(investigationList != null && !investigationList.isEmpty())investigations = (investigationList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
 
-		String diagnosis = "";
-		for (ObjectId diagnosisId : clinicalNotesCollection.getDiagnoses()) {
-		    DiagnosisCollection diagnosisCollection = diagnosisRepository.findOne(diagnosisId);
-		    if (diagnosisCollection != null) {
-			if (diagnosis.isEmpty())
-			    diagnosis = diagnosisCollection.getDiagnosis();
-			else
-			    diagnosis = diagnosis + ", " + diagnosisCollection.getDiagnosis();
-		    }
-		}
-		parameters.put("diagnosesIds", indicLigaturizer.process(diagnosis));
+	    String diagnosis = "";
+	    Collection<String> diagnosisList = CollectionUtils.collect(sortDiagnoses(
+	    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))),
+		 DiagnosisCollection.class, Diagnoses.class).getMappedResults(), clinicalNotesCollection.getDiagnoses()),new BeanToPropertyValueTransformer("diagnosis"));
+		if(diagnosisList != null && !diagnosisList.isEmpty())diagnosis = (diagnosisList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
 
-		String complaints = "";
-		for (ObjectId complaintId : clinicalNotesCollection.getComplaints()) {
-		    ComplaintCollection complaint = complaintRepository.findOne(complaintId);
-		    if (complaint != null) {
-			if (complaints.isEmpty())
-			    complaints = complaint.getComplaint();
-			else
-			    complaints = complaints + ", " + complaint.getComplaint();
-		    }
-		}
-		parameters.put("complaintIds", indicLigaturizer.process(complaints));
+	    String complaints = "";
+	    Collection<String> complaintList = CollectionUtils.collect(sortComplaints(
+	    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getComplaints()))),
+		 ComplaintCollection.class, Complaint.class).getMappedResults(), clinicalNotesCollection.getComplaints()),new BeanToPropertyValueTransformer("complaint"));
+		if(complaintList != null && !complaintList.isEmpty())complaints = (complaintList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
+		parameters.put("observationIds", observations);
+		parameters.put("noteIds", notes);
+		parameters.put("investigationIds", investigations);
+		parameters.put("diagnosesIds", diagnosis);
+		parameters.put("complaintIds", complaints);
 
 		List<DBObject> diagramIds = new ArrayList<DBObject>();
 		if (clinicalNotesCollection.getDiagrams() != null)
@@ -1935,7 +1912,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    if (diagramsCollection.getDiagramUrl() != null) {
 				diagram.put("url", getFinalImageURL(diagramsCollection.getDiagramUrl()));
 			    }
-			    diagram.put("tags", indicLigaturizer.process(diagramsCollection.getTags()));
+			    diagram.put("tags", diagramsCollection.getTags());
 			    diagramIds.add(diagram);
 			}
 		    }
@@ -1949,25 +1926,25 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	    	String vitalSigns = null;
 	    	
 			String pulse = clinicalNotesCollection.getVitalSigns().getPulse();
-			pulse =  (pulse != null && !pulse.isEmpty() ? "Pulse("+VitalSignsUnit.PULSE.getUnit()+"): "+pulse.trim(): "");
+			pulse =  (pulse != null && !pulse.isEmpty() ? "Pulse: "+pulse.trim()+" "+VitalSignsUnit.PULSE.getUnit(): "");
 			if(!DPDoctorUtils.allStringsEmpty(pulse))vitalSigns = pulse;
 	
 			String temp = clinicalNotesCollection.getVitalSigns().getTemperature();
-			temp = (temp != null && !temp.isEmpty() ? "Temperature("+VitalSignsUnit.TEMPERATURE.getUnit() +"): " + temp.trim(): "");
+			temp = (temp != null && !temp.isEmpty() ? "Temperature: " + temp.trim()+" "+VitalSignsUnit.TEMPERATURE.getUnit(): "");
 			if(!DPDoctorUtils.allStringsEmpty(temp)){
 				if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+temp;
 				else vitalSigns = temp;
 			}
 	
 			String breathing = clinicalNotesCollection.getVitalSigns().getBreathing();
-			breathing = (breathing != null && !breathing.isEmpty() ? "Breathing("+VitalSignsUnit.BREATHING.getUnit() + "): " + breathing.trim(): "");
+			breathing = (breathing != null && !breathing.isEmpty() ? "Breathing: " + breathing.trim()+" "+VitalSignsUnit.BREATHING.getUnit(): "");
 			if(!DPDoctorUtils.allStringsEmpty(breathing)){
 				if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+breathing;
 				else vitalSigns = breathing;
 			}
 			
 			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
-			weight = (weight != null && !weight.isEmpty() ? "Weight("+VitalSignsUnit.WEIGHT.getUnit() +"): " + weight.trim(): "");
+			weight = (weight != null && !weight.isEmpty() ? "Weight: " + weight.trim()+" "+VitalSignsUnit.WEIGHT.getUnit(): "");
 			if(!DPDoctorUtils.allStringsEmpty(temp)){
 				if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+weight;
 				else vitalSigns = weight;
@@ -1981,19 +1958,18 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    String diastolic = clinicalNotesCollection.getVitalSigns().getBloodPressure().getDiastolic();
 			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
 	
-			    if(!DPDoctorUtils.allStringsEmpty(systolic, diastolic))
-			    	bloodPressure = "Blood Pressure("+VitalSignsUnit.BLOODPRESSURE.getUnit()+"): " + systolic + "/" + diastolic;
+			    if(!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+			    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic+" "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 			    if(!DPDoctorUtils.allStringsEmpty(bloodPressure)){
 					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+bloodPressure;
 					else vitalSigns = bloodPressure;
 				}
 			}
 			
-			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? indicLigaturizer.process(vitalSigns) : null);
+			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 	    } else
 		parameters.put("vitalSigns", null);
-
-	    PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
+	    
 		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, clinicalNotesCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"+ clinicalNotesCollection.getUniqueEmrId()+new Date().getTime();
@@ -2011,7 +1987,6 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 	
 	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId) {
-		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
@@ -2073,13 +2048,13 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
-				if (doctorUser != null)	parameters.put("footerSignature", indicLigaturizer.process(doctorUser.getTitle() + " " + doctorUser.getFirstName()));	
+				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
 			}	
 		}
 		parameters.put("contentFontSize", contentFontSize);
-		parameters.put("headerLeftText", indicLigaturizer.process(headerLeftText));
-		parameters.put("headerRightText", indicLigaturizer.process(headerRightText));
-		parameters.put("footerBottomText", indicLigaturizer.process(footerBottomText));
+		parameters.put("headerLeftText", headerLeftText);
+		parameters.put("headerRightText", headerRightText);
+		parameters.put("footerBottomText", footerBottomText);
 		parameters.put("logoURL", logoURL);
 		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
@@ -2089,7 +2064,6 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	}
 
 	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId, String firstName, String mobileNumber, Map<String, Object> parameters) {
-		IndicLigaturizer indicLigaturizer = new DevanagariLigaturizer();
 		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null), patientLeftText = "", patientRightText = "";
 		if(patientDetails == null){
 			patientDetails = new PatientDetails();
@@ -2117,7 +2091,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		}
 		
 		if(patientDetails.getShowDOB()){
-			if(!DPDoctorUtils.allStringsEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
+			if(!DPDoctorUtils.anyStringEmpty(age, gender))patientDetailList.add("<b>Age | Gender: </b>"+age+" | "+gender);
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
@@ -2152,8 +2126,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 				else patientRightText = text;
 			}
 		}
-		parameters.put("patientLeftText", indicLigaturizer.process(patientLeftText));
-		parameters.put("patientRightText", indicLigaturizer.process(patientRightText));
+		parameters.put("patientLeftText", patientLeftText);
+		parameters.put("patientRightText", patientRightText);
 	}
 
    private List<Complaint> getCustomGlobalComplaintsForAdmin(int page, int size, String updatedTime, Boolean discarded, String searchTerm) {
@@ -2405,8 +2379,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	return response;
     }
 
-
-    private List<Complaint> sortComplaints(List<Complaint> complaints, List<ObjectId> complaintIds) {
+    @Override
+    public List<Complaint> sortComplaints(List<Complaint> complaints, List<ObjectId> complaintIds) {
 		List<Complaint> response = new ArrayList<Complaint>();
 		if(complaints != null && !complaints.isEmpty()){
 			for(ObjectId id : complaintIds)
@@ -2414,7 +2388,9 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		}
 		return response;
 	}
-	private List<Diagram> sortDiagrams(List<Diagram> mappedResults, List<ObjectId> diagrams) {
+    
+    @Override
+    public List<Diagram> sortDiagrams(List<Diagram> mappedResults, List<ObjectId> diagrams) {
 		List<Diagram> response = new ArrayList<Diagram>();
 		if(mappedResults != null && !mappedResults.isEmpty()){
 			for(ObjectId id : diagrams)
@@ -2423,7 +2399,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		return response;
 	}
 
-	private List<Notes> sortNotes(List<Notes> mappedResults, List<ObjectId> notes) {
+    @Override
+    public List<Notes> sortNotes(List<Notes> mappedResults, List<ObjectId> notes) {
 		List<Notes> response = new ArrayList<Notes>();
 		if(mappedResults != null && !mappedResults.isEmpty()){
 			for(ObjectId id : notes)
@@ -2432,7 +2409,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		return response;
 	}
 
-	private List<Diagnoses> sortDiagnoses(List<Diagnoses> mappedResults, List<ObjectId> diagnoses) {
+    @Override
+    public List<Diagnoses> sortDiagnoses(List<Diagnoses> mappedResults, List<ObjectId> diagnoses) {
 		List<Diagnoses> response = new ArrayList<Diagnoses>();
 		if(mappedResults != null && !mappedResults.isEmpty()){
 			for(ObjectId id : diagnoses)
@@ -2441,7 +2419,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		return response;
 	}
 
-	private List<Observation> sortObservations(List<Observation> mappedResults, List<ObjectId> observations) {
+    @Override
+    public List<Observation> sortObservations(List<Observation> mappedResults, List<ObjectId> observations) {
 		List<Observation> response = new ArrayList<Observation>();
 		if(mappedResults != null && !mappedResults.isEmpty()){
 			for(ObjectId id : observations)
@@ -2450,7 +2429,8 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		return response;
 	}
 
-	private List<Investigation> sortInvestigations(List<Investigation> mappedResults, List<ObjectId> investigations) {
+    @Override
+	public List<Investigation> sortInvestigations(List<Investigation> mappedResults, List<ObjectId> investigations) {
 		List<Investigation> response = new ArrayList<Investigation>();
 		if(mappedResults != null && !mappedResults.isEmpty()){
 			for(ObjectId id : investigations)

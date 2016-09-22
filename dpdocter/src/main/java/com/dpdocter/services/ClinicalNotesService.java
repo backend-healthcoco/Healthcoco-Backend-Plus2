@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
@@ -65,5 +67,17 @@ public interface ClinicalNotesService {
 	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,	String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
 
 	String getClinicalNotesFile(String clinicalNotesId);
+
+	List<Complaint> sortComplaints(List<Complaint> complaints, List<ObjectId> complaintIds);
+
+	List<Observation> sortObservations(List<Observation> mappedResults, List<ObjectId> observations);
+
+	List<Diagnoses> sortDiagnoses(List<Diagnoses> mappedResults, List<ObjectId> diagnoses);
+
+	List<Notes> sortNotes(List<Notes> mappedResults, List<ObjectId> notes);
+
+	List<Diagram> sortDiagrams(List<Diagram> mappedResults, List<ObjectId> diagrams);
+
+	List<Investigation> sortInvestigations(List<Investigation> mappedResults, List<ObjectId> investigations);
 
 }
