@@ -29,9 +29,6 @@
 						<filtering>true</filtering>
 					</resource>
 					<resource>
-					   <directory>src/main/resources/spring-properties/local</directory>
-                   </resource>
-                   <resource>
 					   <directory>src/main/resources/files</directory>
 					   <filtering>true</filtering>
                    </resource>
@@ -55,6 +52,10 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
+					<resource>
+					   <directory>src/main/resources/files</directory>
+					   <filtering>true</filtering>
+                   </resource>
 				</resources>
 			</build>
 		</profile>
@@ -75,6 +76,10 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
+					<resource>
+					   <directory>src/main/resources/files</directory>
+					   <filtering>true</filtering>
+                   </resource>
 				</resources>
 			</build>
 		</profile>
@@ -95,6 +100,10 @@
 						<directory>src/main/resources/velocityTemplates</directory>
 						<filtering>true</filtering>
 					</resource>
+					<resource>
+					   <directory>src/main/resources/files</directory>
+					   <filtering>true</filtering>
+                   </resource>
 				</resources>
 			</build>
 		</profile>
