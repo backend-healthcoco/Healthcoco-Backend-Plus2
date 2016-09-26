@@ -3,7 +3,7 @@ package com.dpdocter.beans;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.GenderType;
 
-public class DeliveryReports extends GenericCollection{
+public class DeliveryReports extends GenericCollection {
 
 	private String id;
 	private String serialNo;
@@ -11,7 +11,7 @@ public class DeliveryReports extends GenericCollection{
 	private String patientId;
 	private Patient patient;
 	private String mobileNumber;
-	private GenderType babyGender;
+	private String babyGender;
 	private String deliveryType;
 	private String formNo;
 	private String remarks;
@@ -86,11 +86,11 @@ public class DeliveryReports extends GenericCollection{
 		this.mobileNumber = mobileNumber;
 	}
 
-	public GenderType getBabyGender() {
+	public String getBabyGender() {
 		return babyGender;
 	}
 
-	public void setBabyGender(GenderType babyGender) {
+	public void setBabyGender(String babyGender) {
 		this.babyGender = babyGender;
 	}
 

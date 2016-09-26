@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.dpdocter.enums.GenderType;
+
 @Document(collection = "delivery_report_cl")
 public class DeliveryReportsCollection extends GenericCollection {
 
@@ -12,7 +13,7 @@ public class DeliveryReportsCollection extends GenericCollection {
 	private Long deliveryDate;
 	private ObjectId patientId;
 	private String mobileNumber;
-	private GenderType babyGender;
+	private String babyGender;
 	private String deliveryType;
 	private String formNo;
 	private String remarks;
@@ -52,11 +53,11 @@ public class DeliveryReportsCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public GenderType getBabyGender() {
+	public String getBabyGender() {
 		return babyGender;
 	}
 
-	public void setBabyGender(GenderType babyGender) {
+	public void setBabyGender(String babyGender) {
 		this.babyGender = babyGender;
 	}
 
