@@ -12,7 +12,7 @@ import com.dpdocter.enums.GenderType;
  *
  */
 
-public class DoctorContactUs extends GenericCollection{
+public class DoctorContactUs extends GenericCollection {
 
 	/*
 	 * title, firstName, userName,gender, emailAddress, mobileNumber,
@@ -34,6 +34,7 @@ public class DoctorContactUs extends GenericCollection{
 	private DoctorContactStateType contactState = DoctorContactStateType.APPROACH;
 	private Boolean isVerified;
 	private Boolean toList;
+	private String deviceType;
 
 	public String getId() {
 		return id;
@@ -134,9 +135,10 @@ public class DoctorContactUs extends GenericCollection{
 	@Override
 	public String toString() {
 		return "DoctorContactUs [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
-				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", city="
-				+ city + ", specialities=" + specialities + ", contactState=" + contactState + ", isVerified="
-				+ isVerified + ", toList=" + toList + "]";
+				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", city=" + city + ", specialities=" + specialities
+				+ ", contactState=" + contactState + ", isVerified=" + isVerified + ", toList=" + toList
+				+ ", deviceType=" + deviceType + "]";
 	}
 
 	public String getCountryCode() {
@@ -147,6 +149,12 @@ public class DoctorContactUs extends GenericCollection{
 		this.countryCode = countryCode;
 	}
 
-	
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
 
 }

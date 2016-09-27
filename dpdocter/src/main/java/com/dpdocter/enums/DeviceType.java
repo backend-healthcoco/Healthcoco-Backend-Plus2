@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum DeviceType {
 
-	ANDROID("ANDROID"), IOS("IOS"), WINDOWS("WINDOWS"), IPAD("IPAD");
+	ANDROID("ANDROID"), IOS("IOS"), WINDOWS("WINDOWS"), IPAD("IPAD") , WEB("WEB");
 	
 	private String type;
 

@@ -25,6 +25,7 @@ import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.TimeDuration;
 import com.dpdocter.collections.DeliveryReportsCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.IPDReportsCollection;
@@ -452,6 +453,23 @@ public class ReportsServiceImpl implements ReportsService {
 			    			BeanUtil.map(patientCollection, patient);
 			    			otReports.setPatient(patient);
 			    		}
+			    	}
+			    	if(collection.getSurgery().getStartTime() != null && collection.getSurgery().getEndTime() != null)
+			    	{
+			    		Long diff = collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime();
+			    	    TimeDuration timeDuration = new TimeDuration();
+			    	   
+			    	    Long diffSeconds = diff / 1000 % 60;
+			            Long diffMinutes = diff / (60 * 1000) % 60;
+			            Long diffHours = diff / (60 * 60 * 1000);
+			            Integer diffInDays = (int) ((collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime()) / (1000 * 60 * 60 * 24));
+			            
+			            timeDuration.setSeconds(diffSeconds.intValue());
+			            timeDuration.setMinutes(diffMinutes.intValue());
+			            timeDuration.setHours(diffHours.intValue());
+			            timeDuration.setDays(diffInDays);
+			            
+			            otReports.setTimeDuration(timeDuration);
 			    	}
 			    	
 			    	

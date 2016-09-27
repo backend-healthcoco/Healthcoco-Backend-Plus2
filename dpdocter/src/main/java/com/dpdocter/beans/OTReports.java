@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
 
-public class OTReports extends GenericCollection{
+public class OTReports extends GenericCollection {
 
 	private String id;
 	private String serialNo;
@@ -28,6 +28,7 @@ public class OTReports extends GenericCollection{
 	private String locationName;
 	private String hospitalId;
 	private String hospitalName;
+	private TimeDuration timeDuration;
 
 	public String getId() {
 		return id;
@@ -197,6 +198,14 @@ public class OTReports extends GenericCollection{
 		this.hospitalName = hospitalName;
 	}
 
+	public TimeDuration getTimeDuration() {
+		return timeDuration;
+	}
+
+	public void setTimeDuration(TimeDuration timeDuration) {
+		this.timeDuration = timeDuration;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
@@ -206,7 +215,7 @@ public class OTReports extends GenericCollection{
 				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
 				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName
 				+ ", locationId=" + locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId
-				+ ", hospitalName=" + hospitalName + "]";
+				+ ", hospitalName=" + hospitalName + ", timeDuration=" + timeDuration + "]";
 	}
 
 }

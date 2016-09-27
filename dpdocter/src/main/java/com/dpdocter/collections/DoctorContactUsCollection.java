@@ -42,6 +42,9 @@ public class DoctorContactUsCollection extends GenericCollection {
 	@Field
 	private String city;
 
+	@Field
+	private String deviceType;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -146,11 +149,21 @@ public class DoctorContactUsCollection extends GenericCollection {
 		this.countryCode = countryCode;
 	}
 
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorContactUsCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName="
-				+ userName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", specialities=" + specialities + ", contactState=" + contactState + ", isVerified=" + isVerified
-				+ ", toList=" + toList + ", city=" + city + "]";
+				+ userName + ", gender=" + gender + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", specialities=" + specialities + ", contactState=" + contactState
+				+ ", isVerified=" + isVerified + ", toList=" + toList + ", city=" + city + ", deviceType=" + deviceType
+				+ "]";
 	}
+
 }

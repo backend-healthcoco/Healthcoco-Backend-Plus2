@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum AnaesthesiaTypeEnum {
 
-	GA("GA"), SA("SA"), LA("LA"), EA("EA");
+	GA("GA"), SA("SA"), LA("LA"), EA("EA"), EMPTY("EMPTY");
 
 	private String anaesthesiaType;
 
