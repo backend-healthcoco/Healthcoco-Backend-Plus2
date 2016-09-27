@@ -454,7 +454,7 @@ public class ReportsServiceImpl implements ReportsService {
 			    			otReports.setPatient(patient);
 			    		}
 			    	}
-			    	if(collection.getSurgery().getStartTime() != null && collection.getSurgery().getEndTime() != null)
+			    	if(collection.getSurgery().getEndTime() != null && collection.getSurgery().getStartTime() != null)
 			    	{
 			    		Long diff = collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime();
 			    	    TimeDuration timeDuration = new TimeDuration();
@@ -462,7 +462,7 @@ public class ReportsServiceImpl implements ReportsService {
 			    	    Long diffSeconds = diff / 1000 % 60;
 			            Long diffMinutes = diff / (60 * 1000) % 60;
 			            Long diffHours = diff / (60 * 60 * 1000);
-			            Integer diffInDays = (int) ((collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime()) / (1000 * 60 * 60 * 24));
+			            Integer diffInDays = (int) ((collection.getSurgery().getEndTime() - collection.getSurgery().getStartTime()) / (1000 * 60 * 60 * 24));
 			            
 			            timeDuration.setSeconds(diffSeconds.intValue());
 			            timeDuration.setMinutes(diffMinutes.intValue());
