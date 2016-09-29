@@ -574,40 +574,24 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	return professionalMemberships;
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     @Transactional
     public DoctorProfessionalAddEditRequest addEditProfessionalMembership(DoctorProfessionalAddEditRequest request) {
-	DoctorCollection doctorCollection = null;
-	List<ProfessionalMembershipCollection> professionalMembershipCollections = null;
-	List<ObjectId> professionalMemberships = null;
-	DoctorProfessionalAddEditRequest response = null;
+    List<String> professionalMemberships = null;
+    List<ObjectId> professionalMembershipIds = null;
+	DoctorProfessionalAddEditRequest response = new DoctorProfessionalAddEditRequest();
 	try {
-	    professionalMembershipCollections = professionalMembershipRepository.findAll();
-	    professionalMemberships = new ArrayList<ObjectId>();
-	    if (request.getMembership() != null)
-		for (String professionalMembership : request.getMembership()) {
-		    Boolean professionalMembershipFound = false;
-		    for (ProfessionalMembershipCollection professionalMembershipCollection : professionalMembershipCollections) {
-			if (professionalMembership.trim().equalsIgnoreCase(professionalMembershipCollection.getMembership())) {
-			    professionalMemberships.add(professionalMembershipCollection.getId());
-			    professionalMembershipFound = true;
-			    break;
-			}
-		    }
-		    if (!professionalMembershipFound) {
-			ProfessionalMembershipCollection professionalMembershipCollection = new ProfessionalMembershipCollection();
-			professionalMembershipCollection.setMembership(professionalMembership);
-			professionalMembershipCollection.setCreatedTime(new Date());
-			professionalMembershipCollection = professionalMembershipRepository.save(professionalMembershipCollection);
-			professionalMemberships.add(professionalMembershipCollection.getId());
-		    }
-		}
-	    doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
-	    doctorCollection.setProfessionalMemberships(professionalMemberships);
+		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+	    if (request.getMembership() != null && !request.getMembership().isEmpty()){
+	    	List<ProfessionalMembershipCollection> professionalMembershipCollections = professionalMembershipRepository.find(request.getMembership());
+	    	professionalMembershipIds = (List<ObjectId>) CollectionUtils.collect(professionalMembershipCollections, new BeanToPropertyValueTransformer("id"));
+	    	professionalMemberships = (List<String>) CollectionUtils.collect(professionalMembershipCollections, new BeanToPropertyValueTransformer("membership"));
+	    }
+	    doctorCollection.setProfessionalMemberships(professionalMembershipIds);
 	    doctorRepository.save(doctorCollection);
-	    response = new DoctorProfessionalAddEditRequest();
-	    BeanUtil.map(doctorCollection, response);
 	    response.setDoctorId(doctorCollection.getUserId().toString());
+	    response.setMembership(professionalMemberships);
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error Editing Doctor Profile");

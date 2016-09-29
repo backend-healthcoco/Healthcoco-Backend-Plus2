@@ -1,11 +1,12 @@
 package com.dpdocter.request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorProfessionalAddEditRequest {
     private String doctorId;
 
-    private List<String> membership;
+    private List<String> membership = new ArrayList<>();
 
     public String getDoctorId() {
 	return doctorId;

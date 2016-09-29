@@ -489,7 +489,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			    	appointmentCollection.setToDate(request.getToDate());
 				    appointmentCollection.setTime(request.getTime());
 			    	appointmentCollection.setIsRescheduled(true);
-			    	appointmentCollection.setState(AppointmentState.NEW);
+			    	appointmentCollection.setState(AppointmentState.CONFIRM);
 			    	dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate());
 			    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request.getAppointmentId());
 			    	if(bookedSlotCollection != null) {

@@ -19,4 +19,7 @@ public interface ProfessionalMembershipRepository extends MongoRepository<Profes
     @Query("{'updatedTime': {'$gt': ?0}}")
     List<ProfessionalMembershipCollection> find(Date date, Sort sort);
 
+    @Query("{'membership': {'$in': ?0}}")
+	List<ProfessionalMembershipCollection> find(List<String> membership);
+
 }
