@@ -2,33 +2,43 @@ package com.dpdocter.beans;
 
 public class Slot {
 
-    private String time;
+	private String time;
 
-    private Boolean isAvailable = true;
+	private Boolean isAvailable = true;
 
-    public String getTime() {
-	return time;
-    }
+	private Integer minutesOfDay;
 
-    public void setTime(String time) {
-	this.time = time;
-    }
+	public String getTime() {
+		return time;
+	}
 
-    public Boolean getIsAvailable() {
-	return isAvailable;
-    }
+	public void setTime(String time) {
+		this.time = time;
+	}
 
-    public void setIsAvailable(Boolean isAvailable) {
-	this.isAvailable = isAvailable;
-    }
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
 
-    @Override
-    public boolean equals(Object object) {
-	return (this.time.equals(((Slot) object).time));
-    }
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
 
-    @Override
-    public String toString() {
-	return "Slot [time=" + time + ", isAvailable=" + isAvailable + "]";
-    }
+	public Integer getMinutesOfDay() {
+		return minutesOfDay;
+	}
+
+	public void setMinutesOfDay(Integer minutesOfDay) {
+		this.minutesOfDay = minutesOfDay;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		return (this.time.equals(((Slot) object).time));
+	}
+
+	@Override
+	public String toString() {
+		return "Slot [time=" + time + ", isAvailable=" + isAvailable + "]";
+	}
 }

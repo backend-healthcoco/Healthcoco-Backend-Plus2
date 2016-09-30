@@ -13,6 +13,7 @@ public class DateAndTimeUtility {
 	    if (slots == null)
 		slots = new ArrayList<Slot>();
 	    Slot slot = new Slot();
+	    slot.setMinutesOfDay(time);
 	    slot.setTime(String.format("%02d:%02d", time / 60, time % 60));
 	    slots.add(slot);
 	}

@@ -124,16 +124,29 @@ public class ReportsServiceImpl implements ReportsService {
 		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
 		if(opdReports != null)
 		{
-			BeanUtil.map(opdReports, opdReportsCollection);
-			try {
+			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
+			if(opdReportsCollectionOld != null)
+			{
+				BeanUtil.map(opdReportsCollectionOld, opdReportsCollection);
+				// set other field while editing
+				opdReportsCollection.setAmountReceived(opdReports.getAmountReceived());
+				opdReportsCollection.setReceiptDate(opdReports.getAmountReceived());
+				opdReportsCollection.setReceiptNo(opdReports.getReceiptNo());
+				opdReportsCollection.setRemarks(opdReports.getRemarks());
+			}
+			else
+			{
+				BeanUtil.map(opdReports, opdReportsCollection);
 				opdReportsCollection.setCreatedTime(new Date());
-				opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
+			}
+			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
+			try {
 				
 				if(opdReportsCollection != null)
 				{
 					BeanUtil.map(opdReportsCollection, opdReports);
 					response = new OPDReports();
-					response = opdReports;
+					BeanUtil.map(response, opdReports);
 				}
 			} catch (Exception e) {
 			    e.printStackTrace();

@@ -8,7 +8,7 @@ import com.dpdocter.collections.OPDReportsCollection;
 
 public interface OPDReportsRepository extends MongoRepository<OPDReportsCollection, ObjectId> {
 
-	@Query
-	public OPDReportsCollection getOPDReportById(String id);
+	 @Query("{'prescriptionId': ?0}")
+	public OPDReportsCollection getOPDReportByPrescriptionId(ObjectId prescriptionId);
 	
 }

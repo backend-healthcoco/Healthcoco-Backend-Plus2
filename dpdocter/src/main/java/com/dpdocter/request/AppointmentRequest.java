@@ -40,6 +40,10 @@ public class AppointmentRequest {
 
     private String cancelledBy;
     
+    private String firstName;
+    
+    private String mobileNumber;
+    
     public String getAppointmentId() {
 	return appointmentId;
     }
@@ -167,6 +171,24 @@ public class AppointmentRequest {
 	public void setCancelledBy(String cancelledBy) {
 		this.cancelledBy = cancelledBy;
 	}
+	
+	
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
 	@Override
 	public String toString() {
@@ -175,6 +197,7 @@ public class AppointmentRequest {
 				+ ", patientId=" + patientId + ", time=" + time + ", fromDate=" + fromDate + ", toDate=" + toDate
 				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
 				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
-				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + "]";
+				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", firstName=" + firstName + ", mobileNumber="
+				+ mobileNumber + "]";
 	}
 }
