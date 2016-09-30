@@ -1978,11 +1978,14 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		String pageSize = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
 		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
-		if(pageSize.equalsIgnoreCase("A5")){
-			response = jasperReportService.createPDF(parameters, clinicalNotesA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));	
-		}else {
-			response = jasperReportService.createPDF(parameters, clinicalNotesA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
-		}
+		Integer leftMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null ? printSettings.getPageSetup().getLeftMargin() : 20) : 20;
+		Integer rightMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null ? printSettings.getPageSetup().getRightMargin() : 20) : 20;
+//		if(pageSize.equalsIgnoreCase("A5")){
+//			response = jasperReportService.createPDF(parameters, clinicalNotesA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));	
+//		}else {
+//			response = jasperReportService.createPDF(parameters, clinicalNotesA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+//		}
+		response = jasperReportService.createPDF(ComponentType.CLINICAL_NOTES, parameters, clinicalNotesA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		return response;
 	}
 	
@@ -2049,7 +2052,9 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
 				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
-			}	
+			}	else{
+				parameters.put("footerSignature", "");
+			}
 		}
 		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);

@@ -705,11 +705,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		String pdfName = (user != null ? user.getFirstName() : "") + "VISITS-" + patientVisitCollection.getUniqueEmrId()+new Date().getTime();
 		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
 		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
-		if(pageSize.equalsIgnoreCase("A5")){
-			response = jasperReportService.createPDF(parameters, visitA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA5FileName, visitPrescriptionA5FileName, visitDiagramsA5FileName, prescriptionSubReportA5FileName);	
-		}else {
-			response = jasperReportService.createPDF(parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName, prescriptionSubReportA4FileName);
-		}
+		Integer leftMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null ? printSettings.getPageSetup().getLeftMargin() : 20) : 20;
+		Integer rightMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null ? printSettings.getPageSetup().getRightMargin() : 20) : 20;
+//		if(pageSize.equalsIgnoreCase("A5")){
+//			response = jasperReportService.createPDF(parameters, visitA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA5FileName, visitPrescriptionA5FileName, visitDiagramsA5FileName, prescriptionSubReportA5FileName);	
+//		}else {
+//			response = jasperReportService.createPDF(parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName, prescriptionSubReportA4FileName);
+//		}
+		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName, prescriptionSubReportA4FileName);
 		return response;
     }
     
@@ -776,7 +779,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
 				UserCollection doctorUser = userRepository.findOne(doctorId);
 				if (doctorUser != null)	parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());	
-			}	
+			}	else{
+				parameters.put("footerSignature", "");
+			}
 		}
 		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);

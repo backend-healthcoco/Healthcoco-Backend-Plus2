@@ -334,36 +334,36 @@
 			<version>2.0.1</version>
 		</dependency>
 		<dependency> 
-    <groupId>xml-apis</groupId>
-    <artifactId>xml-apis</artifactId>
-    <version>1.4.01</version>
-</dependency>
-	<dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>5.4.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <version>5.4.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-      <version>5.4.1</version>
-    </dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>ar.com.fdvs</groupId> -->
-<!-- 			<artifactId>DynamicJasper</artifactId> -->
-<!-- 			<version>3.0.13</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>jasperreports</artifactId> -->
-<!-- 					<groupId>jasperreports</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
+		    <groupId>xml-apis</groupId>
+		    <artifactId>xml-apis</artifactId>
+		    <version>1.4.01</version>
+		</dependency>
+		<dependency>
+	      <groupId>org.apache.lucene</groupId>
+	      <artifactId>lucene-core</artifactId>
+	      <version>5.4.1</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.apache.lucene</groupId>
+	      <artifactId>lucene-analyzers-common</artifactId>
+	      <version>5.4.1</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.apache.lucene</groupId>
+	      <artifactId>lucene-queryparser</artifactId>
+	      <version>5.4.1</version>
+	    </dependency>
+		<dependency>
+			<groupId>ar.com.fdvs</groupId>
+			<artifactId>DynamicJasper</artifactId>
+			<version>5.0.10</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jasperreports</artifactId>
+					<groupId>jasperreports</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
