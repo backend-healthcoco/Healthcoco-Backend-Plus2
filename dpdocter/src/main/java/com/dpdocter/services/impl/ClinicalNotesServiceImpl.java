@@ -1868,6 +1868,9 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
 		String contentLineStyle = (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
 		
+		if(contentLineStyle.equalsIgnoreCase(LineStyle.BLOCK.getStyle()))contentLineStyle = "<br>";
+	    else contentLineStyle = ", ";
+		
 	    String observations = "";
 	    Collection<String> observationList = CollectionUtils.collect(sortObservations(
 	    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))),

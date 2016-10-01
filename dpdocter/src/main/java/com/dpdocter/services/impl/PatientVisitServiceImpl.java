@@ -671,8 +671,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     	String resourceId = "<b>VID: </b>" + (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
 		
     	PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
-    	List<DBObject> prescriptions = new ArrayList<DBObject>();
+    	List<DBObject> prescriptions = null;
 	    if (patientVisitCollection.getPrescriptionId() != null) {
+	    	prescriptions = new ArrayList<DBObject>();
 		for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
 		    if(!DPDoctorUtils.anyStringEmpty(prescriptionId)){
 		    	DBObject prescriptionItems = new BasicDBObject();
@@ -683,8 +684,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    }
 		}
 	    }
-	    List<ClinicalNotesJasperDetails> clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
+	    List<ClinicalNotesJasperDetails> clinicalNotes = null;
 	    if (patientVisitCollection.getClinicalNotesId() != null) {
+	    	clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 	    	String contentLineStyle = (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
 		for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
 		    if(!DPDoctorUtils.anyStringEmpty(clinicalNotesId)){
