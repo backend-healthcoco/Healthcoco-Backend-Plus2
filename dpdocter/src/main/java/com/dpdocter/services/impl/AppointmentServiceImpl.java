@@ -680,6 +680,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			// appointment
 
 			if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
+				if(request.getFirstName() == null || request.getMobileNumber() == null)
+				{
+					throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
+				}
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 				patientRegistrationRequest.setFirstName(request.getFirstName());
 				patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
