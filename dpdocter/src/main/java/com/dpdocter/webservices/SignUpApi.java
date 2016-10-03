@@ -45,254 +45,263 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.SIGNUP_BASE_URL, description = "Endpoint for signup")
 public class SignUpApi {
 
-    private static Logger logger = Logger.getLogger(SignUpApi.class.getName());
+	private static Logger logger = Logger.getLogger(SignUpApi.class.getName());
 
-    @Autowired
-    private SignUpService signUpService;
+	@Autowired
+	private SignUpService signUpService;
 
-    @Autowired
-    private TransactionalManagementService transnationalService;
-    
-    @Autowired
-    private DoctorContactUsService doctorContactUsService;
-    
-    @Autowired
-    private ClinicContactUsService clinicContactUsService;
+	@Autowired
+	private TransactionalManagementService transnationalService;
 
-    @Value(value = "${image.path}")
-    private String imagePath;
+	@Autowired
+	private DoctorContactUsService doctorContactUsService;
 
-    @Value(value = "${register.first.name.validation}")
-    private String firstNameValidaton;
-    
+	@Autowired
+	private ClinicContactUsService clinicContactUsService;
 
-    /**
-     * This API signup patient into DB. It contains a flag
-     * isNewPatientNeedToBeCreated which indicates that a new patient signup
-     * need to be done or not. When new patient is created then unlock only that
-     * new patient only.Rest of the patients will be locked. When patient signup
-     * is done (for already registered from doc.) with 80% match then unlock all
-     * the patients with that mobile number.
-     * 
-     * @param PatientSignupRequestMobile
-     * @return User List
-     */
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
-    @POST
-    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
-    public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
-    	    logger.warn("Inavlid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
-    	}
-	List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
+	@Value(value = "${image.path}")
+	private String imagePath;
 
-	if (request.isNewPatientNeedToBeCreated()) {
-		if (request.getName().length() < 2) {
-    		logger.warn(firstNameValidaton);
-    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-    	 }
-		RegisteredPatientDetails user = signUpService.signupNewPatient(request);
-	    users.add(user);
-	} else {
-	    users = signUpService.signupAlreadyRegisteredPatient(request);
-	}
-	for (RegisteredPatientDetails user : users) {
-	    if (user.getImageUrl() != null) {
-		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-	    }
-	    if (user.getThumbnailUrl() != null) {
-		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	    }
-	}
-	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
-	response.setDataList(users);
-	return response;
-    }
+	@Value(value = "${register.first.name.validation}")
+	private String firstNameValidaton;
 
-    /**
-     * This API will take name and mobile num and flag (to verify or unlock) as
-     * i/p and return true or false based on 80 % match of name.POST API.In case
-     * of unlock it will unlock the user.In case of verify only return true or
-     * false ,no unlock in this case.Also while unlock check 80% match for only
-     * lock patients.
-     */
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
-    @POST
-    @ApiOperation(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT, notes = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
-    public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
-	boolean flag = false;
-	if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.VERIFY.getFlag())) {
-	    flag = signUpService.verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber());
-	} else if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.UNLOCK.getFlag())) {
-	    flag = signUpService.unlockPatientBasedOn80PercentMatch(request.getName(), request.getMobileNumber());
-	}
-	Response<Boolean> flagResponse = new Response<Boolean>();
-	flagResponse.setData(flag);
-	return flagResponse;
+	/**
+	 * This API signup patient into DB. It contains a flag
+	 * isNewPatientNeedToBeCreated which indicates that a new patient signup
+	 * need to be done or not. When new patient is created then unlock only that
+	 * new patient only.Rest of the patients will be locked. When patient signup
+	 * is done (for already registered from doc.) with 80% match then unlock all
+	 * the patients with that mobile number.
+	 * 
+	 * @param PatientSignupRequestMobile
+	 * @return User List
+	 */
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE, notes = PathProxy.SignUpUrls.PATIENT_SIGNUP_MOBILE)
+	public Response<RegisteredPatientDetails> patientSignupMobile(PatientSignupRequestMobile request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null
+				|| request.getPassword().length == 0) {
+			logger.warn("Inavlid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
+		}
+		List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
-    @POST
-    @ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
-    public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername())) {
-    	    logger.warn("Inavlid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
-    	}
-	User user = signUpService.patientProfilePicChange(request);
-	transnationalService.addResource(new ObjectId(user.getId()), Resource.PATIENT, false);
-	transnationalService.checkPatient(new ObjectId(user.getId()));
-	if (user != null) {
-	    if (user.getImageUrl() != null) {
-		user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-	    }
-	    if (user.getThumbnailUrl() != null) {
-		user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-	    }
-	}
-	Response<User> response = new Response<User>();
-	response.setData(user);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.VERIFY_USER)
-    @GET
-    @ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
-    public Response<String> verifyUser(@PathParam(value = "tokenId") String tokenId) {
-	if (tokenId == null) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	String string = signUpService.verifyUser(tokenId);
-	Response<String> response = new Response<String>();
-	response.setData(string);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
-    @GET
-    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
-    public Response<Boolean> checkUsernameExist(@PathParam(value = "username") String username) {
-	if (username == null) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(signUpService.checkUserNameExist(username));
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
-    @GET
-    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
-    public Response<Boolean> checkMobileNumExist(@PathParam(value = "mobileNumber") String mobileNumber) {
-	if (mobileNumber == null) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	}
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(signUpService.checkMobileNumExist(mobileNumber));
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
-    @GET
-    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP, notes = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
-    public Response<PateientSignUpCheckResponse> checkMobileNumberSignedUp(@PathParam(value = "mobileNumber") String mobileNumber) {
-	if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
-	    logger.warn("Invalid Input. Mobile Number Cannot Be Empty!");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty!");
+		if (request.isNewPatientNeedToBeCreated()) {
+			if (request.getName().length() < 2) {
+				logger.warn(firstNameValidaton);
+				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+			}
+			RegisteredPatientDetails user = signUpService.signupNewPatient(request);
+			users.add(user);
+		} else {
+			users = signUpService.signupAlreadyRegisteredPatient(request);
+		}
+		for (RegisteredPatientDetails user : users) {
+			if (user.getImageUrl() != null) {
+				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+			}
+			if (user.getThumbnailUrl() != null) {
+				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+			}
+		}
+		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+		response.setDataList(users);
+		return response;
 	}
 
-	PateientSignUpCheckResponse checkResponse = signUpService.checkMobileNumberSignedUp(mobileNumber);
-	Response<PateientSignUpCheckResponse> response = new Response<PateientSignUpCheckResponse>();
-	response.setData(checkResponse);
-	return response;
-    }
+	/**
+	 * This API will take name and mobile num and flag (to verify or unlock) as
+	 * i/p and return true or false based on 80 % match of name.POST API.In case
+	 * of unlock it will unlock the user.In case of verify only return true or
+	 * false ,no unlock in this case.Also while unlock check 80% match for only
+	 * lock patients.
+	 */
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT, notes = PathProxy.SignUpUrls.VERIFY_UNLOCK_PATIENT)
+	public Response<Boolean> verifyOrUnlockPatient(VerifyUnlockPatientRequest request) {
+		boolean flag = false;
+		if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.VERIFY.getFlag())) {
+			flag = signUpService.verifyPatientBasedOn80PercentMatchOfName(request.getName(), request.getMobileNumber());
+		} else if ((request.getVerifyOrUnlock().getFlag()).equals(FlagEnum.UNLOCK.getFlag())) {
+			flag = signUpService.unlockPatientBasedOn80PercentMatch(request.getName(), request.getMobileNumber());
+		}
+		Response<Boolean> flagResponse = new Response<Boolean>();
+		flagResponse.setData(flag);
+		return flagResponse;
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
-    @GET
-    @ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
-    public Response<Boolean> checkEmailExist(@PathParam(value = "emailaddress") String emailaddress) {
-	if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(signUpService.checkEmailAddressExist(emailaddress));
-	return response;
-    }
 
-    private String getFinalImageURL(String imageURL) {
-	return imagePath + imageURL;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
-    @GET
-    @ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
-    public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
-	if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
+	public Response<User> patientProfilePicChange(PatientProfilePicChangeRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUsername())) {
+			logger.warn("Inavlid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
+		}
+		User user = signUpService.patientProfilePicChange(request);
+		transnationalService.addResource(new ObjectId(user.getId()), Resource.PATIENT, false);
+		transnationalService.checkPatient(new ObjectId(user.getId()));
+		if (user != null) {
+			if (user.getImageUrl() != null) {
+				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+			}
+			if (user.getThumbnailUrl() != null) {
+				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+			}
+		}
+		Response<User> response = new Response<User>();
+		response.setData(user);
+		return response;
 	}
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(signUpService.resendVerificationEmail(emailaddress));
-	return response;
-    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
-    @POST
-    @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
-    public Response<String> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs)
-    {
-    	if(doctorContactUs == null){
-    		logger.warn("Doctor contact data is null");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact data is null");
-    	}else if(DPDoctorUtils.anyStringEmpty(doctorContactUs.getFirstName(), doctorContactUs.getEmailAddress(), doctorContactUs.getTitle(),doctorContactUs.getCity(), doctorContactUs.getMobileNumber()) || doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null || doctorContactUs.getSpecialities().isEmpty()){
-    		logger.warn("Invalid Input");
-    		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}else if (doctorContactUs.getFirstName().length() < 2) {
-    		logger.warn(firstNameValidaton);
-    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-    	 }
-    	
-    	Response<String> response = new Response<String>();
-    	response.setData(doctorContactUsService.submitDoctorContactUSInfo(doctorContactUs));
-    	return response;
-    }
-    
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
-    @POST
-    @ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
-    public Response<String> submitClinicContactUsInfo(ClinicContactUs clinicContactUs)
-    {
-    	if(clinicContactUs == null){
-    		logger.warn("Clinic contact data is null");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Clinic Contact data is null");
-    	}/*else if(DPDoctorUtils.anyStringEmpty(clinicContactUs.get, doctorContactUs.getEmailAddress(), doctorContactUs.getTitle(),doctorContactUs.getCity(), doctorContactUs.getMobileNumber()) || doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null || doctorContactUs.getSpecialities().isEmpty()){
-    		logger.warn("Invalid Input");
-    		throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}else if (doctorContactUs.getFirstName().length() < 2) {
-    		logger.warn(firstNameValidaton);
-    		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-    	 }*/
-    	
-    	Response<String> response = new Response<String>();
-    	response.setData(clinicContactUsService.submitClinicContactUSInfo(clinicContactUs));
-    	return response;
-    }
-    
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.VERIFY_USER)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_USER, notes = PathProxy.SignUpUrls.VERIFY_USER)
+	public Response<String> verifyUser(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = signUpService.verifyUser(tokenId);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_USERNAME_EXIST)
+	public Response<Boolean> checkUsernameExist(@PathParam(value = "username") String username) {
+		if (username == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.checkUserNameExist(username));
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_MOBNUM_EXIST)
+	public Response<Boolean> checkMobileNumExist(@PathParam(value = "mobileNumber") String mobileNumber) {
+		if (mobileNumber == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.checkMobileNumExist(mobileNumber));
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP, notes = PathProxy.SignUpUrls.CHECK_MOBNUM_SIGNEDUP)
+	public Response<PateientSignUpCheckResponse> checkMobileNumberSignedUp(
+			@PathParam(value = "mobileNumber") String mobileNumber) {
+		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+			logger.warn("Invalid Input. Mobile Number Cannot Be Empty!");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input. Mobile Number Cannot Be Empty!");
+		}
+
+		PateientSignUpCheckResponse checkResponse = signUpService.checkMobileNumberSignedUp(mobileNumber);
+		Response<PateientSignUpCheckResponse> response = new Response<PateientSignUpCheckResponse>();
+		response.setData(checkResponse);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST, notes = PathProxy.SignUpUrls.CHECK_IF_EMAIL_ADDR_EXIST)
+	public Response<Boolean> checkEmailExist(@PathParam(value = "emailaddress") String emailaddress) {
+		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.checkEmailAddressExist(emailaddress));
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		return imagePath + imageURL;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
+	public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
+		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(signUpService.resendVerificationEmail(emailaddress));
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
+	public Response<String> submitDoctorContactUsInfo(DoctorContactUs doctorContactUs) {
+		if (doctorContactUs == null) {
+			logger.warn("Doctor contact data is null");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Contact data is null");
+		} else if (DPDoctorUtils.anyStringEmpty(doctorContactUs.getFirstName(), doctorContactUs.getEmailAddress(),
+				doctorContactUs.getTitle(), doctorContactUs.getCity(), doctorContactUs.getMobileNumber())
+				|| doctorContactUs.getGender() == null || doctorContactUs.getSpecialities() == null
+				|| doctorContactUs.getSpecialities().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} else if (doctorContactUs.getFirstName().length() < 2) {
+			logger.warn(firstNameValidaton);
+			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+		}
+
+		Response<String> response = new Response<String>();
+		response.setData(doctorContactUsService.submitDoctorContactUSInfo(doctorContactUs));
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_CLINIC_CONTACT)
+	public Response<String> submitClinicContactUsInfo(ClinicContactUs clinicContactUs) {
+		if (clinicContactUs == null) {
+			logger.warn("Clinic contact data is null");
+			throw new BusinessException(ServiceError.InvalidInput, "Clinic Contact data is null");
+		} /*
+			 * else if(DPDoctorUtils.anyStringEmpty(clinicContactUs.get,
+			 * doctorContactUs.getEmailAddress(),
+			 * doctorContactUs.getTitle(),doctorContactUs.getCity(),
+			 * doctorContactUs.getMobileNumber()) || doctorContactUs.getGender()
+			 * == null || doctorContactUs.getSpecialities() == null ||
+			 * doctorContactUs.getSpecialities().isEmpty()){
+			 * logger.warn("Invalid Input"); throw new
+			 * BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			 * }else if (doctorContactUs.getFirstName().length() < 2) {
+			 * logger.warn(firstNameValidaton); throw new
+			 * BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+			 * }
+			 */
+
+		Response<String> response = new Response<String>();
+		response.setData(clinicContactUsService.submitClinicContactUSInfo(clinicContactUs));
+		return response;
+	}
+
 }
