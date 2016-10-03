@@ -689,6 +689,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 		}
 		registeredPatientDetails.setUserId(userCollection.getId().toString());
+		patientCollection.setFirstName(userCollection.getFirstName());
 		patientCollection = patientRepository.save(patientCollection);
 		registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 		registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
