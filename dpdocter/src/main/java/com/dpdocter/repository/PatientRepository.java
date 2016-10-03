@@ -25,6 +25,9 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
     @Query("{'userId': ?0,'doctorId': ?1,'locationId': ?2,'hospitalId': ?3}")
     PatientCollection findByUserIdDoctorIdLocationIdAndHospitalId(ObjectId userId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 
+    @Query(value="{'userId': ?0,'doctorId': ?1,'locationId': ?2,'hospitalId': ?3}", count = true)
+    Integer findCount(ObjectId userId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+
     @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}}")
     List<PatientCollection> findByDoctorId(ObjectId doctorId, Date date, Sort sort);
 
