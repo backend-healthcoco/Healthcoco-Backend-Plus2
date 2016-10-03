@@ -538,23 +538,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    }
 	    else {
 	    	if(request.getState().getState().equals(AppointmentState.RESCHEDULE.getState())){
-	    	appointmentCollection.setFromDate(request.getFromDate());
-	    	appointmentCollection.setToDate(request.getToDate());
-	    appointmentCollection.setTime(request.getTime());
-	    	appointmentCollection.setIsRescheduled(true);
-	    	appointmentCollection.setState(AppointmentState.CONFIRM);
-	    	dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate());
-	    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request.getAppointmentId());
-	    	if(bookedSlotCollection != null) {
-	    	bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
-	    	bookedSlotCollection.setToDate(appointmentCollection.getToDate());
-	    	bookedSlotCollection.setTime(request.getTime());
-	    bookedSlotCollection.setUpdatedTime(new Date());
-	    	appointmentBookedSlotRepository.save(bookedSlotCollection);
+		    	appointmentCollection.setFromDate(request.getFromDate());
+		    	appointmentCollection.setToDate(request.getToDate());
+		    	appointmentCollection.setTime(request.getTime());
+		    	appointmentCollection.setIsRescheduled(true);
+		    	appointmentCollection.setState(AppointmentState.CONFIRM);
+		    	dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate());
+		    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request.getAppointmentId());
+		    	if(bookedSlotCollection != null) {
+			    	bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
+			    	bookedSlotCollection.setToDate(appointmentCollection.getToDate());
+			    	bookedSlotCollection.setTime(request.getTime());
+			        bookedSlotCollection.setUpdatedTime(new Date());
+			    	appointmentBookedSlotRepository.save(bookedSlotCollection);
 	    	}
 	    }
 	    }
-	appointmentCollection.setExplanation(request.getExplanation());
+	    appointmentCollection.setExplanation(request.getExplanation());
 	    appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
 	    appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
 	    appointmentCollection.setNotifyPatientByEmail(request.getNotifyPatientByEmail());
@@ -771,6 +771,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
 					BeanUtil.map(appointmentCollection, bookedSlotCollection);
+					bookedSlotCollection.setDoctorId(appointmentCollection.getDoctorId());
+					bookedSlotCollection.setLocationId(appointmentCollection.getLocationId());
+					bookedSlotCollection.setHospitalId(appointmentCollection.getHospitalId());
 					bookedSlotCollection.setId(null);
 					appointmentBookedSlotRepository.save(bookedSlotCollection);
 
@@ -860,8 +863,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
-					if (appointmentCollection.getState().getState()
-							.equalsIgnoreCase(AppointmentState.CONFIRM.getState())) {
+					if (appointmentCollection.getState().getState().equalsIgnoreCase(AppointmentState.CONFIRM.getState())) {
 						updateQueue(appointmentCollection.getAppointmentId(),
 								appointmentCollection.getDoctorId().toString(),
 								appointmentCollection.getLocationId().toString(),

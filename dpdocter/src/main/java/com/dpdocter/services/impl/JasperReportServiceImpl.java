@@ -671,6 +671,14 @@ public class JasperReportServiceImpl implements JasperReportService {
         }
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
         
+        band = new JRDesignBand();
+        band.setHeight(1);
+        jrDesignLine = new JRDesignLine();
+        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
+        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+        band.addElement(jrDesignLine);        
+       jasperDesign.setColumnFooter(band);
+        
 		JasperCompileManager.compileReportToFile(jasperDesign, JASPER_TEMPLATES_RESOURCE+"new/mongo-prescription_items_subreport-A4.jasper");
   	
 	    JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign); 
@@ -695,11 +703,6 @@ public class JasperReportServiceImpl implements JasperReportService {
         band = new JRDesignBand();
         band.setHeight(81);
         band.addElement(jSubreport);
-        
-        jrDesignLine = new JRDesignLine();
-        jrDesignLine.setX(0); jrDesignLine.setY(50); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
-        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
-        band.addElement(jrDesignLine);        
         
         return band;
 

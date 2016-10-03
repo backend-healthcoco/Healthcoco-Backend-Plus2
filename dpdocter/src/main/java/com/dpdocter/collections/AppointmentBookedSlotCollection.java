@@ -44,54 +44,54 @@ public class AppointmentBookedSlotCollection extends GenericCollection {
 
     @Field
     private Boolean isAllDayEvent = false;
-    
-    public ObjectId getId() {
-	return id;
-    }
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public String getAppointmentId() {
-	return appointmentId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	public String getAppointmentId() {
+		return appointmentId;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public WorkingHours getTime() {
-	return time;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setTime(WorkingHours time) {
-	this.time = time;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
 	public Date getFromDate() {
 		return fromDate;
