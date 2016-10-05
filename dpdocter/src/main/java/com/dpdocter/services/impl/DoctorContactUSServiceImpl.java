@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -59,6 +60,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 		{
 			BeanUtil.map(doctorContactUs, doctorContactUsCollection);
 			try {
+				doctorContactUsCollection.setCreatedTime(new Date());
 				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
 				
