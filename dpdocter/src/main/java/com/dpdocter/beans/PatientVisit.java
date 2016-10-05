@@ -27,8 +27,38 @@ public class PatientVisit {
     private List<String> clinicalNotesId;
 
     private List<String> recordId;
+    
+    private WorkingHours time;
 
-    private Boolean discarded = false;
+    private Date fromDate;
+    
+    private Date toDate;
+
+    public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	private Boolean discarded = false;
 
     public String getId() {
 	return id;

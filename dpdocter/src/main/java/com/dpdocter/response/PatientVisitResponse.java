@@ -32,6 +32,10 @@ public class PatientVisitResponse extends GenericCollection {
     private List<ClinicalNotes> clinicalNotes;
 
     private List<Records> records;
+    
+    private String appointmentId;
+    
+    private String nextReview;
 
     public String getId() {
 	return id;
@@ -121,11 +125,28 @@ public class PatientVisitResponse extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public String getNextReview() {
+		return nextReview;
+	}
+
+	public void setNextReview(String nextReview) {
+		this.nextReview = nextReview;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
-				+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + "]";
+				+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + ", appointmentId=" + appointmentId
+				+ ", nextReview=" + nextReview + "]";
 	}
 }

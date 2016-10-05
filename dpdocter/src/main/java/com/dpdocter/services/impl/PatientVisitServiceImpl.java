@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.Complaint;
@@ -50,6 +51,7 @@ import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
+import com.dpdocter.beans.User;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -67,6 +69,10 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.AppointmentCreatedBy;
+import com.dpdocter.enums.AppointmentResponseType;
+import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.LineSpace;
@@ -89,11 +95,13 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
@@ -168,6 +176,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
     @Autowired
     private ReferenceRepository referenceRepository;
+    
+    @Autowired
+    private AppointmentService appointmentService;
 
     @Autowired
     private MailBodyGenerator mailBodyGenerator;
@@ -430,9 +441,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
 	PatientVisitResponse response = new PatientVisitResponse();
 	try {
+		Appointment appointment = null;
+		if(request.getAppointment() != null)
+	    {
+	    	appointment = addVisitAppointment(request.getAppointment());
+	    }
+		
 	    BeanUtil.map(request, response);
 	    if (request.getClinicalNote() != null) {
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
+		if(appointment != null)
+		{
+			clinicalNotes.setAppointmentId(appointment.getAppointmentId());
+			clinicalNotes.setTime(appointment.getTime());
+			clinicalNotes.setFromDate(appointment.getFromDate());
+		}
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 		    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}
@@ -443,6 +466,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		list.add(clinicalNotes);
 		response.setClinicalNotes(list);
 	    }
+	    
+	    
 
 	    if (request.getPrescription() != null) {
 		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
@@ -502,7 +527,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			response.setCreatedTime(patientVisitCollection.getCreatedTime());
 			response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 			response.setCreatedBy(patientVisitCollection.getCreatedBy());
+			response.setAppointmentId(patientVisitCollection.getAppointmentId());
 	    }
+	    
+	    
+	    
+	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());
@@ -1323,5 +1353,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
 		}
 		return response;
+	}
+	
+	private Appointment addVisitAppointment(AppointmentRequest appointment)
+	{
+		Appointment response = null;
+		if(appointment.getAppointmentId() == null)
+		{
+			response = appointmentService.addAppointment(appointment);
+		}
+		else
+		{
+			response = appointmentService.updateAppointment(appointment);
+		}
+		
+		return response;
+		
 	}
 }
