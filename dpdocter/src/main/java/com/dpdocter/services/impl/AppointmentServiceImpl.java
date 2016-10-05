@@ -1868,7 +1868,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
 
 			PatientQueueCollection patientQueueCollection = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId,	patientObjectId, start, end, false);
-			if(patientQueueCollection == null){
+			if(patientQueueCollection == null || sequenceNo == null || sequenceNo == 0){
 				patientQueueCollection = new PatientQueueCollection();
 				patientQueueCollection.setAppointmentId(appointmentId);
 				patientQueueCollection.setDoctorId(doctorObjectId);

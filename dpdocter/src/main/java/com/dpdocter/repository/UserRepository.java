@@ -40,4 +40,7 @@ public interface UserRepository extends MongoRepository<UserCollection, ObjectId
     @Query("{'mobileNumber' : ?0, 'userState' : ?1}")
 	public UserCollection findAdminByMobileNumber(String mobileNumber, String userState);
 
+    @Query("{'id' : ?0, 'signedUp' : ?1}")
+	public UserCollection findByIdAndNotSignedUp(ObjectId userId, Boolean signedUp);
+
 }

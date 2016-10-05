@@ -1,6 +1,6 @@
 package com.dpdocter.beans;
 
-import java.util.List;
+import java.util.Date;
 
 import com.dpdocter.collections.GenericCollection;
 
@@ -27,13 +27,25 @@ public class OPDReports extends GenericCollection {
 		super();
 	}
 
-	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId) {
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId, Date createdTime) {
 		super();
 		this.patientId = patientId;
 		this.prescriptionId = prescriptionId;
 		this.doctorId = doctorId;
 		this.locationId = locationId;
 		this.hospitalId = hospitalId;
+		super.setCreatedTime(createdTime);
+	}
+
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId, Date createdTime, Date updatedTime) {
+		super();
+		this.patientId = patientId;
+		this.prescriptionId = prescriptionId;
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+		super.setCreatedTime(createdTime);
+		super.setUpdatedTime(updatedTime);
 	}
 
 	public String getId() {
