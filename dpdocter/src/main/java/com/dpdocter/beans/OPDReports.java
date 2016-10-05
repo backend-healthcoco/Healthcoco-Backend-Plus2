@@ -7,7 +7,6 @@ import com.dpdocter.collections.GenericCollection;
 public class OPDReports extends GenericCollection {
 
 	private String id;
-	private String serialNo;
 	private String patientId;
 	private Patient patient;
 	private String prescriptionId;
@@ -54,14 +53,6 @@ public class OPDReports extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public String getPatientId() {
@@ -178,12 +169,11 @@ public class OPDReports extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "OPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
-				+ ", prescriptionId=" + prescriptionId + ", prescription=" + prescription + ", amountReceived="
-				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
-				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
-				+ "]";
+		return "OPDReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", prescriptionId="
+				+ prescriptionId + ", prescription=" + prescription + ", amountReceived=" + amountReceived
+				+ ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId="
+				+ doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId + ", locationName="
+				+ locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName + "]";
 	}
 
 }

@@ -17,6 +17,8 @@ public class AddMultipleDataRequest {
     private PrescriptionAddEditRequest prescription;
 
     private RecordsAddRequest record;
+    
+    private AppointmentRequest appointment;
 
     public String getVisitId() {
 	return visitId;
@@ -82,10 +84,19 @@ public class AddMultipleDataRequest {
 	this.record = record;
     }
 
-    @Override
-    public String toString() {
-	return "AddMultipleDataRequest [visitId=" + visitId + ", patientId=" + patientId + ", doctorId=" + doctorId + ", locationId=" + locationId
-		+ ", hospitalId=" + hospitalId + ", clinicalNote=" + clinicalNote + ", prescription=" + prescription + ", record=" + record + "]";
-    }
+	public AppointmentRequest getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(AppointmentRequest appointment) {
+		this.appointment = appointment;
+	}
+
+	@Override
+	public String toString() {
+		return "AddMultipleDataRequest [visitId=" + visitId + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", clinicalNote=" + clinicalNote
+				+ ", prescription=" + prescription + ", record=" + record + ", appointment=" + appointment + "]";
+	}
 
 }

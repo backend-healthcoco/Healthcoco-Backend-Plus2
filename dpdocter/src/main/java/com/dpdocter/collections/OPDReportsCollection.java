@@ -11,8 +11,6 @@ public class OPDReportsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String serialNo;
-	@Field
 	private ObjectId patientId;
 	@Field
 	private ObjectId prescriptionId;
@@ -37,14 +35,6 @@ public class OPDReportsCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public ObjectId getPatientId() {
@@ -121,10 +111,10 @@ public class OPDReportsCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "OPDReportsCollection [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId
-				+ ", prescriptionId=" + prescriptionId + ", amountReceived=" + amountReceived + ", receiptNo="
-				+ receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+		return "OPDReportsCollection [id=" + id + ", patientId=" + patientId + ", prescriptionId=" + prescriptionId
+				+ ", amountReceived=" + amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate
+				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + "]";
 	}
 
 }

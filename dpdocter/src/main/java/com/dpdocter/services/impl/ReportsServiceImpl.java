@@ -95,12 +95,16 @@ public class ReportsServiceImpl implements ReportsService {
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
 		IPDReports response = null;
 		IPDReportsCollection ipdReportsCollection = new IPDReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(ipdReports.getDoctorId()));
+		
 		if(ipdReports != null)
 		{
 			BeanUtil.map(ipdReports, ipdReportsCollection);
 			try {
 				ipdReportsCollection.setCreatedTime(new Date());
+				ipdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				ipdReportsCollection = ipdReportsRepository.save(ipdReportsCollection);
+				
 				
 				if(ipdReportsCollection != null)
 				{
@@ -122,6 +126,7 @@ public class ReportsServiceImpl implements ReportsService {
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
 		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
 		if(opdReports != null)
 		{
 			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
@@ -138,6 +143,7 @@ public class ReportsServiceImpl implements ReportsService {
 			{
 				BeanUtil.map(opdReports, opdReportsCollection);
 			}
+			opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 			try {
 				
@@ -161,11 +167,13 @@ public class ReportsServiceImpl implements ReportsService {
 	public OTReports submitOTReport(OTReports otReports) {
 		OTReports response = null;
 		OTReportsCollection otReportsCollection = new OTReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(otReports.getDoctorId()));
 		if(otReports != null)
 		{
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
 				otReportsCollection.setCreatedTime(new Date());
+				otReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				otReportsCollection = otReportsRepository.save(otReportsCollection);
 				
 				if(otReportsCollection != null)
@@ -188,13 +196,14 @@ public class ReportsServiceImpl implements ReportsService {
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
 		DeliveryReports response = null;
 		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
+		UserCollection userCollection = userRepository.findOne(new ObjectId(deliveryReports.getDoctorId()));
 		if(deliveryReports != null)
 		{
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
 				deliveryReportsCollection.setCreatedTime(new Date());
+				deliveryReports.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				deliveryReportsCollection = deliveryReportsRepository.save(deliveryReportsCollection);
-				
 				if(deliveryReportsCollection != null)
 				{
 					BeanUtil.map(deliveryReportsCollection, deliveryReports);

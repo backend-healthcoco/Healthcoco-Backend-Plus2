@@ -2034,14 +2034,29 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private Boolean checkToday(Date date) {
 		Boolean status = false;
-
-		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
+		System.out.println(date);
+		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")));
+		System.out.println(inputDate);
+		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")));
+		System.out.println(today);
 		if (inputDate.getYear() == today.getYear() && today.getDayOfYear() == inputDate.getDayOfYear()) {
 			status = true;
 		}
 
 		return status;
+	}
+	
+	@Override
+	@Transactional
+	public Appointment getAppointmentById(ObjectId appointmentId)
+	{
+		Appointment appointment = null;
+		AppointmentCollection appointmentCollection = appointmentRepository.findOne(appointmentId);
+		if(appointmentCollection != null)
+		{
+			appointment = new Appointment();
+			BeanUtil.map(appointmentCollection, appointment);
+		}
+		return appointment;
 	}
 }

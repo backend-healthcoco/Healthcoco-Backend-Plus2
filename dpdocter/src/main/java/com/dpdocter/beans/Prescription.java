@@ -6,129 +6,135 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.TestAndRecordDataResponse;
 
 public class Prescription extends GenericCollection {
-    private String id;
+	private String id;
 
-    private String uniqueEmrId;
+	private String uniqueEmrId;
 
-    private String name;
+	private String name;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private List<PrescriptionItemDetail> items;
+	private List<PrescriptionItemDetail> items;
 
-    private Boolean inHistory = false;
+	private Boolean inHistory = false;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    private List<TestAndRecordDataResponse> diagnosticTests;
+	private List<TestAndRecordDataResponse> diagnosticTests;
 
-    private String advice;
+	private String advice;
 
-    private String visitId;
+	private String visitId;
 
-    private String patientId;
+	private String patientId;
 
-    private Boolean isFeedbackAvailable = false;
+	private Boolean isFeedbackAvailable = false;
 
-    public String getId() {
-	return id;
-    }
+	private String appointmentId;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private Appointment appointment;
 
-    public String getName() {
-	return name;
-    }
+	private Long nextReview;
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public List<PrescriptionItemDetail> getItems() {
-	return items;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setItems(List<PrescriptionItemDetail> items) {
-	this.items = items;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public List<PrescriptionItemDetail> getItems() {
+		return items;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setItems(List<PrescriptionItemDetail> items) {
+		this.items = items;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public String getAdvice() {
-	return advice;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setAdvice(String advice) {
-	this.advice = advice;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getVisitId() {
-	return visitId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setVisitId(String visitId) {
-	this.visitId = visitId;
-    }
+	public String getAdvice() {
+		return advice;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
-    public Boolean getInHistory() {
-	return inHistory;
-    }
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
 
-    public void setInHistory(Boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public Boolean getIsFeedbackAvailable() {
-	return isFeedbackAvailable;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-	this.isFeedbackAvailable = isFeedbackAvailable;
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
+
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
@@ -146,12 +152,37 @@ public class Prescription extends GenericCollection {
 		this.diagnosticTests = diagnosticTests;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
+	}
+
+	public Long getNextReview() {
+		return nextReview;
+	}
+
+	public void setNextReview(Long nextReview) {
+		this.nextReview = nextReview;
+	}
+
 	@Override
 	public String toString() {
 		return "Prescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
 				+ inHistory + ", discarded=" + discarded + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
 				+ ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable
+				+ ", appointmentId=" + appointmentId + ", appointment=" + appointment + ", nextReview=" + nextReview
 				+ "]";
 	}
 }

@@ -8,7 +8,6 @@ import com.dpdocter.enums.AnaesthesiaTypeEnum;
 public class OTReports extends GenericCollection {
 
 	private String id;
-	private String serialNo;
 	private String patientId;
 	private Patient patient;
 	private Long operationDate;
@@ -37,15 +36,7 @@ public class OTReports extends GenericCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
-	}
-
+	
 	public String getPatientId() {
 		return patientId;
 	}
@@ -208,14 +199,14 @@ public class OTReports extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "OTReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
-				+ ", operationDate=" + operationDate + ", anaesthesiaType=" + anaesthesiaType
-				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis="
-				+ finalDiagnosis + ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist
-				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
-				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName
-				+ ", locationId=" + locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId
-				+ ", hospitalName=" + hospitalName + ", timeDuration=" + timeDuration + "]";
+		return "OTReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", operationDate="
+				+ operationDate + ", anaesthesiaType=" + anaesthesiaType + ", provisionalDiagnosis="
+				+ provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis=" + finalDiagnosis
+				+ ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors="
+				+ assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE
+				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId="
+				+ locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName="
+				+ hospitalName + ", timeDuration=" + timeDuration + "]";
 	}
 
 }
