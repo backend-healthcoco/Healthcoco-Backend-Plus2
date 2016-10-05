@@ -1831,6 +1831,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							collection.getPatientId(), doctorObjectId, locationObjectId, hospitalObjectId);
 					if (patientCollection != null)
 						BeanUtil.map(patientCollection, patientCard);
+					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 					patientCard.setId(collection.getPatientId().toString());
 					patientQueue.setPatient(patientCard);
 					response.add(patientQueue);
@@ -1996,6 +1998,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 											locationObjectId, hospitalObjectId);
 							if (patientCollection != null)
 								BeanUtil.map(patientCollection, patientCard);
+							patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+							patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 							patientQueue.setPatient(patientCard);
 							patientCard.setId(collection.getPatientId().toString());
 							response.add(patientQueue);
