@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -238,6 +239,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Value(value = "${jasper.print.prescription.subreport.a5.fileName}")
     private String prescriptionSubReportA5FileName;
 
+	@Value(value = "${prescription.add.patient.download.app.message}")
+    private String downloadAppMessageToPatient;
+	
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
@@ -692,7 +696,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			
 			if(prescriptionCollection != null)
 			{
-				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()));
+				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()), prescriptionCollection.getCreatedTime());
 				opdReports = reportsService.submitOPDReport(opdReports);
 			}
 			response = new PrescriptionAddEditResponse();
@@ -713,12 +717,46 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			response.setVisitId(request.getVisitId());
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+			sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), prescriptionCollection.getCreatedBy());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
 		}
 		return response;
+	}
+
+	private void sendDownloadAppMessage(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String doctorName) {
+		try {
+			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);			
+  			if(userCollection != null){
+  					String message = downloadAppMessageToPatient;
+  					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+      				smsTrackDetail.setDoctorId(doctorId);
+      				smsTrackDetail.setLocationId(locationId);
+      				smsTrackDetail.setHospitalId(hospitalId);
+      			    smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+      			    SMSDetail smsDetail = new SMSDetail();
+      			    smsDetail.setUserId(userCollection.getId());
+      			    SMS sms = new SMS();
+      			    smsDetail.setUserName(userCollection.getFirstName());
+      			    sms.setSmsText(message.replaceAll("{doctorName}", doctorName));
+
+      			    SMSAddress smsAddress = new SMSAddress();
+      			    smsAddress.setRecipient(userCollection.getMobileNumber());
+      			    sms.setSmsAddress(smsAddress);
+
+      			    smsDetail.setSms(sms);
+      			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+      			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+      			    smsDetails.add(smsDetail);
+      			    smsTrackDetail.setSmsDetails(smsDetails);
+      			    sMSServices.sendSMS(smsTrackDetail, true);     			    
+  			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override

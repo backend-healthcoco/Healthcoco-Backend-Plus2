@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -42,6 +43,7 @@ import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TransactionalCollection;
@@ -100,7 +102,9 @@ import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
@@ -215,8 +219,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Autowired
     private TreatmentServicesCostRepository treatmentServicesCostRepository;
     
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
+    
+    @Autowired
+    private SMSTrackRepository smsTrackRepository;
+    
     @Value(value = "${mail.appointment.details.subject}")
     private String appointmentDetailsSub;
+
+    @Value(value = "${prescription.add.patient.download.app.message}")
+    private String downloadAppMessageToPatient;
 
     @Scheduled(fixedDelay = 1800000)
     @Override
@@ -332,7 +345,58 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     	    logger.error(e);
     	}
     }
-    
+ 
+//  @Scheduled(cron = "0 0/30 9 * * *", zone = "IST")
+  @Override
+  @Transactional
+  public Boolean sendPromotionalSMSToPatient(){
+	  Boolean response = false;
+  	try{  		
+  		List<PrescriptionCollection> prescriptions = prescriptionRepository.findAll();
+  		
+  		for(PrescriptionCollection prescriptionCollection : prescriptions){
+  			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(prescriptionCollection.getPatientId(), false);			
+      			if(userCollection != null){
+      				String[] type = {"APP_LINK_THROUGH_PRESCRIPTION"};
+      				Calendar cal = Calendar.getInstance();
+	    			cal.add(Calendar.DATE, -5);
+      				List<SMSTrackDetail> smsTrackDetails = smsTrackRepository.findByDoctorLocationHospitalPatient(prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
+      						prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId(), type, cal.getTime(), new Date(), new PageRequest(0, 1));
+      				
+      				if(smsTrackDetails == null || smsTrackDetails.isEmpty()){
+      					String message = downloadAppMessageToPatient;
+      					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+	      				smsTrackDetail.setDoctorId(prescriptionCollection.getDoctorId());
+	      				smsTrackDetail.setLocationId(prescriptionCollection.getLocationId());
+	      				smsTrackDetail.setHospitalId(prescriptionCollection.getHospitalId());
+	      			    smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+	      			    SMSDetail smsDetail = new SMSDetail();
+	      			    smsDetail.setUserId(userCollection.getId());
+	      			    SMS sms = new SMS();
+	      			    smsDetail.setUserName(userCollection.getFirstName());
+	      			    sms.setSmsText(message.replace("{doctorName}", prescriptionCollection.getCreatedBy()));
+	
+	      			    SMSAddress smsAddress = new SMSAddress();
+	      			    smsAddress.setRecipient(userCollection.getMobileNumber());
+	      			    sms.setSmsAddress(smsAddress);
+	
+	      			    smsDetail.setSms(sms);
+	      			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+	      			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+	      			    smsDetails.add(smsDetail);
+	      			    smsTrackDetail.setSmsDetails(smsDetails);
+	      			    sMSServices.sendSMS(smsTrackDetail, true);     			    
+      			}
+      		}
+  	  }
+  		response = true;
+  	}catch(Exception e){
+  		e.printStackTrace();
+  	    logger.error(e);
+  	}
+  	return response;
+  }
+
     public void checkOTP() {
 	try {
 	    List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());

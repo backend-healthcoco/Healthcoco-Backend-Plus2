@@ -141,4 +141,13 @@ public class ReportsAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS)
+	@GET
+	@ApiOperation(value = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS, notes = PathProxy.ReportsUrls.ADD_PRESCRIPTION_IN_OPD_REPORTS)
+	public Response<Boolean> addPrescriptionOPDReports() {
+		Boolean save = reportsService.addPrescriptionOPDReports();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(save);
+		return response;
+	}
 }

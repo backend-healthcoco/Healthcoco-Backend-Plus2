@@ -676,6 +676,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_SMS_FORMAT = "/format/add";
 
 		public static final String GET_SMS_FORMAT = "/format/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String SEND_DOWNLOAD_APP_SMS_TO_PATIENT = "/sendDownloadSmsToPatient";
 
 	}
 
@@ -787,6 +789,8 @@ public interface PathProxy {
 		public static final String SUBMIT_OPD_REPORTS = "/submitOPDReports";
 		public static final String SUBMIT_OT_REPORTS = "/submitOTReports";
 		public static final String SUBMIT_DELIVERY_REPORTS = "/submitDeliveryReports";
+		
+		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
 		
 	}
 }
