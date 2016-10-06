@@ -1528,14 +1528,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
-					for (Slot slot : slotResponse) {
+					/*for (Slot slot : slotResponse) {
 						if (checkToday(date) && slot.getMinutesOfDay() < getMinutesOfDay(date)) {
 							slot.setIsAvailable(false);
 							slotResponse.set(slotResponse.indexOf(slot), slot);
 						}
 
 					}
-
+*/
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
 							.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
