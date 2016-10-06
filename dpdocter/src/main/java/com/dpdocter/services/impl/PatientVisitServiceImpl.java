@@ -437,9 +437,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	PatientVisitResponse response = new PatientVisitResponse();
 	try {
 		Appointment appointment = null;
-		if(request.getAppointment() != null)
+		if(request.getAppointmentRequest() != null)
 	    {
-	    	appointment = addVisitAppointment(request.getAppointment());
+	    	appointment = addVisitAppointment(request.getAppointmentRequest());
 	    }
 		
 	    BeanUtil.map(request, response);
