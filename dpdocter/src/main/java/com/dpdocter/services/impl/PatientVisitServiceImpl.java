@@ -451,10 +451,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    		request.getClinicalNote().setFromDate(appointment.getFromDate());
 			}
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 		    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}
