@@ -632,28 +632,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							items = new ArrayList<PrescriptionItem>();
 						items.add(item);
 						
-						DoctorDrugCollection doctorDrugCollection =  doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-						if(doctorDrugCollection != null){
-							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount()+1);
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-							if(esDoctorDrugDocument != null){
-								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
-								esDoctorDrugRepository.save(esDoctorDrugDocument);
-							}
-						}else{
-							DrugCollection  drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
-							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1, false, drugCollection != null ? drugCollection.getGenericCodes():null);
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-							if (doctorDrugCollection != null) {
-							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
-							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-							    esDoctorDrugDocument.setId(drugCollection.getId().toString());
-							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
-							}
-						}
+//						DoctorDrugCollection doctorDrugCollection =  doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+//						if(doctorDrugCollection != null){
+//							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount()+1);
+//							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+//							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(), request.getLocationId(), request.getHospitalId());
+//							if(esDoctorDrugDocument != null){
+//								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
+//								esDoctorDrugRepository.save(esDoctorDrugDocument);
+//							}
+//						}else{
+//							DrugCollection  drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
+//							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1, false, drugCollection != null ? drugCollection.getGenericCodes():null);
+//							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+//							transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+//							if (doctorDrugCollection != null) {
+//							    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+//							    BeanUtil.map(drugCollection, esDoctorDrugDocument);
+//							    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+//							    esDoctorDrugDocument.setId(drugCollection.getId().toString());
+//							    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+//							}
+//						}
 					}
 				}
 				prescriptionCollection.setItems(items);
@@ -740,7 +740,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
       			    smsDetail.setUserId(userCollection.getId());
       			    SMS sms = new SMS();
       			    smsDetail.setUserName(userCollection.getFirstName());
-      			    sms.setSmsText(message.replaceAll("{doctorName}", doctorName));
+      			    sms.setSmsText(message.replace("{doctorName}", doctorName));
 
       			    SMSAddress smsAddress = new SMSAddress();
       			    smsAddress.setRecipient(userCollection.getMobileNumber());
