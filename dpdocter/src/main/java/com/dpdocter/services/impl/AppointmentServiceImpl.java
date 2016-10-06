@@ -1540,6 +1540,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
+							System.out.println("Booked slot :: "+bookedSlot);
 							if (bookedSlot.getTime() != null) {
 								if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
 									if (bookedSlot.getIsAllDayEvent()) {
@@ -1554,6 +1555,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 										bookedSlot.getTime().getToTime(),
 										Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
 								for (Slot slot : slots) {
+									System.out.println("slot :: "+slot);
 									if (slotResponse.contains(slot)) {
 										slot.setIsAvailable(false);
 										slotResponse.set(slotResponse.indexOf(slot), slot);
