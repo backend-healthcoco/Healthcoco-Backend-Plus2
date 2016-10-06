@@ -234,7 +234,6 @@ public class AppointmentApi {
 	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 	}
 	Date dateObj = new Date(Long.parseLong(date));
-	System.out.println(dateObj);
 	SlotDataResponse slotDataResponse = appointmentService.getTimeSlots(doctorId, locationId, dateObj);
 	Response<SlotDataResponse> response = new Response<SlotDataResponse>();
 	response.setData(slotDataResponse);

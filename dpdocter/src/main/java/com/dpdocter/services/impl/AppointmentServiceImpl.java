@@ -1486,7 +1486,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date) {
-		System.out.println("Service layer input:: " +date);
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		List<Slot> slotResponse = null;
 		SlotDataResponse response = null;
@@ -1506,7 +1505,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
 				String day = sdf.format(date);
-				System.out.println("SDF day conversion :: "+ day);
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null
 						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
 					response = new SlotDataResponse();
@@ -1530,22 +1528,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
-					/*for (Slot slot : slotResponse) {
-						if (checkToday(date) && slot.getMinutesOfDay() < getMinutesOfDay(date)) {
+					for (Slot slot : slotResponse) {
+						if (checkToday(date) && slot.getMinutesOfDay() < getMinutesOfDay(date) ) {
 							slot.setIsAvailable(false);
 							slotResponse.set(slotResponse.indexOf(slot), slot);
 						}
 
 					}
-*/
 					
-					System.out.println("Date for booked slot ::" + date);
+					Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					calendar.setTime(date);
+					calendar.add(Calendar.DATE, 1);  // number of days to add
+					Date nextDay = calendar.getTime();  // nextDay is now the new date
+
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-							.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
-					
+							.findByDoctorLocationId(doctorObjectId, locationObjectId, date , nextDay);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
-							System.out.println("Booked slot :: "+bookedSlot);
 							if (bookedSlot.getTime() != null) {
 								if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
 									if (bookedSlot.getIsAllDayEvent()) {
@@ -1560,7 +1559,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 										bookedSlot.getTime().getToTime(),
 										Math.round(doctorClinicProfileCollection.getAppointmentSlot().getTime()));
 								for (Slot slot : slots) {
-									System.out.println("slot :: "+slot);
 									if (slotResponse.contains(slot)) {
 										slot.setIsAvailable(false);
 										slotResponse.set(slotResponse.indexOf(slot), slot);

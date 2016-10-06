@@ -611,9 +611,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 			List<DiagnosticTest> diagnosticTests = request.getDiagnosticTests();
-			request.setAppointmentId(appointment.getAppointmentId());
-			request.setTime(appointment.getTime());
-			request.setFromDate(appointment.getFromDate());
+			if(appointment != null)
+			{
+				request.setAppointmentId(appointment.getAppointmentId());
+				request.setTime(appointment.getTime());
+				request.setFromDate(appointment.getFromDate());
+			}
 			request.setDiagnosticTests(null);
 			BeanUtil.map(request, prescriptionCollection);
 
