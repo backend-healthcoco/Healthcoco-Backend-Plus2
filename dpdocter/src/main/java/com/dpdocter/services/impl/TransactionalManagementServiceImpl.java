@@ -495,11 +495,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findOne(resourceId);
 		    if (doctorDrugCollection != null) {
 		    	DrugCollection drugCollection = drugRepository.findOne(doctorDrugCollection.getDrugId());
-				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-				BeanUtil.map(drugCollection, esDoctorDrugDocument);
-				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-				esDoctorDrugDocument.setId(drugCollection.getId().toString());
-				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+				if(drugCollection != null){
+					ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+					BeanUtil.map(drugCollection, esDoctorDrugDocument);
+					BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+					esDoctorDrugDocument.setId(drugCollection.getId().toString());
+					esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+				}
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();
