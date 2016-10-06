@@ -142,7 +142,6 @@ public class ReportsServiceImpl implements ReportsService {
 			else
 			{
 				BeanUtil.map(opdReports, opdReportsCollection);
-				opdReportsCollection.setCreatedTime(new Date());
 			}
 			opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
@@ -585,6 +584,22 @@ public class ReportsServiceImpl implements ReportsService {
 			    	
 			    	response.add(deliveryReports);
 			    }
+			}
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addPrescriptionOPDReports() {
+		Boolean response = false;
+		try{
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
+			for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
+				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()), prescriptionCollection.getCreatedTime(), prescriptionCollection.getUpdatedTime());
+				opdReports = submitOPDReport(opdReports);
 			}
 		} catch (Exception e) {
 		    e.printStackTrace();

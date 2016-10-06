@@ -8,95 +8,97 @@ import com.dpdocter.enums.AppointmentType;
 
 public class Appointment extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private WorkingHours time;
+	private WorkingHours time;
 
-    private PatientCard patient;
+	private PatientCard patient;
 
-    private AppointmentState state;
+	private AppointmentState state;
 
-    private Boolean isRescheduled = false;
+	private Boolean isRescheduled = false;
 
-    private Date fromDate;
+	private Date fromDate;
 
-    private Date toDate;
+	private Date toDate;
 
-    private String appointmentId;
+	private String appointmentId;
 
-    private String subject;
+	private String subject;
 
-    private String explanation;
+	private String explanation;
 
-    private AppointmentType type;
+	private AppointmentType type;
 
-    private Boolean isCalenderBlocked = false;
+	private Boolean isCalenderBlocked = false;
 
-    private Boolean isFeedbackAvailable = false;
+	private Boolean isFeedbackAvailable = false;
 
-    private Boolean isAllDayEvent = false;
-    
-    private String doctorName;
+	private Boolean isAllDayEvent = false;
 
-    private String locationName;
+	private String doctorName;
 
-    private String clinicAddress;
-    
-    private String clinicNumber;
+	private String locationName;
 
-    private Double latitude;
+	private String clinicAddress;
 
-    private Double longitude;
+	private String clinicNumber;
 
-    private String cancelledBy;
-    
-    private Boolean notifyPatientBySms;
+	private Double latitude;
 
-    private Boolean notifyPatientByEmail;
+	private Double longitude;
 
-    private Boolean notifyDoctorBySms;
+	private String cancelledBy;
 
-    private Boolean notifyDoctorByEmail;
+	private Boolean notifyPatientBySms;
 
-    public String getId() {
-	return id;
-    }
+	private Boolean notifyPatientByEmail;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private Boolean notifyDoctorBySms;
 
-    public WorkingHours getTime() {
-	return time;
-    }
+	private Boolean notifyDoctorByEmail;
 
-    public void setTime(WorkingHours time) {
-	this.time = time;
-    }
+	private String visitId;
 
-    public PatientCard getPatient() {
-	return patient;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setPatient(PatientCard patient) {
-	this.patient = patient;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public AppointmentState getState() {
-	return state;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
 
-    public void setState(AppointmentState state) {
-	this.state = state;
-    }
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
-    public Boolean getIsRescheduled() {
+	public PatientCard getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCard patient) {
+		this.patient = patient;
+	}
+
+	public AppointmentState getState() {
+		return state;
+	}
+
+	public void setState(AppointmentState state) {
+		this.state = state;
+	}
+
+	public Boolean getIsRescheduled() {
 		return isRescheduled;
 	}
 
@@ -105,22 +107,22 @@ public class Appointment extends GenericCollection {
 	}
 
 	public String getAppointmentId() {
-	return appointmentId;
-    }
+		return appointmentId;
+	}
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public String getSubject() {
-	return subject;
-    }
+	public String getSubject() {
+		return subject;
+	}
 
-    public void setSubject(String subject) {
-	this.subject = subject;
-    }
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -129,68 +131,68 @@ public class Appointment extends GenericCollection {
 	}
 
 	public AppointmentType getType() {
-	return type;
-    }
+		return type;
+	}
 
-    public void setType(AppointmentType type) {
-	this.type = type;
-    }
+	public void setType(AppointmentType type) {
+		this.type = type;
+	}
 
-    public Boolean getIsCalenderBlocked() {
-	return isCalenderBlocked;
-    }
+	public Boolean getIsCalenderBlocked() {
+		return isCalenderBlocked;
+	}
 
-    public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
-	this.isCalenderBlocked = isCalenderBlocked;
-    }
+	public void setIsCalenderBlocked(Boolean isCalenderBlocked) {
+		this.isCalenderBlocked = isCalenderBlocked;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getIsFeedbackAvailable() {
-	return isFeedbackAvailable;
-    }
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
 
-    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-	this.isFeedbackAvailable = isFeedbackAvailable;
-    }
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
 
-    public String getDoctorName() {
-	return doctorName;
-    }
+	public String getDoctorName() {
+		return doctorName;
+	}
 
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
 
-    public String getLocationName() {
-	return locationName;
-    }
+	public String getLocationName() {
+		return locationName;
+	}
 
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
 
 	public String getClinicAddress() {
 		return clinicAddress;
@@ -288,6 +290,14 @@ public class Appointment extends GenericCollection {
 		this.notifyDoctorByEmail = notifyDoctorByEmail;
 	}
 
+	public String getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -299,6 +309,6 @@ public class Appointment extends GenericCollection {
 				+ clinicAddress + ", clinicNumber=" + clinicNumber + ", latitude=" + latitude + ", longitude="
 				+ longitude + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms=" + notifyPatientBySms
 				+ ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
-				+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
+				+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId + "]";
 	}
 }

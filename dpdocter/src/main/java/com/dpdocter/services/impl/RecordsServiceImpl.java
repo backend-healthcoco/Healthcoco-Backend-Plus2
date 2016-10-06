@@ -241,17 +241,23 @@ public class RecordsServiceImpl implements RecordsService {
 	    String body = null;
 	    if(prescriptionCollection != null && !DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState())){
 	    	if(recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){
-	    		String subject = approvedRecordToDoctorSubject;
-	    		subject = subject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{clinicName}", recordsCollection.getUploadedByLocation());
-	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
-	    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "approvedRecordToDoctorTemplate.vm");
-			    mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
+	    		userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+	    		if(userCollection != null){
+	    			String subject = approvedRecordToDoctorSubject;
+		    		subject = subject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{clinicName}", recordsCollection.getUploadedByLocation());
+		    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+		    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "approvedRecordToDoctorTemplate.vm");
+				    mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
+	    		}
 	    	}else if(recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_REQUIRED.toString())){
-	    		String subject = notApprovedRecordToDoctorSubject;
-	    		subject = subject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{clinicName}", recordsCollection.getUploadedByLocation());
-	    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
-	    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "notApprovedRecordToDoctorTemplate.vm");
-			    mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
+	    		userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
+	    		if(userCollection != null){
+	    			String subject = notApprovedRecordToDoctorSubject;
+		    		subject = subject.replace("{patientName}", patientCollection.getFirstName()).replace("{reportName}", recordsCollection.getRecordsLabel()).replace("{clinicName}", recordsCollection.getUploadedByLocation());
+		    		pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject, ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+		    		body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(), recordsCollection.getCreatedBy(), patientCollection.getFirstName(), recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(), "notApprovedRecordToDoctorTemplate.vm");
+				    mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
+	    		}
 	    	}
 	    }
 	    if(!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())){

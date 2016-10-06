@@ -51,7 +51,6 @@ import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
-import com.dpdocter.beans.User;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -69,10 +68,6 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.AppointmentCreatedBy;
-import com.dpdocter.enums.AppointmentResponseType;
-import com.dpdocter.enums.AppointmentState;
-import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.LineSpace;
@@ -449,13 +444,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		
 	    BeanUtil.map(request, response);
 	    if (request.getClinicalNote() != null) {
+	    	if(appointment != null)
+			{
+	    		request.getClinicalNote().setAppointmentId(appointment.getAppointmentId());
+	    		request.getClinicalNote().setTime(appointment.getTime());
+	    		request.getClinicalNote().setFromDate(appointment.getFromDate());
+			}
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
-		if(appointment != null)
-		{
-			clinicalNotes.setAppointmentId(appointment.getAppointmentId());
-			clinicalNotes.setTime(appointment.getTime());
-			clinicalNotes.setFromDate(appointment.getFromDate());
-		}
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 		    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}
@@ -470,6 +469,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    
 
 	    if (request.getPrescription() != null) {
+	    	
+	    	if(appointment != null)
+			{
+	    		request.getPrescription().setAppointmentId(appointment.getAppointmentId());
+	    		request.getPrescription().setTime(appointment.getTime());
+	    		request.getPrescription().setFromDate(appointment.getFromDate());
+			}
 		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
 		Prescription prescription = new Prescription();
 		
@@ -528,11 +534,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 			response.setCreatedBy(patientVisitCollection.getCreatedBy());
 			response.setAppointmentId(patientVisitCollection.getAppointmentId());
-	    }
-	    
-	    
-	    
-	    
+	    }    	    
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e + " Error while adding patient Visit : " + e.getCause().getMessage());

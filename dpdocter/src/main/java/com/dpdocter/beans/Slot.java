@@ -39,6 +39,6 @@ public class Slot {
 
 	@Override
 	public String toString() {
-		return "Slot [time=" + time + ", isAvailable=" + isAvailable + "]";
+		return "Slot [time=" + time + ", isAvailable=" + isAvailable + ", minutesOfDay=" + minutesOfDay + "]";
 	}
 }

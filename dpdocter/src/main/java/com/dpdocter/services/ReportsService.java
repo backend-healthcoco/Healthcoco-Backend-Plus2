@@ -29,4 +29,6 @@ public interface ReportsService {
 	List<DeliveryReports> getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
+	public Boolean addPrescriptionOPDReports();
+
 }

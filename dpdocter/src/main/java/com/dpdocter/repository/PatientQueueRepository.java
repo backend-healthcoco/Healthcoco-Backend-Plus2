@@ -29,4 +29,7 @@ public interface PatientQueueRepository extends MongoRepository<PatientQueueColl
     @Query("{'doctorId':?0,'locationId':?1,'hospitalId':?2, 'patientId':?3, 'date' : {'$gt' : ?4, '$lte' : ?5}, 'discarded':?6}")
 	PatientQueueCollection find(ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, ObjectId patientObjectId, DateTime start, DateTime end, Boolean discarded);
 
+    @Query("{'appointmentId':?0}")
+	PatientQueueCollection find(String appointmentId);
+
 }

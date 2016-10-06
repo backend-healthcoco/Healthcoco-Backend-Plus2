@@ -3,6 +3,7 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DoctorDrug;
 import com.dpdocter.beans.Drug;
@@ -104,6 +106,7 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
@@ -124,6 +127,7 @@ import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -213,9 +217,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	
 	@Autowired
 	private ReportsService reportsService;
+	
+	@Autowired
+	private AppointmentService appointmentService;
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
+	
 
 	@Autowired
     private MongoTemplate mongoTemplate;
@@ -238,6 +246,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Value(value = "${jasper.print.prescription.subreport.a5.fileName}")
     private String prescriptionSubReportA5FileName;
 
+	@Value(value = "${prescription.add.patient.download.app.message}")
+    private String downloadAppMessageToPatient;
+	
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
@@ -593,8 +604,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request) {
 		PrescriptionAddEditResponse response = null;
 		try {
+			Appointment appointment = null;
+			if(request.getAppointmentRequest() != null)
+			{
+				appointment = addPrescriptionAppointment(request.getAppointmentRequest());
+			}
 			PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 			List<DiagnosticTest> diagnosticTests = request.getDiagnosticTests();
+			if(appointment != null)
+			{
+				request.setAppointmentId(appointment.getAppointmentId());
+				request.setTime(appointment.getTime());
+				request.setFromDate(appointment.getFromDate());
+			}
 			request.setDiagnosticTests(null);
 			BeanUtil.map(request, prescriptionCollection);
 
@@ -692,7 +714,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			
 			if(prescriptionCollection != null)
 			{
-				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()));
+				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()), prescriptionCollection.getCreatedTime());
 				opdReports = reportsService.submitOPDReport(opdReports);
 			}
 			response = new PrescriptionAddEditResponse();
@@ -713,12 +735,46 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			response.setVisitId(request.getVisitId());
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+			sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), prescriptionCollection.getCreatedBy());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
 		}
 		return response;
+	}
+
+	private void sendDownloadAppMessage(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, String doctorName) {
+		try {
+			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);			
+  			if(userCollection != null){
+  					String message = downloadAppMessageToPatient;
+  					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+      				smsTrackDetail.setDoctorId(doctorId);
+      				smsTrackDetail.setLocationId(locationId);
+      				smsTrackDetail.setHospitalId(hospitalId);
+      			    smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+      			    SMSDetail smsDetail = new SMSDetail();
+      			    smsDetail.setUserId(userCollection.getId());
+      			    SMS sms = new SMS();
+      			    smsDetail.setUserName(userCollection.getFirstName());
+      			    sms.setSmsText(message.replaceAll("{doctorName}", doctorName));
+
+      			    SMSAddress smsAddress = new SMSAddress();
+      			    smsAddress.setRecipient(userCollection.getMobileNumber());
+      			    sms.setSmsAddress(smsAddress);
+
+      			    smsDetail.setSms(sms);
+      			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+      			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+      			    smsDetails.add(smsDetail);
+      			    smsTrackDetail.setSmsDetails(smsDetails);
+      			    sMSServices.sendSMS(smsTrackDetail, true);     			    
+  			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
@@ -3536,4 +3592,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	private Appointment addPrescriptionAppointment(AppointmentRequest appointment)
+	{
+		Appointment response = null;
+		if(appointment.getAppointmentId() == null)
+		{
+			response = appointmentService.addAppointment(appointment);
+		}
+		else
+		{
+			response = appointmentService.updateAppointment(appointment);
+		}
+		return response;
+	}
+	
 }

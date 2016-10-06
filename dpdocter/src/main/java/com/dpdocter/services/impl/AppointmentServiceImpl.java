@@ -1070,7 +1070,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			text = "Your appointment " + appointmentId + " @ " + dateTime + " has been cancelled by " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".Request you to book again.";
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Request you to book again.";
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1529,21 +1529,26 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 					for (Slot slot : slotResponse) {
-						if (slot.getMinutesOfDay() < getMinutesOfDay() && checkToday(date)) {
+						if (checkToday(date) && slot.getMinutesOfDay() < getMinutesOfDay(date) ) {
 							slot.setIsAvailable(false);
 							slotResponse.set(slotResponse.indexOf(slot), slot);
 						}
 
 					}
+					
+					Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					calendar.setTime(date);
+					calendar.add(Calendar.DATE, 1);  // number of days to add
+					Date nextDay = calendar.getTime();  // nextDay is now the new date
 
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-							.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
+							.findByDoctorLocationId(doctorObjectId, locationObjectId, date , nextDay);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
 							if (bookedSlot.getTime() != null) {
 								if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
 									if (bookedSlot.getIsAllDayEvent()) {
-										System.out.println(getMinutesOfDay());
+										//System.out.println(getMinutesOfDay());
 										if (bookedSlot.getFromDate().equals(date))
 											bookedSlot.getTime().setToTime(719);
 										if (bookedSlot.getToDate().equals(date))
@@ -1831,6 +1836,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							collection.getPatientId(), doctorObjectId, locationObjectId, hospitalObjectId);
 					if (patientCollection != null)
 						BeanUtil.map(patientCollection, patientCard);
+					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 					patientCard.setId(collection.getPatientId().toString());
 					patientQueue.setPatient(patientCard);
 					response.add(patientQueue);
@@ -1866,10 +1873,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-
-			PatientQueueCollection patientQueueCollection = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId,	patientObjectId, start, end, false);
-			if(patientQueueCollection == null){
-				patientQueueCollection = new PatientQueueCollection();
+			PatientQueueCollection patientQueueCollection = patientQueueRepository.find(appointmentId);
+			if(patientQueueCollection == null)patientQueueCollection = new PatientQueueCollection();
+			
 				patientQueueCollection.setAppointmentId(appointmentId);
 				patientQueueCollection.setDoctorId(doctorObjectId);
 				patientQueueCollection.setLocationId(locationObjectId);
@@ -1877,7 +1883,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				patientQueueCollection.setPatientId(patientObjectId);
 				patientQueueCollection.setDate(date);
 				patientQueueCollection.setStartTime(startTime);
-
+				patientQueueCollection.setDiscarded(false);
+				
 				patientQueueCollections = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId,
 						start, end, false, new Sort(Direction.DESC, "sequenceNo"));
 				if (startTime != null) {
@@ -1902,8 +1909,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						for (PatientQueueCollection queueCollection : patientQueueCollections) {
 							int seq = queueCollection.getSequenceNo();
 							if (appointmentId.equalsIgnoreCase(queueCollection.getAppointmentId())) {
-								queueCollection.setDiscarded(true);
-								patientQueueRepository.save(queueCollection);
+//								queueCollection.setDiscarded(true);
+								patientQueueRepository.delete(queueCollection);
 								break;
 							} else {
 								queueCollection.setSequenceNo(seq - 1);
@@ -1996,6 +2003,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 											locationObjectId, hospitalObjectId);
 							if (patientCollection != null)
 								BeanUtil.map(patientCollection, patientCard);
+							patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+							patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 							patientQueue.setPatient(patientCard);
 							patientCard.setId(collection.getPatientId().toString());
 							response.add(patientQueue);
@@ -2004,10 +2013,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(patientQueueCollections, response);
 					}
 				}
-			}else{
-				logger.error("Patient is already added in queue");
-				throw new BusinessException(ServiceError.NotAcceptable, "Patient is already added in queue");
-			}
+//			}else{
+//				logger.error("Patient is already added in queue");
+//				throw new BusinessException(ServiceError.NotAcceptable, "Patient is already added in queue");
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -2022,8 +2031,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			return null;
 	}
 
-	private Integer getMinutesOfDay() {
-		DateTime dateTime = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+	private Integer getMinutesOfDay(Date date) {
+		DateTime dateTime = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));;
 		Integer currentMinute = dateTime.getMinuteOfDay();
 		return currentMinute;
 	}
@@ -2031,9 +2040,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private Boolean checkToday(Date date) {
 		Boolean status = false;
 		System.out.println(date);
-		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")));
+		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 		System.out.println(inputDate);
-		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")));
+		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 		System.out.println(today);
 		if (inputDate.getYear() == today.getYear() && today.getDayOfYear() == inputDate.getDayOfYear()) {
 			status = true;

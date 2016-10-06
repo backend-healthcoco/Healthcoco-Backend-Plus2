@@ -1,124 +1,132 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
 public class PrescriptionAddEditResponse extends GenericCollection {
-    private String id;
+	private String id;
 
-    private String uniqueEmrId;
+	private String uniqueEmrId;
 
-    private String name;
+	private String name;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private List<PrescriptionItem> items;
+	private List<PrescriptionItem> items;
 
-    private String patientId;
+	private String patientId;
 
-    private String prescriptionCode;
+	private String prescriptionCode;
 
-    private Boolean discarded;
+	private Boolean discarded;
 
-    private String visitId;
+	private String visitId;
 
-    private List<TestAndRecordDataResponse> diagnosticTests;
+	private List<TestAndRecordDataResponse> diagnosticTests;
 
-    private String advice;
+	private String advice;
 
-    public String getId() {
-	return id;
-    }
+	private String appointmentId;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private WorkingHours time;
 
-    public String getName() {
-	return name;
-    }
+	private Date fromDate;
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public List<PrescriptionItem> getItems() {
-	return items;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setItems(List<PrescriptionItem> items) {
-	this.items = items;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public List<PrescriptionItem> getItems() {
+		return items;
+	}
 
-    public String getPrescriptionCode() {
-	return prescriptionCode;
-    }
+	public void setItems(List<PrescriptionItem> items) {
+		this.items = items;
+	}
 
-    public void setPrescriptionCode(String prescriptionCode) {
-	this.prescriptionCode = prescriptionCode;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public String getPrescriptionCode() {
+		return prescriptionCode;
+	}
 
-    public String getVisitId() {
-	return visitId;
-    }
+	public void setPrescriptionCode(String prescriptionCode) {
+		this.prescriptionCode = prescriptionCode;
+	}
 
-    public void setVisitId(String visitId) {
-	this.visitId = visitId;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public String getAdvice() {
-	return advice;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public void setAdvice(String advice) {
-	this.advice = advice;
-    }
+	public String getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	public String getAdvice() {
+		return advice;
+	}
+
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
@@ -136,12 +144,36 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 		this.diagnosticTests = diagnosticTests;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionAddEditResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items="
 				+ items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
 				+ discarded + ", visitId=" + visitId + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
-				+ "]";
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }
