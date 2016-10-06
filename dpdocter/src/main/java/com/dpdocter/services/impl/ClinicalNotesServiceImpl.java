@@ -222,9 +222,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		
 		String createdBy = null;
 	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
-	    request.setAppointmentId(appointment.getAppointmentId());
-		request.setTime(appointment.getTime());
-		request.setFromDate(appointment.getFromDate());
+	    if(appointment != null)
+	    {
+	    	request.setAppointmentId(appointment.getAppointmentId());
+	    	request.setTime(appointment.getTime());
+	    	request.setFromDate(appointment.getFromDate());
+	    }
 	    BeanUtil.map(request, clinicalNotesCollection);
 	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 	    if (userCollection != null) {

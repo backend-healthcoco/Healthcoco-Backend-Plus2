@@ -1540,7 +1540,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					calendar.setTime(date);
 					calendar.add(Calendar.DATE, 1);  // number of days to add
 					Date nextDay = calendar.getTime();  // nextDay is now the new date
-
+					System.out.println("Today date :: "+date);
+					System.out.println("Next day :: "+nextDay);
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
 							.findByDoctorLocationId(doctorObjectId, locationObjectId, date , nextDay);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
