@@ -18,7 +18,7 @@ public class AddMultipleDataRequest {
 
     private RecordsAddRequest record;
     
-    private AppointmentRequest appointment;
+    private AppointmentRequest appointmentRequest;
 
     public String getVisitId() {
 	return visitId;
