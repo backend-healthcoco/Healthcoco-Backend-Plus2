@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
@@ -36,9 +37,9 @@ public class Prescription extends GenericCollection {
 
 	private String appointmentId;
 
-	private Appointment appointment;
+	private WorkingHours time;
 
-	private Long nextReview;
+	private Date fromDate;
 
 	public String getId() {
 		return id;
@@ -160,20 +161,20 @@ public class Prescription extends GenericCollection {
 		this.appointmentId = appointmentId;
 	}
 
-	public Appointment getAppointment() {
-		return appointment;
+	public WorkingHours getTime() {
+		return time;
 	}
 
-	public void setAppointment(Appointment appointment) {
-		this.appointment = appointment;
+	public void setTime(WorkingHours time) {
+		this.time = time;
 	}
 
-	public Long getNextReview() {
-		return nextReview;
+	public Date getFromDate() {
+		return fromDate;
 	}
 
-	public void setNextReview(Long nextReview) {
-		this.nextReview = nextReview;
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 
 	@Override
@@ -182,7 +183,6 @@ public class Prescription extends GenericCollection {
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
 				+ inHistory + ", discarded=" + discarded + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
 				+ ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable
-				+ ", appointmentId=" + appointmentId + ", appointment=" + appointment + ", nextReview=" + nextReview
-				+ "]";
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

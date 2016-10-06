@@ -2035,9 +2035,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	private Boolean checkToday(Date date) {
 		Boolean status = false;
 		System.out.println(date);
-		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")));
+		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 		System.out.println(inputDate);
-		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("UTC")));
+		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 		System.out.println(today);
 		if (inputDate.getYear() == today.getYear() && today.getDayOfYear() == inputDate.getDayOfYear()) {
 			status = true;

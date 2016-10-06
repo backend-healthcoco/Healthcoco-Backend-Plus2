@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesComplaint;
 import com.dpdocter.beans.ClinicalNotesDiagnosis;
@@ -91,11 +92,13 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
@@ -181,6 +184,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
      @Autowired
      private MongoTemplate mongoTemplate;
+     
+     @Autowired
+     private AppointmentService appointmentService;
 
      @Value(value = "${image.path}")
      private String imagePath;
@@ -204,11 +210,21 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	List<ObjectId> noteIds = null;
 	List<ObjectId> diagnosisIds = null;
 	List<ObjectId> diagramIds = null;
+	Appointment appointment = null;
 	Date createdTime = new Date();
 
 	try {
+		
+		if(request.getAppointmentRequest() != null)
+		{
+			appointment = addNotesAppointment(request.getAppointmentRequest());
+		}
+		
 		String createdBy = null;
 	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+	    request.setAppointmentId(appointment.getAppointmentId());
+		request.setTime(appointment.getTime());
+		request.setFromDate(appointment.getFromDate());
 	    BeanUtil.map(request, clinicalNotesCollection);
 	    UserCollection userCollection = userRepository.findOne(clinicalNotesCollection.getDoctorId());
 	    if (userCollection != null) {
@@ -2443,6 +2459,20 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		if(mappedResults != null && !mappedResults.isEmpty()){
 			for(ObjectId id : investigations)
 				for(Investigation investigation : mappedResults)if(investigation.getId().equalsIgnoreCase(id.toString()))response.add(investigation);
+		}
+		return response;
+	}
+    
+	private Appointment addNotesAppointment(AppointmentRequest appointment)
+	{
+		Appointment response = null;
+		if(appointment.getAppointmentId() == null)
+		{
+			response = appointmentService.addAppointment(appointment);
+		}
+		else
+		{
+			response = appointmentService.updateAppointment(appointment);
 		}
 		return response;
 	}

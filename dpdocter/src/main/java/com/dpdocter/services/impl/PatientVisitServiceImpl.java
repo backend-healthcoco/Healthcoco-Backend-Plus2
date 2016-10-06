@@ -449,13 +449,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		
 	    BeanUtil.map(request, response);
 	    if (request.getClinicalNote() != null) {
+	    	if(appointment != null)
+			{
+	    		request.getClinicalNote().setAppointmentId(appointment.getAppointmentId());
+	    		request.getClinicalNote().setTime(appointment.getTime());
+	    		request.getClinicalNote().setFromDate(appointment.getFromDate());
+			}
 		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
-		if(appointment != null)
-		{
-			clinicalNotes.setAppointmentId(appointment.getAppointmentId());
-			clinicalNotes.setTime(appointment.getTime());
-			clinicalNotes.setFromDate(appointment.getFromDate());
-		}
+		
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 		    clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}
@@ -470,6 +471,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    
 
 	    if (request.getPrescription() != null) {
+	    	
+	    	if(appointment != null)
+			{
+	    		request.getPrescription().setAppointmentId(appointment.getAppointmentId());
+	    		request.getPrescription().setTime(appointment.getTime());
+	    		request.getPrescription().setFromDate(appointment.getFromDate());
+			}
 		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription());
 		Prescription prescription = new Prescription();
 		
@@ -528,9 +536,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 			response.setCreatedBy(patientVisitCollection.getCreatedBy());
 			response.setAppointmentId(patientVisitCollection.getAppointmentId());
-	    }
-	    
-	    
+	    }    
 	    
 	    
 	} catch (Exception e) {
