@@ -1486,6 +1486,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date) {
+		System.out.println("Service layer input:: " +date);
 		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 		List<Slot> slotResponse = null;
 		SlotDataResponse response = null;
@@ -1505,6 +1506,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				SimpleDateFormat sdf = new SimpleDateFormat("EEEEE");
 				sdf.setTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
 				String day = sdf.format(date);
+				System.out.println("SDF day conversion :: "+ day);
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null
 						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
 					response = new SlotDataResponse();
@@ -1536,8 +1538,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					}
 */
+					
+					System.out.println("Date for booked slot ::" + date);
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
 							.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
+					
 					if (bookedSlots != null && !bookedSlots.isEmpty())
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
 							System.out.println("Booked slot :: "+bookedSlot);
