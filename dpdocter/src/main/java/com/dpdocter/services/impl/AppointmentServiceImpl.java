@@ -1070,7 +1070,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			text = "Your appointment " + appointmentId + " @ " + dateTime + " has been cancelled by " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".Request you to book again.";
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Request you to book again.";
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1529,7 +1529,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 
 					for (Slot slot : slotResponse) {
-						if (slot.getMinutesOfDay() < getMinutesOfDay() && checkToday(date)) {
+						if (checkToday(date) && slot.getMinutesOfDay() < getMinutesOfDay(date)) {
 							slot.setIsAvailable(false);
 							slotResponse.set(slotResponse.indexOf(slot), slot);
 						}
@@ -1543,7 +1543,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							if (bookedSlot.getTime() != null) {
 								if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
 									if (bookedSlot.getIsAllDayEvent()) {
-										System.out.println(getMinutesOfDay());
+										//System.out.println(getMinutesOfDay());
 										if (bookedSlot.getFromDate().equals(date))
 											bookedSlot.getTime().setToTime(719);
 										if (bookedSlot.getToDate().equals(date))
@@ -2026,8 +2026,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			return null;
 	}
 
-	private Integer getMinutesOfDay() {
-		DateTime dateTime = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+	private Integer getMinutesOfDay(Date date) {
+		DateTime dateTime = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));;
 		Integer currentMinute = dateTime.getMinuteOfDay();
 		return currentMinute;
 	}
