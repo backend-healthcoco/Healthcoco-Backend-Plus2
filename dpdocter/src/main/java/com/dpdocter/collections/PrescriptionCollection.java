@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.TestAndRecordData;
+import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "prescription_cl")
 @CompoundIndexes({
@@ -59,6 +61,15 @@ public class PrescriptionCollection extends GenericCollection {
 
     @Field
     private Boolean isFeedbackAvailable = false;
+    
+    @Field
+	private String appointmentId;
+
+    @Field
+	private WorkingHours time;
+
+    @Field
+	private Date fromDate;
 
     public ObjectId getId() {
 	return id;
@@ -171,6 +182,30 @@ public class PrescriptionCollection extends GenericCollection {
 	public void setDiagnosticTests(List<TestAndRecordData> diagnosticTests) {
 		this.diagnosticTests = diagnosticTests;
 	}
+	
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
 	@Override
 	public String toString() {
@@ -178,6 +213,7 @@ public class PrescriptionCollection extends GenericCollection {
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", items=" + items + ", diagnosticTests=" + diagnosticTests + ", patientId=" + patientId
 				+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice
-				+ ", isFeedbackAvailable=" + isFeedbackAvailable + "]";
+				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", fromDate=" + fromDate + "]";
 	}
 }

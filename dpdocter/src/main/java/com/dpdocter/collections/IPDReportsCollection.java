@@ -11,8 +11,6 @@ public class IPDReportsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String serialNo;
-	@Field
 	private ObjectId patientId;
 	@Field
 	private String admissionTime;
@@ -43,14 +41,6 @@ public class IPDReportsCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public ObjectId getPatientId() {
@@ -151,8 +141,8 @@ public class IPDReportsCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "IPDReportsCollection [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId
-				+ ", admissionTime=" + admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
+		return "IPDReportsCollection [id=" + id + ", patientId=" + patientId + ", admissionTime=" + admissionTime
+				+ ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
 				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
 				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";

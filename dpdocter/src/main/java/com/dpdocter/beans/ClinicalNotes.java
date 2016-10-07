@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
@@ -37,6 +38,12 @@ public class ClinicalNotes extends GenericCollection {
     private String patientId;
 
     private VitalSigns vitalSigns;
+    
+    private String appointmentId;
+    
+    private WorkingHours time;
+    
+    private Date fromDate;
 
     public String getId() {
 	return id;
@@ -166,12 +173,37 @@ public class ClinicalNotes extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", complaints=" + complaints
 				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
 				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
-				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + "]";
+				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

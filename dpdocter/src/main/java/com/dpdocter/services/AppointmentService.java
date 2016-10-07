@@ -3,6 +3,8 @@ package com.dpdocter.services;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
@@ -55,5 +57,7 @@ public interface AppointmentService {
     List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, int sequenceNo);
 
     List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
+
+	Appointment getAppointmentById(ObjectId appointmentId);
 
 }

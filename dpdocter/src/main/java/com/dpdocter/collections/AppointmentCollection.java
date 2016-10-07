@@ -85,6 +85,9 @@ public class AppointmentCollection extends GenericCollection {
 
     @Field
     private Boolean notifyDoctorByEmail;
+    
+    @Field
+    private ObjectId visitId;
 
     public ObjectId getId() {
 	return id;
@@ -262,6 +265,14 @@ public class AppointmentCollection extends GenericCollection {
 		this.notifyDoctorByEmail = notifyDoctorByEmail;
 	}
 
+	public ObjectId getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(ObjectId visitId) {
+		this.visitId = visitId;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -271,6 +282,8 @@ public class AppointmentCollection extends GenericCollection {
 				+ toDate + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable
 				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms="
 				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
-				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + "]";
+				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId + "]";
 	}
+
+	
 }

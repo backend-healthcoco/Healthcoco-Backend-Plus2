@@ -16,8 +16,6 @@ public class OTReportsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String serialNo;
-	@Field
 	private ObjectId patientId;
 	@Field
 	private Date operationDate;
@@ -54,14 +52,6 @@ public class OTReportsCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public ObjectId getPatientId() {
@@ -186,13 +176,12 @@ public class OTReportsCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "OTReportsCollection [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId
-				+ ", operationDate=" + operationDate + ", anaesthesiaType=" + anaesthesiaType
-				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", surgery=" + surgery + ", finalDiagnosis="
-				+ finalDiagnosis + ", operatingSurgeon=" + operatingSurgeon + ", anaesthetist=" + anaesthetist
-				+ ", assitingDoctors=" + assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE="
-				+ materialForHPE + ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+		return "OTReportsCollection [id=" + id + ", patientId=" + patientId + ", operationDate=" + operationDate
+				+ ", anaesthesiaType=" + anaesthesiaType + ", provisionalDiagnosis=" + provisionalDiagnosis
+				+ ", surgery=" + surgery + ", finalDiagnosis=" + finalDiagnosis + ", operatingSurgeon="
+				+ operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors=" + assitingDoctors
+				+ ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE + ", remarks=" + remarks
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
 }

@@ -235,7 +235,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Override
     @Transactional
     public void checkResources() {
-	System.out.println(">>> Scheduled test service <<<");
+	/*System.out.println(">>> Scheduled test service <<<");
 	List<TransactionalCollection> transactionalCollections = null;
 	try {
 	    transactionalCollections = transnationalRepositiory.findByIsCached(false);
@@ -272,7 +272,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    logger.error(e);
-	}
+	}*/
     }
 
 	//Appointment Reminder to Doctor, if appointment > 0

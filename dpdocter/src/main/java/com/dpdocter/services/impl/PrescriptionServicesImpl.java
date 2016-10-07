@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Age;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DoctorDrug;
 import com.dpdocter.beans.Drug;
@@ -105,6 +106,7 @@ import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.DrugDirectionAddEditRequest;
 import com.dpdocter.request.DrugDosageAddEditRequest;
@@ -125,6 +127,7 @@ import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -214,9 +217,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	
 	@Autowired
 	private ReportsService reportsService;
+	
+	@Autowired
+	private AppointmentService appointmentService;
 
 	@Autowired
 	PushNotificationServices pushNotificationServices;
+	
 
 	@Autowired
     private MongoTemplate mongoTemplate;
@@ -597,8 +604,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request) {
 		PrescriptionAddEditResponse response = null;
 		try {
+			Appointment appointment = null;
+			if(request.getAppointmentRequest() != null)
+			{
+				appointment = addPrescriptionAppointment(request.getAppointmentRequest());
+			}
 			PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 			List<DiagnosticTest> diagnosticTests = request.getDiagnosticTests();
+			if(appointment != null)
+			{
+				request.setAppointmentId(appointment.getAppointmentId());
+				request.setTime(appointment.getTime());
+				request.setFromDate(appointment.getFromDate());
+			}
 			request.setDiagnosticTests(null);
 			BeanUtil.map(request, prescriptionCollection);
 
@@ -3574,4 +3592,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	private Appointment addPrescriptionAppointment(AppointmentRequest appointment)
+	{
+		Appointment response = null;
+		if(appointment.getAppointmentId() == null)
+		{
+			response = appointmentService.addAppointment(appointment);
+		}
+		else
+		{
+			response = appointmentService.updateAppointment(appointment);
+		}
+		return response;
+	}
+	
 }
