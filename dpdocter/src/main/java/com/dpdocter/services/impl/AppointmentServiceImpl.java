@@ -1528,7 +1528,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
-					if(checkToday(date))
+					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
+					localCalendar.setTime(date);
+					int dayOfDate = localCalendar.get(Calendar.DATE);
+					int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
+					int yearOfDate = localCalendar.get(Calendar.YEAR);
+
+					if(checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate, doctorClinicProfileCollection.getTimeZone()))
 					for (Slot slot : slotResponse) {
 						if (slot.getMinutesOfDay() < getMinutesOfDay(date) ) {
 							slot.setIsAvailable(false);
@@ -1537,24 +1543,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					}
 					
-					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-					localCalendar.setTime(date);
-					int currentDay = localCalendar.get(Calendar.DATE);
-					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-					int currentYear = localCalendar.get(Calendar.YEAR);
-
-					DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-					DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+					DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0);
+					DateTime end = new DateTime(yearOfDate, monthOfDate, dayOfDate, 23, 59, 59);
 					
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
 							.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
-						System.out.println(bookedSlots);
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
 							if (bookedSlot.getTime() != null) {
 								if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
 									if (bookedSlot.getIsAllDayEvent()) {
-										//System.out.println(getMinutesOfDay());
 										if (bookedSlot.getFromDate().equals(date))
 											bookedSlot.getTime().setToTime(719);
 										if (bookedSlot.getToDate().equals(date))
@@ -2042,19 +2040,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	private Integer getMinutesOfDay(Date date) {
-		DateTime dateTime = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));;
+		DateTime dateTime = new DateTime(new Date(), DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));;
 		Integer currentMinute = dateTime.getMinuteOfDay();
 		return currentMinute;
 	}
 
-	private Boolean checkToday(Date date) {
+//	private Boolean checkToday(Date date) {
+//		Boolean status = false;
+//		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+//		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+//		if (inputDate.getYear() == today.getYear() && today.getDayOfYear() == inputDate.getDayOfYear()) {
+//			status = true;
+//		}
+//
+//		return status;
+//	}
+
+	private Boolean checkToday(int dayOfDate, int yearOfDate, String timeZone) {
 		Boolean status = false;
-		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		if (inputDate.getYear() == today.getYear() && today.getDayOfYear() == inputDate.getDayOfYear()) {
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
+		if (yearOfDate == localCalendar.get(Calendar.YEAR) && dayOfDate == localCalendar.get(Calendar.DAY_OF_YEAR)) {
 			status = true;
 		}
-
 		return status;
 	}
 	
