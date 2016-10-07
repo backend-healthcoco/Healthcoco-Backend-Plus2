@@ -213,6 +213,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
+	@Value(value = "${patient.app.bit.link}")
+	private String patientAppBitLink;
+
 	@Override
 	@Transactional
 	public City addCity(City city) {
@@ -496,7 +499,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    
 	        AppointmentCollection appointmentCollectionToCheck = null;
 	        if (request.getState().equals(AppointmentState.RESCHEDULE))
-	        	appointmentCollectionToCheck = null;//appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),request.getToDate(),AppointmentState.CANCEL.getState());
+	        	appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),request.getToDate(),AppointmentState.CANCEL.getState());
 	        if (appointmentCollectionToCheck == null) {
 				AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 				BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
@@ -542,7 +545,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		    	appointmentCollection.setTime(request.getTime());
 		    	appointmentCollection.setIsRescheduled(true);
 		    	appointmentCollection.setState(AppointmentState.CONFIRM);
-		    	dateTime= String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60)+" "+new SimpleDateFormat("MMM dd,yyyy").format(appointmentCollection.getFromDate());
 		    	AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository.findByAppointmentId(request.getAppointmentId());
 		    	if(bookedSlotCollection != null) {
 			    	bookedSlotCollection.setFromDate(appointmentCollection.getFromDate());
@@ -1027,7 +1029,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your appointment " + appointmentId + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
-					+ ".";
+					+ ". Download Healthcoco App- "+patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1052,7 +1054,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "TENTATIVE_APPOINTMENT_TO_PATIENT": {
 			text = "Your appointment " + appointmentId + " @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been sent for confirmation.";
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been sent for confirmation. Download Healthcoco App- "+patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1069,7 +1071,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR": {
 			text = "Your appointment " + appointmentId + " @ " + dateTime + " has been cancelled by " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Request you to book again.";
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Request you to book again. Download Healthcoco App- "+patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1085,7 +1087,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		case "CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT": {
 			text = "Your appointment " + appointmentId + " for " + dateTime + " with " + doctorName
-					+ " has been cancelled as per your request";
+					+ " has been cancelled as per your request. Download Healthcoco App- "+patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1094,7 +1096,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "APPOINTMENT_REMINDER_TO_PATIENT": {
 			text = "You have an upcoming appointment " + appointmentId + " @ " + dateTime + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
-					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ".";
+					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Download Healthcoco App- "+patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
@@ -1104,14 +1106,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your appointment " + appointmentId + " with " + doctorName
 					+ (clinicName != "" ? ", " + clinicName : "")
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
-					+ ".";
+					+ ". Download Healthcoco App- "+patientAppBitLink;
 			smsDetail.setUserName(patientName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
 		}
 			break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
-			text = "Your appointment with " + patientName + "has been rescheduled to " + dateTime + " at " + clinicName
+			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName
 					+ ".";
 			smsDetail.setUserName(doctorName);
 			pushNotificationServices.notifyUser(userId, text, null, null);
