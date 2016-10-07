@@ -1536,14 +1536,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					}
 					
-					Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					/*Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 					calendar.setTime(date);
 					calendar.add(Calendar.DATE, 1);  // number of days to add
 					Date nextDay = calendar.getTime();  // nextDay is now the new date
 					System.out.println("Today date :: "+date);
-					System.out.println("Next day :: "+nextDay);
+					System.out.println("Next day :: "+nextDay);*/
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-							.findByDoctorLocationId(doctorObjectId, locationObjectId, date , nextDay);
+							.findByDoctorLocationId(doctorObjectId, locationObjectId, date);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
 							if (bookedSlot.getTime() != null) {
