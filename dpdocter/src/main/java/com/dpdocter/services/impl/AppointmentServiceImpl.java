@@ -1528,26 +1528,26 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
+					if(checkToday(date))
 					for (Slot slot : slotResponse) {
-						if (checkToday(date) && slot.getMinutesOfDay() < getMinutesOfDay(date) ) {
+						if (slot.getMinutesOfDay() < getMinutesOfDay(date) ) {
 							slot.setIsAvailable(false);
 							slotResponse.set(slotResponse.indexOf(slot), slot);
 						}
 
 					}
 					
-					Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-					calendar.setTime(date);
-					calendar.add(Calendar.DATE, 1);  // number of days to add
-					/*calendar.set(Calendar.MILLISECOND, 0);
-			        calendar.set(Calendar.SECOND, 0);
-			        calendar.set(Calendar.MINUTE, 0);
-			        calendar.set(Calendar.HOUR, 0);*/
-			        Date nextDay = calendar.getTime();  // nextDay is now the new date
-					System.out.println("Today date :: "+date);
-					System.out.println("Next day :: "+nextDay);
+					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+					localCalendar.setTime(date);
+					int currentDay = localCalendar.get(Calendar.DATE);
+					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+					int currentYear = localCalendar.get(Calendar.YEAR);
+
+					DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+					DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+					
 					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-							.findByDoctorLocationId(doctorObjectId, locationObjectId, date, nextDay);
+							.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end);
 					if (bookedSlots != null && !bookedSlots.isEmpty())
 						System.out.println(bookedSlots);
 						for (AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
@@ -2049,11 +2049,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	private Boolean checkToday(Date date) {
 		Boolean status = false;
-		System.out.println(date);
 		DateTime inputDate = new DateTime(date, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		System.out.println(inputDate);
 		DateTime today = new DateTime(DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-		System.out.println(today);
 		if (inputDate.getYear() == today.getYear() && today.getDayOfYear() == inputDate.getDayOfYear()) {
 			status = true;
 		}
