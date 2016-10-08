@@ -2,12 +2,14 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class IPDReports extends GenericCollection{
+public class IPDReports extends GenericCollection {
 
 	private String id;
 	private String patientId;
 	private Patient patient;
 	private Long admissionTime;
+	private Long dateOfAdmission;
+	private Integer timeOfAdmission;
 	private String doctorIncharge;
 	private String diagnosis;
 	private String natureOfProfessionalServiceRendered;
@@ -157,6 +159,22 @@ public class IPDReports extends GenericCollection{
 
 	public void setHospitalName(String hospitalName) {
 		this.hospitalName = hospitalName;
+	}
+
+	public Long getDateOfAdmission() {
+		return dateOfAdmission;
+	}
+
+	public void setDateOfAdmission(Long dateOfAdmission) {
+		this.dateOfAdmission = dateOfAdmission;
+	}
+
+	public Integer getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(Integer timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
 	}
 
 	@Override
