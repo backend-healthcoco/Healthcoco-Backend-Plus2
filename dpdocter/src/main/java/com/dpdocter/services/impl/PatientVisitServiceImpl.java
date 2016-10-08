@@ -837,9 +837,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 		List<String> patientDetailList = new ArrayList<String>();
 		patientDetailList.add("<b>Patient Name: </b>" + firstName);
-		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
-		patientDetailList.add(uniqueEMRId);
-		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
@@ -862,7 +860,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
-                
+              
+        patientDetailList.add(uniqueEMRId);
+        patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		
         if(patientDetails.getShowBloodGroup() && patient != null && !DPDoctorUtils.anyStringEmpty(patient.getBloodGroup())){
         	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
@@ -871,7 +873,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
     			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
     				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
     	}
-        patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
@@ -944,7 +945,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic : "";
 		
 				    if(!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-				    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic+" "+VitalSignsUnit.BLOODPRESSURE.getUnit();
+				    	bloodPressure = "B.P: " + systolic + "/" + diastolic+" "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 				    if(!DPDoctorUtils.allStringsEmpty(bloodPressure)){
 						if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+bloodPressure;
 						else vitalSigns = bloodPressure;
@@ -955,7 +956,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    }
 		    
 		    if(contentLineStyle.equalsIgnoreCase(LineStyle.BLOCK.getStyle()))contentLineStyle = "<br>";
-		    else contentLineStyle = ", ";
+		    else contentLineStyle = ",  ";
 		    
 		    String observations = "";
 		    Collection<String> observationList = CollectionUtils.collect(clinicalNotesService.sortObservations(

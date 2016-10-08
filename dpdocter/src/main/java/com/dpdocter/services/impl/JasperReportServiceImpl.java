@@ -98,7 +98,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 //		    jrPropertiesUtil.setProperty("net.sf.jasperreports.extension.registry.factory.queryexecuters.mongodb", "com.jaspersoft.mongodb.query.MongoDbQueryExecuterExtensionsRegistryFactory");
 //		    jrPropertiesUtil.setProperty("net.sf.jasperreports.default.font.size", contentFontSize+"");
 
-		    JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin, bottonMargin, leftMargin, rightMargin, componentType); 
+		    JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin+45, bottonMargin, leftMargin+28, rightMargin+28, componentType); 
 		    JasperReport jasperReport = JasperCompileManager.compileReport(design);
 			
 		    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, new JREmptyDataSource());
@@ -136,7 +136,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         jasperDesign.setPageWidth(pageWidth);jasperDesign.setPageHeight(pageHeight);
         jasperDesign.setColumnWidth(columnWidth);jasperDesign.setColumnSpacing(0);
         jasperDesign.setLeftMargin(leftMargin);jasperDesign.setRightMargin(rightMargin);
-        if(topMargin != null)jasperDesign.setTopMargin(topMargin+10);
+        if(topMargin != null)jasperDesign.setTopMargin(topMargin);
 	    if(bottonMargin != null)jasperDesign.setBottomMargin(bottonMargin);
 	    
         JRDesignStyle normalStyle = new JRDesignStyle();
@@ -626,9 +626,9 @@ public class JasperReportServiceImpl implements JasperReportService {
         
 		band = new JRDesignBand();
 		band.setSplitType(SplitTypeEnum.STRETCH);
-		if(parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))band.setHeight(20);
-		else if(parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))band.setHeight(25);
-		else if(parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))band.setHeight(30);
+		if(parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.SMALL.name()))band.setHeight(22);
+		else if(parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.MEDIUM.name()))band.setHeight(27);
+		else if(parameters.get("contentLineSpace").toString().equalsIgnoreCase(LineSpace.LARGE.name()))band.setHeight(32);
 		
 		jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$F{no}"));
@@ -863,10 +863,12 @@ public class JasperReportServiceImpl implements JasperReportService {
         band.addElement(jrDesignTextField);
         
         JRDesignLine jrDesignLine = new JRDesignLine();
+        jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
         jrDesignLine.setX(0); jrDesignLine.setY(25); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
         band.addElement(jrDesignLine);
         
         jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
         jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
         jrDesignTextField.setX(0);jrDesignTextField.setY(25);jrDesignTextField.setHeight(26); jrDesignTextField.setWidth(columnWidth);
         jrDesignTextField.setMarkup("html");

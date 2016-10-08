@@ -506,27 +506,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 				appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
 			
 				appointmentCollection.setState(request.getState());
-				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-	
-				String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
-		        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-		        SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-		        if(clinicProfileCollection != null){
-		        	sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-		        	_24HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-		        	_12HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
-		        }
-				else{
-				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-				_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-				_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-				}
-	        
-		        Date _24HourDt = _24HourSDF.parse(_24HourTime);
-	        
-		        String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
-				dateTime= _12HourSDF.format(_24HourDt)+", "+sdf.format(appointmentCollection.getFromDate()),
-				doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
 	
 			if(request.getState().getState().equals(AppointmentState.CANCEL.getState())){
 			if(request.getCancelledBy() != null){
@@ -562,6 +541,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 	    appointmentCollection.setNotifyPatientBySms(request.getNotifyPatientByEmail());
 	    appointmentCollection.setUpdatedTime(new Date());
 	    appointmentCollection = appointmentRepository.save(appointmentCollection);
+	    
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");		
+		String _24HourTime = String.format("%02d:%02d", appointmentCollection.getTime().getFromTime() / 60, appointmentCollection.getTime().getFromTime() % 60);
+        SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+        if(clinicProfileCollection != null){
+        	sdf.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+        	_24HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+        	_12HourSDF.setTimeZone(TimeZone.getTimeZone(clinicProfileCollection.getTimeZone()));
+        }
+		else{
+		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+		_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+		_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+		}
+    
+        Date _24HourDt = _24HourSDF.parse(_24HourTime);
+    
+        String patientName = patient.getFirstName() != null?patient.getFirstName().split(" ")[0] :"", appointmentId= appointmentCollection.getAppointmentId(), 
+		dateTime= _12HourSDF.format(_24HourDt)+", "+sdf.format(appointmentCollection.getFromDate()),
+		doctorName=userCollection.getTitle()+" "+userCollection.getFirstName(),clinicName= locationCollection.getLocationName(),clinicContactNum=locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber() :"";
+
 	  //sendSMS after appointment is saved	
 
 	    if(request.getState().getState().equals(AppointmentState.CANCEL.getState())){
