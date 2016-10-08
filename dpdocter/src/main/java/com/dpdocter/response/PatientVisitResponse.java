@@ -6,6 +6,7 @@ import java.util.List;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.VisitedFor;
 
@@ -35,7 +36,9 @@ public class PatientVisitResponse extends GenericCollection {
     
     private String appointmentId;
     
-    private String nextReview;
+    private WorkingHours time;
+
+	private Date fromDate;
 
     public String getId() {
 	return id;
@@ -133,12 +136,20 @@ public class PatientVisitResponse extends GenericCollection {
 		this.appointmentId = appointmentId;
 	}
 
-	public String getNextReview() {
-		return nextReview;
+	public WorkingHours getTime() {
+		return time;
 	}
 
-	public void setNextReview(String nextReview) {
-		this.nextReview = nextReview;
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 
 	@Override
@@ -147,6 +158,6 @@ public class PatientVisitResponse extends GenericCollection {
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", prescriptions=" + prescriptions
 				+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + ", appointmentId=" + appointmentId
-				+ ", nextReview=" + nextReview + "]";
+				+ ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }
