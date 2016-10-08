@@ -1888,7 +1888,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		String contentLineStyle = (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
 		
 		if(contentLineStyle.equalsIgnoreCase(LineStyle.BLOCK.getStyle()))contentLineStyle = "<br>";
-	    else contentLineStyle = ", ";
+	    else contentLineStyle = ",  ";
 		
 	    String observations = "";
 	    Collection<String> observationList = CollectionUtils.collect(sortObservations(
@@ -1981,7 +1981,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			    diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
 	
 			    if(!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-			    	bloodPressure = "Blood Pressure: " + systolic + "/" + diastolic+" "+VitalSignsUnit.BLOODPRESSURE.getUnit();
+			    	bloodPressure = "B.P: " + systolic + "/" + diastolic+" "+VitalSignsUnit.BLOODPRESSURE.getUnit();
 			    if(!DPDoctorUtils.allStringsEmpty(bloodPressure)){
 					if(!DPDoctorUtils.allStringsEmpty(vitalSigns))vitalSigns = vitalSigns+",  "+bloodPressure;
 					else vitalSigns = bloodPressure;
@@ -2097,9 +2097,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 		}
 		List<String> patientDetailList = new ArrayList<String>();
 		patientDetailList.add("<b>Patient Name:</b> " + firstName);
-		patientDetailList.add("<b>Patient Id: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
-		patientDetailList.add("<b>CID: </b>"+ (uniqueEMRId != null ? uniqueEMRId : "--"));
-		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		patientDetailList.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 		
 		if (patient != null && patient.getDob() != null) {
 			Age ageObj = patient.getDob().getAge();
@@ -2122,7 +2120,10 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 			else if(!DPDoctorUtils.anyStringEmpty(age))patientDetailList.add("<b>Age | Gender: </b>"+age+" | --");
 			else if(!DPDoctorUtils.anyStringEmpty(gender))patientDetailList.add("<b>Age | Gender: </b>-- | "+gender);
 		}
-                
+		patientDetailList.add("<b>CID: </b>"+ (uniqueEMRId != null ? uniqueEMRId : "--"));        
+		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
+		
         if(patientDetails.getShowBloodGroup() && patient != null && !DPDoctorUtils.anyStringEmpty(patient.getBloodGroup())){
         	patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
         }
@@ -2132,7 +2133,6 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
     		if (referencesCollection != null && !DPDoctorUtils.anyStringEmpty(referencesCollection.getReference()))
     			patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
     		}
-        patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		
 		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
 		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
