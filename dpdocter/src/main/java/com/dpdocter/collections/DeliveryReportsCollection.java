@@ -131,4 +131,22 @@ public class DeliveryReportsCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public Integer getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(Integer deliveryTime) {
+		this.deliveryTime = deliveryTime;
+	}
+
+	@Override
+	public String toString() {
+		return "DeliveryReportsCollection [id=" + id + ", serialNo=" + serialNo + ", deliveryDate=" + deliveryDate
+				+ ", deliveryTime=" + deliveryTime + ", patientId=" + patientId + ", mobileNumber=" + mobileNumber
+				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
+				+ remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ "]";
+	}
+	
+
 }
