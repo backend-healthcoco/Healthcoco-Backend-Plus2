@@ -15,6 +15,10 @@ public class IPDReportsCollection extends GenericCollection {
 	@Field
 	private String admissionTime;
 	@Field
+	private Long dateOfAdmission;
+	@Field
+	private Integer timeOfAdmission;
+	@Field
 	private String doctorIncharge;
 	@Field
 	private String diagnosis;
@@ -139,13 +143,30 @@ public class IPDReportsCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public Long getDateOfAdmission() {
+		return dateOfAdmission;
+	}
+
+	public void setDateOfAdmission(Long dateOfAdmission) {
+		this.dateOfAdmission = dateOfAdmission;
+	}
+
+	public Integer getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(Integer timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
 	@Override
 	public String toString() {
 		return "IPDReportsCollection [id=" + id + ", patientId=" + patientId + ", admissionTime=" + admissionTime
-				+ ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
-				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
-				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+				+ ", dateOfAdmission=" + dateOfAdmission + ", timeOfAdmission=" + timeOfAdmission + ", doctorIncharge="
+				+ doctorIncharge + ", diagnosis=" + diagnosis + ", natureOfProfessionalServiceRendered="
+				+ natureOfProfessionalServiceRendered + ", amountReceived=" + amountReceived + ", receiptNo="
+				+ receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
 }
