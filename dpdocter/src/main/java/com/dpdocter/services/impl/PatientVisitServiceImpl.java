@@ -529,7 +529,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			response.setCreatedTime(patientVisitCollection.getCreatedTime());
 			response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 			response.setCreatedBy(patientVisitCollection.getCreatedBy());
-			response.setAppointmentId(patientVisitCollection.getAppointmentId());
+			if(appointment != null)
+			{
+				response.setAppointmentId(appointment.getAppointmentId());
+				response.setTime(appointment.getTime());
+				response.setFromDate(appointment.getFromDate());
+			}
 	    }    	    
 	} catch (Exception e) {
 	    e.printStackTrace();
