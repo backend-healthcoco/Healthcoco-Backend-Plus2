@@ -432,11 +432,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	List<ObjectId> noteIds = null;
 	List<ObjectId> diagnosisIds = null;
 	List<ObjectId> diagramIds = null;
+	Appointment appointment = null;
 	Date createdTime = new Date();
 
 	try {
 	    // save clinical notes.
+		if(request.getAppointmentRequest() != null)
+		{
+			appointment = addNotesAppointment(request.getAppointmentRequest());
+		}
+		
+		
 	    ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
+	    if(appointment != null)
+	    {
+	    	request.setAppointmentId(appointment.getAppointmentId());
+	    	request.setTime(appointment.getTime());
+	    	request.setFromDate(appointment.getFromDate());
+	    }
 	    BeanUtil.map(request, clinicalNotesCollection);
 
 	    complaintIds = new ArrayList<ObjectId>();
