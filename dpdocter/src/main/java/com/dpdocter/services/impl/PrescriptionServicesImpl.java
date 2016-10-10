@@ -782,8 +782,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrescriptionAddEditResponseDetails response = null;
 		PrescriptionAddEditResponse prescription = null;
 		try {
+			Appointment appointment = null;
+			if(request.getAppointmentRequest() != null)
+			{
+				appointment = addPrescriptionAppointment(request.getAppointmentRequest());
+			}
 			PrescriptionCollection prescriptionCollection = new PrescriptionCollection();
 			List<DiagnosticTest> diagnosticTests = request.getDiagnosticTests();
+			if(appointment != null)
+			{
+				request.setAppointmentId(appointment.getAppointmentId());
+				request.setTime(appointment.getTime());
+				request.setFromDate(appointment.getFromDate());
+			}
 			request.setDiagnosticTests(null);
 			BeanUtil.map(request, prescriptionCollection);
 			UserCollection userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());

@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.ClinicalNotesComplaint;
@@ -8,6 +9,7 @@ import com.dpdocter.beans.ClinicalNotesInvestigation;
 import com.dpdocter.beans.ClinicalNotesNote;
 import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.VitalSigns;
+import com.dpdocter.beans.WorkingHours;
 
 public class ClinicalNotesEditRequest {
     private String id;
@@ -35,6 +37,14 @@ public class ClinicalNotesEditRequest {
     private String visitId;
 
     private VitalSigns vitalSigns;
+    
+    private AppointmentRequest appointmentRequest;
+
+	private String appointmentId;
+
+	private WorkingHours time;
+
+	private Date fromDate;
 
     public String getId() {
 	return id;
@@ -140,10 +150,47 @@ public class ClinicalNotesEditRequest {
 	this.vitalSigns = vitalSigns;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
-		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + ", vitalSigns=" + vitalSigns + "]";
-    }
+	public AppointmentRequest getAppointmentRequest() {
+		return appointmentRequest;
+	}
+
+	public void setAppointmentRequest(AppointmentRequest appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints
+				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
+				+ ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + ", vitalSigns=" + vitalSigns
+				+ ", appointmentRequest=" + appointmentRequest + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", fromDate=" + fromDate + "]";
+	}
+	
+	
 }
