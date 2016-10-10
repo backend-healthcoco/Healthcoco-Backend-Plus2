@@ -6,6 +6,8 @@ public class Patient {
 
 	private String firstName;
 
+	private String localPatientName;
+
 	private String patientId;
 
 	private String bloodGroup;
@@ -45,7 +47,7 @@ public class Patient {
 	private String gender;
 
 	private DOB dob;
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -212,6 +214,14 @@ public class Patient {
 
 	public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
 		this.isPatientOTPVerified = isPatientOTPVerified;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 	@Override

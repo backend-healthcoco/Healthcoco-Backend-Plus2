@@ -15,6 +15,7 @@ public class ESPatientResponse {
     private String userName;
 
     private String firstName;
+	private String localPatientName;
 
     private String middleName;
 
@@ -254,5 +255,13 @@ public class ESPatientResponse {
 		+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
 		+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + "]";
     }
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
 
 }
