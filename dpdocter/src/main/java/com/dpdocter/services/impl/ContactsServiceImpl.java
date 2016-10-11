@@ -62,28 +62,28 @@ import common.util.web.DPDoctorUtils;
 @Service
 public class ContactsServiceImpl implements ContactsService {
 
-    private static Logger logger = Logger.getLogger(ContactsServiceImpl.class.getName());
+	private static Logger logger = Logger.getLogger(ContactsServiceImpl.class.getName());
 
-    @Autowired
-    private PatientRepository patientRepository;
+	@Autowired
+	private PatientRepository patientRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
-    @Autowired
-    private GroupRepository groupRepository;
+	@Autowired
+	private GroupRepository groupRepository;
 
-    @Autowired
-    private PatientGroupRepository patientGroupRepository;
+	@Autowired
+	private PatientGroupRepository patientGroupRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private ImportContactsRequestRepository importContactsRequestRepository;
+	@Autowired
+	private ImportContactsRequestRepository importContactsRequestRepository;
 
-    @Autowired
-    private ExportContactsRequestRepository exportContactsRequestRepository;
+	@Autowired
+	private ExportContactsRequestRepository exportContactsRequestRepository;
 
 	@Autowired
 	private FileManager fileManager;
@@ -355,6 +355,8 @@ public class ContactsServiceImpl implements ContactsService {
 
 						PatientCard patientCard = new PatientCard();
 						BeanUtil.map(patientCollection, patientCard);
+						if(!DPDoctorUtils.anyStringEmpty(patientCard.getLocalPatientName()))
+						patientCard.setFirstName(patientCard.getLocalPatientName());
 						BeanUtil.map(userCollection, patientCard);
 						patientCard.setUserId(userCollection.getId().toString());
 						patientCard.setGroups(groups);
@@ -709,7 +711,10 @@ public class ContactsServiceImpl implements ContactsService {
 						}
 					}
 					Patient patient = new Patient();
+					if (!DPDoctorUtils.anyStringEmpty(patient.getLocalPatientName()))
+						patient.setFirstName(patient.getLocalPatientName());
 					BeanUtil.map(patientCollection, patient);
+
 					patient.setPatientId(userCollection.getId().toString());
 					ObjectId referredBy = patientCollection.getReferredBy();
 					patientCollection.setReferredBy(null);
@@ -732,11 +737,14 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setAddress(patientCollection.getAddress());
 
 					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-						groups = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds)
-										.and("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
-										.and("hospitalId").is(hospitalObjectId).and("discarded").is(false))),
-								GroupCollection.class, Group.class).getMappedResults();
+						groups = mongoTemplate
+								.aggregate(
+										Aggregation.newAggregation(Aggregation.match(
+												new Criteria("id").in(groupIds).and("doctorId").is(doctorObjectId)
+														.and("locationId").is(locationObjectId).and("hospitalId")
+														.is(hospitalObjectId).and("discarded").is(false))),
+										GroupCollection.class, Group.class)
+								.getMappedResults();
 					} else {
 						groups = mongoTemplate.aggregate(
 								Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds)
