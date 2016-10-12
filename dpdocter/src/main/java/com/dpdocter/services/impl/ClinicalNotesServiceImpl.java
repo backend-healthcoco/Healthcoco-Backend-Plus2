@@ -2005,7 +2005,7 @@ private List<Complaint> getCustomGlobalComplaints(int page, int size, String doc
 	    } else
 		parameters.put("vitalSigns", null);
 	    
-		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, clinicalNotesCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
+		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, clinicalNotesCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"+ clinicalNotesCollection.getUniqueEmrId()+new Date().getTime();
 

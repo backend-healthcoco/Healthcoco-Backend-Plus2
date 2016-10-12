@@ -216,6 +216,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    // save Patient Info
 	    PatientCollection patientCollection = new PatientCollection();
 	    BeanUtil.map(request, patientCollection);
+	    patientCollection.setLocalPatientName(request.getFirstName());
 	    patientCollection.setUserId(userCollection.getId());
 	    Date createdTime = new Date();
 	    patientCollection.setCreatedTime(createdTime);

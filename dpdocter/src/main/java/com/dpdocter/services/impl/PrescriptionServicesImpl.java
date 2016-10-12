@@ -2661,8 +2661,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							}
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
-							String patientName = patientCollection.getFirstName() != null
-									? patientCollection.getFirstName().split(" ")[0] : "", doctorName = "",
+							String patientName = patientCollection.getLocalPatientName() != null
+									? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
 									clinicContactNum = "";
 
 							UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
@@ -2680,7 +2680,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							SMSDetail smsDetail = new SMSDetail();
 							smsDetail.setUserId(prescriptionCollection.getPatientId());
 							if (userCollection != null)
-								smsDetail.setUserName(userCollection.getFirstName());
+								smsDetail.setUserName(patientCollection.getLocalPatientName());
 							SMS sms = new SMS();
 							sms.setSmsText("Hi " + patientName + ", your prescription "
 									+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
@@ -3411,7 +3411,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 		parameters.put("contentLineSpace", (printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, prescriptionCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(), parameters);
+		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, prescriptionCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-" + prescriptionCollection.getUniqueEmrId()+new Date().getTime();
 		String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";

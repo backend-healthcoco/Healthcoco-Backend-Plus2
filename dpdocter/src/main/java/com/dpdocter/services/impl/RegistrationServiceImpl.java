@@ -331,6 +331,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				userCollection.setPassword(checkPatientSignUpResponse.getPassword());
 				userCollection.setSalt(checkPatientSignUpResponse.getSalt());
 			}
+			userCollection.setFirstName(request.getLocalPatientName());
 			userCollection = userRepository.save(userCollection);
 
 			// assign roles
@@ -473,29 +474,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					"Welcome to " + locationCollection.getLocationName()
 							+ ", let us know about your visit. We will be happy to serve you again.",
 					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString());
-			if (userCollection.getMobileNumber() != null) {
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());
-				smsTrackDetail.setHospitalId(patientCollection.getHospitalId());
-				smsTrackDetail.setLocationId(patientCollection.getLocationId());
 
-				SMSDetail smsDetail = new SMSDetail();
-				smsDetail.setUserId(patientCollection.getUserId());
-				smsDetail.setUserName(patientCollection.getFirstName());
-				SMS sms = new SMS();
-				sms.setSmsText("OTP Verification");
-
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(userCollection.getMobileNumber());
-				sms.setSmsAddress(smsAddress);
-
-				smsDetail.setSms(sms);
-				// List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				// smsDetails.add(smsDetail);
-				// smsTrackDetail.setSmsDetails(smsDetails);
-				// sMSServices.sendSMS(smsTrackDetail, false);
-
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

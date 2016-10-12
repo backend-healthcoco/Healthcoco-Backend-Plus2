@@ -733,7 +733,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    parameters.put("clinicalNotes", clinicalNotes);
 	    parameters.put("visitId", patientVisitCollection.getId().toString());
 	    
-		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, resourceId, user.getFirstName(), user.getMobileNumber(), parameters);
+		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, patientVisitCollection.getDoctorId());
 	    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
