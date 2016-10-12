@@ -319,6 +319,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			User user = new User();
 			BeanUtil.map(request, user);
+			user.setFirstName(request.getLocalPatientName());
 			String uniqueUserName = generateUniqueUserNameService.generate(user);
 			userCollection.setUserName(uniqueUserName);
 			userCollection.setPassword(generateRandomAlphanumericString(10));

@@ -101,13 +101,13 @@ public class RegistrationApi {
     @POST
     @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
     public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getFirstName())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 		logger.warn(invalidInput);
 	    throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 	}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
-	}else if (request.getFirstName().length() < 2) {
+	}else if (request.getLocalPatientName().length() < 2) {
 		logger.warn(firstNameValidaton);
 		throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 	 }
