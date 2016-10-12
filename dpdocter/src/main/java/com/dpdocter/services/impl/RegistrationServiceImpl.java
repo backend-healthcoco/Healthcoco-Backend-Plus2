@@ -342,8 +342,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (checkPatientSignUpResponse != null) {
 				PatientCollection patientCollection = new PatientCollection();
 				patientCollection.setCreatedTime(new Date());
-				patientCollection.setFirstName(request.getFirstName());
-				patientCollection.setLocalPatientName(request.getFirstName());
+				patientCollection.setFirstName(request.getLocalPatientName());
+				patientCollection.setLocalPatientName(request.getLocalPatientName());
 				patientCollection.setUserId(userCollection.getId());
 				patientRepository.save(patientCollection);
 			}
@@ -592,7 +592,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						doctorObjectId, locationObjectId, hospitalObjectId);
 
 				if (patientCollection != null) {
-					patientCollection.setLocalPatientName(request.getFirstName());
+					patientCollection.setLocalPatientName(request.getLocalPatientName());
 					patientCollection.setBloodGroup(request.getBloodGroup());
 					patientCollection.setGender(request.getGender());
 					patientCollection.setEmailAddress(request.getEmailAddress());
@@ -617,7 +617,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				Patient patient = new Patient();
 				BeanUtil.map(patientCollection, patient);
-				patient.setFirstName(request.getFirstName());
 				patient.setPatientId(userCollection.getId().toString());
 				registeredPatientDetails.setPatient(patient);
 				registeredPatientDetails.setDob(patientCollection.getDob());

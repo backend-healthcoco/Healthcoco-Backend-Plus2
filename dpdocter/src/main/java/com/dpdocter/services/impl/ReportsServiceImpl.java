@@ -281,8 +281,7 @@ public class ReportsServiceImpl implements ReportsService {
 										collection.getHospitalId());
 						if (patientCollection != null) {
 							Patient patient = new Patient();
-							if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
-								patientCollection.setFirstName(patientCollection.getLocalPatientName());
+
 							BeanUtil.map(patientCollection, patient);
 							ipdReports.setPatient(patient);
 						}
@@ -378,8 +377,7 @@ public class ReportsServiceImpl implements ReportsService {
 										collection.getHospitalId());
 						if (patientCollection != null) {
 							Patient patient = new Patient();
-							if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
-								patientCollection.setFirstName(patientCollection.getLocalPatientName());
+
 							BeanUtil.map(patientCollection, patient);
 							opdReports.setPatient(patient);
 						}
@@ -486,8 +484,7 @@ public class ReportsServiceImpl implements ReportsService {
 										collection.getHospitalId());
 						if (patientCollection != null) {
 							Patient patient = new Patient();
-							if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
-								patientCollection.setFirstName(patientCollection.getLocalPatientName());
+
 							BeanUtil.map(patientCollection, patient);
 							otReports.setPatient(patient);
 						}
@@ -603,8 +600,6 @@ public class ReportsServiceImpl implements ReportsService {
 										collection.getHospitalId());
 						if (patientCollection != null) {
 							Patient patient = new Patient();
-							if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocalPatientName()))
-								patientCollection.setFirstName(patientCollection.getLocalPatientName());
 							BeanUtil.map(patientCollection, patient);
 							deliveryReports.setPatient(patient);
 						}

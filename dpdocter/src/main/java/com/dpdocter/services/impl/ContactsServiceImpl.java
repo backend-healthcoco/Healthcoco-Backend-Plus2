@@ -355,8 +355,6 @@ public class ContactsServiceImpl implements ContactsService {
 
 						PatientCard patientCard = new PatientCard();
 						BeanUtil.map(patientCollection, patientCard);
-						if(!DPDoctorUtils.anyStringEmpty(patientCard.getLocalPatientName()))
-						patientCard.setFirstName(patientCard.getLocalPatientName());
 						BeanUtil.map(userCollection, patientCard);
 						patientCard.setUserId(userCollection.getId().toString());
 						patientCard.setGroups(groups);
@@ -711,8 +709,7 @@ public class ContactsServiceImpl implements ContactsService {
 						}
 					}
 					Patient patient = new Patient();
-					if (!DPDoctorUtils.anyStringEmpty(patient.getLocalPatientName()))
-						patient.setFirstName(patient.getLocalPatientName());
+					
 					BeanUtil.map(patientCollection, patient);
 
 					patient.setPatientId(userCollection.getId().toString());

@@ -134,7 +134,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 
 					BeanUtil.map(patient, patientResponse);
-					patientResponse.setFirstName(patient.getLocalPatientName());
 					ESReferenceDocument esReferenceDocument = esReferenceRepository.findOne(patient.getId());
 					if (esReferenceDocument != null)
 						patientResponse.setReferredBy(esReferenceDocument.getReference());
@@ -181,8 +180,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 
 					BeanUtil.map(patient, patientResponse);
-					if (patient.getDoctorId() != null && patient.getDoctorId() == request.getDoctorId())
-						patientResponse.setFirstName(patient.getLocalPatientName());
+
 					ESReferenceDocument esReferenceDocument = esReferenceRepository.findOne(patient.getId());
 					if (esReferenceDocument != null)
 						patientResponse.setReferredBy(esReferenceDocument.getReference());
