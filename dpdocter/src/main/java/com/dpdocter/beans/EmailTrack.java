@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class EmailTrack {
 
     private String id;

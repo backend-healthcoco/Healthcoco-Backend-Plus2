@@ -1,8 +1,9 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Duration {
     private String value;
 

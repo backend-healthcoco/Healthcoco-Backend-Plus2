@@ -2,8 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import com.dpdocter.collections.GenericCollection;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.collections.GenericCollection;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Event extends GenericCollection {
 
     private String id;

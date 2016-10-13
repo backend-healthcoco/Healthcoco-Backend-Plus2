@@ -2,10 +2,12 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Appointment extends GenericCollection {
 
 	private String id;

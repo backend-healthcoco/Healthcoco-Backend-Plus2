@@ -3,9 +3,11 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.TestAndRecordDataResponse;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Prescription extends GenericCollection {
 	private String id;
 

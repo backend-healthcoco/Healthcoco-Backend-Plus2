@@ -1,5 +1,8 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesInvestigation {
     private String id;
 

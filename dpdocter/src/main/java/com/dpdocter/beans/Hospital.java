@@ -3,9 +3,12 @@ package com.dpdocter.beans;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 /**
  * @author veeraj
  */
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Hospital {
     private String id;
 

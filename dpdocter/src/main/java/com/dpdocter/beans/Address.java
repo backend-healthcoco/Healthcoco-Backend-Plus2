@@ -1,8 +1,13 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * @author veeraj
  */
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Address {
 
     private String country;

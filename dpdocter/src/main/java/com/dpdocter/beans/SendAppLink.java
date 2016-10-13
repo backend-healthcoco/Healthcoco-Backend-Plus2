@@ -1,7 +1,9 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.AppType;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.AppType;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SendAppLink {
 	
 	private String countryCode;

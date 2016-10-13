@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.VisitedFor;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PatientVisit {
 	private String id;
 

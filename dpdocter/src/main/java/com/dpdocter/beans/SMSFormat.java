@@ -2,8 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.SMSFormatType;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.SMSFormatType;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SMSFormat {
 
     private String id;

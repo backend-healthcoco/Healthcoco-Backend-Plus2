@@ -1,8 +1,10 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.AchievementType;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-public class Achievement {
+import com.dpdocter.enums.AchievementType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)public class Achievement {
     private String achievementName;
 
     private int year;

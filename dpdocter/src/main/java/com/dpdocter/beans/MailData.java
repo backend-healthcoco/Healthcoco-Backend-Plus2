@@ -1,7 +1,9 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.MailType;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.MailType;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class MailData {
     private MailType mailType;
 

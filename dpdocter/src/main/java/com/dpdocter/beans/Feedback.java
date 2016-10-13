@@ -1,9 +1,11 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.FeedbackType;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Feedback extends GenericCollection {
 
     private String id;

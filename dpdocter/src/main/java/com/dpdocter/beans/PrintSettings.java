@@ -1,10 +1,12 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.LineStyle;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrintSettings extends GenericCollection {
 
     private String id;

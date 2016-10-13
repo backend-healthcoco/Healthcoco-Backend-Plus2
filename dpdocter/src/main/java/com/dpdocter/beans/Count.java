@@ -1,7 +1,10 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.CountFor;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.CountFor;
+import com.fasterxml.jackson.annotation.JsonInclude;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Count {
     private CountFor countFor;
 

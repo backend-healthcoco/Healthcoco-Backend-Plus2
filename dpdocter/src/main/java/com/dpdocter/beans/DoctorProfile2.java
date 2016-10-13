@@ -6,7 +6,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class DoctorProfile {
+public class DoctorProfile2 {
     private String id;
 
     private String userId;
@@ -18,7 +18,7 @@ public class DoctorProfile {
     private String firstName;
 
     private String emailAddress;
-	private String countryCode;
+    
 
     private String mobileNumber;
 
@@ -269,13 +269,5 @@ public class DoctorProfile {
 				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
 				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
 				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
-	}
-
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
 	}
 }

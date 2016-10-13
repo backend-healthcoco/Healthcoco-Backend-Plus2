@@ -2,9 +2,11 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AnaesthesiaTypeEnum;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class OTReports extends GenericCollection {
 
 	private String id;
