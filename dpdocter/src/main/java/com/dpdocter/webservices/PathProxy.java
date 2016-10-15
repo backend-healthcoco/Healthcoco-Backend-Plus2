@@ -360,6 +360,8 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PRESCRIPTION = "/download/{prescriptionId}";
 		
 		public static final String ADD_DRUG_TO_DOCTOR = "/drug/{drugId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
+	public static final String ADD_ADVICE="/advice";
+	public static final String DELETE_ADVICE="/deleteAdvice/{adviceId}";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
@@ -569,6 +571,7 @@ public interface PathProxy {
 		public static final String SEARCH_LAB_TEST = "searchLabTest/{range}";
 
 		public static final String SEARCH_DIAGNOSTIC_TEST = "searchDiagnosticTest/{range}";
+		public static final String SEARCH_ADVICE="searchAdvice/{range}";
 	}
 
 	public static final String SOLR_REGISTRATION_BASEURL = BASE_URL + "/solr/registration";

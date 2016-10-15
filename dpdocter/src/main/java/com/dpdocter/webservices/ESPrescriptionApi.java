@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.exceptions.BusinessException;
@@ -34,64 +35,90 @@ import io.swagger.annotations.ApiOperation;
 public class ESPrescriptionApi {
 
 	private static Logger logger = Logger.getLogger(ESPrescriptionApi.class.getName());
-	
-    @Autowired
-    private ESPrescriptionService esPrescriptionService;
-    
-    @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
-    @GET
-    @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
-    public Response<Object> searchDrug(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm,
-	    @QueryParam(value = "category") String category) {
 
-    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
+	@Autowired
+	private ESPrescriptionService esPrescriptionService;
 
-	List<?> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-		searchTerm, category);
-	Response<Object> response = new Response<Object>();
-	response.setDataList(drugDocuments);
-	return response;
-    }
+	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
+	@GET
+	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DRUG)
+	public Response<Object> searchDrug(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "category") String category) {
 
-    @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
-    @GET
-    @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
-    public Response<LabTest> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
-	    @QueryParam(value = "searchTerm") String searchTerm) {
-    	if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	List<LabTest> labTests = esPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm);
-	Response<LabTest> response = new Response<LabTest>();
-	response.setDataList(labTests);
-	return response;
-    }
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
 
-    @Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
-    @GET
-    @ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
-    public Response<ESDiagnosticTestDocument> searchDiagnosticTest(@PathParam("range") String range, @QueryParam("page") int page,
-	    @QueryParam("size") int size, @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime, @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
-	    @QueryParam(value = "searchTerm") String searchTerm) {
-    	if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	List<ESDiagnosticTestDocument> diagnosticTests = esPrescriptionService.searchDiagnosticTest(range, page, size, locationId, hospitalId, updatedTime,
-		discarded, searchTerm);
-	Response<ESDiagnosticTestDocument> response = new Response<ESDiagnosticTestDocument>();
-	response.setDataList(diagnosticTests);
-	return response;
-    }
+		List<?> drugDocuments = esPrescriptionService.searchDrug(range, page, size, doctorId, locationId, hospitalId,
+				updatedTime, discarded, searchTerm, category);
+		Response<Object> response = new Response<Object>();
+		response.setDataList(drugDocuments);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
+	@GET
+	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_LAB_TEST)
+	public Response<LabTest> searchLabTest(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<LabTest> labTests = esPrescriptionService.searchLabTest(range, page, size, locationId, hospitalId,
+				updatedTime, discarded, searchTerm);
+		Response<LabTest> response = new Response<LabTest>();
+		response.setDataList(labTests);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
+	@GET
+	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
+	public Response<ESDiagnosticTestDocument> searchDiagnosticTest(@PathParam("range") String range,
+			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, locationId, hospitalId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESDiagnosticTestDocument> diagnosticTests = esPrescriptionService.searchDiagnosticTest(range, page, size,
+				locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESDiagnosticTestDocument> response = new Response<ESDiagnosticTestDocument>();
+		response.setDataList(diagnosticTests);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_ADVICE)
+	@GET
+	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_ADVICE, notes = PathProxy.SolrPrescriptionUrls.SEARCH_ADVICE)
+	public Response<ESAdvicesDocument> searchAdvices(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "disease") String disease, @QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESAdvicesDocument> advices = esPrescriptionService.searchAdvices(range, page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded, disease, searchTerm);
+		Response<ESAdvicesDocument> response = new Response<ESAdvicesDocument>();
+		response.setDataList(advices);
+		return response;
+	}
 
 }
