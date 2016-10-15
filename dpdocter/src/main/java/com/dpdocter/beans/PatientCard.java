@@ -3,228 +3,238 @@ package com.dpdocter.beans;
 import java.util.List;
 
 public class PatientCard {
-    private String id;
+	private String id;
 
-    private String userId;
+	private String userId;
 
-    private String firstName;
+	private String firstName;
 
-    private String userName;
+	private String localPatientName;
 
-    private String emailAddress;
+	private String userName;
 
-    private String imageUrl;
+	private String emailAddress;
 
-    private String thumbnailUrl;
+	private String imageUrl;
 
-    private String bloodGroup;
+	private String thumbnailUrl;
 
-    private String PID;
+	private String bloodGroup;
 
-    private String gender;
+	private String PID;
+
+	private String gender;
 	private String countryCode;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private String secPhoneNumber;
+	private String secPhoneNumber;
 
-    private DOB dob;
+	private DOB dob;
 
-    private int count;
+	private int count;
 
-    private Long dateOfVisit;
+	private Long dateOfVisit;
 
-    private List<Group> groups;
+	private List<Group> groups;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String doctorSepecificPatientId;
+	private String doctorSepecificPatientId;
 
-    private String colorCode;
+	private String colorCode;
 
-    private Boolean isDataAvailableWithOtherDoctor = false;
+	private Boolean isDataAvailableWithOtherDoctor = false;
 
-    private Boolean isPatientOTPVerified = false;
+	private Boolean isPatientOTPVerified = false;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
 
-    public void setFirstName(String firstName) {
-	this.firstName = firstName;
-    }
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
 
-    public String getUserName() {
-	return userName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setUserName(String userName) {
-	this.userName = userName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    public String getEmailAddress() {
-	return emailAddress;
-    }
+	public String getUserName() {
+		return userName;
+	}
 
-    public void setEmailAddress(String emailAddress) {
-	this.emailAddress = emailAddress;
-    }
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    public String getImageUrl() {
-	return imageUrl;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public void setImageUrl(String imageUrl) {
-	this.imageUrl = imageUrl;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public String getBloodGroup() {
-	return bloodGroup;
-    }
+	public String getImageUrl() {
+		return imageUrl;
+	}
 
-    public void setBloodGroup(String bloodGroup) {
-	this.bloodGroup = bloodGroup;
-    }
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
 
-    public String getPID() {
-	return PID;
-    }
+	public String getBloodGroup() {
+		return bloodGroup;
+	}
 
-    public void setPID(String pID) {
-	PID = pID;
-    }
+	public void setBloodGroup(String bloodGroup) {
+		this.bloodGroup = bloodGroup;
+	}
 
-    public String getGender() {
-	return gender;
-    }
+	public String getPID() {
+		return PID;
+	}
 
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
+	public void setPID(String pID) {
+		PID = pID;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public String getSecPhoneNumber() {
-	return secPhoneNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public void setSecPhoneNumber(String secPhoneNumber) {
-	this.secPhoneNumber = secPhoneNumber;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public DOB getDob() {
-	return dob;
-    }
+	public String getSecPhoneNumber() {
+		return secPhoneNumber;
+	}
 
-    public void setDob(DOB dob) {
-	this.dob = dob;
-    }
+	public void setSecPhoneNumber(String secPhoneNumber) {
+		this.secPhoneNumber = secPhoneNumber;
+	}
 
-    public int getCount() {
-	return count;
-    }
+	public DOB getDob() {
+		return dob;
+	}
 
-    public void setCount(int count) {
-	this.count = count;
-    }
+	public void setDob(DOB dob) {
+		this.dob = dob;
+	}
 
-    public Long getDateOfVisit() {
-	return dateOfVisit;
-    }
+	public int getCount() {
+		return count;
+	}
 
-    public void setDateOfVisit(Long dateOfVisit) {
-	this.dateOfVisit = dateOfVisit;
-    }
+	public void setCount(int count) {
+		this.count = count;
+	}
 
-    public List<Group> getGroups() {
-	return groups;
-    }
+	public Long getDateOfVisit() {
+		return dateOfVisit;
+	}
 
-    public void setGroups(List<Group> groups) {
-	this.groups = groups;
-    }
+	public void setDateOfVisit(Long dateOfVisit) {
+		this.dateOfVisit = dateOfVisit;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public List<Group> getGroups() {
+		return groups;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDoctorSepecificPatientId() {
-	return doctorSepecificPatientId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setDoctorSepecificPatientId(String doctorSepecificPatientId) {
-	this.doctorSepecificPatientId = doctorSepecificPatientId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getColorCode() {
-	return colorCode;
-    }
+	public String getDoctorSepecificPatientId() {
+		return doctorSepecificPatientId;
+	}
 
-    public void setColorCode(String colorCode) {
-	this.colorCode = colorCode;
-    }
+	public void setDoctorSepecificPatientId(String doctorSepecificPatientId) {
+		this.doctorSepecificPatientId = doctorSepecificPatientId;
+	}
 
-    public String getThumbnailUrl() {
-	return thumbnailUrl;
-    }
+	public String getColorCode() {
+		return colorCode;
+	}
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-	this.thumbnailUrl = thumbnailUrl;
-    }
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
 
-    public Boolean getIsDataAvailableWithOtherDoctor() {
-	return isDataAvailableWithOtherDoctor;
-    }
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
 
-    public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
-	this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
-    }
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
 
-    public Boolean getIsPatientOTPVerified() {
-	return isPatientOTPVerified;
-    }
+	public Boolean getIsDataAvailableWithOtherDoctor() {
+		return isDataAvailableWithOtherDoctor;
+	}
 
-    public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
-	this.isPatientOTPVerified = isPatientOTPVerified;
-    }
+	public void setIsDataAvailableWithOtherDoctor(Boolean isDataAvailableWithOtherDoctor) {
+		this.isDataAvailableWithOtherDoctor = isDataAvailableWithOtherDoctor;
+	}
+
+	public Boolean getIsPatientOTPVerified() {
+		return isPatientOTPVerified;
+	}
+
+	public void setIsPatientOTPVerified(Boolean isPatientOTPVerified) {
+		this.isPatientOTPVerified = isPatientOTPVerified;
+	}
 
 	public String getUserId() {
 		return userId;

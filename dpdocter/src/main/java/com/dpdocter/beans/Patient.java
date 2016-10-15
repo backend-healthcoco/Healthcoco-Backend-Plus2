@@ -5,6 +5,7 @@ import java.util.List;
 public class Patient {
 
 	private String firstName;
+	private String localPatientName;
 
 	private String patientId;
 
@@ -45,7 +46,15 @@ public class Patient {
 	private String gender;
 
 	private DOB dob;
-	
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}

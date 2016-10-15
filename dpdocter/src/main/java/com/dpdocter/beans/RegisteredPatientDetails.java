@@ -7,6 +7,7 @@ import com.dpdocter.collections.GenericCollection;
 public class RegisteredPatientDetails extends GenericCollection {
 
     private String firstName;
+    private String localPatientName;
 
     private String lastName;
 
@@ -225,6 +226,14 @@ public class RegisteredPatientDetails extends GenericCollection {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 }

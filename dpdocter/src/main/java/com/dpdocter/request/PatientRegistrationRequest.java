@@ -12,6 +12,7 @@ public class PatientRegistrationRequest {
 	private String userId;
 
 	private String firstName;
+	private String localPatientName;
 
 	private String mobileNumber;
 
@@ -301,6 +302,14 @@ public class PatientRegistrationRequest {
 				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
 				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
 				+ "]";
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 }

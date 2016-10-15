@@ -536,7 +536,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				    specialities.add(null);specialities.add("ALL");
 			}
 			
-			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, specialities), TreatmentServicesCollection.class, TreatmentService.class); 
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, specialities,null), TreatmentServicesCollection.class, TreatmentService.class); 
 			response = results.getMappedResults();
 			    
 		} catch (Exception e) {
@@ -550,7 +550,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	private List<?> getCustomServices(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<TreatmentService> response = null;
 		try {
-			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null), TreatmentServicesCollection.class, TreatmentService.class); 
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), TreatmentServicesCollection.class, TreatmentService.class); 
 			response = results.getMappedResults();
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -574,7 +574,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		    	specialities = CollectionUtils.collect((Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),new BeanToPropertyValueTransformer("speciality"));
 		    	specialities.add("ALL");specialities.add(null);
 		    }
-			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities), TreatmentServicesCollection.class, TreatmentService.class); 
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null), TreatmentServicesCollection.class, TreatmentService.class); 
 			response = results.getMappedResults();
 		} catch (Exception e) {
 		    e.printStackTrace();
