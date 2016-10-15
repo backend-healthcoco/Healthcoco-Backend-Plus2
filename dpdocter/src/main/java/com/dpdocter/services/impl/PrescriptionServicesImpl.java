@@ -4090,7 +4090,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			AggregationResults<Advice> results = mongoTemplate
 					.aggregate(
 							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, disease, "advice"),
+									updatedTime, discarded, null, disease, null, "advice"),
 							AdviceCollection.class, Advice.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {

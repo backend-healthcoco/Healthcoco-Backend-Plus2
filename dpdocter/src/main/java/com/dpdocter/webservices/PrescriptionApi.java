@@ -737,7 +737,7 @@ public class PrescriptionApi {
 			}
 		}
 		List<?> clinicalItems = prescriptionServices.getPrescriptionItems(type, range, page, size, doctorId, locationId,
-				hospitalId, updatedTime, discarded, false, null, null);
+				hospitalId, updatedTime, discarded, false, disease, null);
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(clinicalItems);

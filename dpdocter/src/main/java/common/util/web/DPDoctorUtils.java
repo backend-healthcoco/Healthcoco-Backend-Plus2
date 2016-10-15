@@ -167,14 +167,15 @@ public class DPDoctorUtils {
 				.mustNot(QueryBuilders.existsQuery("doctorId")).mustNot(QueryBuilders.existsQuery("locationId"))
 				.mustNot(QueryBuilders.existsQuery("hospitalId"));
 
+		if (!DPDoctorUtils.anyStringEmpty(disease))
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
 			if (searchTermFieldName.length == 1)
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
 			else
 				boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
 		}
-		if (!DPDoctorUtils.anyStringEmpty(disease))
-			boolQueryBuilder.must(QueryBuilders.termQuery("diseases", disease));
+
 		if (!discarded)
 			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 
@@ -223,7 +224,7 @@ public class DPDoctorUtils {
 				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
 				.must(QueryBuilders.termQuery("doctorId", doctorId));
 		if (!DPDoctorUtils.anyStringEmpty(disease))
-			boolQueryBuilder.must(QueryBuilders.termQuery("diseases", disease));
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 			boolQueryBuilder.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId));
@@ -280,8 +281,7 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(
 					QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")),
 							QueryBuilders.termQuery("doctorId", doctorId)));
-		if (!DPDoctorUtils.anyStringEmpty(disease))
-			boolQueryBuilder.must(QueryBuilders.termQuery("diseases", disease));
+
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			boolQueryBuilder
 					.must(QueryBuilders.orQuery(
@@ -291,6 +291,8 @@ public class DPDoctorUtils {
 							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
 							QueryBuilders.termQuery("hospitalId", hospitalId)));
 		}
+		if (!DPDoctorUtils.anyStringEmpty(disease))
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
 			if (searchTermFieldName.length == 1)
@@ -373,7 +375,7 @@ public class DPDoctorUtils {
 	}
 
 	public static Aggregation createCustomAggregation(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String sortBy,String disease, String searchTerm,
+			String hospitalId, String updatedTime, Boolean discarded, String sortBy, String disease, String searchTerm,
 			String... searchTermFieldName) {
 
 		long createdTimeStamp = Long.parseLong(updatedTime);
