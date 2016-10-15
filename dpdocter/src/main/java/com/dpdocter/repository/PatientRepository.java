@@ -34,8 +34,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
     @Query("{'doctorId': ?0,'locationId': ?1,'hospitalId': ?2, 'updatedTime': {'$gt': ?3}}")
     List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
 
-    @Query(value ="{'doctorId':?0, 'locationId':?1, 'hospitalId':?2, 'createdTime' : {'$gt' : ?3, '$lte' : ?4}}", count = true)
-    Integer findTodaysRegisteredPatient(ObjectId doctorId, ObjectId location, ObjectId hospitalId, DateTime start, DateTime end);
+    @Query(value ="{'locationId':?0, 'hospitalId':?1, 'createdTime' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
+    Integer findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, DateTime start, DateTime end);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}")
     List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,

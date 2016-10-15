@@ -475,7 +475,7 @@ public class ClinicalNotesApi {
 	    logger.warn("Invalid Input.");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.");
 	}
-	List<?> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, false, null);
+	List<?> clinicalItems = clinicalNotesService.getClinicalItems(type, range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null);
 	if (clinicalItems != null && !clinicalItems.isEmpty() && ClinicalItems.DIAGRAMS.getType().equalsIgnoreCase(type)) {
 	    for (Object clinicalItem : clinicalItems) {
 		((Diagram) clinicalItem).setDiagramUrl(getFinalImageURL(((Diagram) clinicalItem).getDiagramUrl()));
@@ -529,5 +529,15 @@ public class ClinicalNotesApi {
     	Response<String> response = new Response<String>();
     	response.setData(clinicalNotesService.getClinicalNotesFile(clinicalNotesId));
     	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
+    @GET
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
+    public Response<Boolean> updateQuery() {
+
+      	Response<Boolean> response = new Response<Boolean>();
+		response.setData(clinicalNotesService.updateQuery());
+		return response;
     }
 }

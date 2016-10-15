@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,16 +30,11 @@ import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
-import com.dpdocter.beans.Complaint;
-import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.Notes;
-import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
@@ -52,16 +46,11 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.collections.ClinicalNotesCollection;
-import com.dpdocter.collections.ComplaintCollection;
-import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
-import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LocationCollection;
-import com.dpdocter.collections.NotesCollection;
-import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -534,6 +523,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				response.setAppointmentId(appointment.getAppointmentId());
 				response.setTime(appointment.getTime());
 				response.setFromDate(appointment.getFromDate());
+			}else{
+				response.setAppointmentId(patientVisitCollection.getAppointmentId());
 			}
 	    }    	    
 	} catch (Exception e) {
@@ -958,40 +949,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		    if(contentLineStyle.equalsIgnoreCase(LineStyle.BLOCK.getStyle()))contentLineStyle = "<br>";
 		    else contentLineStyle = ",  ";
 		    
-		    String observations = "";
-		    Collection<String> observationList = CollectionUtils.collect(clinicalNotesService.sortObservations(
-		    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getObservations()))),
-			 ObservationCollection.class, Observation.class).getMappedResults(), clinicalNotesCollection.getObservations()),new BeanToPropertyValueTransformer("observation"));
-			if(observationList != null && !observationList.isEmpty())observations = (observationList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
-		    clinicalNotesJasperDetails.setObservations(observations);
-
-		    String notes = "";
-		    Collection<String> noteList = CollectionUtils.collect(clinicalNotesService.sortNotes(
-		    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getNotes()))),
-			 NotesCollection.class, Notes.class).getMappedResults(), clinicalNotesCollection.getNotes()),new BeanToPropertyValueTransformer("note"));
-			if(noteList != null && !noteList.isEmpty())notes = (noteList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
-		    clinicalNotesJasperDetails.setNotes(notes);
-
-		    String investigations = "";
-		    Collection<String> investigationList = CollectionUtils.collect(clinicalNotesService.sortInvestigations(
-		    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getInvestigations()))),
-			 InvestigationCollection.class, Investigation.class).getMappedResults(), clinicalNotesCollection.getInvestigations()),new BeanToPropertyValueTransformer("investigation"));
-			if(investigationList != null && !investigationList.isEmpty())investigations = (investigationList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
-		    clinicalNotesJasperDetails.setInvestigations(investigations);
-
-		    String diagnosis = "";
-		    Collection<String> diagnosisList = CollectionUtils.collect(clinicalNotesService.sortDiagnoses(
-		    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))),
-			 DiagnosisCollection.class, Diagnoses.class).getMappedResults(), clinicalNotesCollection.getDiagnoses()),new BeanToPropertyValueTransformer("diagnosis"));
-			if(diagnosisList != null && !diagnosisList.isEmpty())diagnosis = (diagnosisList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
-		    clinicalNotesJasperDetails.setDiagnosis(diagnosis);
-
-		    String complaints = "";
-		    Collection<String> complaintList = CollectionUtils.collect(clinicalNotesService.sortComplaints(
-		    		mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getComplaints()))),
-			 ComplaintCollection.class, Complaint.class).getMappedResults(), clinicalNotesCollection.getComplaints()),new BeanToPropertyValueTransformer("complaint"));
-			if(complaintList != null && !complaintList.isEmpty())complaints = (complaintList+"").replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", contentLineStyle);
-		    clinicalNotesJasperDetails.setComplaints(complaints);
+		    clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
+		    clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
+		    clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
+		    clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
+		    clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 
 		    List<DBObject> diagramIds = new ArrayList<DBObject>();
 		    if (clinicalNotesCollection.getDiagrams() != null)

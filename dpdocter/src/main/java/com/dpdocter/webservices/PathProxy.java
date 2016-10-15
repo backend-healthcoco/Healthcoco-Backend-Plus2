@@ -103,9 +103,9 @@ public interface PathProxy {
 
 		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 
-		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{locationId}/{patientInitial}/{patientCounter}";
+		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{locationId}/{patientInitial}/{patientCounter}";
 
-		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}/{locationId}";
+		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{locationId}";
 
 		public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
@@ -200,6 +200,8 @@ public interface PathProxy {
 		public static final String EMAIL_CLINICAL_NOTES = "/{clinicalNotesId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DOWNLOAD_CLINICAL_NOTES = "/download/{clinicalNotesId}";
+		
+		public static final String UPDATE_QUERY_CLINICAL_NOTES = "/updateQuery";
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";

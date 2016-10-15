@@ -24,11 +24,6 @@ public interface ClinicalNotesService {
 
     ClinicalNotes deleteNote(String id, Boolean discarded);
 
-//    List<ClinicalNotes> getPatientsClinicalNotesWithVerifiedOTP(int page, int size, String patientId, String updatedTime, boolean discarded, boolean inHistory);
-//
-//    List<ClinicalNotes> getPatientsClinicalNotesWithoutVerifiedOTP(int page, int size, String patientId, String doctorId, String locationId, String hospitalId,
-//	    String updatedTime, boolean discarded, boolean inHistory);
-
     Complaint addEditComplaint(Complaint complaint);
 
     Observation addEditObservation(Observation observation);
@@ -56,7 +51,7 @@ public interface ClinicalNotesService {
     Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    Boolean discarded, Boolean isAdmin, String searchTerm);
+	    Boolean discarded, String searchTerm);
 
     void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
@@ -68,16 +63,5 @@ public interface ClinicalNotesService {
 
 	String getClinicalNotesFile(String clinicalNotesId);
 
-	List<Complaint> sortComplaints(List<Complaint> complaints, List<ObjectId> complaintIds);
-
-	List<Observation> sortObservations(List<Observation> mappedResults, List<ObjectId> observations);
-
-	List<Diagnoses> sortDiagnoses(List<Diagnoses> mappedResults, List<ObjectId> diagnoses);
-
-	List<Notes> sortNotes(List<Notes> mappedResults, List<ObjectId> notes);
-
-	List<Diagram> sortDiagrams(List<Diagram> mappedResults, List<ObjectId> diagrams);
-
-	List<Investigation> sortInvestigations(List<Investigation> mappedResults, List<ObjectId> investigations);
-
+	Boolean updateQuery();
 }

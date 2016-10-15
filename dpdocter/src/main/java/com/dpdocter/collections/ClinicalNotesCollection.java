@@ -42,6 +42,21 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> diagrams;
 
+ 	@Field
+	private String note;
+
+	@Field
+	private String observation;
+
+	@Field
+	private String investigation;
+
+	@Field
+	private String diagnosis;
+
+	@Field
+	private String complaint;
+	
 	@Field
 	private List<String> comments;
 
@@ -227,14 +242,55 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.fromDate = fromDate;
 	}
 
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
 				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", complaints=" + complaints + ", diagrams=" + diagrams + ", comments=" + comments + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
-				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
-				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", complaints=" + complaints + ", diagrams=" + diagrams + ", note=" + note + ", observation="
+				+ observation + ", investigation=" + investigation + ", diagnosis=" + diagnosis + ", complaint="
+				+ complaint + ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
+				+ ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
-
 }

@@ -485,6 +485,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			    case GLOBAL: response = getGlobalServices(page, size, doctorId, updatedTime, discarded); break;
 			    case CUSTOM: response = getCustomServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
 			    case BOTH: response = getCustomGlobalServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded); break;
+				default:break;
 			    
 			    }break;
 			}

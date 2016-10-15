@@ -11,18 +11,20 @@ public class ClinicalNotes extends GenericCollection {
 
     private String uniqueEmrId;
 
-    private List<Complaint> complaints;
-
-    private List<Observation> observations;
-
-    private List<Investigation> investigations;
-
     private List<Diagnoses> diagnoses;
 
     private List<Diagram> diagrams;
 
-    private List<Notes> notes;
+    private String note;
 
+    private String observation;
+
+    private String investigation;
+
+    private String diagnosis;
+
+    private String complaint;
+    
     private String doctorId;
 
     private String locationId;
@@ -53,30 +55,6 @@ public class ClinicalNotes extends GenericCollection {
 	this.id = id;
     }
 
-    public List<Complaint> getComplaints() {
-	return complaints;
-    }
-
-    public void setComplaints(List<Complaint> complaints) {
-	this.complaints = complaints;
-    }
-
-    public List<Observation> getObservations() {
-	return observations;
-    }
-
-    public void setObservations(List<Observation> observations) {
-	this.observations = observations;
-    }
-
-    public List<Investigation> getInvestigations() {
-	return investigations;
-    }
-
-    public void setInvestigations(List<Investigation> investigations) {
-	this.investigations = investigations;
-    }
-
     public List<Diagnoses> getDiagnoses() {
 	return diagnoses;
     }
@@ -91,14 +69,6 @@ public class ClinicalNotes extends GenericCollection {
 
     public void setDiagrams(List<Diagram> diagrams) {
 	this.diagrams = diagrams;
-    }
-
-    public List<Notes> getNotes() {
-	return notes;
-    }
-
-    public void setNotes(List<Notes> notes) {
-	this.notes = notes;
     }
 
     public String getDoctorId() {
@@ -197,13 +167,54 @@ public class ClinicalNotes extends GenericCollection {
 		this.fromDate = fromDate;
 	}
 
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
+	}
+
 	@Override
 	public String toString() {
-		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", complaints=" + complaints
-				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", diagrams=" + diagrams + ", notes=" + notes + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
-				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns
-				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses
+				+ ", diagrams=" + diagrams + ", note=" + note + ", observation=" + observation
+				+ ", investigation=" + investigation + ", diagnosis=" + diagnosis + ", complaint=" + complaint
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId=" + visitId + ", patientId="
+				+ patientId + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", fromDate=" + fromDate + "]";
 	}
 }

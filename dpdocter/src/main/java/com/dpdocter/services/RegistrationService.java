@@ -47,11 +47,11 @@ public interface RegistrationService {
     List<ReferenceDetail> getReferences(String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded);
 
-    String patientIdGenerator(String doctorId, String locationId, String hospitalId);
+    String patientIdGenerator(String locationId, String hospitalId);
 
-    PatientInitialAndCounter getPatientInitialAndCounter(String doctorId, String locationId);
+    PatientInitialAndCounter getPatientInitialAndCounter(String locationId);
 
-    Boolean updatePatientInitialAndCounter(String doctorId, String locationId, String patientInitial, int patientCounter);
+    Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter);
 
     Location getClinicDetails(String clinicId);
 

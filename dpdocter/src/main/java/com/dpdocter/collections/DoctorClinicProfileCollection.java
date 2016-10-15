@@ -22,12 +22,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private ObjectId userLocationId;
 
     @Field
-    private String patientInitial = "P";
-
-    @Field
-    private int patientCounter = 1;
-
-    @Field
     private List<String> appointmentBookingNumber;
 
     @Field
@@ -65,22 +59,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
     public void setUserLocationId(ObjectId userLocationId) {
 	this.userLocationId = userLocationId;
-    }
-
-    public String getPatientInitial() {
-	return patientInitial;
-    }
-
-    public void setPatientInitial(String patientInitial) {
-	this.patientInitial = patientInitial;
-    }
-
-    public int getPatientCounter() {
-	return patientCounter;
-    }
-
-    public void setPatientCounter(int patientCounter) {
-	this.patientCounter = patientCounter;
     }
 
     public List<String> getAppointmentBookingNumber() {
@@ -149,8 +127,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
+		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", appointmentBookingNumber="
 				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
 				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone="

@@ -29,10 +29,6 @@ public class DoctorClinicProfile {
 
     private Double longitude;
 
-    private String patientInitial = "P";
-
-    private int patientCounter = 0;
-
     private List<String> appointmentBookingNumber;
 
     private ConsultationFee consultationFee;
@@ -95,22 +91,6 @@ public class DoctorClinicProfile {
 
     public void setClinicAddress(String clinicAddress) {
 	this.clinicAddress = clinicAddress;
-    }
-
-    public String getPatientInitial() {
-	return patientInitial;
-    }
-
-    public void setPatientInitial(String patientInitial) {
-	this.patientInitial = patientInitial;
-    }
-
-    public int getPatientCounter() {
-	return patientCounter;
-    }
-
-    public void setPatientCounter(int patientCounter) {
-	this.patientCounter = patientCounter;
     }
 
     public List<String> getAppointmentBookingNumber() {
@@ -350,8 +330,7 @@ public class DoctorClinicProfile {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
 				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", patientInitial=" + patientInitial
-				+ ", patientCounter=" + patientCounter + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber=" + appointmentBookingNumber
 				+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot
 				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
 				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews

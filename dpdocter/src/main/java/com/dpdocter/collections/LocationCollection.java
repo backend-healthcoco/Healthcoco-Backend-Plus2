@@ -103,6 +103,12 @@ public class LocationCollection extends GenericCollection {
     @Field
     private Boolean isActivate = false;
 
+    @Field
+    private String patientInitial = "P";
+
+    @Field
+    private int patientCounter = 1;
+
     public ObjectId getId() {
 	return id;
     }
@@ -343,6 +349,22 @@ public class LocationCollection extends GenericCollection {
 		this.isActivate = isActivate;
 	}
 
+    public String getPatientInitial() {
+	return patientInitial;
+    }
+
+    public void setPatientInitial(String patientInitial) {
+	this.patientInitial = patientInitial;
+    }
+
+    public int getPatientCounter() {
+	return patientCounter;
+    }
+
+    public void setPatientCounter(int patientCounter) {
+	this.patientCounter = patientCounter;
+    }
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -355,7 +377,7 @@ public class LocationCollection extends GenericCollection {
 				+ ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen="
 				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate + "]";
+				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + "]";
 	}
-
 }

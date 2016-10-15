@@ -12,6 +12,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -22,8 +23,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -432,29 +431,50 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
         boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
 	    
 	    SearchQuery searchQuery = null;
-	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
-	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+	    		.addAggregation(AggregationBuilders.terms("locationId").field("locationId").size(Integer.MAX_VALUE)
+	    				.subAggregation(AggregationBuilders.topHits("locations").setSize(1))).withPageable(new PageRequest(page, size)).build();
+	    /*
+	     * SearchQuery searchQuery = new NativeSearchQueryBuilder()
+    .withQuery(boolQueryBuilder)
+    .addAggregation(AggregationBuilders
+    .terms("addressId")
+    .field("addressId")
+    .size(Integer.MAX_VALUE)
+    .subaggregation(AggregationBuilders.topHits("justOneUserPerAddressId)
+         .setSize(1)
+    )
+    .withPageable(new PageRequest(page, size)).build();
+	     */
+	    
+	    else searchQuery = new NativeSearchQueryBuilder()
+	    		.withQuery(boolQueryBuilder)
+	    		.addAggregation(AggregationBuilders
+	    				.terms("locationTerms").include("locationTerms")
+	    				.field("locationId")
+	    				.size(Integer.MAX_VALUE)
+	    				.subAggregation(AggregationBuilders.topHits("locationHits").setSize(1))).build();
 			
 	    doctorDocument = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-	    for(ESLabTestDocument labTestDocument : esLabTestDocuments){
+//	    for(ESLabTestDocument labTestDocument : esLabTestDocuments){
 	    	if (doctorDocument != null && !doctorDocument.isEmpty()) {
 				for (ESDoctorDocument document : doctorDocument) {
-					if(labTestDocument.getLocationId().equalsIgnoreCase(document.getLocationId())){
+//					if(labTestDocument.getLocationId().equalsIgnoreCase(document.getLocationId())){
 						LabResponse labResponse = new LabResponse();
 						BeanUtil.map(document, labResponse);
-						LabTest esLabTest = new LabTest();
-						BeanUtil.map(labTestDocument, esLabTest);
-						labResponse.setLabTest(esLabTest);
-						if (labResponse.getLabTest() != null) {
-						    if (labTestDocument.getTestId() != null) {
-							ESDiagnosticTestDocument testDocument = esDiagnosticTestRepository.findOne(labTestDocument.getTestId());
-							DiagnosticTest diagnosticTest = new DiagnosticTest();
-							if(testDocument != null){
-								BeanUtil.map(testDocument, diagnosticTest);
-							}
-							labResponse.getLabTest().setTest(diagnosticTest);
-						    }
-						}
+//						LabTest esLabTest = new LabTest();
+//						BeanUtil.map(labTestDocument, esLabTest);
+//						labResponse.setLabTest(esLabTest);
+//						if (labResponse.getLabTest() != null) {
+//						    if (labTestDocument.getTestId() != null) {
+//							ESDiagnosticTestDocument testDocument = esDiagnosticTestRepository.findOne(labTestDocument.getTestId());
+//							DiagnosticTest diagnosticTest = new DiagnosticTest();
+//							if(testDocument != null){
+//								BeanUtil.map(testDocument, diagnosticTest);
+//							}
+//							labResponse.getLabTest().setTest(diagnosticTest);
+//						    }
+//						}
 						List<String> images = new ArrayList<String>();
 						if(document.getImages() != null)
 						for (String clinicImage : document.getImages()) {
@@ -472,8 +492,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						response.add(labResponse);
 					    }	
 					}
-			}
-	    }
+//			}
+//	    }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error While Getting Labs From ES : " + e.getMessage());
