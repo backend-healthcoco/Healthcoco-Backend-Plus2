@@ -10,8 +10,13 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.elasticsearch.common.xcontent.ToXContent;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -386,7 +391,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
     @Override
     public List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling,
-    		int minTime, int maxTime, List<String> days) {
+    		int minTime, int maxTime, List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl) {
 	List<LabResponse> response = null;
 	List<ESLabTestDocument> esLabTestDocuments = null;
 	try {
@@ -417,6 +422,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
         if(booking != null && booking)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.BOOK.getType()));
 	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.CALL.getType()));
 
+        if(onlineReports != null)boolQueryBuilder.must(QueryBuilders.termQuery("isOnlineReportsAvailable", onlineReports));
+	    if(homeService != null)boolQueryBuilder.must(QueryBuilders.termQuery("isHomeServiceAvailable", homeService));
+        if(nabl != null)boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
+
 	    if(minTime != 0 && maxTime != 0) 
 	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime)).must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
 	    else if(minTime != 0)
@@ -432,7 +441,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	    
 	    SearchQuery searchQuery = null;
 	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-	    		.addAggregation(AggregationBuilders.terms("locationId").field("locationId").size(Integer.MAX_VALUE)
+	    		.addAggregation(AggregationBuilders.terms("keys").field("locationId").size(Integer.MAX_VALUE)
 	    				.subAggregation(AggregationBuilders.topHits("locations").setSize(1))).withPageable(new PageRequest(page, size)).build();
 	    /*
 	     * SearchQuery searchQuery = new NativeSearchQueryBuilder()
@@ -448,13 +457,28 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	     */
 	    
 	    else searchQuery = new NativeSearchQueryBuilder()
-	    		.withQuery(boolQueryBuilder)
+	    		
 	    		.addAggregation(AggregationBuilders
-	    				.terms("locationTerms").include("locationTerms")
+	    				.terms("keys")
 	    				.field("locationId")
 	    				.size(Integer.MAX_VALUE)
-	    				.subAggregation(AggregationBuilders.topHits("locationHits").setSize(1))).build();
+	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+	    		.withQuery(boolQueryBuilder)
+	    		.build();
 			
+	    if (searchQuery.getQuery() != null) {
+	        System.out.println(searchQuery.getQuery().toString());
+	    }
+	    if (searchQuery.getAggregations() != null) {
+	            XContentBuilder builder = XContentFactory.contentBuilder(XContentType.JSON);
+	            builder.startObject();
+	            for (AbstractAggregationBuilder subAgg : searchQuery.getAggregations()) {
+	                subAgg.toXContent(builder, ToXContent.EMPTY_PARAMS);
+	            }
+	            builder.endObject();
+	            System.out.println(builder.string());
+
+	    }
 	    doctorDocument = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 //	    for(ESLabTestDocument labTestDocument : esLabTestDocuments){
 	    	if (doctorDocument != null && !doctorDocument.isEmpty()) {

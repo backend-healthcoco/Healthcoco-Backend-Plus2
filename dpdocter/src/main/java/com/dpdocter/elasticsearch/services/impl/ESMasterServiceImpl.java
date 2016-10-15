@@ -191,7 +191,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<Reference> response = null;
 	List<ESReferenceDocument> referenceDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.REFERENCE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, null, null, "reference");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.REFERENCE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "reference", searchTerm, null, null, null, "reference");
 		referenceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESReferenceDocument.class);
 		
 	    if (referenceDocuments != null) {
@@ -287,7 +287,7 @@ public class ESMasterServiceImpl implements ESMasterService {
 	List<DiseaseListResponse> diseaseListResponses = null;
 	List<ESDiseasesDocument> diseasesDocuments = null;
 	try {
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DISEASE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm, null, null, "disease");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DISEASE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "disease", searchTerm, null, null, null, "disease");
 		
         diseasesDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDiseasesDocument.class);
 

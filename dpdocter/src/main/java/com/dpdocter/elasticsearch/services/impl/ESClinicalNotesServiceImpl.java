@@ -318,7 +318,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.COMPLAINT, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "complaint");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.COMPLAINT, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "complaint");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -561,7 +561,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INVESTIGATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "investigation");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INVESTIGATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "investigation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -654,7 +654,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.OBSERVATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "observation");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.OBSERVATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "observation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -747,7 +747,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-	      SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DIAGNOSIS, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "diagnosis");
+	      SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DIAGNOSIS, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "diagnosis");
 	      response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class);
 
 	} catch (Exception e) {
@@ -842,7 +842,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NOTES, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "note");
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.NOTES, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "note");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();

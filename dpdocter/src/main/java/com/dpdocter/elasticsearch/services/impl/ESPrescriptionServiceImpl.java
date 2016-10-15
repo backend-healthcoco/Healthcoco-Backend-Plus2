@@ -168,7 +168,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response = null;
 		try {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, "drugName");
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -586,7 +586,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		try {
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ADVICE, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, disease, "advice");
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, disease, "advice");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESAdvicesDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();

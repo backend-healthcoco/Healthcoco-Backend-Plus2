@@ -188,7 +188,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			 	}
 		    }
 
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "name");
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
 		    e.printStackTrace();
