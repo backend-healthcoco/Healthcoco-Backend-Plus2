@@ -725,11 +725,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    parameters.put("clinicalNotes", clinicalNotes);
 	    parameters.put("visitId", patientVisitCollection.getId().toString());
 	    
-		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, resourceId, user.getFirstName(), user.getMobileNumber(), parameters);
+		generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null ? printSettings.getHeaderSetup().getPatientDetails() : null), patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, patientVisitCollection.getDoctorId());
 	    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		String pdfName = (user != null ? user.getFirstName() : "") + "VISITS-" + patientVisitCollection.getUniqueEmrId()+new Date().getTime();
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "VISITS-" + patientVisitCollection.getUniqueEmrId()+new Date().getTime();
 		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
 		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
 		Integer leftMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null ? printSettings.getPageSetup().getLeftMargin() : 20) : 20;

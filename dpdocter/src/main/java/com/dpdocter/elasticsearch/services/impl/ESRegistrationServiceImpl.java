@@ -198,6 +198,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		return responseDetails;
 	}
 
+	@SuppressWarnings("deprecation")
 	private BoolQueryBuilder createAdvancedSearchCriteria(AdvancedSearch request) throws ParseException {
 		String doctorId = request.getDoctorId();
 		String locationId = request.getLocationId();

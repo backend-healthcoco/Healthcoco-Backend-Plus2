@@ -1948,10 +1948,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, clinicalNotesCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(),
+				patient, clinicalNotesCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(),
 				parameters);
 		generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
 
 		String layout = printSettings != null
@@ -2248,75 +2248,83 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		try {
 			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findAll();
 			for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
-				String observations = "";
-				Collection<String> observationList = CollectionUtils
-						.collect(
-								sortObservations(
-										mongoTemplate
-												.aggregate(
-														Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-																.in(clinicalNotesCollection.getObservations()))),
-														ObservationCollection.class, Observation.class)
-												.getMappedResults(),
-										clinicalNotesCollection.getObservations()),
-								new BeanToPropertyValueTransformer("observation"));
-				if (observationList != null && !observationList.isEmpty())
-					observations = (observationList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				String observations = null;
+				if(clinicalNotesCollection.getObservations() != null && !clinicalNotesCollection.getObservations().isEmpty()){
+					Collection<String> observationList = CollectionUtils
+							.collect(
+									sortObservations(
+											mongoTemplate
+													.aggregate(
+															Aggregation.newAggregation(Aggregation.match(new Criteria("id")
+																	.in(clinicalNotesCollection.getObservations()))),
+															ObservationCollection.class, Observation.class)
+													.getMappedResults(),
+											clinicalNotesCollection.getObservations()),
+									new BeanToPropertyValueTransformer("observation"));
+					if (observationList != null && !observationList.isEmpty())
+						observations = (observationList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				}
 
-				String notes = "";
-				Collection<String> noteList = CollectionUtils
-						.collect(
-								sortNotes(
-										mongoTemplate.aggregate(
-												Aggregation.newAggregation(Aggregation.match(
-														new Criteria("id").in(clinicalNotesCollection.getNotes()))),
-												NotesCollection.class, Notes.class).getMappedResults(),
-										clinicalNotesCollection.getNotes()),
-								new BeanToPropertyValueTransformer("note"));
-				if (noteList != null && !noteList.isEmpty())
-					notes = (noteList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				String notes = null;
+				if(clinicalNotesCollection.getNotes()!=null && !clinicalNotesCollection.getNotes().isEmpty()){
+					Collection<String> noteList = CollectionUtils
+							.collect(
+									sortNotes(
+											mongoTemplate.aggregate(
+													Aggregation.newAggregation(Aggregation.match(
+															new Criteria("id").in(clinicalNotesCollection.getNotes()))),
+													NotesCollection.class, Notes.class).getMappedResults(),
+											clinicalNotesCollection.getNotes()),
+									new BeanToPropertyValueTransformer("note"));
+					if (noteList != null && !noteList.isEmpty())
+						notes = (noteList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				}
+				String investigations = null;
+				if(clinicalNotesCollection.getInvestigations() != null && !clinicalNotesCollection.getInvestigations().isEmpty()){
+					Collection<String> investigationList = CollectionUtils
+							.collect(
+									sortInvestigations(
+											mongoTemplate
+													.aggregate(
+															Aggregation.newAggregation(Aggregation.match(new Criteria("id")
+																	.in(clinicalNotesCollection.getInvestigations()))),
+															InvestigationCollection.class, Investigation.class)
+													.getMappedResults(),
+											clinicalNotesCollection.getInvestigations()),
+									new BeanToPropertyValueTransformer("investigation"));
+					if (investigationList != null && !investigationList.isEmpty())
+						investigations = (investigationList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				}
 
-				String investigations = "";
-				Collection<String> investigationList = CollectionUtils
-						.collect(
-								sortInvestigations(
-										mongoTemplate
-												.aggregate(
-														Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-																.in(clinicalNotesCollection.getInvestigations()))),
-														InvestigationCollection.class, Investigation.class)
-												.getMappedResults(),
-										clinicalNotesCollection.getInvestigations()),
-								new BeanToPropertyValueTransformer("investigation"));
-				if (investigationList != null && !investigationList.isEmpty())
-					investigations = (investigationList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-
-				String diagnosis = "";
-				Collection<String> diagnosisList = CollectionUtils
-						.collect(
-								sortDiagnoses(
-										mongoTemplate.aggregate(
-												Aggregation.newAggregation(Aggregation.match(
-														new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))),
-												DiagnosisCollection.class, Diagnoses.class).getMappedResults(),
-										clinicalNotesCollection.getDiagnoses()),
-								new BeanToPropertyValueTransformer("diagnosis"));
-				if (diagnosisList != null && !diagnosisList.isEmpty())
-					diagnosis = (diagnosisList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-
-				String complaints = "";
-				Collection<String> complaintList = CollectionUtils
-						.collect(
-								sortComplaints(
-										mongoTemplate.aggregate(
-												Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-														.in(clinicalNotesCollection.getComplaints()))),
-												ComplaintCollection.class, Complaint.class).getMappedResults(),
-										clinicalNotesCollection.getComplaints()),
-								new BeanToPropertyValueTransformer("complaint"));
-				if (complaintList != null && !complaintList.isEmpty())
-					complaints = (complaintList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-
+				String diagnosis = null;
+				if(clinicalNotesCollection.getDiagnoses() !=null && !clinicalNotesCollection.getDiagnoses().isEmpty()){
+					Collection<String> diagnosisList = CollectionUtils
+							.collect(
+									sortDiagnoses(
+											mongoTemplate.aggregate(
+													Aggregation.newAggregation(Aggregation.match(
+															new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))),
+													DiagnosisCollection.class, Diagnoses.class).getMappedResults(),
+											clinicalNotesCollection.getDiagnoses()),
+									new BeanToPropertyValueTransformer("diagnosis"));
+					if (diagnosisList != null && !diagnosisList.isEmpty())
+						diagnosis = (diagnosisList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				}
+				
+				String complaints = null;
+				if(clinicalNotesCollection.getComplaints() != null && !clinicalNotesCollection.getComplaints().isEmpty()){
+					Collection<String> complaintList = CollectionUtils
+							.collect(
+									sortComplaints(
+											mongoTemplate.aggregate(
+													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
+															.in(clinicalNotesCollection.getComplaints()))),
+													ComplaintCollection.class, Complaint.class).getMappedResults(),
+											clinicalNotesCollection.getComplaints()),
+									new BeanToPropertyValueTransformer("complaint"));
+					if (complaintList != null && !complaintList.isEmpty())
+						complaints = (complaintList + "").replaceAll("\\[", "").replaceAll("\\]", "");
+				}
 				clinicalNotesCollection.setObservation(observations);
 				clinicalNotesCollection.setNote(notes);
 				clinicalNotesCollection.setInvestigation(investigations);
@@ -2325,6 +2333,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				clinicalNotesRepository.save(clinicalNotesCollection);
 
 			}
+			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

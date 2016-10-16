@@ -2930,8 +2930,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								}
 							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
-							String patientName = patientCollection.getFirstName() != null
-									? patientCollection.getFirstName().split(" ")[0] : "", doctorName = "",
+							String patientName = patientCollection.getLocalPatientName() != null
+									? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
 									clinicContactNum = "";
 
 							UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
@@ -3728,10 +3728,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, prescriptionCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(),
+				patient, prescriptionCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(),
 				parameters);
 		generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
-		String pdfName = (user != null ? user.getFirstName() : "") + "PRESCRIPTION-"
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
