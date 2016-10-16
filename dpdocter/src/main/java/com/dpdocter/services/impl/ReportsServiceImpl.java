@@ -149,9 +149,8 @@ public class ReportsServiceImpl implements ReportsService {
 				
 				if(opdReportsCollection != null)
 				{
-					BeanUtil.map(opdReportsCollection, opdReports);
 					response = new OPDReports();
-					BeanUtil.map(response, opdReports);
+					BeanUtil.map(opdReportsCollection, response);
 				}
 			} catch (Exception e) {
 			    e.printStackTrace();

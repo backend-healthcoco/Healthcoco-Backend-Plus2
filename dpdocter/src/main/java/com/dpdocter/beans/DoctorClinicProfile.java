@@ -69,6 +69,10 @@ public class DoctorClinicProfile {
 
     private List<Role> roles;
     
+    private String patientInitial = "P";
+
+    private int patientCounter = 0;
+
     public String getId() {
 	return id;
     }
@@ -325,19 +329,37 @@ public class DoctorClinicProfile {
 		this.roles = roles;
 	}
 
+	public String getPatientInitial() {
+		return patientInitial;
+	}
+
+	public void setPatientInitial(String patientInitial) {
+		this.patientInitial = patientInitial;
+	}
+
+	public int getPatientCounter() {
+		return patientCounter;
+	}
+
+	public void setPatientCounter(int patientCounter) {
+		this.patientCounter = patientCounter;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
 				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber=" + appointmentBookingNumber
-				+ ", consultationFee=" + consultationFee + ", appointmentSlot=" + appointmentSlot
-				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images=" + images
-				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews
-				+ ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab
-				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
-				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality + ", timeZone="
-				+ timeZone + ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices
-				+ ", roles=" + roles + "]";
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
+				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", images="
+				+ images + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews="
+				+ noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", isClinic=" + isClinic + ", isLab="
+				+ isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locality=" + locality
+				+ ", timeZone=" + timeZone + ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices="
+				+ noOfServices + ", roles=" + roles + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + "]";
 	}
+
 }

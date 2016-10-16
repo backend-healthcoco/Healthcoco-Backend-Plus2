@@ -20,8 +20,8 @@ public interface ClinicalNotesRepository extends MongoRepository<ClinicalNotesCo
 //    @Query(value = "{'doctorId' : ?0, 'hospitalId' : ?1, 'locationId' : ?2}")
 //    List<ClinicalNotesCollection> getClinicalNotes(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId);
 //
-    @Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
-    Integer getClinicalNotesCountForOtherDoctors(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
+    @Query(value = "{'patientId': ?0, 'hospitalId' : {'$ne' : ?1}, 'locationId' : {'$ne' : ?2}}", count = true)
+    Integer getClinicalNotesCountForOtherDoctors(ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
 
     @Query("{'doctorId' : ?0, 'patientId' : ?1, 'updatedTime' : {'$gt' : ?2}, 'discarded' : {$in: ?3}, 'inHistory' : {$in: ?4}}")
 	List<ClinicalNotesCollection> getClinicalNotes(ObjectId doctorId, ObjectId patientId, Date date, boolean[] discards, boolean[] inHistorys, Pageable pageable);

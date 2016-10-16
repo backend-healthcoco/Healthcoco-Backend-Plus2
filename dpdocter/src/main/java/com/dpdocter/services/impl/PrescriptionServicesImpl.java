@@ -3959,30 +3959,36 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public Boolean makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId) {
-		Boolean response = false;
+	public Drug makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId) {
+		Drug response = null;;
 		try {
 			ObjectId drugObjectId = new ObjectId(drugId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
 			DrugCollection drugCollection = drugRepository.findOne(drugObjectId);
 			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-			if(doctorDrugCollection == null){
-				doctorDrugCollection = new DoctorDrugCollection(drugObjectId, doctorObjectId, locationObjectId, hospitalObjectId, 1, false, drugCollection.getGenericCodes());
-				doctorDrugCollection.setCreatedTime(new Date());
-				doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-				transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-				if (doctorDrugCollection != null) {
-					ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-					BeanUtil.map(drugCollection, esDoctorDrugDocument);
-					BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-					esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+			if(drugCollection != null){
+				if(doctorDrugCollection == null){
+					doctorDrugCollection = new DoctorDrugCollection(drugObjectId, doctorObjectId, locationObjectId, hospitalObjectId, 1, false, drugCollection.getGenericCodes());
+					doctorDrugCollection.setCreatedTime(new Date());
+					doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+					transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+					if (doctorDrugCollection != null) {
+						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+						BeanUtil.map(drugCollection, esDoctorDrugDocument);
+						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+					}
 				}
+				response = new Drug();
+				BeanUtil.map(drugCollection, response);
+			}else{
+				logger.error("Invalid drug Id");
+				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 			}
-			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Occurred While Saving Drug");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
+			logger.error(e + " Error Occurred While making Drug Favourite");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While making Drug Favourite");
 		}
 		return response;
 	}
@@ -4125,6 +4131,39 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 
+	}
+
+	@Override
+	public Boolean makeCustomDrugFavourite() {
+		Boolean response = false;
+		List<DrugCollection> drugs = null;
+		try {
+			Criteria criteria = new Criteria("doctorId").ne(null);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+			AggregationResults<DrugCollection> results = mongoTemplate.aggregate(aggregation, DrugCollection.class, DrugCollection.class);
+			drugs = results.getMappedResults();
+			for(DrugCollection drug : drugs){
+				DoctorDrugCollection doctorDrugCollection =  doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drug.getId(), drug.getDoctorId(), drug.getLocationId(), drug.getHospitalId());
+				if(doctorDrugCollection == null){
+					doctorDrugCollection = new DoctorDrugCollection(drug.getId(), drug.getDoctorId(), drug.getLocationId(), drug.getHospitalId(), 1, false, null);
+					doctorDrugCollection.setCreatedTime(new Date());
+					doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+					transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+					if (doctorDrugCollection != null) {
+					    ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+					    BeanUtil.map(drug, esDoctorDrugDocument);
+					    BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+					    esDoctorDrugDocument.setId(drug.getId().toString());
+					    esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Making Custom Drugs Favourite");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Making Custom Drugs Favourite");
+		}
+		return response;
 	}
 
 }

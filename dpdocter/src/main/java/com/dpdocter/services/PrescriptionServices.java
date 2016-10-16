@@ -140,9 +140,11 @@ public interface PrescriptionServices {
 
 	String getPrescriptionFile(String prescriptionId);
 
-	Boolean makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
+	Drug makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
 
 	public Advice addAdvice(Advice request);
 
 	public Advice deleteAdvice(String id, Boolean discarded);
+
+	Boolean makeCustomDrugFavourite();
 }

@@ -336,7 +336,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		Response<PatientInitialAndCounter> response = new Response<PatientInitialAndCounter>();
-		PatientInitialAndCounter patientInitialAndCounter = registrationService.getPatientInitialAndCounter(locationId);
+		PatientInitialAndCounter patientInitialAndCounter = registrationService.getPatientInitialAndCounter(doctorId, locationId);
 		response.setData(patientInitialAndCounter);
 		return response;
 	}
@@ -355,7 +355,7 @@ public class RegistrationApi {
 			logger.warn("Invalid Patient Initial");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Patient Initial");
 		}
-		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(locationId, patientInitial, patientCounter);
+		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(updateResponse);
 		return response;

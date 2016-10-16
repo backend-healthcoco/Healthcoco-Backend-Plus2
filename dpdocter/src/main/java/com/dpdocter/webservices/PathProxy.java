@@ -103,9 +103,9 @@ public interface PathProxy {
 
 		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
 
-		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{locationId}/{patientInitial}/{patientCounter}";
+		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{locationId}/{patientInitial}/{patientCounter}";
 
-		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{locationId}";
+		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}/{locationId}";
 
 		public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
@@ -362,8 +362,12 @@ public interface PathProxy {
 		public static final String DOWNLOAD_PRESCRIPTION = "/download/{prescriptionId}";
 		
 		public static final String ADD_DRUG_TO_DOCTOR = "/drug/{drugId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
-	public static final String ADD_ADVICE="/advice";
-	public static final String DELETE_ADVICE="/deleteAdvice/{adviceId}";
+		
+		public static final String ADD_ADVICE="/advice";
+		
+		public static final String DELETE_ADVICE="/deleteAdvice/{adviceId}";
+		
+		public static final String ADD_CUSTOM_DRUG_TO_FAV = "/makeCustomDrugFavourite";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";

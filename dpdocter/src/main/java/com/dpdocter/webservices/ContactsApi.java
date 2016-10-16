@@ -60,7 +60,7 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = "GET_DOCTOR_CONTACTS", notes = "GET_DOCTOR_CONTACTS")
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId()) || request.getGroups() == null || request.getGroups().isEmpty()) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId()) || request.getGroups() == null || request.getGroups().isEmpty()) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
@@ -84,28 +84,28 @@ public class ContactsApi {
     @GET
     @ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	DoctorContactsResponse doctorContactsResponse = null;
 
-	if (DPDoctorUtils.anyStringEmpty(type, doctorId)) {
+	if (DPDoctorUtils.anyStringEmpty(type)) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}
 
 	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
 	case DOCTORCONTACTS:
-	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
+	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(null, locationId, hospitalId, updatedTime, discarded, page, size);
 	    break;
 	case RECENTLYADDED:
-	    doctorContactsResponse = contactsService.getDoctorContacts(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
+	    doctorContactsResponse = contactsService.getDoctorContacts(null, locationId, hospitalId, updatedTime, discarded, page, size);
 	    break;
 	case RECENTLYVISITED:
-	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);
+	    doctorContactsResponse = patientTrackService.recentlyVisited(null, locationId, hospitalId, page, size);
 	    break;
 	case MOSTVISITED:
-	    doctorContactsResponse = patientTrackService.mostVisited(doctorId, locationId, hospitalId, page, size);
+	    doctorContactsResponse = patientTrackService.mostVisited(null, locationId, hospitalId, page, size);
 	    break;
 	default:
 	    break;
