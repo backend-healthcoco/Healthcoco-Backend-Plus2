@@ -22,6 +22,7 @@ public class RegisteredPatientDetails extends GenericCollection {
     private String userId;
 
     private String userName;
+    
 	private String countryCode;
 
     private String mobileNumber;

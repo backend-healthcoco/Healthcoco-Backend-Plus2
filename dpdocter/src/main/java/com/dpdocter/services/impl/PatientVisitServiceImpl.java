@@ -628,10 +628,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (patientVisitCollection != null) {
 		PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
 		UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+		user.setFirstName(patient.getLocalPatientName());
 		JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
 		if(jasperReportResponse != null){
 			if (user != null) {
-				emailTrackCollection.setPatientName(user.getFirstName());
+				emailTrackCollection.setPatientName(patient.getLocalPatientName());
 				emailTrackCollection.setPatientId(user.getId());
 			    }
 			    List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>();

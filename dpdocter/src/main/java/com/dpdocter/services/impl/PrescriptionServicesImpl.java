@@ -2788,13 +2788,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 								prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 								prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
 						emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
 						emailTrackCollection.setHospitalId(prescriptionCollection.getHospitalId());
 						emailTrackCollection.setLocationId(prescriptionCollection.getLocationId());
 						emailTrackCollection.setType(ComponentType.PRESCRIPTIONS.getType());
 						emailTrackCollection.setSubject("Prescription");
 						if (user != null) {
-							emailTrackCollection.setPatientName(user.getFirstName());
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
@@ -2949,7 +2950,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							SMSDetail smsDetail = new SMSDetail();
 							smsDetail.setUserId(prescriptionCollection.getPatientId());
 							if (userCollection != null)
-								smsDetail.setUserName(userCollection.getFirstName());
+								smsDetail.setUserName(patientCollection.getLocalPatientName());
 							SMS sms = new SMS();
 							sms.setSmsText("Hi " + patientName + ", your prescription "
 									+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
