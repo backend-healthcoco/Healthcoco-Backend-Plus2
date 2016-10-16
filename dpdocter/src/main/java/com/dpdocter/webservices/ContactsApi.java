@@ -84,7 +84,7 @@ public class ContactsApi {
     @GET
     @ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
-	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+    		@QueryParam(value = "doctorId") String doctorId,@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 	DoctorContactsResponse doctorContactsResponse = null;
@@ -96,16 +96,16 @@ public class ContactsApi {
 
 	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
 	case DOCTORCONTACTS:
-	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(null, locationId, hospitalId, updatedTime, discarded, page, size);
+	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
 	    break;
 	case RECENTLYADDED:
-	    doctorContactsResponse = contactsService.getDoctorContacts(null, locationId, hospitalId, updatedTime, discarded, page, size);
+	    doctorContactsResponse = contactsService.getDoctorContacts(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
 	    break;
 	case RECENTLYVISITED:
-	    doctorContactsResponse = patientTrackService.recentlyVisited(null, locationId, hospitalId, page, size);
+	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);
 	    break;
 	case MOSTVISITED:
-	    doctorContactsResponse = patientTrackService.mostVisited(null, locationId, hospitalId, page, size);
+	    doctorContactsResponse = patientTrackService.mostVisited(doctorId, locationId, hospitalId, page, size);
 	    break;
 	default:
 	    break;
