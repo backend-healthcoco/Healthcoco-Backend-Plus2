@@ -424,13 +424,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(patientCollection, patient);
 			patient.setPatientId(userCollection.getId().toString());
 
-			Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+			Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(),
 					userCollection.getId(), patientCollection.getHospitalId(),
 					patientCollection.getLocationId());
-			Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+			Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(),
 					userCollection.getId(), patientCollection.getHospitalId(),
 					patientCollection.getLocationId());
-			Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(
+			Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(),
 					userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
 
 			if ((prescriptionCount != null && prescriptionCount > 0)
@@ -752,13 +752,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(patientCollection, patient);
 				patient.setPatientId(userCollection.getId().toString());
 
-				Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+				Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(),
 						userCollection.getId(), patientCollection.getHospitalId(),
 						patientCollection.getLocationId());
-				Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+				Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(),
 						userCollection.getId(), patientCollection.getHospitalId(),
 						patientCollection.getLocationId());
-				Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(
+				Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(),
 						userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
 
 				if ((prescriptionCount != null && prescriptionCount > 0)
@@ -978,13 +978,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					BeanUtil.map(patientCollection, patient);
 					patient.setPatientId(patientCollection.getId().toString());
 
-					Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+					Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(),
 							userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
-					Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+					Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(patientCollection.getDoctorId(),
 							userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
-					Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(
+					Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(),
 							userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
 
@@ -2468,11 +2468,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+			Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorObjectId,
 					patientObjectId, hospitalObjectId, locationObjectId);
-			Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+			Integer clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorObjectId,
 					patientObjectId, hospitalObjectId, locationObjectId);
-			Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(patientObjectId,
+			Integer recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorObjectId,patientObjectId,
 					hospitalObjectId, locationObjectId);
 
 			if ((prescriptionCount != null && prescriptionCount > 0)

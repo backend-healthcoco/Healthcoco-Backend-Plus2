@@ -351,7 +351,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (results != null && !results.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(results, new BeanToPropertyValueTransformer("id"));
-		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, locationId, hospitalId, 0, 0, "0", true, false);
+		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, 0, 0, "0", true, false);
 
 		Aggregation aggregationCount = Aggregation.newAggregation(
 			Aggregation.match((Criteria.where("doctorId").is(doctorObjectId)
@@ -406,7 +406,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 		@SuppressWarnings("unchecked")
 		List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(patientTrackCollections, new BeanToPropertyValueTransformer("id"));
-		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, locationId, hospitalId, 0, 0, "0", true, false);
+		List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, 0, 0, "0", true, false);
 		int totalSize = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisitCollection.class).getMappedResults().size();
 		response = new DoctorContactsResponse();
 		response.setPatientCards(patientCards);
