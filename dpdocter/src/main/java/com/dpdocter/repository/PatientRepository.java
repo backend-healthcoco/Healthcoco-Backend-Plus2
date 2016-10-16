@@ -40,12 +40,12 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 //    @Query(value ="{'locationId':?0, 'hospitalId':?1, 'createdTime' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
 //    Integer findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, DateTime start, DateTime end);
 
-    @Query("{'userId': {'$in': ?0}, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded':{'$in': ?4}}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId locationId, ObjectId hospitalId,
+    @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}")
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 	    Date date, boolean[] discards, Pageable pageRequest);
 
-    @Query("{'userId': {'$in': ?0}, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded':{'$in': ?4}}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId locationId, ObjectId hospitalId,
+    @Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}")
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
     		Date date, boolean[] discards, Sort sort);
 
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1, 'updatedTime': {'$gt': ?2}, 'discarded':{'$in': ?3}}")
@@ -54,12 +54,12 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
     @Query("{'userId': {'$in': ?0}, 'doctorId':?1, 'updatedTime': {'$gt': ?2}, 'discarded':{'$in': ?3}}")
     List<PatientCollection> findByUserIdDoctorId(Collection<ObjectId> patientIds, ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'locationId': ?0, 'hospitalId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded':{'$in': ?3}}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(ObjectId locationId, ObjectId hospitalId,
+    @Query("{'doctorId':?0,'locationId': ?1,'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded':{'$in': ?4}}")
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 	    Date date, boolean[] discards, Pageable pageRequest);
 
-    @Query("{'locationId': ?0,'hospitalId': ?1, 'updatedTime': {'$gt': ?2}, 'discarded':{'$in': ?3}}")
-    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(ObjectId locationId, ObjectId hospitalId,
+    @Query("{'doctorId':?0,'locationId': ?1,'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded':{'$in': ?4}}")
+    List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
     		Date date, boolean[] discards, Sort sort);
 
     @Query("{'doctorId':?0, 'updatedTime': {'$gt': ?1}, 'discarded':{'$in': ?2}}")
@@ -74,8 +74,8 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
     @Query(value = "{'doctorId':?0, 'locationId':?1, 'PID':?2}", count = true)
     Integer findPatientByPID(ObjectId doctorId, ObjectId locationId, String generatedId);
 
-    @Query(value = "{'userId': {'$in': ?0}, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded':{'$in': ?4}}", count = true)
-	Integer findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards);
+    @Query(value = "{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}", count = true)
+	Integer findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards);
 
     @Query(value = "{'userId': {'$in': ?0}, 'doctorId':?1, 'updatedTime': {'$gt': ?2}, 'discarded':{'$in': ?3}}", count = true)
 	Integer findByUserIdDoctorId(Collection<ObjectId> patientIds, ObjectId doctorId, Date date, boolean[] discards);
