@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Treatment;
 
 @Document(collection = "patient_treatment_cl")
@@ -28,9 +29,15 @@ public class PatientTreatmentCollection extends GenericCollection {
 
     @Field
     private ObjectId doctorId;
+    
+    @Field 
+    private Discount totalDiscount;
 
     @Field
     private double totalCost = 0.0;
+    
+    @Field
+    private double grandTotal = 0.0;
 
     @Field
     private Boolean discarded = false;
@@ -86,7 +93,31 @@ public class PatientTreatmentCollection extends GenericCollection {
 	this.doctorId = doctorId;
     }
 
-    public double getTotalCost() {
+    public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public Boolean getInHistory() {
+		return inHistory;
+	}
+
+	public double getTotalCost() {
 	return totalCost;
     }
 
