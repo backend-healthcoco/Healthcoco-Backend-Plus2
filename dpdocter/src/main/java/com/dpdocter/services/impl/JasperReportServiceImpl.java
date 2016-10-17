@@ -417,7 +417,8 @@ public class JasperReportServiceImpl implements JasperReportService {
         contents.addElement(jrDesignImage);     
         
         jrDesignTextField = new JRDesignTextField();
-        jrExpression = new JRDesignExpression();jrExpression.setText("$F{tags}");jrDesignTextField.setExpression(jrExpression);
+        jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$F{tags}.isEmpty() && !$F{tags}.equals( null )"));
+        jrDesignTextField.setExpression(new JRDesignExpression("$F{tags}"));
         jrDesignTextField.setY(108);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(100);
         jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);jrDesignTextField.setStretchWithOverflow(true);
         contents.addElement(jrDesignTextField);
