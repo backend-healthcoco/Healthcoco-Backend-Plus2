@@ -2,23 +2,44 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Treatment;
 
 public class PatientTreatmentAddEditRequest {
 
 	private String id;
 
-    private List<Treatment> treatments;
+	private List<Treatment> treatments;
 
-    private String patientId;
+	private String patientId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private double totalCost = 0.0;
+	private double totalCost = 0.0;
+
+	private Discount totalDiscount;
+
+	private double grandTotal = 0.0;
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
 
 	public String getId() {
 		return id;
@@ -81,5 +102,5 @@ public class PatientTreatmentAddEditRequest {
 		return "PatientTreatmentAddEditRequest [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
 				+ ", totalCost=" + totalCost + "]";
-	}   
+	}
 }

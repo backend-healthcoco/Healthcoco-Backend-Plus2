@@ -2,36 +2,57 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.Discount;
 import com.dpdocter.collections.GenericCollection;
 
 public class PatientTreatmentResponse extends GenericCollection {
-    private String id;
+	private String id;
 
-    private List<TreatmentResponse> treatments;
+	private List<TreatmentResponse> treatments;
 
-    private String patientId;
+	private String patientId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private double totalCost = 0.0;
+	private double totalCost = 0.0;
+	
+	private Discount totalDiscount;
+	
+	private double grandTotal = 0.0;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    private Boolean inHistory = false;
+	private Boolean inHistory = false;
 
-    public String getId() {
-	return id;
-    }
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
 
-    public List<TreatmentResponse> getTreatments() {
+	public double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public List<TreatmentResponse> getTreatments() {
 		return treatments;
 	}
 
@@ -40,44 +61,44 @@ public class PatientTreatmentResponse extends GenericCollection {
 	}
 
 	public String getPatientId() {
-	return patientId;
-    }
+		return patientId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public double getTotalCost() {
-	return totalCost;
-    }
+	public double getTotalCost() {
+		return totalCost;
+	}
 
-    public void setTotalCost(double totalCost) {
-	this.totalCost = totalCost;
-    }
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;

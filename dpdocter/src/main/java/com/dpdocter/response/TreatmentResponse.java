@@ -2,24 +2,30 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Quentity;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
 public class TreatmentResponse {
 
-    private TreatmentService treatmentService;
+	private TreatmentService treatmentService;
 
-    private PatientTreatmentStatus status;
+	private PatientTreatmentStatus status;
 
-    private double cost = 0.0;
+	private double cost = 0.0;
 
-    private String note;
+	private String note;
 
-    private int quantity = 0;
-    
-    private List<TreatmentService> treatmentServices;
-    
-    public PatientTreatmentStatus getStatus() {
+	private Discount discount;
+
+	private double finalCost = 0.0;
+
+	private Quentity quantity;
+
+	private List<TreatmentService> treatmentServices;
+
+	public PatientTreatmentStatus getStatus() {
 		return status;
 	}
 
@@ -59,11 +65,19 @@ public class TreatmentResponse {
 		this.treatmentServices = treatmentServices;
 	}
 
-	public int getQuantity() {
+	public double getFinalCost() {
+		return finalCost;
+	}
+
+	public void setFinalCost(double finalCost) {
+		this.finalCost = finalCost;
+	}
+
+	public Quentity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Quentity quantity) {
 		this.quantity = quantity;
 	}
 
@@ -71,5 +85,13 @@ public class TreatmentResponse {
 	public String toString() {
 		return "TreatmentResponse [treatmentService=" + treatmentService + ", status=" + status + ", cost=" + cost
 				+ ", note=" + note + ", quantity=" + quantity + ", treatmentServices=" + treatmentServices + "]";
+	}
+
+	public Discount getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Discount discount) {
+		this.discount = discount;
 	}
 }
