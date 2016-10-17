@@ -752,11 +752,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 			// appointment
 
 			if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
-				if (request.getFirstName() == null || request.getMobileNumber() == null) {
+				if (request.getLocalPatientName() == null || request.getMobileNumber() == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
 				}
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
-				patientRegistrationRequest.setFirstName(request.getFirstName());
+				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
 				patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
 				patientRegistrationRequest.setDoctorId(request.getDoctorId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
