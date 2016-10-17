@@ -757,6 +757,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 				patientRegistrationRequest.setFirstName(request.getLocalPatientName());
+				patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
 				patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
 				patientRegistrationRequest.setDoctorId(request.getDoctorId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
