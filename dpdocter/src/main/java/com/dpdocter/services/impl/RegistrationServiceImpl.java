@@ -443,6 +443,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userCollection.getId().toString()));
 
 			registeredPatientDetails.setPatient(patient);
+			registeredPatientDetails.setBackendPatientId(patientCollection.getId().toString());
 			registeredPatientDetails.setLocalPatientName(patient.getLocalPatientName());
 			registeredPatientDetails.setDob(patientCollection.getDob());
 			registeredPatientDetails.setGender(patientCollection.getGender());
@@ -621,6 +622,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				Patient patient = new Patient();
 				BeanUtil.map(patientCollection, patient);
 				patient.setPatientId(userCollection.getId().toString());
+				registeredPatientDetails.setBackendPatientId(patientCollection.getId().toString());
 				registeredPatientDetails.setPatient(patient);
 				registeredPatientDetails.setLocalPatientName(patient.getLocalPatientName());
 				registeredPatientDetails.setDob(patientCollection.getDob());
@@ -750,6 +752,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 				Patient patient = new Patient();
 				BeanUtil.map(patientCollection, patient);
+				registeredPatientDetails.setBackendPatientId(patientCollection.getId().toString());
 				patient.setPatientId(userCollection.getId().toString());
 
 				Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(),
@@ -976,7 +979,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					registeredPatientDetails.setReferredBy(reference);
 					Patient patient = new Patient();
 					BeanUtil.map(patientCollection, patient);
-					patient.setPatientId(patientCollection.getId().toString());
+					patient.setPatientId(userCollection.getId().toString());
 
 					Integer prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(patientCollection.getDoctorId(),
 							userCollection.getId(), patientCollection.getHospitalId(),

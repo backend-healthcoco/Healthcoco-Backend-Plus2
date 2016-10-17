@@ -730,15 +730,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	    String layout = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT") : "PORTRAIT";
 		String pageSize = printSettings != null ? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "VISITS-" + patientVisitCollection.getUniqueEmrId()+new Date().getTime();
-		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
-		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
+		Integer topMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null	? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
 		Integer leftMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null ? printSettings.getPageSetup().getLeftMargin() : 20) : 20;
 		Integer rightMargin = printSettings != null	? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null ? printSettings.getPageSetup().getRightMargin() : 20) : 20;
-//		if(pageSize.equalsIgnoreCase("A5")){
-//			response = jasperReportService.createPDF(parameters, visitA5FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA5FileName, visitPrescriptionA5FileName, visitDiagramsA5FileName, prescriptionSubReportA5FileName);	
-//		}else {
-//			response = jasperReportService.createPDF(parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName, prescriptionSubReportA4FileName);
-//		}
+//		
 		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin, Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""), visitClinicalNotesA4FileName, visitPrescriptionA4FileName, visitDiagramsA4FileName, prescriptionSubReportA4FileName);
 		return response;
     }

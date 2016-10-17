@@ -3739,9 +3739,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String pageSize = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : null) : null;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : null) : null;
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
 						? printSettings.getPageSetup().getLeftMargin() : 20)
@@ -3750,17 +3750,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		// if(pageSize.equalsIgnoreCase("A5")){
-		// response = jasperReportService.createPDF(parameters,
-		// prescriptionA5FileName, layout, pageSize, topMargin, bottonMargin,
-		// Integer.parseInt(parameters.get("contentFontSize").toString()),
-		// pdfName.replaceAll("\\s+", ""), prescriptionSubReportA5FileName);
-		// }else {
-		// response = jasperReportService.createPDF(parameters,
-		// prescriptionA4FileName, layout, pageSize, topMargin, bottonMargin,
-		// Integer.parseInt(parameters.get("contentFontSize").toString()),
-		// pdfName.replaceAll("\\s+", ""), prescriptionSubReportA4FileName);
-		// }
+		
 		response = jasperReportService.createPDF(ComponentType.PRESCRIPTIONS, parameters, prescriptionA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),

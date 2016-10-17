@@ -666,10 +666,8 @@ public class RegistrationApi {
 				BeanUtil.map(patient.getPatient(), esPatientDocument);
 			}
 			BeanUtil.map(patient, esPatientDocument);
-			if (patient.getPatient() != null)
-				esPatientDocument.setId(patient.getPatient().getPatientId());
-			if (patient.getReferredBy() != null)
-				esPatientDocument.setReferredBy(patient.getReferredBy().getId());
+			if (patient.getBackendPatientId() != null)esPatientDocument.setId(patient.getBackendPatientId());
+			if (patient.getReferredBy() != null)esPatientDocument.setReferredBy(patient.getReferredBy().getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
