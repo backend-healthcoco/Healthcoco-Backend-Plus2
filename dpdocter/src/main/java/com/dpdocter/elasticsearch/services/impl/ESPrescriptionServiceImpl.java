@@ -152,7 +152,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				response = new ArrayList<ESDoctorDrugDocument>();
 			else {
 				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-						updatedTime, discarded, "rankingCount", searchTerm, category, "drugName");
+						updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDrugDocument.class);
 			}
 		} catch (Exception e) {
