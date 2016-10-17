@@ -836,9 +836,8 @@ public class RecordsServiceImpl implements RecordsService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setFileSystemResource(null);
 				mailAttachment.setInputStream(objectData);
-				UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
 				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patientUserCollection.getId(), new ObjectId(doctorId), new ObjectId(locationId),
+						recordsCollection.getPatientId(), new ObjectId(doctorId), new ObjectId(locationId),
 						new ObjectId(hospitalId));
 				if (patient != null) {
 
@@ -877,7 +876,7 @@ public class RecordsServiceImpl implements RecordsService {
 				mailResponse.setClinicName(locationCollection.getLocationName());
 				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 				mailResponse.setMailRecordCreatedDate(sdf.format(recordsCollection.getCreatedTime()));
-				mailResponse.setPatientName(patientUserCollection.getFirstName());
+				mailResponse.setPatientName(patient.getLocalPatientName());
 
 				EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 				emailTrackCollection.setDoctorId(recordsCollection.getDoctorId());
