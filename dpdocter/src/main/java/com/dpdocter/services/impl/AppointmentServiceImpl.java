@@ -1287,7 +1287,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(userCollection, patient);
 						BeanUtil.map(patientCollection, patient);
 
-						patient.setUserId(patient.getId());
+						patient.setUserId(String.valueOf(patientCollection.getId()));
 					}
 					BeanUtil.map(collection, appointment);
 					appointment.setPatient(patient);
