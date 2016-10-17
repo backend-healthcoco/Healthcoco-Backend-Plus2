@@ -1284,10 +1284,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 										collection.getDoctorId(), collection.getLocationId(),
 										collection.getHospitalId());
 						patient = new PatientCard();
-						BeanUtil.map(userCollection, patient);
+						//BeanUtil.map(userCollection, patient);
 						BeanUtil.map(patientCollection, patient);
-
-						patient.setUserId(String.valueOf(patientCollection.getId()));
+						patient.setUserId(patient.getUserId());
 					}
 					BeanUtil.map(collection, appointment);
 					appointment.setPatient(patient);
