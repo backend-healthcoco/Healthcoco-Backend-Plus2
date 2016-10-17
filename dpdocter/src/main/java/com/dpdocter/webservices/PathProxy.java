@@ -808,4 +808,12 @@ public interface PathProxy {
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
 
 	}
+	
+	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
+	
+	public interface DynamicUIUrls {
+		public static final String GET_ALL_PERMISSIONS_FOR_DOCTOR= "/getAllPermissionsForDoctor/{doctorId}";
+		public static final String GET_PERMISSIONS_FOR_DOCTOR= "/getPermissionsForDoctor/{doctorId}";
+		public static final String POST_PERMISSIONS = "/postPermissions";
+	}
 }

@@ -1,15 +1,21 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.UIPermissions;
 
 @Document(collection = "dynamic_ui_cl")
 public class DynamicUICollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private UIPermissions uiPermissions;
+	@Field
 	private ObjectId doctorId;
 
 	public ObjectId getId() {

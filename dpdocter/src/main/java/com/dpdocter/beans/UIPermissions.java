@@ -50,7 +50,5 @@ public class UIPermissions {
 				+ clinicalNotesPermissions + ", prescriptionPermissions=" + prescriptionPermissions
 				+ ", historyPermissions=" + historyPermissions + "]";
 	}
-	
-	
 
 }
