@@ -144,7 +144,8 @@ public interface PrescriptionServices {
 
 	public Advice addAdvice(Advice request);
 
-	public Advice deleteAdvice(String id, Boolean discarded);
+	public Advice deleteAdvice(String adviceId, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
 
 	Boolean makeCustomDrugFavourite();
 }

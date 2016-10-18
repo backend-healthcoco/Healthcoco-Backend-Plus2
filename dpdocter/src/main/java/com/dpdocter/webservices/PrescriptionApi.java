@@ -906,10 +906,13 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.DELETE_ADVICE)
 	@DELETE
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_ADVICE, notes = PathProxy.PrescriptionUrls.DELETE_ADVICE)
-	public Response<Advice> deleteAdvice(@PathParam("adviceId") String adviceId) {
+	public Response<Advice> deleteAdvice(@PathParam("adviceId") String adviceId, @PathParam(value = "doctorId") String doctorId,
+		    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+		    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 		Response<Advice> response = new Response<Advice>();
-		response.setData(prescriptionServices.deleteAdvice(adviceId, true));
+		response.setData(prescriptionServices.deleteAdvice( adviceId,  doctorId,  locationId,  hospitalId,
+				discarded));
 		return response;
 	}
 
