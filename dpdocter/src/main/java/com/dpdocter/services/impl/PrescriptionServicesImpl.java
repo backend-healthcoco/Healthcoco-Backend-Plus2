@@ -1961,22 +1961,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			break;
 		}
 		case ADVICE: {
-			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				searchTerm = searchTerm.toUpperCase();
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
-				response = getGlobalAdvices(page, size, doctorId, updatedTime, disease, discarded);
+				response = getGlobalAdvices(page, size, doctorId, updatedTime, disease, searchTerm, discarded);
 				break;
 
 			case CUSTOM:
 				response = getCustomAdvices(page, size, doctorId, locationId, hospitalId, updatedTime, disease,
-						discarded);
+						searchTerm, discarded);
 				break;
 
 			case BOTH:
 				response = getCustomGlobalAdvices(page, size, doctorId, locationId, hospitalId, updatedTime, disease,
-						discarded);
+						searchTerm, discarded);
 				break;
 			default:
 				break;
@@ -3763,7 +3761,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		
+
 		response = jasperReportService.createPDF(ComponentType.PRESCRIPTIONS, parameters, prescriptionA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),
@@ -3964,7 +3962,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Override
 	public Drug makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId) {
 		Drug response = null;
-		
+
 		try {
 			ObjectId drugObjectId = new ObjectId(drugId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
@@ -4049,7 +4047,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private List<Advice> getCustomGlobalAdvices(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, String disease, Boolean discarded) {
+			String hospitalId, String updatedTime, String disease, String searchTerm, Boolean discarded) {
 		List<Advice> response = new ArrayList<Advice>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -4060,7 +4058,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			AggregationResults<Advice> results = mongoTemplate.aggregate(
 					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, null, disease, "advice"),
+							updatedTime, discarded, null, searchTerm, null, disease, "advice"),
 					AdviceCollection.class, Advice.class);
 			response = results.getMappedResults();
 
@@ -4074,7 +4072,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private List<Advice> getGlobalAdvices(int page, int size, String doctorId, String updatedTime, String disease,
-			Boolean discarded) {
+			String searchTerm, Boolean discarded) {
 		List<Advice> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -4084,7 +4082,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 
 			AggregationResults<Advice> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
-					size, updatedTime, discarded, null, null, null, disease, "advice"), AdviceCollection.class,
+					size, updatedTime, discarded, null, searchTerm, null, disease, "advice"), AdviceCollection.class,
 					Advice.class);
 			response = results.getMappedResults();
 
@@ -4097,7 +4095,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private List<Advice> getCustomAdvices(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, String disease, Boolean discarded) {
+			String updatedTime, String disease, String searchTerm, Boolean discarded) {
 		List<Advice> response = null;
 		try {
 			AggregationResults<Advice> results = mongoTemplate
@@ -4127,27 +4125,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (adviceCollection.getDoctorId().toString().equals(doctorId)
 							&& adviceCollection.getHospitalId().toString().equals(hospitalId)
 							&& adviceCollection.getLocationId().toString().equals(locationId)) {
-				adviceCollection.setDiscarded(discarded);
-				adviceCollection.setUpdatedTime(new Date());
-				adviceCollection = adviceRepository.save(adviceCollection);
+						adviceCollection.setDiscarded(discarded);
+						adviceCollection.setUpdatedTime(new Date());
+						adviceCollection = adviceRepository.save(adviceCollection);
 
-				BeanUtil.map(adviceCollection, response);
+						BeanUtil.map(adviceCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					adviceCollection.setDiscarded(discarded);
+					adviceCollection.setUpdatedTime(new Date());
+					adviceRepository.save(adviceCollection);
+					response = new Advice();
+					BeanUtil.map(adviceCollection, response);
+				}
 			} else {
-				logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
-				throw new BusinessException(ServiceError.InvalidInput,
-						"Invalid Doctor Id, Hospital Id, Or Location Id");
+				logger.warn("Advice not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Advice not found!");
 			}
-		} else {
-			adviceCollection.setDiscarded(discarded);
-			adviceCollection.setUpdatedTime(new Date());
-			adviceRepository.save(adviceCollection);
-			response = new Advice();
-			BeanUtil.map(adviceCollection, response);
-		}
-	} else {
-		logger.warn("Advice not found!");
-		throw new BusinessException(ServiceError.NoRecord, "Advice not found!");
-	}} catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Deleting Advice");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Advice");
