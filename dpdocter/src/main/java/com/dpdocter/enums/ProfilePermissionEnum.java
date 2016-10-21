@@ -1,13 +1,13 @@
 package com.dpdocter.enums;
 
-public enum HistoryPermissionEnum {
+public enum ProfilePermissionEnum {
 
 	PAST_HISTORY("PAST_HISTORY"), PRESENT_HISTORY("PRESENT_HISTORY"), FAMILY_HISTORY(
-			"FAMILY_HISTORY"), MENSTRUAL_HISTORY("MENSTRUAL_HISTORY");
+			"FAMILY_HISTORY"), DRUG_AND_ALLERGIES("DRUG_AND_ALLERGIES");
 
 	private String permissions;
 
-	private HistoryPermissionEnum(String permissions) {
+	private ProfilePermissionEnum(String permissions) {
 		this.permissions = permissions;
 	}
 

@@ -1,7 +1,9 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+
+import com.dpdocter.beans.UIPermissions;
 
 @JsonSerialize(include = Inclusion.NON_NULL)
 public class DynamicUIRequest {

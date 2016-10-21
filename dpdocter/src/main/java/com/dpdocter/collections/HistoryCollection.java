@@ -10,126 +10,162 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.BirthHistory;
+import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.GeneralData;
+import com.dpdocter.beans.PersonalHistory;
 
 @Document(collection = "history_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class HistoryCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Indexed
-    private ObjectId patientId;
+	@Indexed
+	private ObjectId patientId;
 
-    @Field
-    private List<GeneralData> generalRecords;
+	@Field
+	private List<GeneralData> generalRecords;
 
-    @Field
-    private List<ObjectId> familyhistory;
+	@Field
+	private List<ObjectId> familyhistory;
 
-    @Field
-    private List<ObjectId> medicalhistory;
+	@Field
+	private List<ObjectId> medicalhistory;
 
-    @Field
-    private List<ObjectId> specialNotes;
+	@Field
+	private DrugsAndAllergies drugsAndAllergies;
 
-    public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
-	super();
-	this.doctorId = doctorId;
-	this.locationId = locationId;
-	this.hospitalId = hospitalId;
-	this.patientId = patientId;
-    }
+	@Field
+	private PersonalHistory personalHistory;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private BirthHistory birthHistory;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private List<ObjectId> specialNotes;
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
+		super();
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+		this.patientId = patientId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public List<GeneralData> getGeneralRecords() {
-	return generalRecords;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setGeneralRecords(List<GeneralData> generalRecords) {
-	this.generalRecords = generalRecords;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public List<ObjectId> getFamilyhistory() {
-	return familyhistory;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setFamilyhistory(List<ObjectId> familyhistory) {
-	this.familyhistory = familyhistory;
-    }
+	public List<GeneralData> getGeneralRecords() {
+		return generalRecords;
+	}
 
-    public List<ObjectId> getMedicalhistory() {
-	return medicalhistory;
-    }
+	public void setGeneralRecords(List<GeneralData> generalRecords) {
+		this.generalRecords = generalRecords;
+	}
 
-    public void setMedicalhistory(List<ObjectId> medicalhistory) {
-	this.medicalhistory = medicalhistory;
-    }
+	public List<ObjectId> getFamilyhistory() {
+		return familyhistory;
+	}
 
-    public List<ObjectId> getSpecialNotes() {
-	return specialNotes;
-    }
+	public void setFamilyhistory(List<ObjectId> familyhistory) {
+		this.familyhistory = familyhistory;
+	}
 
-    public void setSpecialNotes(List<ObjectId> specialNotes) {
-	this.specialNotes = specialNotes;
-    }
+	public List<ObjectId> getMedicalhistory() {
+		return medicalhistory;
+	}
 
-    @Override
-    public String toString() {
-	return "HistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory=" + medicalhistory
-		+ ", specialNotes=" + specialNotes + "]";
-    }
+	public void setMedicalhistory(List<ObjectId> medicalhistory) {
+		this.medicalhistory = medicalhistory;
+	}
+
+	public List<ObjectId> getSpecialNotes() {
+		return specialNotes;
+	}
+
+	public void setSpecialNotes(List<ObjectId> specialNotes) {
+		this.specialNotes = specialNotes;
+	}
+
+	public DrugsAndAllergies getDrugsAndAllergies() {
+		return drugsAndAllergies;
+	}
+
+	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
+		this.drugsAndAllergies = drugsAndAllergies;
+	}
+
+	public PersonalHistory getPersonalHistory() {
+		return personalHistory;
+	}
+
+	public void setPersonalHistory(PersonalHistory personalHistory) {
+		this.personalHistory = personalHistory;
+	}
+
+	public BirthHistory getBirthHistory() {
+		return birthHistory;
+	}
+
+	public void setBirthHistory(BirthHistory birthHistory) {
+		this.birthHistory = birthHistory;
+	}
+
+	@Override
+	public String toString() {
+		return "HistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", patientId=" + patientId + ", generalRecords=" + generalRecords + ", familyhistory="
+				+ familyhistory + ", medicalhistory=" + medicalhistory + ", drugsAndAllergies=" + drugsAndAllergies
+				+ ", personalHistory=" + personalHistory + ", birthHistory=" + birthHistory + ", specialNotes="
+				+ specialNotes + "]";
+	}
 
 }

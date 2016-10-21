@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum PrescriptionPermissionEnum {
 
-	DRUG("DRUG"), DOSAGE("DOSAGE"), DIRECTION("DIRECTION"), TEMPLATE("TEMPLATE"), LAB("LAB");
+	DRUG("DRUG"), DOSAGE("DOSAGE"), DIRECTION("DIRECTION"), TEMPLATE("TEMPLATE"), LAB("LAB"), ADVICE("ADVICE");
 
 	private String permissions;
 

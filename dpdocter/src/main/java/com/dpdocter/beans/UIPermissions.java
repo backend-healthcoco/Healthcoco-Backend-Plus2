@@ -10,7 +10,7 @@ public class UIPermissions {
 	private List<String> tabPermissions;
 	private List<String> clinicalNotesPermissions;
 	private List<String> prescriptionPermissions;
-	private List<String> historyPermissions;
+	private List<String> profilePermissions;
 
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -36,19 +36,19 @@ public class UIPermissions {
 		this.prescriptionPermissions = prescriptionPermissions;
 	}
 
-	public List<String> getHistoryPermissions() {
-		return historyPermissions;
+	public List<String> getProfilePermissions() {
+		return profilePermissions;
 	}
 
-	public void setHistoryPermissions(List<String> historyPermissions) {
-		this.historyPermissions = historyPermissions;
+	public void setProfilePermissions(List<String> profilePermissions) {
+		this.profilePermissions = profilePermissions;
 	}
 
 	@Override
 	public String toString() {
 		return "UIPermissions [tabPermissions=" + tabPermissions + ", clinicalNotesPermissions="
 				+ clinicalNotesPermissions + ", prescriptionPermissions=" + prescriptionPermissions
-				+ ", historyPermissions=" + historyPermissions + "]";
+				+ ", profilePermissions=" + profilePermissions + "]";
 	}
 
 }
