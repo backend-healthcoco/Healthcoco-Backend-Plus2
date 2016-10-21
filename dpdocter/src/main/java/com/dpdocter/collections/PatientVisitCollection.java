@@ -49,6 +49,9 @@ public class PatientVisitCollection extends GenericCollection {
 
     @Field
     private List<ObjectId> clinicalNotesId;
+    
+    @Field
+    private List<ObjectId> treatmentId;
 
     @Field
     private List<ObjectId> recordId;
@@ -169,6 +172,16 @@ public class PatientVisitCollection extends GenericCollection {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	
+
+	public List<ObjectId> getTreatmentId() {
+		return treatmentId;
+	}
+
+	public void setTreatmentId(List<ObjectId> treatmentId) {
+		this.treatmentId = treatmentId;
 	}
 
 	@Override

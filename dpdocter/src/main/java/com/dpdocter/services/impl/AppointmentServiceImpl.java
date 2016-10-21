@@ -1285,7 +1285,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 										collection.getDoctorId(), collection.getLocationId(),
 										collection.getHospitalId());
 						patient = new PatientCard();
-						//BeanUtil.map(userCollection, patient);
+						// BeanUtil.map(userCollection, patient);
 						BeanUtil.map(patientCollection, patient);
 						patient.setUserId(patient.getUserId());
 					}
@@ -1451,11 +1451,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else if (!localtionCollection.getIsLab()) {
 				return null;
 			} else {
+				if (!DPDoctorUtils.anyStringEmpty(localtionCollection.getLogoThumbnailUrl()))
+					localtionCollection.setLogoThumbnailUrl(imagePath + localtionCollection.getLogoThumbnailUrl());
+				if (!DPDoctorUtils.anyStringEmpty(localtionCollection.getLogoUrl()))
+					localtionCollection.setLogoUrl(imagePath + localtionCollection.getLogoUrl());
+				for (ClinicImage image : localtionCollection.getImages()) {
+					if (!DPDoctorUtils.anyStringEmpty(image.getImageUrl()))
+						image.setImageUrl(imagePath + image.getImageUrl());
+					if (!DPDoctorUtils.anyStringEmpty(image.getThumbnailUrl()))
+						image.setThumbnailUrl(imagePath + image.getThumbnailUrl());
+
+				}
+
 				BeanUtil.map(localtionCollection, location);
 				response.setLocation(location);
 
 				hospitalCollection = hospitalRepository.findOne(localtionCollection.getHospitalId());
 				if (hospitalCollection != null) {
+					if (!DPDoctorUtils.anyStringEmpty(hospitalCollection.getHospitalImageUrl()))
+						hospitalCollection.setHospitalImageUrl(imagePath + hospitalCollection.getHospitalImageUrl());
 					BeanUtil.map(hospitalCollection, hospital);
 					response.setHospital(hospital);
 				}
@@ -1467,6 +1481,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					UserLocationCollection userLocationCollection = iterator.next();
 					DoctorCollection doctorCollection = doctorRepository
 							.findByUserId(userLocationCollection.getUserId());
+
 					UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
 					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
 							.findByLocationId(userLocationCollection.getId());
@@ -1493,6 +1508,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 									new BeanToPropertyValueTransformer("speciality"));
 							doctor.setSpecialities(specialities);
 						}
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))
+
+							doctor.setCoverImageUrl(imagePath + doctor.getCoverImageUrl());
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))
+							doctor.setCoverThumbnailImageUrl(imagePath + doctor.getCoverImageUrl());
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getThumbnailUrl()))
+							doctor.setThumbnailUrl(imagePath + doctor.getThumbnailUrl());
+						if (!DPDoctorUtils.anyStringEmpty(doctor.getImageUrl()))
+							doctor.setImageUrl(imagePath + doctor.getImageUrl());
+
 						doctors.add(doctor);
 					}
 				}
