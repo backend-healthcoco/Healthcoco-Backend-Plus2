@@ -251,13 +251,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				}
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
-			List<Treatment> treatments=new ArrayList<Treatment>();
+			List<Treatment> treatments = new ArrayList<Treatment>();
 			for (TreatmentRequest treatmentRequest : request.getTreatments()) {
-               
+
 				if (treatmentRequest.getStatus() == null) {
 					treatmentRequest.setStatus(PatientTreatmentStatus.NOT_STARTED);
 				}
-				Treatment treatment=new Treatment();
+				Treatment treatment = new Treatment();
 				TreatmentResponse treatmentResponse = new TreatmentResponse();
 				BeanUtil.map(treatmentRequest, treatment);
 				BeanUtil.map(treatmentRequest, treatmentResponse);
@@ -460,6 +460,85 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId);
 			if (!isOTPVerified) {
+				criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				}
+			}
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (inHistory)
+				criteria.and("inHistory").is(inHistory);
+			if (!DPDoctorUtils.anyStringEmpty(status))
+				criteria.and("treatments.status").is(status);
+			Aggregation aggregation = null;
+			// Aggregation.lookup("treatment_services_cl",
+			// "treatments.treatmentServiceId", "_id",
+			// "treatments.treatmentServices")
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<PatientTreatmentCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, PatientTreatmentCollection.class);
+			List<PatientTreatmentCollection> patientTreatmentCollections = aggregationResults.getMappedResults();
+			if (patientTreatmentCollections != null && !patientTreatmentCollections.isEmpty()) {
+				response = new ArrayList<PatientTreatmentResponse>();
+
+				for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
+					PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
+					BeanUtil.map(patientTreatmentCollection, patientTreatmentResponse);
+					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+						TreatmentResponse treatmentResponse = new TreatmentResponse();
+						BeanUtil.map(treatment, treatmentResponse);
+						TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
+								.findOne(treatment.getTreatmentServiceId());
+						if (treatmentServicesCollection != null) {
+							TreatmentService treatmentService = new TreatmentService();
+							BeanUtil.map(treatmentServicesCollection, treatmentService);
+							treatmentResponse.setTreatmentService(treatmentService);
+						}
+						treatmentResponses.add(treatmentResponse);
+					}
+					patientTreatmentResponse.setTreatments(treatmentResponses);
+					response.add(patientTreatmentResponse);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting patient treatments", e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(int page, int size, String doctorId,
+			String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded,
+			Boolean inHistory, String status) {
+		List<PatientTreatmentResponse> response = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			Criteria criteria = new Criteria("patientId").is(patientObjectId);
+			patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+
+			if (!DPDoctorUtils.anyStringEmpty(updatedTime))
+				criteria = criteria.and("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
+						.is(patientObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 				criteria.and("doctorId").is(doctorObjectId);
 				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);

@@ -41,4 +41,8 @@ public interface PatientTreatmentServices {
 			Boolean inHistory, String status);
 
 	List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId);
+
+	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(int page, int size, String doctorId,
+			String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded,
+			Boolean inHistory, String status);
 }
