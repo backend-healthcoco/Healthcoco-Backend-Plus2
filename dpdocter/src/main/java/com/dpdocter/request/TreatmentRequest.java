@@ -1,13 +1,12 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
-import org.bson.types.ObjectId;
-
-import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Quentity;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
-public class Treatment extends GenericCollection {
-    
-	private ObjectId treatmentServiceId;
+public class TreatmentRequest {
+
+	private String treatmentServiceId;
 
 	private PatientTreatmentStatus status;
 
@@ -21,12 +20,11 @@ public class Treatment extends GenericCollection {
 
 	private Quentity quantity;
 
-	
-	public ObjectId getTreatmentServiceId() {
+	public String getTreatmentServiceId() {
 		return treatmentServiceId;
 	}
 
-	public void setTreatmentServiceId(ObjectId treatmentServiceId) {
+	public void setTreatmentServiceId(String treatmentServiceId) {
 		this.treatmentServiceId = treatmentServiceId;
 	}
 
@@ -54,18 +52,12 @@ public class Treatment extends GenericCollection {
 		this.note = note;
 	}
 
-	public Quentity getQuantity() {
-		return quantity;
+	public Discount getDiscount() {
+		return discount;
 	}
 
-	public void setQuantity(Quentity quantity) {
-		this.quantity = quantity;
-	}
-
-	@Override
-	public String toString() {
-		return "Treatment [treatmentServiceId=" + treatmentServiceId + ", status=" + status + ", cost=" + cost
-				+ ", note=" + note + ", quantity=" + quantity + "]";
+	public void setDiscount(Discount discount) {
+		this.discount = discount;
 	}
 
 	public double getFinalCost() {
@@ -76,12 +68,13 @@ public class Treatment extends GenericCollection {
 		this.finalCost = finalCost;
 	}
 
-	public Discount getDiscount() {
-		return discount;
+	public Quentity getQuantity() {
+		return quantity;
 	}
 
-	public void setDiscount(Discount discount) {
-		this.discount = discount;
+	public void setQuantity(Quentity quantity) {
+		this.quantity = quantity;
 	}
+	
 
 }

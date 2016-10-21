@@ -8,8 +8,10 @@ import com.dpdocter.beans.Treatment;
 public class PatientTreatmentAddEditRequest {
 
 	private String id;
-
-	private List<Treatment> treatments;
+	
+	private String appoinmentId;
+	
+	private List<TreatmentRequest> treatments;
 
 	private String patientId;
 
@@ -49,11 +51,11 @@ public class PatientTreatmentAddEditRequest {
 		this.id = id;
 	}
 
-	public List<Treatment> getTreatments() {
+	public List<TreatmentRequest> getTreatments() {
 		return treatments;
 	}
 
-	public void setTreatments(List<Treatment> treatments) {
+	public void setTreatments(List<TreatmentRequest> treatments) {
 		this.treatments = treatments;
 	}
 
@@ -95,6 +97,15 @@ public class PatientTreatmentAddEditRequest {
 
 	public void setTotalCost(double totalCost) {
 		this.totalCost = totalCost;
+	}
+	
+
+	public String getAppoinmentId() {
+		return appoinmentId;
+	}
+
+	public void setAppoinmentId(String appoinmentId) {
+		this.appoinmentId = appoinmentId;
 	}
 
 	@Override

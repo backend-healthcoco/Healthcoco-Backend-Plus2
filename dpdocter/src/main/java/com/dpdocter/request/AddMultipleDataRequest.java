@@ -20,6 +20,8 @@ public class AddMultipleDataRequest {
 
 	private AppointmentRequest appointmentRequest;
 
+	private PatientTreatmentAddEditRequest treatmentRequest;
+
 	public String getVisitId() {
 		return visitId;
 	}
@@ -90,6 +92,14 @@ public class AddMultipleDataRequest {
 
 	public void setAppointmentRequest(AppointmentRequest appointmentRequest) {
 		this.appointmentRequest = appointmentRequest;
+	}
+
+	public PatientTreatmentAddEditRequest getTreatmentRequest() {
+		return treatmentRequest;
+	}
+
+	public void setTreatmentRequest(PatientTreatmentAddEditRequest treatmentRequest) {
+		this.treatmentRequest = treatmentRequest;
 	}
 
 	@Override

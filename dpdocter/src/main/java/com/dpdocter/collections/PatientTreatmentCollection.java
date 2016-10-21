@@ -12,48 +12,48 @@ import com.dpdocter.beans.Treatment;
 
 @Document(collection = "patient_treatment_cl")
 public class PatientTreatmentCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private List<Treatment> treatments;
+	@Field
+	private List<Treatment> treatments;
 
-    @Field
-    private ObjectId patientId;
+	@Field
+	private ObjectId patientId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId doctorId;
-    
-    @Field 
-    private Discount totalDiscount;
+	@Field
+	private ObjectId doctorId;
 
-    @Field
-    private double totalCost = 0.0;
-    
-    @Field
-    private double grandTotal = 0.0;
+	@Field
+	private Discount totalDiscount;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private double totalCost = 0.0;
 
-    @Field
-    private Boolean inHistory = false;
+	@Field
+	private double grandTotal = 0.0;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean discarded = false;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private Boolean inHistory = false;
 
-    public List<Treatment> getTreatments() {
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public List<Treatment> getTreatments() {
 		return treatments;
 	}
 
@@ -62,38 +62,38 @@ public class PatientTreatmentCollection extends GenericCollection {
 	}
 
 	public ObjectId getPatientId() {
-	return patientId;
-    }
+		return patientId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public Discount getTotalDiscount() {
+	public Discount getTotalDiscount() {
 		return totalDiscount;
 	}
 
@@ -118,28 +118,28 @@ public class PatientTreatmentCollection extends GenericCollection {
 	}
 
 	public double getTotalCost() {
-	return totalCost;
-    }
+		return totalCost;
+	}
 
-    public void setTotalCost(double totalCost) {
-	this.totalCost = totalCost;
-    }
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
+	}
 
-    public Boolean isDiscarded() {
-	return discarded;
-    }
+	public Boolean isDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Boolean isInHistory() {
-	return inHistory;
-    }
+	public Boolean isInHistory() {
+		return inHistory;
+	}
 
-    public void setInHistory(Boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
 
 	@Override
 	public String toString() {
