@@ -1,14 +1,14 @@
 package com.dpdocter.enums;
 
-public enum DurationType {
-	HOURS("hours"),DAYS("days"),WEEKS("weeks"),MONTHS("months"),YEARS("years");
+public enum QuantityEnum {
+	DAYS("DAYS"),QTY("QTY");
 	private String duration;
 
 	public String getDuration() {
 		return duration;
 	}
 
-	private DurationType(String duration) {
+	private QuantityEnum(String duration) {
 		this.duration = duration;
 	}
 	

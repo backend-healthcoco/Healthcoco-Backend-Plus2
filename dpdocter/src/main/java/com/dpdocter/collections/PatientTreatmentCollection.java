@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -9,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "patient_treatment_cl")
 public class PatientTreatmentCollection extends GenericCollection {
@@ -31,6 +33,12 @@ public class PatientTreatmentCollection extends GenericCollection {
 	private ObjectId doctorId;
 
 	@Field
+	private ObjectId visitId;
+
+	@Field
+	private String uniqueEmrId;
+
+	@Field
 	private Discount totalDiscount;
 
 	@Field
@@ -44,6 +52,15 @@ public class PatientTreatmentCollection extends GenericCollection {
 
 	@Field
 	private Boolean inHistory = false;
+
+	@Field
+	private ObjectId appointmentId;
+
+	@Field
+	private WorkingHours time;
+
+	@Field
+	private Date fromDate;
 
 	public ObjectId getId() {
 		return id;
@@ -133,12 +150,53 @@ public class PatientTreatmentCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public ObjectId getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(ObjectId visitId) {
+		this.visitId = visitId;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
 	public Boolean isInHistory() {
 		return inHistory;
 	}
 
 	public void setInHistory(Boolean inHistory) {
 		this.inHistory = inHistory;
+	}
+	
+
+	public ObjectId getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(ObjectId appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 
 	@Override

@@ -1,5 +1,10 @@
 package com.dpdocter.services.impl;
 
+import static com.dpdocter.enums.VisitedFor.CLINICAL_NOTES;
+import static com.dpdocter.enums.VisitedFor.PRESCRIPTION;
+import static com.dpdocter.enums.VisitedFor.REPORTS;
+import static com.dpdocter.enums.VisitedFor.TREATMENT;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,6 +86,7 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.request.AppointmentRequest;
+import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
@@ -546,6 +552,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				if (prescriptionResponse != null) {
 					String visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
+
 					prescription.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<Prescription> list = new ArrayList<Prescription>();
@@ -568,6 +575,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 			if (request.getTreatmentRequest() != null) {
+
+				if (appointment != null) {
+					request.getTreatmentRequest().setAppointmentId(appointment.getAppointmentId());
+					request.getTreatmentRequest().setTime(appointment.getTime());
+					request.getTreatmentRequest().setFromDate(appointment.getFromDate());
+				}
+
 				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
 						.addEditPatientTreatment(request.getTreatmentRequest());
 
@@ -576,6 +590,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (patientTreatmentResponse != null) {
 					String visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId());
+
 					patientTreatment.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<PatientTreatment> list = new ArrayList<PatientTreatment>();
@@ -615,15 +630,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, Boolean isOTPVerified, String updatedTime) {
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor) {
 		List<PatientVisitResponse> response = null;
 		List<PatientVisitCollection> patientVisitCollections = null;
 		try {
 			List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
-			visitedFors.add(VisitedFor.CLINICAL_NOTES);
-			visitedFors.add(VisitedFor.PRESCRIPTION);
-			visitedFors.add(VisitedFor.REPORTS);
-			visitedFors.add(VisitedFor.TREATMENT);
+			if (visitFor == VisitedFor.ALL.toString() || visitFor == null) {
+				visitedFors.add(CLINICAL_NOTES);
+				visitedFors.add(PRESCRIPTION);
+				visitedFors.add(REPORTS);
+				visitedFors.add(TREATMENT);
+			} else {
+				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
+
+			}
 
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -694,7 +714,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						List<Records> records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
 						patientVisitResponse.setRecords(records);
 					}
-					if (patientVisitCollection.getTreatmentId() != null) {
+
+					if (patientVisitCollection.getTreatmentId() != null && visitFor != null) {
 						List<PatientTreatment> patientTreatment = patientTreatmentServices
 								.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
 						patientVisitResponse.setPatientTreatment(patientTreatment);

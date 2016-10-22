@@ -1,13 +1,17 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.response.TreatmentResponse;
 
 public class PatientTreatment {
 	private List<TreatmentResponse> treatments;
+	private String id;
 
 	private String patientId;
+
+	private String uniqueEmrId;
 
 	private String locationId;
 
@@ -24,9 +28,38 @@ public class PatientTreatment {
 	private Boolean discarded = false;
 
 	private Boolean inHistory = false;
-	
+
 	private String visitId;
-	
+
+	private String appointmentId;
+
+	private WorkingHours time;
+
+	private Date fromDate;
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
 	public String getVisitId() {
 		return visitId;
@@ -114,6 +147,22 @@ public class PatientTreatment {
 
 	public void setInHistory(Boolean inHistory) {
 		this.inHistory = inHistory;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 
 }

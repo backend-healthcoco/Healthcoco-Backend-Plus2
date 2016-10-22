@@ -1,8 +1,10 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
 public class PatientTreatmentResponse extends GenericCollection {
@@ -18,15 +20,49 @@ public class PatientTreatmentResponse extends GenericCollection {
 
 	private String doctorId;
 
+	private String visitId;
+
+	private String uniqueEmrId;
+
 	private double totalCost = 0.0;
-	
+
 	private Discount totalDiscount;
-	
+
 	private double grandTotal = 0.0;
 
 	private Boolean discarded = false;
 
 	private Boolean inHistory = false;
+
+	private String appointmentId;
+
+	private WorkingHours time;
+
+	private Date fromDate;
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
 	public Discount getTotalDiscount() {
 		return totalDiscount;
@@ -92,6 +128,14 @@ public class PatientTreatmentResponse extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
+	public String getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
 	public double getTotalCost() {
 		return totalCost;
 	}
@@ -121,5 +165,13 @@ public class PatientTreatmentResponse extends GenericCollection {
 		return "PatientTreatmentResponse [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
 				+ ", totalCost=" + totalCost + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 }

@@ -24,7 +24,7 @@ public interface PatientVisitService {
     PatientVisitResponse getVisit(String visitId);
 
     List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
-	    String updatedTime);
+	    String updatedTime,String visitFor);
 
     Boolean email(String visitId, String emailAddress);
 

@@ -1,10 +1,10 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.DurationType;
+import com.dpdocter.enums.QuantityEnum;
 
 public class Quentity {
 private int value;
-private DurationType type;
+private QuantityEnum type;
 
 public int getValue() {
 	return value;
@@ -12,10 +12,10 @@ public int getValue() {
 public void setValue(int value) {
 	this.value = value;
 }
-public DurationType getType() {
+public QuantityEnum getType() {
 	return type;
 }
-public void setType(DurationType type) {
+public void setType(QuantityEnum type) {
 	this.type = type;
 }
 

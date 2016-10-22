@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
@@ -33,6 +34,7 @@ import com.dpdocter.enums.PatientTreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -42,10 +44,12 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.TreatmentRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.TreatmentResponse;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -69,6 +73,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private AppointmentService appointmentService;
 
 	@Autowired
 	private SpecialityRepository specialityRepository;
@@ -223,9 +230,19 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request) {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection;
+		Appointment appointment = null;
 		try {
+			if (request.getAppointmentRequest() != null) {
+				appointment = addTreatmentAppointment(request.getAppointmentRequest());
+			}
+
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				patientTreatmentCollection = new PatientTreatmentCollection();
+				if (appointment != null) {
+					request.setAppointmentId(appointment.getAppointmentId());
+					request.setTime(appointment.getTime());
+					request.setFromDate(appointment.getFromDate());
+				}
 				patientTreatmentCollection.setCreatedTime(new Date());
 				BeanUtil.map(request, patientTreatmentCollection);
 				UserCollection userCollection = null;
@@ -272,6 +289,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentResponses.add(treatmentResponse);
 			}
 			patientTreatmentCollection.setTreatments(treatments);
+			patientTreatmentCollection
+					.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
+			;
 			patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 			response = new PatientTreatmentResponse();
@@ -361,6 +381,16 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		return response;
 	}
 
+	private Appointment addTreatmentAppointment(AppointmentRequest appointment) {
+		Appointment response = null;
+		if (appointment.getAppointmentId() == null) {
+			response = appointmentService.addAppointment(appointment);
+		} else {
+			response = appointmentService.updateAppointment(appointment);
+		}
+		return response;
+	}
+
 	@Override
 	@Transactional
 	public PatientTreatmentResponse getPatientTreatmentById(String treatmentId) {
@@ -401,9 +431,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId) {
 
 		List<PatientTreatment> response = null;
+		List<PatientTreatmentCollection> patientTreatmentCollectionList = null;
+
 		try {
-			List<PatientTreatmentCollection> patientTreatmentCollectionList = patientTreamentRepository
-					.findByIds(treatmentId);
+			patientTreatmentCollectionList = patientTreamentRepository.findByIds(treatmentId);
 			if (patientTreatmentCollectionList != null) {
 				response = new ArrayList<PatientTreatment>();
 				for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollectionList) {
