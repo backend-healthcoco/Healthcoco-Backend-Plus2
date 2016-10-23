@@ -3,9 +3,10 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.TreatmentResponse;
 
-public class PatientTreatment {
+public class PatientTreatment  extends GenericCollection {
 	private List<TreatmentResponse> treatments;
 	private String id;
 

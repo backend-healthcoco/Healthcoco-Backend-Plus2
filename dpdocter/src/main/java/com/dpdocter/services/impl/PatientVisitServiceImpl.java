@@ -590,7 +590,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (patientTreatmentResponse != null) {
 					String visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId());
-
 					patientTreatment.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<PatientTreatment> list = new ArrayList<PatientTreatment>();
