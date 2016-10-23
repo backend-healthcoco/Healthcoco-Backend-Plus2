@@ -332,6 +332,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCollection.setCreatedBy(oldDrug.getCreatedBy());
 			drugCollection.setCreatedTime(oldDrug.getCreatedTime());
 			drugCollection.setDiscarded(oldDrug.getDiscarded());
+			drugCollection.setDrugCode(oldDrug.getDrugCode());
+			drugCollection.setGenericCodes(oldDrug.getGenericCodes());
+			drugCollection.setMRP(oldDrug.getMRP());
+			drugCollection.setCompanyName(oldDrug.getCompanyName());
+			drugCollection.setPackSize(oldDrug.getPackSize());
 			if (drugCollection.getDrugType() != null) {
 				if (drugCollection.getDrugType().getId() == null)
 					drugCollection.setDrugType(null);
