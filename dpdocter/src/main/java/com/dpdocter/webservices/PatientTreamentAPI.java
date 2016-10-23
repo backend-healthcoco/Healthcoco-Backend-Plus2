@@ -26,6 +26,7 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -33,6 +34,7 @@ import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -51,7 +53,10 @@ public class PatientTreamentAPI {
 
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
-
+	
+	@Autowired
+	private PatientVisitService patientTrackService;
+	
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
 
@@ -201,6 +206,11 @@ public class PatientTreamentAPI {
 		}
 		PatientTreatmentResponse addEditPatientTreatmentResponse = patientTreatmentServices
 				.addEditPatientTreatment(request);
+		if (addEditPatientTreatmentResponse != null) {
+			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
+					request.getVisitId());
+			addEditPatientTreatmentResponse.setVisitId(visitId);
+		}
 
 		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
 		response.setData(addEditPatientTreatmentResponse);
