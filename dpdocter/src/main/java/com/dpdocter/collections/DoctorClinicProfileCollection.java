@@ -34,7 +34,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private ConsultationFee consultationFee;
 
     @Field
-    private AppointmentSlot appointmentSlot;
+    private AppointmentSlot appointmentSlot = new AppointmentSlot();
 
     @Field
     private List<WorkingSchedule> workingSchedules;

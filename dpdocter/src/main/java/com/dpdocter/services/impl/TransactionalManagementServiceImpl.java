@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -111,9 +114,12 @@ import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
+import com.dpdocter.response.AppointmentPatientReminderResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class TransactionalManagementServiceImpl implements TransactionalManagementService {
@@ -231,6 +237,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Value(value = "${prescription.add.patient.download.app.message}")
     private String downloadAppMessageToPatient;
 
+    @Value(value = "${patient.app.bit.link}")
+	private String patientAppBitLink;
+    
     @Scheduled(fixedDelay = 1800000)
     @Override
     @Transactional
@@ -397,6 +406,91 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
   	return response;
   }
 
+	//Appointment Reminder to Patient
+  @Scheduled(cron = "0 0/30 9 * * *", zone = "IST")
+  @Override
+  @Transactional
+  public void sendReminderToPatient(){
+  	try{
+  		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+      	
+  	    localCalendar.setTime(new Date());
+  		int currentDayFromTime = localCalendar.get(Calendar.DATE);
+  		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
+  		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
+  		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
+  		    
+  	    localCalendar.setTime(new Date());
+  		int currentDay = localCalendar.get(Calendar.DATE);
+  		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+  		int currentYear = localCalendar.get(Calendar.YEAR);
+  		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+  		
+  		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("doctorName", "$user.firstName"),
+  				Fields.field("doctorTitle", "$user.title"),
+				Fields.field("patientMobileNumber", "$patient.mobileNumber"), 
+				Fields.field("appointmentId", "$appointmentId"),
+				Fields.field("clinicNumber", "$location.clinicNumber"),
+				Fields.field("locationName", "$location.locationName"),
+				Fields.field("time", "$time"),
+				Fields.field("fromDate", "$fromDate")
+				));
+
+  		Aggregation aggregation = Aggregation.newAggregation(
+  				Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type").is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+  				Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+				Aggregation.unwind("user"),
+				Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+				Aggregation.unwind("location"),
+				Aggregation.lookup("user_cl", "patientId", "_id", "patient"),
+				Aggregation.unwind("patient"), projectList);
+  		AggregationResults<AppointmentPatientReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation, AppointmentCollection.class, AppointmentPatientReminderResponse.class);
+
+  		List<AppointmentPatientReminderResponse> appointmentPatientReminderResponses = aggregationResults.getMappedResults();
+
+  		if(appointmentPatientReminderResponses != null && !appointmentPatientReminderResponses.isEmpty())
+  		for(AppointmentPatientReminderResponse appointmentPatientReminderResponse : appointmentPatientReminderResponses){
+  			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+
+			String _24HourTime = String.format("%02d:%02d", appointmentPatientReminderResponse.getTime().getFromTime() / 60, appointmentPatientReminderResponse.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(appointmentPatientReminderResponse.getFromDate());
+
+			if(!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getPatientMobileNumber())){
+      				
+      				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+      				SMSDetail smsDetail = new SMSDetail();
+      			    SMS sms = new SMS();
+      			    sms.setSmsText("You have an upcoming appointment " + appointmentPatientReminderResponse.getAppointmentId()
+      			    + " @ " + dateTime + " with " + appointmentPatientReminderResponse.getDoctorTitle()+" "+appointmentPatientReminderResponse.getDoctorName()
+      						+ (!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getLocationName()) ? (", " + appointmentPatientReminderResponse.getLocationName()) : "")
+      						+ (!DPDoctorUtils.anyStringEmpty(appointmentPatientReminderResponse.getClinicNumber()) ? ", " + appointmentPatientReminderResponse.getClinicNumber() : "") 
+      						+ ". Download Healthcoco App- "+ patientAppBitLink);
+
+      			    SMSAddress smsAddress = new SMSAddress();
+      			    smsAddress.setRecipient(appointmentPatientReminderResponse.getPatientMobileNumber());
+      			    sms.setSmsAddress(smsAddress);
+
+      			    smsDetail.setSms(sms);
+      			    smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+      			    List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+      			    smsDetails.add(smsDetail);
+      			    smsTrackDetail.setSmsDetails(smsDetails);
+      			    sMSServices.sendSMS(smsTrackDetail, false);
+      			}
+  			}
+  	}catch(Exception e){
+  		e.printStackTrace();
+  	    logger.error(e);
+  	}
+  }
+
     public void checkOTP() {
 	try {
 	    List<OTPCollection> otpCollections = otpRepository.findNonExpiredOtp(OTPState.EXPIRED.getState());
@@ -490,7 +584,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
     }
 
-	private void checkDoctorDrug(ObjectId resourceId) {
+    @Override
+    @Transactional
+    public void checkDoctorDrug(ObjectId resourceId) {
 		try {
 		    DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findOne(resourceId);
 		    if (doctorDrugCollection != null) {

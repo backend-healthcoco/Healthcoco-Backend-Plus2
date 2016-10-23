@@ -36,4 +36,8 @@ public interface TransactionalManagementService {
 
 	Boolean sendPromotionalSMSToPatient();
 
+	void sendReminderToPatient();
+
+	void checkDoctorDrug(ObjectId resourceId);
+
 }
