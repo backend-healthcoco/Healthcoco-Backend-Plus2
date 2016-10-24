@@ -322,10 +322,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
         		if(appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
         		for(AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses){
         			UserCollection userCollection = userRepository.findOne(new ObjectId(appointmentDoctorReminderResponse.getDoctorId()));
-//        			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-//        			String dateTime = sdf.format(new Date());
         			if(appointmentDoctorReminderResponse.getTotal() > 0){
-        				
             			if(userCollection != null){            				
                 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
                 				smsTrackDetail.setDoctorId(userCollection.getId());

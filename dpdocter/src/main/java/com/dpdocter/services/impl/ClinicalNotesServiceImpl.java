@@ -222,7 +222,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
-					diagnosisIds.add(new ObjectId(diagnosis.getId()));
+					if(!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))diagnosisIds.add(new ObjectId(diagnosis.getId()));
 				}
 			}
 
@@ -329,7 +329,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
 					if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-						diagnosisIds.add(new ObjectId(diagnosis.getId()));
+						if(!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))diagnosisIds.add(new ObjectId(diagnosis.getId()));
 					}
 				}
 			}

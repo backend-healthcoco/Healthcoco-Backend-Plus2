@@ -86,7 +86,6 @@ import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.request.AppointmentRequest;
-import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;

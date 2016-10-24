@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
-import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DoctorDrug;
 import com.dpdocter.beans.Drug;

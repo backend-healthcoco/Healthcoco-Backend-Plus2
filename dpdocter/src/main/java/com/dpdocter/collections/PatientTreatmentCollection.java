@@ -54,7 +54,7 @@ public class PatientTreatmentCollection extends GenericCollection {
 	private Boolean inHistory = false;
 
 	@Field
-	private ObjectId appointmentId;
+	private String appointmentId;
 
 	@Field
 	private WorkingHours time;
@@ -175,11 +175,11 @@ public class PatientTreatmentCollection extends GenericCollection {
 	}
 	
 
-	public ObjectId getAppointmentId() {
+	public String getAppointmentId() {
 		return appointmentId;
 	}
 
-	public void setAppointmentId(ObjectId appointmentId) {
+	public void setAppointmentId(String appointmentId) {
 		this.appointmentId = appointmentId;
 	}
 
