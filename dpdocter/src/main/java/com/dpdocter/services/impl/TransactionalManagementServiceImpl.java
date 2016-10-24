@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -296,16 +297,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     		int currentDayFromTime = localCalendar.get(Calendar.DATE);
     		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
     		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
-    		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
-    		    
+    		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
     	    localCalendar.setTime(new Date());
     		int currentDay = localCalendar.get(Calendar.DATE);
     		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
     		int currentYear = localCalendar.get(Calendar.YEAR);
-    		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-    		
+    		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+	
     		Aggregation aggregation = Aggregation.newAggregation(
-    				Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type").is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
+    				Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).
+    						and("type").is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate").lte(toTime)),
     				Aggregation.group("doctorId").count().as("total"), Aggregation.project("total").and("doctorId").previousOperation());
     		AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate.aggregate(aggregation, AppointmentCollection.class,
     				AppointmentDoctorReminderResponse.class);
@@ -407,7 +409,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
   }
 
 	//Appointment Reminder to Patient
-  @Scheduled(cron = "0 0/30 9 * * *", zone = "IST")
+  @Scheduled(cron = "0 0/30 1 * * *", zone = "IST")
   @Override
   @Transactional
   public void sendReminderToPatient(){
@@ -418,13 +420,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
   		int currentDayFromTime = localCalendar.get(Calendar.DATE);
   		int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
   		int currentYearFromTime = localCalendar.get(Calendar.YEAR);
-  		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0);
+  		DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
   		    
   	    localCalendar.setTime(new Date());
   		int currentDay = localCalendar.get(Calendar.DATE);
   		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
   		int currentYear = localCalendar.get(Calendar.YEAR);
-  		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+  		DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
   		
   		ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("doctorName", "$user.firstName"),
   				Fields.field("doctorTitle", "$user.title"),
