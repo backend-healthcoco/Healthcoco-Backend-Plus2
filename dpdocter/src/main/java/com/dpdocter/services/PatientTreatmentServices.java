@@ -19,7 +19,7 @@ public interface PatientTreatmentServices {
 
 	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request);
 
-	boolean deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
+	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
 	PatientTreatmentResponse getPatientTreatmentById(String treatmentId);

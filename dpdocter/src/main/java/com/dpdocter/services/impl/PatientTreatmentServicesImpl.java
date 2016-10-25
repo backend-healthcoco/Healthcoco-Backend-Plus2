@@ -357,20 +357,23 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	@Transactional
-	public boolean deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
-		boolean response = false;
+	public PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId,
+			String hospitalId, Boolean discarded) {
+		PatientTreatmentResponse response = null;
 		try {
 			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
 					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
-
+			
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setDiscarded(discarded);
 				patientTreatmentCollection.setUpdatedTime(new Date());
 				patientTreamentRepository.save(patientTreatmentCollection);
-				response = true;
-			} else {
+				response=getPatientTreatmentById(treatmentId);
+
+				}
+
+			else {
 				logger.warn("No treatment found for the given id");
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
 			}

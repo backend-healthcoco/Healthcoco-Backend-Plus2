@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
@@ -53,10 +54,10 @@ public class PatientTreamentAPI {
 
 	@Value(value = "${invalid.input}")
 	private String invalidInput;
-	
+
 	@Autowired
 	private PatientVisitService patientTrackService;
-	
+
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
 
@@ -242,7 +243,7 @@ public class PatientTreamentAPI {
 	@Path(PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT)
 	@DELETE
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.DELETE_PATIENT_TREATMENT)
-	public Response<Boolean> deletePatientTreatment(@PathParam("treatmentId") String treatmentId,
+	public Response<PatientTreatmentResponse> deletePatientTreatment(@PathParam("treatmentId") String treatmentId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@PathParam("doctorId") String doctorId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(treatmentId, locationId, hospitalId, doctorId)) {
@@ -250,10 +251,10 @@ public class PatientTreamentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 
-		boolean deletePatientTreatmentResponse = patientTreatmentServices.deletePatientTreatment(treatmentId, doctorId,
-				locationId, hospitalId, discarded);
+		PatientTreatmentResponse deletePatientTreatmentResponse = patientTreatmentServices
+				.deletePatientTreatment(treatmentId, doctorId, locationId, hospitalId, discarded);
 
-		Response<Boolean> response = new Response<Boolean>();
+		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
 		response.setData(deletePatientTreatmentResponse);
 		return response;
 	}
