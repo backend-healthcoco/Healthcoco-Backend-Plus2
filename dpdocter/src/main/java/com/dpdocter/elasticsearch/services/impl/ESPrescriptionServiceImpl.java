@@ -183,7 +183,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		List<ESDrugDocument> response = null;
 		try {
 			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded,
-					null, searchTerm, null, category, "drugName");
+					null, searchTerm, null, category, null, "drugName");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();

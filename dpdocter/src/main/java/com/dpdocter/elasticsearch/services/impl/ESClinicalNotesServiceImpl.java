@@ -356,7 +356,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.COMPLAINT, page, size, updatedTime, discarded, null, searchTerm, specialities, null, "complaint");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.COMPLAINT, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "complaint");
 		
 		response = elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class);
 	} catch (Exception e) {
@@ -371,7 +371,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    Boolean discarded, String searchTerm) {
 	List<ESComplaintsDocument> response = null;
 	try {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "complaint");
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "complaint");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESComplaintsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -598,7 +598,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INVESTIGATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, "investigation");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INVESTIGATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "investigation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -615,7 +615,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	    if (doctorId == null)
 	    	response = new ArrayList<ESInvestigationsDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "investigation");
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "investigation");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESInvestigationsDocument.class);
 	    }
 	} catch (Exception e) {
@@ -692,7 +692,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.OBSERVATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, "observation");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.OBSERVATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "observation");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class);
 		} catch (Exception e) {
 	    e.printStackTrace();
@@ -708,7 +708,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    if (doctorId == null)response = new ArrayList<ESObservationsDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "observation");
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "observation");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESObservationsDocument.class);
 		}
 	} catch (Exception e) {
@@ -785,7 +785,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DIAGNOSIS, page, size, updatedTime, discarded, null, searchTerm, specialities, null, "diagnosis");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DIAGNOSIS, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "diagnosis");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class);
 		
 	} catch (Exception e) {
@@ -802,7 +802,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    if(doctorId == null)response = new ArrayList<ESDiagnosesDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "diagnosis");
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "diagnosis");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDiagnosesDocument.class);
 	    }
 	} catch (Exception e) {
@@ -880,7 +880,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		 	}
 	    }
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NOTES, page, size, updatedTime, discarded, null, searchTerm, specialities, null, "note");
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.NOTES, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "note");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class);
 	} catch (Exception e) {
 	    e.printStackTrace();
@@ -896,7 +896,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	try {
 	    if (doctorId == null)response = new ArrayList<ESNotesDocument>();
 	    else {
-	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "note");
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "note");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESNotesDocument.class);	
 	    }	
 	    

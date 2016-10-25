@@ -581,8 +581,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getTreatmentRequest().setFromDate(appointment.getFromDate());
 				}
 
-				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
-						.addEditPatientTreatment(request.getTreatmentRequest());
+				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(request.getTreatmentRequest());
 
 				PatientTreatment patientTreatment = new PatientTreatment();
 				BeanUtil.map(patientTreatmentResponse, patientTreatment);
@@ -637,10 +636,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				visitedFors.add(CLINICAL_NOTES);
 				visitedFors.add(PRESCRIPTION);
 				visitedFors.add(REPORTS);
-				visitedFors.add(TREATMENT);
-			} else {
+			} else if(visitFor.equalsIgnoreCase(VisitedFor.TREATMENT.getVisitedFor())) {
+				visitedFors.add(CLINICAL_NOTES);
+				visitedFors.add(PRESCRIPTION);
+				visitedFors.add(REPORTS);
+				visitedFors.add(VisitedFor.TREATMENT);
+			}else{
 				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
-
 			}
 
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -713,7 +715,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						patientVisitResponse.setRecords(records);
 					}
 
-					if (patientVisitCollection.getTreatmentId() != null && visitFor != null) {
+					if (patientVisitCollection.getTreatmentId() != null) {
 						List<PatientTreatment> patientTreatment = patientTreatmentServices
 								.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
 						patientVisitResponse.setPatientTreatment(patientTreatment);
