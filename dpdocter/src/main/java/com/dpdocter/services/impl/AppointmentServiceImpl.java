@@ -1451,25 +1451,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 			} else if (!localtionCollection.getIsLab()) {
 				return null;
 			} else {
-				if (!DPDoctorUtils.anyStringEmpty(localtionCollection.getLogoThumbnailUrl()))
-					localtionCollection.setLogoThumbnailUrl(imagePath + localtionCollection.getLogoThumbnailUrl());
-				if (!DPDoctorUtils.anyStringEmpty(localtionCollection.getLogoUrl()))
-					localtionCollection.setLogoUrl(imagePath + localtionCollection.getLogoUrl());
+				localtionCollection.setLogoThumbnailUrl(getFinalImageURL(localtionCollection.getLogoThumbnailUrl()));
+				localtionCollection.setLogoUrl(getFinalImageURL(localtionCollection.getLogoUrl()));
 				for (ClinicImage image : localtionCollection.getImages()) {
-					if (!DPDoctorUtils.anyStringEmpty(image.getImageUrl()))
-						image.setImageUrl(imagePath + image.getImageUrl());
-					if (!DPDoctorUtils.anyStringEmpty(image.getThumbnailUrl()))
-						image.setThumbnailUrl(imagePath + image.getThumbnailUrl());
+					image.setImageUrl(getFinalImageURL(image.getImageUrl()));
+					image.setThumbnailUrl(getFinalImageURL(image.getThumbnailUrl()));
 
 				}
-
 				BeanUtil.map(localtionCollection, location);
 				response.setLocation(location);
 
 				hospitalCollection = hospitalRepository.findOne(localtionCollection.getHospitalId());
 				if (hospitalCollection != null) {
-					if (!DPDoctorUtils.anyStringEmpty(hospitalCollection.getHospitalImageUrl()))
-						hospitalCollection.setHospitalImageUrl(imagePath + hospitalCollection.getHospitalImageUrl());
+					hospitalCollection.setHospitalImageUrl(getFinalImageURL(hospitalCollection.getHospitalImageUrl()));
 					BeanUtil.map(hospitalCollection, hospital);
 					response.setHospital(hospital);
 				}
@@ -1508,15 +1502,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 									new BeanToPropertyValueTransformer("speciality"));
 							doctor.setSpecialities(specialities);
 						}
-						if (!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))
-
-							doctor.setCoverImageUrl(imagePath + doctor.getCoverImageUrl());
-						if (!DPDoctorUtils.anyStringEmpty(doctor.getCoverImageUrl()))
-							doctor.setCoverThumbnailImageUrl(imagePath + doctor.getCoverImageUrl());
-						if (!DPDoctorUtils.anyStringEmpty(doctor.getThumbnailUrl()))
-							doctor.setThumbnailUrl(imagePath + doctor.getThumbnailUrl());
-						if (!DPDoctorUtils.anyStringEmpty(doctor.getImageUrl()))
-							doctor.setImageUrl(imagePath + doctor.getImageUrl());
+						doctor.setCoverImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+						doctor.setCoverThumbnailImageUrl(getFinalImageURL(doctor.getCoverImageUrl()));
+						doctor.setThumbnailUrl(getFinalImageURL(doctor.getThumbnailUrl()));
+						doctor.setImageUrl(getFinalImageURL(doctor.getImageUrl()));
 
 						doctors.add(doctor);
 					}

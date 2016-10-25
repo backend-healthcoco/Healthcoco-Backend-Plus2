@@ -241,8 +241,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     @Value(value = "${patient.app.bit.link}")
 	private String patientAppBitLink;
     
-    @Value("${is.env.production}")
-    private Boolean isEnvProduction;
+    @Value("${send.sms}")
+    private Boolean sendSMS;
 
     @Scheduled(fixedDelay = 1800000)
     @Override
@@ -289,13 +289,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
     }
 
 	//Appointment Reminder to Doctor, if appointment > 0
-    @Scheduled(cron = "0 0/30 7 * * *", zone = "IST")
+    @Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
     @Override
     @Transactional
     public void sendReminderToDoctor(){
-    	System.out.println("Doctor");
     	try{
-    		if(isEnvProduction){
+    		if(sendSMS){
     			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
             	
         	    localCalendar.setTime(new Date());
@@ -415,9 +414,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
   @Override
   @Transactional
   public void sendReminderToPatient(){
-	  System.out.println("done");
   	try{
-  		if(isEnvProduction){
+  		if(sendSMS){
   	  		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
   	      	
   	  	    localCalendar.setTime(new Date());

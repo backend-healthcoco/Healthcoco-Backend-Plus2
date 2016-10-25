@@ -557,7 +557,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			Criteria criteria = new Criteria("patientId").is(patientObjectId);
+			
 			patientObjectId = new ObjectId(patientId);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -566,9 +566,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			if (!DPDoctorUtils.anyStringEmpty(updatedTime))
-				criteria = criteria.and("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
-						.is(patientObjectId);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId").is(patientObjectId); 
+			
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 				criteria.and("doctorId").is(doctorObjectId);
 				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
