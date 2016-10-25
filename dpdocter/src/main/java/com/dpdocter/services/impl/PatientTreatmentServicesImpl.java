@@ -236,7 +236,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				appointment = addTreatmentAppointment(request.getAppointmentRequest());
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				patientTreatmentCollection = new PatientTreatmentCollection();
 				if (appointment != null) {
 					request.setAppointmentId(appointment.getAppointmentId());
