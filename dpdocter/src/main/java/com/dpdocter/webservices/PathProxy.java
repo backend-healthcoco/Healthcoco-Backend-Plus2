@@ -422,6 +422,8 @@ public interface PathProxy {
 		public static final String GET_PATIENT_HISTORY = "/{patientId}";
 
 		public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
+		
+		public static final String GET_HISTORY = "/getHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		// public static final String ADD_VISITS_TO_HISTORY =
 		// "/visits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";

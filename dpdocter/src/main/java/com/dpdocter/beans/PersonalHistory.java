@@ -7,6 +7,7 @@ public class PersonalHistory {
 	private String addictions;
 	private String bowelHabit;
 	private String bladderHabit;
+	private String patientId;
 
 	public String getId() {
 		return id;
@@ -48,10 +49,18 @@ public class PersonalHistory {
 		this.bladderHabit = bladderHabit;
 	}
 
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	@Override
 	public String toString() {
 		return "PersonalHistory [id=" + id + ", diet=" + diet + ", addictions=" + addictions + ", bowelHabit="
-				+ bowelHabit + ", bladderHabit=" + bladderHabit + "]";
+				+ bowelHabit + ", bladderHabit=" + bladderHabit + ", patientId=" + patientId + "]";
 	}
 
 }
