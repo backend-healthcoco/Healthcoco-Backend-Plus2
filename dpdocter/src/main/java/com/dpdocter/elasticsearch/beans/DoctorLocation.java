@@ -100,16 +100,8 @@ public class DoctorLocation {
     private List<WorkingSchedule> clinicWorkingSchedules;
     
     @Field(type = FieldType.Boolean)
-    private Boolean IslocationListed=true;
+    private Boolean isLocationListed=true;
 
-
-	public Boolean getIslocationListed() {
-		return IslocationListed;
-	}
-
-	public void setIslocationListed(Boolean islocationListed) {
-		IslocationListed = islocationListed;
-	}
 
 	public String getLocationId() {
 		return locationId;
@@ -351,6 +343,14 @@ public class DoctorLocation {
 		}
 	}
 
+	public Boolean getIsLocationListed() {
+		return isLocationListed;
+	}
+
+	public void setIsLocationListed(Boolean isLocationListed) {
+		this.isLocationListed = isLocationListed;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -363,7 +363,8 @@ public class DoctorLocation {
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
-				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + "]";
+				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
+				+ isLocationListed + "]";
 	}
 
 }
