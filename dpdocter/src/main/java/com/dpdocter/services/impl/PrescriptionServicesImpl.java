@@ -118,7 +118,6 @@ import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
@@ -263,8 +262,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public DrugAddEditResponse addDrug(DrugAddEditRequest request) {
-		DrugAddEditResponse response = null;
+	public Drug addDrug(DrugAddEditRequest request) {
+		Drug response = null;
 		DrugCollection drugCollection = new DrugCollection();
 		BeanUtil.map(request, drugCollection);
 		UUID drugCode = UUID.randomUUID();
@@ -292,10 +291,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 			}
-			if (drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null) {
-				if (drugCollection.getStrength().getStrengthUnit().getId() == null)
-					drugCollection.getStrength().setStrengthUnit(null);
-			}
 			drugCollection = drugRepository.save(drugCollection);
 			DoctorDrugCollection doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
 					drugCollection.getDoctorId(), drugCollection.getLocationId(), drugCollection.getHospitalId(), 1,
@@ -310,7 +305,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				esDoctorDrugDocument.setId(drugCollection.getId().toString());
 				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 			}
-			response = new DrugAddEditResponse();
+			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -322,8 +317,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public DrugAddEditResponse editDrug(DrugAddEditRequest request) {
-		DrugAddEditResponse response = null;
+	public Drug editDrug(DrugAddEditRequest request) {
+		Drug response = null;
 		DrugCollection drugCollection = new DrugCollection();
 		BeanUtil.map(request, drugCollection);
 		try {
@@ -354,7 +349,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					drugCollection.getStrength().setStrengthUnit(null);
 			}
 			drugCollection = drugRepository.save(drugCollection);
-			response = new DrugAddEditResponse();
+			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -421,12 +416,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public DrugAddEditResponse getDrugById(String drugId) {
-		DrugAddEditResponse drugAddEditResponse = null;
+	public Drug getDrugById(String drugId) {
+		Drug drugAddEditResponse = null;
 		try {
 			DrugCollection drugCollection = drugRepository.findOne(new ObjectId(drugId));
 			if (drugCollection != null) {
-				drugAddEditResponse = new DrugAddEditResponse();
+				drugAddEditResponse = new Drug();
 				BeanUtil.map(drugCollection, drugAddEditResponse);
 			} else {
 				logger.warn("Drug not found. Please check Drug Id");

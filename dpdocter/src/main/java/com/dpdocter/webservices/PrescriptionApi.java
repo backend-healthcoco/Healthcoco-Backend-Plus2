@@ -42,7 +42,6 @@ import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
@@ -90,13 +89,13 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG)
 	@POST
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG, notes = PathProxy.PrescriptionUrls.ADD_DRUG)
-	public Response<DrugAddEditResponse> addDrug(DrugAddEditRequest request) {
+	public Response<Drug> addDrug(DrugAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
 				request.getLocationId(), request.getDrugName())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		DrugAddEditResponse drugAddEditResponse = prescriptionServices.addDrug(request);
+		Drug drugAddEditResponse = prescriptionServices.addDrug(request);
 
 		transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
 		if (drugAddEditResponse != null) {
@@ -109,7 +108,7 @@ public class PrescriptionApi {
 			esPrescriptionService.addDrug(esDrugDocument);
 		}
 
-		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
+		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);
 		return response;
 	}
@@ -117,7 +116,7 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
 	@PUT
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG, notes = PathProxy.PrescriptionUrls.EDIT_DRUG)
-	public Response<DrugAddEditResponse> editDrug(@PathParam(value = "drugId") String drugId,
+	public Response<Drug> editDrug(@PathParam(value = "drugId") String drugId,
 			DrugAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(drugId, request.getDoctorId(), request.getHospitalId(),
 				request.getLocationId())) {
@@ -125,7 +124,7 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		request.setId(drugId);
-		DrugAddEditResponse drugAddEditResponse = prescriptionServices.editDrug(request);
+		Drug drugAddEditResponse = prescriptionServices.editDrug(request);
 
 		transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
 		if (drugAddEditResponse != null) {
@@ -137,7 +136,7 @@ public class PrescriptionApi {
 			}
 			esPrescriptionService.addDrug(esDrugDocument);
 		}
-		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
+		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);
 		return response;
 	}
@@ -175,13 +174,13 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.GET_DRUG_ID)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_DRUG_ID, notes = PathProxy.PrescriptionUrls.GET_DRUG_ID)
-	public Response<DrugAddEditResponse> getDrugDetails(@PathParam("drugId") String drugId) {
+	public Response<Drug> getDrugDetails(@PathParam("drugId") String drugId) {
 		if (drugId == null) {
 			logger.error("DrugId Is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "DrugId Is NULL");
 		}
-		DrugAddEditResponse drugAddEditResponse = prescriptionServices.getDrugById(drugId);
-		Response<DrugAddEditResponse> response = new Response<DrugAddEditResponse>();
+		Drug drugAddEditResponse = prescriptionServices.getDrugById(drugId);
+		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);
 		return response;
 	}

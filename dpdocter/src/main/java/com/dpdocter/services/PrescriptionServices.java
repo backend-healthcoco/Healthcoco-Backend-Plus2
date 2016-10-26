@@ -18,7 +18,6 @@ import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
@@ -31,13 +30,13 @@ import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 
 public interface PrescriptionServices {
-	DrugAddEditResponse addDrug(DrugAddEditRequest request);
+	Drug addDrug(DrugAddEditRequest request);
 
-	DrugAddEditResponse editDrug(DrugAddEditRequest request);
+	Drug editDrug(DrugAddEditRequest request);
 
 	Drug deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
 
-	DrugAddEditResponse getDrugById(String drugId);
+	Drug getDrugById(String drugId);
 
 	TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
 

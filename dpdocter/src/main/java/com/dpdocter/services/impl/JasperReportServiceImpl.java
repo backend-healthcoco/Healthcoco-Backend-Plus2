@@ -223,7 +223,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private void createPrescription(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth) throws JRException {
 		JRDesignBand band = new JRDesignBand();
-		band.setHeight(21);
+		band.setHeight(20);
 		
 		JRDesignTextField jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$P{PRESCRIPTION}"));
@@ -851,17 +851,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if(contentFontSize > 13)fieldWidth = 82;
 		else if(contentFontSize > 11)fieldWidth = 70;
 		JRDesignBand band = new JRDesignBand();
-		band.setHeight(25);
+		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression("!"+value+".equals( null )"));
 		JRDesignTextField jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$P{VitalSigns}"));
-        jrDesignTextField.setX(0);jrDesignTextField.setY(4);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setX(0);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
         jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
         band.addElement(jrDesignTextField);
         
 		jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression(value));
-        jrDesignTextField.setX(fieldWidth+1);jrDesignTextField.setY(4);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth-fieldWidth-1);
+        jrDesignTextField.setX(fieldWidth+1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth-fieldWidth-1);
         jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.RELATIVE_TO_TALLEST_OBJECT);
         band.addElement(jrDesignTextField);	
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
