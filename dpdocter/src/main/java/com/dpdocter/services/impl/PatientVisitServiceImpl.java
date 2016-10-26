@@ -92,6 +92,7 @@ import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
+import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
@@ -607,6 +608,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				response.setCreatedTime(patientVisitCollection.getCreatedTime());
 				response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 				response.setCreatedBy(patientVisitCollection.getCreatedBy());
+				if((response.getPatientTreatment() == null || response.getPatientTreatment().isEmpty()) && (patientVisitCollection.getTreatmentId() != null && !patientVisitCollection.getTreatmentId().isEmpty())){
+					List<PatientTreatment> list = patientTreatmentServices.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId()); 
+					response.setPatientTreatment(list);
+				}
+					
 				if (appointment != null) {
 					response.setAppointmentId(appointment.getAppointmentId());
 					response.setTime(appointment.getTime());

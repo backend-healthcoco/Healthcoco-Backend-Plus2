@@ -5,289 +5,291 @@ import java.util.List;
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorClinicProfile {
-    private String id;
+	private String id;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String clinicAddress;
+	private String clinicAddress;
 
-    private String locationName;
+	private String locationName;
 
-    private String country;
+	private String country;
 
-    private String state;
+	private String state;
 
-    private String city;
+	private String city;
 
-    private String postalCode;
+	private String postalCode;
 
-    private Double latitude;
+	private Double latitude;
 
-    private Double longitude;
+	private Double longitude;
 
-    private List<String> appointmentBookingNumber;
+	private List<String> appointmentBookingNumber;
 
-    private ConsultationFee consultationFee;
+	private ConsultationFee consultationFee;
 
-    private AppointmentSlot appointmentSlot;
+	private AppointmentSlot appointmentSlot;
 
-    private List<WorkingSchedule> workingSchedules;
+	private List<WorkingSchedule> workingSchedules;
 
-    private DoctorFacility facility;
+	private DoctorFacility facility;
 
-    private List<ClinicImage> images;
+	private List<ClinicImage> images;
 
-    private String logoUrl;
+	private String logoUrl;
 
-    private String logoThumbnailUrl;
+	private String logoThumbnailUrl;
 
-    private Integer noOfReviews = 0;
+	private Integer noOfReviews = 0;
 
-    private Integer noOfRecommenations = 0;
+	private Integer noOfRecommenations = 0;
 
-    private Boolean isClinic = true;
+	private Boolean isClinic = true;
 
-    private Boolean isLab = false;
+	private Boolean isLab = false;
 
-    private Boolean isOnlineReportsAvailable = false;
+	private Boolean isOnlineReportsAvailable = false;
 
-    private Boolean isNABLAccredited = false;
+	private Boolean isNABLAccredited = false;
 
-    private Boolean isHomeServiceAvailable = false;
+	private Boolean isHomeServiceAvailable = false;
 
-    private String locality;
-    
-    private String timeZone = "IST";
-    		
-    private List<TreatmentServiceCost> treatmentServiceCosts;
-    
-    private Integer noOfServices = 0;
+	private String locality;
 
-    private List<Role> roles;
-    
-    private String patientInitial = "P";
+	private String timeZone = "IST";
 
-    private int patientCounter = 0;
+	private List<TreatmentServiceCost> treatmentServiceCosts;
 
-    public String getId() {
-	return id;
-    }
+	private Integer noOfServices = 0;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private List<Role> roles;
 
-    public String getLocationId() {
-	return locationId;
-    }
+	private String patientInitial = "P";
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	private int patientCounter = 0;
 
-    public String getClinicAddress() {
-	return clinicAddress;
-    }
+	private Boolean isDoctorListed=true;
 
-    public void setClinicAddress(String clinicAddress) {
-	this.clinicAddress = clinicAddress;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public List<String> getAppointmentBookingNumber() {
-	return appointmentBookingNumber;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
-	this.appointmentBookingNumber = appointmentBookingNumber;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public ConsultationFee getConsultationFee() {
-	return consultationFee;
-    }
-
-    public void setConsultationFee(ConsultationFee consultationFee) {
-	this.consultationFee = consultationFee;
-    }
-
-    public AppointmentSlot getAppointmentSlot() {
-	return appointmentSlot;
-    }
-
-    public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
-	this.appointmentSlot = appointmentSlot;
-    }
-
-    public List<WorkingSchedule> getWorkingSchedules() {
-	return workingSchedules;
-    }
-
-    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-	this.workingSchedules = workingSchedules;
-    }
-
-    public List<ClinicImage> getImages() {
-	return images;
-    }
-
-    public void setImages(List<ClinicImage> images) {
-	this.images = images;
-    }
-
-    public String getLogoUrl() {
-	return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
-    }
-
-    public String getLogoThumbnailUrl() {
-	return logoThumbnailUrl;
-    }
-
-    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-	this.logoThumbnailUrl = logoThumbnailUrl;
-    }
-
-    public String getLocationName() {
-	return locationName;
-    }
-
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
-
-    public String getCountry() {
-	return country;
-    }
-
-    public void setCountry(String country) {
-	this.country = country;
-    }
-
-    public String getState() {
-	return state;
-    }
-
-    public void setState(String state) {
-	this.state = state;
-    }
-
-    public String getCity() {
-	return city;
-    }
-
-    public void setCity(String city) {
-	this.city = city;
-    }
-
-    public String getPostalCode() {
-	return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
-
-    public DoctorFacility getFacility() {
-	return facility;
-    }
-
-    public void setFacility(DoctorFacility facility) {
-	this.facility = facility;
-    }
-
-    public Integer getNoOfReviews() {
-	return noOfReviews;
-    }
-
-    public void setNoOfReviews(Integer noOfReviews) {
-	this.noOfReviews = noOfReviews;
-    }
-
-    public Integer getNoOfRecommenations() {
-	return noOfRecommenations;
-    }
-
-    public void setNoOfRecommenations(Integer noOfRecommenations) {
-	this.noOfRecommenations = noOfRecommenations;
-    }
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
-
-    public String getHospitalId() {
-	return hospitalId;
-    }
-
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
-
-    public Double getLatitude() {
-	return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
-
-    public Double getLongitude() {
-	return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
-
-    public Boolean getIsLab() {
-	return isLab;
-    }
-
-    public void setIsLab(Boolean isLab) {
-	this.isLab = isLab;
-    }
-
-    public Boolean getIsOnlineReportsAvailable() {
-	return isOnlineReportsAvailable;
-    }
-
-    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-    }
-
-    public Boolean getIsNABLAccredited() {
-	return isNABLAccredited;
-    }
-
-    public void setIsNABLAccredited(Boolean isNABLAccredited) {
-	this.isNABLAccredited = isNABLAccredited;
-    }
-
-    public Boolean getIsHomeServiceAvailable() {
-	return isHomeServiceAvailable;
-    }
-
-    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-	this.isHomeServiceAvailable = isHomeServiceAvailable;
-    }
-
-    public Boolean getIsClinic() {
-	return isClinic;
-    }
-
-    public void setIsClinic(Boolean isClinic) {
-	this.isClinic = isClinic;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getClinicAddress() {
+		return clinicAddress;
+	}
+
+	public void setClinicAddress(String clinicAddress) {
+		this.clinicAddress = clinicAddress;
+	}
+
+	public List<String> getAppointmentBookingNumber() {
+		return appointmentBookingNumber;
+	}
+
+	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+		this.appointmentBookingNumber = appointmentBookingNumber;
+	}
+
+	public ConsultationFee getConsultationFee() {
+		return consultationFee;
+	}
+
+	public void setConsultationFee(ConsultationFee consultationFee) {
+		this.consultationFee = consultationFee;
+	}
+
+	public AppointmentSlot getAppointmentSlot() {
+		return appointmentSlot;
+	}
+
+	public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
+		this.appointmentSlot = appointmentSlot;
+	}
+
+	public List<WorkingSchedule> getWorkingSchedules() {
+		return workingSchedules;
+	}
+
+	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+		this.workingSchedules = workingSchedules;
+	}
+
+	public List<ClinicImage> getImages() {
+		return images;
+	}
+
+	public void setImages(List<ClinicImage> images) {
+		this.images = images;
+	}
+
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+	public String getLogoThumbnailUrl() {
+		return logoThumbnailUrl;
+	}
+
+	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+		this.logoThumbnailUrl = logoThumbnailUrl;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public DoctorFacility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
+
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
+
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
+
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public Boolean getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
+
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
+
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
+
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
+
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
+
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
+
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
+
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
+
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
 
 	public String getLocality() {
 		return locality;
@@ -343,6 +345,15 @@ public class DoctorClinicProfile {
 
 	public void setPatientCounter(int patientCounter) {
 		this.patientCounter = patientCounter;
+	}
+
+	
+	public Boolean getIsDoctorListed() {
+		return isDoctorListed;
+	}
+
+	public void setIsDoctorListed(Boolean isDoctorListed) {
+		this.isDoctorListed = isDoctorListed;
 	}
 
 	@Override

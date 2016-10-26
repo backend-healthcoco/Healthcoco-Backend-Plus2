@@ -98,6 +98,18 @@ public class DoctorLocation {
     
     @Field(type = FieldType.Nested)
     private List<WorkingSchedule> clinicWorkingSchedules;
+    
+    @Field(type = FieldType.Boolean)
+    private Boolean IslocationListed=true;
+
+
+	public Boolean getIslocationListed() {
+		return IslocationListed;
+	}
+
+	public void setIslocationListed(Boolean islocationListed) {
+		IslocationListed = islocationListed;
+	}
 
 	public String getLocationId() {
 		return locationId;

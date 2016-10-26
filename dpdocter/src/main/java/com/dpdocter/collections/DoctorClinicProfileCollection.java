@@ -15,113 +15,116 @@ import com.dpdocter.enums.DoctorFacility;
 
 @Document(collection = "doctor_clinic_profile_cl")
 public class DoctorClinicProfileCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed
-    private ObjectId userLocationId;
+	@Indexed
+	private ObjectId userLocationId;
 
 	@Field
 	private String patientInitial = "P";
-	
+
 	@Field
 	private int patientCounter = 1;
 
-    @Field
-    private List<String> appointmentBookingNumber;
+	@Field
+	private List<String> appointmentBookingNumber;
 
-    @Field
-    private ConsultationFee consultationFee;
+	@Field
+	private ConsultationFee consultationFee;
 
-    @Field
-    private AppointmentSlot appointmentSlot = new AppointmentSlot();
+	@Field
+	private AppointmentSlot appointmentSlot = new AppointmentSlot();
 
-    @Field
-    private List<WorkingSchedule> workingSchedules;
+	@Field
+	private List<WorkingSchedule> workingSchedules;
 
-    @Field
-    private DoctorFacility facility = DoctorFacility.CALL;
+	@Field
+	private DoctorFacility facility = DoctorFacility.CALL;
 
-    @Field
-    private Integer noOfReviews = 0;
+	@Field
+	private Integer noOfReviews = 0;
 
-    @Field
-    private Integer noOfRecommenations = 0;
+	@Field
+	private Integer noOfRecommenations = 0;
 
-    @Field
-    private String timeZone = "IST";
+	@Field
+	private String timeZone = "IST";
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean isDoctorListed = true;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public ObjectId getUserLocationId() {
-	return userLocationId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setUserLocationId(ObjectId userLocationId) {
-	this.userLocationId = userLocationId;
-    }
+	public ObjectId getUserLocationId() {
+		return userLocationId;
+	}
 
-    public List<String> getAppointmentBookingNumber() {
-	return appointmentBookingNumber;
-    }
+	public void setUserLocationId(ObjectId userLocationId) {
+		this.userLocationId = userLocationId;
+	}
 
-    public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
-	this.appointmentBookingNumber = appointmentBookingNumber;
-    }
+	public List<String> getAppointmentBookingNumber() {
+		return appointmentBookingNumber;
+	}
 
-    public ConsultationFee getConsultationFee() {
-	return consultationFee;
-    }
+	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+		this.appointmentBookingNumber = appointmentBookingNumber;
+	}
 
-    public void setConsultationFee(ConsultationFee consultationFee) {
-	this.consultationFee = consultationFee;
-    }
+	public ConsultationFee getConsultationFee() {
+		return consultationFee;
+	}
 
-    public AppointmentSlot getAppointmentSlot() {
-	return appointmentSlot;
-    }
+	public void setConsultationFee(ConsultationFee consultationFee) {
+		this.consultationFee = consultationFee;
+	}
 
-    public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
-	this.appointmentSlot = appointmentSlot;
-    }
+	public AppointmentSlot getAppointmentSlot() {
+		return appointmentSlot;
+	}
 
-    public List<WorkingSchedule> getWorkingSchedules() {
-	return workingSchedules;
-    }
+	public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
+		this.appointmentSlot = appointmentSlot;
+	}
 
-    public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
-	this.workingSchedules = workingSchedules;
-    }
+	public List<WorkingSchedule> getWorkingSchedules() {
+		return workingSchedules;
+	}
 
-    public DoctorFacility getFacility() {
-	return facility;
-    }
+	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
+		this.workingSchedules = workingSchedules;
+	}
 
-    public void setFacility(DoctorFacility facility) {
-	this.facility = facility;
-    }
+	public DoctorFacility getFacility() {
+		return facility;
+	}
 
-    public Integer getNoOfReviews() {
-	return noOfReviews;
-    }
+	public void setFacility(DoctorFacility facility) {
+		this.facility = facility;
+	}
 
-    public void setNoOfReviews(Integer noOfReviews) {
-	this.noOfReviews = noOfReviews;
-    }
+	public Integer getNoOfReviews() {
+		return noOfReviews;
+	}
 
-    public Integer getNoOfRecommenations() {
-	return noOfRecommenations;
-    }
+	public void setNoOfReviews(Integer noOfReviews) {
+		this.noOfReviews = noOfReviews;
+	}
 
-    public void setNoOfRecommenations(Integer noOfRecommenations) {
-	this.noOfRecommenations = noOfRecommenations;
-    }
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
+	}
 
 	public String getTimeZone() {
 		return timeZone;
@@ -145,6 +148,15 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setPatientCounter(int patientCounter) {
 		this.patientCounter = patientCounter;
+	}
+
+	
+	public Boolean getIsDoctorListed() {
+		return isDoctorListed;
+	}
+
+	public void setIsDoctorListed(Boolean isDoctorListed) {
+		this.isDoctorListed = isDoctorListed;
 	}
 
 	@Override

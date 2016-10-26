@@ -69,6 +69,8 @@ public class Location {
     
     private Boolean isActivate = false;
     
+    private Boolean isLocationListed=true;
+    
 //    private String patientInitial = "P";
 //
 //    private int patientCounter = 0;
@@ -320,6 +322,7 @@ public class Location {
 	public void setIsActivate(Boolean isActivate) {
 		this.isActivate = isActivate;
 	}
+	
 
 //    public String getPatientInitial() {
 //	return patientInitial;
@@ -336,6 +339,14 @@ public class Location {
 //    public void setPatientCounter(int patientCounter) {
 //	this.patientCounter = patientCounter;
 //    }
+
+	public Boolean getIsLocationListed() {
+		return isLocationListed;
+	}
+
+	public void setIsLocationListed(Boolean isLocationListed) {
+		this.isLocationListed = isLocationListed;
+	}
 
 	@Override
 	public String toString() {
