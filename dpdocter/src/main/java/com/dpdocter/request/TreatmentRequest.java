@@ -1,7 +1,7 @@
 package com.dpdocter.request;
 
 import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Quentity;
+import com.dpdocter.beans.Quantity;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
 public class TreatmentRequest {
@@ -18,7 +18,7 @@ public class TreatmentRequest {
 
 	private double finalCost=0.0;
 
-	private Quentity quantity;
+	private Quantity quantity;
 
 	public String getTreatmentServiceId() {
 		return treatmentServiceId;
@@ -68,11 +68,11 @@ public class TreatmentRequest {
 		this.finalCost = finalCost;
 	}
 
-	public Quentity getQuantity() {
+	public Quantity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Quentity quantity) {
+	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
 	

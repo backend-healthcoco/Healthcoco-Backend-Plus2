@@ -1,9 +1,15 @@
 package com.dpdocter.services;
 
 import java.util.List;
+import java.util.Map;
+
+import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.DoctorContactsResponse;
+import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
@@ -40,4 +46,9 @@ public interface PatientVisitService {
     int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
 
     String getPatientVisitFile(String visitId);
+
+	void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId);
+
+	void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
+			String firstName, String mobileNumber, Map<String, Object> parameters);
 }

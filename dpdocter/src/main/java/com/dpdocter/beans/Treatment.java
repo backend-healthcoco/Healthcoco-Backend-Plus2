@@ -19,7 +19,7 @@ public class Treatment extends GenericCollection {
 
 	private double finalCost=0.0;
 
-	private Quentity quantity;
+	private Quantity quantity;
 
 	
 	public ObjectId getTreatmentServiceId() {
@@ -54,11 +54,11 @@ public class Treatment extends GenericCollection {
 		this.note = note;
 	}
 
-	public Quentity getQuantity() {
+	public Quantity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Quentity quantity) {
+	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
 

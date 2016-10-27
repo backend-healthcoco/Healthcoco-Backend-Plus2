@@ -45,4 +45,9 @@ public interface PatientTreatmentServices {
 	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(int page, int size, String doctorId,
 			String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded,
 			Boolean inHistory, String status);
+
+	void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
+
+	String downloadPatientTreatment(String treatmentId);
 }

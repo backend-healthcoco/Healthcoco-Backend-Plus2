@@ -3,7 +3,7 @@ package com.dpdocter.response;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
-import com.dpdocter.beans.Quentity;
+import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
@@ -21,7 +21,7 @@ public class TreatmentResponse {
 
 	private double finalCost = 0.0;
 
-	private Quentity quantity;
+	private Quantity quantity;
 
 	private List<TreatmentService> treatmentServices;
 
@@ -73,11 +73,11 @@ public class TreatmentResponse {
 		this.finalCost = finalCost;
 	}
 
-	public Quentity getQuantity() {
+	public Quantity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(Quentity quantity) {
+	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
 

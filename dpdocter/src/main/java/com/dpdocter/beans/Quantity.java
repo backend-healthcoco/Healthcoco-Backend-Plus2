@@ -2,7 +2,7 @@ package com.dpdocter.beans;
 
 import com.dpdocter.enums.QuantityEnum;
 
-public class Quentity {
+public class Quantity {
 private int value;
 private QuantityEnum type;
 

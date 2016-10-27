@@ -1,15 +1,22 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -19,17 +26,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PatientTreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.Range;
@@ -39,7 +54,10 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
@@ -47,10 +65,17 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.TreatmentRequest;
+import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientTreatmentServices;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -89,6 +114,33 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Autowired
 	private ESTreatmentService esTreatmentService;
 
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private LocationRepository locationRepository;
+
+	@Autowired
+	private PatientRepository patientRepository;
+
+	@Autowired
+	private EmailTackService emailTackService;
+
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+
+	@Autowired
+	private JasperReportService jasperReportService;
+	
+	@Autowired
+	private PatientVisitService patientVisitService;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
+	
 	@Override
 	@Transactional
 	public TreatmentService addEditService(TreatmentService treatmentService) {
@@ -856,4 +908,206 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		return response;
 	}
 
+	@Override
+	public void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId, String emailAddress) {
+		try {
+			MailResponse mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Treatment", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Treatment", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	@Override
+	public String downloadPatientTreatment(String treatmentId) {
+		String response = null;
+		try {
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+
+			if (patientTreatmentCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getDoctorId(),
+						patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
+				UserCollection user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+
+				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+	}
+
+	private MailResponse createMailData(String treatmentId, String doctorId, String locationId, String hospitalId) {
+		MailResponse response = null;
+		PatientTreatmentCollection patientTreatmentCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			if (patientTreatmentCollection != null) {
+				if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null
+						&& patientTreatmentCollection.getLocationId() != null) {
+					if (patientTreatmentCollection.getDoctorId().toString().equals(doctorId)
+							&& patientTreatmentCollection.getHospitalId().toString().equals(hospitalId)
+							&& patientTreatmentCollection.getLocationId().toString().equals(locationId)) {
+
+						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
+						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getDoctorId(),
+								patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
+						emailTrackCollection.setLocationId(patientTreatmentCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.TREATMENT.getType());
+						emailTrackCollection.setSubject("Treatment");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						response = new MailResponse();
+						response.setMailAttachment(mailAttachment);
+						response.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						response.setClinicAddress(address);
+						response.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						response.setMailRecordCreatedDate(sdf.format(patientTreatmentCollection.getCreatedTime()));
+						response.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("Prescription Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								"Prescription Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Prescription not found.Please check prescriptionId.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Prescription not found.Please check prescriptionId.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection, PatientCollection patient,
+			UserCollection user) throws IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
+			Boolean showTreatmentQuantity = false;
+			List<PatientTreatmentJasperDetails> treatmentResponses = new ArrayList<PatientTreatmentJasperDetails>();
+			int no = 0;
+			for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+				PatientTreatmentJasperDetails treatmentResponse = new PatientTreatmentJasperDetails();
+				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+				treatmentResponse.setNo(++no);	
+//				treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
+				treatmentResponse.setTreatmentServiceName(treatmentServicesCollection.getName());
+				if(treatment.getQuantity() != null){
+					showTreatmentQuantity = true;
+					String quantity = treatment.getQuantity().getValue()+" ";
+					if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
+					treatmentResponse.setQuantity(quantity);
+				}
+				treatmentResponses.add(treatmentResponse);
+			}
+		parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
+		parameters.put("treatments", treatmentResponses);
+		parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
+		
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
+				patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient, "<b>TID: </b>"+patientTreatmentCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(),
+				parameters);
+		patientVisitService.generatePrintSetup(parameters, printSettings, patientTreatmentCollection.getDoctorId());
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTTREARMENT-"
+				+ patientTreatmentCollection.getUniqueEmrId() + new Date().getTime();
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+
+		response = jasperReportService.createPDF(ComponentType.TREATMENT, parameters, null,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+		}
+		return response;
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
 }

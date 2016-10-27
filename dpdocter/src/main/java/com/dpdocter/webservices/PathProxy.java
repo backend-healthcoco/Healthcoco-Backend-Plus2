@@ -655,9 +655,9 @@ public interface PathProxy {
 
 		public static final String GET_PATIENT_TREATMENT_PATIENT_ID = "/{patientId}";
 
-		public static final String EMAIL_PATIENT_TREATMENT = "/{treatmentServiceId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+		public static final String EMAIL_PATIENT_TREATMENT = "/{treatmentId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
-		public static final String DOWNLOAD_PATIENT_TREATMENT = "/download/{treatmentServiceId}";
+		public static final String DOWNLOAD_PATIENT_TREATMENT = "/download/{treatmentId}";
 
 	}
 

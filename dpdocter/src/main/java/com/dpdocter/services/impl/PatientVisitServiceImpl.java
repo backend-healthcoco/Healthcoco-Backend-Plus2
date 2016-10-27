@@ -3,7 +3,6 @@ package com.dpdocter.services.impl;
 import static com.dpdocter.enums.VisitedFor.CLINICAL_NOTES;
 import static com.dpdocter.enums.VisitedFor.PRESCRIPTION;
 import static com.dpdocter.enums.VisitedFor.REPORTS;
-import static com.dpdocter.enums.VisitedFor.TREATMENT;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -43,6 +42,7 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
@@ -51,6 +51,7 @@ import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
+import com.dpdocter.beans.Treatment;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
@@ -58,10 +59,12 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
@@ -79,10 +82,12 @@ import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.request.AppointmentRequest;
@@ -92,7 +97,6 @@ import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
-import com.dpdocter.response.TreatmentResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.EmailTackService;
@@ -178,6 +182,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private PatientTreamentRepository patientTreamentRepository;
+
+	@Autowired
+	private TreatmentServicesRepository treatmentServicesRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -875,11 +885,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
+		
+		List<PatientTreatmentJasperDetails> patientTreatments = null;
+		if (patientVisitCollection.getTreatmentId() != null) {
+			patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
+			for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
+				if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
+					patientTreatments = getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
+//					patientTreatments.add(patientTreatmentJasperDetails);
+				}
+			}
+		}
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		parameters.put("prescriptions", prescriptions);
 		parameters.put("clinicalNotes", clinicalNotes);
+		parameters.put("treatments", patientTreatments);
 		parameters.put("visitId", patientVisitCollection.getId().toString());
 
 		generatePatientDetails(
@@ -915,7 +937,50 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
-	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
+	private List<PatientTreatmentJasperDetails> getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object> parameters) {
+		PatientTreatmentCollection patientTreatmentCollection = null;
+		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
+		try {
+			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			if (patientTreatmentCollection != null) {
+				if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null
+						&& patientTreatmentCollection.getLocationId() != null) {
+					if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
+						Boolean showTreatmentQuantity = false;
+						int no = 0;
+						patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
+						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
+							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+							patientTreatments.setNo(++no);	
+//							treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
+							patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
+							if(treatment.getQuantity() != null){
+								showTreatmentQuantity = true;
+								String quantity = treatment.getQuantity().getValue()+" ";
+								if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
+								patientTreatments.setQuantity(quantity);
+							}
+							patientTreatmentJasperDetails.add(patientTreatments);
+						}
+					parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
+				}
+			  }
+			} else {
+				logger.warn("Patient Treatment not found. Please check Id.");
+				throw new BusinessException(ServiceError.NotFound,
+						"Patient Treatment not found. Please check Id.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return patientTreatmentJasperDetails;
+	}
+
+	@Override
+	public void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
 			ObjectId doctorId) {
 		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
@@ -1007,7 +1072,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
-		parameters.put("logoURL", logoURL);
+		parameters.put("logoURL", "");
 		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
 		} else {
@@ -1015,7 +1080,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		}
 	}
 
-	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
+	@Override
+	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
 			String firstName, String mobileNumber, Map<String, Object> parameters) {
 		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null),
 				patientLeftText = "", patientRightText = "";
@@ -1103,7 +1169,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("patientRightText", patientRightText);
 	}
 
-	@SuppressWarnings("unchecked")
 	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;

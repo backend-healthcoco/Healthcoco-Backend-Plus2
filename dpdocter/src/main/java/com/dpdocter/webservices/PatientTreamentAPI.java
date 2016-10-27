@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
@@ -314,6 +313,40 @@ public class PatientTreamentAPI {
 
 		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
 		response.setDataList(patientTreatmentResponses);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT)
+	public Response<Boolean> emailPatientTreatment(@PathParam(value = "treatmentId") String treatmentId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(treatmentId, doctorId, locationId, hospitalId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. Patient Treatment Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Patient Treatment Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+		}
+		patientTreatmentServices.emailPatientTreatment(treatmentId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
+	@Path(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
+	public Response<String> downloadPatientTreatment(@PathParam("treatmentId") String treatmentId) {
+		if (DPDoctorUtils.anyStringEmpty(treatmentId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(patientTreatmentServices.downloadPatientTreatment(treatmentId));
 		return response;
 	}
 }
