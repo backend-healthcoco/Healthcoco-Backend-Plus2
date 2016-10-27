@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1044,7 +1045,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		return response;
 	}
 	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection, PatientCollection patient,
-			UserCollection user) throws IOException {
+			UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
@@ -1068,7 +1069,20 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
 		parameters.put("treatments", treatmentResponses);
 		parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
-		
+		if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+			String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
+					patientTreatmentCollection.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(patientTreatmentCollection.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on "+dateTime);
+		}
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 				patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
 		patientVisitService.generatePatientDetails(

@@ -880,7 +880,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
 				if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 					ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
-							clinicalNotesId.toString(), contentLineStyle);
+							clinicalNotesId.toString(), contentLineStyle, parameters);
 					clinicalNotes.add(clinicalJasperDetails);
 				}
 			}
@@ -964,6 +964,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientTreatmentJasperDetails.add(patientTreatments);
 						}
 					parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
+					if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+						String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
+								patientTreatmentCollection.getTime().getFromTime() % 60);
+						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						
+						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(patientTreatmentCollection.getFromDate());
+						parameters.put("followUpAppointment", "Next Review on "+dateTime);
+					}
 				}
 			  }
 			} else {
@@ -1169,7 +1183,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("patientRightText", patientRightText);
 	}
 
-	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle) {
+	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle, Map<String, Object> parameters) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		try {
@@ -1271,6 +1285,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					else
 						clinicalNotesJasperDetails.setDiagrams(null);
 				}
+				if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId()) && clinicalNotesCollection.getTime() != null){
+					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+					String _24HourTime = String.format("%02d:%02d", clinicalNotesCollection.getTime().getFromTime() / 60,
+							clinicalNotesCollection.getTime().getFromTime() % 60);
+					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+					
+					Date _24HourDt = _24HourSDF.parse(_24HourTime);
+					String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(clinicalNotesCollection.getFromDate());
+					parameters.put("followUpAppointment", "Next Review on "+dateTime);
+				}
 			} else {
 				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
 				throw new BusinessException(ServiceError.NotFound,
@@ -1371,6 +1399,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 					parameters.put("showIntructions", showIntructions);
 					parameters.put("showDirection", showDirection);
+					if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAppointmentId()) && prescriptionCollection.getTime() != null){
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+						String _24HourTime = String.format("%02d:%02d", prescriptionCollection.getTime().getFromTime() / 60,
+								prescriptionCollection.getTime().getFromTime() % 60);
+						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						
+						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(prescriptionCollection.getFromDate());
+						parameters.put("followUpAppointment", "Next Review on "+dateTime);
+					}
 				}
 			} else {
 				logger.warn("Prescription not found.Please check prescriptionId.");

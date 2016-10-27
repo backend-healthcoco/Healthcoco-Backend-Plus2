@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1853,7 +1854,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
-			PatientCollection patient, UserCollection user) throws IOException {
+			PatientCollection patient, UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
@@ -1945,6 +1946,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} else
 			parameters.put("vitalSigns", null);
 
+		if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId()) && clinicalNotesCollection.getTime() != null){
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+			String _24HourTime = String.format("%02d:%02d", clinicalNotesCollection.getTime().getFromTime() / 60,
+					clinicalNotesCollection.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(clinicalNotesCollection.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on "+dateTime);
+		}
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),

@@ -163,6 +163,16 @@ public class JasperReportServiceImpl implements JasperReportService {
         if((componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType()) && parameters.get("treatments") != null) || (componentType.getType().equalsIgnoreCase(ComponentType.TREATMENT.getType())))
         	((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters, contentFontSize, columnWidth, pageWidth, pageHeight, "$P{treatments}"));
         
+        if(parameters.get("followUpAppointment") != null){
+        	JRDesignBand band = new JRDesignBand();
+        	band.setHeight(21);
+        	JRDesignTextField jrDesignTextField = new JRDesignTextField();
+            jrDesignTextField.setExpression(new JRDesignExpression("$P{followUpAppointment}"));
+            jrDesignTextField.setX(1);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(columnWidth);
+            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+            band.addElement(jrDesignTextField);
+            ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+        }
         jasperDesign.setPageFooter(createPageFooter(columnWidth, contentFontSize));
         return jasperDesign;
     }

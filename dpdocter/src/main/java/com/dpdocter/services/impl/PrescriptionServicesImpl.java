@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -3647,7 +3648,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private JasperReportResponse createJasper(PrescriptionCollection prescriptionCollection, PatientCollection patient,
-			UserCollection user) throws IOException {
+			UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
@@ -3702,6 +3703,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 			}
+		if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAppointmentId()) && prescriptionCollection.getTime() != null){
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+			String _24HourTime = String.format("%02d:%02d", prescriptionCollection.getTime().getFromTime() / 60,
+					prescriptionCollection.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(prescriptionCollection.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on "+dateTime);
+		}
 		parameters.put("prescriptionItems", prescriptionItems);
 		parameters.put("showIntructions", showIntructions);
 		parameters.put("showDirection", showDirection);
