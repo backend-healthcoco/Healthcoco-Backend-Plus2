@@ -1097,7 +1097,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("headerLeftText", headerLeftText);
 		parameters.put("headerRightText", headerRightText);
 		parameters.put("footerBottomText", footerBottomText);
-		parameters.put("logoURL", "");
+		parameters.put("logoURL", logoURL);
 		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
 			parameters.put("showTableOne", true);
 		} else {
