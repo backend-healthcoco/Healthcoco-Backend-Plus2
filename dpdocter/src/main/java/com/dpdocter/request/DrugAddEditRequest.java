@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
-import com.dpdocter.beans.Strength;
 
 public class DrugAddEditRequest {
     private String id;
@@ -16,10 +15,6 @@ public class DrugAddEditRequest {
     private String drugName;
 
     private String explanation;
-
-    private Strength strength;
-
-    private List<String> genericCodes;
 
     private String doctorId;
 
@@ -75,22 +70,6 @@ public class DrugAddEditRequest {
 
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
-	}
-
-	public Strength getStrength() {
-	return strength;
-    }
-
-    public void setStrength(Strength strength) {
-	this.strength = strength;
-    }
-
-    public List<String> getGenericCodes() {
-		return genericCodes;
-	}
-
-	public void setGenericCodes(List<String> genericCodes) {
-		this.genericCodes = genericCodes;
 	}
 
 	public String getDoctorId() {
@@ -192,10 +171,10 @@ public class DrugAddEditRequest {
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
-				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
-				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", drugCode=" + drugCode
-				+ ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration
-				+ ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories="
-				+ categories + "]";
+				+ explanation + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
+				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
+				+ direction + ", categories=" + categories + "]";
 	}
+
 }
