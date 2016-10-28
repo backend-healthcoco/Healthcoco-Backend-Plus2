@@ -1049,25 +1049,28 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
-			Boolean showTreatmentQuantity = false;
-			List<PatientTreatmentJasperDetails> treatmentResponses = new ArrayList<PatientTreatmentJasperDetails>();
-			int no = 0;
+//			Boolean showTreatmentQuantity = false;
+//			List<PatientTreatmentJasperDetails> treatmentResponses = new ArrayList<PatientTreatmentJasperDetails>();
+//			int no = 0;
+			String treatments = "";
 			for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-				PatientTreatmentJasperDetails treatmentResponse = new PatientTreatmentJasperDetails();
+//				PatientTreatmentJasperDetails treatmentResponse = new PatientTreatmentJasperDetails();
 				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
-				treatmentResponse.setNo(++no);	
-//				treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
-				treatmentResponse.setTreatmentServiceName(treatmentServicesCollection.getName());
-				if(treatment.getQuantity() != null){
-					showTreatmentQuantity = true;
-					String quantity = treatment.getQuantity().getValue()+" ";
-					if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
-					treatmentResponse.setQuantity(quantity);
-				}
-				treatmentResponses.add(treatmentResponse);
+//				treatmentResponse.setNo(++no);	
+////				treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
+//				treatmentResponse.setTreatmentServiceName(treatmentServicesCollection.getName());
+//				if(treatment.getQuantity() != null){
+//					showTreatmentQuantity = true;
+//					String quantity = treatment.getQuantity().getValue()+" ";
+//					if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
+//					treatmentResponse.setQuantity(quantity);
+//				}
+//				treatmentResponses.add(treatmentResponse);
+				if(DPDoctorUtils.anyStringEmpty(treatments))treatments = treatmentServicesCollection.getName();
+				else treatments = treatments + ", "+treatmentServicesCollection.getName();
 			}
-		parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
-		parameters.put("treatments", treatmentResponses);
+//		parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
+		parameters.put("treatments", treatments);
 		parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
 		if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
@@ -1080,7 +1083,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 			
 			Date _24HourDt = _24HourSDF.parse(_24HourTime);
-			String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(patientTreatmentCollection.getFromDate());
+			String dateTime = sdf.format(patientTreatmentCollection.getFromDate()+", "+_12HourSDF.format(_24HourDt));
 			parameters.put("followUpAppointment", "Next Review on "+dateTime);
 		}
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),

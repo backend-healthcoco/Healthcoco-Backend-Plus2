@@ -541,13 +541,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 		
 		JRDesignTextField jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$P{Advice}"));
-        jrDesignTextField.setX(1);jrDesignTextField.setY(2);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(70);
+        jrDesignTextField.setX(1);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(70);
         jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
         band.addElement(jrDesignTextField);
             
 		jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression(value));
-        jrDesignTextField.setX(71);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth-70);
+        jrDesignTextField.setX(71);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(columnWidth-70);
         jrDesignTextField.setStretchWithOverflow(true);
         band.addElement(jrDesignTextField);
         
@@ -905,121 +905,135 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private JRBand addTreatmentServices(Map<String, Object> parameters, Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, String itemsValue) throws JRException {
-		JasperDesign jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jrxml"); 
-		jasperDesign.setName("Treatment");
-        jasperDesign.setPageWidth(pageWidth); jasperDesign.setPageHeight(pageHeight);jasperDesign.setColumnWidth(columnWidth);jasperDesign.setColumnSpacing(0);jasperDesign.setBottomMargin(0);jasperDesign.setLeftMargin(0);jasperDesign.setRightMargin(0);jasperDesign.setTopMargin(0);
-     
-        JRDesignStyle normalStyle = new JRDesignStyle();
-        normalStyle.setName("Noto Sans");normalStyle.setDefault(true);normalStyle.setFontName("Noto Sans");normalStyle.setFontSize(new Float(contentFontSize)); normalStyle.setPdfFontName("Helvetica");normalStyle.setPdfEncoding("Cp1252"); normalStyle.setPdfEmbedded(false);jasperDesign.addStyle(normalStyle);
-   
-        JRDesignBand band = new JRDesignBand();
-		band.setHeight(26);
-		
-        Boolean showTreatmentQuantity = (Boolean) parameters.get("showTreatmentQuantity");
+//		JasperDesign jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jrxml"); 
+//		jasperDesign.setName("Treatment");
+//        jasperDesign.setPageWidth(pageWidth); jasperDesign.setPageHeight(pageHeight);jasperDesign.setColumnWidth(columnWidth);jasperDesign.setColumnSpacing(0);jasperDesign.setBottomMargin(0);jasperDesign.setLeftMargin(0);jasperDesign.setRightMargin(0);jasperDesign.setTopMargin(0);
+//     
+//        JRDesignStyle normalStyle = new JRDesignStyle();
+//        normalStyle.setName("Noto Sans");normalStyle.setDefault(true);normalStyle.setFontName("Noto Sans");normalStyle.setFontSize(new Float(contentFontSize)); normalStyle.setPdfFontName("Helvetica");normalStyle.setPdfEncoding("Cp1252"); normalStyle.setPdfEmbedded(false);jasperDesign.addStyle(normalStyle);
+//   
+//        JRDesignBand band = new JRDesignBand();
+//		band.setHeight(26);
+//		
+//        Boolean showTreatmentQuantity = (Boolean) parameters.get("showTreatmentQuantity");
+//        
+//        int serviceWidth = 0, quantityWidth=0; 
+//        if(showTreatmentQuantity){
+//        	serviceWidth = (50*(columnWidth-31))/100; quantityWidth = (50*(columnWidth-31))/100;
+//        }else{
+//        	serviceWidth = columnWidth;
+//        }
+//        
+//        JRDesignLine jrDesignLine = new JRDesignLine();
+//        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+//        band.addElement(jrDesignLine);
+//        
+//        JRDesignTextField jrDesignTextField = new JRDesignTextField();
+//        jrDesignTextField.setExpression(new JRDesignExpression("$P{SNo}"));
+//        jrDesignTextField.setX(0);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(39);
+//        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+//        band.addElement(jrDesignTextField);
+//        
+//        jrDesignTextField = new JRDesignTextField();
+//        jrDesignTextField.setExpression(new JRDesignExpression("$P{Service}"));
+//        jrDesignTextField.setX(39);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(serviceWidth);
+//        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+//        band.addElement(jrDesignTextField);
+//        
+//        if(showTreatmentQuantity){
+//        	jrDesignTextField = new JRDesignTextField();
+//            jrDesignTextField.setExpression(new JRDesignExpression("$P{Quantity}"));
+//            jrDesignTextField.setX(39+serviceWidth);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(quantityWidth);
+//            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+//            band.addElement(jrDesignTextField);
+//        }
+//        jrDesignLine = new JRDesignLine();
+//        jrDesignLine.setX(0); jrDesignLine.setY(22); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+//        band.addElement(jrDesignLine);
+//        
+//		jasperDesign.setColumnHeader(band);
+//        
+//		band = new JRDesignBand();
+//		band.setSplitType(SplitTypeEnum.STRETCH);
+//		band.setHeight(22);
+//		
+//		jrDesignTextField = new JRDesignTextField();
+//        jrDesignTextField.setExpression(new JRDesignExpression("$F{no}"));
+//        jrDesignTextField.setX(0);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(39);
+//        jrDesignTextField.setStretchWithOverflow(true);
+//        band.addElement(jrDesignTextField);
+//        
+//		jrDesignTextField = new JRDesignTextField();
+//        jrDesignTextField.setExpression(new JRDesignExpression("$F{treatmentServiceName}"));
+//        jrDesignTextField.setX(39);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(serviceWidth);
+//        jrDesignTextField.setStretchWithOverflow(true);
+//        band.addElement(jrDesignTextField);
+//        
+//        if(showTreatmentQuantity){
+//        	jrDesignTextField = new JRDesignTextField();
+//            jrDesignTextField.setExpression(new JRDesignExpression("$F{quantity}"));
+//            jrDesignTextField.setX(39+serviceWidth);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(quantityWidth);
+//            jrDesignTextField.setStretchWithOverflow(true);
+//            band.addElement(jrDesignTextField);
+//        }
+//        
+//        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+//        
+//        band = new JRDesignBand();
+//        band.setHeight(1);
+//        jrDesignLine = new JRDesignLine();
+//        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
+//        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+//        band.addElement(jrDesignLine);        
+//        jasperDesign.setColumnFooter(band);
+//        
+//		JasperCompileManager.compileReportToFile(jasperDesign, JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper");
+//  	
+//	    JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign); 
+//        jSubreport.setUsingCache(false); 
+//        jSubreport.setRemoveLineWhenBlank(true); 
+//        jSubreport.setPrintRepeatedValues(false);
+//        jSubreport.setWidth(columnWidth);
+//        jSubreport.setHeight(60);
+//        jSubreport.setX(0);jSubreport.setY(21);
+//
+//        JRDesignExpression expression = new JRDesignExpression();
+//        expression.setText("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource("+itemsValue+")");
+//        jSubreport.setDataSourceExpression(expression);
+//       
+//        expression = new JRDesignExpression();
+//        expression.setText("\""+JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper\"");
+//        jSubreport.setExpression(expression);
+//
+//        JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();  
+//        designSubreportParameter.setName("REPORT_CONNECTION");designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+//        
+//        band = new JRDesignBand();
+//        band.setHeight(81);
+//        
+//        jrDesignTextField = new JRDesignTextField();
+//        jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
+//        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(220);
+//        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+//        band.addElement(jrDesignTextField);
+//        
+//        band.addElement(jSubreport);
         
-        int serviceWidth = 0, quantityWidth=0; 
-        if(showTreatmentQuantity){
-        	serviceWidth = (50*(columnWidth-31))/100; quantityWidth = (50*(columnWidth-31))/100;
-        }else{
-        	serviceWidth = columnWidth;
-        }
+		  JRDesignBand band = new JRDesignBand();
+	      band.setHeight(22);
+	      
+	      JRDesignTextField jrDesignTextField = new JRDesignTextField();
+	      jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
+	      jrDesignTextField.setX(1);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(80);
+	      jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	      band.addElement(jrDesignTextField);
         
-        JRDesignLine jrDesignLine = new JRDesignLine();
-        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-        band.addElement(jrDesignLine);
-        
-        JRDesignTextField jrDesignTextField = new JRDesignTextField();
-        jrDesignTextField.setExpression(new JRDesignExpression("$P{SNo}"));
-        jrDesignTextField.setX(0);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(39);
-        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-        band.addElement(jrDesignTextField);
-        
-        jrDesignTextField = new JRDesignTextField();
-        jrDesignTextField.setExpression(new JRDesignExpression("$P{Service}"));
-        jrDesignTextField.setX(39);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(serviceWidth);
-        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-        band.addElement(jrDesignTextField);
-        
-        if(showTreatmentQuantity){
-        	jrDesignTextField = new JRDesignTextField();
-            jrDesignTextField.setExpression(new JRDesignExpression("$P{Quantity}"));
-            jrDesignTextField.setX(39+serviceWidth);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(quantityWidth);
-            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-            band.addElement(jrDesignTextField);
-        }
-        jrDesignLine = new JRDesignLine();
-        jrDesignLine.setX(0); jrDesignLine.setY(22); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-        band.addElement(jrDesignLine);
-        
-		jasperDesign.setColumnHeader(band);
-        
-		band = new JRDesignBand();
-		band.setSplitType(SplitTypeEnum.STRETCH);
-		band.setHeight(22);
-		
-		jrDesignTextField = new JRDesignTextField();
-        jrDesignTextField.setExpression(new JRDesignExpression("$F{no}"));
-        jrDesignTextField.setX(0);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(39);
-        jrDesignTextField.setStretchWithOverflow(true);
-        band.addElement(jrDesignTextField);
-        
-		jrDesignTextField = new JRDesignTextField();
-        jrDesignTextField.setExpression(new JRDesignExpression("$F{treatmentServiceName}"));
-        jrDesignTextField.setX(39);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(serviceWidth);
-        jrDesignTextField.setStretchWithOverflow(true);
-        band.addElement(jrDesignTextField);
-        
-        if(showTreatmentQuantity){
-        	jrDesignTextField = new JRDesignTextField();
-            jrDesignTextField.setExpression(new JRDesignExpression("$F{quantity}"));
-            jrDesignTextField.setX(39+serviceWidth);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(quantityWidth);
-            jrDesignTextField.setStretchWithOverflow(true);
-            band.addElement(jrDesignTextField);
-        }
-        
-        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-        
-        band = new JRDesignBand();
-        band.setHeight(1);
-        jrDesignLine = new JRDesignLine();
-        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
-        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-        band.addElement(jrDesignLine);        
-        jasperDesign.setColumnFooter(band);
-        
-		JasperCompileManager.compileReportToFile(jasperDesign, JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper");
-  	
-	    JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign); 
-        jSubreport.setUsingCache(false); 
-        jSubreport.setRemoveLineWhenBlank(true); 
-        jSubreport.setPrintRepeatedValues(false);
-        jSubreport.setWidth(columnWidth);
-        jSubreport.setHeight(60);
-        jSubreport.setX(0);jSubreport.setY(21);
-
-        JRDesignExpression expression = new JRDesignExpression();
-        expression.setText("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource("+itemsValue+")");
-        jSubreport.setDataSourceExpression(expression);
-       
-        expression = new JRDesignExpression();
-        expression.setText("\""+JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper\"");
-        jSubreport.setExpression(expression);
-
-        JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();  
-        designSubreportParameter.setName("REPORT_CONNECTION");designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
-        
-        band = new JRDesignBand();
-        band.setHeight(81);
-        
-        jrDesignTextField = new JRDesignTextField();
-        jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
-        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(220);
-        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-        band.addElement(jrDesignTextField);
-        
-        band.addElement(jSubreport);
-        
-        return band;
+	      jrDesignTextField = new JRDesignTextField();
+	      jrDesignTextField.setExpression(new JRDesignExpression("$P{treatments}"));
+	      jrDesignTextField.setX(82);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(columnWidth-81);
+	      jrDesignTextField.setStretchWithOverflow(true);
+	      band.addElement(jrDesignTextField);
+	      return band;
 	}
 
 }

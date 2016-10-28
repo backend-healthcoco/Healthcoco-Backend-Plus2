@@ -350,6 +350,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					drugCollection.getStrength().setStrengthUnit(null);
 			}
 			drugCollection = drugRepository.save(drugCollection);
+			DoctorDrugCollection doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
+					drugCollection.getDoctorId(), drugCollection.getLocationId(), drugCollection.getHospitalId(), 1,
+					false, drugCollection.getGenericCodes());
+			doctorDrugCollection.setCreatedTime(new Date());
+			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+			if (doctorDrugCollection != null) {
+				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+				BeanUtil.map(drugCollection, esDoctorDrugDocument);
+				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+				esDoctorDrugDocument.setId(drugCollection.getId().toString());
+				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
+			}
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {

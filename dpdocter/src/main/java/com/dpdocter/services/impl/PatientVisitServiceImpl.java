@@ -886,22 +886,33 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		
-		List<PatientTreatmentJasperDetails> patientTreatments = null;
-		if (patientVisitCollection.getTreatmentId() != null) {
-			patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
-			for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
-				if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
-					patientTreatments = getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
-//					patientTreatments.add(patientTreatmentJasperDetails);
+//		List<PatientTreatmentJasperDetails> patientTreatments = null;
+//		if (patientVisitCollection.getTreatmentId() != null) {
+//			patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
+//			for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
+//				if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
+//					patientTreatments = getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
+////					patientTreatments.add(patientTreatmentJasperDetails);
+//				}
+//			}
+//		}
+		if (patientVisitCollection.getTreatmentId() != null){
+			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository.findByIds(patientVisitCollection.getTreatmentId());
+			String treatments = "";
+			for(PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections){
+				for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+					if(DPDoctorUtils.anyStringEmpty(treatments))treatments = treatmentServicesCollection.getName();
+					else treatments = treatments + ", "+treatmentServicesCollection.getName();
 				}
 			}
+			parameters.put("treatments", treatments);
 		}
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		parameters.put("prescriptions", prescriptions);
 		parameters.put("clinicalNotes", clinicalNotes);
-		parameters.put("treatments", patientTreatments);
 		parameters.put("visitId", patientVisitCollection.getId().toString());
 
 		generatePatientDetails(
