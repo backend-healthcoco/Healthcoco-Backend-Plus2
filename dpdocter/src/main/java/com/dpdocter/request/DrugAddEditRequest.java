@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.Strength;
 
 public class DrugAddEditRequest {
     private String id;
@@ -16,6 +17,8 @@ public class DrugAddEditRequest {
 
     private String explanation;
 
+    private Strength strength;
+    
     private String doctorId;
 
     private String hospitalId;
@@ -168,13 +171,21 @@ public class DrugAddEditRequest {
 		this.categories = categories;
 	}
 
+	public Strength getStrength() {
+		return strength;
+	}
+
+	public void setStrength(Strength strength) {
+		this.strength = strength;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
-				+ explanation + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
-				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + "]";
+				+ explanation + ", strength=" + strength + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId
+				+ ", locationId=" + locationId + ", drugCode=" + drugCode + ", companyName=" + companyName
+				+ ", packSize=" + packSize + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories + "]";
 	}
 
 }
