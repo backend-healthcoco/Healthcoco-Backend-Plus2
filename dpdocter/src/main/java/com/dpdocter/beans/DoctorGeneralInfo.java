@@ -5,67 +5,69 @@ import java.util.List;
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorGeneralInfo {
-    private String id;
+	private String id;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private AppointmentSlot appointmentSlot;
+	private AppointmentSlot appointmentSlot;
 
-    private ConsultationFee consultationFee;
+	private ConsultationFee consultationFee;
 
-    private List<String> appointmentBookingNumber;
+	private ConsultationFee revisitConsultationFee;
 
-    private DoctorFacility facility;
+	private List<String> appointmentBookingNumber;
 
-    public String getId() {
-	return id;
-    }
+	private DoctorFacility facility;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public AppointmentSlot getAppointmentSlot() {
-	return appointmentSlot;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
-	this.appointmentSlot = appointmentSlot;
-    }
+	public AppointmentSlot getAppointmentSlot() {
+		return appointmentSlot;
+	}
 
-    public ConsultationFee getConsultationFee() {
-	return consultationFee;
-    }
+	public void setAppointmentSlot(AppointmentSlot appointmentSlot) {
+		this.appointmentSlot = appointmentSlot;
+	}
 
-    public void setConsultationFee(ConsultationFee consultationFee) {
-	this.consultationFee = consultationFee;
-    }
+	public ConsultationFee getConsultationFee() {
+		return consultationFee;
+	}
 
-    public List<String> getAppointmentBookingNumber() {
-	return appointmentBookingNumber;
-    }
+	public void setConsultationFee(ConsultationFee consultationFee) {
+		this.consultationFee = consultationFee;
+	}
 
-    public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
-	this.appointmentBookingNumber = appointmentBookingNumber;
-    }
+	public List<String> getAppointmentBookingNumber() {
+		return appointmentBookingNumber;
+	}
+
+	public void setAppointmentBookingNumber(List<String> appointmentBookingNumber) {
+		this.appointmentBookingNumber = appointmentBookingNumber;
+	}
 
 	public DoctorFacility getFacility() {
 		return facility;
@@ -73,6 +75,14 @@ public class DoctorGeneralInfo {
 
 	public void setFacility(DoctorFacility facility) {
 		this.facility = facility;
+	}
+
+	public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
 	}
 
 	@Override

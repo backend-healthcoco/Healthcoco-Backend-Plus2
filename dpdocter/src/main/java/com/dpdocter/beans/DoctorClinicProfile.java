@@ -33,6 +33,8 @@ public class DoctorClinicProfile {
 
 	private ConsultationFee consultationFee;
 
+	private ConsultationFee revisitConsultationFee;
+	
 	private AppointmentSlot appointmentSlot;
 
 	private List<WorkingSchedule> workingSchedules;
@@ -73,7 +75,7 @@ public class DoctorClinicProfile {
 
 	private int patientCounter = 0;
 
-	private Boolean isDoctorListed=true;
+	private Boolean isDoctorListed = true;
 
 	public String getId() {
 		return id;
@@ -347,13 +349,22 @@ public class DoctorClinicProfile {
 		this.patientCounter = patientCounter;
 	}
 
-	
 	public Boolean getIsDoctorListed() {
 		return isDoctorListed;
 	}
 
 	public void setIsDoctorListed(Boolean isDoctorListed) {
 		this.isDoctorListed = isDoctorListed;
+	}
+	
+	
+
+	public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
 	}
 
 	@Override

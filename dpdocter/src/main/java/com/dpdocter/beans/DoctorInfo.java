@@ -20,6 +20,8 @@ public class DoctorInfo {
 	private String specialization;
 
 	private ConsultationFee consultationFee;
+	
+	private ConsultationFee revisitConsultationFee;
 
 	private List<WorkingSchedule> workingSchedules;
 
@@ -130,5 +132,14 @@ public class DoctorInfo {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
+
+	public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
+	}
+	
 
 }

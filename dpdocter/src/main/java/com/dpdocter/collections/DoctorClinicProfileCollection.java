@@ -34,6 +34,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private ConsultationFee consultationFee;
 
 	@Field
+	private ConsultationFee revisitConsultationFee;
+
+	@Field
 	private AppointmentSlot appointmentSlot = new AppointmentSlot();
 
 	@Field
@@ -150,13 +153,21 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.patientCounter = patientCounter;
 	}
 
-	
 	public Boolean getIsDoctorListed() {
 		return isDoctorListed;
 	}
 
 	public void setIsDoctorListed(Boolean isDoctorListed) {
 		this.isDoctorListed = isDoctorListed;
+	}
+	
+
+	public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
 	}
 
 	@Override

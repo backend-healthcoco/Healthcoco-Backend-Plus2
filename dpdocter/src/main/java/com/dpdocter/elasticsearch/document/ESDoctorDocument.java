@@ -44,6 +44,9 @@ public class ESDoctorDocument extends DoctorLocation {
 	private ConsultationFee consultationFee;
 
 	@Field(type = FieldType.Nested)
+	private ConsultationFee revisitConsultationFee;
+
+	@Field(type = FieldType.Nested)
 	private List<WorkingSchedule> workingSchedules;
 
 	@MultiField(mainField = @Field(type = FieldType.String))
@@ -92,7 +95,7 @@ public class ESDoctorDocument extends DoctorLocation {
 	private String userUId;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isDoctorListed=true;
+	private Boolean isDoctorListed = true;
 
 	@Field(type = FieldType.String)
 	private String timeZone = "IST";
@@ -163,6 +166,14 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	public List<WorkingSchedule> getWorkingSchedules() {
 		return workingSchedules;
+	}
+
+	public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
 	}
 
 	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {

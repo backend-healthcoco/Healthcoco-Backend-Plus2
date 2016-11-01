@@ -11,6 +11,10 @@ public class DoctorConsultationFeeAddEditRequest {
     private String locationId;
 
     private ConsultationFee consultationFee;
+    
+	private ConsultationFee revisitConsultationFee;
+    
+    
 
     public String getId() {
 	return id;
@@ -43,8 +47,17 @@ public class DoctorConsultationFeeAddEditRequest {
     public void setConsultationFee(ConsultationFee consultationFee) {
 	this.consultationFee = consultationFee;
     }
+    
 
-    @Override
+    public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
+	}
+
+	@Override
     public String toString() {
 	return "DoctorConsultationFeeAddEditRequest [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", consultationFee="
 		+ consultationFee + "]";
