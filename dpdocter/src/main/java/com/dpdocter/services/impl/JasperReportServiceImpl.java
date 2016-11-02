@@ -590,13 +590,13 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         int drugWidth = 0, dosageWidth=0, directionWidth=0, durationWidth=0, instructionWidth=0; 
         if(showDirection && showIntructions){
-        	drugWidth = (35*(columnWidth-31))/100;dosageWidth=(15*(columnWidth-31)/100);directionWidth=(22*(columnWidth-31)/100);durationWidth=(13*(columnWidth-31)/100);instructionWidth=(15*(columnWidth-31)/100);
+        	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(16*(columnWidth-31)/100);directionWidth=(23*(columnWidth-31)/100);durationWidth=(15*(columnWidth-31)/100);instructionWidth=(16*(columnWidth-31)/100);
         }else if(showDirection){
-        	drugWidth = (40*(columnWidth-31))/100;dosageWidth=(18*(columnWidth-31)/100);directionWidth=(27*(columnWidth-31)/100);durationWidth=(15*(columnWidth-31)/100);
+        	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(21*(columnWidth-31)/100);directionWidth=(29*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);
         }else if(showIntructions){
-        	drugWidth = (40*(columnWidth-31))/100;dosageWidth=(20*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);instructionWidth=(20*(columnWidth-31)/100);
+        	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(21*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);instructionWidth=(29*(columnWidth-31)/100);
         }else{
-        	drugWidth = (50*(columnWidth-31))/100;dosageWidth=(25*(columnWidth-31)/100);durationWidth=(25*(columnWidth-31)/100);
+        	drugWidth = (40*(columnWidth-31))/100;dosageWidth=(30*(columnWidth-31)/100);durationWidth=(30*(columnWidth-31)/100);
         }
         
         JRDesignLine jrDesignLine = new JRDesignLine();
