@@ -255,6 +255,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Value(value = "${prescription.add.patient.download.app.message}")
 	private String downloadAppMessageToPatient;
 
+    @Value("${send.sms}")
+    private Boolean sendSMS;
+
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
 
@@ -805,7 +808,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
-			if (DPDoctorUtils.allStringsEmpty(request.getId()))
+			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
 				sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 						prescriptionCollection.getCreatedBy());
@@ -4282,7 +4285,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 			
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(), drugCollection.getDoctorId(), drugCollection.getLocationId(), drugCollection.getHospitalId());
+			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 			if(doctorDrugCollection != null){
 						doctorDrugCollection.setUpdatedTime(new Date());
 						doctorDrugCollection.setDuration(request.getDuration());
@@ -4309,6 +4312,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
+			BeanUtil.map(doctorDrugCollection, response);
+			response.setId(drugCollection.getId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Drug");
