@@ -1,24 +1,38 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.dpdocter.enums.GenderType;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "delivery_report_cl")
 public class DeliveryReportsCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private String serialNo;
+	@Field
 	private Long deliveryDate;
+	@Field
+	private Integer deliveryTime;
+	@Field
 	private ObjectId patientId;
+	@Field
 	private String mobileNumber;
+	@Field
 	private String babyGender;
+	@Field
 	private String deliveryType;
+	@Field
 	private String formNo;
+	@Field
 	private String remarks;
+	@Field
 	private ObjectId doctorId;
+	@Field
 	private ObjectId locationId;
+	@Field
 	private ObjectId hospitalId;
 
 	public ObjectId getId() {
@@ -116,5 +130,23 @@ public class DeliveryReportsCollection extends GenericCollection {
 	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
+
+	public Integer getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(Integer deliveryTime) {
+		this.deliveryTime = deliveryTime;
+	}
+
+	@Override
+	public String toString() {
+		return "DeliveryReportsCollection [id=" + id + ", serialNo=" + serialNo + ", deliveryDate=" + deliveryDate
+				+ ", deliveryTime=" + deliveryTime + ", patientId=" + patientId + ", mobileNumber=" + mobileNumber
+				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
+				+ remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ "]";
+	}
+	
 
 }

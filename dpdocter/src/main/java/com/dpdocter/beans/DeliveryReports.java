@@ -1,13 +1,12 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.GenderType;
 
 public class DeliveryReports extends GenericCollection {
 
 	private String id;
-	private String serialNo;
 	private Long deliveryDate;
+	private Integer deliveryTime;
 	private String patientId;
 	private Patient patient;
 	private String mobileNumber;
@@ -52,14 +51,6 @@ public class DeliveryReports extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public Long getDeliveryDate() {
@@ -150,13 +141,22 @@ public class DeliveryReports extends GenericCollection {
 		this.patient = patient;
 	}
 
+	public Integer getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(Integer deliveryTime) {
+		this.deliveryTime = deliveryTime;
+	}
+
 	@Override
 	public String toString() {
-		return "DeliveryReports [id=" + id + ", serialNo=" + serialNo + ", deliveryDate=" + deliveryDate
-				+ ", patientId=" + patientId + ", mobileNumber=" + mobileNumber + ", babyGender=" + babyGender
-				+ ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks=" + remarks + ", doctorId="
-				+ doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId + ", locationName="
-				+ locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName + "]";
+		return "DeliveryReports [id=" + id + ", deliveryDate=" + deliveryDate + ", deliveryTime=" + deliveryTime
+				+ ", patientId=" + patientId + ", patient=" + patient + ", mobileNumber=" + mobileNumber
+				+ ", babyGender=" + babyGender + ", deliveryType=" + deliveryType + ", formNo=" + formNo + ", remarks="
+				+ remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
+				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
+				+ "]";
 	}
 
 }

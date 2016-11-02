@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.GenericCode;
 
 @Document(indexName = "doctor_drugs_in", type ="doctor_drugs")
 public class ESDoctorDrugDocument {
@@ -76,6 +77,9 @@ public class ESDoctorDrugDocument {
     @Field(type = FieldType.Long)
     private long rankingCount = 0;
 
+    @Field(type = FieldType.Nested)
+    private List<GenericCode> genericNames;
+    
 	public String getId() {
 		return id;
 	}
@@ -236,6 +240,14 @@ public class ESDoctorDrugDocument {
 		this.rankingCount = rankingCount;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDoctorDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation
@@ -244,6 +256,6 @@ public class ESDoctorDrugDocument {
 				+ updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
 				+ ", genericCodes=" + genericCodes + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
 				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
-				+ rankingCount + "]";
+				+ rankingCount + ", genericNames=" + genericNames + "]";
 	}
 }

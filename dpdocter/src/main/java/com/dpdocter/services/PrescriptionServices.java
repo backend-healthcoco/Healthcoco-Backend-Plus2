@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.GenericCode;
@@ -17,7 +18,6 @@ import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.DrugTypeAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
@@ -30,100 +30,108 @@ import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
 
 public interface PrescriptionServices {
-    DrugAddEditResponse addDrug(DrugAddEditRequest request);
+	Drug addDrug(DrugAddEditRequest request);
 
-    DrugAddEditResponse editDrug(DrugAddEditRequest request);
+	Drug editDrug(DrugAddEditRequest request);
 
-    Drug deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
+	Drug deleteDrug(String drugId, String doctorId, String hospitalId, String locationIdString, Boolean discarded);
 
-    DrugAddEditResponse getDrugById(String drugId);
+	Drug getDrugById(String drugId);
 
-    TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
+	TemplateAddEditResponse addTemplate(TemplateAddEditRequest request);
 
-    TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request);
+	TemplateAddEditResponseDetails editTemplate(TemplateAddEditRequest request);
 
-    TemplateAddEditResponseDetails deleteTemplate(String templateId, String doctorId, String hospitalId, String locationId, Boolean discarded);
+	TemplateAddEditResponseDetails deleteTemplate(String templateId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded);
 
-    TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId, String locationId);
+	TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId,
+			String locationId);
 
-    PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
+	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
 
-    PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
+	PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
 
-    Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId, String patientId, Boolean discarded);
+	Prescription deletePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId,
+			String patientId, Boolean discarded);
 
-    List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
-	    boolean isOTPVerified, boolean discarded, boolean inHistory);
+	List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId,
+			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
-    List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds);
+	List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds);
 
-    Prescription getPrescriptionById(String prescriptionId);
+	Prescription getPrescriptionById(String prescriptionId);
 
-    List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId, String locationId, String updatedTime,
-	    boolean discarded);
+	List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId,
+			String locationId, String updatedTime, boolean discarded);
 
-    Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+	Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId,
+			boolean isOTPVerified);
 
-    TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
+	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
-    PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
+	PrescriptionAddEditResponseDetails addPrescriptionHandheld(PrescriptionAddEditRequest request);
 
-    DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
+	DrugTypeAddEditResponse addDrugType(DrugTypeAddEditRequest request);
 
-    DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request);
+	DrugDosageAddEditResponse addDrugDosage(DrugDosageAddEditRequest request);
 
-    DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request);
+	DrugDirectionAddEditResponse addDrugDirection(DrugDirectionAddEditRequest request);
 
-    DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request);
+	DrugTypeAddEditResponse editDrugType(DrugTypeAddEditRequest request);
 
-    DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request);
+	DrugDosageAddEditResponse editDrugDosage(DrugDosageAddEditRequest request);
 
-    DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
+	DrugDirectionAddEditResponse editDrugDirection(DrugDirectionAddEditRequest request);
 
-    DrugTypeAddEditResponse deleteDrugType(String drugTypeId, Boolean discarded);
+	DrugTypeAddEditResponse deleteDrugType(String drugTypeId, Boolean discarded);
 
-    DrugDosageAddEditResponse deleteDrugDosage(String drugDosageId, Boolean discarded);
+	DrugDosageAddEditResponse deleteDrugDosage(String drugDosageId, Boolean discarded);
 
-    DrugDirectionAddEditResponse deleteDrugDirection(String drugDirectionId, Boolean discarded);
+	DrugDirectionAddEditResponse deleteDrugDirection(String drugDirectionId, Boolean discarded);
 
-    DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request);
+	DrugDurationUnitAddEditResponse addDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
-    DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
+	DrugDurationUnitAddEditResponse editDrugDurationUnit(DrugDurationUnitAddEditRequest request);
 
-    DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
+	DrugDurationUnitAddEditResponse deleteDrugDurationUnit(String drugDurationUnitId, Boolean discarded);
 
-    List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    Boolean discarded, Boolean isAdmin, String searchTerm);
+	public List<?> getPrescriptionItems(String type, String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, Boolean isAdmin,
+			String disease, String searchTerm);
 
-    void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
+	void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 
-    MailResponse getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
+	MailResponse getPrescriptionMailData(String prescriptionId, String doctorId, String locationId, String hospitalId);
 
-    Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String mobileNumber, String type);
+	Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String mobileNumber, String type);
 
-    LabTest addLabTest(LabTest request);
+	LabTest addLabTest(LabTest request);
 
-    LabTest editLabTest(LabTest request);
+	LabTest editLabTest(LabTest request);
 
-    LabTest deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded);
+	LabTest deleteLabTest(String labTestId, String hospitalId, String locationId, Boolean discarded);
 
-    LabTest deleteLabTest(String labTestId, Boolean discarded);
+	LabTest deleteLabTest(String labTestId, Boolean discarded);
 
-    LabTest getLabTestById(String labTestId);
+	LabTest getLabTestById(String labTestId);
 
-    List<DiagnosticTestCollection> getDiagnosticTest();
+	List<DiagnosticTestCollection> getDiagnosticTest();
 
-    List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
+	List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
-    DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
+	DiagnosticTest addEditDiagnosticTest(DiagnosticTest request);
 
-    DiagnosticTest getDiagnosticTest(String diagnosticTestId);
+	DiagnosticTest getDiagnosticTest(String diagnosticTestId);
 
-    DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
+	DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, Boolean discarded);
 
-    DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId, Boolean discarded);
+	DiagnosticTest deleteDiagnosticTest(String diagnosticTestId, String hospitalId, String locationId,
+			Boolean discarded);
 
-    PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
+	PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
 
 	Boolean addRemoveGenericCode(String action, String genericCode, String drugCode);
 
@@ -131,6 +139,14 @@ public interface PrescriptionServices {
 
 	String getPrescriptionFile(String prescriptionId);
 
-	Boolean makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
+	Drug makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
 
+	public Advice addAdvice(Advice request);
+
+	public Advice deleteAdvice(String adviceId, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	Boolean makeCustomDrugFavourite();
+
+	Drug addFavouriteDrug(DrugAddEditRequest request);
 }

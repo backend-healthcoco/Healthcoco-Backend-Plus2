@@ -8,137 +8,137 @@ import com.dpdocter.enums.AppointmentState;
 
 public class AppointmentRequest {
 
-    private String appointmentId;
+	private String appointmentId;
 
-    private AppointmentState state;
+	private AppointmentState state;
 
-    private String explanation;
-    
-    private String doctorId;
+	private String explanation;
 
-    private String locationId;
+	private String doctorId;
 
-    private String hospitalId;
+	private String locationId;
 
-    private String patientId;
+	private String hospitalId;
 
-    private WorkingHours time;
+	private String patientId;
 
-    private Date fromDate;
-    
-    private Date toDate;
+	private WorkingHours time;
 
-    private AppointmentCreatedBy createdBy;
+	private Date fromDate;
 
-    private Boolean notifyPatientBySms;
+	private Date toDate;
 
-    private Boolean notifyPatientByEmail;
+	private AppointmentCreatedBy createdBy;
 
-    private Boolean notifyDoctorBySms;
+	private Boolean notifyPatientBySms;
 
-    private Boolean notifyDoctorByEmail;
+	private Boolean notifyPatientByEmail;
 
-    private String cancelledBy;
-    
-    private String firstName;
-    
-    private String mobileNumber;
-    
-    public String getAppointmentId() {
-	return appointmentId;
-    }
+	private Boolean notifyDoctorBySms;
 
-    public void setAppointmentId(String appointmentId) {
-	this.appointmentId = appointmentId;
-    }
+	private Boolean notifyDoctorByEmail;
 
-    public AppointmentState getState() {
-	return state;
-    }
+	private String cancelledBy;
 
-    public void setState(AppointmentState state) {
-	this.state = state;
-    }
+	private String localPatientName;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private String mobileNumber;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getAppointmentId() {
+		return appointmentId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public AppointmentState getState() {
+		return state;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public void setState(AppointmentState state) {
+		this.state = state;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public WorkingHours getTime() {
-	return time;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setTime(WorkingHours time) {
-	this.time = time;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public AppointmentCreatedBy getCreatedBy() {
-	return createdBy;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setCreatedBy(AppointmentCreatedBy createdBy) {
-	this.createdBy = createdBy;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public Boolean getNotifyPatientBySms() {
-	return notifyPatientBySms;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setNotifyPatientBySms(Boolean notifyPatientBySms) {
-	this.notifyPatientBySms = notifyPatientBySms;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
 
-    public Boolean getNotifyPatientByEmail() {
-	return notifyPatientByEmail;
-    }
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
-    public void setNotifyPatientByEmail(Boolean notifyPatientByEmail) {
-	this.notifyPatientByEmail = notifyPatientByEmail;
-    }
+	public AppointmentCreatedBy getCreatedBy() {
+		return createdBy;
+	}
 
-    public Boolean getNotifyDoctorBySms() {
-	return notifyDoctorBySms;
-    }
+	public void setCreatedBy(AppointmentCreatedBy createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public void setNotifyDoctorBySms(Boolean notifyDoctorBySms) {
-	this.notifyDoctorBySms = notifyDoctorBySms;
-    }
+	public Boolean getNotifyPatientBySms() {
+		return notifyPatientBySms;
+	}
 
-    public Boolean getNotifyDoctorByEmail() {
-	return notifyDoctorByEmail;
-    }
+	public void setNotifyPatientBySms(Boolean notifyPatientBySms) {
+		this.notifyPatientBySms = notifyPatientBySms;
+	}
 
-    public void setNotifyDoctorByEmail(Boolean notifyDoctorByEmail) {
-	this.notifyDoctorByEmail = notifyDoctorByEmail;
-    }
+	public Boolean getNotifyPatientByEmail() {
+		return notifyPatientByEmail;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setNotifyPatientByEmail(Boolean notifyPatientByEmail) {
+		this.notifyPatientByEmail = notifyPatientByEmail;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public Boolean getNotifyDoctorBySms() {
+		return notifyDoctorBySms;
+	}
+
+	public void setNotifyDoctorBySms(Boolean notifyDoctorBySms) {
+		this.notifyDoctorBySms = notifyDoctorBySms;
+	}
+
+	public Boolean getNotifyDoctorByEmail() {
+		return notifyDoctorByEmail;
+	}
+
+	public void setNotifyDoctorByEmail(Boolean notifyDoctorByEmail) {
+		this.notifyDoctorByEmail = notifyDoctorByEmail;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
 	public Date getFromDate() {
 		return fromDate;
@@ -171,16 +171,6 @@ public class AppointmentRequest {
 	public void setCancelledBy(String cancelledBy) {
 		this.cancelledBy = cancelledBy;
 	}
-	
-	
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
 
 	public String getMobileNumber() {
 		return mobileNumber;
@@ -190,6 +180,14 @@ public class AppointmentRequest {
 		this.mobileNumber = mobileNumber;
 	}
 
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -197,7 +195,7 @@ public class AppointmentRequest {
 				+ ", patientId=" + patientId + ", time=" + time + ", fromDate=" + fromDate + ", toDate=" + toDate
 				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
 				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
-				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + "]";
+				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
+				+ ", mobileNumber=" + mobileNumber + "]";
 	}
 }

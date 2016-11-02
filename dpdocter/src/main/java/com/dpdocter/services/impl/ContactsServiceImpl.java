@@ -253,11 +253,11 @@ public class ContactsServiceImpl implements ContactsService {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds,
 								doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimestamp),
-								discards, new PageRequest(page, size, Direction.ASC, "firstName"));
+								discards, new PageRequest(page, size, Direction.ASC, "localPatientName"));
 					else
 						patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds,
 								doctorObjectId, locationObjectId, hospitalObjectId, new Date(createdTimestamp),
-								discards, new Sort(Direction.ASC, "firstName"));
+								discards, new Sort(Direction.ASC, "localPatientName"));
 				} else {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(patientIds,
@@ -273,10 +273,10 @@ public class ContactsServiceImpl implements ContactsService {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorObjectId,
 								new Date(createdTimestamp), discards,
-								new PageRequest(page, size, Direction.ASC, "firstName"));
+								new PageRequest(page, size, Direction.ASC, "localPatientName"));
 					else
 						patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorObjectId,
-								new Date(createdTimestamp), discards, new Sort(Direction.ASC, "firstName"));
+								new Date(createdTimestamp), discards, new Sort(Direction.ASC, "localPatientName"));
 				} else {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorId(patientIds, doctorObjectId,
@@ -293,11 +293,11 @@ public class ContactsServiceImpl implements ContactsService {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorObjectId,
 								locationObjectId, hospitalObjectId, new Date(createdTimestamp), discards,
-								new PageRequest(page, size, Direction.ASC, "firstName"));
+								new PageRequest(page, size, Direction.ASC, "localPatientName"));
 					else
 						patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorObjectId,
 								locationObjectId, hospitalObjectId, new Date(createdTimestamp), discards,
-								new Sort(Direction.ASC, "firstName"));
+								new Sort(Direction.ASC, "localPatientName"));
 				} else {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorIdLocationIdHospitalId(doctorObjectId,
@@ -313,10 +313,10 @@ public class ContactsServiceImpl implements ContactsService {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorId(doctorObjectId,
 								new Date(createdTimestamp), discards,
-								new PageRequest(page, size, Direction.ASC, "firstName"));
+								new PageRequest(page, size, Direction.ASC, "localPatientName"));
 					else
 						patientCollections = patientRepository.findByUserIdDoctorId(doctorObjectId,
-								new Date(createdTimestamp), discards, new Sort(Direction.ASC, "firstName"));
+								new Date(createdTimestamp), discards, new Sort(Direction.ASC, "localPatientName"));
 				} else {
 					if (size > 0)
 						patientCollections = patientRepository.findByUserIdDoctorId(doctorObjectId,

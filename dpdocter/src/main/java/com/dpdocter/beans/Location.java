@@ -69,6 +69,12 @@ public class Location {
     
     private Boolean isActivate = false;
     
+    private Boolean isLocationListed=true;
+    
+//    private String patientInitial = "P";
+//
+//    private int patientCounter = 0;
+
     public String getId() {
 	return id;
     }
@@ -316,6 +322,31 @@ public class Location {
 	public void setIsActivate(Boolean isActivate) {
 		this.isActivate = isActivate;
 	}
+	
+
+//    public String getPatientInitial() {
+//	return patientInitial;
+//    }
+//
+//    public void setPatientInitial(String patientInitial) {
+//	this.patientInitial = patientInitial;
+//    }
+//
+//    public int getPatientCounter() {
+//	return patientCounter;
+//    }
+//
+//    public void setPatientCounter(int patientCounter) {
+//	this.patientCounter = patientCounter;
+//    }
+
+	public Boolean getIsLocationListed() {
+		return isLocationListed;
+	}
+
+	public void setIsLocationListed(Boolean isLocationListed) {
+		this.isLocationListed = isLocationListed;
+	}
 
 	@Override
 	public String toString() {
@@ -331,5 +362,5 @@ public class Location {
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
 				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate + "]";
 	}
-
+    
 }

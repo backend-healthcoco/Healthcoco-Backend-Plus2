@@ -1,13 +1,12 @@
 package com.dpdocter.beans;
 
-import java.util.List;
+import java.util.Date;
 
 import com.dpdocter.collections.GenericCollection;
 
 public class OPDReports extends GenericCollection {
 
 	private String id;
-	private String serialNo;
 	private String patientId;
 	private Patient patient;
 	private String prescriptionId;
@@ -27,13 +26,25 @@ public class OPDReports extends GenericCollection {
 		super();
 	}
 
-	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId) {
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId, Date createdTime) {
 		super();
 		this.patientId = patientId;
 		this.prescriptionId = prescriptionId;
 		this.doctorId = doctorId;
 		this.locationId = locationId;
 		this.hospitalId = hospitalId;
+		super.setCreatedTime(createdTime);
+	}
+
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId, Date createdTime, Date updatedTime) {
+		super();
+		this.patientId = patientId;
+		this.prescriptionId = prescriptionId;
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+		super.setCreatedTime(createdTime);
+		super.setUpdatedTime(updatedTime);
 	}
 
 	public String getId() {
@@ -42,14 +53,6 @@ public class OPDReports extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public String getPatientId() {
@@ -166,12 +169,11 @@ public class OPDReports extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "OPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
-				+ ", prescriptionId=" + prescriptionId + ", prescription=" + prescription + ", amountReceived="
-				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId
-				+ ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
-				+ "]";
+		return "OPDReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", prescriptionId="
+				+ prescriptionId + ", prescription=" + prescription + ", amountReceived=" + amountReceived
+				+ ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId="
+				+ doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId + ", locationName="
+				+ locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName + "]";
 	}
 
 }

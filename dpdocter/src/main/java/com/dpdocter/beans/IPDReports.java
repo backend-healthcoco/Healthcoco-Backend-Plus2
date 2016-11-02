@@ -2,13 +2,14 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class IPDReports extends GenericCollection{
+public class IPDReports extends GenericCollection {
 
 	private String id;
-	private String serialNo;
 	private String patientId;
 	private Patient patient;
 	private Long admissionTime;
+	private Long dateOfAdmission;
+	private Integer timeOfAdmission;
 	private String doctorIncharge;
 	private String diagnosis;
 	private String natureOfProfessionalServiceRendered;
@@ -29,14 +30,6 @@ public class IPDReports extends GenericCollection{
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public String getPatientId() {
@@ -168,10 +161,26 @@ public class IPDReports extends GenericCollection{
 		this.hospitalName = hospitalName;
 	}
 
+	public Long getDateOfAdmission() {
+		return dateOfAdmission;
+	}
+
+	public void setDateOfAdmission(Long dateOfAdmission) {
+		this.dateOfAdmission = dateOfAdmission;
+	}
+
+	public Integer getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(Integer timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
 	@Override
 	public String toString() {
-		return "IPDReports [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId + ", patient=" + patient
-				+ ", admissionTime=" + admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
+		return "IPDReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", admissionTime="
+				+ admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
 				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
 				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
 				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId

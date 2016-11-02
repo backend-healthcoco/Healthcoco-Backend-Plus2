@@ -49,11 +49,25 @@ public class PatientVisitCollection extends GenericCollection {
 
     @Field
     private List<ObjectId> clinicalNotesId;
+    
+    @Field
+    private List<ObjectId> treatmentId;
 
     @Field
     private List<ObjectId> recordId;
-
+    
     @Field
+    private String appointmentId;
+
+    public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	@Field
     private Boolean discarded = false;
 
     public ObjectId getId() {
@@ -160,12 +174,22 @@ public class PatientVisitCollection extends GenericCollection {
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
+	
+
+	public List<ObjectId> getTreatmentId() {
+		return treatmentId;
+	}
+
+	public void setTreatmentId(List<ObjectId> treatmentId) {
+		this.treatmentId = treatmentId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
 				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", recordId="
-				+ recordId + ", discarded=" + discarded + "]";
+				+ recordId + ", appointmentId=" + appointmentId + ", discarded=" + discarded + "]";
 	}
 }

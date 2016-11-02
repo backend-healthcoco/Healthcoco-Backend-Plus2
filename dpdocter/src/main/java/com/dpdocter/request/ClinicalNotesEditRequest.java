@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.ClinicalNotesComplaint;
@@ -8,21 +9,24 @@ import com.dpdocter.beans.ClinicalNotesInvestigation;
 import com.dpdocter.beans.ClinicalNotesNote;
 import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.VitalSigns;
+import com.dpdocter.beans.WorkingHours;
 
 public class ClinicalNotesEditRequest {
     private String id;
 
     private String patientId;
 
-    private List<ClinicalNotesComplaint> complaints;
+    private String note;
 
-    private List<ClinicalNotesObservation> observations;
+    private String observation;
 
-    private List<ClinicalNotesInvestigation> investigations;
+    private String investigation;
 
+    private String diagnosis;
+
+    private String complaint;
+    
     private List<ClinicalNotesDiagnosis> diagnoses;
-
-    private List<ClinicalNotesNote> notes;
 
     private List<String> diagrams;
 
@@ -35,6 +39,14 @@ public class ClinicalNotesEditRequest {
     private String visitId;
 
     private VitalSigns vitalSigns;
+    
+    private AppointmentRequest appointmentRequest;
+
+	private String appointmentId;
+
+	private WorkingHours time;
+
+	private Date fromDate;
 
     public String getId() {
 	return id;
@@ -52,44 +64,12 @@ public class ClinicalNotesEditRequest {
 	this.patientId = patientId;
     }
 
-    public List<ClinicalNotesComplaint> getComplaints() {
-	return complaints;
-    }
-
-    public void setComplaints(List<ClinicalNotesComplaint> complaints) {
-	this.complaints = complaints;
-    }
-
-    public List<ClinicalNotesObservation> getObservations() {
-	return observations;
-    }
-
-    public void setObservations(List<ClinicalNotesObservation> observations) {
-	this.observations = observations;
-    }
-
-    public List<ClinicalNotesInvestigation> getInvestigations() {
-	return investigations;
-    }
-
-    public void setInvestigations(List<ClinicalNotesInvestigation> investigations) {
-	this.investigations = investigations;
-    }
-
     public List<ClinicalNotesDiagnosis> getDiagnoses() {
 	return diagnoses;
     }
 
     public void setDiagnoses(List<ClinicalNotesDiagnosis> diagnoses) {
 	this.diagnoses = diagnoses;
-    }
-
-    public List<ClinicalNotesNote> getNotes() {
-	return notes;
-    }
-
-    public void setNotes(List<ClinicalNotesNote> notes) {
-	this.notes = notes;
     }
 
     public List<String> getDiagrams() {
@@ -140,10 +120,86 @@ public class ClinicalNotesEditRequest {
 	this.vitalSigns = vitalSigns;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", complaints=" + complaints + ", observations=" + observations
-		+ ", investigations=" + investigations + ", diagnoses=" + diagnoses + ", notes=" + notes + ", diagrams=" + diagrams + ", doctorId=" + doctorId
-		+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitId=" + visitId + ", vitalSigns=" + vitalSigns + "]";
-    }
+	public AppointmentRequest getAppointmentRequest() {
+		return appointmentRequest;
+	}
+
+	public void setAppointmentRequest(AppointmentRequest appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", note=" + note + ", observation="
+				+ observation + ", investigation=" + investigation + ", diagnosis=" + diagnosis + ", complaint="
+				+ complaint + ", diagnoses=" + diagnoses + ", diagrams=" + diagrams
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", visitId="
+				+ visitId + ", vitalSigns=" + vitalSigns + ", appointmentRequest=" + appointmentRequest
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+	}
+
 }

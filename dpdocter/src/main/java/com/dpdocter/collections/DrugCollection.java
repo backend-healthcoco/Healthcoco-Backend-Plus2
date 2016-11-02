@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Strength;
 
 @Document(collection = "drug_cl")
@@ -32,6 +33,9 @@ public class DrugCollection extends GenericCollection {
 
     @Field
     private List<String> genericCodes;
+
+    @Field
+    private List<GenericCode> genericNames;
 
     @Field
     private ObjectId doctorId;
@@ -226,13 +230,22 @@ public class DrugCollection extends GenericCollection {
 		this.categories = categories;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
-				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", doctorId=" + doctorId
-				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
-				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
-				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + "]";
+				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", genericNames="
+				+ genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
+				+ ", discarded=" + discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize="
+				+ packSize + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
+				+ dosageTime + ", direction=" + direction + ", categories=" + categories + "]";
 	}
+
 }

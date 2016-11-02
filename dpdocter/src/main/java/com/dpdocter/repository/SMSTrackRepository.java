@@ -1,8 +1,10 @@
 package com.dpdocter.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -60,5 +62,8 @@ public interface SMSTrackRepository extends MongoRepository<SMSTrackDetail, Obje
 
     @Query("{'doctorId': ?0, 'smsDetails.userId': ?1, 'type':{$in: ?2}}")
     List<SMSTrackDetail> findByDoctorPatient(ObjectId doctorId, ObjectId patientId, String[] type, Sort sort);
+
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'smsDetails.userId': ?3, 'type':{$in: ?4}, createdTime:{$gte :?5, $lte :?6}}")
+	List<SMSTrackDetail> findByDoctorLocationHospitalPatient(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId, String[] type, Date time, Date date, Pageable pageRequest);
 
 }

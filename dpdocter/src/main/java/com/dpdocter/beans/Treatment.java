@@ -6,17 +6,22 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
 public class Treatment extends GenericCollection {
-	
-    private ObjectId treatmentServiceId;
-
-    private PatientTreatmentStatus status;
-
-    private double cost = 0.0;
-
-    private String note;
-
-    private int quantity = 0;
     
+	private ObjectId treatmentServiceId;
+
+	private PatientTreatmentStatus status;
+
+	private double cost = 0.0;
+
+	private String note;
+	
+	private Discount discount;
+
+	private double finalCost=0.0;
+
+	private Quantity quantity;
+
+	
 	public ObjectId getTreatmentServiceId() {
 		return treatmentServiceId;
 	}
@@ -26,34 +31,34 @@ public class Treatment extends GenericCollection {
 	}
 
 	public PatientTreatmentStatus getStatus() {
-	return status;
-    }
+		return status;
+	}
 
-    public void setStatus(PatientTreatmentStatus status) {
-	this.status = status;
-    }
+	public void setStatus(PatientTreatmentStatus status) {
+		this.status = status;
+	}
 
-    public double getCost() {
-	return cost;
-    }
+	public double getCost() {
+		return cost;
+	}
 
-    public void setCost(double cost) {
-	this.cost = cost;
-    }
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
 
-    public String getNote() {
-	return note;
-    }
+	public String getNote() {
+		return note;
+	}
 
-    public void setNote(String note) {
-	this.note = note;
-    }
+	public void setNote(String note) {
+		this.note = note;
+	}
 
-	public int getQuantity() {
+	public Quantity getQuantity() {
 		return quantity;
 	}
 
-	public void setQuantity(int quantity) {
+	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
 
@@ -61,6 +66,22 @@ public class Treatment extends GenericCollection {
 	public String toString() {
 		return "Treatment [treatmentServiceId=" + treatmentServiceId + ", status=" + status + ", cost=" + cost
 				+ ", note=" + note + ", quantity=" + quantity + "]";
+	}
+
+	public double getFinalCost() {
+		return finalCost;
+	}
+
+	public void setFinalCost(double finalCost) {
+		this.finalCost = finalCost;
+	}
+
+	public Discount getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Discount discount) {
+		this.discount = discount;
 	}
 
 }

@@ -18,81 +18,87 @@ import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
-public class ESDoctorDocument extends DoctorLocation{
-    @Id
-    private String id;
+public class ESDoctorDocument extends DoctorLocation {
+	@Id
+	private String id;
 
-    @Field(type = FieldType.String)
-    private String userId;
+	@Field(type = FieldType.String)
+	private String userId;
 
-    @Field(type = FieldType.String)
-    private String firstName;
+	@Field(type = FieldType.String)
+	private String firstName;
 
-    @Field(type = FieldType.String)
-    private String gender;
+	@Field(type = FieldType.String)
+	private String gender;
 
-    @Field(type = FieldType.String)
-    private String emailAddress;
+	@Field(type = FieldType.String)
+	private String emailAddress;
 
-    @Field(type = FieldType.String)
-    private String mobileNumber;
+	@Field(type = FieldType.String)
+	private String mobileNumber;
 
-    @Field(type = FieldType.String)
-    private String imageUrl;
+	@Field(type = FieldType.String)
+	private String imageUrl;
 
-    @Field(type = FieldType.Nested)
-    private ConsultationFee consultationFee;
+	@Field(type = FieldType.Nested)
+	private ConsultationFee consultationFee;
 
-    @Field(type = FieldType.Nested)
-    private List<WorkingSchedule> workingSchedules;
+	@Field(type = FieldType.Nested)
+	private ConsultationFee revisitConsultationFee;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> specialities;
+	@Field(type = FieldType.Nested)
+	private List<WorkingSchedule> workingSchedules;
 
-    @Field(type = FieldType.Nested)
-    private DoctorExperience experience;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialities;
 
-    @Field(type = FieldType.String)
-    private String facility;
+	@Field(type = FieldType.Nested)
+	private DoctorExperience experience;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> appointmentBookingNumber;
+	@Field(type = FieldType.String)
+	private String facility;
 
-    @Field(type = FieldType.Nested)
-    private AppointmentSlot appointmentSlot;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> appointmentBookingNumber;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isActive = false;
+	@Field(type = FieldType.Nested)
+	private AppointmentSlot appointmentSlot;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isVerified = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean isActive = false;
 
-    @Field(type = FieldType.String)
-    private String coverImageUrl;
+	@Field(type = FieldType.Boolean)
+	private Boolean isVerified = false;
 
-    @Field(type = FieldType.String)
-    private String coverThumbnailImageUrl;
+	@Field(type = FieldType.String)
+	private String coverImageUrl;
 
-    @Field(type = FieldType.String)
-    private String colorCode;
+	@Field(type = FieldType.String)
+	private String coverThumbnailImageUrl;
 
-    @Field(type = FieldType.String)
-    private String userState;
+	@Field(type = FieldType.String)
+	private String colorCode;
 
-    @Field(type = FieldType.String)
-    private String registerNumber;
+	@Field(type = FieldType.String)
+	private String userState;
 
-    @Field(type = FieldType.Nested)
-    private DOB dob;
+	@Field(type = FieldType.String)
+	private String registerNumber;
 
-    @Transient
-    private Double distance;
+	@Field(type = FieldType.Nested)
+	private DOB dob;
 
-    @Field(type = FieldType.String)
-    private String userUId;
+	@Transient
+	private Double distance;
 
-    @Field(type = FieldType.String)
-    private String timeZone = "IST";
+	@Field(type = FieldType.String)
+	private String userUId;
+
+	@Field(type = FieldType.Boolean)
+	private Boolean isDoctorListed = true;
+
+	@Field(type = FieldType.String)
+	private String timeZone = "IST";
 
 	public String getId() {
 		return id;
@@ -162,16 +168,32 @@ public class ESDoctorDocument extends DoctorLocation{
 		return workingSchedules;
 	}
 
+	public ConsultationFee getRevisitConsultationFee() {
+		return revisitConsultationFee;
+	}
+
+	public void setRevisitConsultationFee(ConsultationFee revisitConsultationFee) {
+		this.revisitConsultationFee = revisitConsultationFee;
+	}
+
 	public void setWorkingSchedules(List<WorkingSchedule> workingSchedules) {
 		this.workingSchedules = workingSchedules;
-		if(workingSchedules != null && !workingSchedules.isEmpty()){
+		if (workingSchedules != null && !workingSchedules.isEmpty()) {
 			List<WorkingSchedule> finalWorkingSchedules = new ArrayList<>();
-			for(WorkingSchedule workingSchedule : workingSchedules){
-				if(workingSchedule.getWorkingHours() != null && !workingSchedule.getWorkingHours().isEmpty())
+			for (WorkingSchedule workingSchedule : workingSchedules) {
+				if (workingSchedule.getWorkingHours() != null && !workingSchedule.getWorkingHours().isEmpty())
 					finalWorkingSchedules.add(workingSchedule);
 			}
 			this.workingSchedules = finalWorkingSchedules;
 		}
+	}
+
+	public Boolean getIsDoctorListed() {
+		return isDoctorListed;
+	}
+
+	public void setIsDoctorListed(Boolean isDoctorListed) {
+		this.isDoctorListed = isDoctorListed;
 	}
 
 	public List<String> getSpecialities() {
@@ -276,7 +298,8 @@ public class ESDoctorDocument extends DoctorLocation{
 
 	public void setDob(DOB dob) {
 		this.dob = dob;
-		if(this.dob != null)dob.getAge();
+		if (this.dob != null)
+			dob.getAge();
 	}
 
 	public Double getDistance() {

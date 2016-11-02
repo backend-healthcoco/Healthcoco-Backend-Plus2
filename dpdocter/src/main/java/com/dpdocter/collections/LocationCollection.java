@@ -13,241 +13,250 @@ import com.dpdocter.beans.WorkingSchedule;
 @Document(collection = "location_cl")
 public class LocationCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String locationName;
+	@Field
+	private String locationName;
 
-    @Field
-    private String country;
+	@Field
+	private String country;
 
-    @Field
-    private String state;
+	@Field
+	private String state;
 
-    @Field
-    private String city;
+	@Field
+	private String city;
 
-    @Field
-    private String postalCode;
+	@Field
+	private String postalCode;
 
-    @Field
-    private String websiteUrl;
+	@Field
+	private String websiteUrl;
 
-    @Field
-    private List<ClinicImage> images;
+	@Field
+	private List<ClinicImage> images;
 
-    @Field
-    private String logoUrl;
+	@Field
+	private String logoUrl;
 
-    @Field
-    private String logoThumbnailUrl;
+	@Field
+	private String logoThumbnailUrl;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private Double latitude;
+	@Field
+	private Double latitude;
 
-    @Field
-    private Double longitude;
+	@Field
+	private Double longitude;
 
-    @Field
-    private String tagLine;
+	@Field
+	private String tagLine;
 
-    @Field
-    private String landmarkDetails;
+	@Field
+	private String landmarkDetails;
 
-    @Field
-    private String locationEmailAddress;
+	@Field
+	private String locationEmailAddress;
 
-    @Field
-    private List<String> specialization;
+	@Field
+	private List<String> specialization;
 
-    @Field
-    private String streetAddress;
+	@Field
+	private String streetAddress;
 
-    @Field
-    private String locality;
+	@Field
+	private String locality;
 
-    @Field
-    private String clinicNumber;
+	@Field
+	private String clinicNumber;
 
-    @Field
-    private List<String> alternateClinicNumbers;
+	@Field
+	private List<String> alternateClinicNumbers;
 
-    @Field
-    private List<WorkingSchedule> clinicWorkingSchedules;
+	@Field
+	private List<WorkingSchedule> clinicWorkingSchedules;
 
-    @Field
-    private boolean isTwentyFourSevenOpen;
+	@Field
+	private boolean isTwentyFourSevenOpen;
 
-    @Field
-    private Boolean isClinic = true;
+	@Field
+	private Boolean isClinic = true;
 
-    @Field
-    private Boolean isLab = false;
+	@Field
+	private Boolean isLab = false;
 
-    @Field
-    private Boolean isOnlineReportsAvailable = false;
+	@Field
+	private Boolean isOnlineReportsAvailable = false;
 
-    @Field
-    private Boolean isNABLAccredited = false;
+	@Field
+	private Boolean isNABLAccredited = false;
 
-    @Field
-    private Boolean isHomeServiceAvailable = false;
+	@Field
+	private Boolean isHomeServiceAvailable = false;
 
-    @Field
-    private String locationUId;
-    
-    @Field
-    private Boolean isActivate = false;
+	@Field
+	private String locationUId;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean isActivate = false;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private Boolean isLocationListed = true;
 
-    public String getLocationName() {
-	return locationName;
-    }
-
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
-
-    public String getCountry() {
-	return country;
-    }
-
-    public void setCountry(String country) {
-	this.country = country;
-    }
-
-    public String getState() {
-	return state;
-    }
-
-    public void setState(String state) {
-	this.state = state;
-    }
-
-    public String getCity() {
-	return city;
-    }
-
-    public void setCity(String city) {
-	this.city = city;
-    }
-
-    public String getPostalCode() {
-	return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	// @Field
+	// private String patientInitial = "P";
+	//
+	// @Field
+	// private int patientCounter = 1;
 
-    public String getWebsiteUrl() {
-	return websiteUrl;
-    }
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public void setWebsiteUrl(String websiteUrl) {
-	this.websiteUrl = websiteUrl;
-    }
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
 
-    public List<ClinicImage> getImages() {
-	return images;
-    }
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
 
-    public void setImages(List<ClinicImage> images) {
-	this.images = images;
-    }
+	public List<ClinicImage> getImages() {
+		return images;
+	}
 
-    public String getLogoUrl() {
-	return logoUrl;
-    }
+	public void setImages(List<ClinicImage> images) {
+		this.images = images;
+	}
 
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
-    }
+	public String getLogoUrl() {
+		return logoUrl;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public String getTagLine() {
-	return tagLine;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
 
-    public void setTagLine(String tagLine) {
-	this.tagLine = tagLine;
-    }
+	public String getTagLine() {
+		return tagLine;
+	}
 
-    public String getLandmarkDetails() {
-	return landmarkDetails;
-    }
+	public void setTagLine(String tagLine) {
+		this.tagLine = tagLine;
+	}
 
-    public void setLandmarkDetails(String landmarkDetails) {
-	this.landmarkDetails = landmarkDetails;
-    }
+	public String getLandmarkDetails() {
+		return landmarkDetails;
+	}
 
-    public String getLocationEmailAddress() {
-	return locationEmailAddress;
-    }
+	public void setLandmarkDetails(String landmarkDetails) {
+		this.landmarkDetails = landmarkDetails;
+	}
 
-    public void setLocationEmailAddress(String locationEmailAddress) {
-	this.locationEmailAddress = locationEmailAddress;
-    }
+	public String getLocationEmailAddress() {
+		return locationEmailAddress;
+	}
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
+	public void setLocationEmailAddress(String locationEmailAddress) {
+		this.locationEmailAddress = locationEmailAddress;
+	}
 
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
+	public List<String> getSpecialization() {
+		return specialization;
+	}
 
-    public String getStreetAddress() {
-	return streetAddress;
-    }
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
 
-    public void setStreetAddress(String streetAddress) {
-	this.streetAddress = streetAddress;
-    }
+	public String getStreetAddress() {
+		return streetAddress;
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public String getLocality() {
+		return locality;
+	}
 
-    public List<WorkingSchedule> getClinicWorkingSchedules() {
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public List<WorkingSchedule> getClinicWorkingSchedules() {
 		return clinicWorkingSchedules;
 	}
 
@@ -256,60 +265,60 @@ public class LocationCollection extends GenericCollection {
 	}
 
 	public boolean isTwentyFourSevenOpen() {
-	return isTwentyFourSevenOpen;
-    }
+		return isTwentyFourSevenOpen;
+	}
 
-    public void setTwentyFourSevenOpen(boolean isTwentyFourSevenOpen) {
-	this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
-    }
+	public void setTwentyFourSevenOpen(boolean isTwentyFourSevenOpen) {
+		this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
+	}
 
-    public String getLogoThumbnailUrl() {
-	return logoThumbnailUrl;
-    }
+	public String getLogoThumbnailUrl() {
+		return logoThumbnailUrl;
+	}
 
-    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-	this.logoThumbnailUrl = logoThumbnailUrl;
-    }
+	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+		this.logoThumbnailUrl = logoThumbnailUrl;
+	}
 
-    public Boolean getIsLab() {
-	return isLab;
-    }
+	public Boolean getIsLab() {
+		return isLab;
+	}
 
-    public void setIsLab(Boolean isLab) {
-	this.isLab = isLab;
-    }
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
 
-    public Boolean getIsOnlineReportsAvailable() {
-	return isOnlineReportsAvailable;
-    }
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
 
-    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-    }
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
 
-    public Boolean getIsNABLAccredited() {
-	return isNABLAccredited;
-    }
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
 
-    public void setIsNABLAccredited(Boolean isNABLAccredited) {
-	this.isNABLAccredited = isNABLAccredited;
-    }
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
 
-    public Boolean getIsHomeServiceAvailable() {
-	return isHomeServiceAvailable;
-    }
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
 
-    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-	this.isHomeServiceAvailable = isHomeServiceAvailable;
-    }
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
 
-    public Boolean getIsClinic() {
-	return isClinic;
-    }
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
 
-    public void setIsClinic(Boolean isClinic) {
-	this.isClinic = isClinic;
-    }
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
 
 	public String getClinicNumber() {
 		return clinicNumber;
@@ -343,6 +352,30 @@ public class LocationCollection extends GenericCollection {
 		this.isActivate = isActivate;
 	}
 
+	// public String getPatientInitial() {
+	// return patientInitial;
+	// }
+	//
+	// public void setPatientInitial(String patientInitial) {
+	// this.patientInitial = patientInitial;
+	// }
+	//
+	// public int getPatientCounter() {
+	// return patientCounter;
+	// }
+	//
+	// public void setPatientCounter(int patientCounter) {
+	// this.patientCounter = patientCounter;
+	// }
+
+	public Boolean getIsLocationListed() {
+		return isLocationListed;
+	}
+
+	public void setIsLocationListed(Boolean isLocationListed) {
+		this.isLocationListed = isLocationListed;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -357,5 +390,4 @@ public class LocationCollection extends GenericCollection {
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
 				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate + "]";
 	}
-
 }

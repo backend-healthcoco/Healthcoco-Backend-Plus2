@@ -27,6 +27,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.SMSResponse;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -41,6 +42,9 @@ public class SMSServicesAPI {
 
     @Autowired
     private SMSServices smsServices;
+
+    @Autowired
+    private TransactionalManagementService transactionalManagementService;
 
 //    @Produces(MediaType.APPLICATION_JSON)
 //    @Consumes(MediaType.APPLICATION_JSON)
@@ -167,4 +171,19 @@ public class SMSServicesAPI {
 	response.setDataList(smsFormat);
 	return response;
     }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
+    @GET
+    @ApiOperation(value = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT, notes = PathProxy.SMSUrls.SEND_DOWNLOAD_APP_SMS_TO_PATIENT)
+    public Response<Boolean> sendPromotionalSMSToPatient() {
+    	
+	Boolean send = transactionalManagementService.sendPromotionalSMSToPatient();
+	Response<Boolean> response = new Response<Boolean>();
+	response.setData(send);
+	return response;
+    }
+
+
 }

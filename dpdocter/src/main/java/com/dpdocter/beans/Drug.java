@@ -14,8 +14,6 @@ public class Drug extends GenericCollection{
 
     private String explanation;
 
-    private Strength strength;
-
     private Boolean discarded = false;
 
     private String doctorId;
@@ -35,6 +33,8 @@ public class Drug extends GenericCollection{
     private List<String> categories;
     
     private long rankingCount = 0;
+
+    private List<GenericCode> genericNames;
 
 	public String getId() {
 		return id;
@@ -66,14 +66,6 @@ public class Drug extends GenericCollection{
 
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
-	}
-
-	public Strength getStrength() {
-		return strength;
-	}
-
-	public void setStrength(Strength strength) {
-		this.strength = strength;
 	}
 
 	public Boolean getDiscarded() {
@@ -156,4 +148,20 @@ public class Drug extends GenericCollection{
 		this.rankingCount = rankingCount;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
+	@Override
+	public String toString() {
+		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
+				+ ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId="
+				+ hospitalId + ", locationId=" + locationId + ", duration=" + duration + ", dosage=" + dosage
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
+				+ ", rankingCount=" + rankingCount + ", genericNames=" + genericNames + "]";
+	}
 }

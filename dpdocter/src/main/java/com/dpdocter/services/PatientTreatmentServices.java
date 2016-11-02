@@ -2,6 +2,9 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
+import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
@@ -14,20 +17,37 @@ public interface PatientTreatmentServices {
 
 	TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request);
 
-    PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request);
+	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request);
 
-    boolean deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
 
-    PatientTreatmentResponse getPatientTreatmentById(String treatmentId);
+	PatientTreatmentResponse getPatientTreatmentById(String treatmentId);
 
-	TreatmentService deleteService(String treatmentServiceId, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	TreatmentService deleteService(String treatmentServiceId, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
 
-	TreatmentServiceCost deleteServiceCost(String treatmentServiceId, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	TreatmentServiceCost deleteServiceCost(String treatmentServiceId, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
 
-	List<?> getServices(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded);
+	List<?> getServices(String type, String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded);
 
-	PatientTreatmentResponse changePatientTreatmentStatus(String treatmentId, String doctorId, String locationId, String hospitalId, Treatment treatment);
+	PatientTreatmentResponse changePatientTreatmentStatus(String treatmentId, String doctorId, String locationId,
+			String hospitalId, Treatment treatment);
 
-	List<PatientTreatmentResponse> getPatientTreatments(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory, String status);
+	List<PatientTreatmentResponse> getPatientTreatments(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
+			Boolean inHistory, String status);
 
+	List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId);
+
+	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(int page, int size, String doctorId,
+			String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded,
+			Boolean inHistory, String status);
+
+	void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
+
+	String downloadPatientTreatment(String treatmentId);
 }

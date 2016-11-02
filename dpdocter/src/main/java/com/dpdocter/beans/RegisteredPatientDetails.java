@@ -7,6 +7,8 @@ import com.dpdocter.collections.GenericCollection;
 public class RegisteredPatientDetails extends GenericCollection {
 
     private String firstName;
+    
+    private String localPatientName;
 
     private String lastName;
 
@@ -21,6 +23,7 @@ public class RegisteredPatientDetails extends GenericCollection {
     private String userId;
 
     private String userName;
+    
 	private String countryCode;
 
     private String mobileNumber;
@@ -46,6 +49,8 @@ public class RegisteredPatientDetails extends GenericCollection {
     private Reference referredBy;
 
     private Boolean isPartOfClinic;
+    
+    private String backendPatientId;
     
     public String getUserId() {
 	return userId;
@@ -208,15 +213,12 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.isPartOfClinic = isPartOfClinic;
 	}
 
-	@Override
-	public String toString() {
-		return "RegisteredPatientDetails [firstName=" + firstName + ", lastName=" + lastName + ", middleName="
-				+ middleName + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
-				+ ", userId=" + userId + ", userName=" + userName + ", mobileNumber=" + mobileNumber + ", gender="
-				+ gender + ", patient=" + patient + ", address=" + address + ", groups=" + groups + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", PID=" + PID
-				+ ", colorCode=" + colorCode + ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic
-				+ "]";
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 	public String getCountryCode() {
@@ -227,4 +229,23 @@ public class RegisteredPatientDetails extends GenericCollection {
 		this.countryCode = countryCode;
 	}
 
+	public String getBackendPatientId() {
+		return backendPatientId;
+	}
+
+	public void setBackendPatientId(String backendPatientId) {
+		this.backendPatientId = backendPatientId;
+	}
+
+	@Override
+	public String toString() {
+		return "RegisteredPatientDetails [firstName=" + firstName + ", localPatientName=" + localPatientName
+				+ ", lastName=" + lastName + ", middleName=" + middleName + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", userId=" + userId + ", userName=" + userName + ", countryCode="
+				+ countryCode + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", patient=" + patient
+				+ ", address=" + address + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", PID=" + PID + ", colorCode=" + colorCode
+				+ ", referredBy=" + referredBy + ", isPartOfClinic=" + isPartOfClinic + ", backendPatientId="
+				+ backendPatientId + "]";
+	}
 }

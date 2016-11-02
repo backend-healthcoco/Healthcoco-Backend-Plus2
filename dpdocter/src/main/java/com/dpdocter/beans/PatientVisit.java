@@ -3,120 +3,163 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.enums.VisitedFor;
 
 public class PatientVisit {
-    private String id;
+	private String id;
 
-    private String uniqueEmrId;
+	private String uniqueEmrId;
 
-    private String patientId;
+	private String patientId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Date visitedTime;
+	private Date visitedTime;
 
-    private List<VisitedFor> visitedFor;
+	private List<VisitedFor> visitedFor;
 
-    private List<String> prescriptionId;
+	private List<String> prescriptionId;
 
-    private List<String> clinicalNotesId;
+	private List<String> clinicalNotesId;
 
-    private List<String> recordId;
+	private List<String> recordId;
 
-    private Boolean discarded = false;
+	private List<ObjectId> treatmentId;
 
-    public String getId() {
-	return id;
-    }
+	private WorkingHours time;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private Date fromDate;
 
-    public String getPatientId() {
-	return patientId;
-    }
+	private Date toDate;
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public WorkingHours getTime() {
+		return time;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public Date getFromDate() {
+		return fromDate;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public Date getToDate() {
+		return toDate;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	private Boolean discarded = false;
 
-    public Date getVisitedTime() {
-	return visitedTime;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setVisitedTime(Date visitedTime) {
-	this.visitedTime = visitedTime;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public List<VisitedFor> getVisitedFor() {
-	return visitedFor;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public void setVisitedFor(List<VisitedFor> visitedFor) {
-	this.visitedFor = visitedFor;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public List<String> getPrescriptionId() {
-	return prescriptionId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setPrescriptionId(List<String> prescriptionId) {
-	this.prescriptionId = prescriptionId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public List<String> getClinicalNotesId() {
-	return clinicalNotesId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setClinicalNotesId(List<String> clinicalNotesId) {
-	this.clinicalNotesId = clinicalNotesId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public List<String> getRecordId() {
-	return recordId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setRecordId(List<String> recordId) {
-	this.recordId = recordId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Date getVisitedTime() {
+		return visitedTime;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setVisitedTime(Date visitedTime) {
+		this.visitedTime = visitedTime;
+	}
+
+	public List<VisitedFor> getVisitedFor() {
+		return visitedFor;
+	}
+
+	public void setVisitedFor(List<VisitedFor> visitedFor) {
+		this.visitedFor = visitedFor;
+	}
+
+	public List<String> getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(List<String> prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public List<String> getClinicalNotesId() {
+		return clinicalNotesId;
+	}
+
+	public void setClinicalNotesId(List<String> clinicalNotesId) {
+		this.clinicalNotesId = clinicalNotesId;
+	}
+
+	public List<String> getRecordId() {
+		return recordId;
+	}
+
+	public void setRecordId(List<String> recordId) {
+		this.recordId = recordId;
+	}
+
+	public List<ObjectId> getTreatmentId() {
+		return treatmentId;
+	}
+
+	public void setTreatmentId(List<ObjectId> treatmentId) {
+		this.treatmentId = treatmentId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;

@@ -1,8 +1,10 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.PrescriptionItemDetail;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
 public class PrescriptionAddEditResponseDetails extends GenericCollection {
@@ -31,6 +33,12 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
     private List<TestAndRecordDataResponse> diagnosticTests;
 
     private String advice;
+    
+    private String appointmentId;
+
+	private WorkingHours time;
+
+	private Date fromDate;
 
     public String getId() {
 	return id;
@@ -136,12 +144,36 @@ public class PrescriptionAddEditResponseDetails extends GenericCollection {
 		this.diagnosticTests = diagnosticTests;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionAddEditResponseDetails [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items="
 				+ items + ", patientId=" + patientId + ", prescriptionCode=" + prescriptionCode + ", discarded="
 				+ discarded + ", visitId=" + visitId + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
-				+ "]";
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

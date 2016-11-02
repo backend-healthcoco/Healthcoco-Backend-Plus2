@@ -2,8 +2,8 @@ package com.dpdocter.response;
 
 public class PatientInitialAndCounter {
 
-    private String doctorId;
-
+	private String doctorId;
+	
     private String locationId;
 
     private String patientInitial;
@@ -11,14 +11,14 @@ public class PatientInitialAndCounter {
     private int patientCounter;
 
     public String getDoctorId() {
-	return doctorId;
-    }
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
+	public String getLocationId() {
 	return locationId;
     }
 
@@ -42,9 +42,9 @@ public class PatientInitialAndCounter {
 	this.patientCounter = patientCounter;
     }
 
-    @Override
-    public String toString() {
-	return "PatientInitialAndCounter [doctorId=" + doctorId + ", locationId=" + locationId + ", patientInitial=" + patientInitial + ", patientCounter="
-		+ patientCounter + "]";
-    }
+	@Override
+	public String toString() {
+		return "PatientInitialAndCounter [doctorId=" + doctorId + ", locationId=" + locationId + ", patientInitial="
+				+ patientInitial + ", patientCounter=" + patientCounter + "]";
+	}
 }

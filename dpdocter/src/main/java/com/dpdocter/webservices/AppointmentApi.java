@@ -182,6 +182,9 @@ public class AppointmentApi {
     if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }else if(request.getTime() != null && (request.getTime().getFromTime() > request.getTime().getToTime())){
+    	logger.warn("Invalid Time");
+	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Time");
     }
 	Appointment appointment = null;
 	if (request.getAppointmentId() == null) {

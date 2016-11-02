@@ -31,6 +31,7 @@ import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceCostRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
+import com.dpdocter.enums.PatientTreatmentService;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
@@ -86,9 +87,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	public List<?> search(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<?> response = new ArrayList<Object>();
 
-		switch (Resource.valueOf(type.toUpperCase())) {
+		switch (PatientTreatmentService.valueOf(type.toUpperCase())) {
 
-		case TREATMENTSERVICE: {
+		case SERVICE: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL: response = getGlobalTreatmentServices(page, size, doctorId, updatedTime, discarded, searchTerm); break;
@@ -99,7 +100,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			}
 			break;
 		}
-		case TREATMENTSERVICECOST: {
+		case SERVICECOST: {
 			response = getCustomTreatmentServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm); break;
 		}
 		default:
@@ -136,7 +137,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			 	}
 		    }
 
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size, updatedTime, discarded, null, searchTerm, specialities, null, "name");
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -149,7 +150,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	private List<?> getCustomTreatmentServices(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESTreatmentServiceDocument> response = null;
 		try {
-		    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, "name");
+		    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "name");
 				response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -187,7 +188,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			 	}
 		    }
 
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, "name");
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
 		    e.printStackTrace();

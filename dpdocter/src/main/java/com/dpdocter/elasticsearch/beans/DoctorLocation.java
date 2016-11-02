@@ -98,6 +98,10 @@ public class DoctorLocation {
     
     @Field(type = FieldType.Nested)
     private List<WorkingSchedule> clinicWorkingSchedules;
+    
+    @Field(type = FieldType.Boolean)
+    private Boolean isLocationListed=true;
+
 
 	public String getLocationId() {
 		return locationId;
@@ -339,6 +343,14 @@ public class DoctorLocation {
 		}
 	}
 
+	public Boolean getIsLocationListed() {
+		return isLocationListed;
+	}
+
+	public void setIsLocationListed(Boolean isLocationListed) {
+		this.isLocationListed = isLocationListed;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -351,7 +363,8 @@ public class DoctorLocation {
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
-				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + "]";
+				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
+				+ isLocationListed + "]";
 	}
 
 }

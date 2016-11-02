@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -75,9 +74,11 @@ public class ESAppointmentApi {
     public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city, @QueryParam("location") String location,
 	    @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test,
 	    @QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling,
-	    @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days) {
+	    @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
+	    @QueryParam("onlineReports") Boolean onlineReports, @QueryParam("homeService") Boolean homeService,
+	    @QueryParam("nabl") Boolean nabl) {
 
-	List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude, test, booking, calling, minTime, maxTime, days);
+	List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude, test, booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl);
 
 //	if (doctors != null && !doctors.isEmpty()) {
 //	    for (LabResponse doctorDocument : doctors) {

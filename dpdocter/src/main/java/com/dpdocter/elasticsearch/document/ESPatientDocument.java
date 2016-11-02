@@ -13,113 +13,124 @@ import com.dpdocter.beans.DOB;
 @Document(indexName = "patients_in", type = "patients")
 public class ESPatientDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.String)
-    private String userId;
+	@Field(type = FieldType.String)
+	private String userId;
 
-    @Field(type = FieldType.String)
-    private String PID;
+	@Field(type = FieldType.String)
+	private String PID;
 
-    @Field(type = FieldType.String)
-    private String userName;
+	@Field(type = FieldType.String)
+	private String userName;
 
-    @Field(type = FieldType.String)
-    private String firstName;
+	@Field(type = FieldType.String)
+	private String firstName;
 
-    @Field(type = FieldType.String)
-    private String gender;
+	@Field(type = FieldType.String)
+	private String localPatientName;
 
-    @Field(type = FieldType.String)
-    private String bloodGroup;
+	@Field(type = FieldType.String)
+	private String gender;
 
-    @Field(type = FieldType.String)
-    private String emailAddress;
+	@Field(type = FieldType.String)
+	private String bloodGroup;
 
-    @Field(type = FieldType.Nested)
-    private DOB dob;
+	@Field(type = FieldType.String)
+	private String emailAddress;
 
-    @Field(type = FieldType.String)
-    private String city;
+	@Field(type = FieldType.Nested)
+	private DOB dob;
 
-    @Field(type = FieldType.String)
-    private String locality;
+	@Field(type = FieldType.String)
+	private String city;
 
-    @Field(type = FieldType.String)
-    private String postalCode;
+	@Field(type = FieldType.String)
+	private String locality;
 
-    @Field(type = FieldType.String)
-    private String mobileNumber;
+	@Field(type = FieldType.String)
+	private String postalCode;
 
-    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
-    private String profession;
+	@Field(type = FieldType.String)
+	private String mobileNumber;
 
-    @Field(type = FieldType.String)
-    private String doctorId;
+	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	private String profession;
 
-    @Field(type = FieldType.String)
-    private String locationId;
+	@Field(type = FieldType.String)
+	private String doctorId;
 
-    @Field(type = FieldType.String)
-    private String hospitalId;
+	@Field(type = FieldType.String)
+	private String locationId;
 
-    @Field(type = FieldType.String, index = FieldIndex.not_analyzed)
-    private String referredBy;
+	@Field(type = FieldType.String)
+	private String hospitalId;
 
-    @Field(type = FieldType.Date)
-    private Date createdTime;
+	@Field(type = FieldType.String, index = FieldIndex.not_analyzed)
+	private String referredBy;
 
-    @Field(type = FieldType.String)
-    private String imageUrl;
+	@Field(type = FieldType.Date)
+	private Date createdTime;
 
-    @Field(type = FieldType.String)
-    private String thumbnailUrl;
+	@Field(type = FieldType.String)
+	private String imageUrl;
 
-    @Field(type = FieldType.String)
-    private String colorCode;
+	@Field(type = FieldType.String)
+	private String thumbnailUrl;
 
-    @Field(type = FieldType.Long)
-    private Long registrationDate;
+	@Field(type = FieldType.String)
+	private String colorCode;
 
-    @Field(type = FieldType.String)
-    private String userUId;
+	@Field(type = FieldType.Long)
+	private Long registrationDate;
 
-    public String getId() {
-	return id;
-    }
+	@Field(type = FieldType.String)
+	private String userUId;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getUserId() {
-	return userId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setUserId(String userId) {
-	this.userId = userId;
-    }
+	public String getUserId() {
+		return userId;
+	}
 
-    public String getPID() {
-	return PID;
-    }
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
 
-    public void setPID(String pID) {
-	PID = pID;
-    }
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
 
-    public String getUserName() {
-	return userName;
-    }
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
-    public void setUserName(String userName) {
-	this.userName = userName;
-    }
+	public String getPID() {
+		return PID;
+	}
 
-    public String getFirstName() {
-	return firstName;
-    }
+	public void setPID(String pID) {
+		PID = pID;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
 
 	public String getGender() {
 		return gender;
@@ -151,7 +162,8 @@ public class ESPatientDocument {
 
 	public void setDob(DOB dob) {
 		this.dob = dob;
-		if(this.dob != null)dob.getAge();
+		if (this.dob != null)
+			dob.getAge();
 	}
 
 	public String getCity() {

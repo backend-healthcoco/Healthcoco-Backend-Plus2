@@ -3,9 +3,9 @@ package com.dpdocter.beans;
 import com.dpdocter.enums.TimeUnit;
 
 public class AppointmentSlot {
-    private float time;
+    private float time = 15;
 
-    private TimeUnit timeUnit;
+    private TimeUnit timeUnit = TimeUnit.MINS;
 
     public AppointmentSlot(float time, TimeUnit timeUnit) {
 		this.time = time;

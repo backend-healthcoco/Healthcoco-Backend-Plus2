@@ -1,37 +1,94 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
 public class PatientTreatmentResponse extends GenericCollection {
-    private String id;
+	private String id;
 
-    private List<TreatmentResponse> treatments;
+	private List<TreatmentResponse> treatments;
 
-    private String patientId;
+	private String patientId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private double totalCost = 0.0;
+	private String visitId;
 
-    private Boolean discarded = false;
+	private String uniqueEmrId;
 
-    private Boolean inHistory = false;
+	private double totalCost = 0.0;
 
-    public String getId() {
-	return id;
-    }
+	private Discount totalDiscount;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private double grandTotal = 0.0;
 
-    public List<TreatmentResponse> getTreatments() {
+	private Boolean discarded = false;
+
+	private Boolean inHistory = false;
+
+	private String appointmentId;
+
+	private WorkingHours time;
+
+	private Date fromDate;
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public double getGrandTotal() {
+		return grandTotal;
+	}
+
+	public void setGrandTotal(double grandTotal) {
+		this.grandTotal = grandTotal;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public List<TreatmentResponse> getTreatments() {
 		return treatments;
 	}
 
@@ -40,44 +97,52 @@ public class PatientTreatmentResponse extends GenericCollection {
 	}
 
 	public String getPatientId() {
-	return patientId;
-    }
+		return patientId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public double getTotalCost() {
-	return totalCost;
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
-    public void setTotalCost(double totalCost) {
-	this.totalCost = totalCost;
-    }
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	public double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -100,5 +165,13 @@ public class PatientTreatmentResponse extends GenericCollection {
 		return "PatientTreatmentResponse [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
 				+ ", totalCost=" + totalCost + ", discarded=" + discarded + ", inHistory=" + inHistory + "]";
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 }

@@ -11,11 +11,13 @@ public class IPDReportsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String serialNo;
-	@Field
 	private ObjectId patientId;
 	@Field
 	private String admissionTime;
+	@Field
+	private Long dateOfAdmission;
+	@Field
+	private Integer timeOfAdmission;
 	@Field
 	private String doctorIncharge;
 	@Field
@@ -43,14 +45,6 @@ public class IPDReportsCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public String getSerialNo() {
-		return serialNo;
-	}
-
-	public void setSerialNo(String serialNo) {
-		this.serialNo = serialNo;
 	}
 
 	public ObjectId getPatientId() {
@@ -149,13 +143,30 @@ public class IPDReportsCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public Long getDateOfAdmission() {
+		return dateOfAdmission;
+	}
+
+	public void setDateOfAdmission(Long dateOfAdmission) {
+		this.dateOfAdmission = dateOfAdmission;
+	}
+
+	public Integer getTimeOfAdmission() {
+		return timeOfAdmission;
+	}
+
+	public void setTimeOfAdmission(Integer timeOfAdmission) {
+		this.timeOfAdmission = timeOfAdmission;
+	}
+
 	@Override
 	public String toString() {
-		return "IPDReportsCollection [id=" + id + ", serialNo=" + serialNo + ", patientId=" + patientId
-				+ ", admissionTime=" + admissionTime + ", doctorIncharge=" + doctorIncharge + ", diagnosis=" + diagnosis
-				+ ", natureOfProfessionalServiceRendered=" + natureOfProfessionalServiceRendered + ", amountReceived="
-				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+		return "IPDReportsCollection [id=" + id + ", patientId=" + patientId + ", admissionTime=" + admissionTime
+				+ ", dateOfAdmission=" + dateOfAdmission + ", timeOfAdmission=" + timeOfAdmission + ", doctorIncharge="
+				+ doctorIncharge + ", diagnosis=" + diagnosis + ", natureOfProfessionalServiceRendered="
+				+ natureOfProfessionalServiceRendered + ", amountReceived=" + amountReceived + ", receiptNo="
+				+ receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
 }

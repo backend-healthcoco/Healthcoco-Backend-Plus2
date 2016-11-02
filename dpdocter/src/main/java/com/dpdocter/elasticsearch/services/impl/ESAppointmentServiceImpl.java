@@ -7,23 +7,30 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -46,6 +53,7 @@ import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import common.util.web.DPDoctorUtils;
 
@@ -387,7 +395,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
     @Override
     public List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling,
-    		int minTime, int maxTime, List<String> days) {
+    		int minTime, int maxTime, List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl) {
 	List<LabResponse> response = null;
 	List<ESLabTestDocument> esLabTestDocuments = null;
 	try {
@@ -418,6 +426,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
         if(booking != null && booking)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.BOOK.getType()));
 	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.CALL.getType()));
 
+        if(onlineReports != null)boolQueryBuilder.must(QueryBuilders.termQuery("isOnlineReportsAvailable", onlineReports));
+	    if(homeService != null)boolQueryBuilder.must(QueryBuilders.termQuery("isHomeServiceAvailable", homeService));
+        if(nabl != null)boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
+
 	    if(minTime != 0 && maxTime != 0) 
 	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime)).must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
 	    else if(minTime != 0)
@@ -432,48 +444,61 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
         boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
 	    
 	    SearchQuery searchQuery = null;
-	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).build();
-	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().addAggregation(AggregationBuilders
+				.terms("keys")
+				.field("locationId")
+				.size(size)
+				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+	    		.withIndices("doctors_in").withTypes("doctors")
+		.withQuery(boolQueryBuilder)
+		.withPageable(new PageRequest(page, size)).build();
+	 
+	    else searchQuery = new NativeSearchQueryBuilder()		
+	    		.addAggregation(AggregationBuilders
+	    				.terms("keys")
+	    				.field("locationId")
+	    				.size(0)
+	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+	    		.withIndices("doctors_in").withTypes("doctors")
+	    		.withQuery(boolQueryBuilder)
+	    		.build();
 			
-	    doctorDocument = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-	    for(ESLabTestDocument labTestDocument : esLabTestDocuments){
-	    	if (doctorDocument != null && !doctorDocument.isEmpty()) {
-				for (ESDoctorDocument document : doctorDocument) {
-					if(labTestDocument.getLocationId().equalsIgnoreCase(document.getLocationId())){
-						LabResponse labResponse = new LabResponse();
-						BeanUtil.map(document, labResponse);
-						LabTest esLabTest = new LabTest();
-						BeanUtil.map(labTestDocument, esLabTest);
-						labResponse.setLabTest(esLabTest);
-						if (labResponse.getLabTest() != null) {
-						    if (labTestDocument.getTestId() != null) {
-							ESDiagnosticTestDocument testDocument = esDiagnosticTestRepository.findOne(labTestDocument.getTestId());
-							DiagnosticTest diagnosticTest = new DiagnosticTest();
-							if(testDocument != null){
-								BeanUtil.map(testDocument, diagnosticTest);
-							}
-							labResponse.getLabTest().setTest(diagnosticTest);
-						    }
-						}
-						List<String> images = new ArrayList<String>();
-						if(document.getImages() != null)
-						for (String clinicImage : document.getImages()) {
+	    SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {
+	        @Override
+	        public SearchResponse extract(SearchResponse response) {
+	        	return response;
+	        }
+	    });
+	    doctorDocument = new ArrayList<ESDoctorDocument>();
+	    StringTerms hits = searchResponse.getAggregations().get("keys");
+	    List<Bucket> buckets = hits.getBuckets();
+	    if(buckets != null && !buckets.isEmpty())
+	    for(Bucket bucket : buckets){
+	    	InternalTopHits topHits = bucket.getAggregations().get("hits");
+	    	SearchHit searchHit = topHits.getHits().getHits()[0];
+	    	ObjectMapper objectMapper = new ObjectMapper();
+	    	ESDoctorDocument esDoctorDocument = objectMapper.convertValue(searchHit.getSource(), ESDoctorDocument.class);
+	    	doctorDocument.add(esDoctorDocument);
+	    }
+	    if (doctorDocument != null && !doctorDocument.isEmpty()) {
+			for (ESDoctorDocument document : doctorDocument) {
+				LabResponse labResponse = new LabResponse();
+				BeanUtil.map(document, labResponse);
+				List<String> images = new ArrayList<String>();
+				if(document.getImages() != null)
+					for (String clinicImage : document.getImages()) {
 							    images.add(getFinalImageURL(clinicImage));
-						}
-						labResponse.setImages(images);
-						 if (document.getLogoUrl() != null)
-							 labResponse.setLogoUrl(getFinalImageURL(document.getLogoUrl()));
-
-						    if (latitude != null && longitude != null && document.getLatitude() != null && document.getLongitude() != null) {
+					}
+					labResponse.setImages(images);
+					if (document.getLogoUrl() != null)labResponse.setLogoUrl(getFinalImageURL(document.getLogoUrl()));
+				    if (latitude != null && longitude != null && document.getLatitude() != null && document.getLongitude() != null) {
 							labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
 								document.getLatitude(), document.getLongitude(), "K"));
-						    }
-						if (response == null)response = new ArrayList<LabResponse>();
-						response.add(labResponse);
-					    }	
-					}
-			}
-	    }
+				    }
+					if (response == null)response = new ArrayList<LabResponse>();
+					response.add(labResponse);
+			}	
+	   }
 	} catch (Exception e) {
 	    e.printStackTrace();
 	    throw new BusinessException(ServiceError.Unknown, "Error While Getting Labs From ES : " + e.getMessage());

@@ -117,14 +117,14 @@ public class OTPServiceImpl implements OTPService {
 		doctorOTPCollection.setPatientId(new ObjectId(patientId));
 		doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
 
-		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patient.getFirstName(),
+		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patientCollection.getLocalPatientName(),
 				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy and Happy!!",
 			patient.getMobileNumber(), "OTPVerification");
 		sMSServices.sendSMS(smsTrackDetail, false);
 
 		if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
 		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCollection.getEmailAddress(),
-			    patient.getFirstName(), doctorName);
+			    patientCollection.getLocalPatientName(), doctorName);
 		    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
 		}
 		pushNotificationServices.notifyUser(patient.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null);
@@ -170,7 +170,7 @@ public class OTPServiceImpl implements OTPService {
 				response = true;
 				if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
 				    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCollection.getEmailAddress(),
-					    patient.getFirstName(), doctorName);
+				    		patientCollection.getLocalPatientName(), doctorName);
 				    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpAfterVerification + " " + userCollection.getTitle() + " "+ userCollection.getFirstName(), body, null);
 				}
 				pushNotificationServices.notifyUser(patient.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null);

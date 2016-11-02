@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -11,172 +12,195 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.VitalSigns;
+import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "clinical_notes_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class ClinicalNotesCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String uniqueEmrId;
+	@Field
+	private String uniqueEmrId;
 
-    @Field
-    private List<ObjectId> notes;
+	@Field
+	private List<ObjectId> notes;
 
-    @Field
-    private List<ObjectId> observations;
+	@Field
+	private List<ObjectId> observations;
 
-    @Field
-    private List<ObjectId> investigations;
+	@Field
+	private List<ObjectId> investigations;
 
-    @Field
-    private List<ObjectId> diagnoses;
+	@Field
+	private List<ObjectId> diagnoses;
 
-    @Field
-    private List<ObjectId> complaints;
+	@Field
+	private List<ObjectId> complaints;
 
-    @Field
-    private List<ObjectId> diagrams;
+	@Field
+	private List<ObjectId> diagrams;
 
-    @Field
-    private List<String> comments;
+ 	@Field
+	private String note;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Field
+	private String observation;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private String investigation;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private String diagnosis;
 
-    @Indexed
-    private ObjectId patientId;
-    
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private String complaint;
+	
+	@Field
+	private List<String> comments;
 
-    @Field
-    private boolean inHistory = false;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private VitalSigns vitalSigns;
+	@Field
+	private ObjectId locationId;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private ObjectId hospitalId;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Indexed
+	private ObjectId patientId;
 
-    public List<ObjectId> getNotes() {
-	return notes;
-    }
+	@Field
+	private Boolean discarded = false;
 
-    public void setNotes(List<ObjectId> notes) {
-	this.notes = notes;
-    }
+	@Field
+	private boolean inHistory = false;
 
-    public List<ObjectId> getObservations() {
-	return observations;
-    }
+	@Field
+	private VitalSigns vitalSigns;
 
-    public void setObservations(List<ObjectId> observations) {
-	this.observations = observations;
-    }
+	@Field
+	private String appointmentId;
 
-    public List<ObjectId> getInvestigations() {
-	return investigations;
-    }
+	@Field
+	private WorkingHours time;
 
-    public void setInvestigations(List<ObjectId> investigations) {
-	this.investigations = investigations;
-    }
+	@Field
+	private Date fromDate;
 
-    public List<ObjectId> getDiagnoses() {
-	return diagnoses;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setDiagnoses(List<ObjectId> diagnoses) {
-	this.diagnoses = diagnoses;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public List<ObjectId> getComplaints() {
-	return complaints;
-    }
+	public List<ObjectId> getNotes() {
+		return notes;
+	}
 
-    public void setComplaints(List<ObjectId> complaints) {
-	this.complaints = complaints;
-    }
+	public void setNotes(List<ObjectId> notes) {
+		this.notes = notes;
+	}
 
-    public List<ObjectId> getDiagrams() {
-	return diagrams;
-    }
+	public List<ObjectId> getObservations() {
+		return observations;
+	}
 
-    public void setDiagrams(List<ObjectId> diagrams) {
-	this.diagrams = diagrams;
-    }
+	public void setObservations(List<ObjectId> observations) {
+		this.observations = observations;
+	}
 
-    public List<String> getComments() {
-	return comments;
-    }
+	public List<ObjectId> getInvestigations() {
+		return investigations;
+	}
 
-    public void setComments(List<String> comments) {
-	this.comments = comments;
-    }
+	public void setInvestigations(List<ObjectId> investigations) {
+		this.investigations = investigations;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public List<ObjectId> getDiagnoses() {
+		return diagnoses;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDiagnoses(List<ObjectId> diagnoses) {
+		this.diagnoses = diagnoses;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public List<ObjectId> getComplaints() {
+		return complaints;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setComplaints(List<ObjectId> complaints) {
+		this.complaints = complaints;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public List<ObjectId> getDiagrams() {
+		return diagrams;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setDiagrams(List<ObjectId> diagrams) {
+		this.diagrams = diagrams;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public List<String> getComments() {
+		return comments;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setComments(List<String> comments) {
+		this.comments = comments;
+	}
 
-    public boolean isInHistory() {
-	return inHistory;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public VitalSigns getVitalSigns() {
-	return vitalSigns;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setVitalSigns(VitalSigns vitalSigns) {
-	this.vitalSigns = vitalSigns;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public boolean isInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
@@ -194,13 +218,79 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+
+	public String getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
 				+ ", observations=" + observations + ", investigations=" + investigations + ", diagnoses=" + diagnoses
-				+ ", complaints=" + complaints + ", diagrams=" + diagrams
-				+ ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", patientId=" + patientId + ", discarded=" + discarded + ", inHistory=" + inHistory
-				+ ", vitalSigns=" + vitalSigns + "]";
+				+ ", complaints=" + complaints + ", diagrams=" + diagrams + ", note=" + note + ", observation="
+				+ observation + ", investigation=" + investigation + ", diagnosis=" + diagnosis + ", complaint="
+				+ complaint + ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
+				+ ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

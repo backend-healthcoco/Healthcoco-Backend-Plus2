@@ -20,6 +20,8 @@ public class ESPatientResponse {
 
     private String lastName;
 
+    private String localPatientName;
+    
     private String gender;
 
     private String bloodGroup;
@@ -246,13 +248,23 @@ public class ESPatientResponse {
 	this.colorCode = colorCode;
     }
 
-    @Override
-    public String toString() {
-	return "ESPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName + ", firstName=" + firstName + ", middleName="
-		+ middleName + ", lastName=" + lastName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", dob="
-		+ dob + ", city=" + city + ", locality=" + locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession="
-		+ profession + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
-		+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + "]";
-    }
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
 
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
+	}
+
+	@Override
+	public String toString() {
+		return "ESPatientResponse [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
+				+ ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
+				+ ", localPatientName=" + localPatientName + ", gender=" + gender + ", bloodGroup=" + bloodGroup
+				+ ", emailAddress=" + emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality
+				+ ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", referredBy=" + referredBy + ", createdTime=" + createdTime + ", imageUrl=" + imageUrl
+				+ ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + "]";
+	}
 }
