@@ -321,4 +321,18 @@ public class AppointmentApi {
 	return response;
     }
 
+    @Path(value = PathProxy.AppointmentUrls.GET_APPOINTMENT_ID)
+    @GET
+    @ApiOperation(value = "GET_APPOINTMENT_ID", notes = "GET_APPOINTMENT_ID")
+    public Response<Appointment> getAppointmentById(@PathParam(value = "appointmentId") String appointmentId) {
+    if (DPDoctorUtils.anyStringEmpty(appointmentId)) {
+    		logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	Appointment appointment = appointmentService.getAppointmentById(new ObjectId(appointmentId));
+	Response<Appointment> response = new Response<Appointment>();
+	response.setData(appointment);
+	return response;
+    }
+
 }

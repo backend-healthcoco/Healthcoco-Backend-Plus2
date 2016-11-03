@@ -631,6 +631,8 @@ public interface PathProxy {
 		public static final String REARRANGE_PATIENT_IN_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}/{patientId}/{appointmentId}/{sequenceNo}/rearrange";
 
 		public static final String GET_PATIENT_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_APPOINTMENT_ID = "/{appointmentId}/view";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
