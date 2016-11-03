@@ -26,6 +26,9 @@ public class ESDoctorDocument extends DoctorLocation {
 	private String userId;
 
 	@Field(type = FieldType.String)
+	private String title;
+
+	@Field(type = FieldType.String)
 	private String firstName;
 
 	@Field(type = FieldType.String)
@@ -114,6 +117,14 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getFirstName() {
@@ -328,14 +339,15 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	@Override
 	public String toString() {
-		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
-				+ ", consultationFee=" + consultationFee + ", workingSchedules=" + workingSchedules + ", specialities="
-				+ specialities + ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
+		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
+				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
+				+ ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
+				+ revisitConsultationFee + ", workingSchedules=" + workingSchedules + ", specialities=" + specialities
+				+ ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
 				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive
 				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
 				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
-				+ registerNumber + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId + ", timeZone="
-				+ timeZone + "]";
+				+ registerNumber + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
+				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + "]";
 	}
 }

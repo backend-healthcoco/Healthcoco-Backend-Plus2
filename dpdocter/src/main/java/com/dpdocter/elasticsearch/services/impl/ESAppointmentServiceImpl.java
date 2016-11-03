@@ -384,6 +384,26 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
 		    }
 		    doctorDocument.getDob();
+		    String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
+					? doctorDocument.getStreetAddress() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
+							? doctorDocument.getLandmarkDetails() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
+							? doctorDocument.getLocality() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity())
+							? doctorDocument.getCity() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
+							? doctorDocument.getState() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
+							? doctorDocument.getCountry() + ", " : "")
+					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
+							? doctorDocument.getPostalCode() : "");
+
+			if (address.charAt(address.length() - 2) == ',') {
+				address = address.substring(0, address.length() - 2);
+			}
+			doctorDocument.setClinicAddress(address);
+
 		  }
 	    }
 	} catch (Exception e) {
@@ -495,6 +515,25 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
 								document.getLatitude(), document.getLongitude(), "K"));
 				    }
+				    String address = (!DPDoctorUtils.anyStringEmpty(document.getStreetAddress())
+							? document.getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getLandmarkDetails())
+									? document.getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getLocality())
+									? document.getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getCity())
+									? document.getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getState())
+									? document.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getCountry())
+									? document.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getPostalCode())
+									? document.getPostalCode() : "");
+
+					if (address.charAt(address.length() - 2) == ',') {
+						address = address.substring(0, address.length() - 2);
+					}
+					labResponse.setClinicAddress(address);
 					if (response == null)response = new ArrayList<LabResponse>();
 					response.add(labResponse);
 			}	

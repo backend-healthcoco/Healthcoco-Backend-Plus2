@@ -3,6 +3,7 @@ package com.dpdocter.elasticsearch.beans;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.GeoPointField;
@@ -102,6 +103,8 @@ public class DoctorLocation {
     @Field(type = FieldType.Boolean)
     private Boolean isLocationListed=true;
 
+    @Transient
+	private String clinicAddress;
 
 	public String getLocationId() {
 		return locationId;
@@ -351,6 +354,14 @@ public class DoctorLocation {
 		this.isLocationListed = isLocationListed;
 	}
 
+	public String getClinicAddress() {
+		return clinicAddress;
+	}
+
+	public void setClinicAddress(String clinicAddress) {
+		this.clinicAddress = clinicAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -364,7 +375,6 @@ public class DoctorLocation {
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
 				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
-				+ isLocationListed + "]";
+				+ isLocationListed + ", clinicAddress=" + clinicAddress + "]";
 	}
-
 }

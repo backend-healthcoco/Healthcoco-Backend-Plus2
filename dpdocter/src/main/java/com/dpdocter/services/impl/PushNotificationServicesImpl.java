@@ -213,6 +213,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
 					notification.setDi(componentTypeId);notification.setNotificationType(componentType);
+				}else if(componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())){
+					notification.setAi(componentTypeId);notification.setNotificationType(componentType);
 				}
 			}
 					String jsonOutput = mapper.writeValueAsString(notification);
@@ -345,6 +347,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
 					customValues.put("DI", componentTypeId);customValues.put("T", "D");
+				}
+				else if(componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())){
+					customValues.put("AI", componentTypeId);customValues.put("T", "A");
 				}
 			}
 					String payload = APNS.newPayload()

@@ -60,6 +60,8 @@ public class LabResponse {
 
     private String clinicNumber;
 
+    private String clinicAddress;
+    
     public String getLocationId() {
 	return locationId;
     }
@@ -276,6 +278,14 @@ public class LabResponse {
 		this.clinicNumber = clinicNumber;
 	}
 
+	public String getClinicAddress() {
+		return clinicAddress;
+	}
+
+	public void setClinicAddress(String clinicAddress) {
+		this.clinicAddress = clinicAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "LabResponse [locationId=" + locationId + ", locationName=" + locationName + ", country=" + country
@@ -287,6 +297,6 @@ public class LabResponse {
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
 				+ isHomeServiceAvailable + ", labTest=" + labTest + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", distance="
-				+ distance + ", clinicNumber=" + clinicNumber + "]";
+				+ distance + ", clinicNumber=" + clinicNumber + ", clinicAddress=" + clinicAddress + "]";
 	}
 }

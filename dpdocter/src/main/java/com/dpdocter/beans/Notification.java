@@ -18,6 +18,8 @@ public class Notification {
 	
 	private String di;
 
+	private String ai;
+
 	public String getTitle() {
 		return title;
 	}
@@ -82,9 +84,17 @@ public class Notification {
 		this.di = di;
 	}
 
+	public String getAi() {
+		return ai;
+	}
+
+	public void setAi(String ai) {
+		this.ai = ai;
+	}
+
 	@Override
 	public String toString() {
 		return "Notification [title=" + title + ", text=" + text + ", img=" + img + ", notificationType="
-				+ notificationType + ", xi=" + xi + ", ri=" + ri + ", pi=" + pi + ", di=" + di + "]";
+				+ notificationType + ", xi=" + xi + ", ri=" + ri + ", pi=" + pi + ", di=" + di + ", ai=" + ai + "]";
 	}
 }
