@@ -6,136 +6,151 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotes extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String uniqueEmrId;
+	private String uniqueEmrId;
 
-    private List<Diagnoses> diagnoses;
+	private List<Diagnoses> diagnoses;
 
-    private List<Diagram> diagrams;
+	private List<Diagram> diagrams;
 
-    private String note;
+	private String note;
 
     private String observation;
 
     private String investigation;
 
-    private String diagnosis;
+	private String diagnosis;
 
-    private String complaint;
-    
-    private String doctorId;
+	private String provisionalDiagnosis;
 
-    private String locationId;
+	private String generalExam;
 
-    private String hospitalId;
+	private String systemExam;
 
-    private boolean inHistory = false;
+	private String complaint;
 
-    private Boolean discarded = false;
+	private String presentComplaint;
 
-    private String visitId;
+	private String presentComplaintHistory;
 
-    private String patientId;
+	private String menstrualHistory;
 
-    private VitalSigns vitalSigns;
-    
-    private String appointmentId;
-    
-    private WorkingHours time;
-    
-    private Date fromDate;
+	private String obstetricHistory;
 
-    public String getId() {
-	return id;
-    }
+	private String doctorId;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String locationId;
 
-    public List<Diagnoses> getDiagnoses() {
-	return diagnoses;
-    }
+	private String hospitalId;
 
-    public void setDiagnoses(List<Diagnoses> diagnoses) {
-	this.diagnoses = diagnoses;
-    }
+	private boolean inHistory = false;
 
-    public List<Diagram> getDiagrams() {
-	return diagrams;
-    }
+	private Boolean discarded = false;
 
-    public void setDiagrams(List<Diagram> diagrams) {
-	this.diagrams = diagrams;
-    }
+	private String visitId;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private String patientId;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	private VitalSigns vitalSigns;
 
-    public String getLocationId() {
-	return locationId;
-    }
+	private String appointmentId;
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	private WorkingHours time;
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	private Date fromDate;
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public boolean isInHistory() {
-	return inHistory;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setInHistory(boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public List<Diagnoses> getDiagnoses() {
+		return diagnoses;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setDiagnoses(List<Diagnoses> diagnoses) {
+		this.diagnoses = diagnoses;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public List<Diagram> getDiagrams() {
+		return diagrams;
+	}
 
-    public String getVisitId() {
-	return visitId;
-    }
+	public void setDiagrams(List<Diagram> diagrams) {
+		this.diagrams = diagrams;
+	}
 
-    public void setVisitId(String visitId) {
-	this.visitId = visitId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public VitalSigns getVitalSigns() {
-	return vitalSigns;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setVitalSigns(VitalSigns vitalSigns) {
-	this.vitalSigns = vitalSigns;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public boolean isInHistory() {
+		return inHistory;
+	}
+
+	public void setInHistory(boolean inHistory) {
+		this.inHistory = inHistory;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public String getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
@@ -209,14 +224,72 @@ public class ClinicalNotes extends GenericCollection {
 		this.complaint = complaint;
 	}
 
+	public String getProvisionalDiagnosis() {
+		return provisionalDiagnosis;
+	}
+
+	public void setProvisionalDiagnosis(String provisionalDiagnosis) {
+		this.provisionalDiagnosis = provisionalDiagnosis;
+	}
+
+	public String getGeneralExam() {
+		return generalExam;
+	}
+
+	public void setGeneralExam(String generalExam) {
+		this.generalExam = generalExam;
+	}
+
+	public String getSystemExam() {
+		return systemExam;
+	}
+
+	public void setSystemExam(String systemExam) {
+		this.systemExam = systemExam;
+	}
+
+	public String getPresentComplaint() {
+		return presentComplaint;
+	}
+
+	public void setPresentComplaint(String presentComplaint) {
+		this.presentComplaint = presentComplaint;
+	}
+
+	public String getPresentComplaintHistory() {
+		return presentComplaintHistory;
+	}
+
+	public void setPresentComplaintHistory(String presentComplaintHistory) {
+		this.presentComplaintHistory = presentComplaintHistory;
+	}
+
+	public String getMenstrualHistory() {
+		return menstrualHistory;
+	}
+
+	public void setMenstrualHistory(String menstrualHistory) {
+		this.menstrualHistory = menstrualHistory;
+	}
+
+	public String getObstetricHistory() {
+		return obstetricHistory;
+	}
+
+	public void setObstetricHistory(String obstetricHistory) {
+		this.obstetricHistory = obstetricHistory;
+	}
+
 	@Override
 	public String toString() {
-		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses
-				+ ", diagrams=" + diagrams + ", note=" + note + ", observation=" + observation
-				+ ", investigation=" + investigation + ", diagnosis=" + diagnosis + ", complaint=" + complaint
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId=" + visitId + ", patientId="
-				+ patientId + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId + ", time=" + time
-				+ ", fromDate=" + fromDate + "]";
+		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
+				+ diagrams + ", note=" + note + ", observation=" + observation + ", investigation=" + investigation
+				+ ", diagnosis=" + diagnosis + ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam="
+				+ generalExam + ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint="
+				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory
+				+ ", discarded=" + discarded + ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns="
+				+ vitalSigns + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

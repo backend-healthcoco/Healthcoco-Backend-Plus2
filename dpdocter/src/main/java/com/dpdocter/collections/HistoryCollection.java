@@ -44,15 +44,6 @@ public class HistoryCollection extends GenericCollection {
 	private List<ObjectId> medicalhistory;
 
 	@Field
-	private DrugsAndAllergies drugsAndAllergies;
-
-	@Field
-	private PersonalHistory personalHistory;
-
-	@Field
-	private BirthHistory birthHistory;
-
-	@Field
 	private List<ObjectId> specialNotes;
 
 	public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
@@ -135,37 +126,11 @@ public class HistoryCollection extends GenericCollection {
 		this.specialNotes = specialNotes;
 	}
 
-	public DrugsAndAllergies getDrugsAndAllergies() {
-		return drugsAndAllergies;
-	}
-
-	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
-		this.drugsAndAllergies = drugsAndAllergies;
-	}
-
-	public PersonalHistory getPersonalHistory() {
-		return personalHistory;
-	}
-
-	public void setPersonalHistory(PersonalHistory personalHistory) {
-		this.personalHistory = personalHistory;
-	}
-
-	public BirthHistory getBirthHistory() {
-		return birthHistory;
-	}
-
-	public void setBirthHistory(BirthHistory birthHistory) {
-		this.birthHistory = birthHistory;
-	}
-
 	@Override
 	public String toString() {
 		return "HistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", patientId=" + patientId + ", generalRecords=" + generalRecords + ", familyhistory="
-				+ familyhistory + ", medicalhistory=" + medicalhistory + ", drugsAndAllergies=" + drugsAndAllergies
-				+ ", personalHistory=" + personalHistory + ", birthHistory=" + birthHistory + ", specialNotes="
-				+ specialNotes + "]";
+				+ familyhistory + ", medicalhistory=" + medicalhistory + ", specialNotes=" + specialNotes + "]";
 	}
 
 }

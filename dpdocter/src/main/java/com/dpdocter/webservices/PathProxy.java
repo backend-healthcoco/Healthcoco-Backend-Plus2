@@ -184,6 +184,20 @@ public interface PathProxy {
 		public static final String ADD_NOTES = "/notes/add";
 
 		public static final String ADD_DIAGRAM = "/diagram/add";
+		
+		public static final String ADD_PRESENT_COMPLAINT = "/presentComplaint/add";
+		
+		public static final String ADD_PROVISIONAL_DIAGNOSIS = "/provisionalDiagnosis/add";
+		
+		public static final String ADD_GENERAL_EXAM = "/generalExam/add";
+		
+		public static final String ADD_SYSTEM_EXAM = "/systemExam/add";
+		
+		public static final String ADD_MENSTRUAL_HISTORY = "/menstrualHistory/add";
+		
+		public static final String ADD_OBSTETRICS_HISTORY = "/obstretricsHistory/add";
+		
+		public static final String ADD_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 

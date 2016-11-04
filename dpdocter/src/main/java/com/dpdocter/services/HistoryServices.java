@@ -16,6 +16,8 @@ import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 
+import common.util.web.Response;
+
 public interface HistoryServices {
 
     List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request);
@@ -79,5 +81,7 @@ public interface HistoryServices {
 	    Boolean inHistory, Boolean discarded);
 
     List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime);
+
+	Response getHistory(String patientId, String doctorId, String hospitalId, String locationId, List<String> type);
 
 }

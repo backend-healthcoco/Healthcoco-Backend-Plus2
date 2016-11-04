@@ -1,9 +1,11 @@
 package com.dpdocter.beans;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.BirthType;
 import com.dpdocter.enums.GestationType;
 
-public class BirthHistory {
+public class BirthHistory extends GenericCollection {
+	private String id;
 	private String birthPlace;
 	private String obstetricianName;
 	private GestationType gestationType;
@@ -13,6 +15,18 @@ public class BirthHistory {
 	private Double weight;
 	private Integer birthOrder;
 	private String birthProblem;
+	private String doctorId;
+	private String locationId;
+	private String hospitalId;
+	private String patientId;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getBirthPlace() {
 		return birthPlace;
@@ -86,11 +100,45 @@ public class BirthHistory {
 		this.birthProblem = birthProblem;
 	}
 
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
 	@Override
 	public String toString() {
-		return "BirthHistory [birthPlace=" + birthPlace + ", obstetricianName=" + obstetricianName + ", gestationType="
-				+ gestationType + ", prematureWeeks=" + prematureWeeks + ", birthType=" + birthType + ", height="
-				+ height + ", weight=" + weight + ", birthOrder=" + birthOrder + ", birthProblem=" + birthProblem + "]";
+		return "BirthHistory [id=" + id + ", birthPlace=" + birthPlace + ", obstetricianName=" + obstetricianName
+				+ ", gestationType=" + gestationType + ", prematureWeeks=" + prematureWeeks + ", birthType=" + birthType
+				+ ", height=" + height + ", weight=" + weight + ", birthOrder=" + birthOrder + ", birthProblem="
+				+ birthProblem + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + "]";
 	}
 
 }

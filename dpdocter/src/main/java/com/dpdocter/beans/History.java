@@ -23,12 +23,6 @@ public class History {
 
 	private List<String> medicalhistory;
 
-	private DrugsAndAllergies drugsAndAllergies;
-
-	private PersonalHistory personalHistory;
-
-	private BirthHistory birthHistory;
-
 	private List<String> specialNotes;
 
 	public String getId() {
@@ -103,37 +97,12 @@ public class History {
 		this.specialNotes = specialNotes;
 	}
 
-	public DrugsAndAllergies getDrugsAndAllergies() {
-		return drugsAndAllergies;
-	}
-
-	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
-		this.drugsAndAllergies = drugsAndAllergies;
-	}
-
-	public PersonalHistory getPersonalHistory() {
-		return personalHistory;
-	}
-
-	public void setPersonalHistory(PersonalHistory personalHistory) {
-		this.personalHistory = personalHistory;
-	}
-
-	public BirthHistory getBirthHistory() {
-		return birthHistory;
-	}
-
-	public void setBirthHistory(BirthHistory birthHistory) {
-		this.birthHistory = birthHistory;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "History [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", patientId=" + patientId + ", generalRecords=" + generalRecords + ", familyhistory="
-				+ familyhistory + ", medicalhistory=" + medicalhistory + ", drugsAndAllergies=" + drugsAndAllergies
-				+ ", personalHistory=" + personalHistory + ", birthHistory=" + birthHistory + ", specialNotes="
-				+ specialNotes + "]";
+				+ familyhistory + ", medicalhistory=" + medicalhistory + ", specialNotes=" + specialNotes + "]";
 	}
 
 }

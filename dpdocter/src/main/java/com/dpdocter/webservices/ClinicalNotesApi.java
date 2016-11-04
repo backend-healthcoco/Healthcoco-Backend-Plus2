@@ -24,15 +24,29 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Investigation;
+import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.PresentComplaint;
+import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProvisionalDiagnosis;
+import com.dpdocter.beans.SystemExam;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
+import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.Resource;
@@ -536,8 +550,149 @@ public class ClinicalNotesApi {
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
     public Response<Boolean> updateQuery() {
 
-      	Response<Boolean> response = new Response<Boolean>();
-		response.setData(clinicalNotesService.updateQuery());
-		return response;
+    	Response<Boolean> response = new Response<Boolean>();
+    	response.setData(clinicalNotesService.updateQuery());
+    	return response;
     }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT, notes = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT)
+    public Response<PresentComplaint> addPresentComplaints(PresentComplaint request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPresentComplaint())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    PresentComplaint presentComplaint = clinicalNotesService.addEditPresentComplaint(request);
+
+	transactionalManagementService.addResource(new ObjectId(presentComplaint.getId()), Resource.PRESENT_COMPLAINT, false);
+	ESPresentComplaintDocument esPresentComplaint = new ESPresentComplaintDocument();
+	BeanUtil.map(presentComplaint, esPresentComplaint);
+	esClinicalNotesService.addPresentComplaint(esPresentComplaint);
+	Response<PresentComplaint> response = new Response<PresentComplaint>();
+	response.setData(presentComplaint);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY, notes = PathProxy.ClinicalNotesUrls.ADD_PRESENT_COMPLAINT_HISTORY)
+    public Response<PresentComplaintHistory> addPresentComplaintsHistory(PresentComplaintHistory request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPresentComplaintHistory())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    PresentComplaintHistory presentComplaintHistory = clinicalNotesService.addEditPresentComplaintHistory(request);
+
+	transactionalManagementService.addResource(new ObjectId(presentComplaintHistory.getId()), Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
+	ESPresentComplaintHistoryDocument esPresentComplaintHistory = new ESPresentComplaintHistoryDocument();
+	BeanUtil.map(presentComplaintHistory, esPresentComplaintHistory);
+	esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistory);
+	Response<PresentComplaintHistory> response = new Response<PresentComplaintHistory>();
+	response.setData(presentComplaintHistory);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS, notes = PathProxy.ClinicalNotesUrls.ADD_PROVISIONAL_DIAGNOSIS)
+    public Response<ProvisionalDiagnosis> addProvisionalDiagnosis(ProvisionalDiagnosis request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getProvisionalDiagnosis())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    ProvisionalDiagnosis provisionalDiagnosis = clinicalNotesService.addEditProvisionalDiagnosis(request);
+
+	transactionalManagementService.addResource(new ObjectId(provisionalDiagnosis.getId()), Resource.PROVISIONAL_DIAGNOSIS, false);
+	ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new ESProvisionalDiagnosisDocument();
+	BeanUtil.map(provisionalDiagnosis, esProvisionalDiagnosis);
+	esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosis);
+	Response<ProvisionalDiagnosis> response = new Response<ProvisionalDiagnosis>();
+	response.setData(provisionalDiagnosis);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_SYSTEM_EXAM)
+    public Response<SystemExam> addSystemExam(SystemExam request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getSystemExam())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    SystemExam systemExam = clinicalNotesService.addEditSystemExam(request);
+
+	transactionalManagementService.addResource(new ObjectId(systemExam.getId()), Resource.SYSTEM_EXAMINATION, false);
+	ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
+	BeanUtil.map(systemExam, esSystemExam);
+	esClinicalNotesService.addSystemExam(esSystemExam);
+	Response<SystemExam> response = new Response<SystemExam>();
+	response.setData(systemExam);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_GENERAL_EXAM)
+    public Response<GeneralExam> addGeneralExam(GeneralExam request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getGeneralExam())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    GeneralExam generalExam = clinicalNotesService.addEditGeneralExam(request);
+
+	transactionalManagementService.addResource(new ObjectId(generalExam.getId()), Resource.GENERAL_EXAMINATION, false);
+	ESGeneralExamDocument esGeneralExam = new ESGeneralExamDocument();
+	BeanUtil.map(generalExam, esGeneralExam);
+	esClinicalNotesService.addGeneralExam(esGeneralExam);
+	Response<GeneralExam> response = new Response<GeneralExam>();
+	response.setData(generalExam);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY, notes = PathProxy.ClinicalNotesUrls.ADD_MENSTRUAL_HISTORY)
+    public Response<MenstrualHistory> addMenstrualHistory(MenstrualHistory request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getMenstrualHistory())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    MenstrualHistory menstrualHistory = clinicalNotesService.addEditMenstrualHistory(request);
+
+	transactionalManagementService.addResource(new ObjectId(menstrualHistory.getId()), Resource.MENSTRUAL_HISTORY, false);
+	ESMenstrualHistoryDocument esMenstrualHistory = new ESMenstrualHistoryDocument();
+	BeanUtil.map(menstrualHistory, esMenstrualHistory);
+	esClinicalNotesService.addMenstrualHistory(esMenstrualHistory);
+	Response<MenstrualHistory> response = new Response<MenstrualHistory>();
+	response.setData(menstrualHistory);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY, notes = PathProxy.ClinicalNotesUrls.ADD_OBSTETRICS_HISTORY)
+    public Response<ObstetricHistory> addObstetricHistory(ObstetricHistory request) {
+    if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getObstetricHistory())) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    }
+	
+    ObstetricHistory obstetricHistory = clinicalNotesService.addEditObstetricHistory(request);
+
+	transactionalManagementService.addResource(new ObjectId(obstetricHistory.getId()), Resource.OBSTETRIC_HISTORY, false);
+	ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
+	BeanUtil.map(obstetricHistory, esObstetricHistory);
+	esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
+	Response<ObstetricHistory> response = new Response<ObstetricHistory>();
+	response.setData(obstetricHistory);
+	return response;
+    }
+
 }
