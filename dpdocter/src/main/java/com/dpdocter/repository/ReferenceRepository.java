@@ -51,4 +51,7 @@ public interface ReferenceRepository extends MongoRepository<ReferencesCollectio
     @Query("{'$or': [{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}} , {'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
     List<ReferencesCollection> findCustomGlobal(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, Date date, boolean[] discards, Sort sort);
 
+    @Query("{'$or': [{'reference': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3} , {'reference': ?0, 'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
+	ReferencesCollection find(String reference, String doctorId, String locationId, String hospitalId);
+
 }

@@ -112,6 +112,9 @@ public class LocationCollection extends GenericCollection {
 	// @Field
 	// private int patientCounter = 1;
 
+	@Field
+    private long clinicRankingCount = 0;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -376,6 +379,14 @@ public class LocationCollection extends GenericCollection {
 		this.isLocationListed = isLocationListed;
 	}
 
+	public long getClinicRankingCount() {
+		return clinicRankingCount;
+	}
+
+	public void setClinicRankingCount(long clinicRankingCount) {
+		this.clinicRankingCount = clinicRankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -388,6 +399,7 @@ public class LocationCollection extends GenericCollection {
 				+ ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isTwentyFourSevenOpen="
 				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate + "]";
+				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
+				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount + "]";
 	}
 }

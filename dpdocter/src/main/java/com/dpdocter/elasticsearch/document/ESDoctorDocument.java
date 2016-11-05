@@ -103,6 +103,9 @@ public class ESDoctorDocument extends DoctorLocation {
 	@Field(type = FieldType.String)
 	private String timeZone = "IST";
 
+	@Field(type = FieldType.Long)
+	private long rankingCount = 0;
+	
 	public String getId() {
 		return id;
 	}
@@ -337,17 +340,25 @@ public class ESDoctorDocument extends DoctorLocation {
 		this.timeZone = timeZone;
 	}
 
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
 	@Override
 	public String toString() {
-		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", title=" + title + ", firstName=" + firstName
-				+ ", gender=" + gender + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", imageUrl=" + imageUrl + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
-				+ revisitConsultationFee + ", workingSchedules=" + workingSchedules + ", specialities=" + specialities
-				+ ", experience=" + experience + ", facility=" + facility + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive
-				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
-				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber="
-				+ registerNumber + ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId
-				+ ", isDoctorListed=" + isDoctorListed + ", timeZone=" + timeZone + "]";
+		return "ESDoctorDocument [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", gender=" + gender
+				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl
+				+ ", consultationFee=" + consultationFee + ", revisitConsultationFee=" + revisitConsultationFee
+				+ ", workingSchedules=" + workingSchedules + ", specialities=" + specialities + ", experience="
+				+ experience + ", facility=" + facility + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", appointmentSlot=" + appointmentSlot + ", isActive=" + isActive + ", isVerified=" + isVerified
+				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+				+ ", colorCode=" + colorCode + ", userState=" + userState + ", registerNumber=" + registerNumber
+				+ ", dob=" + dob + ", distance=" + distance + ", userUId=" + userUId + ", isDoctorListed="
+				+ isDoctorListed + ", timeZone=" + timeZone + ", rankingCount=" + rankingCount + "]";
 	}
 }

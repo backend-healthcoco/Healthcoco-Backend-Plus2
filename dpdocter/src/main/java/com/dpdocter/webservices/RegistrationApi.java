@@ -138,9 +138,15 @@ public class RegistrationApi {
 	@PUT
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
 	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId(), request.getLocalPatientName())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		} else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+			logger.warn(mobileNumberValidaton);
+			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
+		} else if (request.getLocalPatientName().length() < 2) {
+			logger.warn(firstNameValidaton);
+			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
@@ -862,6 +868,20 @@ public class RegistrationApi {
 		}
 		Boolean changePatientNumberResponse = registrationService.changePatientNumber(oldMobileNumber, newMobileNumber,
 				otpNumber);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(changePatientNumberResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.REGISTER_PATIENTS_IN_BULK)
+	@GET
+	public Response<Boolean> registerPatients(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+		}
+		Boolean changePatientNumberResponse = registrationService.registerPatients(doctorId, locationId, hospitalId);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(changePatientNumberResponse);
 		return response;

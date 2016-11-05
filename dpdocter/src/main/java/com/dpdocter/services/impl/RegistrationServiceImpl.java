@@ -1,7 +1,12 @@
 
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -31,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -75,6 +81,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
@@ -1128,7 +1135,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			AggregationResults<ReferenceDetail> aggregationResults = mongoTemplate.aggregate(
 					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded, "reference", null, null, null),
+							discarded, "reference", null, null),
 					ReferencesCollection.class, ReferenceDetail.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
@@ -2707,6 +2714,132 @@ public class RegistrationServiceImpl implements RegistrationService {
 			return imagePath + imageURL;
 		} else
 			return null;
+	}
+
+	@Override
+	public Boolean registerPatients(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		String csvFile = "/home/ubuntu/patients.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+		int lineCount = 0;
+		try {
+			br = new BufferedReader(new FileReader(csvFile));
+		    while ((line = br.readLine()) != null) {
+		    	
+				if(lineCount > 0){
+					String[] fields = line.split(cvsSplitBy);
+					if(!DPDoctorUtils.anyStringEmpty(fields[0]) && !fields[0].equalsIgnoreCase("NULL")){
+						PatientRegistrationRequest request = new PatientRegistrationRequest();
+						request.setMobileNumber(fields[0]);
+						int count = 0;
+						List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getEmailAddress());
+						if (userCollections != null && !userCollections.isEmpty()) {
+							for (UserCollection userCollection : userCollections) {
+								if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
+									count++;
+							}
+						}
+						
+						if (count < Integer.parseInt(patientCount)) {
+							if(!DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NULL")){
+								request.setFirstName(fields[1]);
+								request.setLocalPatientName(fields[1]);
+							}
+							if(!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NULL"))request.setGender(fields[2]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NULL")){
+								String[] dob = fields[3].split("/");
+								DOB dobObject = new DOB(Integer.parseInt(dob[0]), Integer.parseInt(dob[1]), Integer.parseInt(dob[2]));
+								request.setDob(dobObject);
+							}
+							if(!DPDoctorUtils.anyStringEmpty(fields[4]) && !fields[4].equalsIgnoreCase("NULL"))request.setEmailAddress(fields[4]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NULL"))request.setBloodGroup(fields[5]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[6]) && !fields[6].equalsIgnoreCase("NULL"))request.setProfession(fields[6]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NULL"))request.setSecMobile(fields[7]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NULL"))request.setAdhaarId(fields[8]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NULL"))request.setPanCardNumber(fields[9]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NULL"))request.setDrivingLicenseId(fields[10]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[11]) && !fields[11].equalsIgnoreCase("NULL"))request.setInsuranceId(fields[11]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[12]) && !fields[12].equalsIgnoreCase("NULL"))request.setInsuranceName(fields[12]);
+							
+							String country = null, city = null, state = null, postalCode = null, locality = null, streetAddress = null;
+	 
+							if(!DPDoctorUtils.anyStringEmpty(fields[13]) && !fields[13].equalsIgnoreCase("NULL"))streetAddress = fields[13];
+							if(!DPDoctorUtils.anyStringEmpty(fields[14]) && !fields[14].equalsIgnoreCase("NULL"))locality = fields[14];
+							if(!DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NULL"))city = fields[15];
+							if(!DPDoctorUtils.anyStringEmpty(fields[16]) && !fields[16].equalsIgnoreCase("NULL"))state = fields[16];
+							if(!DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NULL"))country = fields[17];
+							if(!DPDoctorUtils.anyStringEmpty(fields[18]) && !fields[18].equalsIgnoreCase("NULL"))postalCode = fields[18];
+							
+							if(!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality, streetAddress)){
+								Address address = new Address(country, city, state, postalCode, locality, null, null, streetAddress);
+								request.setAddress(address);
+							}
+							if(!DPDoctorUtils.anyStringEmpty(fields[19]) && !fields[19].equalsIgnoreCase("NULL")){
+								DateFormat newDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");    
+								Date dateOfVisit = newDateFormat.parse(fields[19]);
+								request.setDateOfVisit(dateOfVisit.getTime());
+							}
+							if(!DPDoctorUtils.anyStringEmpty(fields[20]) && !fields[20].equalsIgnoreCase("NULL")){
+								ReferencesCollection referencesCollection = referrenceRepository.find(fields[20], doctorId, locationId, hospitalId);
+								Reference reference = new Reference();
+								if(referencesCollection != null)reference.setId(referencesCollection.getId().toString());
+								reference.setReference(fields[20]);
+								request.setReferredBy(reference);
+							}
+							request.setDoctorId(doctorId);
+							request.setLocationId(locationId);
+							request.setHospitalId(hospitalId);
+							RegisteredPatientDetails registeredPatientDetails = registerNewPatient(request);
+							
+							transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
+							esRegRistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
+						}else{
+							System.out.println(patientCount+" patients already exist with mobile number "+request.getMobileNumber());
+						}
+					}else{
+						if(!DPDoctorUtils.anyStringEmpty(fields[1]) || !fields[1].equalsIgnoreCase("NULL")){
+							System.out.println("Mobile Number is null for patient with name "+fields[1]);
+						}
+					}
+				}
+				lineCount++;
+				response = true;
+		    }
+		    
+		    } catch (Exception e) {
+		    e.printStackTrace();
+		} 
+		finally {
+		    if (br != null) {
+			try {
+			    br.close();
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+		    }
+		}
+		return response;
+	}
+	
+	private ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient) {
+		ESPatientDocument esPatientDocument = null;
+		try {
+			esPatientDocument = new ESPatientDocument();
+			if (patient.getAddress() != null) {
+				BeanUtil.map(patient.getAddress(), esPatientDocument);
+			}
+			if (patient.getPatient() != null) {
+				BeanUtil.map(patient.getPatient(), esPatientDocument);
+			}
+			BeanUtil.map(patient, esPatientDocument);
+			if (patient.getBackendPatientId() != null)esPatientDocument.setId(patient.getBackendPatientId());
+			if (patient.getReferredBy() != null)esPatientDocument.setReferredBy(patient.getReferredBy().getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return esPatientDocument;
 	}
 
 }

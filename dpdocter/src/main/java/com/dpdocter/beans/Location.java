@@ -75,6 +75,8 @@ public class Location {
 //
 //    private int patientCounter = 0;
 
+    private long clinicRankingCount = 0;
+    
     public String getId() {
 	return id;
     }
@@ -348,6 +350,14 @@ public class Location {
 		this.isLocationListed = isLocationListed;
 	}
 
+	public long getClinicRankingCount() {
+		return clinicRankingCount;
+	}
+
+	public void setClinicRankingCount(long clinicRankingCount) {
+		this.clinicRankingCount = clinicRankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -360,7 +370,7 @@ public class Location {
 				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
-				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate + "]";
+				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
+				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount + "]";
 	}
-    
 }

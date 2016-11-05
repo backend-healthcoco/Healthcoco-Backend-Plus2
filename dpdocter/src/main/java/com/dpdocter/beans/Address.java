@@ -21,7 +21,26 @@ public class Address {
 
     private String streetAddress;
     
-    public String getCountry() {
+    public Address() {
+		super();
+	}
+
+    
+	public Address(String country, String city, String state, String postalCode, String locality, Double latitude,
+			Double longitude, String streetAddress) {
+		super();
+		this.country = country;
+		this.city = city;
+		this.state = state;
+		this.postalCode = postalCode;
+		this.locality = locality;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.streetAddress = streetAddress;
+	}
+
+
+	public String getCountry() {
 	return country;
     }
 

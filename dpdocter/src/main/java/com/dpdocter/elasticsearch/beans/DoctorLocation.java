@@ -106,6 +106,9 @@ public class DoctorLocation {
     @Transient
 	private String clinicAddress;
 
+    @Field(type = FieldType.Long)
+    private long clinicRankingCount = 0;
+
 	public String getLocationId() {
 		return locationId;
 	}
@@ -361,6 +364,14 @@ public class DoctorLocation {
 	public void setClinicAddress(String clinicAddress) {
 		this.clinicAddress = clinicAddress;
 	}
+	
+	public long getClinicRankingCount() {
+		return clinicRankingCount;
+	}
+
+	public void setClinicRankingCount(long clinicRankingCount) {
+		this.clinicRankingCount = clinicRankingCount;
+	}
 
 	@Override
 	public String toString() {
@@ -375,6 +386,6 @@ public class DoctorLocation {
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
 				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
-				+ isLocationListed + ", clinicAddress=" + clinicAddress + "]";
+				+ isLocationListed + ", clinicAddress=" + clinicAddress + ", clinicRankingCount=" + clinicRankingCount + "]";
 	}
 }

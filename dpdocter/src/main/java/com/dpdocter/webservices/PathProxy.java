@@ -154,6 +154,8 @@ public interface PathProxy {
 		public static final String CHANGE_PATIENT_NUMBER = "/patient/changeNumber/{oldMobileNumber}/{newMobileNumber}/{otpNumber}";
 
 		public static final String CHECK_PATIENT_NUMBER = "/patient/checkNumber/{oldMobileNumber}/{newMobileNumber}";
+		
+		public static final String REGISTER_PATIENTS_IN_BULK = "/registerPatients/{doctorId}/{locationId}/{hospitalId}";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

@@ -57,6 +57,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Field
 	private Boolean isDoctorListed = true;
 
+	@Field
+    private long rankingCount = 0;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -170,13 +173,22 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.revisitConsultationFee = revisitConsultationFee;
 	}
 
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
 				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", appointmentSlot="
-				+ appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility=" + facility
-				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", timeZone="
-				+ timeZone + "]";
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
+				+ revisitConsultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
+				+ workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
+				+ noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed
+				+ ", rankingCount=" + rankingCount + "]";
 	}
 }
