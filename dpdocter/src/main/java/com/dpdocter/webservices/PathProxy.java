@@ -808,4 +808,17 @@ public interface PathProxy {
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
 
 	}
+	
+	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
+	
+	public interface BlogsUrls {
+		public static final String GET_BLOGS = "/getBlogs";
+
+		public static final String GET_BLOG_BY_ID = "/getBlog/{blogId}";
+		
+		public static final String LIKE_THE_BLOG="/likeTheBlog/{blogId}/{userId}";
+		
+
+	}
+	
 }
