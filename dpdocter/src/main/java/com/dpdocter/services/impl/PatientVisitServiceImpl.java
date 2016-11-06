@@ -1114,7 +1114,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name: </b>" + firstName);
+		patientDetailList.add("<b>Patient Name: </b>" + firstName.toUpperCase());
 		patientDetailList
 				.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 
