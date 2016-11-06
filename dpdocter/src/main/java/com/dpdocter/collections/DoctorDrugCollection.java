@@ -56,7 +56,7 @@ public class DoctorDrugCollection extends GenericCollection{
 	public DoctorDrugCollection() {
 	}
 
-	public DoctorDrugCollection(ObjectId drugId, ObjectId doctorId, ObjectId hospitalId, ObjectId locationId,
+	public DoctorDrugCollection(ObjectId drugId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
 			long rankingCount, Boolean discarded, Duration duration, String dosage, List<Long> dosageTime,
 			List<DrugDirection> direction, List<GenericCode> genericNames, String createdBy) {
 		this.drugId = drugId;
