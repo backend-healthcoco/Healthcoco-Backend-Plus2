@@ -452,7 +452,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         listComponent.setDatasetRun(dsr);
         JRDesignComponentElement reportElement = new JRDesignComponentElement();  
         reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components","jr", "list"));  
-        reportElement.setHeight(126);  reportElement.setWidth(columnWidth-80);  reportElement.setX(80);  reportElement.setY(8);  
+        reportElement.setHeight(126);  reportElement.setWidth(columnWidth-80);  reportElement.setX(80);  reportElement.setY(0);  
         reportElement.setComponent(listComponent);
         
         band.addElement(reportElement);
