@@ -2730,7 +2730,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		    	
 				if(lineCount > 0){
 					String[] fields = line.split(cvsSplitBy);
-					if(!DPDoctorUtils.anyStringEmpty(fields[0]) && !fields[0].equalsIgnoreCase("NULL")){
+					if(!DPDoctorUtils.anyStringEmpty(fields[0]) && !fields[0].equalsIgnoreCase("NULL") && !DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NULL")
+							&& fields[0].length() == 10 && fields[1].length() >= 2){
 						PatientRegistrationRequest request = new PatientRegistrationRequest();
 						request.setMobileNumber(fields[0]);
 						int count = 0;
@@ -2743,10 +2744,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 						}
 						
 						if (count < Integer.parseInt(patientCount)) {
-							if(!DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NULL")){
-								request.setFirstName(fields[1]);
-								request.setLocalPatientName(fields[1]);
-							}
+							request.setFirstName(fields[1]);
+							request.setLocalPatientName(fields[1]);
 							if(!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NULL"))request.setGender(fields[2]);
 							if(!DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NULL")){
 								String[] dob = fields[3].split("/");
@@ -2799,9 +2798,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							System.out.println(patientCount+" patients already exist with mobile number "+request.getMobileNumber());
 						}
 					}else{
-						if(!DPDoctorUtils.anyStringEmpty(fields[1]) || !fields[1].equalsIgnoreCase("NULL")){
-							System.out.println("Mobile Number is null for patient with name "+fields[1]);
-						}
+						System.out.println("Invalid user- MobileNumber: "+fields[0]+" Name: "+fields[1]);
 					}
 				}
 				lineCount++;
