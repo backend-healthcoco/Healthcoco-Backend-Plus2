@@ -3701,7 +3701,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								: "";
 						String durationUnit = prescriptionItem.getDuration() != null
 								? (prescriptionItem.getDuration().getDurationUnit() != null
-										? prescriptionItem.getDuration().getDurationUnit().getUnit() : "")
+										? (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getDurationUnit().getUnit())?
+												prescriptionItem.getDuration().getDurationUnit().getUnit() : "") : "")
 								: "";
 
 						String directions = "";
