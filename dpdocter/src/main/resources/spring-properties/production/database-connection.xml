@@ -9,8 +9,20 @@
 	<mongo:options connect-timeout="${db.connectTimeout}" connections-per-host="${db.connectionPerHost}" threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}"
 	ssl="true"/> 
              </mongo:mongo> 
+	<mongo:db-factory dbname="${db.name}" host="${db.host}"
+		mongo-ref="mongo" port="${db.port}" />
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-		<constructor-arg ref="mongo" />
-		<constructor-arg name="databaseName" value="${db.name}" />
+		<constructor-arg name="mongoConverter" ref="mappingConverter" />
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+
 	</bean>
+	<mongo:mapping-converter id="mappingConverter" />
+
+
+
+	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
+		<constructor-arg ref="mongoDbFactory" />
+		<constructor-arg ref="mappingConverter" />
+	</bean>
+
 </beans>

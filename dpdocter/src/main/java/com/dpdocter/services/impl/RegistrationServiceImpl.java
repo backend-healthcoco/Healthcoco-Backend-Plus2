@@ -597,7 +597,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 				}
 				BeanUtil.map(userCollection, registeredPatientDetails);
-
+				userCollection.setFirstName(request.getLocalPatientName());
 				userCollection.setIsActive(true);
 				userCollection.setEmailAddress(request.getEmailAddress());
 				userCollection = userRepository.save(userCollection);
@@ -2746,7 +2746,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						if (count < Integer.parseInt(patientCount)) {
 							request.setFirstName(fields[1]);
 							request.setLocalPatientName(fields[1]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NULL"))request.setGender(fields[2]);
+							if(!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NULL"))request.setGender(fields[2].toUpperCase());
 							if(!DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NULL")){
 								String[] dob = fields[3].split("/");
 								DOB dobObject = new DOB(Integer.parseInt(dob[0]), Integer.parseInt(dob[1]), Integer.parseInt(dob[2]));

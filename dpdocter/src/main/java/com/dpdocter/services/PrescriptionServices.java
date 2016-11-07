@@ -7,7 +7,6 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -133,10 +132,6 @@ public interface PrescriptionServices {
 
 	PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
 
-	Boolean addRemoveGenericCode(String action, String genericCode, String drugCode);
-
-	GenericCode addEditGenericCode(GenericCode request);
-
 	String getPrescriptionFile(String prescriptionId);
 
 	Drug makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
@@ -146,7 +141,9 @@ public interface PrescriptionServices {
 	public Advice deleteAdvice(String adviceId, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
-	Boolean makeCustomDrugFavourite();
+//	Boolean makeCustomDrugFavourite();
 
 	Drug addFavouriteDrug(DrugAddEditRequest request);
+
+	Boolean addGenericNameInDrugs();
 }

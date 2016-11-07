@@ -12,6 +12,7 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.GenericCode;
 
 @Document(indexName = "drugs_in", type ="drugs")
 public class ESDrugDocument {
@@ -74,6 +75,9 @@ public class ESDrugDocument {
 
     @MultiField(mainField = @Field(type = FieldType.String))
     private List<String> categories;
+
+    @Field(type = FieldType.Nested)
+    private List<GenericCode> genericNames;
     
     public String getId() {
 	return id;
@@ -235,6 +239,14 @@ public class ESDrugDocument {
 		this.categories = categories;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
@@ -242,7 +254,7 @@ public class ESDrugDocument {
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
 				+ MRP + ", genericCodes=" + genericCodes + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories + "]";
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
+				+ ", genericNames=" + genericNames + "]";
 	}
-
 }
