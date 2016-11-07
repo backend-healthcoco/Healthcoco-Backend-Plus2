@@ -60,6 +60,9 @@ public class PrintSettingsCollection extends GenericCollection {
     
     @Field
     private String contentLineStyle = LineStyle.INLINE.getStyle();
+
+    @Field
+    private Boolean showDrugGenericNames = false;
     
     public ObjectId getId() {
 	return id;
@@ -165,12 +168,21 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.contentLineStyle = contentLineStyle;
 	}
 
+	public Boolean getShowDrugGenericNames() {
+		return showDrugGenericNames;
+	}
+
+	public void setShowDrugGenericNames(Boolean showDrugGenericNames) {
+		this.showDrugGenericNames = showDrugGenericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "PrintSettingsCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", componentType=" + componentType + ", pageSetup=" + pageSetup
 				+ ", headerSetup=" + headerSetup + ", footerSetup=" + footerSetup + ", discarded=" + discarded
 				+ ", clinicLogoUrl=" + clinicLogoUrl + ", contentSetup=" + contentSetup + ", contentLineSpace="
-				+ contentLineSpace + ", contentLineStyle=" + contentLineStyle + "]";
+				+ contentLineSpace + ", contentLineStyle=" + contentLineStyle + ", showDrugGenericNames="
+				+ showDrugGenericNames + "]";
 	}
 }

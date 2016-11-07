@@ -372,6 +372,8 @@ public interface PathProxy {
 		public static final String ADD_CUSTOM_DRUG_TO_FAV = "/makeCustomDrugFavourite";
 		
 		public static final String ADD_FAVOURITE_DRUG = "/favouriteDrug/add";
+
+		public static final String ADD_GENERIC_NAME_IN_DRUGS = "/addGenericNameInDrugs";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
