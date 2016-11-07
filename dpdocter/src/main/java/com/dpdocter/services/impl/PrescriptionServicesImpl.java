@@ -369,6 +369,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						false, drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
 						drugCollection.getGenericNames(), drugCollection.getCreatedBy());
 				doctorDrugCollection.setCreatedTime(new Date());
+			}else{
+				doctorDrugCollection.setDirection(request.getDirection());
+				doctorDrugCollection.setDosage(request.getDosage());
+				doctorDrugCollection.setDosageTime(request.getDosageTime());
+				doctorDrugCollection.setDuration(request.getDuration());
 			}
 			doctorDrugCollection.setUpdatedTime(new Date());
 			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
@@ -4029,6 +4034,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
 						BeanUtil.map(drugCollection, esDoctorDrugDocument);
 						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+						esDoctorDrugDocument.setId(drugCollection.getId().toString());
 						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument);
 					}
 				}
