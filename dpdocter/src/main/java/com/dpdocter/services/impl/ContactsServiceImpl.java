@@ -213,6 +213,7 @@ public class ContactsServiceImpl implements ContactsService {
 			for (PatientCard patientCard : patientCards) {
 					patientCard.setColorCode(patientCard.getUser().getColorCode());
 					patientCard.setDoctorSepecificPatientId(patientCard.getUserId().toString());		
+					patientCard.setId(patientCard.getUserId());
 					patientCard.setUser(null);
 			}
 			response = new DoctorContactsResponse();
