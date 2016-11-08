@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
-import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
@@ -38,7 +37,6 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
@@ -135,13 +133,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private JasperReportService jasperReportService;
-	
+
 	@Autowired
 	private PatientVisitService patientVisitService;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
-	
+
 	@Override
 	@Transactional
 	public TreatmentService addEditService(TreatmentService treatmentService) {
@@ -282,20 +280,24 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Transactional
 	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request) {
 		PatientTreatmentResponse response;
-		PatientTreatmentCollection patientTreatmentCollection;
+		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
+		;
 		Appointment appointment = null;
 		try {
 			if (request.getAppointmentRequest() != null) {
 				appointment = addTreatmentAppointment(request.getAppointmentRequest());
-			}
-
-			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-				patientTreatmentCollection = new PatientTreatmentCollection();
 				if (appointment != null) {
 					request.setAppointmentId(appointment.getAppointmentId());
 					request.setTime(appointment.getTime());
 					request.setFromDate(appointment.getFromDate());
 				}
+			}
+
+			patientTreatmentCollection = new PatientTreatmentCollection();
+			BeanUtil.map(request, patientTreatmentCollection);
+
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+
 				patientTreatmentCollection.setCreatedTime(new Date());
 				BeanUtil.map(request, patientTreatmentCollection);
 				UserCollection userCollection = null;
@@ -310,14 +312,20 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					throw new BusinessException(ServiceError.NotFound, "No Doctor Found");
 				}
 			} else {
-				patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(request.getId()),
-						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-						new ObjectId(request.getHospitalId()));
-				if (patientTreatmentCollection == null) {
+				PatientTreatmentCollection oldPatientTreatmentCollection = patientTreamentRepository.findOne(
+						new ObjectId(request.getId()), new ObjectId(request.getDoctorId()),
+						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+				if (oldPatientTreatmentCollection == null) {
 					throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 				} else {
-					patientTreatmentCollection.setTotalCost(request.getTotalCost());
+					// patientTreatmentCollection.setTotalCost(request.getTotalCost());
+					BeanUtil.map(request, patientTreatmentCollection);
 					patientTreatmentCollection.setUpdatedTime(new Date());
+					patientTreatmentCollection.setCreatedBy(oldPatientTreatmentCollection.getCreatedBy());
+					patientTreatmentCollection.setCreatedTime(oldPatientTreatmentCollection.getCreatedTime());
+					patientTreatmentCollection.setUniqueEmrId(oldPatientTreatmentCollection.getUniqueEmrId());
+					patientTreatmentCollection.setDiscarded(oldPatientTreatmentCollection.getDiscarded());
+					patientTreatmentCollection.setInHistory(oldPatientTreatmentCollection.getInHistory());
 				}
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
@@ -417,14 +425,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(
 					new ObjectId(treatmentId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
-			
+
 			if (patientTreatmentCollection != null) {
 				patientTreatmentCollection.setDiscarded(discarded);
 				patientTreatmentCollection.setUpdatedTime(new Date());
 				patientTreamentRepository.save(patientTreatmentCollection);
-				response=getPatientTreatmentById(treatmentId);
+				response = getPatientTreatmentById(treatmentId);
 
-				}
+			}
 
 			else {
 				logger.warn("No treatment found for the given id");
@@ -547,10 +555,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId);
 			if (!isOTPVerified) {
-				criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
@@ -613,7 +620,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			
+
 			patientObjectId = new ObjectId(patientId);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -622,13 +629,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId").is(patientObjectId); 
-			
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
+					.is(patientObjectId);
+
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-				criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
@@ -910,7 +916,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	@Override
-	public void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId, String emailAddress) {
+	public void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
 		try {
 			MailResponse mailResponse = createMailData(treatmentId, doctorId, locationId, hospitalId);
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
@@ -932,7 +939,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public String downloadPatientTreatment(String treatmentId) {
 		String response = null;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
+					.findOne(new ObjectId(treatmentId));
 
 			if (patientTreatmentCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
@@ -968,7 +976,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		try {
 			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
 			if (patientTreatmentCollection != null) {
-				if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null
+				if (patientTreatmentCollection.getDoctorId() != null
+						&& patientTreatmentCollection.getHospitalId() != null
 						&& patientTreatmentCollection.getLocationId() != null) {
 					if (patientTreatmentCollection.getDoctorId().toString().equals(doctorId)
 							&& patientTreatmentCollection.getHospitalId().toString().equals(hospitalId)
@@ -989,7 +998,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user);
+						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
+								user);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -1044,79 +1054,91 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 		return response;
 	}
-	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection, PatientCollection patient,
-			UserCollection user) throws IOException, ParseException {
+
+	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection,
+			PatientCollection patient, UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-		if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
-//			Boolean showTreatmentQuantity = false;
-//			List<PatientTreatmentJasperDetails> treatmentResponses = new ArrayList<PatientTreatmentJasperDetails>();
-//			int no = 0;
+		if (patientTreatmentCollection.getTreatments() != null
+				&& !patientTreatmentCollection.getTreatments().isEmpty()) {
+			// Boolean showTreatmentQuantity = false;
+			// List<PatientTreatmentJasperDetails> treatmentResponses = new
+			// ArrayList<PatientTreatmentJasperDetails>();
+			// int no = 0;
 			String treatments = "";
 			for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-//				PatientTreatmentJasperDetails treatmentResponse = new PatientTreatmentJasperDetails();
-				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
-//				treatmentResponse.setNo(++no);	
-////				treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
-//				treatmentResponse.setTreatmentServiceName(treatmentServicesCollection.getName());
-//				if(treatment.getQuantity() != null){
-//					showTreatmentQuantity = true;
-//					String quantity = treatment.getQuantity().getValue()+" ";
-//					if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
-//					treatmentResponse.setQuantity(quantity);
-//				}
-//				treatmentResponses.add(treatmentResponse);
-				if(DPDoctorUtils.anyStringEmpty(treatments))treatments = treatmentServicesCollection.getName();
-				else treatments = treatments + ", "+treatmentServicesCollection.getName();
+				// PatientTreatmentJasperDetails treatmentResponse = new
+				// PatientTreatmentJasperDetails();
+				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
+						.findOne(treatment.getTreatmentServiceId());
+				// treatmentResponse.setNo(++no);
+				//// treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
+				// treatmentResponse.setTreatmentServiceName(treatmentServicesCollection.getName());
+				// if(treatment.getQuantity() != null){
+				// showTreatmentQuantity = true;
+				// String quantity = treatment.getQuantity().getValue()+" ";
+				// if(treatment.getQuantity().getType() != null)quantity=
+				// quantity+treatment.getQuantity().getType().getDuration();
+				// treatmentResponse.setQuantity(quantity);
+				// }
+				// treatmentResponses.add(treatmentResponse);
+				if (DPDoctorUtils.anyStringEmpty(treatments))
+					treatments = treatmentServicesCollection.getName();
+				else
+					treatments = treatments + ", " + treatmentServicesCollection.getName();
 			}
-//		parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
-		parameters.put("treatments", treatments);
-		parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
-		if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
-			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-			String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
-					patientTreatmentCollection.getTime().getFromTime() % 60);
-			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-			
-			Date _24HourDt = _24HourSDF.parse(_24HourTime);
-			String dateTime = sdf.format(patientTreatmentCollection.getFromDate()+", "+_12HourSDF.format(_24HourDt));
-			parameters.put("followUpAppointment", "Next Review on "+dateTime);
-		}
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
-				patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, "<b>TID: </b>"+patientTreatmentCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(),
-				parameters);
-		patientVisitService.generatePrintSetup(parameters, printSettings, patientTreatmentCollection.getDoctorId());
-		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTTREARMENT-"
-				+ patientTreatmentCollection.getUniqueEmrId() + new Date().getTime();
-		String layout = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-				: "PORTRAIT";
-		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
-		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
-		Integer leftMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20)
-				: 20;
-		Integer rightMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
-				: 20;
+			// parameters.put("showTreatmentQuantity", showTreatmentQuantity);
+			parameters.put("treatments", treatments);
+			parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
+			if (parameters.get("followUpAppointment") == null
+					&& !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId())
+					&& patientTreatmentCollection.getTime() != null) {
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+				String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
+						patientTreatmentCollection.getTime().getFromTime() % 60);
+				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+				_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
-		response = jasperReportService.createPDF(ComponentType.TREATMENT, parameters, null,
-				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
-				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+				Date _24HourDt = _24HourSDF.parse(_24HourTime);
+				String dateTime = sdf
+						.format(patientTreatmentCollection.getFromDate() + ", " + _12HourSDF.format(_24HourDt));
+				parameters.put("followUpAppointment", "Next Review on " + dateTime);
+			}
+			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
+					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
+			patientVisitService.generatePatientDetails(
+					(printSettings != null && printSettings.getHeaderSetup() != null
+							? printSettings.getHeaderSetup().getPatientDetails() : null),
+					patient, "<b>TID: </b>" + patientTreatmentCollection.getUniqueEmrId(),
+					patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+			patientVisitService.generatePrintSetup(parameters, printSettings, patientTreatmentCollection.getDoctorId());
+			String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PATIENTTREARMENT-"
+					+ patientTreatmentCollection.getUniqueEmrId() + new Date().getTime();
+			String layout = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+					: "PORTRAIT";
+			String pageSize = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+			Integer topMargin = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+			Integer bottonMargin = printSettings != null
+					? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+			Integer leftMargin = printSettings != null
+					? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+							? printSettings.getPageSetup().getLeftMargin() : 20)
+					: 20;
+			Integer rightMargin = printSettings != null
+					? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+							? printSettings.getPageSetup().getRightMargin() : 20)
+					: 20;
+
+			response = jasperReportService.createPDF(ComponentType.TREATMENT, parameters, null, layout, pageSize,
+					topMargin, bottonMargin, leftMargin, rightMargin,
+					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		}
 		return response;
 	}

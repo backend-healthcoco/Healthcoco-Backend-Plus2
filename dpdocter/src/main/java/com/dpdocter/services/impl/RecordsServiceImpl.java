@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -447,28 +448,15 @@ public class RecordsServiceImpl implements RecordsService {
 	public List<Records> searchRecords(RecordsSearchRequest request) {
 		List<Records> records = null;
 		List<RecordsCollection> recordsCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
 		try {
 			boolean isOTPVerified = otpService.checkOTPVerified(request.getDoctorId(), request.getLocationId(),
 					request.getHospitalId(), request.getPatientId());
-			if (request.getDiscarded())
-				discards[1] = true;
-			long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
 			ObjectId tagObjectId = null, patientObjectId = null, doctorObjectId = null, locationObjectId = null,
 					hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(request.getTagId()))
-				tagObjectId = new ObjectId(request.getTagId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
-				patientObjectId = new ObjectId(request.getPatientId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
-				doctorObjectId = new ObjectId(request.getDoctorId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
-				locationObjectId = new ObjectId(request.getLocationId());
-			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
-				hospitalObjectId = new ObjectId(request.getHospitalId());
-
+			
 			if (request.getTagId() != null) {
+				tagObjectId = new ObjectId(request.getTagId());
+				
 				List<RecordsTagsCollection> recordsTagsCollections = null;
 
 				if (request.getSize() > 0)
@@ -484,26 +472,31 @@ public class RecordsServiceImpl implements RecordsService {
 
 			} else {
 
-				if (isOTPVerified) {
-					if (request.getSize() > 0) {
-						recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp),
-								discards,
-								new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
-					} else {
-						recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp),
-								discards, new Sort(Sort.Direction.DESC, "createdTime"));
-					}
-				} else {
-					if (request.getSize() > 0) {
-						recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId,
-								locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards,
-								new PageRequest(request.getPage(), request.getSize(), Direction.DESC, "createdTime"));
-					} else {
-						recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId,
-								locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards,
-								new Sort(Sort.Direction.DESC, "createdTime"));
-					}
+				long createdTimeStamp = Long.parseLong(request.getUpdatedTime());
+				if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
+					patientObjectId = new ObjectId(request.getPatientId());
+				if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+					doctorObjectId = new ObjectId(request.getDoctorId());
+				if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+					locationObjectId = new ObjectId(request.getLocationId());
+				if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+					hospitalObjectId = new ObjectId(request.getHospitalId());
+
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId").is(patientObjectId);
+				if(!request.getDiscarded())criteria.and("discarded").is(request.getDiscarded());
+				
+				if(!isOTPVerified){
+					if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+					if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
 				}
+				
+				Aggregation aggregation = null;
+				
+				if (request.getSize() > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((request.getPage()) * request.getSize()), Aggregation.limit(request.getSize()));
+				else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				
+				AggregationResults<RecordsCollection> aggregationResults = mongoTemplate.aggregate(aggregation, RecordsCollection.class, RecordsCollection.class);
+				recordsCollections = aggregationResults.getMappedResults();
 
 				records = new ArrayList<Records>();
 				for (RecordsCollection recordCollection : recordsCollections) {
@@ -551,7 +544,8 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
 
-			Criteria criteria = new Criteria("doctorId").is(doctorObjectId);
+			Criteria criteria = new Criteria();
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);		
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
@@ -714,25 +708,19 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId,
+	public Integer getRecordCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			boolean isOTPVerified) {
 		Integer recordCount = 0;
 		try {
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			if (isOTPVerified)
-				recordCount = recordsRepository.getRecordCount(patientObjectId, false);
-			else
-				recordCount = recordsRepository.getRecordCount(doctorObjectId, patientObjectId, hospitalObjectId,
-						locationObjectId, false);
+			Criteria criteria = new Criteria("discarded").is(false);
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
+			}
+			else{
+				criteria.and("patientId").is(patientObjectId);
+			}
+			recordCount = (int)mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting Records Count");
@@ -744,33 +732,39 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	@Transactional
 	public FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts) {
-		String doctorId = flexibleCounts.getDoctorId();
-		String locationId = flexibleCounts.getLocationId();
-		String hospitalId = flexibleCounts.getHospitalId();
-		String patientId = flexibleCounts.getPatientId();
-
 		List<Count> counts = flexibleCounts.getCounts();
 		try {
-			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
+			
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(flexibleCounts.getPatientId()))
+				patientObjectId = new ObjectId(flexibleCounts.getPatientId());
+			if (!DPDoctorUtils.anyStringEmpty(flexibleCounts.getDoctorId()))
+				doctorObjectId = new ObjectId(flexibleCounts.getDoctorId());
+			if (!DPDoctorUtils.anyStringEmpty(flexibleCounts.getLocationId()))
+				locationObjectId = new ObjectId(flexibleCounts.getLocationId());
+			if (!DPDoctorUtils.anyStringEmpty(flexibleCounts.getHospitalId()))
+				hospitalObjectId = new ObjectId(flexibleCounts.getHospitalId());
+
+			boolean isOTPVerified = otpService.checkOTPVerified(flexibleCounts.getDoctorId(), flexibleCounts.getLocationId(), flexibleCounts.getHospitalId(), flexibleCounts.getPatientId());
 			for (Count count : counts) {
 				switch (count.getCountFor()) {
 				case PRESCRIPTIONS:
-					count.setValue(prescriptionService.getPrescriptionCount(doctorId, patientId, locationId, hospitalId,
+					count.setValue(prescriptionService.getPrescriptionCount(doctorObjectId, patientObjectId, locationObjectId, hospitalObjectId,
 							isOTPVerified));
 					break;
 				case RECORDS:
-					count.setValue(getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
+					count.setValue(getRecordCount(doctorObjectId, patientObjectId, locationObjectId, hospitalObjectId, isOTPVerified));
 					break;
 				case NOTES:
-					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId,
-							hospitalId, isOTPVerified));
+					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorObjectId, patientObjectId, locationObjectId,
+							hospitalObjectId, isOTPVerified));
 					break;
 				case HISTORY:
-					count.setValue(historyServices.getHistoryCount(doctorId, patientId, locationId, hospitalId,
+					count.setValue(historyServices.getHistoryCount(doctorObjectId, patientObjectId, locationObjectId, hospitalObjectId,
 							isOTPVerified));
 					break;
 				case PATIENTVISITS:
-					count.setValue(patientVisitServices.getVisitCount(doctorId, patientId, locationId, hospitalId,
+					count.setValue(patientVisitServices.getVisitCount(doctorObjectId, patientObjectId, locationObjectId, hospitalObjectId,
 							isOTPVerified));
 				default:
 					break;
@@ -960,26 +954,24 @@ public class RecordsServiceImpl implements RecordsService {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
-
-			if (isOTPVerified) {
-				if (size > 0) {
-					recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp),
-							discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				} else {
-					recordsCollections = recordsRepository.findRecords(patientObjectId, new Date(createdTimeStamp),
-							discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (size > 0) {
-					recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId,
-							locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, inHistorys,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				} else {
-					recordsCollections = recordsRepository.findRecords(patientObjectId, doctorObjectId,
-							locationObjectId, hospitalObjectId, new Date(createdTimeStamp), discards, inHistorys,
-							new Sort(Sort.Direction.DESC, "createdTime"));
-				}
+			
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId").is(patientObjectId);
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(inHistory)criteria.and("inHistory").is(inHistory);
+			
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
 			}
+			
+			Aggregation aggregation = null;
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			
+			AggregationResults<RecordsCollection> aggregationResults = mongoTemplate.aggregate(aggregation, RecordsCollection.class, RecordsCollection.class);
+			recordsCollections = aggregationResults.getMappedResults();
+
 			records = new ArrayList<Records>();
 			for (RecordsCollection recordCollection : recordsCollections) {
 				Records record = new Records();

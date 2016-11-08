@@ -20,13 +20,12 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +38,8 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
-import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
@@ -384,20 +381,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Aggregation aggregation = null;
-			int totalSize = 0;
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match((new Criteria("doctorId").is(doctorObjectId).and("locationId")
-								.is(locationObjectId).and("hospitalId").is(hospitalObjectId))),
-						Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-
-			else
-				aggregation = Aggregation.newAggregation(
-						Aggregation.match((new Criteria("doctorId").is(doctorObjectId).and("locationId")
-								.is(locationObjectId).and("hospitalId").is(hospitalObjectId))),
+			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
+			
+			Aggregation aggregation = Aggregation.newAggregation(
+						Aggregation.match(criteria),
 						Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
 
@@ -409,23 +397,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				@SuppressWarnings("unchecked")
 				List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(results,
 						new BeanToPropertyValueTransformer("id"));
-				List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId,
-						locationId, hospitalId, 0, 0, "0", true, false);
-
-				Aggregation aggregationCount = Aggregation.newAggregation(
-						Aggregation.match((Criteria.where("doctorId").is(doctorObjectId)
-								.andOperator(Criteria.where("locationId").is(locationObjectId)
-										.andOperator(Criteria.where("hospitalId").is(hospitalObjectId))))),
-						Aggregation.group("patientId"));
-
-				groupResults = mongoTemplate.aggregate(aggregationCount, PatientVisitCollection.class,
-						PatientVisitCollection.class);
-				results = groupResults.getMappedResults();
-
-				totalSize = results.size();
-				response = new DoctorContactsResponse();
-				response.setPatientCards(patientCards);
-				response.setTotalSize(totalSize);
+				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId,
+						locationId, hospitalId, page, size, "0", true, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -450,26 +423,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria matchCriteria = Criteria.where("doctorId").is(doctorObjectId).and("locationId")
-					.is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-			Aggregation aggregation;
-
-			if (size > 0) {
-				aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
-						Aggregation.group("patientId").count().as("total"),
-						Aggregation.sort(Sort.Direction.DESC, "total"), Aggregation.skip(page * size),
-						Aggregation.limit(size));
-			} else {
-				aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
+			Criteria matchCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))matchCriteria.and("doctorId").is(doctorObjectId);
+			
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
 						Aggregation.group("patientId").count().as("total"),
 						Aggregation.project("total").and("patientId").previousOperation(),
 						Aggregation.sort(Sort.Direction.DESC, "total"));
-			}
-
-			Aggregation aggregationCount = Aggregation.newAggregation(Aggregation.match(matchCriteria),
-					Aggregation.group("patientId").count().as("total"),
-					Aggregation.project("total").and("patientId").previousOperation(),
-					Aggregation.sort(Sort.Direction.DESC, "total"));
 
 			AggregationResults<PatientVisitCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientVisitCollection.class, PatientVisitCollection.class);
@@ -479,15 +439,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (patientTrackCollections != null && !patientTrackCollections.isEmpty()) {
 				@SuppressWarnings("unchecked")
 				List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(patientTrackCollections,
-						new BeanToPropertyValueTransformer("id"));
-				List<PatientCard> patientCards = contactsService.getSpecifiedPatientCards(patientIds, doctorId,
-						locationId, hospitalId, 0, 0, "0", true, false);
-				int totalSize = mongoTemplate
-						.aggregate(aggregationCount, PatientVisitCollection.class, PatientVisitCollection.class)
-						.getMappedResults().size();
-				response = new DoctorContactsResponse();
-				response.setPatientCards(patientCards);
-				response.setTotalSize(totalSize);
+						new BeanToPropertyValueTransformer("patientId"));
+				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, page, size, "0", true, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -661,6 +614,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
 			}
 
+			long createdTimestamp = Long.parseLong(updatedTime);
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -671,34 +625,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			long createdTimestamp = Long.parseLong(updatedTime);
-			if (!isOTPVerified) {
-				if (locationObjectId == null && hospitalObjectId == null) {
-					if (size > 0)
-						patientVisitCollections = patientVisitRepository.find(doctorObjectId, patientObjectId,
-								visitedFors, new Date(createdTimestamp),
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						patientVisitCollections = patientVisitRepository.find(doctorObjectId, patientObjectId,
-								visitedFors, new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						patientVisitCollections = patientVisitRepository.find(doctorObjectId, locationObjectId,
-								hospitalObjectId, patientObjectId, visitedFors, new Date(createdTimestamp),
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						patientVisitCollections = patientVisitRepository.find(doctorObjectId, locationObjectId,
-								hospitalObjectId, patientObjectId, visitedFors, new Date(createdTimestamp),
-								new Sort(Sort.Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (size > 0)
-					patientVisitCollections = patientVisitRepository.find(patientObjectId, visitedFors,
-							new Date(createdTimestamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					patientVisitCollections = patientVisitRepository.find(patientObjectId, visitedFors,
-							new Date(createdTimestamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId).and("visitedFor").in(visitedFors);
+			
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
 			}
+			Aggregation aggregation = null;
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			
+			AggregationResults<PatientVisitCollection> aggregationResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisitCollection.class);
+			patientVisitCollections = aggregationResults.getMappedResults();
 			if (patientVisitCollections != null) {
 				response = new ArrayList<PatientVisitResponse>();
 
@@ -939,7 +878,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		//
+		
 		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize,
 				topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),
@@ -948,61 +887,61 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
-	private List<PatientTreatmentJasperDetails> getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object> parameters) {
-		PatientTreatmentCollection patientTreatmentCollection = null;
-		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
-		try {
-			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
-			if (patientTreatmentCollection != null) {
-				if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null
-						&& patientTreatmentCollection.getLocationId() != null) {
-					if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
-						Boolean showTreatmentQuantity = false;
-						int no = 0;
-						patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
-						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
-							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
-							patientTreatments.setNo(++no);	
-//							treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
-							patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
-							if(treatment.getQuantity() != null){
-								showTreatmentQuantity = true;
-								String quantity = treatment.getQuantity().getValue()+" ";
-								if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
-								patientTreatments.setQuantity(quantity);
-							}
-							patientTreatmentJasperDetails.add(patientTreatments);
-						}
-					parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
-					if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
-						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-						String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
-								patientTreatmentCollection.getTime().getFromTime() % 60);
-						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-						
-						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-						String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(patientTreatmentCollection.getFromDate());
-						parameters.put("followUpAppointment", "Next Review on "+dateTime);
-					}
-				}
-			  }
-			} else {
-				logger.warn("Patient Treatment not found. Please check Id.");
-				throw new BusinessException(ServiceError.NotFound,
-						"Patient Treatment not found. Please check Id.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return patientTreatmentJasperDetails;
-	}
+//	private List<PatientTreatmentJasperDetails> getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object> parameters) {
+//		PatientTreatmentCollection patientTreatmentCollection = null;
+//		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
+//		try {
+//			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+//			if (patientTreatmentCollection != null) {
+//				if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null
+//						&& patientTreatmentCollection.getLocationId() != null) {
+//					if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
+//						Boolean showTreatmentQuantity = false;
+//						int no = 0;
+//						patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
+//						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+//							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
+//							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+//							patientTreatments.setNo(++no);	
+////							treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
+//							patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
+//							if(treatment.getQuantity() != null){
+//								showTreatmentQuantity = true;
+//								String quantity = treatment.getQuantity().getValue()+" ";
+//								if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
+//								patientTreatments.setQuantity(quantity);
+//							}
+//							patientTreatmentJasperDetails.add(patientTreatments);
+//						}
+//					parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
+//					if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
+//						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+//						String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
+//								patientTreatmentCollection.getTime().getFromTime() % 60);
+//						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+//						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+//						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+//						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+//						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+//						
+//						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+//						String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(patientTreatmentCollection.getFromDate());
+//						parameters.put("followUpAppointment", "Next Review on "+dateTime);
+//					}
+//				}
+//			  }
+//			} else {
+//				logger.warn("Patient Treatment not found. Please check Id.");
+//				throw new BusinessException(ServiceError.NotFound,
+//						"Patient Treatment not found. Please check Id.");
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e);
+//			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+//		}
+//		return patientTreatmentJasperDetails;
+//	}
 
 	@Override
 	public void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
@@ -1114,7 +1053,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name: </b>" + firstName);
+		patientDetailList.add("<b>Patient Name: </b>" + firstName.toUpperCase());
 		patientDetailList
 				.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 
@@ -1373,7 +1312,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 											: "";
 									String durationUnit = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getDurationUnit() != null
-													? prescriptionItem.getDuration().getDurationUnit().getUnit() : "")
+													? (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getDurationUnit().getUnit())?
+															prescriptionItem.getDuration().getDurationUnit().getUnit() : "") : "")
 											: "";
 
 									String directions = "";
@@ -1608,10 +1548,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("visitedFor")
 					.in(visitedFors).and("patientId").is(patientObjectId);
 			if (!isOTPVerified) {
-				criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			Aggregation aggregation = null;
 			if (size > 0)
@@ -1678,7 +1616,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId,
+	public int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			boolean isOTPVerified) {
 		Integer visitCount = 0;
 		try {
@@ -1688,21 +1626,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			visitedFors.add(VisitedFor.REPORTS);
 			visitedFors.add(VisitedFor.TREATMENT);
 
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			if (isOTPVerified)
-				visitCount = patientVisitRepository.getVisitCount(patientObjectId, visitedFors, false);
-			else
-				visitCount = patientVisitRepository.getVisitCount(doctorObjectId, patientObjectId, hospitalObjectId,
-						locationObjectId, visitedFors, false);
+			Criteria criteria = new Criteria("discarded").is(false);
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
+			}
+			else{
+				criteria.and("patientId").is(patientObjectId);
+			}
+			visitCount = (int)mongoTemplate.count(new Query(criteria), PatientVisitCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting Visits Count");

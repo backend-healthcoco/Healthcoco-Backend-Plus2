@@ -2,6 +2,8 @@ package com.dpdocter.elasticsearch.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -28,7 +30,7 @@ public interface ESPrescriptionService {
 
 	Boolean editDrugTypeInDrugs(String drugTypeId);
 
-	void addDoctorDrug(ESDoctorDrugDocument esDoctorDrugDocument);
+	void addDoctorDrug(ESDoctorDrugDocument esDoctorDrugDocument, ObjectId resourceId);
 
 	public boolean addAdvices(ESAdvicesDocument request);
 

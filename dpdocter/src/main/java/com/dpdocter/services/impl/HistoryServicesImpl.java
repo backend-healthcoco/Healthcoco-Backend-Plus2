@@ -33,13 +33,13 @@ import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.MailData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
+import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiseasesCollection;
@@ -1580,14 +1580,14 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Override
     @Transactional
-    public Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified) {
+    public Integer getHistoryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified) {
 	Integer historyCount = 0;
 	try {
 	    List<HistoryCollection> historyCollections = null;
 	    if (isOTPVerified)
-		historyCollections = historyRepository.findHistory(new ObjectId(patientId));
+		historyCollections = historyRepository.findHistory(patientObjectId);
 	    else {
-		HistoryCollection historyCollection = historyRepository.findHistory(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(patientId));
+		HistoryCollection historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
 		if (historyCollection != null) {
 		    historyCollections = new ArrayList<HistoryCollection>();
 		    historyCollections.add(historyCollection);

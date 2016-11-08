@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -925,61 +926,37 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean inHistory) {
 		List<ClinicalNotesCollection> clinicalNotesCollections = null;
 		List<ClinicalNotes> clinicalNotes = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-
-		boolean[] inHistorys = new boolean[2];
-		inHistorys[0] = true;
-
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-		if (!DPDoctorUtils.anyStringEmpty(patientId))
-			patientObjectId = new ObjectId(patientId);
-		if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			doctorObjectId = new ObjectId(doctorId);
-		if (!DPDoctorUtils.anyStringEmpty(locationId))
-			locationObjectId = new ObjectId(locationId);
-		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-			hospitalObjectId = new ObjectId(hospitalId);
-
 		try {
-			if (discarded)
-				discards[1] = true;
-			if (!inHistory)
-				inHistorys[1] = false;
+			
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			if (!isOTPVerified) {
-				if (locationObjectId == null && hospitalObjectId == null) {
-					if (size > 0)
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-								new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp),
-								discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp),
-								discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (size > 0)
-					clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new Sort(Sort.Direction.DESC, "createdTime"));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(inHistory)criteria.and("inHistory").is(inHistory);
+			
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
 			}
-
+			
+			Aggregation aggregation = null;
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			
+			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesCollection.class);
+			clinicalNotesCollections = aggregationResults.getMappedResults();
+			
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				clinicalNotes = new ArrayList<ClinicalNotes>();
 				for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
@@ -1792,25 +1769,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId,
+	public Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			if (isOTPVerified)
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(patientObjectId, false);
-			else
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(doctorObjectId, patientObjectId,
-						hospitalObjectId, locationObjectId, false);
+			Criteria criteria = new Criteria("discarded").is(false);
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
+			}
+			else{
+				criteria.and("patientId").is(patientObjectId);
+			}
+			clinicalNotesCount = (int)mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3088,7 +3059,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name:</b> " + firstName);
+		patientDetailList.add("<b>Patient Name:</b> " + firstName.toUpperCase());
 		patientDetailList
 				.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
 
@@ -3836,6 +3807,5 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
 
 }

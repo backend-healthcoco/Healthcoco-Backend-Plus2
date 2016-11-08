@@ -74,10 +74,6 @@ public class DoctorClinicProfile {
 
 	private List<Role> roles;
 
-	private String patientInitial = "P";
-
-	private int patientCounter = 0;
-
 	private Boolean isDoctorListed = true;
 
 	private long rankingCount = 0;
@@ -338,22 +334,6 @@ public class DoctorClinicProfile {
 		this.roles = roles;
 	}
 
-	public String getPatientInitial() {
-		return patientInitial;
-	}
-
-	public void setPatientInitial(String patientInitial) {
-		this.patientInitial = patientInitial;
-	}
-
-	public int getPatientCounter() {
-		return patientCounter;
-	}
-
-	public void setPatientCounter(int patientCounter) {
-		this.patientCounter = patientCounter;
-	}
-
 	public Boolean getIsDoctorListed() {
 		return isDoctorListed;
 	}
@@ -392,8 +372,6 @@ public class DoctorClinicProfile {
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
 				+ isHomeServiceAvailable + ", locality=" + locality + ", timeZone=" + timeZone
 				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", roles="
-				+ roles + ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
-				+ ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount + "]";
+				+ roles + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount + "]";
 	}
-
 }

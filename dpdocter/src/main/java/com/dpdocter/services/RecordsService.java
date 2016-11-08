@@ -46,7 +46,7 @@ public interface RecordsService {
 
     Records deleteRecord(String recordId, Boolean discarded);
 
-    Integer getRecordCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+    Integer getRecordCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
 
     FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 

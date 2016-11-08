@@ -101,11 +101,9 @@ public interface PathProxy {
 
 		public static final String GET_REFERRENCES = "/reference/{range}";
 
-		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
+		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{locationId}/{patientInitial}/{patientCounter}";
 
-		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{locationId}/{patientInitial}/{patientCounter}";
-
-		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}/{locationId}";
+		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{locationId}";
 
 		public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
@@ -156,6 +154,8 @@ public interface PathProxy {
 		public static final String CHECK_PATIENT_NUMBER = "/patient/checkNumber/{oldMobileNumber}/{newMobileNumber}";
 		
 		public static final String REGISTER_PATIENTS_IN_BULK = "/registerPatients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL = "/updatePIDOnClinicLevel";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -386,6 +386,8 @@ public interface PathProxy {
 		public static final String ADD_CUSTOM_DRUG_TO_FAV = "/makeCustomDrugFavourite";
 		
 		public static final String ADD_FAVOURITE_DRUG = "/favouriteDrug/add";
+
+		public static final String ADD_GENERIC_NAME_IN_DRUGS = "/addGenericNameInDrugs";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
@@ -825,6 +827,7 @@ public interface PathProxy {
 
 	}
 	
+
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
 	
 	public interface DynamicUIUrls {
@@ -832,4 +835,18 @@ public interface PathProxy {
 		public static final String GET_PERMISSIONS_FOR_DOCTOR= "/getPermissionsForDoctor/{doctorId}";
 		public static final String POST_PERMISSIONS = "/postPermissions";
 	}
+
+	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
+	
+	public interface BlogsUrls {
+		public static final String GET_BLOGS = "/getBlogs";
+
+		public static final String GET_BLOG_BY_ID = "/getBlog/{blogId}";
+		
+		public static final String LIKE_THE_BLOG="/likeTheBlog/{blogId}/{userId}";
+		
+
+	}
+	
+
 }

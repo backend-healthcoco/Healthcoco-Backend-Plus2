@@ -546,10 +546,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	@Override
-	public void addDoctorDrug(ESDoctorDrugDocument request) {
+	public void addDoctorDrug(ESDoctorDrugDocument request, ObjectId resourceId) {
 		try {
 			esDoctorDrugRepository.save(request);
-			transnationalService.addResource(new ObjectId(request.getId()), Resource.DOCTORDRUG, true);
+			transnationalService.addResource(resourceId, Resource.DOCTORDRUG, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Doctor Drug in ES");

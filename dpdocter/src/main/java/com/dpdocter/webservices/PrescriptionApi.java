@@ -537,8 +537,8 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId,
-				hospitalId, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
+		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(new ObjectId(doctorId), new ObjectId(patientId), new ObjectId(locationId),
+				new ObjectId(hospitalId), otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
 		Response<Integer> response = new Response<Integer>();
 		response.setData(prescriptionCount);
 		return response;
@@ -916,16 +916,16 @@ public class PrescriptionApi {
 	}
 
 	/*
-	 * for master data..dont not use
+	 * Don't not use it. To add existing custom drugs in my fav..fr updating mongodb data
 	 * */
-	@Path(value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
-	@GET
-	public Response<Boolean> makeCustomDrugFavourite() {
-		
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(prescriptionServices.makeCustomDrugFavourite());
-		return response;
-	}
+//	@Path(value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
+//	@GET
+//	public Response<Boolean> makeCustomDrugFavourite() {
+//		
+//		Response<Boolean> response = new Response<Boolean>();
+//		response.setData(prescriptionServices.makeCustomDrugFavourite());
+//		return response;
+//	}
 	
 	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG)
 	@POST
@@ -954,4 +954,16 @@ public class PrescriptionApi {
 		return response;
 	}
 
+	/*
+	 * Don't not use it. To add genericNames in drugs using generic codes.For updating mongodb data
+	 * */
+	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_NAME_IN_DRUGS)
+	@GET
+	public Response<Boolean> addGenericNameInDrugs() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(prescriptionServices.addGenericNameInDrugs());
+		return response;
+	}
+	
 }

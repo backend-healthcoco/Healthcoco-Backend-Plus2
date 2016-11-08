@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.GenericCode;
 
 public class DrugAddEditRequest {
     private String id;
@@ -40,6 +41,8 @@ public class DrugAddEditRequest {
 
     private List<String> categories;
     
+    private List<GenericCode> genericNames;
+
     public String getId() {
 	return id;
     }
@@ -168,13 +171,20 @@ public class DrugAddEditRequest {
 		this.categories = categories;
 	}
 
+	public List<GenericCode> getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(List<GenericCode> genericNames) {
+		this.genericNames = genericNames;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugAddEditRequest [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
 				+ explanation + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
 				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
 				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
-				+ direction + ", categories=" + categories + "]";
+				+ direction + ", categories=" + categories + ", genericNames=" + genericNames + "]";
 	}
-
 }

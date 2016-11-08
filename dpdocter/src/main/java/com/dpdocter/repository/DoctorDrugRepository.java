@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -12,6 +14,10 @@ public interface DoctorDrugRepository extends MongoRepository<DoctorDrugCollecti
 	@Query("{'drugId': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId' : ?3}")
 	DoctorDrugCollection findByDrugIdDoctorIdLocaationIdHospitalId(ObjectId id, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
 
+	@Query("{'drugId': ?0}")
+	List<DoctorDrugCollection> findByDrugId(ObjectId id);
+
+	
 //    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
 //    List<DrugCollection> getCustomDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Pageable pageable);
 //

@@ -23,71 +23,54 @@ public interface ESDoctorRepository extends ElasticsearchRepository<ESDoctorDocu
 	@Query("{\"bool\": {\"must\": [{\"match\": {\"locationId\": \"?0\"}}]}}")
     List<ESDoctorDocument> findByLocationId(String locationId);
 
-	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"firstName\": \"?0*\"}}]}}")
-    List<ESDoctorDocument> findByFirstName(String searchTerm);
+	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"firstName\": \"?0*\"}}, {\"match\": {\"isDoctorListed\": \"?1\"}}]}}")
+    List<ESDoctorDocument> findByFirstName(String searchTerm, Boolean isDoctorListed, Pageable pageRequest);
 
     @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, "
     		+ "{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?1*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?1*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?1*\"}}]}},"
-    		+ "{\"match_phrase_prefix\": {\"firstName\": \"?2*\"}}]}}")
-    List<ESDoctorDocument> findByCityLocation(String city, String location, String searchTerm);
+    		+ "{\"match_phrase_prefix\": {\"firstName\": \"?2*\"}}, {\"match\": {\"isDoctorListed\": \"?3\"}}]}}")
+    List<ESDoctorDocument> findByCityLocation(String city, String location, String searchTerm, Boolean isDoctorListed, Pageable pageRequest);
 
-    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match_phrase_prefix\": {\"firstName\": \"?1*\"}}]}}")
-    List<ESDoctorDocument> findByCity(String city, String searchTerm);
+    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match_phrase_prefix\": {\"firstName\": \"?1*\"}}, {\"match\": {\"isDoctorListed\": \"?2\"}}]}}")
+    List<ESDoctorDocument> findByCity(String city, String searchTerm, Boolean isDoctorListed, Pageable pageRequest);
 
     @Query("{\"bool\": {\"must\": [{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?0*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?0*\"}}]}},"
-    		+ "{\"match_phrase_prefix\": {\"firstName\": \"?1*\"}}]}}")
-    List<ESDoctorDocument> findByLocation(String location, String searchTerm);
+    		+ "{\"match_phrase_prefix\": {\"firstName\": \"?1*\"}}, {\"match\": {\"isDoctorListed\": \"?2\"}}]}}")
+    List<ESDoctorDocument> findByLocation(String location, String searchTerm, Boolean isDoctorListed, Pageable pageRequest);
 
     @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, "
-    		+ "{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?1*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?1*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?1*\"}}]}}]}}")
-    List<ESDoctorDocument> findByCityLocation(String city, String location);
+    		+ "{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?1*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?1*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?1*\"}}]}}, {\"match\": {\"isDoctorListed\": \"?2\"}}]}}")
+    List<ESDoctorDocument> findByCityLocation(String city, String location, Boolean isDoctorListed, Pageable pageRequest);
 
-    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}]}}")
-    List<ESDoctorDocument> findByCity(String city);
+    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match\": {\"isDoctorListed\": \"?1\"}}]}}")
+    List<ESDoctorDocument> findByCity(String city, Boolean isDoctorListed, Pageable pageRequest);
 
-    @Query("{\"bool\": {\"must\": [{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?0*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?0*\"}}]}}]}")
-    List<ESDoctorDocument> findByLocation(String location);
+    @Query("{\"bool\": {\"must\": [{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?0*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?0*\"}}]}}, {\"match\": {\"isDoctorListed\": \"?1\"}}]}")
+    List<ESDoctorDocument> findByLocation(String location, Boolean isDoctorListed, Pageable pageRequest);
 
-//    @Query("city : ?0* AND (landmarkDetails: ?1* OR streetAddress: ?1* OR locality: ?1*)")
-//    List<SolrDoctorDocument> findByCityLocation(String city, String location);
+    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, "
+    		+ "{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?1*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?1*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?1*\"}}]}}, {\"match\": {\"isLocationListed\": \"?2\"}}]}}")
+    List<ESDoctorDocument> findLocationByCityLocation(String city, String location, Boolean isLocationListed, Pageable pageRequest);
+
+    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match\": {\"isLocationListed\": \"?1\"}}]}}")
+    List<ESDoctorDocument> findLocationByCity(String city, Boolean isLocationListed, Pageable pageRequest);
+
+    @Query("{\"bool\": {\"must\": [{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?0*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?0*\"}}]}}, {\"match\": {\"isLocationListed\": \"?1\"}}]}")
+    List<ESDoctorDocument> findLocationByLocation(String location, Boolean isLocationListed, Pageable pageRequest);
 
     @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"locationName\": \"?0*\"}}]}}")
     List<ESDoctorDocument> findByLocationName(String searchTerm);
 
     @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, "
     		+ "{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?1*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?1*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?1*\"}}]}},"
-    		+ "{\"match_phrase_prefix\": {\"locationName\": \"?2*\"}}]}}")
-    List<ESDoctorDocument> findByCityLocationName(String city, String location, String searchTerm);
+    		+ "{\"match_phrase_prefix\": {\"locationName\": \"?2*\"}}, {\"match\": {\"isLocationListed\": \"?3\"}}]}}")
+    List<ESDoctorDocument> findByCityLocationName(String city, String location, String searchTerm, Boolean isLocationListed, Pageable pageRequest);
 
-    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locationName\": \"?1*\"}}]}}")
-    List<ESDoctorDocument> findByCityLocationName(String city, String searchTerm);
+    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locationName\": \"?1*\"}}, {\"match\": {\"isLocationListed\": \"?2\"}}]}}")
+    List<ESDoctorDocument> findByCityLocationName(String city, String searchTerm, Boolean isLocationListed, Pageable pageRequest);
 
     @Query("{\"bool\": {\"must\": [{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?0*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?0*\"}}]}},"
-    		+ "{\"match_phrase_prefix\": {\"locationName\": \"?1*\"}}]}}")
-    List<ESDoctorDocument> findByLocationLocationName(String location, String searchTerm);
+    		+ "{\"match_phrase_prefix\": {\"locationName\": \"?1*\"}}, {\"match\": {\"isLocationListed\": \"?2\"}}]}}")
+    List<ESDoctorDocument> findByLocationLocationName(String location, String searchTerm, Boolean isLocationListed, Pageable pageRequest);
 
-    
-//    @Query("city : ?0* AND (landmarkDetails: ?1* OR streetAddress: ?1* OR locality: ?1*) AND locationId : ?2 AND isLab : ?3")
-//    List<SolrDoctorDocument> findLabByCityLocationName(String city, String location, String locationId, boolean isLab);
-//
-//    @Query("city : ?0* AND locationId : ?1 AND isLab : ?2")
-//    List<SolrDoctorDocument> findLabByCity(String city, String locationId, boolean isLab);
-//
-//    @Query("city : ?0* AND (landmarkDetails: ?1* OR streetAddress: ?1* OR locality: ?1*) AND isLab : ?2")
-//    SolrDoctorDocument findLabByCityLocationName(String city, String location, boolean isLab);
-//
-//    @Query("city : ?0* AND isLab : ?1")
-//    SolrDoctorDocument findLabByCity(String city, boolean isLab);
-//
-
-
-//    @Query("city : ?0*")
-//    List<SolrDoctorDocument> findByCity(String city);
-//
-//    @Query("(landmarkDetails: ?0* OR streetAddress: ?0* OR locality: ?0*)")
-//    List<SolrDoctorDocument> findByLocation(String location);
-//
-//
-//    @Query("!geofilt sfield='geoLocation'  pt=?0,?1 d=10 AND locationId : ?2 AND isLab : ?3 ")
-//    List<SolrDoctorDocument> findLabByLatLong(String latitude, String longitude, String locationId, boolean isLab);
 }

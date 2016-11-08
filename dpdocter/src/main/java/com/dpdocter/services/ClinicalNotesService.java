@@ -55,7 +55,7 @@ public interface ClinicalNotesService {
 
     Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+    Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
 
     List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm);

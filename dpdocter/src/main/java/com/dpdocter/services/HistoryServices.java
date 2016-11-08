@@ -9,7 +9,6 @@ import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
-import com.dpdocter.beans.Treatment;
 import com.dpdocter.request.DiseaseAddEditRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -63,7 +62,7 @@ public interface HistoryServices {
     List<HistoryDetailsResponse> getPatientHistoryDetailsWithVerifiedOTP(String patientId, String doctorId, String hospitalId, String locationId,
 	    List<String> historyFilter, int page, int size, String updatedTime);
 
-    Integer getHistoryCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+    Integer getHistoryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
 
     boolean handleMedicalHistory(MedicalHistoryHandler request);
 
