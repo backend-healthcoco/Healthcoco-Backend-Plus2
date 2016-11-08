@@ -3,7 +3,7 @@ package com.dpdocter.enums;
 public enum SpecialityTypeEnum {
 
 	GENERAL("GENERAL"), OPHTHALMOLOGIST("OPHTHALMOLOGIST"), PEDIATRICIAN("PEDIATRICIAN"), GYNAECOLOGIST(
-			"GYNAECOLOGIST");
+			"GYNAECOLOGIST") , EMPTY("EMPTY");
 
 	private String specialityType;
 
