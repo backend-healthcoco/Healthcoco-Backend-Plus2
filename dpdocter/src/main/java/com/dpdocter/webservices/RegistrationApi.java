@@ -302,47 +302,17 @@ public class RegistrationApi {
 		return response;
 	}
 
-	// @Path(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR)
-	// @GET
-	// @ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR,
-	// notes = PathProxy.RegistrationUrls.PATIENT_ID_GENERATOR, response =
-	// Response.class)
-	// public Response<String> patientIDGenerator(@PathParam("doctorId") String
-	// doctorId, @PathParam("locationId") String locationId,
-	// @PathParam("hospitalId") String hospitalId) {
-	//
-	// if (doctorId == null) {
-	// throw new BusinessException(ServiceError.InvalidInput, "Invalid
-	// Input.doctorId is null");
-	// }
-	// if (locationId == null) {
-	// throw new BusinessException(ServiceError.InvalidInput, "Invalid
-	// Input.locationId is null");
-	// }
-	// if (hospitalId == null) {
-	// throw new BusinessException(ServiceError.InvalidInput, "Invalid
-	// Input.hospitalId is null");
-	// }
-	//
-	// Response<String> response = new Response<String>();
-	// String generatedId = registrationService.patientIdGenerator(doctorId,
-	// locationId, hospitalId);
-	// response.setData(generatedId);
-	// return response;
-	// }
-
 	@Path(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, notes = PathProxy.RegistrationUrls.GET_PATIENT_INITIAL_COUNTER, response = Response.class)
-	public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId) {
+	public Response<PatientInitialAndCounter> getPatientInitialAndCounter(@PathParam("locationId") String locationId) {
 
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId)) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		Response<PatientInitialAndCounter> response = new Response<PatientInitialAndCounter>();
-		PatientInitialAndCounter patientInitialAndCounter = registrationService.getPatientInitialAndCounter(doctorId, locationId);
+		PatientInitialAndCounter patientInitialAndCounter = registrationService.getPatientInitialAndCounter(locationId);
 		response.setData(patientInitialAndCounter);
 		return response;
 	}
@@ -350,10 +320,9 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, response = Response.class)
-	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("patientInitial") String patientInitial,
+	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("locationId") String locationId, @PathParam("patientInitial") String patientInitial,
 			@PathParam("patientCounter") int patientCounter) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, patientInitial,
+		if (DPDoctorUtils.anyStringEmpty(locationId, patientInitial,
 				new Integer(patientCounter).toString())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -361,7 +330,7 @@ public class RegistrationApi {
 			logger.warn("Invalid Patient Initial");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Patient Initial");
 		}
-		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(doctorId, locationId, patientInitial, patientCounter);
+		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(locationId, patientInitial, patientCounter);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(updateResponse);
 		return response;
@@ -882,6 +851,16 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		Boolean changePatientNumberResponse = registrationService.registerPatients(doctorId, locationId, hospitalId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(changePatientNumberResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
+	@GET
+	public Response<Boolean> updatePIDOnClinicLevel() {
+		
+		Boolean changePatientNumberResponse = registrationService.updatePIDOnClinicLevel();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(changePatientNumberResponse);
 		return response;

@@ -106,11 +106,11 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private Boolean isLocationListed = true;
 
-	// @Field
-	// private String patientInitial = "P";
-	//
-	// @Field
-	// private int patientCounter = 1;
+	 @Field
+	 private String patientInitial = "P";
+	
+	 @Field
+	 private int patientCounter = 1;
 
 	@Field
     private long clinicRankingCount = 0;
@@ -355,21 +355,21 @@ public class LocationCollection extends GenericCollection {
 		this.isActivate = isActivate;
 	}
 
-	// public String getPatientInitial() {
-	// return patientInitial;
-	// }
-	//
-	// public void setPatientInitial(String patientInitial) {
-	// this.patientInitial = patientInitial;
-	// }
-	//
-	// public int getPatientCounter() {
-	// return patientCounter;
-	// }
-	//
-	// public void setPatientCounter(int patientCounter) {
-	// this.patientCounter = patientCounter;
-	// }
+	 public String getPatientInitial() {
+	 return patientInitial;
+	 }
+	
+	 public void setPatientInitial(String patientInitial) {
+	 this.patientInitial = patientInitial;
+	 }
+	
+	 public int getPatientCounter() {
+	 return patientCounter;
+	 }
+	
+	 public void setPatientCounter(int patientCounter) {
+	 this.patientCounter = patientCounter;
+	 }
 
 	public Boolean getIsLocationListed() {
 		return isLocationListed;
@@ -400,6 +400,8 @@ public class LocationCollection extends GenericCollection {
 				+ isTwentyFourSevenOpen + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
 				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount + "]";
+				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + "]";
 	}
+
 }

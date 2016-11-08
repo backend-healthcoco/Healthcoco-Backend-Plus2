@@ -191,4 +191,5 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed
 				+ ", rankingCount=" + rankingCount + "]";
 	}
+
 }

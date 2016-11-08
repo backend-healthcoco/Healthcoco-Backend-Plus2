@@ -537,8 +537,8 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(doctorId, patientId, locationId,
-				hospitalId, otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
+		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(new ObjectId(doctorId), new ObjectId(patientId), new ObjectId(locationId),
+				new ObjectId(hospitalId), otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
 		Response<Integer> response = new Response<Integer>();
 		response.setData(prescriptionCount);
 		return response;

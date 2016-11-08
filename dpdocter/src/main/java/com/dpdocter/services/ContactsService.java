@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
@@ -14,7 +12,7 @@ import com.dpdocter.request.PatientGroupAddEditRequest;
 
 public interface ContactsService {
 
-    List<PatientCard> getDoctorContacts(GetDoctorContactsRequest request);
+    DoctorContactsResponse getDoctorContacts(GetDoctorContactsRequest request);
 
     void blockPatient(String patientId, String docterId);
 

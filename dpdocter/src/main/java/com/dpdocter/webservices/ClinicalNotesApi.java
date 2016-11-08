@@ -530,14 +530,4 @@ public class ClinicalNotesApi {
     	response.setData(clinicalNotesService.getClinicalNotesFile(clinicalNotesId));
     	return response;
     }
-    
-    @Path(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
-    @GET
-    @ApiOperation(value = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.UPDATE_QUERY_CLINICAL_NOTES)
-    public Response<Boolean> updateQuery() {
-
-      	Response<Boolean> response = new Response<Boolean>();
-		response.setData(clinicalNotesService.updateQuery());
-		return response;
-    }
 }

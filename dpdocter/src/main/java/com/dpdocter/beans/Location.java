@@ -71,9 +71,9 @@ public class Location {
     
     private Boolean isLocationListed=true;
     
-//    private String patientInitial = "P";
-//
-//    private int patientCounter = 0;
+    private String patientInitial = "P";
+
+    private int patientCounter = 0;
 
     private long clinicRankingCount = 0;
     
@@ -326,21 +326,21 @@ public class Location {
 	}
 	
 
-//    public String getPatientInitial() {
-//	return patientInitial;
-//    }
-//
-//    public void setPatientInitial(String patientInitial) {
-//	this.patientInitial = patientInitial;
-//    }
-//
-//    public int getPatientCounter() {
-//	return patientCounter;
-//    }
-//
-//    public void setPatientCounter(int patientCounter) {
-//	this.patientCounter = patientCounter;
-//    }
+    public String getPatientInitial() {
+	return patientInitial;
+    }
+
+    public void setPatientInitial(String patientInitial) {
+	this.patientInitial = patientInitial;
+    }
+
+    public int getPatientCounter() {
+	return patientCounter;
+    }
+
+    public void setPatientCounter(int patientCounter) {
+	this.patientCounter = patientCounter;
+    }
 
 	public Boolean getIsLocationListed() {
 		return isLocationListed;
@@ -371,6 +371,7 @@ public class Location {
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
 				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount + "]";
+				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + "]";
 	}
 }

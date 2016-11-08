@@ -1235,7 +1235,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromTime);
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
@@ -1244,7 +1244,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("toDate").lte(toTime);
 			}
@@ -1347,7 +1347,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromTime);
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
@@ -1356,7 +1356,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("toDate").lte(toTime);
 			}
@@ -1808,10 +1808,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (appointmentCollection != null) {
 				if (appointmentCollection.getPatientId() != null) {
 					UserCollection userCollection = userRepository.findOne(appointmentCollection.getDoctorId());
+					UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
 					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
 							appointmentCollection.getPatientId(), appointmentCollection.getDoctorId(),
 							appointmentCollection.getLocationId(), appointmentCollection.getHospitalId());
-					UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
+					
 					LocationCollection locationCollection = locationRepository
 							.findOne(appointmentCollection.getLocationId());
 					if (userCollection != null && locationCollection != null && patient != null) {
@@ -1914,8 +1915,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
 
-			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 			List<PatientQueueCollection> patientQueueCollections = patientQueueRepository.find(doctorObjectId,
 					locationObjectId, hospitalObjectId, start, end, false, new Sort(Direction.DESC, "sequenceNo"));
@@ -1967,8 +1968,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
 
-			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			PatientQueueCollection patientQueueCollection = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(appointmentId))

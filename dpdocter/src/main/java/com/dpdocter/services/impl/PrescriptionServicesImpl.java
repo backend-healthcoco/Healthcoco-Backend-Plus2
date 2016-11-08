@@ -27,6 +27,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1131,16 +1132,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
 
-		boolean[] inHistorys = new boolean[2];
-		inHistorys[0] = true;
-		inHistorys[1] = true;
-
 		try {
-			if (discarded)
-				discards[1] = true;
-			if (!inHistory)
-				inHistorys[1] = false;
-
 			long createdTimestamp = Long.parseLong(updatedTime);
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -1152,39 +1144,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			if (!isOTPVerified) {
-				if (locationObjectId == null && hospitalObjectId == null) {
-					if (size > 0)
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId,
-								patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId,
-								patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-								new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId,
-								hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp),
-								discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						prescriptionCollections = prescriptionRepository.getPrescription(doctorObjectId,
-								hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp),
-								discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (size > 0)
-					prescriptionCollections = prescriptionRepository.getPrescription(patientObjectId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					prescriptionCollections = prescriptionRepository.getPrescription(patientObjectId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new Sort(Sort.Direction.DESC, "createdTime"));
-
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(inHistory)criteria.and("inHistory").is(inHistory);
+			
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+			}
+			else{
 				pushNotificationServices.notifyUser(patientId, "Global records", null, null);
 			}
-
+			Aggregation aggregation = null;
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			
+			AggregationResults<PrescriptionCollection> aggregationResults = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, PrescriptionCollection.class);
+			prescriptionCollections = aggregationResults.getMappedResults();
+	
 			if (prescriptionCollections != null) {
 				prescriptions = new ArrayList<Prescription>();
 				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
@@ -1210,8 +1188,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setItems(prescriptionItemDetailsList);
 					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescriptionCollection.getId());
+					PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
 					if (patientVisitCollection != null)
 						prescription.setVisitId(patientVisitCollection.getId().toString());
 
@@ -1219,8 +1196,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : tests) {
 							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(new ObjectId(data.getTestId()));
+								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(new ObjectId(data.getTestId()));
 								DiagnosticTest diagnosticTest = new DiagnosticTest();
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
@@ -1316,11 +1292,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String locationId, String updatedTime, boolean discarded) {
 		List<TemplateAddEditResponseDetails> response = null;
 		List<TemplateCollection> templateCollections = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
 		try {
-			if (discarded)
-				discards[1] = true;
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -1331,24 +1303,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			if (hospitalObjectId == null && locationObjectId == null) {
-				if (size > 0)
-					templateCollections = templateRepository.getTemplates(doctorObjectId, new Date(createdTimeStamp),
-							discards, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					templateCollections = templateRepository.getTemplates(doctorObjectId, new Date(createdTimeStamp),
-							discards, new Sort(Sort.Direction.DESC, "createdTime"));
-			} else {
-				if (size > 0)
-					templateCollections = templateRepository.getTemplates(doctorObjectId, hospitalObjectId,
-							locationObjectId, new Date(createdTimeStamp), discards,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					templateCollections = templateRepository.getTemplates(doctorObjectId, hospitalObjectId,
-							locationObjectId, new Date(createdTimeStamp), discards,
-							new Sort(Sort.Direction.DESC, "createdTime"));
-			}
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp));
+			if(!discarded)criteria.and("discarded").is(discarded);
+			
+			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+			
+			Aggregation aggregation = null;
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
+			templateCollections = mongoTemplate.aggregate(aggregation, TemplateCollection.class, TemplateCollection.class).getMappedResults();
 			if (templateCollections != null && !templateCollections.isEmpty()) {
 				response = new ArrayList<TemplateAddEditResponseDetails>();
 				for (TemplateCollection templateCollection : templateCollections) {
@@ -1369,11 +1335,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					response.add(template);
 				}
 			}
-			// else {
-			// logger.warn("Template Not Found");
-			// throw new BusinessException(ServiceError.NotFound, "Template Not
-			// Found");
-			// }
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Template");
@@ -1384,25 +1345,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId,
+	public Integer getPrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			boolean isOTPVerified) {
 		Integer prescriptionCount = 0;
-		try {
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
+		try {			
 
-			if (isOTPVerified)
-				prescriptionCount = prescriptionRepository.getPrescriptionCount(patientObjectId, false);
-			else
-				prescriptionCount = prescriptionRepository.getPrescriptionCount(doctorObjectId, patientObjectId,
-						hospitalObjectId, locationObjectId, false);
+			Criteria criteria = new Criteria("discarded").is(false);
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
+			}
+			else{
+				criteria.and("patientId").is(patientObjectId);
+			}
+			prescriptionCount = (int)mongoTemplate.count(new Query(criteria), PrescriptionCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Prescription Count");
@@ -2069,63 +2025,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	// private List<Object> getCustomGlobalLabTests(int page, int size, String
-	// locationId, String hospitalId,
-	// String updatedTime, boolean discarded) {
-	// List<Object> response = null;
-	// List<LabTestCollection> labTestCollections = null;
-	// boolean[] discards = new boolean[2];
-	// discards[0] = false;
-	// try {
-	// if (discarded)
-	// discards[1] = true;
-	// long createdTimeStamp = Long.parseLong(updatedTime);
-	//
-	// if (locationId == null && hospitalId == null) {
-	// if (size > 0)
-	// labTestCollections = labTestRepository.getCustomGlobalLabTests(new
-	// Date(createdTimeStamp), discards,
-	// new PageRequest(page, size, Direction.DESC, "updatedTime"));
-	// else
-	// labTestCollections = labTestRepository.getCustomGlobalLabTests(new
-	// Date(createdTimeStamp), discards,
-	// new Sort(Sort.Direction.DESC, "updatedTime"));
-	// } else {
-	// if (size > 0)
-	// labTestCollections =
-	// labTestRepository.getCustomGlobalLabTests(hospitalId, locationId,
-	// new Date(createdTimeStamp), discards,
-	// new PageRequest(page, size, Direction.DESC, "updatedTime"));
-	// else
-	// labTestCollections =
-	// labTestRepository.getCustomGlobalLabTests(hospitalId, locationId,
-	// new Date(createdTimeStamp), discards, new Sort(Sort.Direction.DESC,
-	// "updatedTime"));
-	// }
-	// if (!labTestCollections.isEmpty()) {
-	// response = new ArrayList<Object>();
-	// for (LabTestCollection labTestCollection : labTestCollections) {
-	// LabTest labTest = new LabTest();
-	// BeanUtil.map(labTestCollection, labTest);
-	// DiagnosticTestCollection diagnosticTestCollection =
-	// diagnosticTestRepository
-	// .findOne(labTestCollection.getTestId());
-	// DiagnosticTest diagnosticTest = new DiagnosticTest();
-	// BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-	// labTest.setTest(diagnosticTest);
-	// response.add(labTest);
-	// }
-	//
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// logger.error(e + " Error Occurred While Getting LabTests");
-	// throw new BusinessException(ServiceError.Unknown, "Error Occurred While
-	// Getting LabTests");
-	// }
-	// return response;
-	// }
-
 	private List<Drug> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded) {
 		List<Drug> response = null;
 		try {
@@ -2419,7 +2318,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public void emailPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
@@ -3938,6 +3837,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
 					}
 					}
+				response = true;
 				}
 			}
 			

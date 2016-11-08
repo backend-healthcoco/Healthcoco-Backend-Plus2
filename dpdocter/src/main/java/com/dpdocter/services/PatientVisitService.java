@@ -43,7 +43,7 @@ public interface PatientVisitService {
 
     String editRecord(String id, VisitedFor prescription);
 
-    int getVisitCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+    int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
 
     String getPatientVisitFile(String visitId);
 

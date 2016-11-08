@@ -101,11 +101,9 @@ public interface PathProxy {
 
 		public static final String GET_REFERRENCES = "/reference/{range}";
 
-		public static final String PATIENT_ID_GENERATOR = "/generatePatientId/{doctorId}/{locationId}/{hospitalId}";
+		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{locationId}/{patientInitial}/{patientCounter}";
 
-		public static final String UPDATE_PATIENT_ID_GENERATOR_LOGIC = "/updatePatientIdGeneratorLogic/{doctorId}/{locationId}/{patientInitial}/{patientCounter}";
-
-		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{doctorId}/{locationId}";
+		public static final String GET_PATIENT_INITIAL_COUNTER = "/getPatientInitialAndCounter/{locationId}";
 
 		public static final String GET_CLINIC_DETAILS = "/settings/getClinicDetails/{clinicId}";
 
@@ -156,6 +154,8 @@ public interface PathProxy {
 		public static final String CHECK_PATIENT_NUMBER = "/patient/checkNumber/{oldMobileNumber}/{newMobileNumber}";
 		
 		public static final String REGISTER_PATIENTS_IN_BULK = "/registerPatients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL = "/updatePIDOnClinicLevel";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

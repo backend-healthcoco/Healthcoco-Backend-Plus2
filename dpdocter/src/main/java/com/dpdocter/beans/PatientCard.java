@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Transient;
+
 public class PatientCard {
 	private String id;
 
@@ -24,6 +26,7 @@ public class PatientCard {
 	private String PID;
 
 	private String gender;
+	
 	private String countryCode;
 
 	private String mobileNumber;
@@ -52,6 +55,9 @@ public class PatientCard {
 
 	private Boolean isPatientOTPVerified = false;
 
+//	@Transient
+	private User user;
+	
 	public String getId() {
 		return id;
 	}
@@ -244,18 +250,6 @@ public class PatientCard {
 		this.userId = userId;
 	}
 
-	@Override
-	public String toString() {
-		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", userName=" + userName
-				+ ", emailAddress=" + emailAddress + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
-				+ ", bloodGroup=" + bloodGroup + ", PID=" + PID + ", gender=" + gender + ", mobileNumber="
-				+ mobileNumber + ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count
-				+ ", dateOfVisit=" + dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
-				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
-				+ ", isPatientOTPVerified=" + isPatientOTPVerified + "]";
-	}
-
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -263,4 +257,26 @@ public class PatientCard {
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
 	}
+
+	@Override
+	public String toString() {
+		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
+				+ localPatientName + ", userName=" + userName + ", emailAddress=" + emailAddress + ", imageUrl="
+				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup + ", PID=" + PID
+				+ ", gender=" + gender + ", countryCode=" + countryCode + ", mobileNumber=" + mobileNumber
+				+ ", secPhoneNumber=" + secPhoneNumber + ", dob=" + dob + ", count=" + count + ", dateOfVisit="
+				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
+				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
+				+ ", isPatientOTPVerified=" + isPatientOTPVerified + ", user=" + user + "]";
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 }

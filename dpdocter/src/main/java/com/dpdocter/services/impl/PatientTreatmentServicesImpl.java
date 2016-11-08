@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
-import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
@@ -38,7 +37,6 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
-import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
@@ -557,10 +555,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId);
 			if (!isOTPVerified) {
-				criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
@@ -636,10 +633,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					.is(patientObjectId);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-				criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);

@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -170,7 +171,7 @@ public class RecordsApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
 		Boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
-		Integer recordCount = recordsService.getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified);
+		Integer recordCount = recordsService.getRecordCount(new ObjectId(doctorId), new ObjectId(patientId), new ObjectId(locationId), new ObjectId(hospitalId), isOTPVerified);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(recordCount);
 	return response;

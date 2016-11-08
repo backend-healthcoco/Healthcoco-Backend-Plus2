@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +58,6 @@ import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
@@ -95,7 +95,6 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
-import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -156,12 +155,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private PatientRepository patientRepository;
-
-	@Autowired
-	private ESClinicalNotesService esClinicalNotesService;
-
-	@Autowired
-	private TransactionalManagementService transactionalManagementService;
 
 	@Autowired
 	private PatientVisitRepository patientVisitRepository;
@@ -415,61 +408,37 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean inHistory) {
 		List<ClinicalNotesCollection> clinicalNotesCollections = null;
 		List<ClinicalNotes> clinicalNotes = null;
-		boolean[] discards = new boolean[2];
-		discards[0] = false;
-
-		boolean[] inHistorys = new boolean[2];
-		inHistorys[0] = true;
-
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-		if (!DPDoctorUtils.anyStringEmpty(patientId))
-			patientObjectId = new ObjectId(patientId);
-		if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			doctorObjectId = new ObjectId(doctorId);
-		if (!DPDoctorUtils.anyStringEmpty(locationId))
-			locationObjectId = new ObjectId(locationId);
-		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-			hospitalObjectId = new ObjectId(hospitalId);
-
 		try {
-			if (discarded)
-				discards[1] = true;
-			if (!inHistory)
-				inHistorys[1] = false;
+			
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			if (!isOTPVerified) {
-				if (locationObjectId == null && hospitalObjectId == null) {
-					if (size > 0)
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-								new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								patientObjectId, new Date(createdTimestamp), discards, inHistorys,
-								new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp),
-								discards, inHistorys, new PageRequest(page, size, Direction.DESC, "createdTime"));
-					else
-						clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(doctorObjectId,
-								hospitalObjectId, locationObjectId, patientObjectId, new Date(createdTimestamp),
-								discards, inHistorys, new Sort(Sort.Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (size > 0)
-					clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					clinicalNotesCollections = clinicalNotesRepository.getClinicalNotes(patientObjectId,
-							new Date(createdTimestamp), discards, inHistorys,
-							new Sort(Sort.Direction.DESC, "createdTime"));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(inHistory)criteria.and("inHistory").is(inHistory);
+			
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
 			}
-
+			
+			Aggregation aggregation = null;
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			
+			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesCollection.class);
+			clinicalNotesCollections = aggregationResults.getMappedResults();
+			
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				clinicalNotes = new ArrayList<ClinicalNotes>();
 				for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
@@ -995,25 +964,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId,
+	public Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			if (isOTPVerified)
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(patientObjectId, false);
-			else
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCount(doctorObjectId, patientObjectId,
-						hospitalObjectId, locationObjectId, false);
+			Criteria criteria = new Criteria("discarded").is(false);
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
+			}
+			else{
+				criteria.and("patientId").is(patientObjectId);
+			}
+			clinicalNotesCount = (int)mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2253,106 +2216,4 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Boolean updateQuery() {
-		Boolean response = false;
-		try {
-			List<ClinicalNotesCollection> clinicalNotesCollections = clinicalNotesRepository.findAll();
-			for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
-				String observations = null;
-				if(clinicalNotesCollection.getObservations() != null && !clinicalNotesCollection.getObservations().isEmpty()){
-					Collection<String> observationList = CollectionUtils
-							.collect(
-									sortObservations(
-											mongoTemplate
-													.aggregate(
-															Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-																	.in(clinicalNotesCollection.getObservations()))),
-															ObservationCollection.class, Observation.class)
-													.getMappedResults(),
-											clinicalNotesCollection.getObservations()),
-									new BeanToPropertyValueTransformer("observation"));
-					if (observationList != null && !observationList.isEmpty())
-						observations = (observationList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-				}
-
-				String notes = null;
-				if(clinicalNotesCollection.getNotes()!=null && !clinicalNotesCollection.getNotes().isEmpty()){
-					Collection<String> noteList = CollectionUtils
-							.collect(
-									sortNotes(
-											mongoTemplate.aggregate(
-													Aggregation.newAggregation(Aggregation.match(
-															new Criteria("id").in(clinicalNotesCollection.getNotes()))),
-													NotesCollection.class, Notes.class).getMappedResults(),
-											clinicalNotesCollection.getNotes()),
-									new BeanToPropertyValueTransformer("note"));
-					if (noteList != null && !noteList.isEmpty())
-						notes = (noteList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-				}
-				String investigations = null;
-				if(clinicalNotesCollection.getInvestigations() != null && !clinicalNotesCollection.getInvestigations().isEmpty()){
-					Collection<String> investigationList = CollectionUtils
-							.collect(
-									sortInvestigations(
-											mongoTemplate
-													.aggregate(
-															Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-																	.in(clinicalNotesCollection.getInvestigations()))),
-															InvestigationCollection.class, Investigation.class)
-													.getMappedResults(),
-											clinicalNotesCollection.getInvestigations()),
-									new BeanToPropertyValueTransformer("investigation"));
-					if (investigationList != null && !investigationList.isEmpty())
-						investigations = (investigationList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-				}
-
-				String diagnosis = null;
-				if(clinicalNotesCollection.getDiagnoses() !=null && !clinicalNotesCollection.getDiagnoses().isEmpty()){
-					Collection<String> diagnosisList = CollectionUtils
-							.collect(
-									sortDiagnoses(
-											mongoTemplate.aggregate(
-													Aggregation.newAggregation(Aggregation.match(
-															new Criteria("id").in(clinicalNotesCollection.getDiagnoses()))),
-													DiagnosisCollection.class, Diagnoses.class).getMappedResults(),
-											clinicalNotesCollection.getDiagnoses()),
-									new BeanToPropertyValueTransformer("diagnosis"));
-					if (diagnosisList != null && !diagnosisList.isEmpty())
-						diagnosis = (diagnosisList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-				}
-				
-				String complaints = null;
-				if(clinicalNotesCollection.getComplaints() != null && !clinicalNotesCollection.getComplaints().isEmpty()){
-					Collection<String> complaintList = CollectionUtils
-							.collect(
-									sortComplaints(
-											mongoTemplate.aggregate(
-													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-															.in(clinicalNotesCollection.getComplaints()))),
-													ComplaintCollection.class, Complaint.class).getMappedResults(),
-											clinicalNotesCollection.getComplaints()),
-									new BeanToPropertyValueTransformer("complaint"));
-					if (complaintList != null && !complaintList.isEmpty())
-						complaints = (complaintList + "").replaceAll("\\[", "").replaceAll("\\]", "");
-				}
-				clinicalNotesCollection.setObservation(observations);
-				clinicalNotesCollection.setNote(notes);
-				clinicalNotesCollection.setInvestigation(investigations);
-				clinicalNotesCollection.setDiagnosis(diagnosis);
-				clinicalNotesCollection.setComplaint(complaints);
-				clinicalNotesRepository.save(clinicalNotesCollection);
-
-			}
-			response = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}
-		return response;
-	}
-
 }

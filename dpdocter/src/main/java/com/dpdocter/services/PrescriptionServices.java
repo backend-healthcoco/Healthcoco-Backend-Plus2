@@ -64,7 +64,7 @@ public interface PrescriptionServices {
 	List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId,
 			String locationId, String updatedTime, boolean discarded);
 
-	Integer getPrescriptionCount(String doctorId, String patientId, String locationId, String hospitalId,
+	Integer getPrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
 			boolean isOTPVerified);
 
 	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);

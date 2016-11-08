@@ -43,6 +43,9 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     @Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
     Integer getPrescriptionCountForOtherDoctors(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
 
+    @Query(value = "{'patientId': ?0, 'hospitalId' : {'$ne' : ?1}, 'locationId' : {'$ne' : ?2}}", count = true)
+    Integer getPrescriptionCountForOtherLocations(ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
+    
     @Query("{'patientId' : ?0, 'updatedTime' : {'$gt' : ?1}, 'discarded' : {$in: ?2}}")
     List<PrescriptionCollection> getPrescription(ObjectId patientId, Date date, boolean[] discards, Pageable pageRequest);
 

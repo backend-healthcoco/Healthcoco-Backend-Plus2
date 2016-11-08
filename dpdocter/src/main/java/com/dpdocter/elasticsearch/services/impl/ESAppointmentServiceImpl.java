@@ -499,7 +499,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				.terms("keys")
 				.field("locationId")
 				.size(size)
-				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+				.subAggregation(AggregationBuilders.topHits("hits").setSize(1))
+				.subAggregation(AggregationBuilders.topHits("nexthits").setFrom(size*(page)).setSize(size)))	    		
 	    		.withIndices("doctors_in").withTypes("doctors")
 		.withQuery(boolQueryBuilder)
 		.withPageable(new PageRequest(page, size))
@@ -528,7 +529,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	    List<Bucket> buckets = hits.getBuckets();
 	    if(buckets != null && !buckets.isEmpty())
 	    for(Bucket bucket : buckets){
-	    	InternalTopHits topHits = bucket.getAggregations().get("hits");
+	    	InternalTopHits topHits = bucket.getAggregations().get("nexthits");
 	    	SearchHit searchHit = topHits.getHits().getHits()[0];
 	    	ObjectMapper objectMapper = new ObjectMapper();
 	    	ESDoctorDocument esDoctorDocument = objectMapper.convertValue(searchHit.getSource(), ESDoctorDocument.class);

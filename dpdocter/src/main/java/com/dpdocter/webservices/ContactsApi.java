@@ -60,21 +60,17 @@ public class ContactsApi {
     @POST
     @ApiOperation(value = "GET_DOCTOR_CONTACTS", notes = "GET_DOCTOR_CONTACTS")
     public Response<DoctorContactsResponse> doctorContacts(GetDoctorContactsRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId()) || request.getGroups() == null || request.getGroups().isEmpty()) {
+    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId()) || request.getGroups() == null || request.getGroups().isEmpty()) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
-	List<PatientCard> patientCards = contactsService.getDoctorContacts(request);
-	int ttlCount = contactsService.getContactsTotalSize(request);
-	DoctorContactsResponse doctorContactsResponse = new DoctorContactsResponse();
-	if (patientCards != null && !patientCards.isEmpty()) {
-	    for (PatientCard patientCard : patientCards) {
+    DoctorContactsResponse doctorContactsResponse = contactsService.getDoctorContacts(request);
+	if (doctorContactsResponse != null && doctorContactsResponse.getPatientCards() != null && !doctorContactsResponse.getPatientCards().isEmpty()) {
+	    for (PatientCard patientCard : doctorContactsResponse.getPatientCards()) {
 		patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 		patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 	    }
 	}
-	doctorContactsResponse.setPatientCards(patientCards);
-	doctorContactsResponse.setTotalSize(ttlCount);
 	Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
 	response.setData(doctorContactsResponse);
 	return response;

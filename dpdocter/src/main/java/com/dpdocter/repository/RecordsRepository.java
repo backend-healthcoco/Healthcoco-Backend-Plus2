@@ -64,6 +64,9 @@ public interface RecordsRepository extends MongoRepository<RecordsCollection, Ob
     @Query(value = "{'doctorId' : {'$ne' : ?0}, 'patientId': ?1, 'hospitalId' : {'$ne' : ?2}, 'locationId' : {'$ne' : ?3}}", count = true)
     Integer getRecordsForOtherDoctors(ObjectId doctorId, ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
 
+    @Query(value = "{'patientId': ?0, 'hospitalId' : {'$ne' : ?1}, 'locationId' : {'$ne' : ?2}}", count = true)
+	Integer getRecordsForOtherLocations(ObjectId patientId, ObjectId hospitalId, ObjectId locationId);
+
     @Query(value = "{'patientId': ?0, 'discarded' : ?1}", count = true)
     Integer getRecordCount(ObjectId patientId, boolean discarded);
 
