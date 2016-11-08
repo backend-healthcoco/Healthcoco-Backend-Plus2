@@ -692,7 +692,7 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE, notes = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
 	public Response<Role> addRole(Role request) {
 		if (request == null
-				|| DPDoctorUtils.anyStringEmpty(request.getRole(), request.getLocationId(), request.getHospitalId())
+				|| DPDoctorUtils.anyStringEmpty(request.getRole())//, request.getLocationId(), request.getHospitalId()
 				|| request.getAccessModules() == null || request.getAccessModules().isEmpty()) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
