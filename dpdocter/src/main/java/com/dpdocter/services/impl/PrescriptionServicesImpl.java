@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -2534,6 +2535,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public Boolean smsPrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
@@ -2607,44 +2609,58 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										}
 									}
 								}
-							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+							if(prescriptionCollection.getDiagnosticTests() != null && !prescriptionCollection.getDiagnosticTests().isEmpty()){
+								if(!DPDoctorUtils.anyStringEmpty(prescriptionDetails))prescriptionDetails = prescriptionDetails +" and ";
+								prescriptionDetails = prescriptionDetails+ "Tests :";
+								List<ObjectId> testIds = new ArrayList<ObjectId>();
+								for(TestAndRecordData  testAndRecordData : prescriptionCollection.getDiagnosticTests()){
+									testIds.add(new ObjectId(testAndRecordData.getTestId()));
+								}
+								
+								Collection<String> tests = CollectionUtils.collect((List<DiagnosticTestCollection>) diagnosticTestRepository.findAll(testIds), new BeanToPropertyValueTransformer("testName"));
+								prescriptionDetails = prescriptionDetails+" "+tests.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+							}
+							
+							if(!DPDoctorUtils.anyStringEmpty(prescriptionDetails)){
+								SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 
-							String patientName = patientCollection.getLocalPatientName() != null
-									? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
-									clinicContactNum = "";
+								String patientName = patientCollection.getLocalPatientName() != null
+										? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
+										clinicContactNum = "";
 
-							UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
-							if (doctor != null)
-								doctorName = doctor.getTitle() + " " + doctor.getFirstName();
+								UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
+								if (doctor != null)
+									doctorName = doctor.getTitle() + " " + doctor.getFirstName();
 
-							LocationCollection locationCollection = locationRepository
-									.findOne(new ObjectId(locationId));
-							if (locationCollection != null && locationCollection.getClinicNumber() != null)
-								clinicContactNum = " " + locationCollection.getClinicNumber();
+								LocationCollection locationCollection = locationRepository
+										.findOne(new ObjectId(locationId));
+								if (locationCollection != null && locationCollection.getClinicNumber() != null)
+									clinicContactNum = " " + locationCollection.getClinicNumber();
 
-							smsTrackDetail.setDoctorId(new ObjectId(doctorId));
-							smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
-							smsTrackDetail.setLocationId(new ObjectId(locationId));
-							smsTrackDetail.setType(type);
-							SMSDetail smsDetail = new SMSDetail();
-							smsDetail.setUserId(prescriptionCollection.getPatientId());
-							if (userCollection != null)
-								smsDetail.setUserName(patientCollection.getLocalPatientName());
-							SMS sms = new SMS();
-							sms.setSmsText("Hi " + patientName + ", your prescription "
-									+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
-									+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum + ".");
+								smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+								smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+								smsTrackDetail.setLocationId(new ObjectId(locationId));
+								smsTrackDetail.setType(type);
+								SMSDetail smsDetail = new SMSDetail();
+								smsDetail.setUserId(prescriptionCollection.getPatientId());
+								if (userCollection != null)
+									smsDetail.setUserName(patientCollection.getLocalPatientName());
+								SMS sms = new SMS();
+								sms.setSmsText("Hi " + patientName + ", your prescription "
+										+ prescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
+										+ prescriptionDetails + ". For queries,contact Doctor" + clinicContactNum + ".");
 
-							SMSAddress smsAddress = new SMSAddress();
-							smsAddress.setRecipient(mobileNumber);
-							sms.setSmsAddress(smsAddress);
+								SMSAddress smsAddress = new SMSAddress();
+								smsAddress.setRecipient(mobileNumber);
+								sms.setSmsAddress(smsAddress);
 
-							smsDetail.setSms(sms);
-							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-							smsDetails.add(smsDetail);
-							smsTrackDetail.setSmsDetails(smsDetails);
-							response = sMSServices.sendSMS(smsTrackDetail, true);
+								smsDetail.setSms(sms);
+								smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+								List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+								smsDetails.add(smsDetail);
+								smsTrackDetail.setSmsDetails(smsDetails);
+								response = sMSServices.sendSMS(smsTrackDetail, true);
+							}
 						}
 					} else {
 						logger.warn("Prescription not found.Please check prescriptionId.");
