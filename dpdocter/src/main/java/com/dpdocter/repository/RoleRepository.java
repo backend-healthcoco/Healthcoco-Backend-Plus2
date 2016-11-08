@@ -91,4 +91,25 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query(value = "{'role': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
 	public Integer countByRole(String role, ObjectId locationId, ObjectId hospitalId);
 
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}}]}")
+	public List<RoleCollection> findCustomGlobalRole(ObjectId locationId, ObjectId hospitalId, Date date, Pageable pageable);
+
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}}]}")
+	public List<RoleCollection> findCustomGlobalRole(ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
+
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role': ?3},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role':?3}]}")
+	public List<RoleCollection> findCustomGlobalDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date,	String role, Pageable pageable);
+
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':?3},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role': ?3}]}")
+	public List<RoleCollection> findCustomGlobalDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date,	String role, Sort sort);
+
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}]}")
+	public List<RoleCollection> findCustomGlobalStaffRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roleIds, Pageable pageable);
+
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}]}")
+    public List<RoleCollection> findCustomGlobalStaffRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roleIds, Sort sort);
+
+    @Query(value = "{'role': ?0}", count = true)
+	public Integer countByRole(String role);
+
 }

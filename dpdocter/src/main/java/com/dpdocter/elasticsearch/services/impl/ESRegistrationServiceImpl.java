@@ -34,9 +34,11 @@ import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.repository.ESReferenceRepository;
 import com.dpdocter.elasticsearch.response.ESPatientResponse;
@@ -59,6 +61,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Autowired
 	private ESDoctorRepository esDoctorRepository;
+
+	@Autowired
+	private ESLocationRepository esLocationRepository;
 
 	@Autowired
 	private ESPatientRepository esPatientRepository;
@@ -310,15 +315,23 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	@Override
 	public void editLocation(DoctorLocation doctorLocation) {
 		try {
+			GeoPoint geoPoint = null;
+			if (doctorLocation.getLatitude() != null && doctorLocation.getLongitude() != null)
+				geoPoint = new GeoPoint(doctorLocation.getLatitude(), doctorLocation.getLongitude());
+			
+			ESLocationDocument esLocationDocument = new ESLocationDocument();
+			BeanUtil.map(doctorLocation, esLocationDocument);
+			esLocationDocument.setGeoPoint(geoPoint);
+			esLocationDocument.setId(doctorLocation.getLocationId());
+			
+			esLocationRepository.save(esLocationDocument);
 			List<ESDoctorDocument> doctorDocuments = esDoctorRepository
 					.findByLocationId(doctorLocation.getLocationId());
 			for (ESDoctorDocument doctorDocument : doctorDocuments) {
 				String id = doctorDocument.getId();
 				BeanUtil.map(doctorLocation, doctorDocument);
+				doctorDocument.setGeoPoint(geoPoint);
 				doctorDocument.setId(id);
-				if (doctorDocument.getLatitude() != null && doctorDocument.getLongitude() != null)
-					doctorDocument
-							.setGeoPoint(new GeoPoint(doctorDocument.getLatitude(), doctorDocument.getLongitude()));
 				esDoctorRepository.save(doctorDocument);
 				transnationalService.addResource(new ObjectId(doctorLocation.getLocationId()), Resource.LOCATION, true);
 			}

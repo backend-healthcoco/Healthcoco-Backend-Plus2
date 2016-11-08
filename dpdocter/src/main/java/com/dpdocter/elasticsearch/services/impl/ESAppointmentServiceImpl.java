@@ -10,14 +10,8 @@ import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -38,6 +31,7 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
+import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
@@ -45,6 +39,7 @@ import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.response.LabResponse;
@@ -54,7 +49,6 @@ import com.dpdocter.enums.DoctorFacility;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import common.util.web.DPDoctorUtils;
 
@@ -68,6 +62,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
     @Autowired
     private ESDoctorRepository esDoctorRepository;
+
+    @Autowired
+    private ESLocationRepository esLocationRepository;
 
     @Autowired
     private ESSpecialityRepository esSpecialityRepository;
@@ -107,44 +104,44 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
     private List<AppointmentSearchResponse> searchLocations(List<AppointmentSearchResponse> response, String city,
 			String location, String latitude, String longitude, String searchTerm) {
 	    if(response.size() < 50){
-	    	List<ESDoctorDocument> esLocationDocuments = null;
+	    	List<ESLocationDocument> esLocationDocuments = null;
 		    if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			if (DPDoctorUtils.allStringsEmpty(city, location)) {
 			    if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
-				esLocationDocuments = esDoctorRepository.findByLocationName(searchTerm);
+				esLocationDocuments = esLocationRepository.findByLocationName(searchTerm);
 			    else {
 				if (latitude != null && longitude != null){
 					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"))
 							.must(QueryBuilders.matchPhrasePrefixQuery("locationName", searchTerm)).must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
-					esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(), ESDoctorDocument.class);
+					esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(), ESLocationDocument.class);
 				}
 			    }
 			} else {
 			    if (city != null && location != null)
-				    esLocationDocuments = esDoctorRepository.findByCityLocationName(city, location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+				    esLocationDocuments = esLocationRepository.findByCityLocationName(city, location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 			    else if (city != null)
-			    	esLocationDocuments = esDoctorRepository.findByCityLocationName(city, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+			    	esLocationDocuments = esLocationRepository.findByCityLocationName(city, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 			    else if (location != null)
-			    	esLocationDocuments = esDoctorRepository.findByLocationLocationName(location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+			    	esLocationDocuments = esLocationRepository.findByLocationLocationName(location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 			}
 		    } else {
 			if (DPDoctorUtils.allStringsEmpty(city, location)) {
 			    if (latitude != null && longitude != null){
 			    	BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km")).must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
-					esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(), ESDoctorDocument.class);	
+					esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(), ESLocationDocument.class);	
 			    } else {
 			    }
 			    if (city != null && location != null)
-			    	esLocationDocuments = esDoctorRepository.findLocationByCityLocation(city, location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+			    	esLocationDocuments = esLocationRepository.findLocationByCityLocation(city, location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 			    else if (city != null)
-			    	esLocationDocuments = esDoctorRepository.findLocationByCity(city, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+			    	esLocationDocuments = esLocationRepository.findLocationByCity(city, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 			    else if (location != null)
-			    	esLocationDocuments = esDoctorRepository.findLocationByLocation(location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+			    	esLocationDocuments = esLocationRepository.findLocationByLocation(location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 			}
 		    }	    
 
 		    if (esLocationDocuments != null)
-				for (ESDoctorDocument locationDocument : esLocationDocuments) {
+				for (ESLocationDocument locationDocument : esLocationDocuments) {
 				    if (locationDocument.getIsClinic()) {
 				    	if(response.size() >= 50)break;
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
@@ -156,7 +153,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 
 			    if (esLocationDocuments != null)
-				for (ESDoctorDocument locationDocument : esLocationDocuments) {
+				for (ESLocationDocument locationDocument : esLocationDocuments) {
 					if(response.size() >= 50)break;
 				    if (locationDocument.getIsLab()) {
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
@@ -467,13 +464,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 	    }
 	    if(esLabTestDocuments == null || esLabTestDocuments.isEmpty()){return null;}
-	    List<ESDoctorDocument> doctorDocument = null;
+	    List<ESLocationDocument> esLocationDocuments = null;
 		
         @SuppressWarnings("unchecked")
     	Collection<String> locationIds = CollectionUtils.collect(esLabTestDocuments, new BeanToPropertyValueTransformer("locationId"));
     	
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("isLocationListed", true)).
-        		must(QueryBuilders.termsQuery("locationId", locationIds)).must(QueryBuilders.termQuery("isLab", true));
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("isLocationListed", true))
+        		.must(QueryBuilders.termsQuery("locationId", locationIds))
+        		.must(QueryBuilders.termQuery("isLab", true));
         if(booking != null && booking)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.BOOK.getType()));
 	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.CALL.getType()));
 
@@ -493,50 +491,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 
         boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
+	            
+        SearchQuery searchQuery = null;
+	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
+	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
+		esLocationDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLocationDocument.class);
 	    
-	    SearchQuery searchQuery = null;
-	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().addAggregation(AggregationBuilders
-				.terms("keys")
-				.field("locationId")
-				.size(size)
-				.subAggregation(AggregationBuilders.topHits("hits").setSize(1))
-				.subAggregation(AggregationBuilders.topHits("nexthits").setFrom(size*(page)).setSize(size)))	    		
-	    		.withIndices("doctors_in").withTypes("doctors")
-		.withQuery(boolQueryBuilder)
-		.withPageable(new PageRequest(page, size))
-		.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC))
-	    .build();
-	 
-	    else searchQuery = new NativeSearchQueryBuilder()		
-	    		.addAggregation(AggregationBuilders
-	    				.terms("keys")
-	    				.field("locationId")
-	    				.size(0)
-	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
-	    		.withIndices("doctors_in").withTypes("doctors")
-	    		.withQuery(boolQueryBuilder)
-	    		.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC))
-	    		.build();
-			
-	    SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {
-	        @Override
-	        public SearchResponse extract(SearchResponse response) {
-	        	return response;
-	        }
-	    });
-	    doctorDocument = new ArrayList<ESDoctorDocument>();
-	    StringTerms hits = searchResponse.getAggregations().get("keys");
-	    List<Bucket> buckets = hits.getBuckets();
-	    if(buckets != null && !buckets.isEmpty())
-	    for(Bucket bucket : buckets){
-	    	InternalTopHits topHits = bucket.getAggregations().get("nexthits");
-	    	SearchHit searchHit = topHits.getHits().getHits()[0];
-	    	ObjectMapper objectMapper = new ObjectMapper();
-	    	ESDoctorDocument esDoctorDocument = objectMapper.convertValue(searchHit.getSource(), ESDoctorDocument.class);
-	    	doctorDocument.add(esDoctorDocument);
-	    }
-	    if (doctorDocument != null && !doctorDocument.isEmpty()) {
-			for (ESDoctorDocument document : doctorDocument) {
+	    if (esLocationDocuments != null && !esLocationDocuments.isEmpty()) {
+			for (ESLocationDocument document : esLocationDocuments) {
 				LabResponse labResponse = new LabResponse();
 				BeanUtil.map(document, labResponse);
 				List<String> images = new ArrayList<String>();
