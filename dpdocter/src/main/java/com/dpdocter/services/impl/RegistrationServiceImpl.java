@@ -607,11 +607,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 					logger.error("Incorrect User Id");
 					throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 				}
-				BeanUtil.map(userCollection, registeredPatientDetails);
 				userCollection.setFirstName(request.getLocalPatientName());
 				userCollection.setIsActive(true);
 				userCollection.setEmailAddress(request.getEmailAddress());
 				userCollection = userRepository.save(userCollection);
+				BeanUtil.map(userCollection, registeredPatientDetails);
 				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId,
 						doctorObjectId, locationObjectId, hospitalObjectId);
 				if (patientCollection != null) {
@@ -2007,9 +2007,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 				roleCollection = new RoleCollection();
 				BeanUtil.map(request, roleCollection);
 				roleCollection.setCreatedTime(new Date());
-				LocationCollection locationCollection = locationRepository
-						.findOne(new ObjectId(request.getLocationId()));
-				roleCollection.setCreatedBy(locationCollection.getLocationName());
+				if(!DPDoctorUtils.allStringsEmpty(request.getLocationId())){
+					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+					roleCollection.setCreatedBy(locationCollection.getLocationName());
+				}else{
+					roleCollection.setCreatedBy("ADMIN");
+				}
 			} else {
 				roleCollection = roleRepository.findOne(new ObjectId(request.getId()));
 				if (roleCollection == null) {
@@ -2041,7 +2044,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	private void checkIfRoleAlreadyExist(String role, String locationId, String hospitalId) {
 		try {
-			Integer count = roleRepository.countByRole(role, new ObjectId(locationId), new ObjectId(hospitalId));
+			Integer count = 0;
+			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+				count = roleRepository.countByRole(role, new ObjectId(locationId), new ObjectId(hospitalId));
+			else 
+				count = roleRepository.countByRole(role);
 			if (count != null && count > 0) {
 				logger.error("Role already exist with this name");
 				throw new BusinessException(ServiceError.Unknown, "Role already exist with this name");
@@ -2060,7 +2067,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<Role> response = null;
 
 		try {
-			response = getCustomRole(page, size, locationId, hospitalId, updatedTime, role);
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case CUSTOM:
+				response = getCustomRole(page, size, locationId, hospitalId, updatedTime, role);
+				break;
+			case BOTH:
+				response = getCustomGlobalRole(page, size, locationId, hospitalId, updatedTime, role);
+				break;
+			default:
+				break;
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2068,6 +2086,63 @@ public class RegistrationServiceImpl implements RegistrationService {
 		}
 		return response;
 
+	}
+
+	private List<Role> getCustomGlobalRole(int page, int size, String locationId, String hospitalId, String updatedTime, String role) {
+		List<Role> response = null;
+		List<RoleCollection> roleCollections = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			if (DPDoctorUtils.anyStringEmpty(role)) {
+				if (size > 0)
+					roleCollections = roleRepository.findCustomGlobalRole(new ObjectId(locationId), new ObjectId(hospitalId),
+							new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else
+					roleCollections = roleRepository.findCustomGlobalRole(new ObjectId(locationId), new ObjectId(hospitalId),
+							new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+			} else {
+				if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
+					if (size > 0)
+						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
+								new ObjectId(hospitalId), new Date(createdTimeStamp), RoleEnum.DOCTOR.getRole(),
+								new PageRequest(page, size, Direction.DESC, "createdTime"));
+					else
+						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
+								new ObjectId(hospitalId), new Date(createdTimeStamp), RoleEnum.DOCTOR.getRole(),
+								new Sort(Sort.Direction.DESC, "createdTime"));
+				} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
+					if (size > 0)
+						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
+								new ObjectId(hospitalId), new Date(createdTimeStamp),
+								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+										RoleEnum.HOSPITAL_ADMIN.getRole()),
+								new PageRequest(page, size, Direction.DESC, "createdTime"));
+					else
+						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
+								new ObjectId(hospitalId), new Date(createdTimeStamp),
+								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+										RoleEnum.HOSPITAL_ADMIN.getRole()),
+								new Sort(Sort.Direction.DESC, "createdTime"));
+				}
+			}
+
+			if (roleCollections != null) {
+				response = new ArrayList<Role>();
+				for (RoleCollection roleCollection : roleCollections) {
+					Role roleObj = new Role();
+					AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(),
+							roleCollection.getLocationId(), roleCollection.getHospitalId());
+					BeanUtil.map(roleCollection, roleObj);
+					roleObj.setAccessModules(accessControl.getAccessModules());
+					response.add(roleObj);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 
 	private List<Role> getCustomRole(int page, int size, String locationId, String hospitalId, String updatedTime,
