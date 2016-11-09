@@ -21,7 +21,9 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.DiagnosticTest;
+import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.LabTest;
+import com.dpdocter.elasticsearch.beans.DrugDocument;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
@@ -137,11 +139,41 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
 					searchTerm, category);
 			break;
+		case WEBBOTH:
+			response = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm, category);
+			break;
 		default:
 			break;
 		}
 		return response;
 
+	}
+
+	private List<DrugDocument> getCustomGlobalDrugsForWeb(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category) {
+		List<DrugDocument> response = null;
+		try {
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			List<ESDrugDocument> drugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+			if(drugDocuments != null && !drugDocuments.isEmpty()){
+				response = new ArrayList<DrugDocument>();
+				for(ESDrugDocument esDrugDocument : drugDocuments){
+					String drugTypeStr = esDrugDocument.getDrugType();
+					esDrugDocument.setDrugType(null);
+					DrugDocument drugDocument = new DrugDocument();
+					BeanUtil.map(esDrugDocument, drugDocument);
+					DrugType drugType = new DrugType();drugType.setId(esDrugDocument.getDrugTypeId());drugType.setType(drugTypeStr);
+					drugDocument.setDrugType(drugType);
+					response.add(drugDocument);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
 	}
 
 	private List<ESDoctorDrugDocument> getFavouritesDrugs(int page, int size, String doctorId, String locationId,
