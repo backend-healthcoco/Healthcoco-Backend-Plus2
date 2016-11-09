@@ -3,7 +3,9 @@
 <suite name="Suite">
   <test name="Test">
     <classes>
-      <class name="com.dpDoctor.testCases.MongoDb"/>
+      <class name="com.dpdocter.integrationTest.AdminServiceTest"/>
+      <class name="com.dpdocter.integrationTest.PrescriptionServiceTest"/>
+      <class name="com.dpdocter.integrationTest.LoginServiceTest"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->

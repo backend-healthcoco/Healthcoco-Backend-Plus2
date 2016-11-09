@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/data/mongo
+    http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd">
+	<mongo:mongo id="mongo" host="${db.host}" port="${db.port}"
+		write-concern="SAFE">
+		<mongo:options connect-timeout="${db.connectTimeout}"
+			connections-per-host="${db.connectionPerHost}"
+			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" />
+	</mongo:mongo>
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg ref="mongo" />
+		<constructor-arg name="databaseName" value="${db.name}" />
+	</bean>
+
+	<bean id="mongeez" class="org.mongeez.MongeezRunner" depends-on="mongo">
+		<property name="mongo" ref="mongo" />
+		<property name="executeEnabled" value="true" />
+		<property name="dbName" value="${db.name}" />
+		<property name="file" value="classpath:migration/mongeez.xml" />
+	</bean>
+</beans>
