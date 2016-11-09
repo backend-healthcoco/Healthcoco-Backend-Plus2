@@ -636,7 +636,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         	jrDesignTextField = new JRDesignTextField();
             jrDesignTextField.setExpression(new JRDesignExpression("$P{Direction}"));
             jrDesignTextField.setX(39+drugWidth+dosageWidth);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(directionWidth);
-            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
             band.addElement(jrDesignTextField);
         }
         
