@@ -208,6 +208,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Value(value = "${mail.appointment.cancel.subject}")
 	private String appointmentCancelMailSubject;
 
+	@Value(value = "${mail.appointment.confirm.to.doctor.subject}")
+	private String appointmentConfirmToDoctorMailSubject;
+
+	@Value(value = "${mail.appointment.request.to.doctor.subject}")
+	private String appointmentRequestToDoctorMailSubject;
+
+	@Value(value = "${mail.appointment.confirm.to.patient.subject}")
+	private String appointmentConfirmToPatientMailSubject;
+
+	@Value(value = "${mail.appointment.reschedule.to.doctor.subject}")
+	private String appointmentRescheduleToDoctorMailSubject;
+
+	@Value(value = "${mail.appointment.reschedule.to.patient.subject}")
+	private String appointmentRescheduleToPatientMailSubject;
+
 	@Autowired
 	UserRoleRepository UserRoleRepository;
 
@@ -976,21 +991,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 		case "CONFIRMED_APPOINTMENT_TO_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
 					"confirmAppointmentToPatient.vm");
-			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+			mailService.sendEmail(emailAddress, appointmentConfirmToPatientMailSubject+" "+dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
 					"confirmAppointmentToDoctorByPatient.vm");
-			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+			mailService.sendEmail(emailAddress, appointmentConfirmToDoctorMailSubject+" "+dateTime, body, null);
 		}
 			break;
 
 		case "CONFIRMED_APPOINTMENT_REQUEST_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
 					"appointmentRequestToDoctorByPatient.vm");
-			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+			mailService.sendEmail(emailAddress, appointmentRequestToDoctorMailSubject+" "+dateTime, body, null);
 		}
 			break;
 
@@ -1025,14 +1040,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 		 case "RESCHEDULE_APPOINTMENT_TO_PATIENT" :{
 			 String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
 						"appointmentCancelToPatientByDoctor.vm");
-				mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+				mailService.sendEmail(emailAddress, appointmentRescheduleToPatientMailSubject+" "+dateTime, body, null);
 		 }
 		 break;
 
 		case "RESCHEDULE_APPOINTMENT_TO_DOCTOR": {
 			String body = mailBodyGenerator.generateAppointmentEmailBody(doctorName, patientName, dateTime, clinicName,
 					"appointmentRescheduleByDoctorToDoctor.vm");
-			mailService.sendEmail(emailAddress, appointmentCancelMailSubject, body, null);
+			mailService.sendEmail(emailAddress, appointmentRescheduleToDoctorMailSubject+" "+dateTime, body, null);
 		}
 			break;
 
