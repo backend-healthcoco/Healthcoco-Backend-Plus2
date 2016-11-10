@@ -155,9 +155,9 @@ public class BlogServicesImpl implements BlogService {
 			if (userCollection != null) {
 				BlogCollection blogCollection = blogRepository.findOne(new ObjectId(id));
 				if (blogCollection.getLikes() != null)
-				set.addAll(blogCollection.getLikes());
+					set.addAll(blogCollection.getLikes());
 				present = set.add(userObjectId);
-				if (present == false)
+				if (!present)
 					set.remove(userObjectId);
 				blogCollection.setLikes(set);
 				blogCollection = blogRepository.save(blogCollection);

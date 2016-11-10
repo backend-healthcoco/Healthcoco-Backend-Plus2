@@ -152,10 +152,12 @@ public interface PathProxy {
 		public static final String CHANGE_PATIENT_NUMBER = "/patient/changeNumber/{oldMobileNumber}/{newMobileNumber}/{otpNumber}";
 
 		public static final String CHECK_PATIENT_NUMBER = "/patient/checkNumber/{oldMobileNumber}/{newMobileNumber}";
-		
+
 		public static final String REGISTER_PATIENTS_IN_BULK = "/registerPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL = "/updatePIDOnClinicLevel";
+		public static final String ADD_SUGGESTION = "/suggestion/add";
+		public static final String GET_SUGGESTION = "/getSuggestion/{userId}";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -370,7 +372,7 @@ public interface PathProxy {
 		public static final String DELETE_ADVICE = "/advice/{adviceId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_CUSTOM_DRUG_TO_FAV = "/makeCustomDrugFavourite";
-		
+
 		public static final String ADD_FAVOURITE_DRUG = "/favouriteDrug/add";
 
 		public static final String ADD_GENERIC_NAME_IN_DRUGS = "/addGenericNameInDrugs";
@@ -635,7 +637,7 @@ public interface PathProxy {
 		public static final String REARRANGE_PATIENT_IN_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}/{patientId}/{appointmentId}/{sequenceNo}/rearrange";
 
 		public static final String GET_PATIENT_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String GET_APPOINTMENT_ID = "/{appointmentId}/view";
 	}
 
@@ -810,17 +812,16 @@ public interface PathProxy {
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
 
 	}
-	
+
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
-	
+
 	public interface BlogsUrls {
 		public static final String GET_BLOGS = "/getBlogs";
 
 		public static final String GET_BLOG_BY_ID = "/getBlog/{blogId}";
-		
-		public static final String LIKE_THE_BLOG="/likeTheBlog/{blogId}/{userId}";
-		
+
+		public static final String LIKE_THE_BLOG = "/likeTheBlog/{blogId}/{userId}";
 
 	}
-	
+
 }

@@ -37,6 +37,7 @@ import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
+import com.dpdocter.beans.Suggestion;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -54,6 +55,7 @@ import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -75,6 +77,9 @@ public class RegistrationApi {
 
 	@Autowired
 	private RegistrationService registrationService;
+
+	@Autowired
+	private SuggestionService suggestionService;
 
 	@Autowired
 	private ESRegistrationService esRegistrationService;
@@ -320,17 +325,17 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, notes = PathProxy.RegistrationUrls.UPDATE_PATIENT_ID_GENERATOR_LOGIC, response = Response.class)
-	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("locationId") String locationId, @PathParam("patientInitial") String patientInitial,
-			@PathParam("patientCounter") int patientCounter) {
-		if (DPDoctorUtils.anyStringEmpty(locationId, patientInitial,
-				new Integer(patientCounter).toString())) {
+	public Response<Boolean> updatePatientInitialAndCounter(@PathParam("locationId") String locationId,
+			@PathParam("patientInitial") String patientInitial, @PathParam("patientCounter") int patientCounter) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, patientInitial, new Integer(patientCounter).toString())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		} else if (patientInitial.matches(".*\\d+.*")) {
 			logger.warn("Invalid Patient Initial");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Patient Initial");
 		}
-		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(locationId, patientInitial, patientCounter);
+		Boolean updateResponse = registrationService.updatePatientInitialAndCounter(locationId, patientInitial,
+				patientCounter);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(updateResponse);
 		return response;
@@ -641,8 +646,10 @@ public class RegistrationApi {
 				BeanUtil.map(patient.getPatient(), esPatientDocument);
 			}
 			BeanUtil.map(patient, esPatientDocument);
-			if (patient.getBackendPatientId() != null)esPatientDocument.setId(patient.getBackendPatientId());
-			if (patient.getReferredBy() != null)esPatientDocument.setReferredBy(patient.getReferredBy().getId());
+			if (patient.getBackendPatientId() != null)
+				esPatientDocument.setId(patient.getBackendPatientId());
+			if (patient.getReferredBy() != null)
+				esPatientDocument.setReferredBy(patient.getReferredBy().getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -660,8 +667,9 @@ public class RegistrationApi {
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_ROLE, notes = PathProxy.RegistrationUrls.ADD_EDIT_ROLE)
 	public Response<Role> addRole(Role request) {
-		if (request == null
-				|| DPDoctorUtils.anyStringEmpty(request.getRole())//, request.getLocationId(), request.getHospitalId()
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getRole())// ,
+																				// request.getLocationId(),
+																				// request.getHospitalId()
 				|| request.getAccessModules() == null || request.getAccessModules().isEmpty()) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -844,8 +852,8 @@ public class RegistrationApi {
 
 	@Path(value = PathProxy.RegistrationUrls.REGISTER_PATIENTS_IN_BULK)
 	@GET
-	public Response<Boolean> registerPatients(@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Boolean> registerPatients(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -859,10 +867,39 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
 	@GET
 	public Response<Boolean> updatePIDOnClinicLevel() {
-		
+
 		Boolean changePatientNumberResponse = registrationService.updatePIDOnClinicLevel();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(changePatientNumberResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.ADD_SUGGESTION)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_SUGGESTION, notes = PathProxy.RegistrationUrls.ADD_SUGGESTION)
+	public Response<Suggestion> addSuggestion(Suggestion request) {
+		if (request == null) {
+			logger.warn(invalidInput);
+			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+
+		}
+		Suggestion suggestion = suggestionService.AddEditSuggestion(request);
+		Response<Suggestion> response = new Response<Suggestion>();
+		response.setData(suggestion);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.GET_SUGGESTION)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_SUGGESTION, notes = PathProxy.RegistrationUrls.GET_SUGGESTION)
+	public Response<?> getSuggestion(@QueryParam("page") int page, @QueryParam("size") int size,
+			@PathParam("userId") String userId, @QueryParam("suggetionTypesuggetionType") String suggetionType,
+			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm) {
+
+		List<Suggestion> suggestions = suggestionService.getSuggestion(page, size, userId, suggetionType, state,
+				searchTerm);
+		Response<String> response = new Response<String>();
+		response.setDataList(suggestions);
 		return response;
 	}
 
