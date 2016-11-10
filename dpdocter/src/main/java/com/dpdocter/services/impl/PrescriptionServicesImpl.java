@@ -328,44 +328,46 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Transactional
 	public Drug editDrug(DrugAddEditRequest request) {
 		Drug response = null;
-		DrugCollection drugCollection = new DrugCollection();
-		BeanUtil.map(request, drugCollection);
 		try {
-			DrugCollection oldDrug = drugRepository.findOne(new ObjectId(request.getId()));
-			drugCollection.setCreatedBy(oldDrug.getCreatedBy());
-			drugCollection.setCreatedTime(oldDrug.getCreatedTime());
-			drugCollection.setDiscarded(oldDrug.getDiscarded());
-			drugCollection.setDrugCode(oldDrug.getDrugCode());
-			drugCollection.setGenericCodes(oldDrug.getGenericCodes());
-			drugCollection.setMRP(oldDrug.getMRP());
-			drugCollection.setCompanyName(oldDrug.getCompanyName());
-			drugCollection.setPackSize(oldDrug.getPackSize());
-			if (drugCollection.getDrugType() != null) {
-				if (drugCollection.getDrugType().getId() == null)
-					drugCollection.setDrugType(null);
-				else {
-					DrugTypeCollection drugTypeCollection = drugTypeRepository
-							.findOne(new ObjectId(drugCollection.getDrugType().getId()));
-					if (drugTypeCollection != null) {
-						DrugType drugType = new DrugType();
-						BeanUtil.map(drugTypeCollection, drugType);
-						drugCollection.setDrugType(drugType);
+			DrugCollection drugCollection = drugRepository.findOne(new ObjectId(request.getId()));
+			if(drugCollection.getDoctorId() != null && drugCollection.getLocationId() != null && drugCollection.getHospitalId() != null){
+				drugCollection.setUpdatedTime(new Date());
+				drugCollection.setDuration(request.getDuration());
+				drugCollection.setDosage(request.getDosage());
+				drugCollection.setDosageTime(request.getDosageTime());
+				drugCollection.setDirection(request.getDirection());
+				if (drugCollection.getDrugType() != null) {
+					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
+						drugCollection.setDrugType(null);
+					else {
+						DrugTypeCollection drugTypeCollection = drugTypeRepository
+								.findOne(new ObjectId(drugCollection.getDrugType().getId()));
+						if (drugTypeCollection != null) {
+							DrugType drugType = new DrugType();
+							BeanUtil.map(drugTypeCollection, drugType);
+							drugCollection.setDrugType(drugType);
+						}
 					}
 				}
+				drugCollection = drugRepository.save(drugCollection);
+				transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+				if (drugCollection != null) {
+					ESDrugDocument esDrugDocument = new ESDrugDocument();
+					BeanUtil.map(drugCollection, esDrugDocument);
+					if (drugCollection.getDrugType() != null) {
+						esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+						esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+					}
+					esPrescriptionService.addDrug(esDrugDocument);
+				}
 			}
-			if (drugCollection.getStrength() != null && drugCollection.getStrength().getStrengthUnit() != null) {
-				if (drugCollection.getStrength().getStrengthUnit().getId() == null)
-					drugCollection.getStrength().setStrengthUnit(null);
-			}
-			drugCollection = drugRepository.save(drugCollection);
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-					drugCollection.getId(), drugCollection.getDoctorId(), drugCollection.getLocationId(),
-					drugCollection.getHospitalId());
-			if (doctorDrugCollection == null) {
-				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(), drugCollection.getDoctorId(),
-						drugCollection.getLocationId(), drugCollection.getHospitalId(), 1, false,
-						drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(),
-						drugCollection.getDirection(), drugCollection.getGenericNames(), drugCollection.getCreatedBy());
+			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
+					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),	new ObjectId(request.getHospitalId()));
+			if(doctorDrugCollection == null){
+				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
+						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1,
+						false, drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
+						drugCollection.getGenericNames(), drugCollection.getCreatedBy());
 				doctorDrugCollection.setCreatedTime(new Date());
 			} else {
 				doctorDrugCollection.setDirection(request.getDirection());
