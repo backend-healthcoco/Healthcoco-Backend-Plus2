@@ -3875,6 +3875,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 			transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+			if (drugCollection != null) {
+				ESDrugDocument esDrugDocument = new ESDrugDocument();
+				BeanUtil.map(drugCollection, esDrugDocument);
+				if (drugCollection.getDrugType() != null) {
+					esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+					esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+				}
+				esPrescriptionService.addDrug(esDrugDocument);
+			}
+
 			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
 			if (doctorDrugCollection != null) {
 				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();

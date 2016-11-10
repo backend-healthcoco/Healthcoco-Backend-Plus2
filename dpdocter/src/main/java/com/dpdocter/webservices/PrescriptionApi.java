@@ -938,17 +938,6 @@ public class PrescriptionApi {
 		}
 		Drug drugAddEditResponse = prescriptionServices.addFavouriteDrug(request);
 
-		transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
-		if (drugAddEditResponse != null) {
-			ESDrugDocument esDrugDocument = new ESDrugDocument();
-			BeanUtil.map(drugAddEditResponse, esDrugDocument);
-			if (drugAddEditResponse.getDrugType() != null) {
-				esDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-				esDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-			}
-			esPrescriptionService.addDrug(esDrugDocument);
-		}
-
 		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);
 		return response;
