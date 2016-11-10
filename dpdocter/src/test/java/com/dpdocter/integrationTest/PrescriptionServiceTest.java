@@ -46,22 +46,21 @@ public class PrescriptionServiceTest extends AbstractTestNGSpringContextTests {
 	private static String doctorId = "5794add2e4b01f1d73f9b74f";
 	private static String hospitalId = "5794add2e4b01f1d73f9b750";
 	private static String locationId = "5794add3e4b01f1d73f9b751";
+	/*
+	 * @Test public void addDrugType() { DrugTypeAddEditRequest request = new
+	 * DrugTypeAddEditRequest(); request.setDoctorId(doctorId);
+	 * request.setHospitalId(hospitalId); request.setLocationId(locationId);
+	 * request.setType("TAB"); DrugTypeAddEditResponse response =
+	 * prescriptionServices.addDrugType(request);
+	 * AssertJUnit.assertEquals(response.getDoctorId(), request.getDoctorId());
+	 * AssertJUnit.assertEquals(response.getHospitalId(),
+	 * request.getHospitalId());
+	 * AssertJUnit.assertEquals(response.getLocationId(),
+	 * request.getLocationId()); AssertJUnit.assertEquals(response.getType(),
+	 * request.getType()); }
+	 */
 
-	@Test
-	public void addDrugType() {
-		DrugTypeAddEditRequest request = new DrugTypeAddEditRequest();
-		request.setDoctorId(doctorId);
-		request.setHospitalId(hospitalId);
-		request.setLocationId(locationId);
-		request.setType("TAB");
-		DrugTypeAddEditResponse response = prescriptionServices.addDrugType(request);
-		AssertJUnit.assertEquals(response.getDoctorId(), request.getDoctorId());
-		AssertJUnit.assertEquals(response.getHospitalId(), request.getHospitalId());
-		AssertJUnit.assertEquals(response.getLocationId(), request.getLocationId());
-		AssertJUnit.assertEquals(response.getType(), request.getType());
-	}
-
-	@Test
+	/*@Test
 	public void adddrugtest() {
 		UserCollection userCollection = new UserCollection();
 		userCollection.setFirstName("Harish");
@@ -93,7 +92,7 @@ public class PrescriptionServiceTest extends AbstractTestNGSpringContextTests {
 		AssertJUnit.assertEquals(response.getDosage(), request.getDosage());
 
 	}
-
+*/
 /*	@Test
 	public void prescriptionTest() {
 		UserCollection userCollection = new UserCollection();
