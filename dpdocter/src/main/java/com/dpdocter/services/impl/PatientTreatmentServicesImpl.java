@@ -278,13 +278,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	@Transactional
-	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request) {
+	public PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,
+			Boolean isAppointmentAdd) {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
 		;
 		Appointment appointment = null;
 		try {
-			if (request.getAppointmentRequest() != null) {
+			if (request.getAppointmentRequest() != null && isAppointmentAdd) {
 				appointment = addTreatmentAppointment(request.getAppointmentRequest());
 				if (appointment != null) {
 					request.setAppointmentId(appointment.getAppointmentId());
@@ -555,9 +556,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId);
 			if (!isOTPVerified) {
-				if (!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
@@ -633,8 +636,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					.is(patientObjectId);
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-				if (!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);

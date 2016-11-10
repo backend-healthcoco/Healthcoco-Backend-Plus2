@@ -16,7 +16,7 @@ import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.MailResponse;
 
 public interface ClinicalNotesService {
-    ClinicalNotes addNotes(ClinicalNotesAddRequest request);
+    ClinicalNotes addNotes(ClinicalNotesAddRequest request,Boolean isAppointmentAdd);
 
     ClinicalNotes getNotesById(String id);
 

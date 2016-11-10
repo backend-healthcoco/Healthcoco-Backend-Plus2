@@ -185,19 +185,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
+	public ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd) {
 		ClinicalNotes clinicalNotes = null;
 		List<ObjectId> diagnosisIds = null;
 		List<ObjectId> diagramIds = null;
 		Appointment appointment = null;
 		Date createdTime = new Date();
-
 		try {
-
-			if (request.getAppointmentRequest() != null) {
-				appointment = addNotesAppointment(request.getAppointmentRequest());
+			if (isAppointmentAdd) {
+				if (request.getAppointmentRequest() != null) {
+					appointment = addNotesAppointment(request.getAppointmentRequest());
+				}
 			}
-
 			String createdBy = null;
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			if (appointment != null) {
@@ -216,7 +215,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
-					if(!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))diagnosisIds.add(new ObjectId(diagnosis.getId()));
+					if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))
+						diagnosisIds.add(new ObjectId(diagnosis.getId()));
 				}
 			}
 
@@ -323,7 +323,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
 					if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-						if(!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))diagnosisIds.add(new ObjectId(diagnosis.getId()));
+						if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))
+							diagnosisIds.add(new ObjectId(diagnosis.getId()));
 					}
 				}
 			}
@@ -409,7 +410,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		List<ClinicalNotesCollection> clinicalNotesCollections = null;
 		List<ClinicalNotes> clinicalNotes = null;
 		try {
-			
+
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -422,23 +423,34 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
-			if(!discarded)criteria.and("discarded").is(discarded);
-			if(inHistory)criteria.and("inHistory").is(inHistory);
-			
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+					.is(patientObjectId);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (inHistory)
+				criteria.and("inHistory").is(inHistory);
+
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
 			}
-			
+
 			Aggregation aggregation = null;
-			
-			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			
-			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesCollection.class);
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					ClinicalNotesCollection.class, ClinicalNotesCollection.class);
 			clinicalNotesCollections = aggregationResults.getMappedResults();
-			
+
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				clinicalNotes = new ArrayList<ClinicalNotes>();
 				for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
@@ -964,19 +976,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
-			boolean isOTPVerified) {
+	public Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
 			Criteria criteria = new Criteria("discarded").is(false);
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
-			}
-			else{
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
+					criteria.and("doctorId").is(doctorObjectId);
+			} else {
 				criteria.and("patientId").is(patientObjectId);
 			}
-			clinicalNotesCount = (int)mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
+			clinicalNotesCount = (int) mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1909,7 +1922,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} else
 			parameters.put("vitalSigns", null);
 
-		if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId()) && clinicalNotesCollection.getTime() != null){
+		if (parameters.get("followUpAppointment") == null
+				&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
+				&& clinicalNotesCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 			String _24HourTime = String.format("%02d:%02d", clinicalNotesCollection.getTime().getFromTime() / 60,
 					clinicalNotesCollection.getTime().getFromTime() % 60);
@@ -1918,16 +1933,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-			
+
 			Date _24HourDt = _24HourSDF.parse(_24HourTime);
-			String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(clinicalNotesCollection.getFromDate());
-			parameters.put("followUpAppointment", "Next Review on "+dateTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(clinicalNotesCollection.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on " + dateTime);
 		}
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, clinicalNotesCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(),
-				parameters);
+				patient, clinicalNotesCollection.getUniqueEmrId(), patient.getLocalPatientName(),
+				user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
@@ -1943,10 +1958,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
-						? printSettings.getPageSetup().getLeftMargin() : 20): 20;
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
 		Integer rightMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20): 20;
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
 		response = jasperReportService.createPDF(ComponentType.CLINICAL_NOTES, parameters, clinicalNotesA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
@@ -2216,4 +2233,5 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
+
 }

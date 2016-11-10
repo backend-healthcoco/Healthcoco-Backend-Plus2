@@ -49,6 +49,7 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
@@ -73,6 +74,7 @@ import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
@@ -162,6 +164,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Autowired
 	private DiagnosticTestRepository diagnosticTestRepository;
 
+	@Autowired
+	private AppointmentRepository appointmentRepository;
 	@Autowired
 	private UserRepository userRepository;
 
@@ -382,12 +386,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);
-			
-			Aggregation aggregation = Aggregation.newAggregation(
-						Aggregation.match(criteria),
-						Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(doctorObjectId);
+
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.group("patientId").max("visitedTime").as("visitedTime"),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "visitedTime")));
 
 			AggregationResults<PatientVisitCollection> groupResults = mongoTemplate.aggregate(aggregation,
 					PatientVisitCollection.class, PatientVisitCollection.class);
@@ -397,8 +401,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				@SuppressWarnings("unchecked")
 				List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(results,
 						new BeanToPropertyValueTransformer("id"));
-				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId,
-						locationId, hospitalId, page, size, "0", true, false);
+				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, page,
+						size, "0", true, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -423,13 +427,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria matchCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-			if(!DPDoctorUtils.anyStringEmpty(doctorId))matchCriteria.and("doctorId").is(doctorObjectId);
-			
+			Criteria matchCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId")
+					.is(hospitalObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				matchCriteria.and("doctorId").is(doctorObjectId);
+
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(matchCriteria),
-						Aggregation.group("patientId").count().as("total"),
-						Aggregation.project("total").and("patientId").previousOperation(),
-						Aggregation.sort(Sort.Direction.DESC, "total"));
+					Aggregation.group("patientId").count().as("total"),
+					Aggregation.project("total").and("patientId").previousOperation(),
+					Aggregation.sort(Sort.Direction.DESC, "total"));
 
 			AggregationResults<PatientVisitCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientVisitCollection.class, PatientVisitCollection.class);
@@ -440,7 +446,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				@SuppressWarnings("unchecked")
 				List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(patientTrackCollections,
 						new BeanToPropertyValueTransformer("patientId"));
-				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, page, size, "0", true, false);
+				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, page,
+						size, "0", true, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -468,7 +475,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getClinicalNote().setTime(appointment.getTime());
 					request.getClinicalNote().setFromDate(appointment.getFromDate());
 				}
-				ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote());
+				ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(),false);
 				if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 					clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 				}
@@ -488,7 +495,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getPrescription().setFromDate(appointment.getFromDate());
 				}
 				PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
-						.addPrescription(request.getPrescription());
+						.addPrescription(request.getPrescription(),false);
 				Prescription prescription = new Prescription();
 
 				List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
@@ -545,7 +552,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getTreatmentRequest().setFromDate(appointment.getFromDate());
 				}
 
-				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices.addEditPatientTreatment(request.getTreatmentRequest());
+				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
+						.addEditPatientTreatment(request.getTreatmentRequest(),false);
 
 				PatientTreatment patientTreatment = new PatientTreatment();
 				BeanUtil.map(patientTreatmentResponse, patientTreatment);
@@ -571,17 +579,25 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				response.setCreatedTime(patientVisitCollection.getCreatedTime());
 				response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 				response.setCreatedBy(patientVisitCollection.getCreatedBy());
-				if((response.getPatientTreatment() == null || response.getPatientTreatment().isEmpty()) && (patientVisitCollection.getTreatmentId() != null && !patientVisitCollection.getTreatmentId().isEmpty())){
-					List<PatientTreatment> list = patientTreatmentServices.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId()); 
+				if ((response.getPatientTreatment() == null || response.getPatientTreatment().isEmpty())
+						&& (patientVisitCollection.getTreatmentId() != null
+								&& !patientVisitCollection.getTreatmentId().isEmpty())) {
+					List<PatientTreatment> list = patientTreatmentServices
+							.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
 					response.setPatientTreatment(list);
 				}
-					
+
 				if (appointment != null) {
 					response.setAppointmentId(appointment.getAppointmentId());
 					response.setTime(appointment.getTime());
 					response.setFromDate(appointment.getFromDate());
 				} else {
 					response.setAppointmentId(patientVisitCollection.getAppointmentId());
+					AppointmentCollection appointmentCollection = appointmentRepository
+							.findByAppointmentId(patientVisitCollection.getAppointmentId());
+					response.setTime(appointmentCollection.getTime());
+					response.setFromDate(appointmentCollection.getFromDate());
+
 				}
 			}
 		} catch (Exception e) {
@@ -605,12 +621,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				visitedFors.add(CLINICAL_NOTES);
 				visitedFors.add(PRESCRIPTION);
 				visitedFors.add(REPORTS);
-			} else if(visitFor.equalsIgnoreCase(VisitedFor.TREATMENT.getVisitedFor())) {
+			} else if (visitFor.equalsIgnoreCase(VisitedFor.TREATMENT.getVisitedFor())) {
 				visitedFors.add(CLINICAL_NOTES);
 				visitedFors.add(PRESCRIPTION);
 				visitedFors.add(REPORTS);
 				visitedFors.add(VisitedFor.TREATMENT);
-			}else{
+			} else {
 				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
 			}
 
@@ -625,18 +641,27 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId).and("visitedFor").in(visitedFors);
-			
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+					.is(patientObjectId).and("visitedFor").in(visitedFors);
+
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
 			}
 			Aggregation aggregation = null;
-			
-			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			
-			AggregationResults<PatientVisitCollection> aggregationResults = mongoTemplate.aggregate(aggregation, PatientVisitCollection.class, PatientVisitCollection.class);
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<PatientVisitCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientVisitCollection.class, PatientVisitCollection.class);
 			patientVisitCollections = aggregationResults.getMappedResults();
 			if (patientVisitCollections != null) {
 				response = new ArrayList<PatientVisitResponse>();
@@ -824,25 +849,31 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
-		
-//		List<PatientTreatmentJasperDetails> patientTreatments = null;
-//		if (patientVisitCollection.getTreatmentId() != null) {
-//			patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
-//			for (ObjectId treatmentId : patientVisitCollection.getTreatmentId()) {
-//				if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
-//					patientTreatments = getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
-////					patientTreatments.add(patientTreatmentJasperDetails);
-//				}
-//			}
-//		}
-		if (patientVisitCollection.getTreatmentId() != null){
-			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository.findByIds(patientVisitCollection.getTreatmentId());
+
+		// List<PatientTreatmentJasperDetails> patientTreatments = null;
+		// if (patientVisitCollection.getTreatmentId() != null) {
+		// patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
+		// for (ObjectId treatmentId : patientVisitCollection.getTreatmentId())
+		// {
+		// if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
+		// patientTreatments =
+		// getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
+		//// patientTreatments.add(patientTreatmentJasperDetails);
+		// }
+		// }
+		// }
+		if (patientVisitCollection.getTreatmentId() != null) {
+			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository
+					.findByIds(patientVisitCollection.getTreatmentId());
 			String treatments = "";
-			for(PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections){
+			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
 				for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
-					if(DPDoctorUtils.anyStringEmpty(treatments))treatments = treatmentServicesCollection.getName();
-					else treatments = treatments + ", "+treatmentServicesCollection.getName();
+					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
+							.findOne(treatment.getTreatmentServiceId());
+					if (DPDoctorUtils.anyStringEmpty(treatments))
+						treatments = treatmentServicesCollection.getName();
+					else
+						treatments = treatments + ", " + treatmentServicesCollection.getName();
 				}
 			}
 			parameters.put("treatments", treatments);
@@ -878,7 +909,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		
+
 		response = jasperReportService.createPDF(ComponentType.VISITS, parameters, visitA4FileName, layout, pageSize,
 				topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),
@@ -887,61 +918,74 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
-//	private List<PatientTreatmentJasperDetails> getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object> parameters) {
-//		PatientTreatmentCollection patientTreatmentCollection = null;
-//		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
-//		try {
-//			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
-//			if (patientTreatmentCollection != null) {
-//				if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null
-//						&& patientTreatmentCollection.getLocationId() != null) {
-//					if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
-//						Boolean showTreatmentQuantity = false;
-//						int no = 0;
-//						patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
-//						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-//							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
-//							TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
-//							patientTreatments.setNo(++no);	
-////							treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
-//							patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
-//							if(treatment.getQuantity() != null){
-//								showTreatmentQuantity = true;
-//								String quantity = treatment.getQuantity().getValue()+" ";
-//								if(treatment.getQuantity().getType() != null)quantity= quantity+treatment.getQuantity().getType().getDuration();
-//								patientTreatments.setQuantity(quantity);
-//							}
-//							patientTreatmentJasperDetails.add(patientTreatments);
-//						}
-//					parameters.put("showTreatmentQuantity", showTreatmentQuantity);	
-//					if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
-//						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-//						String _24HourTime = String.format("%02d:%02d", patientTreatmentCollection.getTime().getFromTime() / 60,
-//								patientTreatmentCollection.getTime().getFromTime() % 60);
-//						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-//						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-//						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-//						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-//						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-//						
-//						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-//						String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(patientTreatmentCollection.getFromDate());
-//						parameters.put("followUpAppointment", "Next Review on "+dateTime);
-//					}
-//				}
-//			  }
-//			} else {
-//				logger.warn("Patient Treatment not found. Please check Id.");
-//				throw new BusinessException(ServiceError.NotFound,
-//						"Patient Treatment not found. Please check Id.");
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e);
-//			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-//		}
-//		return patientTreatmentJasperDetails;
-//	}
+	// private List<PatientTreatmentJasperDetails>
+	// getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object>
+	// parameters) {
+	// PatientTreatmentCollection patientTreatmentCollection = null;
+	// List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
+	// try {
+	// patientTreatmentCollection = patientTreamentRepository.findOne(new
+	// ObjectId(treatmentId));
+	// if (patientTreatmentCollection != null) {
+	// if (patientTreatmentCollection.getDoctorId() != null &&
+	// patientTreatmentCollection.getHospitalId() != null
+	// && patientTreatmentCollection.getLocationId() != null) {
+	// if (patientTreatmentCollection.getTreatments() != null &&
+	// !patientTreatmentCollection.getTreatments().isEmpty()){
+	// Boolean showTreatmentQuantity = false;
+	// int no = 0;
+	// patientTreatmentJasperDetails = new
+	// ArrayList<PatientTreatmentJasperDetails>();
+	// for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+	// PatientTreatmentJasperDetails patientTreatments = new
+	// PatientTreatmentJasperDetails();
+	// TreatmentServicesCollection treatmentServicesCollection =
+	// treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+	// patientTreatments.setNo(++no);
+	//// treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
+	// patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
+	// if(treatment.getQuantity() != null){
+	// showTreatmentQuantity = true;
+	// String quantity = treatment.getQuantity().getValue()+" ";
+	// if(treatment.getQuantity().getType() != null)quantity=
+	// quantity+treatment.getQuantity().getType().getDuration();
+	// patientTreatments.setQuantity(quantity);
+	// }
+	// patientTreatmentJasperDetails.add(patientTreatments);
+	// }
+	// parameters.put("showTreatmentQuantity", showTreatmentQuantity);
+	// if(parameters.get("followUpAppointment") == null &&
+	// !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId())
+	// && patientTreatmentCollection.getTime() != null){
+	// SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+	// String _24HourTime = String.format("%02d:%02d",
+	// patientTreatmentCollection.getTime().getFromTime() / 60,
+	// patientTreatmentCollection.getTime().getFromTime() % 60);
+	// SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+	// SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+	// sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+	// _24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+	// _12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+	//
+	// Date _24HourDt = _24HourSDF.parse(_24HourTime);
+	// String dateTime = _12HourSDF.format(_24HourDt) + ", "+
+	// sdf.format(patientTreatmentCollection.getFromDate());
+	// parameters.put("followUpAppointment", "Next Review on "+dateTime);
+	// }
+	// }
+	// }
+	// } else {
+	// logger.warn("Patient Treatment not found. Please check Id.");
+	// throw new BusinessException(ServiceError.NotFound,
+	// "Patient Treatment not found. Please check Id.");
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// logger.error(e);
+	// throw new BusinessException(ServiceError.Unknown, e.getMessage());
+	// }
+	// return patientTreatmentJasperDetails;
+	// }
 
 	@Override
 	public void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
@@ -1133,7 +1177,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("patientRightText", patientRightText);
 	}
 
-	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle, Map<String, Object> parameters) {
+	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
+			Map<String, Object> parameters) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		try {
@@ -1235,19 +1280,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					else
 						clinicalNotesJasperDetails.setDiagrams(null);
 				}
-				if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId()) && clinicalNotesCollection.getTime() != null){
+				if (parameters.get("followUpAppointment") == null
+						&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
+						&& clinicalNotesCollection.getTime() != null) {
 					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-					String _24HourTime = String.format("%02d:%02d", clinicalNotesCollection.getTime().getFromTime() / 60,
+					String _24HourTime = String.format("%02d:%02d",
+							clinicalNotesCollection.getTime().getFromTime() / 60,
 							clinicalNotesCollection.getTime().getFromTime() % 60);
 					SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 					SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 					_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 					_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-					
+
 					Date _24HourDt = _24HourSDF.parse(_24HourTime);
-					String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(clinicalNotesCollection.getFromDate());
-					parameters.put("followUpAppointment", "Next Review on "+dateTime);
+					String dateTime = _12HourSDF.format(_24HourDt) + ", "
+							+ sdf.format(clinicalNotesCollection.getFromDate());
+					parameters.put("followUpAppointment", "Next Review on " + dateTime);
 				}
 			} else {
 				logger.warn("Clinical Notes not found. Please check clinicalNotesId.");
@@ -1310,10 +1359,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue() : "")
 											: "";
-									String durationUnit = prescriptionItem.getDuration() != null
-											? (prescriptionItem.getDuration().getDurationUnit() != null
-													? (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getDurationUnit().getUnit())?
-															prescriptionItem.getDuration().getDurationUnit().getUnit() : "") : "")
+									String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem
+											.getDuration()
+											.getDurationUnit() != null
+													? (!DPDoctorUtils.anyStringEmpty(
+															prescriptionItem.getDuration().getDurationUnit().getUnit())
+																	? prescriptionItem.getDuration().getDurationUnit()
+																			.getUnit()
+																	: "")
+													: "")
 											: "";
 
 									String directions = "";
@@ -1350,19 +1404,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 					parameters.put("showIntructions", showIntructions);
 					parameters.put("showDirection", showDirection);
-					if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAppointmentId()) && prescriptionCollection.getTime() != null){
+					if (parameters.get("followUpAppointment") == null
+							&& !DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAppointmentId())
+							&& prescriptionCollection.getTime() != null) {
 						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-						String _24HourTime = String.format("%02d:%02d", prescriptionCollection.getTime().getFromTime() / 60,
+						String _24HourTime = String.format("%02d:%02d",
+								prescriptionCollection.getTime().getFromTime() / 60,
 								prescriptionCollection.getTime().getFromTime() % 60);
 						SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 						SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
 						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 						_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 						_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-						
+
 						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-						String dateTime = _12HourSDF.format(_24HourDt) + ", "+ sdf.format(prescriptionCollection.getFromDate());
-						parameters.put("followUpAppointment", "Next Review on "+dateTime);
+						String dateTime = _12HourSDF.format(_24HourDt) + ", "
+								+ sdf.format(prescriptionCollection.getFromDate());
+						parameters.put("followUpAppointment", "Next Review on " + dateTime);
 					}
 				}
 			} else {
@@ -1548,8 +1606,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimestamp)).and("visitedFor")
 					.in(visitedFors).and("patientId").is(patientObjectId);
 			if (!isOTPVerified) {
-				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
+					criteria.and("doctorId").is(doctorObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			Aggregation aggregation = null;
 			if (size > 0)
@@ -1616,8 +1676,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
-			boolean isOTPVerified) {
+	public int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer visitCount = 0;
 		try {
 			List<VisitedFor> visitedFors = new ArrayList<VisitedFor>();
@@ -1627,14 +1687,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			visitedFors.add(VisitedFor.TREATMENT);
 
 			Criteria criteria = new Criteria("discarded").is(false);
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
-			}
-			else{
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
+					criteria.and("doctorId").is(doctorObjectId);
+			} else {
 				criteria.and("patientId").is(patientObjectId);
 			}
-			visitCount = (int)mongoTemplate.count(new Query(criteria), PatientVisitCollection.class);
+			visitCount = (int) mongoTemplate.count(new Query(criteria), PatientVisitCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting Visits Count");

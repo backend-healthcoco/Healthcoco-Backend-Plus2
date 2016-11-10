@@ -383,7 +383,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request);
+		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request,true);
 
 		// patient track
 		if (prescriptionAddEditResponse != null) {

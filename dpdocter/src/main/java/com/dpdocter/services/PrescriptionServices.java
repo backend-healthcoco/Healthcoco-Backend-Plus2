@@ -47,7 +47,7 @@ public interface PrescriptionServices {
 	TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId,
 			String locationId);
 
-	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request);
+	PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request, Boolean isAppointmentAdd);
 
 	PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request);
 
@@ -64,8 +64,8 @@ public interface PrescriptionServices {
 	List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId,
 			String locationId, String updatedTime, boolean discarded);
 
-	Integer getPrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
-			boolean isOTPVerified);
+	Integer getPrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified);
 
 	TemplateAddEditResponseDetails addTemplateHandheld(TemplateAddEditRequest request);
 
@@ -141,7 +141,7 @@ public interface PrescriptionServices {
 	public Advice deleteAdvice(String adviceId, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
-//	Boolean makeCustomDrugFavourite();
+	// Boolean makeCustomDrugFavourite();
 
 	Drug addFavouriteDrug(DrugAddEditRequest request);
 

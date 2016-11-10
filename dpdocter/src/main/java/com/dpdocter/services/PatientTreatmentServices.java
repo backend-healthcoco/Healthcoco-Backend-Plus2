@@ -17,7 +17,7 @@ public interface PatientTreatmentServices {
 
 	TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request);
 
-	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request);
+	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,Boolean isAppointmentAdd);
 
 	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
