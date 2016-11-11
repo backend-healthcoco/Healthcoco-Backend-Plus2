@@ -712,13 +712,10 @@ public class RecordsServiceImpl implements RecordsService {
 			boolean isOTPVerified) {
 		Integer recordCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
 			if(!isOTPVerified){
 				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
-			}
-			else{
-				criteria.and("patientId").is(patientObjectId);
 			}
 			recordCount = (int)mongoTemplate.count(new Query(criteria), RecordsCollection.class);
 		} catch (Exception e) {

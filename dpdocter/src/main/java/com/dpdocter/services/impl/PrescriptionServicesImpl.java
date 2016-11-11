@@ -1375,14 +1375,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Integer prescriptionCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);;
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
 					criteria.and("doctorId").is(doctorObjectId);
-			} else {
-				criteria.and("patientId").is(patientObjectId);
 			}
 			prescriptionCount = (int) mongoTemplate.count(new Query(criteria), PrescriptionCollection.class);
 		} catch (Exception e) {

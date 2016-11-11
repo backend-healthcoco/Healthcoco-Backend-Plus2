@@ -980,14 +980,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
 					criteria.and("doctorId").is(doctorObjectId);
-			} else {
-				criteria.and("patientId").is(patientObjectId);
 			}
 			clinicalNotesCount = (int) mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
 		} catch (Exception e) {
