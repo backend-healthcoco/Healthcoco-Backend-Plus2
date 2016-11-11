@@ -75,6 +75,8 @@ public class DoctorClinicProfile {
 
 	private long rankingCount = 0;
 	
+	private Boolean isSendBirthdaySMS = true;	
+	
 	public String getId() {
 		return id;
 	}
@@ -370,5 +372,13 @@ public class DoctorClinicProfile {
 				+ isHomeServiceAvailable + ", locality=" + locality + ", timeZone=" + timeZone
 				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", roles="
 				+ roles + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount + "]";
+	}
+
+	public Boolean getIsSendBirthdaySMS() {
+		return isSendBirthdaySMS;
+	}
+
+	public void setIsSendBirthdaySMS(Boolean isSendBirthdaySMS) {
+		this.isSendBirthdaySMS = isSendBirthdaySMS;
 	}
 }
