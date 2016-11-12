@@ -58,8 +58,11 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private Boolean isDoctorListed = true;
 
 	@Field
-    private long rankingCount = 0;
-	
+	private long rankingCount = 0;
+
+	@Field
+	private Boolean isSendBirthdaySMS = true;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -163,7 +166,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setIsDoctorListed(Boolean isDoctorListed) {
 		this.isDoctorListed = isDoctorListed;
 	}
-	
 
 	public ConsultationFee getRevisitConsultationFee() {
 		return revisitConsultationFee;
@@ -179,6 +181,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setRankingCount(long rankingCount) {
 		this.rankingCount = rankingCount;
+	}
+
+	public Boolean getIsSendBirthdaySMS() {
+		return isSendBirthdaySMS;
+	}
+
+	public void setIsSendBirthdaySMS(Boolean isSendBirthdaySMS) {
+		this.isSendBirthdaySMS = isSendBirthdaySMS;
 	}
 
 	@Override

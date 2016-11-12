@@ -102,7 +102,7 @@ public class ClinicalNotesApi {
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     }
 	
-    ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request);
+    ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request,true);
 
 	if (clinicalNotes != null) {
 	    String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());

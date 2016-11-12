@@ -27,29 +27,10 @@ import com.dpdocter.services.AdminServices;
 		DirtiesContextTestExecutionListener.class })
 public class AdminServiceTest extends AbstractTestNGSpringContextTests {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminServiceTest.class);
-	@Autowired
-	private AdminServices adminServices;
+
 	@Autowired
 	private ContactUsRepository contactUsRepository;
 
-	@Test
-	public void testAddContactUs() {
-		ContactUs request = new ContactUs();
-
-		request.setEmailAddress("harish.Sendurse@gmail.com");
-		request.setMessage("it is Test MSG");
-		request.setName("Harish Sendurse");
-		request.setMobileNumber("9561217448");
-		ContactUs response = adminServices.addContactUs(request);
-		AssertJUnit.assertEquals(response.getEmailAddress(), request.getEmailAddress());
-		AssertJUnit.assertEquals(response.getMobileNumber(), request.getMobileNumber());
-		AssertJUnit.assertEquals(response.getName(), request.getName());
-		AssertJUnit.assertEquals(response.getMessage(), request.getMessage());
-		System.out.println(response.getId());
-
-	}
-
-	
 	@Test
 	public void test() {
 

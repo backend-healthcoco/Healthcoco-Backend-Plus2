@@ -3,79 +3,79 @@
 <fontFamilies>
 
 	<fontFamily name="Noto Sans">
-		<normal>/home/suresh/jasperTemplates/noto/Khula-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/Khula-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Devanagari">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansDevanagari-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansDevanagari-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Bengali">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansBengali-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansBengali-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Telugu">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansTelugu-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansTelugu-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Tamil">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansTamil-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansTamil-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Gujarati">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansGujarati-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansGujarati-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Kannada">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansKannada-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansKannada-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Malayalam">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansMalayalam-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansMalayalam-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Odia">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansOriya-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansOriya-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Gurmukhi">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansGurmukhi-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansGurmukhi-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Sinhala">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansSinhala-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansSinhala-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Tibetan">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansTibetan-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansTibetan-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>
 
 	<fontFamily name="Noto Khmer">
-		<normal>/home/suresh/jasperTemplates/noto/NotoSansKhmer-Regular.ttf</normal>
+		<normal>/home/healthcoco-neha/jasperTemplates/noto/NotoSansKhmer-Regular.ttf</normal>
 		<pdfEncoding>Identity-H</pdfEncoding>
 		<pdfEmbedded>true</pdfEmbedded>
 	</fontFamily>

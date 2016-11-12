@@ -18,7 +18,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.jboss.netty.handler.codec.oneone.OneToOneStrictEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +35,6 @@ import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesDiagnosis;
-import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
@@ -250,23 +248,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public ClinicalNotes addNotes(ClinicalNotesAddRequest request) {
+	public ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd) {
 		ClinicalNotes clinicalNotes = null;
-		// List<ObjectId> complaintIds = null;
-		// List<ObjectId> observationIds = null;
-		// List<ObjectId> investigationIds = null;
-		// List<ObjectId> noteIds = null;
 		List<ObjectId> diagnosisIds = null;
 		List<ObjectId> diagramIds = null;
 		Appointment appointment = null;
 		Date createdTime = new Date();
-
 		try {
-
-			if (request.getAppointmentRequest() != null) {
-				appointment = addNotesAppointment(request.getAppointmentRequest());
+			if (isAppointmentAdd) {
+				if (request.getAppointmentRequest() != null) {
+					appointment = addNotesAppointment(request.getAppointmentRequest());
+				}
 			}
-
 			String createdBy = null;
 			ClinicalNotesCollection clinicalNotesCollection = new ClinicalNotesCollection();
 			if (appointment != null) {
@@ -673,11 +666,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Transactional
 	public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
 		ClinicalNotes clinicalNotes = null;
-		// List<ObjectId> complaintIds = null;
-		// List<ObjectId> observationIds = null;
-		// List<ObjectId> investigationIds = null;
-		// List<ObjectId> noteIds = null;
-		// List<ObjectId> diagnosisIds = null;
+		 List<ObjectId> diagnosisIds = null;
 		List<ObjectId> diagramIds = null;
 		Appointment appointment = null;
 		Date createdTime = new Date();
@@ -695,146 +684,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				request.setFromDate(appointment.getFromDate());
 			}
 			BeanUtil.map(request, clinicalNotesCollection);
+			diagnosisIds = new ArrayList<ObjectId>();
+			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
+				for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
+					if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+						if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))
+							diagnosisIds.add(new ObjectId(diagnosis.getId()));
+					}
+				}
+			}
 
-			// complaintIds = new ArrayList<ObjectId>();
-			// if (request.getComplaints() != null &&
-			// !request.getComplaints().isEmpty()) {
-			// for (ClinicalNotesComplaint complaint : request.getComplaints())
-			// {
-			// if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
-			// ComplaintCollection complaintCollection = new
-			// ComplaintCollection();
-			// BeanUtil.map(complaint, complaintCollection);
-			// BeanUtil.map(request, complaintCollection);
-			// complaintCollection.setId(null);
-			// complaintCollection.setCreatedTime(createdTime);
-			// complaintCollection =
-			// complaintRepository.save(complaintCollection);
-			//
-			// transactionalManagementService.addResource(complaintCollection.getId(),
-			// Resource.COMPLAINT, false);
-			// ESComplaintsDocument esComplaints = new ESComplaintsDocument();
-			// BeanUtil.map(complaintCollection, esComplaints);
-			// esClinicalNotesService.addComplaints(esComplaints);
-			//
-			// complaintIds.add(complaintCollection.getId());
-			// } else {
-			// complaintIds.add(new ObjectId(complaint.getId()));
-			// }
-			// }
-			// }
-			//
-			// observationIds = new ArrayList<ObjectId>();
-			// if (request.getObservations() != null &&
-			// !request.getObservations().isEmpty()) {
-			// for (ClinicalNotesObservation observation :
-			// request.getObservations()) {
-			// if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
-			// ObservationCollection observationCollection = new
-			// ObservationCollection();
-			// BeanUtil.map(observation, observationCollection);
-			// BeanUtil.map(request, observationCollection);
-			// observationCollection.setCreatedTime(createdTime);
-			// observationCollection.setId(null);
-			// observationCollection =
-			// observationRepository.save(observationCollection);
-			// transactionalManagementService.addResource(observationCollection.getId(),
-			// Resource.OBSERVATION, false);
-			// ESObservationsDocument esObservations = new
-			// ESObservationsDocument();
-			// BeanUtil.map(observationCollection, esObservations);
-			// esClinicalNotesService.addObservations(esObservations);
-			// observationIds.add(observationCollection.getId());
-			// } else {
-			// observationIds.add(new ObjectId(observation.getId()));
-			// }
-			// }
-			// }
-			//
-			// investigationIds = new ArrayList<ObjectId>();
-			// if (request.getInvestigations() != null &&
-			// !request.getInvestigations().isEmpty()) {
-			// for (ClinicalNotesInvestigation investigation :
-			// request.getInvestigations()) {
-			// if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
-			// InvestigationCollection investigationCollection = new
-			// InvestigationCollection();
-			// BeanUtil.map(investigation, investigationCollection);
-			// BeanUtil.map(request, investigationCollection);
-			// investigationCollection.setCreatedTime(createdTime);
-			// investigationCollection.setId(null);
-			// investigationCollection =
-			// investigationRepository.save(investigationCollection);
-			//
-			// transactionalManagementService.addResource(investigationCollection.getId(),
-			// Resource.INVESTIGATION, false);
-			// ESInvestigationsDocument esInvestigations = new
-			// ESInvestigationsDocument();
-			// BeanUtil.map(investigationCollection, esInvestigations);
-			// esClinicalNotesService.addInvestigations(esInvestigations);
-			//
-			// investigationIds.add(investigationCollection.getId());
-			// } else {
-			// investigationIds.add(new ObjectId(investigation.getId()));
-			// }
-			// }
-			// }
-			//
-			// noteIds = new ArrayList<ObjectId>();
-			// if (request.getNotes() != null && !request.getNotes().isEmpty())
-			// {
-			// for (ClinicalNotesNote note : request.getNotes()) {
-			// if (DPDoctorUtils.anyStringEmpty(note.getId())) {
-			// NotesCollection notesCollection = new NotesCollection();
-			// BeanUtil.map(note, notesCollection);
-			// BeanUtil.map(request, notesCollection);
-			// notesCollection.setCreatedTime(createdTime);
-			// notesCollection.setId(null);
-			// notesCollection = notesRepository.save(notesCollection);
-			// transactionalManagementService.addResource(notesCollection.getId(),
-			// Resource.NOTES, false);
-			// ESNotesDocument esNotes = new ESNotesDocument();
-			// BeanUtil.map(notesCollection, esNotes);
-			// esClinicalNotesService.addNotes(esNotes);
-			// noteIds.add(notesCollection.getId());
-			// } else {
-			// noteIds.add(new ObjectId(note.getId()));
-			// }
-			// }
-			// }
-			//
-			// diagnosisIds = new ArrayList<ObjectId>();
-			// if (request.getDiagnoses() != null &&
-			// !request.getDiagnoses().isEmpty()) {
-			// for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
-			// if (DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-			// DiagnosisCollection diagnosisCollection = new
-			// DiagnosisCollection();
-			// BeanUtil.map(diagnosis, diagnosisCollection);
-			// BeanUtil.map(request, diagnosisCollection);
-			// diagnosisCollection.setCreatedTime(createdTime);
-			// diagnosisCollection.setId(null);
-			// diagnosisCollection =
-			// diagnosisRepository.save(diagnosisCollection);
-			//
-			// transactionalManagementService.addResource(diagnosisCollection.getId(),
-			// Resource.DIAGNOSIS, false);
-			// ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
-			// BeanUtil.map(diagnosisCollection, esDiagnoses);
-			// esClinicalNotesService.addDiagnoses(esDiagnoses);
-			//
-			// diagnosisIds.add(diagnosisCollection.getId());
-			// } else {
-			// diagnosisIds.add(new ObjectId(diagnosis.getId()));
-			// }
-			// }
-			// }
-			//
-			// clinicalNotesCollection.setComplaints(complaintIds);
-			// clinicalNotesCollection.setInvestigations(investigationIds);
-			// clinicalNotesCollection.setObservations(observationIds);
-			// clinicalNotesCollection.setDiagnoses(diagnosisIds);
-			// clinicalNotesCollection.setNotes(noteIds);
+			clinicalNotesCollection.setDiagnoses(diagnosisIds);
 			if (request.getDiagrams() == null) {
 				clinicalNotesCollection.setDiagrams(diagramIds);
 			} else {
@@ -927,7 +787,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		List<ClinicalNotesCollection> clinicalNotesCollections = null;
 		List<ClinicalNotes> clinicalNotes = null;
 		try {
-			
+
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -940,23 +800,34 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
-			if(!discarded)criteria.and("discarded").is(discarded);
-			if(inHistory)criteria.and("inHistory").is(inHistory);
-			
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+					.is(patientObjectId);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (inHistory)
+				criteria.and("inHistory").is(inHistory);
+
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
 			}
-			
+
 			Aggregation aggregation = null;
-			
-			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			
-			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesCollection.class);
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					ClinicalNotesCollection.class, ClinicalNotesCollection.class);
 			clinicalNotesCollections = aggregationResults.getMappedResults();
-			
+
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				clinicalNotes = new ArrayList<ClinicalNotes>();
 				for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
@@ -1769,19 +1640,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId,
-			boolean isOTPVerified) {
+	public Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer clinicalNotesCount = 0;
 		try {
-			Criteria criteria = new Criteria("discarded").is(false);
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId))criteria.and("doctorId").is(doctorObjectId);	
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
+					criteria.and("doctorId").is(doctorObjectId);
 			}
-			else{
-				criteria.and("patientId").is(patientObjectId);
-			}
-			clinicalNotesCount = (int)mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
+			clinicalNotesCount = (int) mongoTemplate.count(new Query(criteria), ClinicalNotesCollection.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2746,82 +2616,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
-			PatientCollection patient, UserCollection user) throws IOException {
+			PatientCollection patient, UserCollection user) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
-		// String contentLineStyle = (printSettings != null &&
-		// !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle())) ?
-		// printSettings.getContentLineStyle() : LineStyle.INLINE.name();
-
-		// if(contentLineStyle.equalsIgnoreCase(LineStyle.BLOCK.getStyle()))contentLineStyle
-		// = "<br>";
-		// else contentLineStyle = ", ";
-		//
-		// String observations = "";
-		// Collection<String> observationList =
-		// CollectionUtils.collect(sortObservations(
-		// mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
-		// Criteria("id").in(clinicalNotesCollection.getObservations()))),
-		// ObservationCollection.class, Observation.class).getMappedResults(),
-		// clinicalNotesCollection.getObservations()),new
-		// BeanToPropertyValueTransformer("observation"));
-		// if(observationList != null && !observationList.isEmpty())observations
-		// = (observationList+"").replaceAll("\\[", "").replaceAll("\\]",
-		// "").replaceAll(",", contentLineStyle);
-		//
-		// String notes = "";
-		// Collection<String> noteList = CollectionUtils.collect(sortNotes(
-		// mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
-		// Criteria("id").in(clinicalNotesCollection.getNotes()))),
-		// NotesCollection.class, Notes.class).getMappedResults(),
-		// clinicalNotesCollection.getNotes()),new
-		// BeanToPropertyValueTransformer("note"));
-		// if(noteList != null && !noteList.isEmpty())notes =
-		// (noteList+"").replaceAll("\\[", "").replaceAll("\\]",
-		// "").replaceAll(",", contentLineStyle);
-		//
-		// String investigations = "";
-		// Collection<String> investigationList =
-		// CollectionUtils.collect(sortInvestigations(
-		// mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
-		// Criteria("id").in(clinicalNotesCollection.getInvestigations()))),
-		// InvestigationCollection.class,
-		// Investigation.class).getMappedResults(),
-		// clinicalNotesCollection.getInvestigations()),new
-		// BeanToPropertyValueTransformer("investigation"));
-		// if(investigationList != null &&
-		// !investigationList.isEmpty())investigations =
-		// (investigationList+"").replaceAll("\\[", "").replaceAll("\\]",
-		// "").replaceAll(",", contentLineStyle);
-		//
-		// String diagnosis = "";
-		// Collection<String> diagnosisList =
-		// CollectionUtils.collect(sortDiagnoses(
-		// mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
-		// Criteria("id").in(clinicalNotesCollection.getDiagnoses()))),
-		// DiagnosisCollection.class, Diagnoses.class).getMappedResults(),
-		// clinicalNotesCollection.getDiagnoses()),new
-		// BeanToPropertyValueTransformer("diagnosis"));
-		// if(diagnosisList != null && !diagnosisList.isEmpty())diagnosis =
-		// (diagnosisList+"").replaceAll("\\[", "").replaceAll("\\]",
-		// "").replaceAll(",", contentLineStyle);
-		//
-		// String complaints = "";
-		// Collection<String> complaintList =
-		// CollectionUtils.collect(sortComplaints(
-		// mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
-		// Criteria("id").in(clinicalNotesCollection.getComplaints()))),
-		// ComplaintCollection.class, Complaint.class).getMappedResults(),
-		// clinicalNotesCollection.getComplaints()),new
-		// BeanToPropertyValueTransformer("complaint"));
-		// if(complaintList != null && !complaintList.isEmpty())complaints =
-		// (complaintList+"").replaceAll("\\[", "").replaceAll("\\]",
-		// "").replaceAll(",", contentLineStyle);
 		parameters.put("observationIds", clinicalNotesCollection.getObservation());
 		parameters.put("noteIds", clinicalNotesCollection.getNote());
 		parameters.put("investigationIds", clinicalNotesCollection.getInvestigation());
@@ -2908,11 +2709,27 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} else
 			parameters.put("vitalSigns", null);
 
+		if (parameters.get("followUpAppointment") == null
+				&& !DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())
+				&& clinicalNotesCollection.getTime() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+			String _24HourTime = String.format("%02d:%02d", clinicalNotesCollection.getTime().getFromTime() / 60,
+					clinicalNotesCollection.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(clinicalNotesCollection.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on " + dateTime);
+		}
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, clinicalNotesCollection.getUniqueEmrId(), user.getFirstName(), user.getMobileNumber(),
-				parameters);
+				patient, clinicalNotesCollection.getUniqueEmrId(), patient.getLocalPatientName(),
+				user.getMobileNumber(), parameters);
 		generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
@@ -2934,17 +2751,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
 						? printSettings.getPageSetup().getRightMargin() : 20)
 				: 20;
-		// if(pageSize.equalsIgnoreCase("A5")){
-		// response = jasperReportService.createPDF(parameters,
-		// clinicalNotesA5FileName, layout, pageSize, topMargin, bottonMargin,
-		// Integer.parseInt(parameters.get("contentFontSize").toString()),
-		// pdfName.replaceAll("\\s+", ""));
-		// }else {
-		// response = jasperReportService.createPDF(parameters,
-		// clinicalNotesA4FileName, layout, pageSize, topMargin, bottonMargin,
-		// Integer.parseInt(parameters.get("contentFontSize").toString()),
-		// pdfName.replaceAll("\\s+", ""));
-		// }
 		response = jasperReportService.createPDF(ComponentType.CLINICAL_NOTES, parameters, clinicalNotesA4FileName,
 				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
@@ -3215,7 +3021,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public Boolean updateQuery() {
 		Boolean response = false;
@@ -3807,5 +3613,4 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
 }

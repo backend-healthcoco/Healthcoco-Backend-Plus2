@@ -636,13 +636,13 @@ public class JasperReportServiceImpl implements JasperReportService {
         	jrDesignTextField = new JRDesignTextField();
             jrDesignTextField.setExpression(new JRDesignExpression("$P{Direction}"));
             jrDesignTextField.setX(39+drugWidth+dosageWidth);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(directionWidth);
-            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
             band.addElement(jrDesignTextField);
         }
         
         jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$P{Duration}"));
-        jrDesignTextField.setX(39+drugWidth+dosageWidth+directionWidth);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(durationWidth);
+        jrDesignTextField.setX(39+drugWidth+dosageWidth+directionWidth+15);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(durationWidth-15);
         jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
         band.addElement(jrDesignTextField);
         
@@ -693,7 +693,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$F{duration}"));
-        jrDesignTextField.setX(39+drugWidth+dosageWidth+directionWidth);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(durationWidth);
+        jrDesignTextField.setX(39+drugWidth+dosageWidth+directionWidth+15);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(durationWidth-15);
         jrDesignTextField.setStretchWithOverflow(true);
         band.addElement(jrDesignTextField);
         

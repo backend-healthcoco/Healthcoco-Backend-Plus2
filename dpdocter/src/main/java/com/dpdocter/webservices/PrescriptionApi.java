@@ -126,16 +126,6 @@ public class PrescriptionApi {
 		request.setId(drugId);
 		Drug drugAddEditResponse = prescriptionServices.editDrug(request);
 
-		transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
-		if (drugAddEditResponse != null) {
-			ESDrugDocument esDrugDocument = new ESDrugDocument();
-			BeanUtil.map(drugAddEditResponse, esDrugDocument);
-			if (drugAddEditResponse.getDrugType() != null) {
-				esDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-				esDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-			}
-			esPrescriptionService.addDrug(esDrugDocument);
-		}
 		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);
 		return response;
@@ -383,7 +373,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request);
+		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request,true);
 
 		// patient track
 		if (prescriptionAddEditResponse != null) {
@@ -937,17 +927,6 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Drug drugAddEditResponse = prescriptionServices.addFavouriteDrug(request);
-
-		transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
-		if (drugAddEditResponse != null) {
-			ESDrugDocument esDrugDocument = new ESDrugDocument();
-			BeanUtil.map(drugAddEditResponse, esDrugDocument);
-			if (drugAddEditResponse.getDrugType() != null) {
-				esDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
-				esDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
-			}
-			esPrescriptionService.addDrug(esDrugDocument);
-		}
 
 		Response<Drug> response = new Response<Drug>();
 		response.setData(drugAddEditResponse);

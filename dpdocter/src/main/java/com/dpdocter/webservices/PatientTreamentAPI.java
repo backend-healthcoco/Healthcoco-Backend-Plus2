@@ -205,7 +205,7 @@ public class PatientTreamentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Treament request cannot be empty");
 		}
 		PatientTreatmentResponse addEditPatientTreatmentResponse = patientTreatmentServices
-				.addEditPatientTreatment(request);
+				.addEditPatientTreatment(request,true);
 		if (addEditPatientTreatmentResponse != null) {
 			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 					request.getVisitId());
