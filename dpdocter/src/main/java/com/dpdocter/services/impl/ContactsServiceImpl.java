@@ -509,16 +509,15 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
-
 			long createdTimeStamp = Long.parseLong(updatedTime);
-			if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-				patientCollections = patientRepository.findByDoctorId(doctorObjectId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"));
-			} else {
-				patientCollections = patientRepository.findByDoctorIdLocationIdAndHospitalId(doctorObjectId,
-						locationObjectId, hospitalObjectId, new Date(createdTimeStamp),
-						new Sort(Sort.Direction.DESC, "createdTime"));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp));
+			if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+				criteria.and("doctorId").is(doctorObjectId);
 			}
+			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			}
+			patientCollections = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(Direction.DESC, "createdTime")), PatientCollection.class, PatientCollection.class).getMappedResults();
 
 			if (!patientCollections.isEmpty()) {
 				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
