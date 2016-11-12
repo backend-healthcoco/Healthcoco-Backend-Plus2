@@ -129,10 +129,7 @@ public class ContactsApi {
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    }
+    
     List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
     	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
     	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
