@@ -62,6 +62,9 @@ public class FeedbackCollection extends GenericCollection {
     @Field
     private String emailAddress;
     
+    @Field
+    private Boolean isUserAnonymous = false;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -188,7 +191,7 @@ public class FeedbackCollection extends GenericCollection {
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
 				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
 				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + ", uniqueFeedbackId="
-				+ uniqueFeedbackId + ", emailAddress=" + emailAddress + "]";
+				+ uniqueFeedbackId + ", emailAddress=" + emailAddress + ", isUserAnonymous=" + isUserAnonymous + "]";
 	}
 
 }
