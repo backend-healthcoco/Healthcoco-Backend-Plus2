@@ -1076,22 +1076,31 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 
 	@Override
-	public DoctorClinicProfile addEditRecommedation(String doctorClinicProfileId, String patientId) {
+	public DoctorClinicProfile addEditRecommedation(String doctorId, String locationId, String patientId) {
 		DoctorClinicProfile response;
 
 		try {
-			Recommendation recommendation = null;
-			RecommendationsCollection recommendationsCollection = recommendationsRepository
-					.findByDoctorClinicProfileIdAndPatientId(new ObjectId(doctorClinicProfileId),
-							new ObjectId(patientId));
-			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-					.findOne(new ObjectId(doctorClinicProfileId));
-			UserCollection userCollection = userRepository.findOne(new ObjectId(patientId));
+
+			ObjectId doctorObjectId = new ObjectId(doctorId);
+			ObjectId locationObjectId = new ObjectId(locationId);
+			ObjectId patientObjectId = new ObjectId(patientId);
+			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+			RecommendationsCollection recommendationsCollection = null;
+
+			UserLocationCollection userLocationCollection = userLocationRepository
+					.findByUserIdAndLocationId(doctorObjectId, locationObjectId);
+			if (userLocationCollection != null)
+				doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByLocationId(userLocationCollection.getId());
+
+			UserCollection userCollection = userRepository.findOne(patientObjectId);
 
 			if (doctorClinicProfileCollection != null && userCollection != null) {
+				recommendationsCollection = recommendationsRepository.findByDoctorClinicProfileIdAndPatientId(
+						doctorClinicProfileCollection.getId(), patientObjectId);
 
 				if (recommendationsCollection != null) {
-					if (recommendationsCollection.getDiscarded()) {
+					if (!recommendationsCollection.getDiscarded()) {
 						doctorClinicProfileCollection
 								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() - 1);
 						recommendationsCollection.setDiscarded(false);
@@ -1101,18 +1110,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						recommendationsCollection.setDiscarded(true);
 					}
 				} else {
-					recommendation = new Recommendation();
-					recommendation.setDoctorClinicProfileId(doctorClinicProfileId);
-					recommendation.setPatientId(patientId);
 
 					recommendationsCollection = new RecommendationsCollection();
-					BeanUtil.map(recommendation, recommendationsCollection);
+					recommendationsCollection.setDoctorClinicProfileId(doctorClinicProfileCollection.getId());
+					recommendationsCollection.setPatientId(patientObjectId);
 					doctorClinicProfileCollection
 							.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
 
 				}
-				UserLocationCollection userLocationCollection = userLocationRepository
-						.findOne(doctorClinicProfileCollection.getUserLocationId());
+
 				transnationalService.checkDoctor(userLocationCollection.getUserId(),
 						userLocationCollection.getLocationId());
 				recommendationsCollection = recommendationsRepository.save(recommendationsCollection);

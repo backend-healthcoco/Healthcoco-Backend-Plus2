@@ -553,11 +553,10 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION, notes = PathProxy.DoctorProfileUrls.SET_RECOMMENDATION)
-	public Response<DoctorClinicProfile> setRecommendation(
-			@PathParam("doctorClinicProfileId") String doctorClinicProfileId,
-			@PathParam("patientId") String patientId) {
+	public Response<DoctorClinicProfile> setRecommendation(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("patientId") String patientId) {
 
-		DoctorClinicProfile doctorClinicProfile = doctorProfileService.addEditRecommedation(doctorClinicProfileId,
+		DoctorClinicProfile doctorClinicProfile = doctorProfileService.addEditRecommedation(doctorId, locationId,
 				patientId);
 		Response<DoctorClinicProfile> response = new Response<DoctorClinicProfile>();
 		response.setData(doctorClinicProfile);

@@ -89,6 +89,6 @@ public interface DoctorProfileService {
 
 	DoctorDOBAddEditRequest addEditDOB(DoctorDOBAddEditRequest request);
 
-	public DoctorClinicProfile addEditRecommedation(String doctorClinicProfileId, String patientId);
+	public DoctorClinicProfile addEditRecommedation(String doctorId, String locationId,String patientId);
 
 }
