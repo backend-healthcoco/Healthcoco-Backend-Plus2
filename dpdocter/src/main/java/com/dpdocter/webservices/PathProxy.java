@@ -499,6 +499,8 @@ public interface PathProxy {
 
 		public static final String ADD_EDIT_DOB = "addEditDOB";
 
+		public static final String SET_RECOMMENDATION = "/recommendation/{doctorClinicProfileId}/{patientId}";
+
 	}
 
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";

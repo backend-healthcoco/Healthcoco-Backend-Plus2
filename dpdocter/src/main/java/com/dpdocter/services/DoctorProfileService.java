@@ -2,12 +2,14 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
+import com.dpdocter.beans.Recommendation;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
@@ -40,50 +42,53 @@ public interface DoctorProfileService {
 
 	DoctorEducationAddEditRequest addEditEducation(DoctorEducationAddEditRequest request);
 
-    List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime);
+	List<MedicalCouncil> getMedicalCouncils(int page, int size, String updatedTime);
 
-    DoctorSpecialityAddEditRequest addEditSpeciality(DoctorSpecialityAddEditRequest request);
+	DoctorSpecialityAddEditRequest addEditSpeciality(DoctorSpecialityAddEditRequest request);
 
-    DoctorAchievementAddEditRequest addEditAchievement(DoctorAchievementAddEditRequest request);
+	DoctorAchievementAddEditRequest addEditAchievement(DoctorAchievementAddEditRequest request);
 
-    DoctorProfessionalStatementAddEditRequest addEditProfessionalStatement(DoctorProfessionalStatementAddEditRequest request);
+	DoctorProfessionalStatementAddEditRequest addEditProfessionalStatement(
+			DoctorProfessionalStatementAddEditRequest request);
 
-    DoctorRegistrationAddEditRequest addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
+	DoctorRegistrationAddEditRequest addEditRegistrationDetail(DoctorRegistrationAddEditRequest request);
 
-    DoctorExperienceDetailAddEditRequest addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request);
+	DoctorExperienceDetailAddEditRequest addEditExperienceDetail(DoctorExperienceDetailAddEditRequest request);
 
-    String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
+	String addEditProfilePicture(DoctorProfilePictureAddEditRequest request);
 
-    String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
+	String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
 
-    DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, Boolean isMobileApp);
+	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, Boolean isMobileApp);
 
-    List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
+	List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
 
-    DoctorProfessionalAddEditRequest addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
+	DoctorProfessionalAddEditRequest addEditProfessionalMembership(DoctorProfessionalAddEditRequest request);
 
-    DoctorAppointmentNumbersAddEditRequest addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request);
+	DoctorAppointmentNumbersAddEditRequest addEditAppointmentNumbers(DoctorAppointmentNumbersAddEditRequest request);
 
-    DoctorVisitingTimeAddEditRequest addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
+	DoctorVisitingTimeAddEditRequest addEditVisitingTime(DoctorVisitingTimeAddEditRequest request);
 
-    DoctorConsultationFeeAddEditRequest addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
+	DoctorConsultationFeeAddEditRequest addEditConsultationFee(DoctorConsultationFeeAddEditRequest request);
 
-    DoctorAppointmentSlotAddEditRequest addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
+	DoctorAppointmentSlotAddEditRequest addEditAppointmentSlot(DoctorAppointmentSlotAddEditRequest request);
 
-    DoctorGeneralInfo addEditGeneralInfo(DoctorGeneralInfo request);
+	DoctorGeneralInfo addEditGeneralInfo(DoctorGeneralInfo request);
 
-    List<Speciality> getSpecialities(int page, int size, String updatedTime);
+	List<Speciality> getSpecialities(int page, int size, String updatedTime);
 
-    List<EducationInstitute> getEducationInstitutes(int page, int size, String updatedTime);
+	List<EducationInstitute> getEducationInstitutes(int page, int size, String updatedTime);
 
-    List<EducationQualification> getEducationQualifications(int page, int size, String updatedTime);
+	List<EducationQualification> getEducationQualifications(int page, int size, String updatedTime);
 
-    DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
+	DoctorMultipleDataAddEditResponse addEditMultipleData(DoctorMultipleDataAddEditRequest request);
 
-    DoctorAddEditFacilityRequest addEditFacility(DoctorAddEditFacilityRequest request);
+	DoctorAddEditFacilityRequest addEditFacility(DoctorAddEditFacilityRequest request);
 
-    DoctorGenderAddEditRequest addEditGender(DoctorGenderAddEditRequest request);
+	DoctorGenderAddEditRequest addEditGender(DoctorGenderAddEditRequest request);
 
-    DoctorDOBAddEditRequest addEditDOB(DoctorDOBAddEditRequest request);
+	DoctorDOBAddEditRequest addEditDOB(DoctorDOBAddEditRequest request);
+
+	public DoctorClinicProfile addEditRecommedation(String doctorClinicProfileId, String patientId);
 
 }

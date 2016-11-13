@@ -4,9 +4,7 @@ import org.bson.types.ObjectId;
 
 public class BirthdaySMSDetailsForPatients {
 
-	private ObjectId Id;
-
-	private ObjectId userLocationId;
+	private ObjectId id;
 
 	private ObjectId doctorId;
 
@@ -14,16 +12,17 @@ public class BirthdaySMSDetailsForPatients {
 
 	private ObjectId hospitalId;
 
+	private ObjectId patientId;
+
+	public ObjectId getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
+
 	private String locationName;
-	
-
-	public ObjectId getUserLocationId() {
-		return userLocationId;
-	}
-
-	public void setUserLocationId(ObjectId userLocationId) {
-		this.userLocationId = userLocationId;
-	}
 
 	public ObjectId getDoctorId() {
 		return doctorId;
@@ -58,11 +57,11 @@ public class BirthdaySMSDetailsForPatients {
 	}
 
 	public ObjectId getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(ObjectId id) {
-		Id = id;
+		this.id = id;
 	}
 
 }
