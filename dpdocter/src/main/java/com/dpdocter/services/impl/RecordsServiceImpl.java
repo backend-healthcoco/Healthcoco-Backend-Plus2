@@ -761,10 +761,9 @@ public class RecordsServiceImpl implements RecordsService {
 				case RECORDS:
 					count.setValue(getRecordCount(doctorId, patientId, locationId, hospitalId, isOTPVerified));
 					break;
-				case NOTES:
-					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorId, patientId, locationId,
-							hospitalId, isOTPVerified));
-					break;
+				/*case NOTES:
+					count.setValue(clinicalNotesService.getClinica);
+					break;*/
 				case HISTORY:
 					count.setValue(historyServices.getHistoryCount(doctorId, patientId, locationId, hospitalId,
 							isOTPVerified));
