@@ -14,6 +14,10 @@ public class BirthdaySMSDetailsForPatients {
 
 	private ObjectId patientId;
 
+	private String localPatientName;
+
+	private String locationName;
+
 	public ObjectId getPatientId() {
 		return patientId;
 	}
@@ -21,8 +25,6 @@ public class BirthdaySMSDetailsForPatients {
 	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
 	}
-
-	private String locationName;
 
 	public ObjectId getDoctorId() {
 		return doctorId;
@@ -62,6 +64,14 @@ public class BirthdaySMSDetailsForPatients {
 
 	public void setId(ObjectId id) {
 		this.id = id;
+	}
+
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 }

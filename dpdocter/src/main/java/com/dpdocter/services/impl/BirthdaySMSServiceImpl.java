@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -47,7 +48,13 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Autowired
 	private SMSServices sMSServices;
 
-	@Scheduled(cron = "0 0 9 * * ?")
+	@Value(value = "${sms.birthday.wish.to.doctor")
+	private String birthdayWishSMStoDoctor;
+
+	@Value(value = "${sms.birthday.wish.to.patient")
+	private String birthdayWishSMStoPatient;
+
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
@@ -61,7 +68,8 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 					Fields.field("doctorId", "$patient.doctorId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$location.hospitalId"),
 					Fields.field("locationName", "$location.locationName"), Fields.field("createdTime", "$createdTime"),
-					Fields.field("patientId", "$patient.userId")));
+					Fields.field("patientId", "$patient.userId"),
+					Fields.field("localPatientName", "$patient.localPatientName")));
 			Criteria criteria = new Criteria("discarded").is(false).andOperator(
 					new Criteria("doctorClinic.isSendBirthdaySMS").is(true), new Criteria("isActivate").is(true),
 					new Criteria("patient.dob.days").is(day), new Criteria("patient.dob.months").is(month),
@@ -81,18 +89,19 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 				for (BirthdaySMSDetailsForPatients birthdaySMSDetailsForPatient : birthdaySMSDetailsForPatientsList) {
 
 					UserCollection userCollection = userRepository.findOne(birthdaySMSDetailsForPatient.getPatientId());
-					String message = userCollection.getFirstName() + ","
-							+ birthdaySMSDetailsForPatient.getLocationName()
-							+ " wishes you a very Healthy and Happy Birthday. Have a great year ahead.";
+					String message = birthdayWishSMStoPatient;
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 					smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
 					smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
 					smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
-					smsTrackDetail.setType("Birthday Wish for patients");
+					smsTrackDetail.setType("BIRTHDAY WISH TO PATIENT");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
-					smsDetail.setUserName(userCollection.getFirstName());
+					smsDetail.setUserName(birthdaySMSDetailsForPatient.getLocalPatientName());
+					message = message.replace("{patientName}", birthdaySMSDetailsForPatient.getLocalPatientName());
+					message = message.replace("{clinicName}", birthdaySMSDetailsForPatient.getLocationName());
+
 					sms.setSmsText(message);
 
 					SMSAddress smsAddress = new SMSAddress();
@@ -119,7 +128,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	}
 
-	@Scheduled(cron = "0 0 9 * * ?")
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToDoctors() {
 		try {
@@ -142,9 +151,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 			if (userCollections.size() > 0)
 				for (UserCollection userCollection : userCollections) {
 
-					String message = "Healthcoco wishes you a very Healthy and Happy Birthday. Have a great year ahead.";
+					String message = birthdayWishSMStoDoctor;
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setType("Birthday Wish for Doctors");
+					smsTrackDetail.setType("BIRTHDAY WISH TO DOCTOR");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();
