@@ -55,7 +55,7 @@ public interface ClinicalNotesService {
 
     Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Integer getClinicalNotesCount(String doctorId, String patientId, String locationId, String hospitalId, boolean isOTPVerified);
+    Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
 
     List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
 	    Boolean discarded, String searchTerm);
@@ -85,5 +85,24 @@ public interface ClinicalNotesService {
 	PresentComplaintHistory addEditPresentComplaintHistory(PresentComplaintHistory presentComplaintHistory);
 
 	ObstetricHistory addEditObstetricHistory(ObstetricHistory obstetricHistory);
+
+	ProvisionalDiagnosis deleteProvisionalDiagnosis(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentComplaint deletePresentComplaint(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentComplaintHistory deletePresentComplaintHistory(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
+
+	GeneralExam deleteGeneralExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	SystemExam deleteSystemExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	ObstetricHistory deleteObstetricHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
 
 }
