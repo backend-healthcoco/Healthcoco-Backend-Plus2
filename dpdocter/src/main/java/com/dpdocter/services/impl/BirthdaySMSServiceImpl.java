@@ -1,10 +1,13 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -20,7 +23,6 @@ import com.dpdocter.beans.BirthdaySMSDetailsForPatients;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
@@ -38,9 +40,6 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	private static Logger logger = Logger.getLogger(BirthdaySMSServiceImpl.class.getName());
 
 	@Autowired
-	private PatientRepository patientRepository;
-
-	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -49,66 +48,78 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Autowired
 	private SMSServices sMSServices;
 
-	@Scheduled(cron = "0 0 9 * * ?")
+	@Value(value = "${sms.birthday.wish.to.doctor")
+	private String birthdayWishSMStoDoctor;
+
+	@Value(value = "${sms.birthday.wish.to.patient")
+	private String birthdayWishSMStoPatient;
+
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
-			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("userLocationId", "$id"),
-					Fields.field("doctorId", "$userId"), Fields.field("locationId", "$locationId"),
+			Date date = new Date(); // your date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+
+			int month = cal.get(Calendar.MONTH) + 1;
+			int day = cal.get(Calendar.DAY_OF_MONTH);
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("doctorId", "$patient.doctorId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$location.hospitalId"),
-					Fields.field("locationName", "$location.locationName"),
-					Fields.field("createdTime", "$createdTime")));
-			Criteria criteria = new Criteria("discarded").is(false).and("doctorClinic.isSendBirthdaySMS").is(true);
-			criteria = criteria.and("isActivate").is(true);
+					Fields.field("locationName", "$location.locationName"), Fields.field("createdTime", "$createdTime"),
+					Fields.field("patientId", "$patient.userId"),
+					Fields.field("localPatientName", "$patient.localPatientName")));
+			Criteria criteria = new Criteria("discarded").is(false).andOperator(
+					new Criteria("doctorClinic.isSendBirthdaySMS").is(true), new Criteria("isActivate").is(true),
+					new Criteria("patient.dob.days").is(day), new Criteria("patient.dob.months").is(month),
+					new Criteria("patient.discarded").is(false));
+
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "userLocationId", "doctorClinic"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.match(criteria),
-					projectList, Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.lookup("patient_cl", "userId", "doctorId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.match(criteria), projectList, Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			AggregationResults<BirthdaySMSDetailsForPatients> results = mongoTemplate.aggregate(aggregation,
 					UserLocationCollection.class, BirthdaySMSDetailsForPatients.class);
 
 			List<BirthdaySMSDetailsForPatients> birthdaySMSDetailsForPatientsList = results.getMappedResults();
 
 			if (birthdaySMSDetailsForPatientsList.size() > 0)
-				for (BirthdaySMSDetailsForPatients birthdaySMSDetailsForPatients : birthdaySMSDetailsForPatientsList) {
+				for (BirthdaySMSDetailsForPatients birthdaySMSDetailsForPatient : birthdaySMSDetailsForPatientsList) {
 
-					List<PatientCollection> patientCollections = patientRepository
-							.findByDoctorIdLocationIdAndHospitalId(birthdaySMSDetailsForPatients.getDoctorId(),
-									birthdaySMSDetailsForPatients.getLocationId(),
-									birthdaySMSDetailsForPatients.getHospitalId());
-					if (patientCollections.size() > 0)
-						for (PatientCollection patientCollection : patientCollections) {
-							UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-							String message = patientCollection.getFirstName() + ","
-									+ birthdaySMSDetailsForPatients.getLocationName()
-									+ " wishes you a very Healthy and Happy Birthday. Have a great year ahead.";
-							SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-							smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatients.getDoctorId());
-							smsTrackDetail.setLocationId(birthdaySMSDetailsForPatients.getLocationId());
-							smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatients.getHospitalId());
-							smsTrackDetail.setType("Birthday Wish for patients");
-							SMSDetail smsDetail = new SMSDetail();
-							smsDetail.setUserId(patientCollection.getUserId());
-							SMS sms = new SMS();
-							smsDetail.setUserName(userCollection.getFirstName());
-							sms.setSmsText(message);
+					UserCollection userCollection = userRepository.findOne(birthdaySMSDetailsForPatient.getPatientId());
+					String message = birthdayWishSMStoPatient;
+					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+					smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
+					smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
+					smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
+					smsTrackDetail.setType("BIRTHDAY WISH TO PATIENT");
+					SMSDetail smsDetail = new SMSDetail();
+					smsDetail.setUserId(userCollection.getId());
+					SMS sms = new SMS();
+					smsDetail.setUserName(birthdaySMSDetailsForPatient.getLocalPatientName());
+					message = message.replace("{patientName}", birthdaySMSDetailsForPatient.getLocalPatientName());
+					message = message.replace("{clinicName}", birthdaySMSDetailsForPatient.getLocationName());
 
-							SMSAddress smsAddress = new SMSAddress();
-							smsAddress.setRecipient(userCollection.getMobileNumber());
-							sms.setSmsAddress(smsAddress);
+					sms.setSmsText(message);
 
-							smsDetail.setSms(sms);
-							smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-							List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-							smsDetails.add(smsDetail);
-							smsTrackDetail.setSmsDetails(smsDetails);
-							sMSServices.sendSMS(smsTrackDetail, true);
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(userCollection.getMobileNumber());
+					sms.setSmsAddress(smsAddress);
 
-						}
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					sMSServices.sendSMS(smsTrackDetail, true);
 
 				}
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Sending Birthday SMS to patients");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Sending Birthday SMS to patients");
@@ -117,14 +128,22 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	}
 
-	@Scheduled(cron = "0 0 9 * * ?")
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToDoctors() {
 		try {
-			Criteria criteria = new Criteria("userLocation.discarded").is(false);
+			Date date = new Date(); // your date
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(date);
+
+			int month = cal.get(Calendar.MONTH) + 1;
+			int day = cal.get(Calendar.DAY_OF_MONTH);
+			Criteria criteria = new Criteria("userLocation.discarded").is(false).andOperator(
+					(new Criteria("docter.dob.days").is(day)), new Criteria("docter.dob.months").is(month));
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.lookup("user_location_cl", "_id", "userId", "userLocation"),
-					Aggregation.match(criteria), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+					Aggregation.lookup("docter_cl", "_id", "userId", "docter"), Aggregation.match(criteria),
+					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class,
 					UserCollection.class);
 			List<UserCollection> userCollections = results.getMappedResults();
@@ -132,9 +151,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 			if (userCollections.size() > 0)
 				for (UserCollection userCollection : userCollections) {
 
-					String message = "Healthcoco wishes you a very Healthy and Happy Birthday.Have a great year ahead.";
+					String message = birthdayWishSMStoDoctor;
 					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setType("Birthday Wish for Doctors");
+					smsTrackDetail.setType("BIRTHDAY WISH TO DOCTOR");
 					SMSDetail smsDetail = new SMSDetail();
 					smsDetail.setUserId(userCollection.getId());
 					SMS sms = new SMS();

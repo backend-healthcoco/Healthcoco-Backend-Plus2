@@ -40,6 +40,8 @@ public class Feedback extends GenericCollection {
 
     private String emailAddress;
     
+    private Boolean isUserAnonymous = false;
+    
     public String getId() {
 	return id;
     }
@@ -168,12 +170,21 @@ public class Feedback extends GenericCollection {
 		this.emailAddress = emailAddress;
 	}
 
+	public Boolean getIsUserAnonymous() {
+		return isUserAnonymous;
+	}
+
+	public void setIsUserAnonymous(Boolean isUserAnonymous) {
+		this.isUserAnonymous = isUserAnonymous;
+	}
+
 	@Override
 	public String toString() {
 		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", userId="
 				+ userId + ", explanation=" + explanation + ", deviceType=" + deviceType + ", deviceInfo=" + deviceInfo
 				+ ", isVisible=" + isVisible + ", isRecommended=" + isRecommended + ", patient=" + patient
-				+ ", uniqueFeedbackId=" + uniqueFeedbackId + ", emailAddress=" + emailAddress + "]";
+				+ ", uniqueFeedbackId=" + uniqueFeedbackId + ", emailAddress=" + emailAddress + ", isUserAnonymous="
+				+ isUserAnonymous + "]";
 	}
 }
