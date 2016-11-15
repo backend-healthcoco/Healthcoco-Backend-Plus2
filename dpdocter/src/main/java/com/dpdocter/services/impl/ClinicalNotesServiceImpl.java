@@ -399,7 +399,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty()) {
+			if (request.getPresentComplaints() != null && !request.getPresentComplaints().isEmpty()) {
 				for (PresentComplaint presentComplaint : request.getPresentComplaints()) {
 					if (DPDoctorUtils.anyStringEmpty(presentComplaint.getId())) {
 						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();

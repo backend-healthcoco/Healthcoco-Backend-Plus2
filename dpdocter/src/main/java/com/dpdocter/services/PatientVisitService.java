@@ -15,37 +15,38 @@ import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.response.PatientVisitResponse;
 
 public interface PatientVisitService {
-    // boolean addRecord(PatientVisit request);
+	// boolean addRecord(PatientVisit request);
 
-    String addRecord(Object details, VisitedFor visitedFor, String visitId);
+	String addRecord(Object details, VisitedFor visitedFor, String visitId, String appomimentId);
 
-    boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
+	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 
-    DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size);
+	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 
-    DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
+	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
 
-    PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
+	PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 
-    PatientVisitResponse getVisit(String visitId);
+	PatientVisitResponse getVisit(String visitId);
 
-    List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
-	    String updatedTime,String visitFor);
+	List<PatientVisitResponse> getVisit(String doctorId, String locationId, String hospitalId, String patientId,
+			int page, int size, Boolean isOTPVerified, String updatedTime, String visitFor);
 
-    Boolean email(String visitId, String emailAddress);
+	Boolean email(String visitId, String emailAddress);
 
-    PatientVisit deleteVisit(String visitId, Boolean discarded);
+	PatientVisit deleteVisit(String visitId, Boolean discarded);
 
-    Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
+	Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
-    List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId, int page, int size, Boolean isOTPVerified,
-	    String updatedTime);
+	List<PatientVisit> getVisitsHandheld(String doctorId, String locationId, String hospitalId, String patientId,
+			int page, int size, Boolean isOTPVerified, String updatedTime);
 
-    String editRecord(String id, VisitedFor prescription);
+	String editRecord(String id, VisitedFor prescription);
 
-    int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
+	int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-    String getPatientVisitFile(String visitId);
+	String getPatientVisitFile(String visitId);
 
 	void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId);
 
