@@ -113,7 +113,7 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(dynamicUIRequest.getDoctorId()));
 		if(dynamicUICollection != null)
 		{
-			BeanUtil.map(dynamicUIRequest, dynamicUICollection);
+			dynamicUICollection.setUiPermissions(dynamicUIRequest.getUiPermissions());
 			dynamicUICollection = dynamicUIRepository.save(dynamicUICollection);
 			dynamicUI = new DynamicUI();
 			BeanUtil.map(dynamicUICollection, dynamicUI);
