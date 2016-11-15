@@ -892,7 +892,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 								&& patientuserCollection.getEmailAddress() != null)
 							sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
-									patientuserCollection.getEmailAddress());
+									patientCollection.getEmailAddress());
 						if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
