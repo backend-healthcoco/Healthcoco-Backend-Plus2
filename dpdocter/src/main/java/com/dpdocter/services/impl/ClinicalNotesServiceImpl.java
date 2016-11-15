@@ -3843,7 +3843,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
 	
 	@Override
 	@Transactional
@@ -4016,7 +4015,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
 	@Override
 	@Transactional
 	public PresentComplaint deletePresentComplaint(String id, String doctorId, String locationId, String hospitalId,
@@ -4146,4 +4144,5 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
+	
 }
