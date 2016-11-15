@@ -16,6 +16,10 @@ public class PresentComplaint {
     
     private String speciality;
 
+	public PresentComplaint() {
+		super();
+	}
+
 	public PresentComplaint(String presentComplaint, String doctorId, String locationId, String hospitalId,
 			Boolean discarded, String speciality) {
 		super();
@@ -26,6 +30,8 @@ public class PresentComplaint {
 		this.discarded = discarded;
 		this.speciality = speciality;
 	}
+
+
 
 	public String getId() {
 		return id;

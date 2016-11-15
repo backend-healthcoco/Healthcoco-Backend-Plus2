@@ -3,14 +3,6 @@ package com.dpdocter.request;
 import java.util.Date;
 import java.util.List;
 
-
-import org.reflections.scanners.MethodParameterNamesScanner;
-
-import com.dpdocter.beans.ClinicalNotesComplaint;
-import com.dpdocter.beans.ClinicalNotesDiagnosis;
-import com.dpdocter.beans.ClinicalNotesInvestigation;
-import com.dpdocter.beans.ClinicalNotesNote;
-import com.dpdocter.beans.ClinicalNotesObservation;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.GeneralExam;
@@ -23,7 +15,6 @@ import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
-
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 
@@ -31,7 +22,6 @@ public class ClinicalNotesAddRequest {
 	private String id;
 
 	private String patientId;
-
 
 	private List<Diagnoses> diagnoses;
 

@@ -86,4 +86,23 @@ public interface ClinicalNotesService {
 
 	ObstetricHistory addEditObstetricHistory(ObstetricHistory obstetricHistory);
 
+	ProvisionalDiagnosis deleteProvisionalDiagnosis(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentComplaint deletePresentComplaint(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentComplaintHistory deletePresentComplaintHistory(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
+
+	GeneralExam deleteGeneralExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	SystemExam deleteSystemExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	ObstetricHistory deleteObstetricHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
 }

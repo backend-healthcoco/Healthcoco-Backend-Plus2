@@ -756,6 +756,7 @@ public class RecordsServiceImpl implements RecordsService {
 					count.setValue(clinicalNotesService.getClinicalNotesCount(doctorObjectId, patientObjectId, locationObjectId,
 							hospitalObjectId, isOTPVerified));
 					break;
+
 				case HISTORY:
 					count.setValue(historyServices.getHistoryCount(doctorObjectId, patientObjectId, locationObjectId, hospitalObjectId,
 							isOTPVerified));

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
-import com.dpdocter.beans.ClinicalNotesDiagnosis;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
@@ -275,7 +273,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				clinicalNotesCollection.setCreatedBy(createdBy);
 			}
 			
-			if(request.getPresentComplaint() != null || !request.getPresentComplaint().isEmpty())
+			/*if(request.getPresentComplaint() != null || !request.getPresentComplaint().isEmpty())
 			{
 				ArrayList<String> presentComplaints = new ArrayList<String>(Arrays.asList(request.getPresentComplaint().split(",")));
 				for( String presentComplaint : presentComplaints)
@@ -283,7 +281,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					PresentComplaint complaint = new PresentComplaint(presentComplaint, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), false, null);
 				}
 			}
-			
+			*/
 			//complaintIds = new ArrayList<ObjectId>();
 			if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
 				for (Complaint complaint : request.getComplaints()) {
@@ -684,16 +682,262 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				request.setFromDate(appointment.getFromDate());
 			}
 			BeanUtil.map(request, clinicalNotesCollection);
-			diagnosisIds = new ArrayList<ObjectId>();
-			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
-				for (ClinicalNotesDiagnosis diagnosis : request.getDiagnoses()) {
-					if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
-						if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId()))
-							diagnosisIds.add(new ObjectId(diagnosis.getId()));
+			ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesCollection.getId());
+			String createdBy = oldClinicalNotesCollection.getCreatedBy();
+			if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
+				for (Complaint complaint : request.getComplaints()) {
+					if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
+						ComplaintCollection complaintCollection = new ComplaintCollection();
+						BeanUtil.map(complaint, complaintCollection);
+						BeanUtil.map(request, complaintCollection);
+						complaintCollection.setCreatedBy(createdBy);
+						complaintCollection.setCreatedTime(createdTime);
+						complaintCollection.setId(null);
+						complaintCollection = complaintRepository.save(complaintCollection);
+
+						transactionalManagementService.addResource(complaintCollection.getId(), Resource.COMPLAINT,
+								false);
+						ESComplaintsDocument esComplaints = new ESComplaintsDocument();
+						BeanUtil.map(complaintCollection, esComplaints);
+						esClinicalNotesService.addComplaints(esComplaints);
+
+						//complaintIds.add(complaintCollection.getId());
+					} else {
+						//complaintIds.add(new ObjectId(complaint.getId()));
 					}
 				}
 			}
 
+			//observationIds = new ArrayList<ObjectId>();
+			if (request.getObservations() != null && !request.getObservations().isEmpty()) {
+				for (Observation observation : request.getObservations()) {
+					if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
+						ObservationCollection observationCollection = new ObservationCollection();
+						BeanUtil.map(observation, observationCollection);
+						BeanUtil.map(request, observationCollection);
+						observationCollection.setCreatedBy(createdBy);
+						observationCollection.setCreatedTime(createdTime);
+						observationCollection.setId(null);
+						observationCollection = observationRepository.save(observationCollection);
+
+						transactionalManagementService.addResource(observationCollection.getId(), Resource.OBSERVATION,
+								false);
+						ESObservationsDocument esObservations = new ESObservationsDocument();
+						BeanUtil.map(observationCollection, esObservations);
+						esClinicalNotesService.addObservations(esObservations);
+
+					//	observationIds.add(observationCollection.getId());
+					} else {
+					//	observationIds.add(new ObjectId(observation.getId()));
+					}
+				}
+			}
+
+			//investigationIds = new ArrayList<ObjectId>();
+			if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
+				for (Investigation investigation : request.getInvestigations()) {
+					if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
+						InvestigationCollection investigationCollection = new InvestigationCollection();
+						BeanUtil.map(investigation, investigationCollection);
+						BeanUtil.map(request, investigationCollection);
+						investigationCollection.setCreatedBy(createdBy);
+						investigationCollection.setCreatedTime(createdTime);
+						investigationCollection.setId(null);
+						investigationCollection = investigationRepository.save(investigationCollection);
+
+						transactionalManagementService.addResource(investigationCollection.getId(),
+								Resource.INVESTIGATION, false);
+						ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
+						BeanUtil.map(investigationCollection, esInvestigations);
+						esClinicalNotesService.addInvestigations(esInvestigations);
+
+						//investigationIds.add(investigationCollection.getId());
+					} else {
+						//investigationIds.add(new ObjectId(investigation.getId()));
+					}
+				}
+			}
+
+		//	noteIds = new ArrayList<ObjectId>();
+			if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+				for (Notes note : request.getNotes()) {
+					if (DPDoctorUtils.anyStringEmpty(note.getId())) {
+						NotesCollection notesCollection = new NotesCollection();
+						BeanUtil.map(note, notesCollection);
+						BeanUtil.map(request, notesCollection);
+						notesCollection.setCreatedBy(createdBy);
+						notesCollection.setCreatedTime(createdTime);
+						notesCollection.setId(null);
+						notesCollection = notesRepository.save(notesCollection);
+						transactionalManagementService.addResource(notesCollection.getId(), Resource.NOTES, false);
+						ESNotesDocument esNotes = new ESNotesDocument();
+						BeanUtil.map(notesCollection, esNotes);
+						esClinicalNotesService.addNotes(esNotes);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+			}
+			}
+			if (request.getProvisionalDiagnoses() != null && !request.getProvisionalDiagnoses().isEmpty()) {
+				for (ProvisionalDiagnosis provisionalDiagnosis : request.getProvisionalDiagnoses()) {
+					if (DPDoctorUtils.anyStringEmpty(provisionalDiagnosis.getId())) {
+						ProvisionalDiagnosisCollection provisionalDiagnosisCollection = new ProvisionalDiagnosisCollection();
+						BeanUtil.map(provisionalDiagnosis, provisionalDiagnosisCollection);
+						BeanUtil.map(request, provisionalDiagnosisCollection);
+						provisionalDiagnosisCollection.setCreatedBy(createdBy);
+						provisionalDiagnosisCollection.setCreatedTime(createdTime);
+						provisionalDiagnosisCollection.setId(null);
+						provisionalDiagnosisCollection = provisionalDiagnosisRepository.save(provisionalDiagnosisCollection);
+						transactionalManagementService.addResource(provisionalDiagnosisCollection.getId(), Resource.PROVISIONAL_DIAGNOSIS, false);
+						ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new ESProvisionalDiagnosisDocument();
+						BeanUtil.map(provisionalDiagnosisCollection, esProvisionalDiagnosis);
+						esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosis);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty()) {
+				for (PresentComplaint presentComplaint : request.getPresentComplaints()) {
+					if (DPDoctorUtils.anyStringEmpty(presentComplaint.getId())) {
+						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();
+						BeanUtil.map(presentComplaint, presentComplaintCollection);
+						BeanUtil.map(request, presentComplaintCollection);
+						presentComplaintCollection.setCreatedBy(createdBy);
+						presentComplaintCollection.setCreatedTime(createdTime);
+						presentComplaintCollection.setId(null);
+						presentComplaintCollection = presentComplaintRepository.save(presentComplaintCollection);
+						transactionalManagementService.addResource(presentComplaintCollection.getId(), Resource.PRESENT_COMPLAINT, false);
+						ESPresentComplaintDocument esPresentComplaint = new ESPresentComplaintDocument();
+						BeanUtil.map(presentComplaintCollection, esPresentComplaint);
+						esClinicalNotesService.addPresentComplaint(esPresentComplaint);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			if (request.getPresentComplaintHistories() != null && !request.getPresentComplaintHistories().isEmpty()) {
+				for (PresentComplaintHistory presentComplaintHistory : request.getPresentComplaintHistories()) {
+					if (DPDoctorUtils.anyStringEmpty(presentComplaintHistory.getId())) {
+						PresentComplaintHistoryCollection presentComplaintHistoryCollection = new PresentComplaintHistoryCollection();
+						BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
+						BeanUtil.map(request, presentComplaintHistoryCollection);
+						presentComplaintHistoryCollection.setCreatedBy(createdBy);
+						presentComplaintHistoryCollection.setCreatedTime(createdTime);
+						presentComplaintHistoryCollection.setId(null);
+						presentComplaintHistoryCollection = presentComplaintHistoryRepository.save(presentComplaintHistoryCollection);
+						transactionalManagementService.addResource(presentComplaintHistoryCollection.getId(), Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
+						ESPresentComplaintHistoryDocument esPresentComplaintHistory = new ESPresentComplaintHistoryDocument();
+						BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistory);
+						esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistory);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			if (request.getGeneralExams() != null && !request.getGeneralExams().isEmpty()) {
+				for (GeneralExam generalExam : request.getGeneralExams()) {
+					if (DPDoctorUtils.anyStringEmpty(generalExam.getId())) {
+						GeneralExamCollection generalExamCollection = new GeneralExamCollection();
+						BeanUtil.map(generalExam, generalExamCollection);
+						BeanUtil.map(request, generalExamCollection);
+						generalExamCollection.setCreatedBy(createdBy);
+						generalExamCollection.setCreatedTime(createdTime);
+						generalExamCollection.setId(null);
+						generalExamCollection = generalExamRepository.save(generalExamCollection);
+						transactionalManagementService.addResource(generalExamCollection.getId(), Resource.GENERAL_EXAMINATION, false);
+						ESGeneralExamDocument esGeneralExam = new ESGeneralExamDocument();
+						BeanUtil.map(generalExamCollection, esGeneralExam);
+						esClinicalNotesService.addGeneralExam(esGeneralExam);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			if (request.getSystemExams() != null && !request.getSystemExams().isEmpty()) {
+				for (SystemExam systemExam : request.getSystemExams()) {
+					if (DPDoctorUtils.anyStringEmpty(systemExam.getId())) {
+						SystemExamCollection systemExamCollection = new SystemExamCollection();
+						BeanUtil.map(systemExam, systemExamCollection);
+						BeanUtil.map(request, systemExamCollection);
+						systemExamCollection.setCreatedBy(createdBy);
+						systemExamCollection.setCreatedTime(createdTime);
+						systemExamCollection.setId(null);
+						systemExamCollection = systemExamRepository.save(systemExamCollection);
+						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEM_EXAMINATION, false);
+						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
+						BeanUtil.map(systemExamCollection, esSystemExam);
+						esClinicalNotesService.addSystemExam(esSystemExam);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			if (request.getMenstrualHistories() != null && !request.getMenstrualHistories().isEmpty()) {
+				for (MenstrualHistory menstrualHistory : request.getMenstrualHistories()) {
+					if (DPDoctorUtils.anyStringEmpty(menstrualHistory.getId())) {
+						MenstrualHistoryCollection menstrualHistoryCollection = new MenstrualHistoryCollection();
+						BeanUtil.map(menstrualHistory, menstrualHistoryCollection);
+						BeanUtil.map(request, menstrualHistoryCollection);
+						menstrualHistoryCollection.setCreatedBy(createdBy);
+						menstrualHistoryCollection.setCreatedTime(createdTime);
+						menstrualHistoryCollection.setId(null);
+						menstrualHistoryCollection = menstrualHistoryRepository.save(menstrualHistoryCollection);
+						transactionalManagementService.addResource(menstrualHistoryCollection.getId(), Resource.MENSTRUAL_HISTORY, false);
+						ESMenstrualHistoryDocument esMenstrualHistory = new ESMenstrualHistoryDocument();
+						BeanUtil.map(menstrualHistoryCollection, esMenstrualHistory);
+						esClinicalNotesService.addMenstrualHistory(esMenstrualHistory);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			if (request.getObstetricHistories() != null && !request.getObstetricHistories().isEmpty()) {
+				for (ObstetricHistory obstetricHistory : request.getObstetricHistories()) {
+					if (DPDoctorUtils.anyStringEmpty(obstetricHistory.getId())) {
+						ObstetricHistoryCollection obstetricHistoryCollection = new ObstetricHistoryCollection();
+						BeanUtil.map(obstetricHistory, obstetricHistoryCollection);
+						BeanUtil.map(request, obstetricHistoryCollection);
+						obstetricHistoryCollection.setCreatedBy(createdBy);
+						obstetricHistoryCollection.setCreatedTime(createdTime);
+						obstetricHistoryCollection.setId(null);
+						obstetricHistoryCollection = obstetricHistoryRepository.save(obstetricHistoryCollection);
+						transactionalManagementService.addResource(obstetricHistoryCollection.getId(), Resource.OBSTETRIC_HISTORY, false);
+						ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
+						BeanUtil.map(obstetricHistoryCollection, esObstetricHistory);
+						esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
+						//noteIds.add(notesCollection.getId());
+					} else {
+						//noteIds.add(new ObjectId(note.getId()));
+					}
+				}
+			}
+			
+			diagnosisIds = new ArrayList<ObjectId>();
+			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
+				for (Diagnoses diagnosis : request.getDiagnoses()) {
+					if (!DPDoctorUtils.anyStringEmpty(diagnosis.getId())) {
+						diagnosisIds.add(new ObjectId(diagnosis.getId()));
+					}
+				}
+			}
+			//
+			// clinicalNotesCollection.setComplaints(complaintIds);
+			// clinicalNotesCollection.setInvestigations(investigationIds);
+			// clinicalNotesCollection.setObservations(observationIds);
 			clinicalNotesCollection.setDiagnoses(diagnosisIds);
 			if (request.getDiagrams() == null) {
 				clinicalNotesCollection.setDiagrams(diagramIds);
@@ -704,8 +948,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository
-					.findOne(clinicalNotesCollection.getId());
 			clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
 			clinicalNotesCollection.setDiscarded(oldClinicalNotesCollection.getDiscarded());
@@ -787,7 +1029,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		List<ClinicalNotesCollection> clinicalNotesCollections = null;
 		List<ClinicalNotes> clinicalNotes = null;
 		try {
-
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -800,34 +1041,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
-					.is(patientObjectId);
-			if (!discarded)
-				criteria.and("discarded").is(discarded);
-			if (inHistory)
-				criteria.and("inHistory").is(inHistory);
-
-			if (!isOTPVerified) {
-				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(doctorId))
-					criteria.and("doctorId").is(doctorObjectId);
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(inHistory)criteria.and("inHistory").is(inHistory);
+			
+			if(!isOTPVerified){
+				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
 			}
-
+			
 			Aggregation aggregation = null;
-
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
-			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
-					ClinicalNotesCollection.class, ClinicalNotesCollection.class);
+			
+			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			
+			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesCollection.class);
 			clinicalNotesCollections = aggregationResults.getMappedResults();
-
+			
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				clinicalNotes = new ArrayList<ClinicalNotes>();
 				for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
@@ -3613,4 +3843,307 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
+
+	
+	@Override
+	@Transactional
+	public ProvisionalDiagnosis deleteProvisionalDiagnosis(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		ProvisionalDiagnosis response = null;
+		try {
+			ProvisionalDiagnosisCollection provisionalDiagnosisCollection = provisionalDiagnosisRepository.findOne(new ObjectId(id));
+			if (provisionalDiagnosisCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(provisionalDiagnosisCollection.getDoctorId(),
+						provisionalDiagnosisCollection.getHospitalId(), provisionalDiagnosisCollection.getLocationId())) {
+					if (provisionalDiagnosisCollection.getDoctorId().toString().equals(doctorId)
+							&& provisionalDiagnosisCollection.getHospitalId().toString().equals(hospitalId)
+							&& provisionalDiagnosisCollection.getLocationId().toString().equals(locationId)) {
+
+						provisionalDiagnosisCollection.setDiscarded(discarded);
+						provisionalDiagnosisCollection.setUpdatedTime(new Date());
+						provisionalDiagnosisRepository.save(provisionalDiagnosisCollection);
+						response = new ProvisionalDiagnosis();
+						BeanUtil.map(provisionalDiagnosisCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					provisionalDiagnosisCollection.setDiscarded(discarded);
+					provisionalDiagnosisCollection.setUpdatedTime(new Date());
+					provisionalDiagnosisRepository.save(provisionalDiagnosisCollection);
+					response = new ProvisionalDiagnosis();
+					BeanUtil.map(provisionalDiagnosisCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public GeneralExam deleteGeneralExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		GeneralExam response = null;
+		try {
+			GeneralExamCollection generalExamCollection = generalExamRepository.findOne(new ObjectId(id));
+			if (generalExamCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(generalExamCollection.getDoctorId(),
+						generalExamCollection.getHospitalId(), generalExamCollection.getLocationId())) {
+					if (generalExamCollection.getDoctorId().toString().equals(doctorId)
+							&& generalExamCollection.getHospitalId().toString().equals(hospitalId)
+							&& generalExamCollection.getLocationId().toString().equals(locationId)) {
+
+						generalExamCollection.setDiscarded(discarded);
+						generalExamCollection.setUpdatedTime(new Date());
+						generalExamRepository.save(generalExamCollection);
+						response = new GeneralExam();
+						BeanUtil.map(generalExamCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					generalExamCollection.setDiscarded(discarded);
+					generalExamCollection.setUpdatedTime(new Date());
+					generalExamRepository.save(generalExamCollection);
+					response = new GeneralExam();
+					BeanUtil.map(generalExamCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public PresentComplaintHistory deletePresentComplaintHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		PresentComplaintHistory response = null;
+		try {
+			PresentComplaintHistoryCollection presentComplaintHistoryCollection = presentComplaintHistoryRepository.findOne(new ObjectId(id));
+			if (presentComplaintHistoryCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(presentComplaintHistoryCollection.getDoctorId(),
+						presentComplaintHistoryCollection.getHospitalId(), presentComplaintHistoryCollection.getLocationId())) {
+					if (presentComplaintHistoryCollection.getDoctorId().toString().equals(doctorId)
+							&& presentComplaintHistoryCollection.getHospitalId().toString().equals(hospitalId)
+							&& presentComplaintHistoryCollection.getLocationId().toString().equals(locationId)) {
+
+						presentComplaintHistoryCollection.setDiscarded(discarded);
+						presentComplaintHistoryCollection.setUpdatedTime(new Date());
+						presentComplaintHistoryRepository.save(presentComplaintHistoryCollection);
+						response = new PresentComplaintHistory();
+						BeanUtil.map(presentComplaintHistoryCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					presentComplaintHistoryCollection.setDiscarded(discarded);
+					presentComplaintHistoryCollection.setUpdatedTime(new Date());
+					presentComplaintHistoryRepository.save(presentComplaintHistoryCollection);
+					response = new PresentComplaintHistory();
+					BeanUtil.map(presentComplaintHistoryCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public SystemExam deleteSystemExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		SystemExam response = null;
+		try {
+			SystemExamCollection systemExamCollection = systemExamRepository.findOne(new ObjectId(id));
+			if (systemExamCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(systemExamCollection.getDoctorId(),
+						systemExamCollection.getHospitalId(), systemExamCollection.getLocationId())) {
+					if (systemExamCollection.getDoctorId().toString().equals(doctorId)
+							&& systemExamCollection.getHospitalId().toString().equals(hospitalId)
+							&& systemExamCollection.getLocationId().toString().equals(locationId)) {
+
+						systemExamCollection.setDiscarded(discarded);
+						systemExamCollection.setUpdatedTime(new Date());
+						systemExamRepository.save(systemExamCollection);
+						response = new SystemExam();
+						BeanUtil.map(systemExamCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					systemExamCollection.setDiscarded(discarded);
+					systemExamCollection.setUpdatedTime(new Date());
+					systemExamRepository.save(systemExamCollection);
+					response = new SystemExam();
+					BeanUtil.map(systemExamCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public PresentComplaint deletePresentComplaint(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		PresentComplaint response = null;
+		try {
+			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findOne(new ObjectId(id));
+			if (presentComplaintCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(presentComplaintCollection.getDoctorId(),
+						presentComplaintCollection.getHospitalId(), presentComplaintCollection.getLocationId())) {
+					if (presentComplaintCollection.getDoctorId().toString().equals(doctorId)
+							&& presentComplaintCollection.getHospitalId().toString().equals(hospitalId)
+							&& presentComplaintCollection.getLocationId().toString().equals(locationId)) {
+
+						presentComplaintCollection.setDiscarded(discarded);
+						presentComplaintCollection.setUpdatedTime(new Date());
+						presentComplaintRepository.save(presentComplaintCollection);
+						response = new PresentComplaint();
+						BeanUtil.map(presentComplaintCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					presentComplaintCollection.setDiscarded(discarded);
+					presentComplaintCollection.setUpdatedTime(new Date());
+					presentComplaintRepository.save(presentComplaintCollection);
+					response = new PresentComplaint();
+					BeanUtil.map(presentComplaintCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public ObstetricHistory deleteObstetricHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		ObstetricHistory response = null;
+		try {
+			ObstetricHistoryCollection obstetricHistoryCollection = obstetricHistoryRepository.findOne(new ObjectId(id));
+			if (obstetricHistoryCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(obstetricHistoryCollection.getDoctorId(),
+						obstetricHistoryCollection.getHospitalId(), obstetricHistoryCollection.getLocationId())) {
+					if (obstetricHistoryCollection.getDoctorId().toString().equals(doctorId)
+							&& obstetricHistoryCollection.getHospitalId().toString().equals(hospitalId)
+							&& obstetricHistoryCollection.getLocationId().toString().equals(locationId)) {
+
+						obstetricHistoryCollection.setDiscarded(discarded);
+						obstetricHistoryCollection.setUpdatedTime(new Date());
+						obstetricHistoryRepository.save(obstetricHistoryCollection);
+						response = new ObstetricHistory();
+						BeanUtil.map(obstetricHistoryCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					obstetricHistoryCollection.setDiscarded(discarded);
+					obstetricHistoryCollection.setUpdatedTime(new Date());
+					obstetricHistoryRepository.save(obstetricHistoryCollection);
+					response = new ObstetricHistory();
+					BeanUtil.map(obstetricHistoryCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		MenstrualHistory response = null;
+		try {
+			MenstrualHistoryCollection menstrualHistoryCollection = menstrualHistoryRepository.findOne(new ObjectId(id));
+			if (menstrualHistoryCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(menstrualHistoryCollection.getDoctorId(),
+						menstrualHistoryCollection.getHospitalId(), menstrualHistoryCollection.getLocationId())) {
+					if (menstrualHistoryCollection.getDoctorId().toString().equals(doctorId)
+							&& menstrualHistoryCollection.getHospitalId().toString().equals(hospitalId)
+							&& menstrualHistoryCollection.getLocationId().toString().equals(locationId)) {
+
+						menstrualHistoryCollection.setDiscarded(discarded);
+						menstrualHistoryCollection.setUpdatedTime(new Date());
+						menstrualHistoryRepository.save(menstrualHistoryCollection);
+						response = new MenstrualHistory();
+						BeanUtil.map(menstrualHistoryCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					menstrualHistoryCollection.setDiscarded(discarded);
+					menstrualHistoryCollection.setUpdatedTime(new Date());
+					menstrualHistoryRepository.save(menstrualHistoryCollection);
+					response = new MenstrualHistory();
+					BeanUtil.map(menstrualHistoryCollection, response);
+				}
+			} else {
+				logger.warn("Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
 }

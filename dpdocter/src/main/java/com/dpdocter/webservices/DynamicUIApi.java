@@ -6,7 +6,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.UIPermissions;
-import com.dpdocter.enums.SpecialityTypeEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DynamicUIRequest;
@@ -63,11 +61,27 @@ public class DynamicUIApi {
 		return response;
 	}
 	
+	@Path(value = PathProxy.DynamicUIUrls.POST_PERMISSIONS)
 	@POST
     @ApiOperation(value = "SUBMIT_DYNAMIC_UI_PERMISSION", notes = "SUBMIT_DYNAMIC_UI_PERMISSION")
-	public DynamicUI postPermissions(DynamicUIRequest dynamicUIRequest)
+	public Response<DynamicUI> postPermissions(DynamicUIRequest dynamicUIRequest)
 	{
-		return null;
+		if(dynamicUIRequest == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Request is null");
+		}
+		else if(dynamicUIRequest.getUiPermissions() == null){
+			throw new BusinessException(ServiceError.InvalidInput, "UI permissions are null");
+		}
+		if(dynamicUIRequest.getDoctorId() == null){
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
+		}
+		
+		DynamicUI dynamicUI = dynamicUIService.postPermissions(dynamicUIRequest);
+		Response<DynamicUI> response = new Response<DynamicUI>();
+		response.setData(dynamicUI);
+		return response;
+		
+		
 	}
 
 }

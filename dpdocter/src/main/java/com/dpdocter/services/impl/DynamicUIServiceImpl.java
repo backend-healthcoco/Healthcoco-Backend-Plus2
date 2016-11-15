@@ -3,17 +3,14 @@ package com.dpdocter.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.velocity.Template;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DynamicUI;
-import com.dpdocter.beans.Slot;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
@@ -255,6 +252,5 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 	private String[] specialityType() {
 	    return Arrays.toString(SpecialityTypeEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
-	
+		
 }
