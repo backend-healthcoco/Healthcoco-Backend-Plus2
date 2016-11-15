@@ -45,6 +45,7 @@ import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
+import com.dpdocter.response.DrugInteractionResposne;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.PrescriptionTestAndRecord;
@@ -944,5 +945,24 @@ public class PrescriptionApi {
 		response.setData(prescriptionServices.addGenericNameInDrugs());
 		return response;
 	}
-	
+
+	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
+	@POST
+	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request) {
+		
+		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request);
+		Response<DrugInteractionResposne> response = new Response<DrugInteractionResposne>();
+		response.setDataList(drugInteractionResposnes);
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_CODES_WITH_REACTION)
+	@GET
+	public Response<Boolean> addGenerics() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(prescriptionServices.addGenerics());
+		return response;
+	}
+
 }

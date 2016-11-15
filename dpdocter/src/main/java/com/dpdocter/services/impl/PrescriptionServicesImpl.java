@@ -7,8 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -18,11 +22,15 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -81,7 +89,9 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.document.ESGenericCodeWithReaction;
 import com.dpdocter.elasticsearch.repository.ESDoctorDrugRepository;
+import com.dpdocter.elasticsearch.repository.ESGenericCodeWithReactionRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FONTSTYLE;
@@ -123,6 +133,7 @@ import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
+import com.dpdocter.response.DrugInteractionResposne;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
@@ -261,6 +272,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private ESDoctorDrugRepository esDoctorDrugRepository;
+
+	@Autowired
+	private ElasticsearchTemplate elasticsearchTemplate;
+
+	@Autowired
+	private ESGenericCodeWithReactionRepository esGenericCodeWithReactionRepository;
 
 	@Override
 	@Transactional
@@ -1864,6 +1881,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			case FAVOURITES:
 				response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
 				break;
 			}
 			break;
@@ -3916,4 +3935,133 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
+	@Override
+	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
+		List<DrugInteractionResposne> response = null;
+		try{
+			Map<Integer, String> genericCodes = new HashMap<Integer, String>();
+			Map<Drug, Set<String>> drugMap = new LinkedHashMap<Drug, Set<String>>();
+			for(Drug drug : request){
+				if(drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()){
+					Set<String> codes = new HashSet<String>();
+					for(GenericCode genericNames : drug.getGenericNames()){
+						if(!codes.contains(genericNames.getCode()))codes.add(genericNames.getCode());
+						if(!genericCodes.containsValue(genericNames.getCode()))genericCodes.put(genericCodes.size(), genericNames.getCode());
+					}
+					drugMap.put(drug, codes);
+				}
+			}
+			
+			boolean[][] codeMatrix = new boolean[genericCodes.size()][genericCodes.size()];	
+			for(int row = 0; row < codeMatrix.length; row++){
+			    for(int column = 0; column < codeMatrix[row].length; column++){
+			    	if(row != column && !codeMatrix[row][column] && !codeMatrix[column][row]){
+			    		if(!checkGenericContainsInSameDrug(genericCodes.get(row), genericCodes.get(column), drugMap)){
+			    				codeMatrix[row][column] = true;
+			    				codeMatrix[column][row] = true;
+			    				List<ESGenericCodeWithReaction> esGenericCodeWithReactions = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+			    						.withQuery(new BoolQueryBuilder().must(QueryBuilders.matchQuery("codes", genericCodes.get(row)))
+			    								.must(QueryBuilders.matchQuery("codes",genericCodes.get(column)))).build(), ESGenericCodeWithReaction.class);
+			    				if(esGenericCodeWithReactions != null && !esGenericCodeWithReactions.isEmpty()){
+			    					if(response == null)response = new ArrayList<>();
+			    					for(Entry<Drug, Set<String>> entry : drugMap.entrySet()){
+			    						if(entry.getValue().contains(genericCodes.get(row))){
+			    							for(Entry<Drug, Set<String>> entry2 : drugMap.entrySet()){
+				    							if(entry2.getValue().contains(genericCodes.get(column))){
+				    								response.add(new DrugInteractionResposne(entry.getKey().getDrugName()+" has "+esGenericCodeWithReactions.get(0).getReactionType()+" reaction with "+entry2.getKey().getDrugName(), esGenericCodeWithReactions.get(0).getReactionType()));			
+				    							}
+				    						}
+			    						}	    						
+			    					}
+			    				}
+			    			}
+			    	}
+			    }
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While drugInteraction");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
+		}
+		return response;
+	}
+
+	public boolean checkGenericContainsInSameDrug(String a, String b, Map<Drug, Set<String>> drugMap) {
+		boolean response = false;
+		for(Entry<Drug, Set<String>> entry : drugMap.entrySet()){
+			if(entry.getValue().contains(a) && entry.getValue().contains(b)){
+				response = true;break;			
+			}
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean addGenerics() {
+//		String[] codes = {"GENGRA0010","GENALC0002","GENASP0015","GENIBU0002","GENKET0005","GENNAP0005"};
+//		ESGenericCodeWithReaction codeWithReaction = null;
+//		for(String code : codes){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENDIC0014", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes2 = {"GENWAR0001","GENRIF0002","GENLIT0001","GENMET0017"};
+//		for(String code : codes2){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENETO0005", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes3 = {"GENRIF0002","GENETH0006","GENSAL0007","GENMIN0004","GENASP0015","GENKET0006","GENKET0006","GENKET0007","GENLIT0001","GENMET0017","GENCOU0001","GENPHE0004","GENPHE0029","GENPHE0030"};
+//		for(String code : codes3){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENLOR0007", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes4 = {"GENCAR0004","GENPHE0029","GENWAR0001","GENDEX0022","GENALC0002","GENCAR0004","GENFOS0007","GENPHE0008","GENPHE0029","GENPHE0030","GENRIT0003","GENWAR0001"};
+//		for(String code : codes4){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENIBU0002", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes5 = {"GENWAR0001","GENMIR0003","GENVEN0002","GENOND0001","GENALC0002"};
+//		for(String code : codes5){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENTRA0003", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//	
+//		codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENDIC0014", "GENDIG0002"), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//		esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		
+//		codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENPAR0007", "GENDIG0002"), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//		esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		
+//		codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENNIM0005", "GENDIG0002"), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//		esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		
+//		String[] codes6 = {"GENLIT0001","GENMET0017","GENMAG0014","GENWAR0001","GENPRE0003"};
+//		for(String code : codes6){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENMEF0001", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes7 = {"GENALC0002","GENZOL0003","GENLOR0003"};
+//		for(String code : codes7){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENMOR0004", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes8 = {"GENCAL0018","GENMAG0014"};
+//		for(String code : codes8){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENDIA0002", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		
+//		String[] codes9 = {"GENCLA0001	GENDIC0014	GENDOX0008	GENERY0002	GENIMA0001	GENISO0006	GENPRO0029	GENQUI0003	GENVER0001	GENALC0002"};
+//		for(String code : codes9){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENFEN0009", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//		String[] codes10 = {"GENFLU0041","GENCIP0001"};
+//		for(String code : codes10){
+//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENTIZ0001", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+//			esGenericCodeWithReactionRepository.save(codeWithReaction);
+//		}
+//
+		return true;
+	}
+		
 }

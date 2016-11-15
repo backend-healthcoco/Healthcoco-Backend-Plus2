@@ -20,6 +20,7 @@ import com.dpdocter.request.TemplateAddEditRequest;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
+import com.dpdocter.response.DrugInteractionResposne;
 import com.dpdocter.response.DrugTypeAddEditResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
@@ -146,4 +147,8 @@ public interface PrescriptionServices {
 	Drug addFavouriteDrug(DrugAddEditRequest request);
 
 	Boolean addGenericNameInDrugs();
+
+	List<DrugInteractionResposne> drugInteraction(List<Drug> request);
+
+	Boolean addGenerics();
 }
