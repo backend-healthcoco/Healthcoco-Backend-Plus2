@@ -117,8 +117,7 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.EDIT_DRUG)
 	@PUT
 	@ApiOperation(value = PathProxy.PrescriptionUrls.EDIT_DRUG, notes = PathProxy.PrescriptionUrls.EDIT_DRUG)
-	public Response<Drug> editDrug(@PathParam(value = "drugId") String drugId,
-			DrugAddEditRequest request) {
+	public Response<Drug> editDrug(@PathParam(value = "drugId") String drugId, DrugAddEditRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(drugId, request.getDoctorId(), request.getHospitalId(),
 				request.getLocationId())) {
 			logger.warn("Invalid Input");
@@ -374,12 +373,12 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request,true);
+		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request, true);
 
 		// patient track
 		if (prescriptionAddEditResponse != null) {
 			String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION,
-					prescriptionAddEditResponse.getVisitId());
+					prescriptionAddEditResponse.getVisitId(), prescriptionAddEditResponse.getAppointmentId());
 			prescriptionAddEditResponse.setVisitId(visitId);
 		}
 
@@ -406,7 +405,7 @@ public class PrescriptionApi {
 				.addPrescriptionHandheld(request);
 		if (prescriptionAddEditResponse != null) {
 			String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION,
-					prescriptionAddEditResponse.getVisitId());
+					prescriptionAddEditResponse.getVisitId(), prescriptionAddEditResponse.getAppointmentId());
 			prescriptionAddEditResponse.setVisitId(visitId);
 		}
 
@@ -528,8 +527,9 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(new ObjectId(doctorId), new ObjectId(patientId), new ObjectId(locationId),
-				new ObjectId(hospitalId), otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
+		Integer prescriptionCount = prescriptionServices.getPrescriptionCount(new ObjectId(doctorId),
+				new ObjectId(patientId), new ObjectId(locationId), new ObjectId(hospitalId),
+				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId));
 		Response<Integer> response = new Response<Integer>();
 		response.setData(prescriptionCount);
 		return response;
@@ -863,9 +863,8 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR, notes = PathProxy.PrescriptionUrls.ADD_DRUG_TO_DOCTOR)
-	public Response<Drug> makeDrugFavourite(@PathParam("drugId") String drugId,
-			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+	public Response<Drug> makeDrugFavourite(@PathParam("drugId") String drugId, @PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
 		if (DPDoctorUtils.anyStringEmpty(drugId, doctorId, locationId, hospitalId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -896,28 +895,29 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.DELETE_ADVICE)
 	@DELETE
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_ADVICE, notes = PathProxy.PrescriptionUrls.DELETE_ADVICE)
-	public Response<Advice> deleteAdvice(@PathParam("adviceId") String adviceId, @PathParam(value = "doctorId") String doctorId,
-		    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-		    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<Advice> deleteAdvice(@PathParam("adviceId") String adviceId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
 		Response<Advice> response = new Response<Advice>();
-		response.setData(prescriptionServices.deleteAdvice( adviceId,  doctorId,  locationId,  hospitalId,
-				discarded));
+		response.setData(prescriptionServices.deleteAdvice(adviceId, doctorId, locationId, hospitalId, discarded));
 		return response;
 	}
 
 	/*
-	 * Don't not use it. To add existing custom drugs in my fav..fr updating mongodb data
-	 * */
-//	@Path(value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
-//	@GET
-//	public Response<Boolean> makeCustomDrugFavourite() {
-//		
-//		Response<Boolean> response = new Response<Boolean>();
-//		response.setData(prescriptionServices.makeCustomDrugFavourite());
-//		return response;
-//	}
-	
+	 * Don't not use it. To add existing custom drugs in my fav..fr updating
+	 * mongodb data
+	 */
+	// @Path(value = PathProxy.PrescriptionUrls.ADD_CUSTOM_DRUG_TO_FAV)
+	// @GET
+	// public Response<Boolean> makeCustomDrugFavourite() {
+	//
+	// Response<Boolean> response = new Response<Boolean>();
+	// response.setData(prescriptionServices.makeCustomDrugFavourite());
+	// return response;
+	// }
+
 	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG)
 	@POST
 	@ApiOperation(value = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG, notes = PathProxy.PrescriptionUrls.ADD_FAVOURITE_DRUG)
@@ -935,12 +935,13 @@ public class PrescriptionApi {
 	}
 
 	/*
-	 * Don't not use it. To add genericNames in drugs using generic codes.For updating mongodb data
-	 * */
+	 * Don't not use it. To add genericNames in drugs using generic codes.For
+	 * updating mongodb data
+	 */
 	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_NAME_IN_DRUGS)
 	@GET
 	public Response<Boolean> addGenericNameInDrugs() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(prescriptionServices.addGenericNameInDrugs());
 		return response;
@@ -949,7 +950,7 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
 	@POST
 	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request) {
-		
+
 		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request);
 		Response<DrugInteractionResposne> response = new Response<DrugInteractionResposne>();
 		response.setDataList(drugInteractionResposnes);
@@ -959,7 +960,7 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_CODES_WITH_REACTION)
 	@GET
 	public Response<Boolean> addGenerics() {
-		
+
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(prescriptionServices.addGenerics());
 		return response;

@@ -225,7 +225,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
+	public String addRecord(Object details, VisitedFor visitedFor, String visitId, String appointmentId) {
 		PatientVisitCollection patientVisitCollection = new PatientVisitCollection();
 		try {
 
@@ -268,6 +268,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!patientVisitCollection.getPrescriptionId().contains(id))
 						patientVisitCollection.getPrescriptionId().add(id);
 				}
+
 			} else if (visitedFor.equals(VisitedFor.CLINICAL_NOTES)) {
 				if (patientVisitCollection.getClinicalNotesId() == null) {
 					List<ObjectId> clinicalNotes = new ArrayList<ObjectId>();
@@ -296,6 +297,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						patientVisitCollection.getTreatmentId().add(id);
 				}
 			}
+			if (!DPDoctorUtils.anyStringEmpty(appointmentId))
+				patientVisitCollection.setAppointmentId(appointmentId);
 			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 
@@ -475,11 +478,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getClinicalNote().setTime(appointment.getTime());
 					request.getClinicalNote().setFromDate(appointment.getFromDate());
 				}
-				ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(),false);
+				ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false);
 				if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 					clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 				}
-				String visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
+				String visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId(),
+						appointment.getAppointmentId());
 				clinicalNotes.setVisitId(visitId);
 				request.setVisitId(visitId);
 				List<ClinicalNotes> list = new ArrayList<ClinicalNotes>();
@@ -495,7 +499,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getPrescription().setFromDate(appointment.getFromDate());
 				}
 				PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
-						.addPrescription(request.getPrescription(),false);
+						.addPrescription(request.getPrescription(), false);
 				Prescription prescription = new Prescription();
 
 				List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
@@ -521,7 +525,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					prescription.setItems(prescriptionItemDetailsList);
 				}
 				if (prescriptionResponse != null) {
-					String visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
+					String visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId(),
+							appointment.getId());
 
 					prescription.setVisitId(visitId);
 					request.setVisitId(visitId);
@@ -536,7 +541,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (records != null) {
 					records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-					String visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId());
+					String visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId(), appointment.getId());
 					records.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<Records> list = new ArrayList<Records>();
@@ -553,13 +558,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 
 				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
-						.addEditPatientTreatment(request.getTreatmentRequest(),false);
+						.addEditPatientTreatment(request.getTreatmentRequest(), false);
 
 				PatientTreatment patientTreatment = new PatientTreatment();
 				BeanUtil.map(patientTreatmentResponse, patientTreatment);
 
 				if (patientTreatmentResponse != null) {
-					String visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId());
+					String visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId(),
+							appointment.getId());
 					patientTreatment.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<PatientTreatment> list = new ArrayList<PatientTreatment>();

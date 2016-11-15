@@ -205,10 +205,10 @@ public class PatientTreamentAPI {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Treament request cannot be empty");
 		}
 		PatientTreatmentResponse addEditPatientTreatmentResponse = patientTreatmentServices
-				.addEditPatientTreatment(request,true);
+				.addEditPatientTreatment(request, true);
 		if (addEditPatientTreatmentResponse != null) {
 			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
-					request.getVisitId());
+					request.getVisitId(), addEditPatientTreatmentResponse.getAppointmentId());
 			addEditPatientTreatmentResponse.setVisitId(visitId);
 		}
 
@@ -315,7 +315,7 @@ public class PatientTreamentAPI {
 		response.setDataList(patientTreatmentResponses);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT)
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.EMAIL_PATIENT_TREATMENT)
