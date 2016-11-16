@@ -1434,11 +1434,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					obstetricHistoryCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				ObstetricHistoryCollection oldMenstrualHistoryCollection = obstetricHistoryRepository
+				ObstetricHistoryCollection oldObstetricHistoryCollection= obstetricHistoryRepository
 						.findOne(obstetricHistoryCollection.getId());
-				obstetricHistoryCollection.setCreatedBy(oldMenstrualHistoryCollection.getCreatedBy());
-				obstetricHistoryCollection.setCreatedTime(oldMenstrualHistoryCollection.getCreatedTime());
-				obstetricHistoryCollection.setDiscarded(oldMenstrualHistoryCollection.getDiscarded());
+				obstetricHistoryCollection.setCreatedBy(oldObstetricHistoryCollection.getCreatedBy());
+				obstetricHistoryCollection.setCreatedTime(oldObstetricHistoryCollection.getCreatedTime());
+				obstetricHistoryCollection.setDiscarded(oldObstetricHistoryCollection.getDiscarded());
 			}
 			obstetricHistoryCollection = obstetricHistoryRepository.save(obstetricHistoryCollection);
 

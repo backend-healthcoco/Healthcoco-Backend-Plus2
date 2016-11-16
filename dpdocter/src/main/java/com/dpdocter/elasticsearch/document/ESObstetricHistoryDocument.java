@@ -28,7 +28,7 @@ public class ESObstetricHistoryDocument {
 	private Boolean discarded = false;
 
 	@Field(type = FieldType.Date)
-	private Date updatedDate = new Date();
+	private Date updatedTime = new Date();
 
 	@Field(type = FieldType.String)
 	private String speciality;
@@ -81,12 +81,12 @@ public class ESObstetricHistoryDocument {
 		this.discarded = discarded;
 	}
 
-	public Date getUpdatedDate() {
-		return updatedDate;
+	public Date getUpdatedTime() {
+		return updatedTime;
 	}
 
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
 	}
 
 	public String getSpeciality() {
@@ -101,7 +101,7 @@ public class ESObstetricHistoryDocument {
 	public String toString() {
 		return "ESObstetricHistoryDocument [id=" + id + ", obstetricHistory=" + obstetricHistory + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedDate=" + updatedDate + ", speciality=" + speciality + "]";
+				+ ", updatedTime=" + updatedTime + ", speciality=" + speciality + "]";
 	}
 
 }

@@ -1,7 +1,9 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "obstetric_history_cl")
 public class ObstetricHistoryCollection extends GenericCollection {
 
 	private ObjectId id;
