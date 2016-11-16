@@ -287,7 +287,7 @@ public class RecordsServiceImpl implements RecordsService {
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
 								"notApprovedRecordToDoctorTemplate.vm");
-						mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
+						mailService.sendEmail(patientCollection.getEmailAddress(), subject, body, null);
 					}
 				}
 			}

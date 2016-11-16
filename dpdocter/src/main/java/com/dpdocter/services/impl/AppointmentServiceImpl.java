@@ -605,7 +605,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							if (request.getCancelledBy().equals(AppointmentCreatedBy.DOCTOR.getType())) {
 								if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
 									sendEmail(doctorName, patientName, dateTime, clinicName,
-											"CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", patient.getEmailAddress());
+											"CANCEL_APPOINTMENT_TO_DOCTOR_BY_DOCTOR", patientCollection.getEmailAddress());
 								if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 									if (appointmentCollection.getState().getState()
 											.equals(AppointmentState.CANCEL.getState()))
@@ -615,9 +615,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 												doctorName, clinicName, clinicContactNum, appointmentCollection.getId().toString());
 								}
 								if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
-										&& patient.getEmailAddress() != null)
+										&& patientCollection.getEmailAddress() != null)
 									sendEmail(doctorName, patientName, dateTime, clinicName,
-											"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", patient.getEmailAddress());
+											"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", patientCollection.getEmailAddress());
 								if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 									if (appointmentCollection.getState().getState()
 											.equals(AppointmentState.CANCEL.getState()))
@@ -640,9 +640,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 											clinicName, clinicContactNum, appointmentCollection.getId().toString());
 									if (DPDoctorUtils.anyStringEmpty(patient.getEmailAddress()))
 										sendEmail(doctorName, patientName, dateTime, clinicName,
-												"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patient.getEmailAddress());
+												"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patientCollection.getEmailAddress());
 									sendEmail(doctorName, patientName, dateTime, clinicName,
-											"CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", patient.getEmailAddress());
+											"CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT", patientCollection.getEmailAddress());
 								}
 							}
 						} else {
@@ -892,7 +892,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 								&& patientuserCollection.getEmailAddress() != null)
 							sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
-									patientuserCollection.getEmailAddress());
+									patientCollection.getEmailAddress());
 						if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 							sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(), "CONFIRMED_APPOINTMENT_TO_PATIENT",
 									request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
