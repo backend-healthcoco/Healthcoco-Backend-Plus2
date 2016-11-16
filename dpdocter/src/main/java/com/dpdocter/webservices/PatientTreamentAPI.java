@@ -208,7 +208,7 @@ public class PatientTreamentAPI {
 				.addEditPatientTreatment(request, true);
 		if (addEditPatientTreatmentResponse != null) {
 			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
-					request.getVisitId(), addEditPatientTreatmentResponse.getAppointmentId());
+					request.getVisitId());
 			addEditPatientTreatmentResponse.setVisitId(visitId);
 		}
 

@@ -87,7 +87,7 @@ public class RecordsApi {
 			BeanUtil.map(records, visitRecord);
 			visitRecord.setPrescriptionId(null);
 			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-			String visitId = patientTrackService.addRecord(visitRecord, VisitedFor.REPORTS, request.getVisitId(), null);
+			String visitId = patientTrackService.addRecord(visitRecord, VisitedFor.REPORTS, request.getVisitId());
 			records.setVisitId(visitId);
 		}
 
@@ -355,7 +355,7 @@ public class RecordsApi {
 		// patient track
 		if (records != null) {
 			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-			String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId(), null);
+			String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
 			records.setVisitId(visitId);
 		}
 

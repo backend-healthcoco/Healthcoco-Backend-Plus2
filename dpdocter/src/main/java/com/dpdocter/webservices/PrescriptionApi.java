@@ -378,7 +378,7 @@ public class PrescriptionApi {
 		// patient track
 		if (prescriptionAddEditResponse != null) {
 			String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION,
-					prescriptionAddEditResponse.getVisitId(), prescriptionAddEditResponse.getAppointmentId());
+					prescriptionAddEditResponse.getVisitId());
 			prescriptionAddEditResponse.setVisitId(visitId);
 		}
 
@@ -405,7 +405,7 @@ public class PrescriptionApi {
 				.addPrescriptionHandheld(request);
 		if (prescriptionAddEditResponse != null) {
 			String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION,
-					prescriptionAddEditResponse.getVisitId(), prescriptionAddEditResponse.getAppointmentId());
+					prescriptionAddEditResponse.getVisitId());
 			prescriptionAddEditResponse.setVisitId(visitId);
 		}
 

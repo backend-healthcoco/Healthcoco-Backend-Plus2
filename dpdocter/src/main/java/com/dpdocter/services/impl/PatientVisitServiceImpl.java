@@ -225,7 +225,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	@Transactional
-	public String addRecord(Object details, VisitedFor visitedFor, String visitId, String appointmentId) {
+	public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
 		PatientVisitCollection patientVisitCollection = new PatientVisitCollection();
 		try {
 
@@ -297,9 +297,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						patientVisitCollection.getTreatmentId().add(id);
 				}
 			}
-			if (!DPDoctorUtils.anyStringEmpty(appointmentId)) {
-				patientVisitCollection.setAppointmentId(appointmentId);
-			}
+
 			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 
@@ -468,7 +466,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PatientVisitResponse response = new PatientVisitResponse();
 		try {
 			String visitId = null;
-			String appointmentId = null;
+
 			Appointment appointment = null;
 			if (request.getAppointmentRequest() != null) {
 				appointment = addVisitAppointment(request.getAppointmentRequest());
@@ -481,14 +479,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getClinicalNote().setAppointmentId(appointment.getAppointmentId());
 					request.getClinicalNote().setTime(appointment.getTime());
 					request.getClinicalNote().setFromDate(appointment.getFromDate());
-					appointmentId = appointment.getAppointmentId();
+
 				}
 				ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false);
 				if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 					clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 				}
 
-				visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId(), appointmentId);
+				visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
 
 				clinicalNotes.setVisitId(visitId);
 				request.setVisitId(visitId);
@@ -503,7 +501,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getPrescription().setAppointmentId(appointment.getAppointmentId());
 					request.getPrescription().setTime(appointment.getTime());
 					request.getPrescription().setFromDate(appointment.getFromDate());
-					appointmentId = appointment.getAppointmentId();
+
 				}
 				PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
 						.addPrescription(request.getPrescription(), false);
@@ -532,8 +530,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					prescription.setItems(prescriptionItemDetailsList);
 				}
 				if (prescriptionResponse != null) {
-					visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId(),
-							appointmentId);
+					visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
 
 					prescription.setVisitId(visitId);
 					request.setVisitId(visitId);
@@ -548,7 +545,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 				if (records != null) {
 					records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-					visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId(), appointmentId);
+					visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId());
 					records.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<Records> list = new ArrayList<Records>();
@@ -562,7 +559,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					request.getTreatmentRequest().setAppointmentId(appointment.getAppointmentId());
 					request.getTreatmentRequest().setTime(appointment.getTime());
 					request.getTreatmentRequest().setFromDate(appointment.getFromDate());
-					appointmentId = appointment.getAppointmentId();
+
 				}
 
 				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
@@ -572,8 +569,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				BeanUtil.map(patientTreatmentResponse, patientTreatment);
 
 				if (patientTreatmentResponse != null) {
-					visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId(),
-							appointmentId);
+					visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId());
 					patientTreatment.setVisitId(visitId);
 					request.setVisitId(visitId);
 					List<PatientTreatment> list = new ArrayList<PatientTreatment>();
@@ -593,6 +589,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				response.setCreatedTime(patientVisitCollection.getCreatedTime());
 				response.setUpdatedTime(patientVisitCollection.getUpdatedTime());
 				response.setCreatedBy(patientVisitCollection.getCreatedBy());
+				if (patientVisitCollection.getAppointmentId() != null) {
+					response.setAppointmentId(patientVisitCollection.getAppointmentId());
+					response.setTime(patientVisitCollection.getTime());
+					response.setFromDate(patientVisitCollection.getFromDate());
+				}
 				if ((response.getPatientTreatment() == null || response.getPatientTreatment().isEmpty())
 						&& (patientVisitCollection.getTreatmentId() != null
 								&& !patientVisitCollection.getTreatmentId().isEmpty())) {
@@ -601,18 +602,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					response.setPatientTreatment(list);
 				}
 
-				if (appointment != null) {
-					response.setAppointmentId(appointment.getAppointmentId());
-					response.setTime(appointment.getTime());
-					response.setFromDate(appointment.getFromDate());
-				} else if (patientVisitCollection.getAppointmentId() != null) {
-					response.setAppointmentId(patientVisitCollection.getAppointmentId());
-					AppointmentCollection appointmentCollection = appointmentRepository
-							.findByAppointmentId(patientVisitCollection.getAppointmentId());
-					response.setTime(appointmentCollection.getTime());
-					response.setFromDate(appointmentCollection.getFromDate());
-
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

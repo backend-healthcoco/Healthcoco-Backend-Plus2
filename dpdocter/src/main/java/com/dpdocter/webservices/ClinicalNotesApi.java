@@ -93,7 +93,7 @@ public class ClinicalNotesApi {
 
 		if (clinicalNotes != null) {
 			String visitId = patientTrackService.addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES,
-					request.getVisitId(), clinicalNotes.getAppointmentId());
+					request.getVisitId());
 			clinicalNotes.setVisitId(visitId);
 		}
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {

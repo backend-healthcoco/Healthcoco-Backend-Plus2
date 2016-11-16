@@ -17,7 +17,7 @@ import com.dpdocter.response.PatientVisitResponse;
 public interface PatientVisitService {
 	// boolean addRecord(PatientVisit request);
 
-	String addRecord(Object details, VisitedFor visitedFor, String visitId, String appomimentId);
+	String addRecord(Object details, VisitedFor visitedFor, String visitId);
 
 	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 

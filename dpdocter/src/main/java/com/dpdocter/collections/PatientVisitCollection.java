@@ -11,55 +11,76 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.VisitedFor;
 
 @Document(collection = "patient_visit_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class PatientVisitCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String uniqueEmrId;
+	@Field
+	private String uniqueEmrId;
 
-    @Indexed
-    private ObjectId patientId;
+	@Indexed
+	private ObjectId patientId;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private Date visitedTime;
+	@Field
+	private Date visitedTime;
 
-    @Field
-    private List<VisitedFor> visitedFor;
+	@Field
+	private List<VisitedFor> visitedFor;
 
-    private long total;
+	private long total;
 
-    @Field
-    private List<ObjectId> prescriptionId;
+	@Field
+	private List<ObjectId> prescriptionId;
 
-    @Field
-    private List<ObjectId> clinicalNotesId;
-    
-    @Field
-    private List<ObjectId> treatmentId;
+	@Field
+	private List<ObjectId> clinicalNotesId;
 
-    @Field
-    private List<ObjectId> recordId;
-    
-    @Field
-    private String appointmentId;
+	@Field
+	private List<ObjectId> treatmentId;
 
-    public String getAppointmentId() {
+	@Field
+	private List<ObjectId> recordId;
+
+	@Field
+	private String appointmentId;
+
+	@Field
+	private WorkingHours time;
+
+	@Field
+	private Date fromDate;
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public String getAppointmentId() {
 		return appointmentId;
 	}
 
@@ -68,103 +89,103 @@ public class PatientVisitCollection extends GenericCollection {
 	}
 
 	@Field
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Date getVisitedTime() {
-	return visitedTime;
-    }
+	public Date getVisitedTime() {
+		return visitedTime;
+	}
 
-    public void setVisitedTime(Date visitedTime) {
-	this.visitedTime = visitedTime;
-    }
+	public void setVisitedTime(Date visitedTime) {
+		this.visitedTime = visitedTime;
+	}
 
-    public List<VisitedFor> getVisitedFor() {
-	return visitedFor;
-    }
+	public List<VisitedFor> getVisitedFor() {
+		return visitedFor;
+	}
 
-    public void setVisitedFor(List<VisitedFor> visitedFor) {
-	this.visitedFor = visitedFor;
-    }
+	public void setVisitedFor(List<VisitedFor> visitedFor) {
+		this.visitedFor = visitedFor;
+	}
 
-    public long getTotal() {
-	return total;
-    }
+	public long getTotal() {
+		return total;
+	}
 
-    public void setTotal(long total) {
-	this.total = total;
-    }
+	public void setTotal(long total) {
+		this.total = total;
+	}
 
-    public List<ObjectId> getPrescriptionId() {
-	return prescriptionId;
-    }
+	public List<ObjectId> getPrescriptionId() {
+		return prescriptionId;
+	}
 
-    public void setPrescriptionId(List<ObjectId> prescriptionId) {
-	this.prescriptionId = prescriptionId;
-    }
+	public void setPrescriptionId(List<ObjectId> prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
 
-    public List<ObjectId> getClinicalNotesId() {
-	return clinicalNotesId;
-    }
+	public List<ObjectId> getClinicalNotesId() {
+		return clinicalNotesId;
+	}
 
-    public void setClinicalNotesId(List<ObjectId> clinicalNotesId) {
-	this.clinicalNotesId = clinicalNotesId;
-    }
+	public void setClinicalNotesId(List<ObjectId> clinicalNotesId) {
+		this.clinicalNotesId = clinicalNotesId;
+	}
 
-    public List<ObjectId> getRecordId() {
-	return recordId;
-    }
+	public List<ObjectId> getRecordId() {
+		return recordId;
+	}
 
-    public void setRecordId(List<ObjectId> recordId) {
-	this.recordId = recordId;
-    }
+	public void setRecordId(List<ObjectId> recordId) {
+		this.recordId = recordId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
@@ -173,8 +194,6 @@ public class PatientVisitCollection extends GenericCollection {
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
 	}
-
-	
 
 	public List<ObjectId> getTreatmentId() {
 		return treatmentId;
