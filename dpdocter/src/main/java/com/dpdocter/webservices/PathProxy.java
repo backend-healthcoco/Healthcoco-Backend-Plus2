@@ -229,7 +229,7 @@ public interface PathProxy {
 		
 		public static final String DELETE_SYSTEM_EXAM = "/systemExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
-		public static final String DELETE_MENSTRUAL_HISTORY = "/generalExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_MENSTRUAL_HISTORY = "/menstrualHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
 		public static final String DELETE_OBSTETRIC_HISTORY = "/obstretricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
