@@ -220,6 +220,20 @@ public interface PathProxy {
 		public static final String DOWNLOAD_CLINICAL_NOTES = "/download/{clinicalNotesId}";
 
 		public static final String UPDATE_QUERY_CLINICAL_NOTES = "/updateQuery";
+		
+		public static final String DELETE_PRESENT_COMPLAINT = "/presentComplaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_PROVISIONAL_DIAGNOSIS = "/provisionalDiagnosis/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_GENERAL_EXAM = "/generalExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_SYSTEM_EXAM = "/systemExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_MENSTRUAL_HISTORY = "/generalExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_OBSTETRIC_HISTORY = "/obstretricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
