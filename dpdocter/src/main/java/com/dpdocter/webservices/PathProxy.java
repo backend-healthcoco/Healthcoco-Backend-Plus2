@@ -595,6 +595,20 @@ public interface PathProxy {
 		public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{range}";
 
 		public static final String SEARCH_OBSERVATIONS = "searchObservations/{range}";
+		
+		public static final String SEARCH_PRESENT_COMPLAINT = "searchPresentComplaint/{range}";
+		
+		public static final String SEARCH_PRESENT_COMPLAINT_HISTORY = "searchPresentComplaintHistory/{range}";
+		
+		public static final String SEARCH_PROVISIONAL_DIAGNOSIS = "searchProvisionalDiagnosis/{range}";
+		
+		public static final String SEARCH_GENERAL_EXAM = "searchGeneralExam/{range}";
+		
+		public static final String SEARCH_SYSTEM_EXAM = "searchSystemExam/{range}";
+		
+		public static final String SEARCH_OBSTETRIC_HISTORY = "searchObstetricHistory/{range}";
+		
+		public static final String SEARCH_MENSTRUAL_HISTORY = "searchMenstrualHistory/{range}";
 
 	}
 

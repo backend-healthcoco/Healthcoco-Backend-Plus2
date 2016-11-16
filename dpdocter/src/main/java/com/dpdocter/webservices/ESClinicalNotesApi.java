@@ -19,9 +19,16 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
+import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -182,4 +189,124 @@ public class ESClinicalNotesApi {
 	} else
 	    return null;
     }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT)
+    public Response<ESPresentComplaintDocument> searchPresentComplaint(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESPresentComplaintDocument> presentComplaints = esClinicalNotesService.searchPresentComplaints(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESPresentComplaintDocument> response = new Response<ESPresentComplaintDocument>();
+	response.setDataList(presentComplaints);
+	return response;
+    }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT_HISTORY)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT_HISTORY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PRESENT_COMPLAINT_HISTORY)
+    public Response<ESPresentComplaintHistoryDocument> searchPresentComplaintHistory(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESPresentComplaintHistoryDocument> presentComplaintHistories = esClinicalNotesService.searchPresentComplaintsHistory(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESPresentComplaintHistoryDocument> response = new Response<ESPresentComplaintHistoryDocument>();
+	response.setDataList(presentComplaintHistories);
+	return response;
+    }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROVISIONAL_DIAGNOSIS)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROVISIONAL_DIAGNOSIS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PROVISIONAL_DIAGNOSIS)
+    public Response<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESProvisionalDiagnosisDocument> provisionalDiagnosis = esClinicalNotesService.searchProvisionalDiagnosis(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESProvisionalDiagnosisDocument> response = new Response<ESProvisionalDiagnosisDocument>();
+	response.setDataList(provisionalDiagnosis);
+	return response;
+    }
+
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_GENERAL_EXAM)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_GENERAL_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_GENERAL_EXAM)
+    public Response<ESGeneralExamDocument> searchGeneralExam(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESGeneralExamDocument> generalExams = esClinicalNotesService.searchGeneralExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESGeneralExamDocument> response = new Response<ESGeneralExamDocument>();
+	response.setDataList(generalExams);
+	return response;
+    }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_SYSTEM_EXAM)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_SYSTEM_EXAM, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_SYSTEM_EXAM)
+    public Response<ESSystemExamDocument> searchSystemExam(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESSystemExamDocument> systemExams = esClinicalNotesService.searchSystemExam(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESSystemExamDocument> response = new Response<ESSystemExamDocument>();
+	response.setDataList(systemExams);
+	return response;
+    }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_MENSTRUAL_HISTORY)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_MENSTRUAL_HISTORY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_MENSTRUAL_HISTORY)
+    public Response<ESMenstrualHistoryDocument> searchMenstrualHistory(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESMenstrualHistoryDocument> menstrualHistories = esClinicalNotesService.searchMenstrualHistory(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESMenstrualHistoryDocument> response = new Response<ESMenstrualHistoryDocument>();
+	response.setDataList(menstrualHistories);
+	return response;
+    }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSTETRIC_HISTORY)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSTETRIC_HISTORY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_OBSTETRIC_HISTORY)
+    public Response<ESObstetricHistoryDocument> searchObstetricHistory(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESObstetricHistoryDocument> obstetricHistories = esClinicalNotesService.searchObstetricHistory(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESObstetricHistoryDocument> response = new Response<ESObstetricHistoryDocument>();
+	response.setDataList(obstetricHistories);
+	return response;
+    }
+    
 }
