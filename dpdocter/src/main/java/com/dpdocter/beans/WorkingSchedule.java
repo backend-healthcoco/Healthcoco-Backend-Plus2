@@ -2,11 +2,12 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import com.dpdocter.enums.Day;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class WorkingSchedule {
     private Day workingDay;
 

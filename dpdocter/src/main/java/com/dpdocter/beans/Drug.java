@@ -2,8 +2,11 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.collections.GenericCollection;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.collections.GenericCollection;
+import com.fasterxml.jackson.annotation.JsonInclude;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Drug extends GenericCollection{
    
 	private String id;

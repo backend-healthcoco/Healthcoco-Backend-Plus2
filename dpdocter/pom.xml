@@ -10,14 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
-
 				<resources>
-
 					<resource>
 						<directory>src/main/resources/spring-context</directory>
 						<filtering>true</filtering>
@@ -35,6 +30,9 @@
 		</profile>
 		<profile>
 			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -366,29 +364,29 @@
 		</dependency>
 		<!-- Log4j -->
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.13</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>ch.qos.logback</groupId> -->
+<!-- 			<artifactId>logback-classic</artifactId> -->
+<!-- 			<version>1.0.13</version> -->
+<!-- 		</dependency> -->
 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.0.13</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>ch.qos.logback</groupId> -->
+<!-- 			<artifactId>logback-core</artifactId> -->
+<!-- 			<version>1.0.13</version> -->
+<!-- 		</dependency> -->
 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-access</artifactId>
-			<version>1.0.13</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>ch.qos.logback</groupId> -->
+<!-- 			<artifactId>logback-access</artifactId> -->
+<!-- 			<version>1.0.13</version> -->
+<!-- 		</dependency> -->
 
-		<dependency>
-			<groupId>org.logback-extensions</groupId>
-			<artifactId>logback-ext-spring</artifactId>
-			<version>0.1.1</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.logback-extensions</groupId> -->
+<!-- 			<artifactId>logback-ext-spring</artifactId> -->
+<!-- 			<version>0.1.1</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>

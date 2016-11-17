@@ -1,7 +1,9 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.HistoryFilter;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.HistoryFilter;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class GeneralData {
     private Object data;
 

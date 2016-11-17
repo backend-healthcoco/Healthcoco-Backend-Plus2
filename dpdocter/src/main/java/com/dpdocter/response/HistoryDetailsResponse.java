@@ -2,115 +2,150 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.BirthHistory;
+import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.GeneralData;
+import com.dpdocter.beans.PersonalHistory;
 
 public class HistoryDetailsResponse {
 
-    private String id;
+	private String id;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String patientId;
+	private String patientId;
 
-    private String doctorName;
+	private String doctorName;
 
-    private List<GeneralData> generalRecords;
+	private List<GeneralData> generalRecords;
 
-    private List<DiseaseListResponse> familyhistory;
+	private List<DiseaseListResponse> familyhistory;
 
-    private List<DiseaseListResponse> medicalhistory;
+	private List<DiseaseListResponse> medicalhistory;
 
-    private List<String> specialNotes;
+	private DrugsAndAllergies drugsAndAllergies;
 
-    public String getId() {
-	return id;
-    }
+	private PersonalHistory personalHistory;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private BirthHistory birthHistory;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	private List<String> specialNotes;
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getDoctorName() {
-	return doctorName;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setDoctorName(String doctorName) {
-	this.doctorName = doctorName;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public List<GeneralData> getGeneralRecords() {
-	return generalRecords;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public void setGeneralRecords(List<GeneralData> generalRecords) {
-	this.generalRecords = generalRecords;
-    }
+	public String getDoctorName() {
+		return doctorName;
+	}
 
-    public List<DiseaseListResponse> getFamilyhistory() {
-	return familyhistory;
-    }
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
 
-    public void setFamilyhistory(List<DiseaseListResponse> familyhistory) {
-	this.familyhistory = familyhistory;
-    }
+	public List<GeneralData> getGeneralRecords() {
+		return generalRecords;
+	}
 
-    public List<DiseaseListResponse> getMedicalhistory() {
-	return medicalhistory;
-    }
+	public void setGeneralRecords(List<GeneralData> generalRecords) {
+		this.generalRecords = generalRecords;
+	}
 
-    public void setMedicalhistory(List<DiseaseListResponse> medicalhistory) {
-	this.medicalhistory = medicalhistory;
-    }
+	public List<DiseaseListResponse> getFamilyhistory() {
+		return familyhistory;
+	}
 
-    public List<String> getSpecialNotes() {
-	return specialNotes;
-    }
+	public void setFamilyhistory(List<DiseaseListResponse> familyhistory) {
+		this.familyhistory = familyhistory;
+	}
 
-    public void setSpecialNotes(List<String> specialNotes) {
-	this.specialNotes = specialNotes;
-    }
+	public List<DiseaseListResponse> getMedicalhistory() {
+		return medicalhistory;
+	}
 
-    @Override
-    public String toString() {
-	return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", doctorName=" + doctorName + ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory="
-		+ medicalhistory + ", specialNotes=" + specialNotes + "]";
-    }
+	public void setMedicalhistory(List<DiseaseListResponse> medicalhistory) {
+		this.medicalhistory = medicalhistory;
+	}
+
+	public List<String> getSpecialNotes() {
+		return specialNotes;
+	}
+
+	public void setSpecialNotes(List<String> specialNotes) {
+		this.specialNotes = specialNotes;
+	}
+
+	public DrugsAndAllergies getDrugsAndAllergies() {
+		return drugsAndAllergies;
+	}
+
+	public void setDrugsAndAllergies(DrugsAndAllergies drugsAndAllergies) {
+		this.drugsAndAllergies = drugsAndAllergies;
+	}
+
+	public PersonalHistory getPersonalHistory() {
+		return personalHistory;
+	}
+
+	public void setPersonalHistory(PersonalHistory personalHistory) {
+		this.personalHistory = personalHistory;
+	}
+
+	public BirthHistory getBirthHistory() {
+		return birthHistory;
+	}
+
+	public void setBirthHistory(BirthHistory birthHistory) {
+		this.birthHistory = birthHistory;
+	}
+
+	@Override
+	public String toString() {
+		return "HistoryDetailsResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", doctorName=" + doctorName
+				+ ", generalRecords=" + generalRecords + ", familyhistory=" + familyhistory + ", medicalhistory="
+				+ medicalhistory + ", drugsAndAllergies=" + drugsAndAllergies + ", personalHistory=" + personalHistory
+				+ ", birthHistory=" + birthHistory + ", specialNotes=" + specialNotes + "]";
+	}
 
 }

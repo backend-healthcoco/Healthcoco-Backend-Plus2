@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.enums.AppType;
 import com.dpdocter.enums.DeviceType;
 
@@ -8,7 +10,7 @@ import com.dpdocter.enums.DeviceType;
  * @author parag
  *
  */
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class VersionControl {
 
 	private String id;

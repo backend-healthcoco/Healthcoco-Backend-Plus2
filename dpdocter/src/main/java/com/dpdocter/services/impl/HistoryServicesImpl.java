@@ -53,6 +53,7 @@ import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.HistoryFilter;
+import com.dpdocter.enums.HistoryType;
 import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -87,6 +88,7 @@ import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
 
 @Service
 public class HistoryServicesImpl implements HistoryServices {
@@ -2062,5 +2064,28 @@ public class HistoryServicesImpl implements HistoryServices {
 	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
 	return response;
+    }
+    
+    @Override
+    @Transactional
+    public Response getHistory( String patientId, String doctorId, String hospitalId, String locationId , List<String> type)
+    {
+    	if(type.contains(HistoryType.BIRTH.getType()))
+    	{
+    		
+    	}
+    	if(type.contains(HistoryType.DRUG_ALLERGIES.getType()))
+    	{
+    		
+    	}
+    	if(type.contains(HistoryType.PERSONAL.getType()))
+    	{
+    		
+    	}
+    	if(type.contains(HistoryType.FAMILY.getType()))
+    	{
+    		
+    	}
+    	return null;
     }
 }

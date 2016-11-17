@@ -2,8 +2,11 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.mongodb.DBObject;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mongodb.DBObject;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesJasperDetails {
 
     private String complaints;

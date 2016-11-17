@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import java.io.InputStream;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.core.io.FileSystemResource;
  * @author veeraj
  *
  */
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class MailAttachment {
     private String attachmentName;
 

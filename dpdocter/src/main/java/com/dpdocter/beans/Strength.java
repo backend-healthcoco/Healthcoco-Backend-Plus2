@@ -1,8 +1,10 @@
 package com.dpdocter.beans;
 
 import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonAutoDetect
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Strength {
     private String value;
 

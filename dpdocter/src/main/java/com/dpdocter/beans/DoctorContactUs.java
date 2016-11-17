@@ -2,16 +2,19 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.GenderType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * 
  * @author parag
  *
  */
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorContactUs extends GenericCollection {
 
 	/*

@@ -1,10 +1,11 @@
 package com.dpdocter.beans;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.PatientTreatmentStatus;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Treatment extends GenericCollection {
     
 	private ObjectId treatmentServiceId;

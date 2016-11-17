@@ -2,8 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.Day;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.Day;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TimeSlots {
 
     private Day day;

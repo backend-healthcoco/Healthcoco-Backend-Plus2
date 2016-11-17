@@ -26,17 +26,31 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
+import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
+import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagramsRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESGeneralExamRepository;
 import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
+import com.dpdocter.elasticsearch.repository.ESMenstrualHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESNotesRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
+import com.dpdocter.elasticsearch.repository.ESObstetricHistoryRepository;
+import com.dpdocter.elasticsearch.repository.ESPresentComplaintHistoryRepository;
+import com.dpdocter.elasticsearch.repository.ESPresentComplaintRepository;
+import com.dpdocter.elasticsearch.repository.ESProvisionalDiagnosisRepository;
+import com.dpdocter.elasticsearch.repository.ESSystemExamRepository;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
@@ -69,7 +83,28 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
     @Autowired
     private ESObservationsRepository esObservationsRepository;
-
+    
+    @Autowired
+    private ESPresentComplaintRepository esPresentComplaintRepository;
+    
+    @Autowired
+    private ESPresentComplaintHistoryRepository esPresentComplaintHistoryRepository;
+    
+    @Autowired
+    private ESProvisionalDiagnosisRepository esProvisionalDiagnosisRepository;
+    
+    @Autowired
+    private ESSystemExamRepository esSystemExamRepository;
+    
+    @Autowired
+    private ESGeneralExamRepository esGeneralExamRepository;
+    
+    @Autowired
+    private ESMenstrualHistoryRepository esMenstrualHistoryRepository;
+    
+    @Autowired
+    private ESObstetricHistoryRepository esObstetricHistoryRepository;
+    
     @Autowired
     private TransactionalManagementService transnationalService;
 
@@ -291,6 +326,154 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
 
+    @Override
+    public List<ESPresentComplaintDocument> searchPresentComplaints(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESPresentComplaintDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalPresentComplaints(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomPresentComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalPresentComplaints(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+    
+    @Override
+    public List<ESPresentComplaintHistoryDocument> searchPresentComplaintsHistory(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESPresentComplaintHistoryDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalPresentComplaintHistory(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomPresentComplaintHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalPresentComplaintHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+    
+    @Override
+    public List<ESProvisionalDiagnosisDocument> searchProvisionalDiagnosis(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESProvisionalDiagnosisDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalProvisionalDiagnosis(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomProvisionalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalProvisionalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+
+    @Override
+    public List<ESGeneralExamDocument> searchGeneralExam(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESGeneralExamDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalGeneralExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomGeneralExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalGeneralExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+    
+    @Override
+    public List<ESSystemExamDocument> searchSystemExam(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESSystemExamDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalSystemExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomSystemExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalSystemExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+    
+    @Override
+    public List<ESMenstrualHistoryDocument> searchMenstrualHistory(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESMenstrualHistoryDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalMenstrualHistory(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomMenstrualHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalMenstrualHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+    
+    @Override
+    public List<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESObstetricHistoryDocument> response = null;
+	switch (Range.valueOf(range.toUpperCase())) {
+
+	case GLOBAL:
+	    response = getGlobalObstetricHistory(page, size, doctorId, updatedTime, discarded, searchTerm);
+	    break;
+	case CUSTOM:
+	    response = getCustomObstetricsHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	case BOTH:
+	    response = getCustomGlobalObstetricHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	    break;
+	default:
+		break;
+	}
+	return response;
+    }
+    
+    
     @SuppressWarnings("unchecked")
 	private List<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId, String hospitalId,
 	    String updatedTime, Boolean discarded, String searchTerm) {
@@ -907,7 +1090,762 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	}
 	return response;
     }
+    
+    @SuppressWarnings("unchecked")
+	private List<ESPresentComplaintDocument> getCustomGlobalPresentComplaints(int page, int size, String doctorId, String locationId, String hospitalId,
+	    String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESPresentComplaintDocument> response = null;
+	try {
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
+			 		}
+		 		}
+		 	}
+	    }
 
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PRESENT_COMPLAINT, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,null, "presentComplaint");
+		response = elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Present Complaints");
+	}
+	return response;
+
+    }
+
+    @SuppressWarnings("unchecked")
+	private List<ESPresentComplaintDocument> getGlobalPresentComplaints(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESPresentComplaintDocument> response = null;
+	try {
+	    List<ESDoctorDocument> doctorCollections = null;
+	    Collection<String> specialities = Collections.EMPTY_LIST;
+	    
+	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+			 		
+			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+			 		if(count > 0){
+			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+				 			specialities.add("ALL");
+				 		}
+			 		}
+		 	    }
+		 	}
+	    }
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PRESENT_COMPLAINT, page, size, updatedTime, discarded, null, searchTerm, specialities, null,null, "presentComplaint");
+		response = elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class);
+		} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Present Complaints");
+	}
+	return response;
+    }
+
+    private List<ESPresentComplaintDocument> getCustomPresentComplaints(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+	    Boolean discarded, String searchTerm) {
+	List<ESPresentComplaintDocument> response = null;
+	try {
+	    if (doctorId == null)response = new ArrayList<ESPresentComplaintDocument>();
+	    else {
+	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null,null, "presentComplaint");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintDocument.class);
+		}
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    logger.error(e);
+	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Present Complaints");
+	}
+	return response;
+    }
+
+    
+    @SuppressWarnings("unchecked")
+   	private List<ESPresentComplaintHistoryDocument> getCustomGlobalPresentComplaintHistory(int page, int size, String doctorId, String locationId, String hospitalId,
+   	    String updatedTime, Boolean discarded, String searchTerm) {
+   	List<ESPresentComplaintHistoryDocument> response = null;
+   	try {
+   	    List<ESDoctorDocument> doctorCollections = null;
+   	    Collection<String> specialities = Collections.EMPTY_LIST;
+   	    
+   	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+   	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+   	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+   	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+   		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+   			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+   			 		
+   			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+   			 		if(count > 0){
+   			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+   				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+   				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+   				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+   				 			specialities.add("ALL");
+   				 		}
+   			 		}
+   		 		}
+   		 	}
+   	    }
+
+   		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.HISTORY_OF_PRESENT_COMPLAINT, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities,null, null, "presentComplaintHistory");
+   		response = elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class);
+   	} catch (Exception e) {
+   	    e.printStackTrace();
+   	    logger.error(e);
+   	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Present Complaints History");
+   	}
+   	return response;
+
+       }
+
+       @SuppressWarnings("unchecked")
+   	private List<ESPresentComplaintHistoryDocument> getGlobalPresentComplaintHistory(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+   	List<ESPresentComplaintHistoryDocument> response = null;
+   	try {
+   	    List<ESDoctorDocument> doctorCollections = null;
+   	    Collection<String> specialities = Collections.EMPTY_LIST;
+   	    
+   	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+   	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+   	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+   	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+   		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+   			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+   			 		
+   			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+   			 		if(count > 0){
+   			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+   				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+   				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+   				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+   				 			specialities.add("ALL");
+   				 		}
+   			 		}
+   		 	    }
+   		 	}
+   	    }
+
+   		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.HISTORY_OF_PRESENT_COMPLAINT, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null,"presentComplaintHistory");
+   		response = elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class);
+   		} catch (Exception e) {
+   	    e.printStackTrace();
+   	    logger.error(e);
+   	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Present Complaints History");
+   	}
+   	return response;
+       }
+
+       private List<ESPresentComplaintHistoryDocument> getCustomPresentComplaintHistory(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+   	    Boolean discarded, String searchTerm) {
+   	List<ESPresentComplaintHistoryDocument> response = null;
+   	try {
+   	    if (doctorId == null)response = new ArrayList<ESPresentComplaintHistoryDocument>();
+   	    else {
+   	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null,null, "presentComplaintHistory");
+   			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentComplaintHistoryDocument.class);
+   		}
+   	} catch (Exception e) {
+   	    e.printStackTrace();
+   	    logger.error(e);
+   	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Present Complaints History");
+   	}
+   	return response;
+       }
+       
+       @SuppressWarnings("unchecked")
+      	private List<ESProvisionalDiagnosisDocument> getCustomGlobalProvisionalDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId,
+      	    String updatedTime, Boolean discarded, String searchTerm) {
+      	List<ESProvisionalDiagnosisDocument> response = null;
+      	try {
+      	    List<ESDoctorDocument> doctorCollections = null;
+      	    Collection<String> specialities = Collections.EMPTY_LIST;
+      	    
+      	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+      	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+      	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+      	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+      		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+      			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+      			 		
+      			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+      			 		if(count > 0){
+      			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+      				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+      				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+      				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+      				 			specialities.add("ALL");
+      				 		}
+      			 		}
+      		 		}
+      		 	}
+      	    }
+
+      		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PROVISIONAL_DIAGNOSIS, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"provisionalDiagnosis");
+      		response = elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class);
+      	} catch (Exception e) {
+      	    e.printStackTrace();
+      	    logger.error(e);
+      	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Provisional Diagnosis");
+      	}
+      	return response;
+
+          }
+
+          @SuppressWarnings("unchecked")
+      	private List<ESProvisionalDiagnosisDocument> getGlobalProvisionalDiagnosis(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+      	List<ESProvisionalDiagnosisDocument> response = null;
+      	try {
+      	    List<ESDoctorDocument> doctorCollections = null;
+      	    Collection<String> specialities = Collections.EMPTY_LIST;
+      	    
+      	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+      	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+      	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+      	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+      		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+      			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+      			 		
+      			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+      			 		if(count > 0){
+      			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+      				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+      				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+      				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+      				 			specialities.add("ALL");
+      				 		}
+      			 		}
+      		 	    }
+      		 	}
+      	    }
+
+      		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PROVISIONAL_DIAGNOSIS, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "provisionalDiagnosis");
+      		response = elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class);
+      		} catch (Exception e) {
+      	    e.printStackTrace();
+      	    logger.error(e);
+      	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Provisional Diagnosis");
+      	}
+      	return response;
+          }
+
+          private List<ESProvisionalDiagnosisDocument> getCustomProvisionalDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+      	    Boolean discarded, String searchTerm) {
+      	List<ESProvisionalDiagnosisDocument> response = null;
+      	try {
+      	    if (doctorId == null)response = new ArrayList<ESProvisionalDiagnosisDocument>();
+      	    else {
+      	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "provisionalDiagnosis");
+      			response = elasticsearchTemplate.queryForList(searchQuery, ESProvisionalDiagnosisDocument.class);
+      		}
+      	} catch (Exception e) {
+      	    e.printStackTrace();
+      	    logger.error(e);
+      	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Provisional Diagnosis");
+      	}
+      	return response;
+   }
+          
+          @SuppressWarnings("unchecked")
+        	private List<ESGeneralExamDocument> getCustomGlobalGeneralExam(int page, int size, String doctorId, String locationId, String hospitalId,
+        	    String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESGeneralExamDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 		}
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.GENERAL_EXAMINATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"generalExam");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESGeneralExamDocument.class);
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting General Examination");
+        	}
+        	return response;
+
+            }
+
+            @SuppressWarnings("unchecked")
+        	private List<ESGeneralExamDocument> getGlobalGeneralExam(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESGeneralExamDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 	    }
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.GENERAL_EXAMINATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "generalExam");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESGeneralExamDocument.class);
+        		} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting General Examination");
+        	}
+        	return response;
+            }
+
+            private List<ESGeneralExamDocument> getCustomGeneralExam(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+        	    Boolean discarded, String searchTerm) {
+        	List<ESGeneralExamDocument> response = null;
+        	try {
+        	    if (doctorId == null)response = new ArrayList<ESGeneralExamDocument>();
+        	    else {
+        	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null,"generalExam");
+        			response = elasticsearchTemplate.queryForList(searchQuery, ESGeneralExamDocument.class);
+        		}
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting General Examination");
+        	}
+        	return response;
+     }
+            
+            @SuppressWarnings("unchecked")
+        	private List<ESSystemExamDocument> getCustomGlobalSystemExam(int page, int size, String doctorId, String locationId, String hospitalId,
+        	    String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESSystemExamDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 		}
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.SYSTEM_EXAMINATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"systemExam");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class);
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting System Examination");
+        	}
+        	return response;
+
+            }
+
+            @SuppressWarnings("unchecked")
+        	private List<ESSystemExamDocument> getGlobalSystemExam(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESSystemExamDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 	    }
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.SYSTEM_EXAMINATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "systemExam");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class);
+        		} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting System Examination");
+        	}
+        	return response;
+            }
+
+            private List<ESSystemExamDocument> getCustomSystemExam(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+        	    Boolean discarded, String searchTerm) {
+        	List<ESSystemExamDocument> response = null;
+        	try {
+        	    if (doctorId == null)response = new ArrayList<ESSystemExamDocument>();
+        	    else {
+        	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "systemExam");
+        			response = elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class);
+        		}
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting General Examination");
+        	}
+        	return response;
+     }
+            
+            @SuppressWarnings("unchecked")
+        	private List<ESMenstrualHistoryDocument> getCustomGlobalMenstrualHistory(int page, int size, String doctorId, String locationId, String hospitalId,
+        	    String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESMenstrualHistoryDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 		}
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.MENSTRUAL_HISTORY, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"menstrualHistory");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class);
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Menstrual History");
+        	}
+        	return response;
+
+            }
+
+            @SuppressWarnings("unchecked")
+        	private List<ESMenstrualHistoryDocument> getGlobalMenstrualHistory(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESMenstrualHistoryDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 	    }
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.MENSTRUAL_HISTORY, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null,"menstrualHistory");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class);
+        		} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Menstrual History");
+        	}
+        	return response;
+            }
+
+            private List<ESMenstrualHistoryDocument> getCustomMenstrualHistory(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+        	    Boolean discarded, String searchTerm) {
+        	List<ESMenstrualHistoryDocument> response = null;
+        	try {
+        	    if (doctorId == null)response = new ArrayList<ESMenstrualHistoryDocument>();
+        	    else {
+        	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "menstrualHistory");
+        			response = elasticsearchTemplate.queryForList(searchQuery, ESMenstrualHistoryDocument.class);
+        		}
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Menstrual");
+        	}
+        	return response;
+     }
+
+			@Override
+			public boolean addPresentComplaint(ESPresentComplaintDocument request) {
+				boolean response = false;
+				try {
+				    esPresentComplaintRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.PRESENT_COMPLAINT, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Present Complaint");
+				}
+				return response;
+			}
+
+			@Override
+			public boolean addPresentComplaintHistory(ESPresentComplaintHistoryDocument request) {
+				boolean response = false;
+				try {
+				    esPresentComplaintHistoryRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.HISTORY_OF_PRESENT_COMPLAINT, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Present Complaint History");
+				}
+				return response;
+
+			}
+
+			@Override
+			public boolean addProvisionalDiagnosis(ESProvisionalDiagnosisDocument request) {
+				boolean response = false;
+				try {
+				    esProvisionalDiagnosisRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.PROVISIONAL_DIAGNOSIS, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Provisional Diagnosis");
+				}
+				return response;
+
+			}
+
+			@Override
+			public boolean addSystemExam(ESSystemExamDocument request) {
+				boolean response = false;
+				try {
+				    esSystemExamRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.SYSTEM_EXAMINATION, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Investigations");
+				}
+				return response;
+
+			}
+
+			@Override
+			public boolean addGeneralExam(ESGeneralExamDocument request) {
+				boolean response = false;
+				try {
+				    esGeneralExamRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.GENERAL_EXAMINATION, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Investigations");
+				}
+				return response;
+
+			}
+
+			@Override
+			public boolean addMenstrualHistory(ESMenstrualHistoryDocument request) {
+				boolean response = false;
+				try {
+				    esMenstrualHistoryRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.MENSTRUAL_HISTORY, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Investigations");
+				}
+				return response;
+
+			}
+			
+			@Override
+			public boolean addObstetricsHistory(ESObstetricHistoryDocument request) {
+				boolean response = false;
+				try {
+				    esObstetricHistoryRepository.save(request);
+				    response = true;
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.OBSTETRIC_HISTORY, true);
+				} catch (Exception e) {
+				    e.printStackTrace();
+				    logger.error(e + " Error Occurred While Saving Investigations");
+				}
+				return response;
+
+			}
+
+			@SuppressWarnings("unchecked")
+        	private List<ESObstetricHistoryDocument> getCustomGlobalObstetricHistory(int page, int size, String doctorId, String locationId, String hospitalId,
+        	    String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESObstetricHistoryDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 		}
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.OBSTETRIC_HISTORY, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"obstetricHistory");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class);
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Obstetric History");
+        	}
+        	return response;
+
+            }
+
+            @SuppressWarnings("unchecked")
+        	private List<ESObstetricHistoryDocument> getGlobalObstetricHistory(int page, int size, String doctorId, String updatedTime, Boolean discarded, String searchTerm) {
+        	List<ESObstetricHistoryDocument> response = null;
+        	try {
+        	    List<ESDoctorDocument> doctorCollections = null;
+        	    Collection<String> specialities = Collections.EMPTY_LIST;
+        	    
+        	    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+        	    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+        	    	if(doctorCollections != null && !doctorCollections.isEmpty()){
+        	    		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+        		 	    if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
+        			 	    BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
+        			 		
+        			 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
+        			 		if(count > 0){
+        			 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
+        				 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
+        				 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
+        				 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
+        				 			specialities.add("ALL");
+        				 		}
+        			 		}
+        		 	    }
+        		 	}
+        	    }
+
+        		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.OBSTETRIC_HISTORY, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "obstetricHistory");
+        		response = elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class);
+        		} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Obstetric History");
+        	}
+        	return response;
+            }
+
+            private List<ESObstetricHistoryDocument> getCustomObstetricsHistory(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
+        	    Boolean discarded, String searchTerm) {
+        	List<ESObstetricHistoryDocument> response = null;
+        	try {
+        	    if (doctorId == null)response = new ArrayList<ESObstetricHistoryDocument>();
+        	    else {
+        	    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "obstetricHistory");
+        			response = elasticsearchTemplate.queryForList(searchQuery, ESObstetricHistoryDocument.class);
+        		}
+        	} catch (Exception e) {
+        	    e.printStackTrace();
+        	    logger.error(e);
+        	    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Obstetric History");
+        	}
+        	return response;
+     }
 //    @Override
 //    public List<ESDiagramsDocument> searchDiagramsBySpeciality(String searchTerm) {
 //	List<ESDiagramsDocument> response = null;

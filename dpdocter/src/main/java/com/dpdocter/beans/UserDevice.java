@@ -2,10 +2,12 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DeviceType;
 import com.dpdocter.enums.RoleEnum;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class UserDevice extends GenericCollection {
 
 	private String id;

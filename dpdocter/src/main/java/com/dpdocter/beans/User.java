@@ -2,8 +2,10 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.enums.UserState;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.UserState;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class User {
     private String id;
 

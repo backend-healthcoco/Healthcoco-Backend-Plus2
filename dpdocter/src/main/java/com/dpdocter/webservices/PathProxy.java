@@ -186,6 +186,20 @@ public interface PathProxy {
 		public static final String ADD_NOTES = "/notes/add";
 
 		public static final String ADD_DIAGRAM = "/diagram/add";
+		
+		public static final String ADD_PRESENT_COMPLAINT = "/presentComplaint/add";
+		
+		public static final String ADD_PROVISIONAL_DIAGNOSIS = "/provisionalDiagnosis/add";
+		
+		public static final String ADD_GENERAL_EXAM = "/generalExam/add";
+		
+		public static final String ADD_SYSTEM_EXAM = "/systemExam/add";
+		
+		public static final String ADD_MENSTRUAL_HISTORY = "/menstrualHistory/add";
+		
+		public static final String ADD_OBSTETRICS_HISTORY = "/obstretricsHistory/add";
+		
+		public static final String ADD_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
@@ -206,6 +220,20 @@ public interface PathProxy {
 		public static final String DOWNLOAD_CLINICAL_NOTES = "/download/{clinicalNotesId}";
 
 		public static final String UPDATE_QUERY_CLINICAL_NOTES = "/updateQuery";
+		
+		public static final String DELETE_PRESENT_COMPLAINT = "/presentComplaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_PROVISIONAL_DIAGNOSIS = "/provisionalDiagnosis/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_GENERAL_EXAM = "/generalExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_SYSTEM_EXAM = "/systemExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_MENSTRUAL_HISTORY = "/menstrualHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_OBSTETRIC_HISTORY = "/obstretricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -430,6 +458,8 @@ public interface PathProxy {
 		public static final String GET_PATIENT_HISTORY = "/{patientId}";
 
 		public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
+		
+		public static final String GET_HISTORY = "/getHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		// public static final String ADD_VISITS_TO_HISTORY =
 		// "/visits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}/add";
@@ -579,6 +609,20 @@ public interface PathProxy {
 		public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{range}";
 
 		public static final String SEARCH_OBSERVATIONS = "searchObservations/{range}";
+		
+		public static final String SEARCH_PRESENT_COMPLAINT = "searchPresentComplaint/{range}";
+		
+		public static final String SEARCH_PRESENT_COMPLAINT_HISTORY = "searchPresentComplaintHistory/{range}";
+		
+		public static final String SEARCH_PROVISIONAL_DIAGNOSIS = "searchProvisionalDiagnosis/{range}";
+		
+		public static final String SEARCH_GENERAL_EXAM = "searchGeneralExam/{range}";
+		
+		public static final String SEARCH_SYSTEM_EXAM = "searchSystemExam/{range}";
+		
+		public static final String SEARCH_OBSTETRIC_HISTORY = "searchObstetricHistory/{range}";
+		
+		public static final String SEARCH_MENSTRUAL_HISTORY = "searchMenstrualHistory/{range}";
 
 	}
 
@@ -819,6 +863,14 @@ public interface PathProxy {
 
 	}
 
+	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
+	
+	public interface DynamicUIUrls {
+		public static final String GET_ALL_PERMISSIONS_FOR_DOCTOR= "/getAllPermissionsForDoctor/{doctorId}";
+		public static final String GET_PERMISSIONS_FOR_DOCTOR= "/getPermissionsForDoctor/{doctorId}";
+		public static final String POST_PERMISSIONS = "/postPermissions";
+	}
+
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
 
 	public interface BlogsUrls {
@@ -829,5 +881,4 @@ public interface PathProxy {
 		public static final String LIKE_THE_BLOG = "/likeTheBlog/{blogId}/{userId}";
 
 	}
-
 }

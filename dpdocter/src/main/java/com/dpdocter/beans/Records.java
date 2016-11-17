@@ -1,8 +1,10 @@
 package com.dpdocter.beans;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.RecordsState;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Records extends GenericCollection {
     private String id;
 

@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.io.InputStream;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class FileDownloadResponse {
 
 	private String fileName;

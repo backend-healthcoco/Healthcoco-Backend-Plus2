@@ -8,9 +8,16 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Investigation;
+import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
+import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.PresentComplaint;
+import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProvisionalDiagnosis;
+import com.dpdocter.beans.SystemExam;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.MailResponse;
@@ -62,4 +69,40 @@ public interface ClinicalNotesService {
 	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,	String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
 
 	String getClinicalNotesFile(String clinicalNotesId);
+
+	Boolean updateQuery();
+
+	ProvisionalDiagnosis addEditProvisionalDiagnosis(ProvisionalDiagnosis provisionalDiagnosis);
+
+	GeneralExam addEditGeneralExam(GeneralExam generalExam);
+
+	SystemExam addEditSystemExam(SystemExam systemExam);
+
+	MenstrualHistory addEditMenstrualHistory(MenstrualHistory menstrualHistory);
+
+	PresentComplaint addEditPresentComplaint(PresentComplaint presentComplaint);
+
+	PresentComplaintHistory addEditPresentComplaintHistory(PresentComplaintHistory presentComplaintHistory);
+
+	ObstetricHistory addEditObstetricHistory(ObstetricHistory obstetricHistory);
+
+	ProvisionalDiagnosis deleteProvisionalDiagnosis(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentComplaint deletePresentComplaint(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentComplaintHistory deletePresentComplaintHistory(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
+
+	GeneralExam deleteGeneralExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	SystemExam deleteSystemExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	ObstetricHistory deleteObstetricHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
 }

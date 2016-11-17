@@ -1,7 +1,9 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.AccessPermissionType;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.AccessPermissionType;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class AccessPermission {
     private AccessPermissionType accessPermissionType;
 

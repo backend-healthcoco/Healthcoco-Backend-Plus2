@@ -3,9 +3,10 @@ package com.dpdocter.beans;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.SMSStatus;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class SMSDetail {
     private ObjectId userId;
 

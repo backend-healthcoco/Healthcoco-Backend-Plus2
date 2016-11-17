@@ -1,0 +1,20 @@
+package com.dpdocter.enums;
+
+public enum DynamicUIEnum {
+	VITAL_SIGNS("VITAL_SIGNS"), PRESENT_COMPLAINT("PRESENT_COMPLAINT"), COMPLAINT("COMPLAINT"), PAST_HISTORY(
+			"PAST_HISTORY"), PRESENT_HISTORY("PRESENT_HISTORY"), FAMILY_HISTORY("FAMILY_HISTORY"), MENSTRUAL_HISTORY(
+					"MENSTRUAL_HISTORY"), GENERAL_EXAM("GENERAL_EXAM"), SYSTEM_EXAM("SYSTEM_EXAM"), OBSERVATION(
+							"OBSERVATION"), WORKING_DIAGRAM("WORKING_DIAGRAM"), INVESTIGATIONS(
+									"INVESTIGATIONS"), DIAGRAM("DIAGRAM"), NOTES("NOTES"), DIAGNOSIS("DIAGNOSIS");
+
+	private String uiPermission;
+
+	private DynamicUIEnum(String uiPermission) {
+		this.uiPermission = uiPermission;
+	}
+
+	public String getUiPermission() {
+		return uiPermission;
+	}
+
+}

@@ -1,7 +1,9 @@
 package com.dpdocter.beans;
 
-import com.dpdocter.enums.TimeUnit;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.TimeUnit;
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class AppointmentSlot {
     private float time = 15;
 
