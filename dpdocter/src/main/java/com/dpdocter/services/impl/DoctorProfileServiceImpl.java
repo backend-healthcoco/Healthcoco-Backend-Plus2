@@ -1103,11 +1103,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					if (!recommendationsCollection.getDiscarded()) {
 						doctorClinicProfileCollection
 								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() - 1);
-						recommendationsCollection.setDiscarded(false);
+						recommendationsCollection.setDiscarded(true);
 					} else {
 						doctorClinicProfileCollection
 								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
-						recommendationsCollection.setDiscarded(true);
+						recommendationsCollection.setDiscarded(false);
 					}
 				} else {
 
