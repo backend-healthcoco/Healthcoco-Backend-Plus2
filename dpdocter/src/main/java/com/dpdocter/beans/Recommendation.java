@@ -4,7 +4,9 @@ public class Recommendation {
 
 	private String id;
 
-	private String doctorClinicProfileId;
+	private String doctorId;
+
+	private String locationId;
 
 	private String patientId;
 
@@ -18,12 +20,20 @@ public class Recommendation {
 		this.id = id;
 	}
 
-	public String getDoctorClinicProfileId() {
-		return doctorClinicProfileId;
+	public String getDoctorId() {
+		return doctorId;
 	}
 
-	public void setDoctorClinicProfileId(String doctorClinicProfileId) {
-		this.doctorClinicProfileId = doctorClinicProfileId;
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
 	public String getPatientId() {

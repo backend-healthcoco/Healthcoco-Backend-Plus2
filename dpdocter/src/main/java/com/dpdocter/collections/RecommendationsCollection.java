@@ -11,8 +11,11 @@ public class RecommendationsCollection {
 	private ObjectId id;
 
 	@Field
-	private ObjectId doctorClinicProfileId;
-
+	private ObjectId doctorId;
+	
+	@Field
+	private ObjectId  locationId;
+	
 	@Field
 	private ObjectId patientId;
 
@@ -43,12 +46,22 @@ public class RecommendationsCollection {
 		this.discarded = discarded;
 	}
 
-	public ObjectId getDoctorClinicProfileId() {
-		return doctorClinicProfileId;
+	public ObjectId getDoctorId() {
+		return doctorId;
 	}
 
-	public void setDoctorClinicProfileId(ObjectId doctorClinicProfileId) {
-		this.doctorClinicProfileId = doctorClinicProfileId;
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
 	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	
 
 }

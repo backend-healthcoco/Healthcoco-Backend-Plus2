@@ -1096,8 +1096,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			UserCollection userCollection = userRepository.findOne(patientObjectId);
 
 			if (doctorClinicProfileCollection != null && userCollection != null) {
-				recommendationsCollection = recommendationsRepository.findByDoctorClinicProfileIdAndPatientId(
-						doctorClinicProfileCollection.getId(), patientObjectId);
+				recommendationsCollection = recommendationsRepository
+						.findByDoctorIdLocationIdAndPatientId(doctorObjectId, locationObjectId, patientObjectId);
 
 				if (recommendationsCollection != null) {
 					if (!recommendationsCollection.getDiscarded()) {
@@ -1112,7 +1112,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				} else {
 
 					recommendationsCollection = new RecommendationsCollection();
-					recommendationsCollection.setDoctorClinicProfileId(doctorClinicProfileCollection.getId());
+					recommendationsCollection.setDoctorId(doctorObjectId);
+					recommendationsCollection.setLocationId(locationObjectId);
 					recommendationsCollection.setPatientId(patientObjectId);
 					doctorClinicProfileCollection
 							.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);

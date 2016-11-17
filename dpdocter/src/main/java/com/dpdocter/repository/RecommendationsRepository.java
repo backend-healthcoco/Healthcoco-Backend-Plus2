@@ -8,8 +8,8 @@ import com.dpdocter.collections.RecommendationsCollection;
 
 public interface RecommendationsRepository extends MongoRepository<RecommendationsCollection, ObjectId> {
 
-	@Query("{'doctorClinicProfileId': ?0,'patientId':?1}")
-	RecommendationsCollection findByDoctorClinicProfileIdAndPatientId(ObjectId doctorClinicProfileId,
+	@Query("{'doctorId': ?0,'locationId':?1,'patientId':?2}")
+	RecommendationsCollection findByDoctorIdLocationIdAndPatientId(ObjectId doctorId, ObjectId locationId,
 			ObjectId patientId);
 
 }

@@ -892,13 +892,13 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.GET_SUGGESTION)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_SUGGESTION, notes = PathProxy.RegistrationUrls.GET_SUGGESTION)
-	public Response<?> getSuggestion(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<Object> getSuggestion(@QueryParam("page") int page, @QueryParam("size") int size,
 			@PathParam("userId") String userId, @QueryParam("suggetionTypesuggetionType") String suggetionType,
 			@QueryParam("state") String state, @QueryParam("searchTerm") String searchTerm) {
 
 		List<Suggestion> suggestions = suggestionService.getSuggestion(page, size, userId, suggetionType, state,
 				searchTerm);
-		Response<String> response = new Response<String>();
+		Response<Object> response = new Response<Object>();
 		response.setDataList(suggestions);
 		return response;
 	}
