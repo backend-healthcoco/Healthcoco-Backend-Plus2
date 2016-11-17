@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class MenstrualHistory {
+import com.dpdocter.collections.GenericCollection;
+
+public class MenstrualHistory  extends GenericCollection{
 
 	private String id;
 

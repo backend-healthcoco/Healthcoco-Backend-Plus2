@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class ObstetricHistory {
+import com.dpdocter.collections.GenericCollection;
+
+public class ObstetricHistory  extends GenericCollection{
 
 	private String id;
 

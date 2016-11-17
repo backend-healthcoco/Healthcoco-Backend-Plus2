@@ -3876,8 +3876,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(provisionalDiagnosisCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("Provisional Diagnosis not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Provisional Diagnosis not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3919,8 +3919,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(generalExamCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("General Exam not found!");
+				throw new BusinessException(ServiceError.NoRecord, "General Exam not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3962,8 +3962,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(presentComplaintHistoryCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("Present Complaint History not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Present Complaint History not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4005,8 +4005,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(systemExamCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("System Exam not found!");
+				throw new BusinessException(ServiceError.NoRecord, "System Exam not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4047,8 +4047,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(presentComplaintCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("Present Complaint not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Present Complaint not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4090,8 +4090,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(obstetricHistoryCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("Obstetric History not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Obstetric History not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4133,8 +4133,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					BeanUtil.map(menstrualHistoryCollection, response);
 				}
 			} else {
-				logger.warn("Complaint not found!");
-				throw new BusinessException(ServiceError.NoRecord, "Complaint not found!");
+				logger.warn("Menstrual History not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Menstrual History not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
