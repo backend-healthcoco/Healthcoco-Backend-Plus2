@@ -26,6 +26,7 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
@@ -37,6 +38,8 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DiseaseAddEditRequest;
+import com.dpdocter.request.DrugsAndAllergiesAddRequest;
+import com.dpdocter.request.PersonalHistoryAddRequest;
 import com.dpdocter.request.SpecialNotesAddRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
@@ -618,4 +621,36 @@ public class HistoryApi {
 	response.setData(history);
 	return response;
     }
+    
+    @Path(value = PathProxy.HistoryUrls.ASSIGN_DRUG_ALLERGIES)
+    @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ASSIGN_DRUG_ALLERGIES, notes = PathProxy.HistoryUrls.ASSIGN_DRUG_ALLERGIES)
+    public Response<HistoryDetailsResponse> assignDrugAndAllergies(DrugsAndAllergiesAddRequest request) {
+	if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getHospitalId(), request.getLocationId())) {
+	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	HistoryDetailsResponse history = historyServices.assignDrugsAndAllergies(request);
+
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
+	response.setData(history);
+	return response;
+    }
+    
+    @Path(value = PathProxy.HistoryUrls.ASSIGN_PERSONAL_HISTORY)
+    @GET
+    @ApiOperation(value = PathProxy.HistoryUrls.ASSIGN_PERSONAL_HISTORY, notes = PathProxy.HistoryUrls.ASSIGN_PERSONAL_HISTORY)
+    public Response<HistoryDetailsResponse> assignPersonalHistory(DrugsAndAllergiesAddRequest request) {
+	if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getHospitalId(), request.getLocationId())) {
+	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+	}
+	HistoryDetailsResponse history = historyServices.assignDrugsAndAllergies(request);
+
+	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
+	response.setData(history);
+	return response;
+    }
+    
+    
 }

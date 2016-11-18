@@ -10,6 +10,8 @@ import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.request.DiseaseAddEditRequest;
+import com.dpdocter.request.DrugsAndAllergiesAddRequest;
+import com.dpdocter.request.PersonalHistoryAddRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
@@ -81,6 +83,10 @@ public interface HistoryServices {
 
     List<HistoryDetailsResponse> getPatientHistory(String patientId, List<String> historyFilter, int page, int size, String updatedTime);
 
-	Response getHistory(String patientId, String doctorId, String hospitalId, String locationId, List<String> type);
+    HistoryDetailsResponse getHistory(String patientId, String doctorId, String hospitalId, String locationId, List<String> type);
+
+	HistoryDetailsResponse assignDrugsAndAllergies(DrugsAndAllergiesAddRequest request);
+
+	HistoryDetailsResponse assignPersonalHistory(PersonalHistoryAddRequest request);
 
 }
