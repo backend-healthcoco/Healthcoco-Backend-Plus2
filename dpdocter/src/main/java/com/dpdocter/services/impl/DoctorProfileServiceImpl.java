@@ -30,7 +30,6 @@ import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
-import com.dpdocter.beans.Recommendation;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
@@ -88,7 +87,6 @@ import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.TransactionalManagementService;
-import com.wutka.dtd.DTDContainer;
 
 import common.util.web.DPDoctorUtils;
 
@@ -443,7 +441,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<String> specialities = null;
 		List<DoctorRegistrationDetail> registrationDetails = null;
 		List<String> professionalMemberships = null;
-		RecommendationsCollection recommendationsCollection = null;
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
 		try {
 			userCollection = userRepository.findOne(new ObjectId(doctorId));
@@ -1106,8 +1103,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						.findByLocationId(userLocationCollection.getId());
 
 			UserCollection userCollection = userRepository.findOne(patientObjectId);
+			if (doctorClinicProfileCollection == null) {
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setUserLocationId(userLocationCollection.getId());
 
-			if (doctorClinicProfileCollection != null && userCollection != null) {
+			}
+
+			if (userCollection != null) {
 				recommendationsCollection = recommendationsRepository
 						.findByDoctorIdLocationIdAndPatientId(doctorObjectId, locationObjectId, patientObjectId);
 
