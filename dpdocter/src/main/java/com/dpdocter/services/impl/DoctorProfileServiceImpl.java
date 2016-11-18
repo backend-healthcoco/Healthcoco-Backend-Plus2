@@ -435,13 +435,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, Boolean isMobileApp) {
+	public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
+			Boolean isMobileApp) {
 		DoctorProfile doctorProfile = null;
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		List<String> specialities = null;
 		List<DoctorRegistrationDetail> registrationDetails = null;
 		List<String> professionalMemberships = null;
+		RecommendationsCollection recommendationsCollection = null;
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
 		try {
 			userCollection = userRepository.findOne(new ObjectId(doctorId));
@@ -459,20 +461,22 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					for (Iterator<UserLocationCollection> iterator = userLocationCollections.iterator(); iterator
 							.hasNext();) {
 						UserLocationCollection userLocationCollection = iterator.next();
-						clinicProfile.add(
-								getDoctorClinic(userLocationCollection, isMobileApp, userLocationCollections.size()));
+						clinicProfile.add(getDoctorClinic(userLocationCollection, patientId, isMobileApp,
+								userLocationCollections.size()));
 					}
 				}
 			} else {
 				UserLocationCollection userLocationCollection = userLocationRepository
 						.findByUserIdAndLocationId(userCollection.getId(), new ObjectId(locationId));
 				if (userLocationCollection != null) {
-					clinicProfile.add(getDoctorClinic(userLocationCollection, isMobileApp, 1));
+					clinicProfile.add(getDoctorClinic(userLocationCollection, patientId, isMobileApp, 1));
 				}
 			}
+
 			doctorProfile = new DoctorProfile();
 			BeanUtil.map(userCollection, doctorProfile);
 			BeanUtil.map(doctorCollection, doctorProfile);
+
 			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
 			doctorProfile.setClinicProfile(clinicProfile);
 			// set specialities using speciality ids
@@ -517,8 +521,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private DoctorClinicProfile getDoctorClinic(UserLocationCollection userLocationCollection, Boolean isMobileApp,
-			int locationSize) {
+	private DoctorClinicProfile getDoctorClinic(UserLocationCollection userLocationCollection, String patientId,
+			Boolean isMobileApp, int locationSize) {
 		DoctorClinicProfile doctorClinic = new DoctorClinicProfile();
 		try {
 			DoctorClinicProfileCollection doctorClinicCollection = doctorClinicProfileRepository
@@ -603,6 +607,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					roles.add(role);
 				}
 				doctorClinic.setRoles(roles);
+
+				if (patientId != null) {
+					RecommendationsCollection recommendationsCollection = recommendationsRepository
+							.findByDoctorIdLocationIdAndPatientId(userLocationCollection.getUserId(),
+									userLocationCollection.getLocationId(), new ObjectId(patientId));
+					doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
+				}
+
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -1119,13 +1131,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
 
 				}
-
-				transnationalService.checkDoctor(userLocationCollection.getUserId(),
-						userLocationCollection.getLocationId());
 				recommendationsCollection = recommendationsRepository.save(recommendationsCollection);
 				doctorClinicProfileCollection = doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				transnationalService.checkDoctor(userLocationCollection.getUserId(),
+						userLocationCollection.getLocationId());
 				response = new DoctorClinicProfile();
 				BeanUtil.map(doctorClinicProfileCollection, response);
+				response.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Error  DoctorClinicProfile not found");
 			}

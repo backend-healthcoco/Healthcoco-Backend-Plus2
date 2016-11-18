@@ -78,7 +78,9 @@ public class DoctorClinicProfile {
 
 	private long rankingCount = 0;
 	
-	private Boolean isSendBirthdaySMS = true;	
+	private Boolean isSendBirthdaySMS = true;
+	
+	private Boolean isDoctorRecommended = false;
 	
 	public String getId() {
 		return id;
@@ -383,5 +385,13 @@ public class DoctorClinicProfile {
 
 	public void setIsSendBirthdaySMS(Boolean isSendBirthdaySMS) {
 		this.isSendBirthdaySMS = isSendBirthdaySMS;
+	}
+
+	public Boolean getIsDoctorRecommended() {
+		return isDoctorRecommended;
+	}
+
+	public void setIsDoctorRecommended(Boolean isDoctorRecommended) {
+		this.isDoctorRecommended = isDoctorRecommended;
 	}
 }

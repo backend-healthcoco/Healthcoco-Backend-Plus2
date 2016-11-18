@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "recommendation_cl")
-public class RecommendationsCollection {
+public class RecommendationsCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 

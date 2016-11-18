@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class Recommendation {
+import com.dpdocter.collections.GenericCollection;
+
+public class Recommendation extends GenericCollection {
 
 	private String id;
 
