@@ -623,7 +623,7 @@ public class HistoryApi {
     }
     
     @Path(value = PathProxy.HistoryUrls.ASSIGN_DRUG_ALLERGIES)
-    @GET
+    @POST
     @ApiOperation(value = PathProxy.HistoryUrls.ASSIGN_DRUG_ALLERGIES, notes = PathProxy.HistoryUrls.ASSIGN_DRUG_ALLERGIES)
     public Response<HistoryDetailsResponse> assignDrugAndAllergies(DrugsAndAllergiesAddRequest request) {
 	if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getHospitalId(), request.getLocationId())) {
@@ -638,14 +638,14 @@ public class HistoryApi {
     }
     
     @Path(value = PathProxy.HistoryUrls.ASSIGN_PERSONAL_HISTORY)
-    @GET
+    @POST
     @ApiOperation(value = PathProxy.HistoryUrls.ASSIGN_PERSONAL_HISTORY, notes = PathProxy.HistoryUrls.ASSIGN_PERSONAL_HISTORY)
-    public Response<HistoryDetailsResponse> assignPersonalHistory(DrugsAndAllergiesAddRequest request) {
+    public Response<HistoryDetailsResponse> assignPersonalHistory(PersonalHistoryAddRequest request) {
 	if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getHospitalId(), request.getLocationId())) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	HistoryDetailsResponse history = historyServices.assignDrugsAndAllergies(request);
+	HistoryDetailsResponse history = historyServices.assignPersonalHistory(request);
 
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setData(history);
