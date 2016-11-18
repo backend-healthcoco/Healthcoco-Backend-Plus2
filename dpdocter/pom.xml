@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -30,9 +33,6 @@
 		</profile>
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -913,17 +913,24 @@
 			<version>2.0.2.RELEASE</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
-		<dependency>
-			<groupId>com.twilio.sdk</groupId>
-			<artifactId>twilio-java-sdk</artifactId>
-			<version>5.10.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
-		<dependency>
-			<groupId>net.sf.jasperreports</groupId>
-			<artifactId>jasperreports-fonts</artifactId>
-			<version>4.0.0</version>
-		</dependency>
+	<dependency>
+	    <groupId>com.twilio.sdk</groupId>
+	    <artifactId>twilio-java-sdk</artifactId>
+	    <version>5.10.1</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
+	<dependency>
+	    <groupId>net.sf.jasperreports</groupId>
+	    <artifactId>jasperreports-fonts</artifactId>
+	    <version>4.0.0</version>
+	</dependency>
+	<dependency>
+    <groupId>net.sf.jasperreports</groupId>
+    <artifactId>jasperreports-htmlcomponent</artifactId>
+    <version>5.0.1</version>
+    <scope>system</scope>
+		<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
+</dependency>
 	</dependencies>
 	<build>
 		<testResources>
@@ -940,7 +947,29 @@
 
 
 		<plugins>
-
+<!-- 		<plugin> -->
+<!--     <groupId>org.apache.maven.plugins</groupId> -->
+<!--     <artifactId>maven-install-plugin</artifactId> -->
+<!--     <version>2.3.1</version> -->
+<!--         <executions> -->
+<!--             <execution> -->
+<!--                 <id>install-external</id> -->
+<!--                 <phase>clean</phase> -->
+<!--                 <configuration> -->
+<!--                     <file>${basedir}/WEB-INF/lib/jasperreports-htmlcomponent-5.0.1.jar</file> -->
+<!--                     <repositoryLayout>default</repositoryLayout> -->
+<!--                     <groupId>net.sf.jasperreports</groupId> -->
+<!--     				<artifactId>jasperreports-htmlcomponent</artifactId> -->
+<!--                     <version>5.0.1</version> -->
+<!--                     <packaging>jar</packaging> -->
+<!--                     <generatePom>true</generatePom> -->
+<!--                 </configuration> -->
+<!--                 <goals> -->
+<!--                     <goal>install-file</goal> -->
+<!--                 </goals> -->
+<!--             </execution> -->
+<!--         </executions> -->
+<!--     </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -950,7 +979,6 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 	<repositories>
@@ -971,5 +999,10 @@
 			<id>jaspersoft-third-party</id>
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
+<!--     <repository> -->
+<!--         <id>project.local</id> -->
+<!--         <name>project</name> -->
+<!--         <url>file:${project.basedir}/repo</url> -->
+<!--     </repository> -->
 	</repositories>
 </project>

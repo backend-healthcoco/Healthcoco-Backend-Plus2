@@ -49,7 +49,6 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
@@ -1254,16 +1253,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 					}
 
-					if (contentLineStyle.equalsIgnoreCase(LineStyle.BLOCK.getStyle()))
-						contentLineStyle = "<br>";
-					else
-						contentLineStyle = ",  ";
-
 					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
 					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
 					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
 					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
 					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
+					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
+					clinicalNotesJasperDetails.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
+					clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
+					clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
+					clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
+					clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
+					clinicalNotesJasperDetails.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
 
 					List<DBObject> diagramIds = new ArrayList<DBObject>();
 					if (clinicalNotesCollection.getDiagrams() != null)

@@ -3315,9 +3315,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String pageSize = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null ? printSettings.getPageSetup().getTopMargin(): 20) : 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
 						? printSettings.getPageSetup().getLeftMargin() : 20)

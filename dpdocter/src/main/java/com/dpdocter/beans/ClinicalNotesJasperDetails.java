@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mongodb.DBObject;
@@ -22,6 +23,20 @@ public class ClinicalNotesJasperDetails {
     private List<DBObject> diagrams;
 
     private String vitalSigns;
+
+    private String presentComplaint;
+    
+	private String provisionalDiagnosis;
+
+	private String generalExam;
+
+	private String systemExam;
+
+	private String presentComplaintHistory;
+
+	private String menstrualHistory;
+	
+	private String obstetricHistory;
 
     public String getComplaints() {
 	return complaints;
@@ -79,9 +94,70 @@ public class ClinicalNotesJasperDetails {
 	this.vitalSigns = vitalSigns;
     }
 
-    @Override
-    public String toString() {
-	return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations + ", diagnosis="
-		+ diagnosis + ", notes=" + notes + ", diagrams=" + diagrams + ", vitalSigns=" + vitalSigns + "]";
-    }
+	public String getPresentComplaint() {
+		return presentComplaint;
+	}
+
+	public void setPresentComplaint(String presentComplaint) {
+		this.presentComplaint = presentComplaint;
+	}
+
+	public String getProvisionalDiagnosis() {
+		return provisionalDiagnosis;
+	}
+
+	public void setProvisionalDiagnosis(String provisionalDiagnosis) {
+		this.provisionalDiagnosis = provisionalDiagnosis;
+	}
+
+	public String getGeneralExam() {
+		return generalExam;
+	}
+
+	public void setGeneralExam(String generalExam) {
+		this.generalExam = generalExam;
+	}
+
+	public String getSystemExam() {
+		return systemExam;
+	}
+
+	public void setSystemExam(String systemExam) {
+		this.systemExam = systemExam;
+	}
+
+	public String getPresentComplaintHistory() {
+		return presentComplaintHistory;
+	}
+
+	public void setPresentComplaintHistory(String presentComplaintHistory) {
+		this.presentComplaintHistory = presentComplaintHistory;
+	}
+
+	public String getMenstrualHistory() {
+		return menstrualHistory;
+	}
+
+	public void setMenstrualHistory(String menstrualHistory) {
+		this.menstrualHistory = menstrualHistory;
+	}
+
+	public String getObstetricHistory() {
+		return obstetricHistory;
+	}
+
+	public void setObstetricHistory(String obstetricHistory) {
+		this.obstetricHistory = obstetricHistory;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", diagnosis=" + diagnosis + ", notes=" + notes + ", diagrams="
+				+ diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
+				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
+				+ systemExam + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + "]";
+	}
+
 }

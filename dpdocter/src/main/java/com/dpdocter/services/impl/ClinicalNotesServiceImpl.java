@@ -2853,11 +2853,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
-		parameters.put("observationIds", clinicalNotesCollection.getObservation());
-		parameters.put("noteIds", clinicalNotesCollection.getNote());
-		parameters.put("investigationIds", clinicalNotesCollection.getInvestigation());
-		parameters.put("diagnosesIds", clinicalNotesCollection.getDiagnosis());
-		parameters.put("complaintIds", clinicalNotesCollection.getComplaint());
+		parameters.put("observations", clinicalNotesCollection.getObservation());
+		parameters.put("notes", clinicalNotesCollection.getNote());
+		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
+		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
+		parameters.put("complaints", clinicalNotesCollection.getComplaint());
+
+		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
+		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
+		parameters.put("generalExam", clinicalNotesCollection.getGeneralExam());
+		parameters.put("systemExam", clinicalNotesCollection.getSystemExam());
+		parameters.put("menstrualHistory", clinicalNotesCollection.getMenstrualHistory());
+		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
+		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
 
 		List<DBObject> diagramIds = new ArrayList<DBObject>();
 		if (clinicalNotesCollection.getDiagrams() != null)
@@ -2873,9 +2881,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 		if (!diagramIds.isEmpty())
-			parameters.put("diagramIds", diagramIds);
+			parameters.put("diagrams", diagramIds);
 		else
-			parameters.put("diagramIds", null);
+			parameters.put("diagrams", null);
 
 		parameters.put("clinicalNotesId", clinicalNotesCollection.getId().toString());
 		if (clinicalNotesCollection.getVitalSigns() != null) {
