@@ -959,10 +959,10 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_CODES_WITH_REACTION)
 	@GET
-	public Response<Boolean> addGenerics() {
+	public Response<Boolean> addGenericsWithReaction() {
 
 		Response<Boolean> response = new Response<Boolean>();
-		response.setData(prescriptionServices.addGenerics());
+		response.setData(prescriptionServices.addGenericsWithReaction());
 		return response;
 	}
 

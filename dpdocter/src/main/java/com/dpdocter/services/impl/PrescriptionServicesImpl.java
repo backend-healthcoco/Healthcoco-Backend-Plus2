@@ -1,9 +1,12 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,6 +79,7 @@ import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GenericCodeCollection;
+import com.dpdocter.collections.GenericCodeWithReactionCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -113,6 +117,7 @@ import com.dpdocter.repository.DrugDosageRepository;
 import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
+import com.dpdocter.repository.GenericCodeWithReactionRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -278,6 +283,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private ESGenericCodeWithReactionRepository esGenericCodeWithReactionRepository;
+
+	@Autowired
+	private GenericCodeWithReactionRepository genericCodeWithReactionRepository;
 
 	@Override
 	@Transactional
@@ -3997,70 +4005,42 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public Boolean addGenerics() {
-//		String[] codes = {"GENGRA0010","GENALC0002","GENASP0015","GENIBU0002","GENKET0005","GENNAP0005"};
-//		ESGenericCodeWithReaction codeWithReaction = null;
-//		for(String code : codes){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENDIC0014", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes2 = {"GENWAR0001","GENRIF0002","GENLIT0001","GENMET0017"};
-//		for(String code : codes2){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENETO0005", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes3 = {"GENRIF0002","GENETH0006","GENSAL0007","GENMIN0004","GENASP0015","GENKET0006","GENKET0006","GENKET0007","GENLIT0001","GENMET0017","GENCOU0001","GENPHE0004","GENPHE0029","GENPHE0030"};
-//		for(String code : codes3){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENLOR0007", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes4 = {"GENCAR0004","GENPHE0029","GENWAR0001","GENDEX0022","GENALC0002","GENCAR0004","GENFOS0007","GENPHE0008","GENPHE0029","GENPHE0030","GENRIT0003","GENWAR0001"};
-//		for(String code : codes4){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENIBU0002", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes5 = {"GENWAR0001","GENMIR0003","GENVEN0002","GENOND0001","GENALC0002"};
-//		for(String code : codes5){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENTRA0003", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//	
-//		codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENDIC0014", "GENDIG0002"), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//		esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		
-//		codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENPAR0007", "GENDIG0002"), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//		esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		
-//		codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENNIM0005", "GENDIG0002"), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//		esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		
-//		String[] codes6 = {"GENLIT0001","GENMET0017","GENMAG0014","GENWAR0001","GENPRE0003"};
-//		for(String code : codes6){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENMEF0001", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes7 = {"GENALC0002","GENZOL0003","GENLOR0003"};
-//		for(String code : codes7){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENMOR0004", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes8 = {"GENCAL0018","GENMAG0014"};
-//		for(String code : codes8){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENDIA0002", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		
-//		String[] codes9 = {"GENCLA0001	GENDIC0014	GENDOX0008	GENERY0002	GENIMA0001	GENISO0006	GENPRO0029	GENQUI0003	GENVER0001	GENALC0002"};
-//		for(String code : codes9){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENFEN0009", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//		String[] codes10 = {"GENFLU0041","GENCIP0001"};
-//		for(String code : codes10){
-//			codeWithReaction = new ESGenericCodeWithReaction(Arrays.asList("GENTIZ0001", code), new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
-//			esGenericCodeWithReactionRepository.save(codeWithReaction);
-//		}
-//
+	public Boolean addGenericsWithReaction() {
+		String csvFile = "/home/ubuntu/AnalgesicsAntipyretics.csv";
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = ",";
+
+		try {
+		    br = new BufferedReader(new FileReader(csvFile));
+		    while ((line = br.readLine()) != null) {
+			 String[] codes = line.split(cvsSplitBy);
+			 for(int i=1 ;i<codes.length;i++){
+				GenericCodeWithReactionCollection genericCodeWithReactionCollection = genericCodeWithReactionRepository.find(Arrays.asList(codes[0],codes[i]));
+				if(genericCodeWithReactionCollection == null){
+					genericCodeWithReactionCollection = new GenericCodeWithReactionCollection(Arrays.asList(codes[0],codes[i]));
+					genericCodeWithReactionCollection.setCreatedBy("ADMIN");
+					genericCodeWithReactionCollection.setCreatedTime(new Date());
+					genericCodeWithReactionCollection = genericCodeWithReactionRepository.save(genericCodeWithReactionCollection);
+					
+					ESGenericCodeWithReaction codeWithReaction = new ESGenericCodeWithReaction();
+					BeanUtil.map(genericCodeWithReactionCollection, codeWithReaction);
+					esGenericCodeWithReactionRepository.save(codeWithReaction);
+				}
+			}
+	    }
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} 
+		finally {
+		    if (br != null) {
+			try {
+			    br.close();
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+	    }
+	}	
 		return true;
 	}
 		

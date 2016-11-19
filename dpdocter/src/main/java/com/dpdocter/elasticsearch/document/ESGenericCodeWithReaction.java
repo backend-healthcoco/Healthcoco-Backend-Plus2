@@ -1,5 +1,6 @@
 package com.dpdocter.elasticsearch.document;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -22,6 +23,9 @@ public class ESGenericCodeWithReaction {
 	
 	@Field(type = FieldType.String)
 	private String explanation;
+
+    @Field(type = FieldType.Date)
+    private Date updatedTime = new Date();
 
 	public ESGenericCodeWithReaction() {
 		super();
@@ -73,9 +77,18 @@ public class ESGenericCodeWithReaction {
 		this.explanation = explanation;
 	}
 
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
 	@Override
 	public String toString() {
 		return "ESGenericCodeWithReaction [id=" + id + ", codes=" + codes + ", reactionType=" + reactionType
-				+ ", explanation=" + explanation + "]";
+				+ ", explanation=" + explanation + ", updatedTime=" + updatedTime + "]";
 	}
+
 }

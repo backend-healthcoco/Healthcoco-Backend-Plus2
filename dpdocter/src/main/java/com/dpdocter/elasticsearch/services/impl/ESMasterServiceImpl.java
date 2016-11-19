@@ -354,13 +354,13 @@ public class ESMasterServiceImpl implements ESMasterService {
 	@Override
 	public Boolean add() {
 		
-		List<LandmarkLocalityCollection> professionCollections = landmarkLocalityRepository.findAll();
+		List<LandmarkLocalityCollection> landmarkLocalityCollections = landmarkLocalityRepository.findAll();
 		
-		for(LandmarkLocalityCollection professionCollection : professionCollections){
-			ESLandmarkLocalityDocument professionDocument = new ESLandmarkLocalityDocument();
-			BeanUtil.map(professionCollection, professionDocument);
-			professionDocument.setGeoPoint(new GeoPoint(professionDocument.getLatitude(), professionDocument.getLongitude()));
-			esLocalityLandmarkRepository.save(professionDocument);
+		for(LandmarkLocalityCollection landmarkLocalityCollection : landmarkLocalityCollections){
+			ESLandmarkLocalityDocument landmarkLocalityDocument = new ESLandmarkLocalityDocument();
+			BeanUtil.map(landmarkLocalityCollection, landmarkLocalityDocument);
+			landmarkLocalityDocument.setGeoPoint(new GeoPoint(landmarkLocalityDocument.getLatitude(), landmarkLocalityDocument.getLongitude()));
+			esLocalityLandmarkRepository.save(landmarkLocalityDocument);
 		}
 		
        List<CityCollection> cityCollections = cityRepository.findAll();
