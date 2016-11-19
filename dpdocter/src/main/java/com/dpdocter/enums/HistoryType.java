@@ -3,7 +3,7 @@ package com.dpdocter.enums;
 public enum HistoryType {
 
 	PAST("PAST"), FAMILY("FAMILY"), PRESENT("PRESENT"), PERSONAL("PERSONAL"), DRUG_ALLERGIES("DRUG_ALLERGIES"), BIRTH(
-			"BIRTH");
+			"BIRTH"),MEDICAL("MEDICAL");
 
 	private String type;
 

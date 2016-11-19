@@ -27,12 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.History;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.MailData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
+import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
@@ -71,6 +73,8 @@ import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DiseaseAddEditRequest;
+import com.dpdocter.request.DrugsAndAllergiesAddRequest;
+import com.dpdocter.request.PersonalHistoryAddRequest;
 import com.dpdocter.response.DiseaseAddEditResponse;
 import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
@@ -86,6 +90,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+import com.squareup.okhttp.internal.spdy.ErrorCode;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -2065,27 +2070,179 @@ public class HistoryServicesImpl implements HistoryServices {
 	}
 	return response;
     }
+
+    @Override
+    @Transactional
+	public HistoryDetailsResponse assignPersonalHistory(PersonalHistoryAddRequest request) {
+		HistoryDetailsResponse response = null;
+		HistoryCollection historyCollection = null;
+		PersonalHistory personalHistory = null;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
+				patientObjectId = new ObjectId(request.getPatientId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+				doctorObjectId = new ObjectId(request.getDoctorId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+				locationObjectId = new ObjectId(request.getLocationId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+				hospitalObjectId = new ObjectId(request.getHospitalId());
+
+			historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId,
+					patientObjectId);
+			if (historyCollection != null) {
+				personalHistory = historyCollection.getPersonalHistory();
+				if (personalHistory != null) {
+					personalHistory.setAddictions(request.getAddictions());
+					personalHistory.setBladderHabit(request.getBladderHabit());
+					personalHistory.setBowelHabit(request.getBowelHabit());
+					personalHistory.setDiet(request.getDiet());
+					historyCollection.setPersonalHistory(personalHistory);
+				} else {
+					personalHistory = new PersonalHistory();
+					personalHistory.setAddictions(request.getAddictions());
+					personalHistory.setBladderHabit(request.getBladderHabit());
+					personalHistory.setBowelHabit(request.getBowelHabit());
+					personalHistory.setDiet(request.getDiet());
+					historyCollection.setPersonalHistory(personalHistory);
+				}
+				historyCollection.setUpdatedTime(new Date());
+			} else {
+				historyCollection = new HistoryCollection(doctorObjectId, locationObjectId, hospitalObjectId,
+						patientObjectId);
+				historyCollection.setCreatedTime(new Date());
+				personalHistory = new PersonalHistory();
+				personalHistory.setAddictions(request.getAddictions());
+				personalHistory.setBladderHabit(request.getBladderHabit());
+				personalHistory.setBowelHabit(request.getBowelHabit());
+				personalHistory.setDiet(request.getDiet());
+				historyCollection.setPersonalHistory(personalHistory);
+			}
+			// finally add history into db.
+			historyCollection = historyRepository.save(historyCollection);
+			if (historyCollection != null) {
+				response = new HistoryDetailsResponse();
+				BeanUtil.map(historyCollection, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return response;
+	}
+	
+    @Override
+    @Transactional
+	public HistoryDetailsResponse assignDrugsAndAllergies(DrugsAndAllergiesAddRequest request) {
+		HistoryDetailsResponse response = null;
+		HistoryCollection historyCollection = null;
+		DrugsAndAllergies drugsAndAllergies = null;
+		try {
+			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
+				patientObjectId = new ObjectId(request.getPatientId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+				doctorObjectId = new ObjectId(request.getDoctorId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+				locationObjectId = new ObjectId(request.getLocationId());
+			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+				hospitalObjectId = new ObjectId(request.getHospitalId());
+
+			historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId,
+					patientObjectId);
+			if (historyCollection != null) {
+				drugsAndAllergies = historyCollection.getDrugsAndAllergies();
+				if (drugsAndAllergies != null) {
+					drugsAndAllergies.setDrugs(request.getDrugs());
+					drugsAndAllergies.setAllergies(request.getAllergies());
+					historyCollection.setDrugsAndAllergies(drugsAndAllergies);
+				} else {
+					drugsAndAllergies = new DrugsAndAllergies();
+					drugsAndAllergies.setDrugs(request.getDrugs());
+					drugsAndAllergies.setAllergies(request.getAllergies());
+					historyCollection.setDrugsAndAllergies(drugsAndAllergies);
+				}
+				historyCollection.setUpdatedTime(new Date());
+			} else {
+				historyCollection = new HistoryCollection(doctorObjectId, locationObjectId, hospitalObjectId,
+						patientObjectId);
+				historyCollection.setCreatedTime(new Date());
+				drugsAndAllergies = new DrugsAndAllergies();
+				drugsAndAllergies.setDrugs(request.getDrugs());
+				drugsAndAllergies.setAllergies(request.getAllergies());
+				historyCollection.setDrugsAndAllergies(drugsAndAllergies);
+			}
+			// finally add history into db.
+			historyCollection = historyRepository.save(historyCollection);
+			if (historyCollection != null) {
+				response = new HistoryDetailsResponse();
+				BeanUtil.map(historyCollection, response);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return response;
+	}
     
     @Override
     @Transactional
-    public Response getHistory( String patientId, String doctorId, String hospitalId, String locationId , List<String> type)
+    public HistoryDetailsResponse getHistory( String patientId, String doctorId, String hospitalId, String locationId , List<String> type)
     {
-    	if(type.contains(HistoryType.BIRTH.getType()))
-    	{
-    		
-    	}
-    	if(type.contains(HistoryType.DRUG_ALLERGIES.getType()))
-    	{
-    		
-    	}
-    	if(type.contains(HistoryType.PERSONAL.getType()))
-    	{
-    		
-    	}
-    	if(type.contains(HistoryType.FAMILY.getType()))
-    	{
-    		
-    	}
-    	return null;
+    	HistoryDetailsResponse response =null;
+    	ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
+    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+    	
+    	HistoryCollection historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId,
+				patientObjectId);
+    	
+		if (historyCollection == null) {
+			throw new BusinessException(ServiceError.NoRecord, "History record not found");
+		} else {
+			response = new HistoryDetailsResponse();
+			if(type == null || type.isEmpty())
+			{
+				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
+				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+				    response.setMedicalhistory(medicalHistory);
+				}
+				response.setDrugsAndAllergies(historyCollection.getDrugsAndAllergies());
+				response.setPersonalHistory(historyCollection.getPersonalHistory());
+				List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
+				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+				    response.setFamilyhistory(familyHistory);
+				}
+			}
+			if (type.contains(HistoryType.MEDICAL.getType())) {
+				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
+				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+				    response.setMedicalhistory(medicalHistory);
+				}
+			}
+			if (type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
+				response.setDrugsAndAllergies(historyCollection.getDrugsAndAllergies());
+			}
+			if (type.contains(HistoryType.PERSONAL.getType())) {
+				response.setPersonalHistory(historyCollection.getPersonalHistory());
+			}
+			if (type.contains(HistoryType.FAMILY.getType())) {
+				List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
+				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+				    response.setFamilyhistory(familyHistory);
+				}
+			}
+		}
+    	return response;
     }
 }

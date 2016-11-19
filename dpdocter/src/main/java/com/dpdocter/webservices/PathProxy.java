@@ -434,6 +434,10 @@ public interface PathProxy {
 		public static final String ASSIGN_MEDICAL_HISTORY = "/assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String ASSIGN_FAMILY_HISTORY = "/assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String ASSIGN_PERSONAL_HISTORY = "/assignPersonalHistory";
+		
+		public static final String ASSIGN_DRUG_ALLERGIES = "/assignDrugsAndAllergies";
 
 		public static final String HANDLE_MEDICAL_HISTORY = "/medicalHistory";
 
