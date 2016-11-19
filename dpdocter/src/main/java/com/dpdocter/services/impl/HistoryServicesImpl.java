@@ -2207,6 +2207,21 @@ public class HistoryServicesImpl implements HistoryServices {
 			throw new BusinessException(ServiceError.NoRecord, "History record not found");
 		} else {
 			response = new HistoryDetailsResponse();
+			if(type == null || type.isEmpty())
+			{
+				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
+				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
+				    response.setMedicalhistory(medicalHistory);
+				}
+				response.setDrugsAndAllergies(historyCollection.getDrugsAndAllergies());
+				response.setPersonalHistory(historyCollection.getPersonalHistory());
+				List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
+				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
+				    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
+				    response.setFamilyhistory(familyHistory);
+				}
+			}
 			if (type.contains(HistoryType.MEDICAL.getType())) {
 				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
 				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
@@ -2228,6 +2243,6 @@ public class HistoryServicesImpl implements HistoryServices {
 				}
 			}
 		}
-    	return null;
+    	return response;
     }
 }

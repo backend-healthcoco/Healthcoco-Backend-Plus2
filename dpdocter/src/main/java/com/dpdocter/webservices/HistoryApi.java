@@ -610,12 +610,12 @@ public class HistoryApi {
     @ApiOperation(value = PathProxy.HistoryUrls.GET_HISTORY, notes = PathProxy.HistoryUrls.GET_HISTORY)
     public Response<HistoryDetailsResponse> getHistory(@PathParam(value = "patientId") String patientId,
 	    @PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-	    @PathParam(value = "hospitalId") String hospitalId , @MatrixParam("type") String type) {
+	    @PathParam(value = "hospitalId") String hospitalId , @MatrixParam("type") List<String> type) {
 	if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, hospitalId, locationId)) {
 	    logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 	}
-	HistoryDetailsResponse history = historyServices.getMedicalAndFamilyHistory(patientId, doctorId, hospitalId, locationId);
+	HistoryDetailsResponse history = historyServices.getHistory(patientId, doctorId, hospitalId, locationId, type);
 
 	Response<HistoryDetailsResponse> response = new Response<HistoryDetailsResponse>();
 	response.setData(history);
