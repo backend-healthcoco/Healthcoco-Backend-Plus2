@@ -2207,6 +2207,10 @@ public class HistoryServicesImpl implements HistoryServices {
 			throw new BusinessException(ServiceError.NoRecord, "History record not found");
 		} else {
 			response = new HistoryDetailsResponse();
+			response.setDoctorId(String.valueOf(historyCollection.getDoctorId()));
+			response.setLocationId(String.valueOf(historyCollection.getLocationId()));
+			response.setHospitalId(String.valueOf(historyCollection.getHospitalId()));
+			response.setPatientId(String.valueOf(historyCollection.getPatientId()));
 			if(type == null || type.isEmpty())
 			{
 				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
