@@ -24,6 +24,7 @@ import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Recommendation;
@@ -31,6 +32,7 @@ import com.dpdocter.beans.Speciality;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -53,6 +55,7 @@ import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.BirthdaySMSServices;
 import com.dpdocter.services.DoctorProfileService;
+import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
@@ -74,6 +77,9 @@ public class DoctorProfileApi {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
+
+	@Autowired
+	private LocationServices locationService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -558,6 +564,20 @@ public class DoctorProfileApi {
 				patientId);
 		Response<DoctorClinicProfile> response = new Response<DoctorClinicProfile>();
 		response.setData(doctorClinicProfile);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION, notes = PathProxy.DoctorProfileUrls.SET_CLINIC_RECOMMENDATION)
+	public Response<Location> setRecommendation(@PathParam("locationId") String locationId,
+			@PathParam("patientId") String patientId) {
+
+		Location location = locationService.addEditRecommedation(locationId, patientId);
+		Response<Location> response = new Response<Location>();
+
+		transnationalService.checkLocation(new ObjectId(location.getId()));
+		response.setData(location);
 		return response;
 	}
 

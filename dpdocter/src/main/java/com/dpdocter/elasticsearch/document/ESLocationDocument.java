@@ -20,100 +20,111 @@ public class ESLocationDocument {
 	private String id;
 
 	@Field(type = FieldType.String)
-    private String locationId;
+	private String locationId;
 
-    @Field(type = FieldType.String)
-    private String hospitalId;
+	@Field(type = FieldType.String)
+	private String hospitalId;
 
-    @Field(type = FieldType.String)
-    private String locationName;
+	@Field(type = FieldType.String)
+	private String locationName;
 
-    @Field(type = FieldType.String)
-    private String country;
+	@Field(type = FieldType.String)
+	private String country;
 
-    @Field(type = FieldType.String)
-    private String state;
+	@Field(type = FieldType.String)
+	private String state;
 
-    @Field(type = FieldType.String)
-    private String city;
+	@Field(type = FieldType.String)
+	private String city;
 
-    @Field(type = FieldType.String)
-    private String postalCode;
+	@Field(type = FieldType.String)
+	private String postalCode;
 
-    @Field(type = FieldType.String)
-    private String websiteUrl;
+	@Field(type = FieldType.String)
+	private String websiteUrl;
 
-    @GeoPointField
-    private GeoPoint geoPoint;
+	@GeoPointField
+	private GeoPoint geoPoint;
 
-    @Field(type = FieldType.Double)
-    private Double latitude;
+	@Field(type = FieldType.Double)
+	private Double latitude;
 
-    @Field(type = FieldType.Double)
-    private Double longitude;
+	@Field(type = FieldType.Double)
+	private Double longitude;
 
-    @Field(type = FieldType.String)
-    private String landmarkDetails;
+	@Field(type = FieldType.String)
+	private String landmarkDetails;
 
-    @Field(type = FieldType.String)
-    private String locationEmailAddress;
+	@Field(type = FieldType.String)
+	private String locationEmailAddress;
 
-    @Field(type = FieldType.String)
-    private String streetAddress;
+	@Field(type = FieldType.String)
+	private String streetAddress;
 
-    @Field(type = FieldType.String)
-    private String locality;
+	@Field(type = FieldType.String)
+	private String locality;
 
-    @Field(type = FieldType.String)
-    private String clinicNumber;
+	@Field(type = FieldType.String)
+	private String clinicNumber;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> alternateClinicNumbers;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> alternateClinicNumbers;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> specialization;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> specialization;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isClinic = true;
+	@Field(type = FieldType.Boolean)
+	private Boolean isClinic = true;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isLab = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean isLab = false;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isOnlineReportsAvailable = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean isOnlineReportsAvailable = false;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isNABLAccredited = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean isNABLAccredited = false;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isHomeServiceAvailable = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean isHomeServiceAvailable = false;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> images;
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> images;
 
-    @Field(type = FieldType.String)
-    private String logoUrl;
+	@Field(type = FieldType.String)
+	private String logoUrl;
 
-    @Field(type = FieldType.Integer)
-    private Integer noOfReviews = 0;
+	@Field(type = FieldType.Integer)
+	private Integer noOfReviews = 0;
 
-    @Field(type = FieldType.Integer)
-    private Integer noOfRecommenations = 0;
+	@Field(type = FieldType.Integer)
+	private Integer noOfRecommenations = 0;
 
-    @Field(type = FieldType.String)
-    private String locationUId;
-    
-    @Field(type = FieldType.Nested)
-    private List<WorkingSchedule> clinicWorkingSchedules;
-    
-    @Field(type = FieldType.Boolean)
-    private Boolean isLocationListed=true;
+	@Field(type = FieldType.String)
+	private String locationUId;
 
-    @Transient
+	@Field(type = FieldType.Nested)
+	private List<WorkingSchedule> clinicWorkingSchedules;
+
+	@Field(type = FieldType.Boolean)
+	private Boolean isLocationListed = true;
+
+	@Transient
 	private String clinicAddress;
 
-    @Field(type = FieldType.Long)
-    private long clinicRankingCount = 0;
+	@Field(type = FieldType.Long)
+	private long clinicRankingCount = 0;
+
+	@Field(type = FieldType.Integer)
+	private int noOfClinicRecommendations = 0;
+
+	public int getNoOfClinicRecommendations() {
+		return noOfClinicRecommendations;
+	}
+
+	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
+		this.noOfClinicRecommendations = noOfClinicRecommendations;
+	}
 
 	public String getId() {
 		return id;

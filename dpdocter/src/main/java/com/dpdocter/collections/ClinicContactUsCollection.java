@@ -1,19 +1,36 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.DoctorContactStateType;
+import com.dpdocter.enums.Type;
 
 @Document(collection = "clinic_contact_us_cl")
-public class ClinicContactUsCollection {
+public class ClinicContactUsCollection extends GenericCollection {
+
+	public Date getContactLaterOnDate() {
+		return contactLaterOnDate;
+	}
+
+	public void setContactLaterOnDate(Date contactLaterOnDate) {
+		this.contactLaterOnDate = contactLaterOnDate;
+	}
 
 	@Id
 	private ObjectId id;
 	@Field
 	private String locationName;
+	@Field
+	private String emailAddress;
+	@Field
+	private Type type = Type.CLINIC;
+	@Field
+	private ObjectId doctorId;
 	@Field
 	private String country;
 	@Field
@@ -21,11 +38,45 @@ public class ClinicContactUsCollection {
 	@Field
 	private String city;
 	@Field
+	private Date contactLaterOnDate;
+	@Field
 	private String clinicNumber;
 	@Field
 	private String streetAddress;
 	@Field
 	private DoctorContactStateType contactState;
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
 	public String getLocationName() {
 		return locationName;

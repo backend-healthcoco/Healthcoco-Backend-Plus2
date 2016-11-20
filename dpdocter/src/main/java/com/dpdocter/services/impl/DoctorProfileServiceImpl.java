@@ -466,7 +466,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				UserLocationCollection userLocationCollection = userLocationRepository
 						.findByUserIdAndLocationId(userCollection.getId(), new ObjectId(locationId));
 				if (userLocationCollection != null) {
-					clinicProfile.add(getDoctorClinic(userLocationCollection, patientId, isMobileApp, 1));
+				
+						clinicProfile.add(getDoctorClinic(userLocationCollection, patientId, isMobileApp, 1));
+
 				}
 			}
 
@@ -609,7 +611,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
 							.findByDoctorIdLocationIdAndPatientId(userLocationCollection.getUserId(),
 									userLocationCollection.getLocationId(), new ObjectId(patientId));
+<<<<<<< Updated upstream
 					if(recommendationsCollection != null)doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
+=======
+					if (recommendationsCollection != null)
+						doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
+>>>>>>> Stashed changes
 				}
 
 			}
@@ -1109,7 +1116,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			}
 
-			if (userCollection != null) {
+			if (userCollection != null && userLocationCollection != null) {
 				recommendationsCollection = recommendationsRepository
 						.findByDoctorIdLocationIdAndPatientId(doctorObjectId, locationObjectId, patientObjectId);
 

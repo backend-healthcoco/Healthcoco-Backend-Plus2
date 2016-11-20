@@ -1,20 +1,30 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DoctorContactStateType;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.dpdocter.enums.Type;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class ClinicContactUs {
+public class ClinicContactUs extends GenericCollection {
 
 	private String id;
 
 	private String locationName;
 
+	private String emailAddress;
+
+	private Type type = Type.CLINIC;
+
+	private String doctorId;
+
 	private String country;
 
 	private String state;
-
+	
 	private String city;
 
 	private String clinicNumber;
@@ -22,6 +32,36 @@ public class ClinicContactUs {
 	private String streetAddress;
 
 	private DoctorContactStateType contactState = DoctorContactStateType.APPROACH;
+	
+	private Date contactLaterOnDate;
+	
+	
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+
+	public Type getType() {
+		return type;
+	}
+	
+	
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
 	public String getId() {
 		return id;
@@ -86,7 +126,13 @@ public class ClinicContactUs {
 	public void setContactState(DoctorContactStateType contactState) {
 		this.contactState = contactState;
 	}
-	
-	
+
+	public Date getContactLaterOnDate() {
+		return contactLaterOnDate;
+	}
+
+	public void setContactLaterOnDate(Date contactLaterOnDate) {
+		this.contactLaterOnDate = contactLaterOnDate;
+	}
 
 }

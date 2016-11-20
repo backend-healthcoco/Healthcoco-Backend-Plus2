@@ -9,221 +9,225 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Location {
-    private String id;
+	private String id;
 
-    private String locationName;
+	private String locationName;
 
-    private String country;
+	private String country;
 
-    private String state;
+	private String state;
 
-    private String city;
+	private String city;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String websiteUrl;
+	private String websiteUrl;
 
-    private List<ClinicImage> images;
+	private List<ClinicImage> images;
 
-    private String logoUrl;
+	private String logoUrl;
 
-    private String logoThumbnailUrl;
+	private String logoThumbnailUrl;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Double latitude;
+	private Double latitude;
 
-    private Double longitude;
+	private Double longitude;
 
-    private String tagLine;
+	private String tagLine;
 
-    private String landmarkDetails;
+	private String landmarkDetails;
 
-    private String locationEmailAddress;
+	private String locationEmailAddress;
 
-    private List<String> specialization;
+	private List<String> specialization;
 
-    private String streetAddress;
+	private String streetAddress;
 
-    private String locality;
+	private String locality;
 
-    private String clinicNumber;
+	private String clinicNumber;
 
-    private List<String> alternateClinicNumbers;
+	private List<String> alternateClinicNumbers;
 
-    private List<WorkingSchedule> clinicWorkingSchedules;
+	private List<WorkingSchedule> clinicWorkingSchedules;
 
-    private boolean isTwentyFourSevenOpen;
+	private boolean isTwentyFourSevenOpen;
 
-    private Boolean isClinic = true;
+	private Boolean isClinic = true;
 
-    private Boolean isLab = false;
+	private Boolean isLab = false;
 
-    private Boolean isOnlineReportsAvailable = false;
+	private Boolean isOnlineReportsAvailable = false;
 
-    private Boolean isNABLAccredited = false;
+	private Boolean isNABLAccredited = false;
 
-    private Boolean isHomeServiceAvailable = false;
+	private Boolean isHomeServiceAvailable = false;
 
-    private String locationUId;
+	private String locationUId;
 
-    private String clinicAddress;
-    
-    private Boolean isActivate = false;
-    
-    private Boolean isLocationListed=true;
-    
-    private String patientInitial = "P";
+	private String clinicAddress;
 
-    private int patientCounter = 0;
+	private Boolean isActivate = false;
 
-    private long clinicRankingCount = 0;
-    
-    public String getId() {
-	return id;
-    }
+	private Boolean isLocationListed = true;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String patientInitial = "P";
 
-    public String getLocationName() {
-	return locationName;
-    }
+	private int patientCounter = 0;
 
-    public void setLocationName(String locationName) {
-	this.locationName = locationName;
-    }
+	private long clinicRankingCount = 0;
 
-    public String getCountry() {
-	return country;
-    }
+	private int noOfClinicRecommendations = 0;
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	private Boolean isClinicRecommended=false;
 
-    public String getState() {
-	return state;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setState(String state) {
-	this.state = state;
-    }
-
-    public String getCity() {
-	return city;
-    }
-
-    public void setCity(String city) {
-	this.city = city;
-    }
-
-    public String getPostalCode() {
-	return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getWebsiteUrl() {
-	return websiteUrl;
-    }
+	public String getLocationName() {
+		return locationName;
+	}
 
-    public void setWebsiteUrl(String websiteUrl) {
-	this.websiteUrl = websiteUrl;
-    }
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
 
-    public List<ClinicImage> getImages() {
-	return images;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setImages(List<ClinicImage> images) {
-	this.images = images;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getLogoUrl() {
-	return logoUrl;
-    }
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public void setLogoUrl(String logoUrl) {
-	this.logoUrl = logoUrl;
-    }
+	public String getWebsiteUrl() {
+		return websiteUrl;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public void setWebsiteUrl(String websiteUrl) {
+		this.websiteUrl = websiteUrl;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public List<ClinicImage> getImages() {
+		return images;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public void setImages(List<ClinicImage> images) {
+		this.images = images;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public String getLogoUrl() {
+		return logoUrl;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getTagLine() {
-	return tagLine;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setTagLine(String tagLine) {
-	this.tagLine = tagLine;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public String getLandmarkDetails() {
-	return landmarkDetails;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public void setLandmarkDetails(String landmarkDetails) {
-	this.landmarkDetails = landmarkDetails;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public String getLocationEmailAddress() {
-	return locationEmailAddress;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
 
-    public void setLocationEmailAddress(String locationEmailAddress) {
-	this.locationEmailAddress = locationEmailAddress;
-    }
+	public String getTagLine() {
+		return tagLine;
+	}
 
-    public List<String> getSpecialization() {
-	return specialization;
-    }
+	public void setTagLine(String tagLine) {
+		this.tagLine = tagLine;
+	}
 
-    public void setSpecialization(List<String> specialization) {
-	this.specialization = specialization;
-    }
+	public String getLandmarkDetails() {
+		return landmarkDetails;
+	}
 
-    public String getStreetAddress() {
-	return streetAddress;
-    }
+	public void setLandmarkDetails(String landmarkDetails) {
+		this.landmarkDetails = landmarkDetails;
+	}
 
-    public void setStreetAddress(String streetAddress) {
-	this.streetAddress = streetAddress;
-    }
+	public String getLocationEmailAddress() {
+		return locationEmailAddress;
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public void setLocationEmailAddress(String locationEmailAddress) {
+		this.locationEmailAddress = locationEmailAddress;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public List<String> getSpecialization() {
+		return specialization;
+	}
 
-    public List<WorkingSchedule> getClinicWorkingSchedules() {
+	public void setSpecialization(List<String> specialization) {
+		this.specialization = specialization;
+	}
+
+	public String getStreetAddress() {
+		return streetAddress;
+	}
+
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public List<WorkingSchedule> getClinicWorkingSchedules() {
 		return clinicWorkingSchedules;
 	}
 
@@ -232,60 +236,60 @@ public class Location {
 	}
 
 	public boolean isTwentyFourSevenOpen() {
-	return isTwentyFourSevenOpen;
-    }
+		return isTwentyFourSevenOpen;
+	}
 
-    public void setTwentyFourSevenOpen(boolean isTwentyFourSevenOpen) {
-	this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
-    }
+	public void setTwentyFourSevenOpen(boolean isTwentyFourSevenOpen) {
+		this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
+	}
 
-    public String getLogoThumbnailUrl() {
-	return logoThumbnailUrl;
-    }
+	public String getLogoThumbnailUrl() {
+		return logoThumbnailUrl;
+	}
 
-    public void setLogoThumbnailUrl(String logoThumbnailUrl) {
-	this.logoThumbnailUrl = logoThumbnailUrl;
-    }
+	public void setLogoThumbnailUrl(String logoThumbnailUrl) {
+		this.logoThumbnailUrl = logoThumbnailUrl;
+	}
 
-    public Boolean getIsLab() {
-	return isLab;
-    }
+	public Boolean getIsLab() {
+		return isLab;
+	}
 
-    public void setIsLab(Boolean isLab) {
-	this.isLab = isLab;
-    }
+	public void setIsLab(Boolean isLab) {
+		this.isLab = isLab;
+	}
 
-    public Boolean getIsOnlineReportsAvailable() {
-	return isOnlineReportsAvailable;
-    }
+	public Boolean getIsOnlineReportsAvailable() {
+		return isOnlineReportsAvailable;
+	}
 
-    public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
-	this.isOnlineReportsAvailable = isOnlineReportsAvailable;
-    }
+	public void setIsOnlineReportsAvailable(Boolean isOnlineReportsAvailable) {
+		this.isOnlineReportsAvailable = isOnlineReportsAvailable;
+	}
 
-    public Boolean getIsNABLAccredited() {
-	return isNABLAccredited;
-    }
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
 
-    public void setIsNABLAccredited(Boolean isNABLAccredited) {
-	this.isNABLAccredited = isNABLAccredited;
-    }
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
 
-    public Boolean getIsHomeServiceAvailable() {
-	return isHomeServiceAvailable;
-    }
+	public Boolean getIsHomeServiceAvailable() {
+		return isHomeServiceAvailable;
+	}
 
-    public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
-	this.isHomeServiceAvailable = isHomeServiceAvailable;
-    }
+	public void setIsHomeServiceAvailable(Boolean isHomeServiceAvailable) {
+		this.isHomeServiceAvailable = isHomeServiceAvailable;
+	}
 
-    public Boolean getIsClinic() {
-	return isClinic;
-    }
+	public Boolean getIsClinic() {
+		return isClinic;
+	}
 
-    public void setIsClinic(Boolean isClinic) {
-	this.isClinic = isClinic;
-    }
+	public void setIsClinic(Boolean isClinic) {
+		this.isClinic = isClinic;
+	}
 
 	public String getClinicNumber() {
 		return clinicNumber;
@@ -326,23 +330,22 @@ public class Location {
 	public void setIsActivate(Boolean isActivate) {
 		this.isActivate = isActivate;
 	}
-	
 
-    public String getPatientInitial() {
-	return patientInitial;
-    }
+	public String getPatientInitial() {
+		return patientInitial;
+	}
 
-    public void setPatientInitial(String patientInitial) {
-	this.patientInitial = patientInitial;
-    }
+	public void setPatientInitial(String patientInitial) {
+		this.patientInitial = patientInitial;
+	}
 
-    public int getPatientCounter() {
-	return patientCounter;
-    }
+	public int getPatientCounter() {
+		return patientCounter;
+	}
 
-    public void setPatientCounter(int patientCounter) {
-	this.patientCounter = patientCounter;
-    }
+	public void setPatientCounter(int patientCounter) {
+		this.patientCounter = patientCounter;
+	}
 
 	public Boolean getIsLocationListed() {
 		return isLocationListed;
@@ -373,7 +376,24 @@ public class Location {
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
 				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + "]";
+				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + "]";
 	}
+
+	public int getNoOfClinicRecommendations() {
+		return noOfClinicRecommendations;
+	}
+
+	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
+		this.noOfClinicRecommendations = noOfClinicRecommendations;
+	}
+
+	public Boolean getIsClinicRecommended() {
+		return isClinicRecommended;
+	}
+
+	public void setIsClinicRecommended(Boolean isClinicRecommended) {
+		this.isClinicRecommended = isClinicRecommended;
+	}
+
 }

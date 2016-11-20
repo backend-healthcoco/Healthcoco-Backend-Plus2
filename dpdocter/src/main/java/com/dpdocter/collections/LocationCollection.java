@@ -106,17 +106,28 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private Boolean isLocationListed = true;
 
-	 @Field
-	 private String patientInitial = "P";
-	
-	 @Field
-	 private int patientCounter = 1;
+	@Field
+	private String patientInitial = "P";
 
 	@Field
-    private long clinicRankingCount = 0;
-	
+	private int patientCounter = 1;
+
+	@Field
+	private long clinicRankingCount = 0;
+
+	@Field
+	private int noOfClinicRecommendations = 0;
+
 	public ObjectId getId() {
 		return id;
+	}
+
+	public int getNoOfClinicRecommendations() {
+		return noOfClinicRecommendations;
+	}
+
+	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
+		this.noOfClinicRecommendations = noOfClinicRecommendations;
 	}
 
 	public void setId(ObjectId id) {
@@ -355,21 +366,21 @@ public class LocationCollection extends GenericCollection {
 		this.isActivate = isActivate;
 	}
 
-	 public String getPatientInitial() {
-	 return patientInitial;
-	 }
-	
-	 public void setPatientInitial(String patientInitial) {
-	 this.patientInitial = patientInitial;
-	 }
-	
-	 public int getPatientCounter() {
-	 return patientCounter;
-	 }
-	
-	 public void setPatientCounter(int patientCounter) {
-	 this.patientCounter = patientCounter;
-	 }
+	public String getPatientInitial() {
+		return patientInitial;
+	}
+
+	public void setPatientInitial(String patientInitial) {
+		this.patientInitial = patientInitial;
+	}
+
+	public int getPatientCounter() {
+		return patientCounter;
+	}
+
+	public void setPatientCounter(int patientCounter) {
+		this.patientCounter = patientCounter;
+	}
 
 	public Boolean getIsLocationListed() {
 		return isLocationListed;

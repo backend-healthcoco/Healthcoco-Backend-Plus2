@@ -538,6 +538,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_DOB = "addEditDOB";
 
 		public static final String SET_RECOMMENDATION = "/recommendation/{doctorId}/{locationId}/{patientId}";
+		
+		public static final String SET_CLINIC_RECOMMENDATION = "/recommendation/{locationId}/{patientId}";
 
 	}
 

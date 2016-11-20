@@ -284,20 +284,14 @@ public class SignUpApi {
 		if (clinicContactUs == null) {
 			logger.warn("Clinic contact data is null");
 			throw new BusinessException(ServiceError.InvalidInput, "Clinic Contact data is null");
-		} /*
-			 * else if(DPDoctorUtils.anyStringEmpty(clinicContactUs.get,
-			 * doctorContactUs.getEmailAddress(),
-			 * doctorContactUs.getTitle(),doctorContactUs.getCity(),
-			 * doctorContactUs.getMobileNumber()) || doctorContactUs.getGender()
-			 * == null || doctorContactUs.getSpecialities() == null ||
-			 * doctorContactUs.getSpecialities().isEmpty()){
-			 * logger.warn("Invalid Input"); throw new
-			 * BusinessException(ServiceError.InvalidInput, "Invalid Input");
-			 * }else if (doctorContactUs.getFirstName().length() < 2) {
-			 * logger.warn(firstNameValidaton); throw new
-			 * BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-			 * }
-			 */
+		} else if (DPDoctorUtils.anyStringEmpty(clinicContactUs.getEmailAddress(), clinicContactUs.getLocationName(),
+				clinicContactUs.getDoctorId(), clinicContactUs.getCity())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} else if (clinicContactUs.getLocationName().length() < 2) {
+			logger.warn("LocationNameValidaton");
+			throw new BusinessException(ServiceError.InvalidInput, "LocationNameValidaton");
+		}
 
 		Response<String> response = new Response<String>();
 		response.setData(clinicContactUsService.submitClinicContactUSInfo(clinicContactUs));
