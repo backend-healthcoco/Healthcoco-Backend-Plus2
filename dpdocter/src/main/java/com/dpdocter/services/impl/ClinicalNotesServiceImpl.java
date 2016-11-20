@@ -2681,8 +2681,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							&& clinicalNotesCollection.getLocationId().equals(locationId)) {
 
 						user = userRepository.findOne(clinicalNotesCollection.getPatientId());
-						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-								clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getDoctorId(),
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								clinicalNotesCollection.getPatientId(), 
 								clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
 
 						emailTrackCollection.setDoctorId(new ObjectId(doctorId));
@@ -2823,8 +2823,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					.findOne(new ObjectId(clinicalNotesId));
 
 			if (clinicalNotesCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getDoctorId(),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						clinicalNotesCollection.getPatientId(), 
 						clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(clinicalNotesCollection.getPatientId());
 

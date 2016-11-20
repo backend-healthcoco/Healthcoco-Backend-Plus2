@@ -870,7 +870,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);
 			PatientCollection patientCollection = patientRepository
-					.findByUserIdDoctorIdLocationIdAndHospitalId(patientId, doctorId, locationId, hospitalId);
+					.findByUserIdLocationIdAndHospitalId(patientId, locationId, hospitalId);
 			if (userCollection != null) {
 				String message = downloadAppMessageToPatient;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -2417,8 +2417,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							&& prescriptionCollection.getLocationId().equals(locationId)) {
 
 						user = userRepository.findOne(prescriptionCollection.getPatientId());
-						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-								prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								prescriptionCollection.getPatientId(), 
 								prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
 						emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
@@ -2505,8 +2505,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 						UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
-										prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
+								.findByUserIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
+										prescriptionCollection.getLocationId(),
 										prescriptionCollection.getHospitalId());
 						if (patientCollection != null) {
 							String prescriptionDetails = "";
@@ -3174,8 +3174,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					.findOne(new ObjectId(prescriptionId));
 
 			if (prescriptionCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						prescriptionCollection.getPatientId(), 
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(prescriptionCollection.getPatientId());
 
