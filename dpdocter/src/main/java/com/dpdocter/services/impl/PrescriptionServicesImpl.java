@@ -3231,12 +3231,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						String directions = "";
 						if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
 							showDirection = true;
-							for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-								if (drugDirection.getDirection() != null)
+							if (prescriptionItem.getDirection().get(0).getDirection() != null){
 									if (directions == "")
-										directions = directions + (drugDirection.getDirection());
+										directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
 									else
-										directions = directions + "," + (drugDirection.getDirection());
+										directions = directions + "," + (prescriptionItem.getDirection().get(0).getDirection());
 							}
 						}
 						if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {

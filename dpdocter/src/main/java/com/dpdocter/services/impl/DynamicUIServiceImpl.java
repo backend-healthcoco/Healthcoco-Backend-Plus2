@@ -18,6 +18,7 @@ import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.enums.ClinicalNotesPermissionEnum;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
+import com.dpdocter.enums.PatientVisitPermissionEnum;
 import com.dpdocter.enums.PrescriptionPermissionEnum;
 import com.dpdocter.enums.ProfilePermissionEnum;
 import com.dpdocter.enums.SpecialityTypeEnum;
@@ -50,6 +51,7 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 	{
 		UIPermissions uiPermissions = null;
 		Set<String> clinicalNotesPermissionsSet = new HashSet<String>();
+		Set<String> patientVisitPermissionsSet = new HashSet<String>();
 		Set<String> prescriptionPermissionsSet = new HashSet<String>();
 		Set<String> profilePermissionsSet = new HashSet<String>();
 		Set<String> tabPermissionsSet = new HashSet<String>();
@@ -71,11 +73,13 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 				
 				if(tempPermissions != null)
 				{
+					patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
 					clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
 					prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
 					profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
 					tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
 				}
+				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
 				uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
 				uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
 				uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
@@ -133,6 +137,7 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 	{
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
+		ArrayList<String> patientVisitPermission = null;
 		ArrayList<String> prescriptionPermission = null;
 		ArrayList<String> profilePermission = null;
 		ArrayList<String> tabPermission = null;
@@ -176,6 +181,7 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 			break;
 		case "EMPTY":
 			uiPermissions = new UIPermissions();
+			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
@@ -184,9 +190,11 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
 			uiPermissions.setTabPermissions(tabPermission);
+			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			break;
 		default:
 			uiPermissions = new UIPermissions();
+			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
@@ -195,6 +203,7 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
 			uiPermissions.setTabPermissions(tabPermission);
+			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			break;
 		}
 		return uiPermissions;
@@ -205,6 +214,7 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
 		ArrayList<String> prescriptionPermission = null;
+		ArrayList<String> patientVisitPermission = null;
 		ArrayList<String> profilePermission = null;
 		ArrayList<String> tabPermission = null;
 		uiPermissions = new UIPermissions();
@@ -217,12 +227,14 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		clinicalNotesPermission.add(ClinicalNotesPermissionEnum.DIAGNOSIS.getPermissions());
 		clinicalNotesPermission.add(ClinicalNotesPermissionEnum.DIAGRAM.getPermissions());
 		prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
+		patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 		profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 		tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 		uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 		uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 		uiPermissions.setProfilePermissions(profilePermission); 
 		uiPermissions.setTabPermissions(tabPermission);
+		uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 		return uiPermissions;
 	}
 	
@@ -239,6 +251,10 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 	
 	private String[] prescriptionPermission() {
 	    return Arrays.toString(PrescriptionPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
+	}
+	
+	private String[] patientVisitPermission() {
+	    return Arrays.toString(PatientVisitPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
 	
 	private String[] historyPermission() {

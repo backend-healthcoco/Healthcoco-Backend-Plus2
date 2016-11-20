@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class UIPermissions {
 
 	private List<String> tabPermissions;
+	private List<String> patientVisitPermissions;
 	private List<String> clinicalNotesPermissions;
 	private List<String> prescriptionPermissions;
 	private List<String> profilePermissions;
@@ -18,6 +19,14 @@ public class UIPermissions {
 
 	public void setTabPermissions(List<String> tabPermissions) {
 		this.tabPermissions = tabPermissions;
+	}
+
+	public List<String> getPatientVisitPermissions() {
+		return patientVisitPermissions;
+	}
+
+	public void setPatientVisitPermissions(List<String> patientVisitPermissions) {
+		this.patientVisitPermissions = patientVisitPermissions;
 	}
 
 	public List<String> getClinicalNotesPermissions() {
@@ -46,9 +55,9 @@ public class UIPermissions {
 
 	@Override
 	public String toString() {
-		return "UIPermissions [tabPermissions=" + tabPermissions + ", clinicalNotesPermissions="
-				+ clinicalNotesPermissions + ", prescriptionPermissions=" + prescriptionPermissions
-				+ ", profilePermissions=" + profilePermissions + "]";
+		return "UIPermissions [tabPermissions=" + tabPermissions + ", patientVisitPermissions="
+				+ patientVisitPermissions + ", clinicalNotesPermissions=" + clinicalNotesPermissions
+				+ ", prescriptionPermissions=" + prescriptionPermissions + ", profilePermissions=" + profilePermissions
+				+ "]";
 	}
-
 }

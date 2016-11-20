@@ -36,7 +36,6 @@ import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
@@ -1378,13 +1377,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									if (prescriptionItem.getDirection() != null
 											&& !prescriptionItem.getDirection().isEmpty()) {
 										showDirection = true;
-										for (DrugDirection drugDirection : prescriptionItem.getDirection()) {
-											if (drugDirection.getDirection() != null)
-												if (directions == "")
-													directions = directions + (drugDirection.getDirection());
-												else
-													directions = directions + "," + (drugDirection.getDirection());
-										}
+										if (prescriptionItem.getDirection().get(0).getDirection() != null){
+											if (directions == "")
+												directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
+											else
+												directions = directions + "," + (prescriptionItem.getDirection().get(0).getDirection());
+									}
 									}
 									if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
 										showIntructions = true;

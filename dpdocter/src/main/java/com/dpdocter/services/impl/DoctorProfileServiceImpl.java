@@ -605,11 +605,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				}
 				doctorClinic.setRoles(roles);
 
-				if (patientId != null) {
+				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
 							.findByDoctorIdLocationIdAndPatientId(userLocationCollection.getUserId(),
 									userLocationCollection.getLocationId(), new ObjectId(patientId));
-					doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
+					if(recommendationsCollection != null)doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
 				}
 
 			}
