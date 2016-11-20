@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -7,11 +8,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class UIPermissions {
 
-	private List<String> tabPermissions;
-	private List<String> patientVisitPermissions;
-	private List<String> clinicalNotesPermissions;
-	private List<String> prescriptionPermissions;
-	private List<String> profilePermissions;
+	private List<String> tabPermissions = new ArrayList<String>();
+	private List<String> patientVisitPermissions = new ArrayList<String>();
+	private List<String> clinicalNotesPermissions = new ArrayList<String>();
+	private List<String> prescriptionPermissions = new ArrayList<String>();
+	private List<String> profilePermissions = new ArrayList<String>();
 
 	public List<String> getTabPermissions() {
 		return tabPermissions;
