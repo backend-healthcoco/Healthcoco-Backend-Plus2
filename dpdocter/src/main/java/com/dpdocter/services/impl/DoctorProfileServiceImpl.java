@@ -611,12 +611,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
 							.findByDoctorIdLocationIdAndPatientId(userLocationCollection.getUserId(),
 									userLocationCollection.getLocationId(), new ObjectId(patientId));
-<<<<<<< Updated upstream
 					if(recommendationsCollection != null)doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
-=======
-					if (recommendationsCollection != null)
-						doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
->>>>>>> Stashed changes
 				}
 
 			}
