@@ -314,7 +314,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
 	    	if(!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))hospitalObjectId = new ObjectId(request.getHospitalId());
 	    	
-	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), doctorObjectId, locationObjectId, hospitalObjectId);	
+	    PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userCollection.getId(), locationObjectId, hospitalObjectId);	
 		if(patientCollection != null){
 			if (request.getImage() != null) {
 			    String path = "profile-image";

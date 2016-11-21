@@ -188,9 +188,8 @@ public class RecordsServiceImpl implements RecordsService {
 
 			Date createdTime = new Date();
 			UserCollection patientUserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
-					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
 			if (!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())) {
@@ -829,8 +828,8 @@ public class RecordsServiceImpl implements RecordsService {
 				mailAttachment = new MailAttachment();
 				mailAttachment.setFileSystemResource(null);
 				mailAttachment.setInputStream(objectData);
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						recordsCollection.getPatientId(), new ObjectId(doctorId), new ObjectId(locationId),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						recordsCollection.getPatientId(), new ObjectId(locationId),
 						new ObjectId(hospitalId));
 				if (patient != null) {
 
@@ -1057,8 +1056,8 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			Date createdTime = new Date();
 			UserCollection patientUserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					new ObjectId(request.getPatientId()), 
 					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 
 			RecordsCollection recordsCollection = null, oldRecord = null;
@@ -1232,8 +1231,8 @@ public class RecordsServiceImpl implements RecordsService {
 			BeanUtil.map(recordsCollection, response);
 			if (recordsState.equalsIgnoreCase(RecordsState.APPROVED_BY_DOCTOR.toString())) {
 				UserCollection patientUserCollection = userRepository.findOne(recordsCollection.getPatientId());
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						recordsCollection.getPatientId(), recordsCollection.getDoctorId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						recordsCollection.getPatientId(), 
 						recordsCollection.getLocationId(), recordsCollection.getHospitalId());
 				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
@@ -1244,8 +1243,8 @@ public class RecordsServiceImpl implements RecordsService {
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
 			} else if (recordsState.equalsIgnoreCase(RecordsState.DECLINED_BY_DOCTOR.toString())) {
 				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						recordsCollection.getPatientId(), recordsCollection.getDoctorId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						recordsCollection.getPatientId(), 
 						recordsCollection.getLocationId(), recordsCollection.getHospitalId());
 
 				PrescriptionCollection prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(

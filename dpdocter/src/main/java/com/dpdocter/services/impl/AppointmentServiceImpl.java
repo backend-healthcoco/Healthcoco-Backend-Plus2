@@ -510,8 +510,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				LocationCollection locationCollection = locationRepository
 						.findOne(appointmentCollection.getLocationId());
 				UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patient.getId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(),
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patient.getId(), appointmentCollection.getLocationId(),
 						appointmentCollection.getHospitalId());
 
 				if (userCollection != null && locationCollection != null && patientCollection != null) {
@@ -805,8 +805,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			UserCollection patientuserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					new ObjectId(request.getPatientId()), 
 					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 			AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
@@ -1281,8 +1281,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (collection.getType().equals(AppointmentType.APPOINTMENT)) {
 						UserCollection userCollection = userRepository.findOne(collection.getPatientId());
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(),
-										collection.getDoctorId(), collection.getLocationId(),
+								.findByUserIdLocationIdAndHospitalId(userCollection.getId(),
+										collection.getLocationId(),
 										collection.getHospitalId());
 						patient = new PatientCard();
 						// BeanUtil.map(userCollection, patient);
@@ -1824,8 +1824,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (appointmentCollection.getPatientId() != null) {
 					UserCollection userCollection = userRepository.findOne(appointmentCollection.getDoctorId());
 					UserCollection patient = userRepository.findOne(appointmentCollection.getPatientId());
-					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-							appointmentCollection.getPatientId(), appointmentCollection.getDoctorId(),
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							appointmentCollection.getPatientId(), 
 							appointmentCollection.getLocationId(), appointmentCollection.getHospitalId());
 					
 					LocationCollection locationCollection = locationRepository
@@ -1944,8 +1944,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					UserCollection userCollection = userRepository.findOne(collection.getPatientId());
 					if (userCollection != null)
 						BeanUtil.map(userCollection, patientCard);
-					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-							collection.getPatientId(), doctorObjectId, locationObjectId, hospitalObjectId);
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							collection.getPatientId(), locationObjectId, hospitalObjectId);
 					if (patientCollection != null)
 						BeanUtil.map(patientCollection, patientCard);
 					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
@@ -2119,7 +2119,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (userCollection != null)
 							BeanUtil.map(userCollection, patientCard);
 						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(collection.getPatientId(), doctorObjectId,
+								.findByUserIdLocationIdAndHospitalId(collection.getPatientId(), 
 										locationObjectId, hospitalObjectId);
 						if (patientCollection != null)
 							BeanUtil.map(patientCollection, patientCard);
@@ -2190,7 +2190,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		if (appointmentCollection != null) {
 			appointment = new Appointment();
 			BeanUtil.map(appointmentCollection, appointment);
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(appointmentCollection.getPatientId(), appointmentCollection.getDoctorId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId());
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(appointmentCollection.getPatientId(), appointmentCollection.getLocationId(), appointmentCollection.getHospitalId());
 			PatientCard patient = new PatientCard();
 			BeanUtil.map(patientCollection, patient);
 			patient.setUserId(patient.getUserId());

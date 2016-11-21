@@ -948,8 +948,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					.findOne(new ObjectId(treatmentId));
 
 			if (patientTreatmentCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getDoctorId(),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientTreatmentCollection.getPatientId(), 
 						patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientTreatmentCollection.getPatientId());
 
@@ -989,8 +989,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							&& patientTreatmentCollection.getLocationId().toString().equals(locationId)) {
 
 						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
-						patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getDoctorId(),
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								patientTreatmentCollection.getPatientId(), 
 								patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
 						emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());

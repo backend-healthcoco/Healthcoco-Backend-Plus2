@@ -328,8 +328,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorObjectId,
 					locationObjectId, hospitalObjectId, patientObjectId);
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+					patientObjectId, locationObjectId, hospitalObjectId);
 			UserCollection userCollection = userRepository.findOne(doctorObjectId);
 
 			if (patientTrackCollection == null) {
@@ -732,8 +732,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 
 			if (patientVisitCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId(),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientVisitCollection.getPatientId(), 
 						patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 				user.setFirstName(patient.getLocalPatientName());
@@ -1711,8 +1711,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 
 			if (patientVisitCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						patientVisitCollection.getPatientId(), patientVisitCollection.getDoctorId(),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						patientVisitCollection.getPatientId(), 
 						patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 

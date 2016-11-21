@@ -659,14 +659,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 			} else {
-				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId,
-						doctorObjectId, locationObjectId, hospitalObjectId);
+				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId, locationObjectId, hospitalObjectId);
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
-
+					ObjectId patientDoctorId = patientCollection.getDoctorId();
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
 					patientCollection.setUpdatedTime(new Date());
+					patientCollection.setDoctorId(patientDoctorId);
 				} else {
 					patientCollection = new PatientCollection();
 					patientCollection.setCreatedTime(new Date());
@@ -2466,8 +2466,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				PatientCollection patientCollection = new PatientCollection();
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getUserId()))
 					patient = userRepository.findOne(feedbackCollection.getUserId());
-				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						feedbackCollection.getUserId(), feedbackCollection.getDoctorId(),
+				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+						feedbackCollection.getUserId(), 
 						feedbackCollection.getLocationId(), feedbackCollection.getHospitalId());
 
 				UserCollection doctor = null;
@@ -2665,8 +2665,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					Feedback feedback = new Feedback();
 					BeanUtil.map(feedbackCollection, feedback);
 					UserCollection userCollection = userRepository.findOne(new ObjectId(feedback.getUserId()));
-					PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-							feedbackCollection.getUserId(), feedbackCollection.getDoctorId(),
+					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+							feedbackCollection.getUserId(), 
 							feedbackCollection.getLocationId(), feedbackCollection.getHospitalId());
 					if (userCollection != null && patientCollection != null) {
 						User user = new User();
