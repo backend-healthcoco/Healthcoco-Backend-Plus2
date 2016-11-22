@@ -2155,12 +2155,12 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (historyCollection != null) {
 				drugsAndAllergies = historyCollection.getDrugsAndAllergies();
 				if (drugsAndAllergies != null) {
-					drugsAndAllergies.setDrugs(request.getDrugs());
+					drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
 					drugsAndAllergies.setAllergies(request.getAllergies());
 					historyCollection.setDrugsAndAllergies(drugsAndAllergies);
 				} else {
 					drugsAndAllergies = new DrugsAndAllergies();
-					drugsAndAllergies.setDrugs(request.getDrugs());
+					drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
 					drugsAndAllergies.setAllergies(request.getAllergies());
 					historyCollection.setDrugsAndAllergies(drugsAndAllergies);
 				}
@@ -2170,7 +2170,7 @@ public class HistoryServicesImpl implements HistoryServices {
 						patientObjectId);
 				historyCollection.setCreatedTime(new Date());
 				drugsAndAllergies = new DrugsAndAllergies();
-				drugsAndAllergies.setDrugs(request.getDrugs());
+				drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
 				drugsAndAllergies.setAllergies(request.getAllergies());
 				historyCollection.setDrugsAndAllergies(drugsAndAllergies);
 			}
@@ -2249,4 +2249,27 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
     	return response;
     }
+    
+    @SuppressWarnings("unchecked")
+	private List<Drug> getDrugsByIds(List<ObjectId> drugIds) {
+    	List<Drug> drugs = null;
+    	try {
+    		List<DrugCollection> drugCollections =  IteratorUtils.toList(drugRepository.findAll(drugIds).iterator());
+
+    	    if (drugCollections != null) {
+    	    	drugs = new ArrayList<Drug>();
+    		for(DrugCollection drugCollection : drugCollections){
+    			Drug drug = new Drug();
+    			BeanUtil.map(drugCollection, drug);
+    			drugs.add(drug);
+    		}
+    		
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    logger.error(e);
+    	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+    	}
+    	return drugs;
+        }
 }

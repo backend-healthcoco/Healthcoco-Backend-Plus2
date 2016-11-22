@@ -1,7 +1,11 @@
 package common.util.web;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
@@ -15,6 +19,7 @@ import java.util.TimeZone;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 import org.bson.types.ObjectId;
@@ -33,6 +38,8 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.dpdocter.enums.Resource;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 
 public class DPDoctorUtils {
 
@@ -492,6 +499,24 @@ public class DPDoctorUtils {
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		}
 		return aggregation;
+	}
+	
+	public static void fileValidator(String fileEncoded) throws IOException
+	{
+		byte[] base64 = Base64.decodeBase64(fileEncoded);
+	    InputStream fis = new ByteArrayInputStream(base64);
+	    Integer fileSizeInMB = (base64.length / (1024 * 1024)) ; 
+		if(fileSizeInMB > 10)
+		{
+			throw new BusinessException(ServiceError.NotAcceptable , "File size greater than 10 mb");
+		}
+	    String contentType = URLConnection.guessContentTypeFromStream(fis);
+	    if(contentType.equalsIgnoreCase("exe"))
+		{
+			throw new BusinessException(ServiceError.NotAcceptable , "Invalid File");
+		}
+		
+		
 	}
 
 }

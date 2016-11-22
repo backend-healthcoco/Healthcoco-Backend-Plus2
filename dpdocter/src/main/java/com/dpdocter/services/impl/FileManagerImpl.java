@@ -26,6 +26,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -58,7 +60,10 @@ public class FileManagerImpl implements FileManager {
 		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
 	    InputStream fis = new ByteArrayInputStream(base64);
 	    String contentType = URLConnection.guessContentTypeFromStream(fis);
-	    
+	    if(contentType.equalsIgnoreCase("exe"))
+		{
+			throw new BusinessException(ServiceError.NotAcceptable , "Invalid File");
+		}
 	    ObjectMetadata metadata = new ObjectMetadata();
 	    byte[] contentBytes = IOUtils.toByteArray(new ByteArrayInputStream(base64));
 	    metadata.setContentLength(contentBytes.length);

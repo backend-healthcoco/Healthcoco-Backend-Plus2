@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.WorkingSchedule;
+import com.dpdocter.enums.LocationType;
 
 @Document(collection = "location_cl")
 public class LocationCollection extends GenericCollection {
@@ -118,6 +119,9 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private int noOfClinicRecommendations = 0;
 
+	@Field
+	private LocationType locationType;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -398,6 +402,14 @@ public class LocationCollection extends GenericCollection {
 		this.clinicRankingCount = clinicRankingCount;
 	}
 
+	public LocationType getLocationType() {
+		return locationType;
+	}
+
+	public void setLocationType(LocationType locationType) {
+		this.locationType = locationType;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -412,7 +424,8 @@ public class LocationCollection extends GenericCollection {
 				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
 				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
 				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + "]";
+				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + ", noOfClinicRecommendations="
+				+ noOfClinicRecommendations + ", locationType=" + locationType + "]";
 	}
 
 }

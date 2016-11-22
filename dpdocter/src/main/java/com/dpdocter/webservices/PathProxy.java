@@ -197,7 +197,7 @@ public interface PathProxy {
 		
 		public static final String ADD_MENSTRUAL_HISTORY = "/menstrualHistory/add";
 		
-		public static final String ADD_OBSTETRICS_HISTORY = "/obstretricsHistory/add";
+		public static final String ADD_OBSTETRICS_HISTORY = "/obstetricHistory/add";
 		
 		public static final String ADD_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/add";
 
@@ -231,7 +231,7 @@ public interface PathProxy {
 		
 		public static final String DELETE_MENSTRUAL_HISTORY = "/menstrualHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
-		public static final String DELETE_OBSTETRIC_HISTORY = "/obstretricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_OBSTETRIC_HISTORY = "/obstetricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
 		public static final String DELETE_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}

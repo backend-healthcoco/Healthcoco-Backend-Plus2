@@ -2,23 +2,25 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.Drug;
 
 public class DrugsAndAllergiesAddRequest {
 
-	private List<Drug> drugs;
+	private List<ObjectId> drugIds;
 	private String allergies;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
 
-	public List<Drug> getDrugs() {
-		return drugs;
+	public List<ObjectId> getDrugIds() {
+		return drugIds;
 	}
 
-	public void setDrugs(List<Drug> drugs) {
-		this.drugs = drugs;
+	public void setDrugIds(List<ObjectId> drugIds) {
+		this.drugIds = drugIds;
 	}
 
 	public String getAllergies() {
@@ -63,7 +65,7 @@ public class DrugsAndAllergiesAddRequest {
 
 	@Override
 	public String toString() {
-		return "DrugsAndAllergiesAddRequest [drugs=" + drugs + ", allergies=" + allergies + ", doctorId=" + doctorId
+		return "DrugsAndAllergiesAddRequest [drugIds=" + drugIds + ", allergies=" + allergies + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + "]";
 	}
 

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.LocationType;
+
 /**
  * @author veeraj
  */
@@ -73,11 +75,13 @@ public class Location {
 
 	private Boolean isLocationListed = true;
 
+	private long clinicRankingCount = 0;
+    
+    private LocationType locationType = LocationType.CLINIC;
+    
 	private String patientInitial = "P";
 
 	private int patientCounter = 0;
-
-	private long clinicRankingCount = 0;
 
 	private int noOfClinicRecommendations = 0;
 
@@ -363,21 +367,12 @@ public class Location {
 		this.clinicRankingCount = clinicRankingCount;
 	}
 
-	@Override
-	public String toString() {
-		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
-				+ ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
-				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
-				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
-				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", clinicNumber="
-				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", clinicWorkingSchedules="
-				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
-				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
-				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
-				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter + "]";
+	public LocationType getLocationType() {
+		return locationType;
+	}
+
+	public void setLocationType(LocationType locationType) {
+		this.locationType = locationType;
 	}
 
 	public int getNoOfClinicRecommendations() {
@@ -394,6 +389,24 @@ public class Location {
 
 	public void setIsClinicRecommended(Boolean isClinicRecommended) {
 		this.isClinicRecommended = isClinicRecommended;
+	}
+	
+	@Override
+	public String toString() {
+		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
+				+ ", city=" + city + ", postalCode=" + postalCode + ", websiteUrl=" + websiteUrl + ", images=" + images
+				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", hospitalId=" + hospitalId
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", tagLine=" + tagLine + ", landmarkDetails="
+				+ landmarkDetails + ", locationEmailAddress=" + locationEmailAddress + ", specialization="
+				+ specialization + ", streetAddress=" + streetAddress + ", locality=" + locality + ", clinicNumber="
+				+ clinicNumber + ", alternateClinicNumbers=" + alternateClinicNumbers + ", clinicWorkingSchedules="
+				+ clinicWorkingSchedules + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", isClinic=" + isClinic
+				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
+				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
+				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
+				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + ", locationType=" + locationType
+				+ "]";
 	}
 
 }
