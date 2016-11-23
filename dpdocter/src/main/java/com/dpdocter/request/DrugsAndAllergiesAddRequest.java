@@ -8,18 +8,18 @@ import com.dpdocter.beans.Drug;
 
 public class DrugsAndAllergiesAddRequest {
 
-	private List<ObjectId> drugIds;
+	private List<String> drugIds;
 	private String allergies;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
 
-	public List<ObjectId> getDrugIds() {
+	public List<String> getDrugIds() {
 		return drugIds;
 	}
 
-	public void setDrugIds(List<ObjectId> drugIds) {
+	public void setDrugIds(List<String> drugIds) {
 		this.drugIds = drugIds;
 	}
 

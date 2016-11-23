@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -342,7 +343,14 @@ public class ClinicalNotesApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-
+		
+		/*try {
+			DPDoctorUtils.fileValidator(request.getDiagram().getFileEncoded());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+*/
 		Diagram diagram = clinicalNotesService.addEditDiagram(request);
 		transactionalManagementService.addResource(new ObjectId(diagram.getId()), Resource.DIAGRAM, false);
 		ESDiagramsDocument esDiagrams = new ESDiagramsDocument();

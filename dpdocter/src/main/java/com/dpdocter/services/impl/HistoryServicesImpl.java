@@ -2251,10 +2251,15 @@ public class HistoryServicesImpl implements HistoryServices {
     }
     
     @SuppressWarnings("unchecked")
-	private List<Drug> getDrugsByIds(List<ObjectId> drugIds) {
+	private List<Drug> getDrugsByIds(List<String> drugIds) {
     	List<Drug> drugs = null;
+    	List<ObjectId> drugObjectIds = new ArrayList<ObjectId>();
     	try {
-    		List<DrugCollection> drugCollections =  IteratorUtils.toList(drugRepository.findAll(drugIds).iterator());
+    		for(String drugId : drugIds)
+    		{
+    			drugObjectIds.add(new ObjectId(drugId));
+    		}
+    		List<DrugCollection> drugCollections =  IteratorUtils.toList(drugRepository.findAll(drugObjectIds).iterator());
 
     	    if (drugCollections != null) {
     	    	drugs = new ArrayList<Drug>();
