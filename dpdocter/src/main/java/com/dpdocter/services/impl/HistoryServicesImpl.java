@@ -2155,12 +2155,18 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (historyCollection != null) {
 				drugsAndAllergies = historyCollection.getDrugsAndAllergies();
 				if (drugsAndAllergies != null) {
-					drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
+					if(request.getDrugIds() != null)
+					{
+						drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
+					}
 					drugsAndAllergies.setAllergies(request.getAllergies());
 					historyCollection.setDrugsAndAllergies(drugsAndAllergies);
 				} else {
 					drugsAndAllergies = new DrugsAndAllergies();
-					drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
+					if(request.getDrugIds() != null)
+					{
+						drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
+					}
 					drugsAndAllergies.setAllergies(request.getAllergies());
 					historyCollection.setDrugsAndAllergies(drugsAndAllergies);
 				}
@@ -2170,7 +2176,10 @@ public class HistoryServicesImpl implements HistoryServices {
 						patientObjectId);
 				historyCollection.setCreatedTime(new Date());
 				drugsAndAllergies = new DrugsAndAllergies();
-				drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
+				if(request.getDrugIds() != null )
+				{
+					drugsAndAllergies.setDrugs(getDrugsByIds(request.getDrugIds()));
+				}
 				drugsAndAllergies.setAllergies(request.getAllergies());
 				historyCollection.setDrugsAndAllergies(drugsAndAllergies);
 			}
