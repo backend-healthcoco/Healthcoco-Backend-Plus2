@@ -1,8 +1,5 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-import java.util.Set;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,8 +31,7 @@ public class BlogCollection extends GenericCollection {
 	@Field
 	private ObjectId userId;
 
-	@Field
-	private Set<ObjectId> likes;
+	private Integer noOfLikes = 0;
 
 	@Field
 	private Integer views = 0;
@@ -111,15 +107,6 @@ public class BlogCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	
-	public Set<ObjectId> getLikes() {
-		return likes;
-	}
-
-	public void setLikes(Set<ObjectId> likes) {
-		this.likes = likes;
-	}
-
 	public Integer getViews() {
 		return views;
 	}
@@ -132,6 +119,14 @@ public class BlogCollection extends GenericCollection {
 	public String toString() {
 		return "BlogCollection [id=" + id + ", title=" + title + "isActive=" + isActive + ", category=" + category
 				+ ", articleiId=" + articleId + "]";
+	}
+
+	public Integer getNoOfLikes() {
+		return noOfLikes;
+	}
+
+	public void setNoOfLikes(Integer noOfLikes) {
+		this.noOfLikes = noOfLikes;
 	}
 
 }

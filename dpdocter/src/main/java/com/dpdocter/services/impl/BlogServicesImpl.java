@@ -2,9 +2,8 @@ package com.dpdocter.services.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -21,10 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Blog;
 import com.dpdocter.collections.BlogCollection;
+import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BlogLikesRepository;
 import com.dpdocter.repository.BlogRepository;
 import com.dpdocter.repository.GridFsRepository;
 import com.dpdocter.repository.UserRepository;
@@ -54,6 +55,9 @@ public class BlogServicesImpl implements BlogService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private BlogLikesRepository blogLikesRepository;
+
 	@Override
 	public List<Blog> getBlogs(int size, int page, String category, String userId, String title) {
 		List<Blog> response = null;
@@ -64,8 +68,7 @@ public class BlogServicesImpl implements BlogService {
 			Aggregation aggregation = null;
 
 			List<BlogCollection> blogCollections = null;
-			if (!DPDoctorUtils.anyStringEmpty(userId))
-				criteria = criteria.and(userId).is(new ObjectId(userId));
+
 			if (!DPDoctorUtils.anyStringEmpty(title))
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
 			if (!DPDoctorUtils.anyStringEmpty(category))
@@ -88,8 +91,11 @@ public class BlogServicesImpl implements BlogService {
 				blog.setArticle(this.getBlogArticle(blog.getArticleId()));
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
-				if (blogCollection.getLikes() != null)
-					blog.setNoOfLikes(blogCollection.getLikes().size());
+				if (userId != null) {
+					BlogLikesCollection blogLikesCollection = blogLikesRepository
+							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+					blog.setIsliked(blogLikesCollection.getDiscarded());
+				}
 				response.add(blog);
 			}
 		} catch (Exception e) {
@@ -124,13 +130,12 @@ public class BlogServicesImpl implements BlogService {
 			response = new Blog();
 			BeanUtil.map(blogCollection, response);
 			response.setArticle(this.getBlogArticle(response.getArticleId()));
-			if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))
-				response.setTitleImage(imagePath + response.getTitleImage());
-			if (blogCollection.getLikes() != null) {
-				if (!DPDoctorUtils.anyStringEmpty(userId))
-					response.setIsliked(blogCollection.getLikes().contains(new ObjectId(userId)));
-				response.setNoOfLikes(blogCollection.getLikes().size());
+			if (userId != null) {
+				BlogLikesCollection blogLikesCollection = blogLikesRepository
+						.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+				response.setIsliked(blogLikesCollection.getDiscarded());
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -141,36 +146,44 @@ public class BlogServicesImpl implements BlogService {
 	}
 
 	@Override
-	public Blog updateLikes(String id, String userId) {
+	public Blog updateLikes(String blogId, String userId) {
 		Blog response = null;
-		boolean present = false;
-		Set<ObjectId> set = new HashSet<ObjectId>();
 		try {
-			UserCollection userCollection = null;
-			ObjectId userObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(userId)) {
-				userObjectId = new ObjectId(userId);
-				userCollection = userRepository.findOne(userObjectId);
-			}
-			if (userCollection != null) {
-				BlogCollection blogCollection = blogRepository.findOne(new ObjectId(id));
-				if (blogCollection.getLikes() != null)
-					set.addAll(blogCollection.getLikes());
-				present = set.add(userObjectId);
-				if (!present)
-					set.remove(userObjectId);
-				blogCollection.setLikes(set);
+			BlogLikesCollection blogLikesCollection = null;
+			UserCollection 	userCollection = userRepository.findOne(new ObjectId(userId));
+
+			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			if (userCollection != null && blogCollection != null) {
+				blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
+						new ObjectId(userId));
+				if (blogLikesCollection != null) {
+					if (!blogLikesCollection.getDiscarded()){
+						blogCollection.setNoOfLikes(blogCollection.getNoOfLikes()- 1);
+					blogLikesCollection.setDiscarded(true);
+					}
+					else{
+						blogCollection.setNoOfLikes(blogCollection.getNoOfLikes() +1);
+						blogLikesCollection.setDiscarded(false);
+					}
+
+				} else {
+					blogLikesCollection = new BlogLikesCollection();
+					blogLikesCollection.setBlogId(new ObjectId(blogId));
+					blogLikesCollection.setUserId(new ObjectId(userId));
+					blogLikesCollection.setDiscarded(false);
+					blogLikesCollection.setCreatedTime(new Date());
+					blogCollection.setNoOfLikes(blogCollection.getNoOfLikes() + 1);
+					blogLikesCollection.setDiscarded(false);
+				}
+				blogLikesCollection.setUpdatedTime(new Date());
+				blogLikesCollection = blogLikesRepository.save(blogLikesCollection);
 				blogCollection = blogRepository.save(blogCollection);
 				response = new Blog();
 				BeanUtil.map(blogCollection, response);
-				response.setIsliked(present);
-				response.setArticle(this.getBlogArticle(response.getArticleId()));
-				if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))
-					response.setTitleImage(imagePath + response.getTitleImage());
-				if (blogCollection.getLikes() != null)
-					response.setNoOfLikes(blogCollection.getLikes().size());
+				response.setIsliked(!blogLikesCollection.getDiscarded());
+
 			} else {
-				throw new BusinessException(ServiceError.Unknown, "Invalid user ");
+				throw new BusinessException(ServiceError.Unknown, "Invalid user or blog");
 
 			}
 
