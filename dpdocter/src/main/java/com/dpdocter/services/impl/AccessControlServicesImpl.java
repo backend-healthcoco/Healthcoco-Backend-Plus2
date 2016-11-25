@@ -64,8 +64,8 @@ public class AccessControlServicesImpl implements AccessControlServices {
 		}
 	    }
 	    response.setRoleOrUserId(roleOrUserId.toString());
-	    response.setLocationId(locationId.toString());
-	    response.setHospitalId(hospitalId.toString());
+	    if(!DPDoctorUtils.anyStringEmpty(locationId))response.setLocationId(locationId.toString());
+	    if(!DPDoctorUtils.anyStringEmpty(hospitalId))response.setHospitalId(hospitalId.toString());
 	} catch (Exception e) {
 	    throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
 	}

@@ -369,7 +369,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} else if ((request.getItems() == null || request.getItems().isEmpty())
-				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty())) {
+				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty()) && DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -397,7 +397,7 @@ public class PrescriptionApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		} else if ((request.getItems() == null || request.getItems().isEmpty())
-				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty())) {
+				&& (request.getDiagnosticTests() == null || request.getDiagnosticTests().isEmpty()) && DPDoctorUtils.anyStringEmpty(request.getAdvice())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

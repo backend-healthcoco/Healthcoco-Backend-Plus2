@@ -2133,7 +2133,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(),
 							roleCollection.getLocationId(), roleCollection.getHospitalId());
 					BeanUtil.map(roleCollection, roleObj);
-					roleObj.setAccessModules(accessControl.getAccessModules());
+					if(accessControl != null)roleObj.setAccessModules(accessControl.getAccessModules());
 					response.add(roleObj);
 				}
 			}
