@@ -7,6 +7,7 @@ import static com.dpdocter.enums.VisitedFor.REPORTS;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,7 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
@@ -72,7 +74,6 @@ import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
@@ -163,8 +164,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private DiagnosticTestRepository diagnosticTestRepository;
 
 	@Autowired
-	private AppointmentRepository appointmentRepository;
-	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
@@ -237,8 +236,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (patientVisitCollection.getId() == null) {
 				patientVisitCollection.setCreatedTime(new Date());
-				patientVisitCollection
-						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+				patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
 				if (userCollection != null) {
 					patientVisitCollection
@@ -462,123 +460,53 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Transactional
 	public PatientVisitResponse addMultipleData(AddMultipleDataRequest request) {
 		PatientVisitResponse response = new PatientVisitResponse();
+		String visitId = request.getVisitId();
+		Appointment appointment = null;
+		PatientVisitCollection patientVisitCollection = null;
 		try {
-			String visitId = null;
 
-			Appointment appointment = null;
+			if (visitId != null){
+				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+				patientVisitCollection.setUpdatedTime(new Date());
+			}
+			else {
+				patientVisitCollection = new PatientVisitCollection();
+				patientVisitCollection.setCreatedTime(new Date());
+				patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
+				if (userCollection != null) {
+					patientVisitCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
+				}
+				patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
+				visitId = patientVisitCollection.getId().toString();
+				request.setVisitId(visitId);
+			}
+
 			if (request.getAppointmentRequest() != null) {
+				request.getAppointmentRequest().setVisitId(visitId);
 				appointment = addVisitAppointment(request.getAppointmentRequest());
+				patientVisitCollection.setAppointmentId(appointment.getAppointmentId());
+				patientVisitCollection.setTime(appointment.getTime());
+				patientVisitCollection.setFromDate(appointment.getFromDate());
 			}
 
 			BeanUtil.map(request, response);
-
 			if (request.getClinicalNote() != null) {
-				if (appointment != null) {
-					request.getClinicalNote().setAppointmentId(appointment.getAppointmentId());
-					request.getClinicalNote().setTime(appointment.getTime());
-					request.getClinicalNote().setFromDate(appointment.getFromDate());
-
-				}
-				ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false);
-				if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
-					clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
-				}
-
-				visitId = addRecord(clinicalNotes, VisitedFor.CLINICAL_NOTES, request.getVisitId());
-
-				clinicalNotes.setVisitId(visitId);
-				request.setVisitId(visitId);
-				List<ClinicalNotes> list = new ArrayList<ClinicalNotes>();
-				list.add(clinicalNotes);
-				response.setClinicalNotes(list);
+				addClinicalNotes(request, response, patientVisitCollection, visitId, appointment);
 			}
 
 			if (request.getPrescription() != null) {
-
-				if (appointment != null) {
-					request.getPrescription().setAppointmentId(appointment.getAppointmentId());
-					request.getPrescription().setTime(appointment.getTime());
-					request.getPrescription().setFromDate(appointment.getFromDate());
-
-				}
-				PrescriptionAddEditResponse prescriptionResponse = prescriptionServices
-						.addPrescription(request.getPrescription(), false);
-				Prescription prescription = new Prescription();
-
-				List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
-				prescriptionResponse.setDiagnosticTests(null);
-				BeanUtil.map(prescriptionResponse, prescription);
-				prescription.setDiagnosticTests(prescriptionTest);
-
-				if (prescriptionResponse.getItems() != null) {
-					List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
-					for (PrescriptionItem prescriptionItem : prescriptionResponse.getItems()) {
-						PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
-						BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-						if (prescriptionItem.getDrugId() != null) {
-							DrugCollection drugCollection = drugRepository
-									.findOne(new ObjectId(prescriptionItem.getDrugId()));
-							Drug drug = new Drug();
-							if (drugCollection != null)
-								BeanUtil.map(drugCollection, drug);
-							prescriptionItemDetails.setDrug(drug);
-						}
-						prescriptionItemDetailsList.add(prescriptionItemDetails);
-					}
-					prescription.setItems(prescriptionItemDetailsList);
-				}
-				if (prescriptionResponse != null) {
-					visitId = addRecord(prescriptionResponse, VisitedFor.PRESCRIPTION, request.getVisitId());
-
-					prescription.setVisitId(visitId);
-					request.setVisitId(visitId);
-					List<Prescription> list = new ArrayList<Prescription>();
-					list.add(prescription);
-					response.setPrescriptions(list);
-				}
+				addPrescription(request, response, patientVisitCollection, visitId, appointment);
 			}
 
 			if (request.getRecord() != null) {
-				Records records = recordsService.addRecord(request.getRecord());
-
-				if (records != null) {
-					records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
-					visitId = addRecord(records, VisitedFor.REPORTS, request.getVisitId());
-					records.setVisitId(visitId);
-					request.setVisitId(visitId);
-					List<Records> list = new ArrayList<Records>();
-					list.add(records);
-					response.setRecords(list);
-				}
+				addRecords(request, response, patientVisitCollection, visitId, appointment);
 			}
-			if (request.getTreatmentRequest() != null) {
-
-				if (appointment != null) {
-					request.getTreatmentRequest().setAppointmentId(appointment.getAppointmentId());
-					request.getTreatmentRequest().setTime(appointment.getTime());
-					request.getTreatmentRequest().setFromDate(appointment.getFromDate());
-
-				}
-
-				PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
-						.addEditPatientTreatment(request.getTreatmentRequest(), false);
-
-				PatientTreatment patientTreatment = new PatientTreatment();
-				BeanUtil.map(patientTreatmentResponse, patientTreatment);
-
-				if (patientTreatmentResponse != null) {
-					visitId = addRecord(patientTreatmentResponse, VisitedFor.TREATMENT, request.getVisitId());
-					patientTreatment.setVisitId(visitId);
-					request.setVisitId(visitId);
-					List<PatientTreatment> list = new ArrayList<PatientTreatment>();
-					list.add(patientTreatment);
-					response.setPatientTreatment(list);
-				}
+			if(request.getTreatmentRequest() != null){
+				addTreatments(request, response, patientVisitCollection, visitId, appointment);
 			}
 
-			PatientVisitCollection patientVisitCollection = patientVisitRepository
-					.findOne(new ObjectId(request.getVisitId()));
-
+			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 			if (patientVisitCollection != null) {
 				response.setId(patientVisitCollection.getId().toString());
 				response.setVisitedFor(patientVisitCollection.getVisitedFor());
@@ -595,11 +523,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if ((response.getPatientTreatment() == null || response.getPatientTreatment().isEmpty())
 						&& (patientVisitCollection.getTreatmentId() != null
 								&& !patientVisitCollection.getTreatmentId().isEmpty())) {
-					List<PatientTreatment> list = patientTreatmentServices
-							.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
+					List<PatientTreatment> list = patientTreatmentServices.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
 					response.setPatientTreatment(list);
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -608,6 +534,161 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					"Error while adding patient Visit : " + e.getCause().getMessage());
 		}
 		return response;
+	}
+
+	private void addTreatments(AddMultipleDataRequest request, PatientVisitResponse response, PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
+
+		if (appointment != null) {
+				request.getTreatmentRequest().setAppointmentId(appointment.getAppointmentId());
+				request.getTreatmentRequest().setTime(appointment.getTime());
+				request.getTreatmentRequest().setFromDate(appointment.getFromDate());
+
+			}
+
+			PatientTreatmentResponse patientTreatmentResponse = patientTreatmentServices
+					.addEditPatientTreatment(request.getTreatmentRequest(), false);
+
+			PatientTreatment patientTreatment = new PatientTreatment();
+			BeanUtil.map(patientTreatmentResponse, patientTreatment);
+
+			if (patientTreatmentResponse != null) {
+				if (patientVisitCollection.getVisitedFor() != null) {
+					if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.TREATMENT))
+						patientVisitCollection.getVisitedFor().add(VisitedFor.TREATMENT);
+				} else {
+					List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+					visitedforList.add(VisitedFor.TREATMENT);
+					patientVisitCollection.setVisitedFor(visitedforList);
+				}
+				if (patientVisitCollection.getTreatmentId() == null) {
+					patientVisitCollection.setTreatmentId(Arrays.asList(new ObjectId(patientTreatment.getId())));
+				} else {
+					if (!patientVisitCollection.getTreatmentId().contains(new ObjectId(patientTreatment.getId())))
+						patientVisitCollection.getTreatmentId().add(new ObjectId(patientTreatment.getId()));
+				}
+
+				patientTreatment.setVisitId(visitId);
+				List<PatientTreatment> list = new ArrayList<PatientTreatment>();
+				list.add(patientTreatment);
+				response.setPatientTreatment(list);
+	}
+}
+	
+	private void addRecords(AddMultipleDataRequest request, PatientVisitResponse response,
+			PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
+		Records records = recordsService.addRecord(request.getRecord());
+
+		if (records != null) {
+			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+			
+			if (patientVisitCollection.getVisitedFor() != null) {
+				if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.REPORTS))
+					patientVisitCollection.getVisitedFor().add(VisitedFor.REPORTS);
+			} else {
+				List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+				visitedforList.add(VisitedFor.REPORTS);
+				patientVisitCollection.setVisitedFor(visitedforList);
+			}
+			if (patientVisitCollection.getRecordId() == null) {
+				patientVisitCollection.setRecordId(Arrays.asList(new ObjectId(records.getId())));
+			} else {
+				if (!patientVisitCollection.getRecordId().contains(new ObjectId(records.getId())))
+					patientVisitCollection.getRecordId().add(new ObjectId(records.getId()));
+			}
+
+			records.setVisitId(visitId);
+			List<Records> list = new ArrayList<Records>();
+			list.add(records);
+			response.setRecords(list);
+		}
+	}
+
+	private void addPrescription(AddMultipleDataRequest request, PatientVisitResponse response, PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
+		if (appointment != null) {
+			request.getPrescription().setAppointmentId(appointment.getAppointmentId());
+			request.getPrescription().setTime(appointment.getTime());
+			request.getPrescription().setFromDate(appointment.getFromDate());
+
+		}
+		PrescriptionAddEditResponse prescriptionResponse = prescriptionServices.addPrescription(request.getPrescription(), false);
+		Prescription prescription = new Prescription();
+
+		List<TestAndRecordDataResponse> prescriptionTest = prescriptionResponse.getDiagnosticTests();
+		prescriptionResponse.setDiagnosticTests(null);
+		BeanUtil.map(prescriptionResponse, prescription);
+		prescription.setDiagnosticTests(prescriptionTest);
+
+		if (prescriptionResponse.getItems() != null) {
+			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+			for (PrescriptionItem prescriptionItem : prescriptionResponse.getItems()) {
+				PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+				BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+				if (prescriptionItem.getDrugId() != null) {
+					DrugCollection drugCollection = drugRepository
+							.findOne(new ObjectId(prescriptionItem.getDrugId()));
+					Drug drug = new Drug();
+					if (drugCollection != null)
+						BeanUtil.map(drugCollection, drug);
+					prescriptionItemDetails.setDrug(drug);
+				}
+				prescriptionItemDetailsList.add(prescriptionItemDetails);
+			}
+			prescription.setItems(prescriptionItemDetailsList);
+		}
+		if (prescriptionResponse != null) {
+			if (patientVisitCollection.getVisitedFor() != null) {
+				if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.PRESCRIPTION))
+					patientVisitCollection.getVisitedFor().add(VisitedFor.PRESCRIPTION);
+			} else {
+				List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+				visitedforList.add(VisitedFor.PRESCRIPTION);
+				patientVisitCollection.setVisitedFor(visitedforList);
+			}
+			if (patientVisitCollection.getPrescriptionId() == null) {
+				patientVisitCollection.setPrescriptionId(Arrays.asList(new ObjectId(prescription.getId())));
+			} else {
+				if (!patientVisitCollection.getPrescriptionId().contains(new ObjectId(prescription.getId())))
+					patientVisitCollection.getPrescriptionId().add(new ObjectId(prescription.getId()));
+			}
+
+
+			prescription.setVisitId(visitId);
+			List<Prescription> list = new ArrayList<Prescription>();
+			list.add(prescription);
+			response.setPrescriptions(list);
+		}
+	}
+
+	private void addClinicalNotes(AddMultipleDataRequest request, PatientVisitResponse response, PatientVisitCollection patientVisitCollection, String visitId, Appointment appointment) {
+		if (appointment != null) {
+			request.getClinicalNote().setAppointmentId(appointment.getAppointmentId());
+			request.getClinicalNote().setTime(appointment.getTime());
+			request.getClinicalNote().setFromDate(appointment.getFromDate());
+
+		}
+		ClinicalNotes clinicalNotes = clinicalNotesService.addNotes(request.getClinicalNote(), false);
+		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
+			clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
+		}
+
+		if (patientVisitCollection.getVisitedFor() != null) {
+			if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.CLINICAL_NOTES))
+				patientVisitCollection.getVisitedFor().add(VisitedFor.CLINICAL_NOTES);
+		} else {
+			List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+			visitedforList.add(VisitedFor.CLINICAL_NOTES);
+			patientVisitCollection.setVisitedFor(visitedforList);
+		}
+		if (patientVisitCollection.getClinicalNotesId() == null) {
+			patientVisitCollection.setClinicalNotesId(Arrays.asList(new ObjectId(clinicalNotes.getId())));
+		} else {
+			if (!patientVisitCollection.getClinicalNotesId().contains(new ObjectId(clinicalNotes.getId())))
+				patientVisitCollection.getClinicalNotesId().add(new ObjectId(clinicalNotes.getId()));
+		}
+		clinicalNotes.setVisitId(visitId);
+		List<ClinicalNotes> list = new ArrayList<ClinicalNotes>();
+		list.add(clinicalNotes);
+		response.setClinicalNotes(list);	
 	}
 
 	@Override
@@ -1738,11 +1819,60 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		Appointment response = null;
 		if (appointment.getAppointmentId() == null) {
 			response = appointmentService.addAppointment(appointment);
-		} else {
-			response = appointmentService.updateAppointment(appointment);
+		}else {
+			response = new Appointment();
+			BeanUtil.map(appointment, response);
 		}
 
 		return response;
 
+	}
+
+	@Override
+	public void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours, Date fromDate) {
+		try{
+			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(visitId);
+			patientVisitCollection.setAppointmentId(appointmentId);
+			patientVisitCollection.setFromDate(fromDate);
+			patientVisitCollection.setTime(workingHours);
+			patientVisitCollection.setUpdatedTime(new Date());
+			patientVisitRepository.save(patientVisitCollection);
+				
+			if(patientVisitCollection.getClinicalNotesId() != null && !patientVisitCollection.getClinicalNotesId().isEmpty()){
+					for(ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()){
+						ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesId);
+						clinicalNotesCollection.setAppointmentId(appointmentId);
+						clinicalNotesCollection.setFromDate(fromDate);
+						clinicalNotesCollection.setTime(workingHours);
+						clinicalNotesCollection.setUpdatedTime(new Date());
+						clinicalNotesRepository.save(clinicalNotesCollection);
+					}
+			}
+			if(patientVisitCollection.getPrescriptionId() != null && !patientVisitCollection.getPrescriptionId().isEmpty()){
+				for(ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()){
+					PrescriptionCollection prescriptionCollection = prescriptionRepository.findOne(prescriptionId);
+					prescriptionCollection.setAppointmentId(appointmentId);
+					prescriptionCollection.setFromDate(fromDate);
+					prescriptionCollection.setTime(workingHours);
+					prescriptionCollection.setUpdatedTime(new Date());
+					prescriptionRepository.save(prescriptionCollection);
+				}
+			}
+			if(patientVisitCollection.getTreatmentId() != null && !patientVisitCollection.getTreatmentId().isEmpty()){
+				for(ObjectId treatmentId : patientVisitCollection.getTreatmentId()){
+					PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository.findOne(treatmentId);
+					patientTreatmentCollection.setAppointmentId(appointmentId);
+					patientTreatmentCollection.setFromDate(fromDate);
+					patientTreatmentCollection.setTime(workingHours);
+					patientTreatmentCollection.setUpdatedTime(new Date());
+					patientTreamentRepository.save(patientTreatmentCollection);
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while updating Appointment Time");
+			throw new BusinessException(ServiceError.Unknown, "Error while updating Appointment Time");
+		}
 	}
 }

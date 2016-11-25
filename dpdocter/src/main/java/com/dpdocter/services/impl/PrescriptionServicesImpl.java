@@ -3577,7 +3577,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (appointment.getAppointmentId() == null) {
 			response = appointmentService.addAppointment(appointment);
 		} else {
-			response = appointmentService.updateAppointment(appointment);
+			response = new Appointment();
+			BeanUtil.map(appointment, response);
 		}
 		return response;
 	}

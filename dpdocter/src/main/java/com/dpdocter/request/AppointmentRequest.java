@@ -44,6 +44,8 @@ public class AppointmentRequest {
 
 	private String mobileNumber;
 
+	private String visitId;
+	
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -188,6 +190,14 @@ public class AppointmentRequest {
 		this.localPatientName = localPatientName;
 	}
 
+	public String getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -196,6 +206,6 @@ public class AppointmentRequest {
 				+ ", createdBy=" + createdBy + ", notifyPatientBySms=" + notifyPatientBySms + ", notifyPatientByEmail="
 				+ notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail="
 				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
-				+ ", mobileNumber=" + mobileNumber + "]";
+				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + "]";
 	}
 }

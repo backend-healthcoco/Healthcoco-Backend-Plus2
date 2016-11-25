@@ -1,5 +1,6 @@
 package com.dpdocter.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.enums.VisitedFor;
@@ -52,4 +54,6 @@ public interface PatientVisitService {
 
 	void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
 			String firstName, String mobileNumber, Map<String, Object> parameters);
+
+	void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours, Date fromDate);
 }

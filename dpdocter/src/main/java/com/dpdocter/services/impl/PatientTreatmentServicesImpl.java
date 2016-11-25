@@ -331,6 +331,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
 			List<Treatment> treatments = new ArrayList<Treatment>();
+			if(request.getTreatments() != null && !request.getTreatments().isEmpty())
 			for (TreatmentRequest treatmentRequest : request.getTreatments()) {
 
 				if (treatmentRequest.getStatus() == null) {
@@ -351,8 +352,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentResponses.add(treatmentResponse);
 			}
 			patientTreatmentCollection.setTreatments(treatments);
-			patientTreatmentCollection
-					.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
+			patientTreatmentCollection.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
 			;
 			patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
@@ -451,7 +451,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		if (appointment.getAppointmentId() == null) {
 			response = appointmentService.addAppointment(appointment);
 		} else {
-			response = appointmentService.updateAppointment(appointment);
+			response = appointmentService.updateAppointment(appointment, false);
 		}
 		return response;
 	}
@@ -465,6 +465,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					.findOne(new ObjectId(treatmentId));
 			if (patientTreatmentCollection != null) {
 				List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+				if(patientTreatmentCollection.getTreatments() != null && ! patientTreatmentCollection.getTreatments().isEmpty())
 				for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 
 					TreatmentResponse treatmentResponse = new TreatmentResponse();
@@ -505,6 +506,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollectionList) {
 					PatientTreatment patientTreatment = new PatientTreatment();
 					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+					if(patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty())
 					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 
 						TreatmentResponse treatmentResponse = new TreatmentResponse();
@@ -590,6 +592,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
 					BeanUtil.map(patientTreatmentCollection, patientTreatmentResponse);
 					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+					if(patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty())
 					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 						TreatmentResponse treatmentResponse = new TreatmentResponse();
 						BeanUtil.map(treatment, treatmentResponse);
@@ -669,6 +672,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
 					BeanUtil.map(patientTreatmentCollection, patientTreatmentResponse);
 					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
+					if(patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty())
 					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 						TreatmentResponse treatmentResponse = new TreatmentResponse();
 						BeanUtil.map(treatment, treatmentResponse);

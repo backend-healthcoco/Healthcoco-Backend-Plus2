@@ -3254,7 +3254,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (appointment.getAppointmentId() == null) {
 			response = appointmentService.addAppointment(appointment);
 		} else {
-			response = appointmentService.updateAppointment(appointment);
+			response = new Appointment();
+			BeanUtil.map(appointment, response);
 		}
 		return response;
 	}

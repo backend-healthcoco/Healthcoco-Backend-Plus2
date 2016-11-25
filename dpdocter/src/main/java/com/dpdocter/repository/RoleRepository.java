@@ -73,13 +73,13 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query(value = "{'id':{$in :?0}, 'role': ?1}", count = true)
 	public Integer findCountByIdAndRole(Collection<ObjectId> roleIds, String role);
 
-    @Query("{'id':{$in :?0}, 'locationId': ?1, 'hospitalId': ?2}")
+    @Query("{'$or': [{'id':{$in :?0}, 'locationId': ?1, 'hospitalId': ?2},{'id':{$in :?0}, 'locationId': null, 'hospitalId': null}]}")
 	public List<RoleCollection> find(Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
     @Query("{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
 	public List<RoleCollection> find(String role, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
-    @Query("{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
+    @Query("{'$or': [{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}, {'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
 	public List<RoleCollection> findStaffs(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
     @Query("{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")

@@ -112,6 +112,7 @@ import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
@@ -231,6 +232,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Value(value = "${patient.app.bit.link}")
 	private String patientAppBitLink;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
 
 	@Override
 	@Transactional
@@ -500,7 +504,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public Appointment updateAppointment(AppointmentRequest request) {
+	public Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit) {
 		Appointment response = null;
 		try {
 			AppointmentCollection appointmentCollection = appointmentRepository
@@ -571,6 +575,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 						appointmentCollection.setUpdatedTime(new Date());
 						appointmentCollection = appointmentRepository.save(appointmentCollection);
 
+						if(updateVisit && !DPDoctorUtils.anyStringEmpty(appointmentCollection.getVisitId())){
+							if(appointmentCollection.getState().getState().equals("CANCEL"))
+								patientVisitService.updateAppointmentTime(appointmentCollection.getVisitId(), null, null, null);
+							else patientVisitService.updateAppointmentTime(appointmentCollection.getVisitId(), appointmentCollection.getAppointmentId(), appointmentCollection.getTime(), appointmentCollection.getFromDate());
+						}
 						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 						String _24HourTime = String.format("%02d:%02d",
 								appointmentCollection.getTime().getFromTime() / 60,

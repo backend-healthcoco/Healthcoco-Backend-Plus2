@@ -44,7 +44,7 @@ public interface AppointmentService {
 
     Appointment addAppointment(AppointmentRequest request);
 
-    Appointment updateAppointment(AppointmentRequest request);
+    Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit);
 
     Appointment addEvent(EventRequest request);
 

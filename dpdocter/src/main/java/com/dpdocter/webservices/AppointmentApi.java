@@ -190,7 +190,7 @@ public class AppointmentApi {
 	if (request.getAppointmentId() == null) {
 	    appointment = appointmentService.addAppointment(request);
 	} else {
-	    appointment = appointmentService.updateAppointment(request);
+	    appointment = appointmentService.updateAppointment(request, true);
 	}
 
 	Response<Appointment> response = new Response<Appointment>();
