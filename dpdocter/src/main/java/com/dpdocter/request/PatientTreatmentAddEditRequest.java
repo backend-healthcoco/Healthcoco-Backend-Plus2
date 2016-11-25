@@ -10,7 +10,7 @@ public class PatientTreatmentAddEditRequest {
 
 	private String id;
 
-	private String appoinmentId;
+
 
 	private List<TreatmentRequest> treatments;
 
@@ -145,13 +145,7 @@ public class PatientTreatmentAddEditRequest {
 		this.totalCost = totalCost;
 	}
 
-	public String getAppoinmentId() {
-		return appoinmentId;
-	}
 
-	public void setAppoinmentId(String appoinmentId) {
-		this.appoinmentId = appoinmentId;
-	}
 
 	public String getVisitId() {
 		return visitId;

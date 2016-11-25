@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,14 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.ClinicContactUs;
 import com.dpdocter.collections.ClinicContactUsCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.ClinicContactUsRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.ClinicContactUsService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -41,7 +44,10 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 	private ClinicContactUsRepository clinicContactUsRepository;
 
 	@Autowired
-	private UserRepository userRepository;;
+	private UserRepository userRepository;
+
+	@Autowired
+	private DoctorRepository doctorRepository;
 
 	@Value(value = "${doctor.welcome.message}")
 	private String doctorWelcomeMessage;
@@ -58,11 +64,16 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 	@Override
 	public String submitClinicContactUSInfo(ClinicContactUs clinicContactUs) {
 		String response = null;
+		DoctorCollection doctorCollection = null;
 		ClinicContactUsCollection clinicContactUsCollection = new ClinicContactUsCollection();
 
 		try {
 			UserCollection userCollection = userRepository.findOne(new ObjectId(clinicContactUs.getDoctorId()));
-			if (userCollection != null) {
+
+			if (userCollection != null)
+				doctorCollection = doctorRepository.findByUserId(userCollection.getId());
+			if (doctorCollection != null) {
+				BeanUtil.map(clinicContactUs, clinicContactUsCollection);
 				clinicContactUsCollection = clinicContactUsRepository.save(clinicContactUsCollection);
 				String body = mailBodyGenerator.generateActivationEmailBody(
 						userCollection.getTitle() + " " + userCollection.getFirstName(), null,

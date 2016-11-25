@@ -326,8 +326,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorObjectId,
 					locationObjectId, hospitalObjectId, patientObjectId);
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-					patientObjectId, locationObjectId, hospitalObjectId);
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientObjectId,
+					locationObjectId, hospitalObjectId);
 			UserCollection userCollection = userRepository.findOne(doctorObjectId);
 
 			if (patientTrackCollection == null) {
@@ -814,8 +814,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (patientVisitCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientVisitCollection.getPatientId(), 
-						patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
+						patientVisitCollection.getPatientId(), patientVisitCollection.getLocationId(),
+						patientVisitCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
@@ -1339,12 +1339,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
 					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
-					clinicalNotesJasperDetails.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
+					clinicalNotesJasperDetails
+							.setPresentComplaintHistory(clinicalNotesCollection.getPresentComplaintHistory());
 					clinicalNotesJasperDetails.setGeneralExam(clinicalNotesCollection.getGeneralExam());
 					clinicalNotesJasperDetails.setSystemExam(clinicalNotesCollection.getSystemExam());
 					clinicalNotesJasperDetails.setMenstrualHistory(clinicalNotesCollection.getMenstrualHistory());
 					clinicalNotesJasperDetails.setObstetricHistory(clinicalNotesCollection.getObstetricHistory());
-					clinicalNotesJasperDetails.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
+					clinicalNotesJasperDetails
+							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
 
 					List<DBObject> diagramIds = new ArrayList<DBObject>();
 					if (clinicalNotesCollection.getDiagrams() != null)
@@ -1458,12 +1460,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									if (prescriptionItem.getDirection() != null
 											&& !prescriptionItem.getDirection().isEmpty()) {
 										showDirection = true;
-										if (prescriptionItem.getDirection().get(0).getDirection() != null){
+										if (prescriptionItem.getDirection().get(0).getDirection() != null) {
 											if (directions == "")
-												directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
+												directions = directions
+														+ (prescriptionItem.getDirection().get(0).getDirection());
 											else
-												directions = directions + "," + (prescriptionItem.getDirection().get(0).getDirection());
-									}
+												directions = directions + ","
+														+ (prescriptionItem.getDirection().get(0).getDirection());
+										}
 									}
 									if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
 										showIntructions = true;
@@ -1793,8 +1797,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			if (patientVisitCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientVisitCollection.getPatientId(), 
-						patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId());
+						patientVisitCollection.getPatientId(), patientVisitCollection.getLocationId(),
+						patientVisitCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
