@@ -700,7 +700,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						patientCard.setUserId(patient.getId().toString());
 						response.setPatient(patientCard);
 						if (userCollection != null)
-							response.setDoctorName(userCollection.getFirstName());
+							response.setDoctorName(userCollection.getTitle()+" "+userCollection.getFirstName());
 						if (locationCollection != null) {
 							response.setLocationName(locationCollection.getLocationName());
 							response.setClinicNumber(locationCollection.getClinicNumber());
@@ -885,7 +885,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					// sendSMS after appointment is saved
 					if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {
 						if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
-							sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_DOCTOR",
+							sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT",
 									userCollection.getEmailAddress());
 						if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 							sendMsg(null, "CONFIRMED_APPOINTMENT_TO_DOCTOR", request.getDoctorId(),
@@ -939,7 +939,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						patientCard.setUserId(patientuserCollection.getId().toString());
 						response.setPatient(patientCard);
 						if (userCollection != null)
-							response.setDoctorName(userCollection.getFirstName());
+							response.setDoctorName(userCollection.getTitle()+" "+userCollection.getFirstName());
 						if (locationCollection != null) {
 							response.setLocationName(locationCollection.getLocationName());
 							response.setClinicNumber(locationCollection.getClinicNumber());
@@ -1299,7 +1299,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (collection.getDoctorId() != null) {
 						UserCollection doctor = userRepository.findOne(collection.getDoctorId());
 						if (doctor != null)
-							appointment.setDoctorName(doctor.getFirstName());
+							appointment.setDoctorName(doctor.getTitle()+" "+doctor.getFirstName());
 					}
 					if (collection.getLocationId() != null) {
 						LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
@@ -1398,7 +1398,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (collection.getDoctorId() != null) {
 						UserCollection doctor = userRepository.findOne(collection.getDoctorId());
 						if (doctor != null)
-							appointment.setDoctorName(doctor.getFirstName());
+							appointment.setDoctorName(doctor.getTitle()+" "+doctor.getFirstName());
 					}
 					if (collection.getLocationId() != null) {
 						LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
@@ -2204,7 +2204,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		if (appointmentCollection.getDoctorId() != null) {
 			UserCollection doctor = userRepository.findOne(appointmentCollection.getDoctorId());
 			if (doctor != null)
-				appointment.setDoctorName(doctor.getFirstName());
+				appointment.setDoctorName(doctor.getTitle()+" "+doctor.getFirstName());
 		}
 		if (appointmentCollection.getLocationId() != null) {
 			LocationCollection locationCollection = locationRepository.findOne(appointmentCollection.getLocationId());
