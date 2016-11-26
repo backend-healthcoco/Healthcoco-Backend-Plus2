@@ -14,6 +14,7 @@ import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -68,12 +69,14 @@ import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
+import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
+import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
@@ -189,6 +192,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Autowired
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
+
+	@Autowired
+	private ESLocationRepository esLocationRepository;
 
     @Autowired
     private ESClinicalNotesService esClinicalNotesService;
@@ -763,14 +769,37 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 		for (UserLocationCollection collection : userLocationCollections) {
 		    LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
+			GeoPoint geoPoint = null;
+			if (locationCollection.getLatitude() != null && locationCollection.getLongitude() != null)
+				geoPoint = new GeoPoint(locationCollection.getLatitude(), locationCollection.getLongitude());
+
 		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
 		    ESDoctorDocument doctorDocument = new ESDoctorDocument();
 		    if (locationCollection != null){
 		    	BeanUtil.map(locationCollection, doctorDocument);
+		    	
+				ESLocationDocument esLocationDocument = new ESLocationDocument();
+				BeanUtil.map(clinicProfileCollection, esLocationDocument);
+				BeanUtil.map(locationCollection, esLocationDocument);
+				
+				if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
+					List<String> images = new ArrayList<String>();
+					for (ClinicImage clinicImage : locationCollection.getImages()) {
+					    images.add(clinicImage.getImageUrl());
+					}
+					doctorDocument.setImages(images);
+					esLocationDocument.setImages(images);
+				}
+				esLocationDocument.setGeoPoint(geoPoint);
+				esLocationDocument.setId(locationCollection.getId().toString());
+				esLocationRepository.save(esLocationDocument);
+
 		    }
 		    if (userCollection != null)BeanUtil.map(userCollection, doctorDocument);
 		    if (doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
-		    if (clinicProfileCollection != null)BeanUtil.map(clinicProfileCollection, doctorDocument);
+		    if (clinicProfileCollection != null){
+		    	BeanUtil.map(clinicProfileCollection, doctorDocument);
+		    }
 		    if (locationCollection != null)
 			doctorDocument.setLocationId(locationCollection.getId().toString());
 		    if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {

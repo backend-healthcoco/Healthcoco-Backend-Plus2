@@ -850,13 +850,15 @@ public class PrescriptionApi {
 	@Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_PRESCRIPTION)
-	public Response<String> downloadPrescription(@PathParam("prescriptionId") String prescriptionId) {
+	public Response<String> downloadPrescription(@PathParam("prescriptionId") String prescriptionId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
+    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
+    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA, @DefaultValue("false") @QueryParam("isLabPrint") Boolean isLabPrint) {
 		if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(prescriptionServices.getPrescriptionFile(prescriptionId));
+		response.setData(prescriptionServices.getPrescriptionFile(prescriptionId, showPH, showPLH, showFH, showDA, isLabPrint));
 		return response;
 	}
 

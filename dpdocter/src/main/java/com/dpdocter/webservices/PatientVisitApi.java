@@ -168,13 +168,16 @@ public class PatientVisitApi {
     @Path(value = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT)
     @GET
     @ApiOperation(value = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT, notes = PathProxy.PatientVisitUrls.DOWNLOAD_PATIENT_VISIT)
-    public Response<String> downloadPatientVisit(@PathParam("visitId") String visitId) {
+    public Response<String> downloadPatientVisit(@PathParam("visitId") String visitId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
+    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
+    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA, @DefaultValue("false") @QueryParam("isLabPrint") Boolean isLabPrint, 
+    		@DefaultValue("false") @QueryParam("showUSG") Boolean showUSG) {
     	if (DPDoctorUtils.allStringsEmpty(visitId)) {
     	    logger.warn("Invalid Input");
     	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
     	}
     	Response<String> response = new Response<String>();
-    	response.setData(patientVisitService.getPatientVisitFile(visitId));
+    	response.setData(patientVisitService.getPatientVisitFile(visitId, showPH, showPLH, showFH, showDA, showUSG, isLabPrint));
     	return response;
     }
 }

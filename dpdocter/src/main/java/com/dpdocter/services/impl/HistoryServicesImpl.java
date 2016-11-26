@@ -90,10 +90,8 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
-import com.squareup.okhttp.internal.spdy.ErrorCode;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.Response;
 
 @Service
 public class HistoryServicesImpl implements HistoryServices {
@@ -267,7 +265,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    GeneralData report = new GeneralData();
 	    report.setData(reportId);
 	    report.setDataType(HistoryFilter.REPORTS);
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 
 		Collection<String> reports = null;
@@ -331,7 +329,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    GeneralData clinicalNote = new GeneralData();
 	    clinicalNote.setData(clinicalNotesId);
 	    clinicalNote.setDataType(HistoryFilter.CLINICAL_NOTES);
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		Collection<String> clinicalNotes = null;
 		if (historyCollection.getGeneralRecords() != null)
@@ -395,7 +393,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    GeneralData prescription = new GeneralData();
 	    prescription.setData(prescriptionId);
 	    prescription.setDataType(HistoryFilter.PRESCRIPTIONS);
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		Collection<String> prescriptions = null;
 		if (historyCollection.getGeneralRecords() != null)
@@ -491,7 +489,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    patientTreatment.setData(treatmentId);
 	    patientTreatment.setDataType(HistoryFilter.PATIENT_TREATMENTS);
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		// check if patient treatments are there in history.
 		Collection<String> patientTreatments = null;
@@ -565,7 +563,7 @@ public class HistoryServicesImpl implements HistoryServices {
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		List<ObjectId> medicalHistoryList = historyCollection.getMedicalhistory();
 		if (medicalHistoryList != null) {
@@ -624,7 +622,7 @@ public class HistoryServicesImpl implements HistoryServices {
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
 	    // check if history for this patient is already added .
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		// check if familyHistory are there in history.
 		List<ObjectId> familyHistoryList = historyCollection.getFamilyhistory();
@@ -690,7 +688,7 @@ public class HistoryServicesImpl implements HistoryServices {
     		specialNotesObjectIds = new ArrayList<ObjectId>();
     		for(String specialNotesId : specialNotes)specialNotesObjectIds.add(new ObjectId(specialNotesId));
     	}
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 			List<ObjectId> specialNotesInHistory = historyCollection.getSpecialNotes();
 			if (specialNotesInHistory == null) specialNotesInHistory = new ArrayList<ObjectId>();
@@ -727,13 +725,12 @@ public class HistoryServicesImpl implements HistoryServices {
     	HistoryCollection historyCollection = null;
     	RecordsCollection recordsCollection = null;
 	try {
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		ObjectId patientObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
 		List<String> reports = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
@@ -782,13 +779,12 @@ public class HistoryServicesImpl implements HistoryServices {
     	HistoryCollection historyCollection = null;
 	ClinicalNotesCollection clinicalNotesCollection = null;
 	try {
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		ObjectId patientObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
 		List<String> clinicalNotes = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(), new BeanToPropertyValueTransformer("data"));
@@ -837,13 +833,12 @@ public class HistoryServicesImpl implements HistoryServices {
     	HistoryCollection historyCollection = null;
 	PrescriptionCollection prescriptionCollection = null;
 	try {
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		ObjectId patientObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
 		List<String> prescriptions = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(),
@@ -926,13 +921,12 @@ public class HistoryServicesImpl implements HistoryServices {
     	HistoryDetailsResponse response = null;
     	HistoryCollection historyCollection = null;
 	try {
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		ObjectId patientObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		List<ObjectId> medicalHistory = historyCollection.getMedicalhistory();
 		if (medicalHistory != null) {
@@ -985,13 +979,12 @@ public class HistoryServicesImpl implements HistoryServices {
     	HistoryDetailsResponse response = null;
     	HistoryCollection historyCollection = null;
 	try {
-		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
+		ObjectId patientObjectId = null, locationObjectId = null , hospitalObjectId= null;
 		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
+		if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-	    historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+	    historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 	    if (historyCollection != null) {
 		List<ObjectId> familyHistory = historyCollection.getFamilyhistory();
 		if (familyHistory != null) {
@@ -1071,6 +1064,8 @@ public class HistoryServicesImpl implements HistoryServices {
 		if(isAdmin)diseaseListResponses = getCustomGlobalDiseasesForAdmin(page, size, updatedTime, discarded, searchTerm);
 		else diseaseListResponses = getCustomGlobalDiseases(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 	    break;
+	default:
+		break;
 	}
 	return diseaseListResponses;
     }
@@ -1592,7 +1587,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    if (isOTPVerified)
 		historyCollections = historyRepository.findHistory(patientObjectId);
 	    else {
-		HistoryCollection historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId);
+		HistoryCollection historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId, patientObjectId);
 		if (historyCollection != null) {
 		    historyCollections = new ArrayList<HistoryCollection>();
 		    historyCollections.add(historyCollection);
@@ -1626,7 +1621,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	    	for(String diseaseId : request.getAddDiseases())diseaseObjectIds.add(new ObjectId(diseaseId));
 	    }
 
-		historyCollection = historyRepository.findHistory(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), new ObjectId(request.getPatientId()));
+		historyCollection = historyRepository.findHistory(new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), new ObjectId(request.getPatientId()));
 	    if (historyCollection != null) {
 
 		List<ObjectId> medicalHistoryList = historyCollection.getMedicalhistory();
@@ -1681,7 +1676,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			diseasesObjectIdList = new ArrayList<ObjectId>();
 			for(String disesaseId : request.getAddDiseases())diseasesObjectIdList.add(new ObjectId(disesaseId));
 		}
-	    historyCollection = historyRepository.findHistory(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), new ObjectId(request.getPatientId()));
+	    historyCollection = historyRepository.findHistory(new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), new ObjectId(request.getPatientId()));
 	    if (historyCollection != null) {
 		List<ObjectId> familyHistoryList = historyCollection.getFamilyhistory();
 		if (familyHistoryList != null && !familyHistoryList.isEmpty()) {
@@ -1728,7 +1723,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	HistoryCollection historyCollection = null;
 
 	try {
-	    historyCollection = historyRepository.findHistory(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(patientId));
+	    historyCollection = historyRepository.findHistory(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(patientId));
 	    if (historyCollection != null) {
 			response = new HistoryDetailsResponse();
 			BeanUtil.map(historyCollection, response);
@@ -2015,7 +2010,7 @@ public class HistoryServicesImpl implements HistoryServices {
     	HistoryCollection historyCollection = null;
 	PatientTreatmentCollection patientTreatmentCollection;
 	try {
-	    historyCollection = historyRepository.findHistory(new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(patientId));
+	    historyCollection = historyRepository.findHistory(new ObjectId(locationId), new ObjectId(hospitalId), new ObjectId(patientId));
 	    if (historyCollection != null) {
 		@SuppressWarnings("unchecked")
 		List<String> patientTreatments = (List<String>) CollectionUtils.collect(historyCollection.getGeneralRecords(),
@@ -2088,7 +2083,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 
-			historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId,
+			historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId,
 					patientObjectId);
 			if (historyCollection != null) {
 				personalHistory = historyCollection.getPersonalHistory();
@@ -2150,7 +2145,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
 
-			historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId,
+			historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId,
 					patientObjectId);
 			if (historyCollection != null) {
 				drugsAndAllergies = historyCollection.getDrugsAndAllergies();
@@ -2209,7 +2204,7 @@ public class HistoryServicesImpl implements HistoryServices {
     	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
-    	HistoryCollection historyCollection = historyRepository.findHistory(doctorObjectId, locationObjectId, hospitalObjectId,
+    	HistoryCollection historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId,
 				patientObjectId);
     	
 		if (historyCollection == null) {

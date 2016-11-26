@@ -340,13 +340,15 @@ public class PatientTreamentAPI {
 	@Path(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
-	public Response<String> downloadPatientTreatment(@PathParam("treatmentId") String treatmentId) {
+	public Response<String> downloadPatientTreatment(@PathParam("treatmentId") String treatmentId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
+    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
+    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA) {
 		if (DPDoctorUtils.anyStringEmpty(treatmentId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(patientTreatmentServices.downloadPatientTreatment(treatmentId));
+		response.setData(patientTreatmentServices.downloadPatientTreatment(treatmentId, showPH, showPLH, showFH, showDA));
 		return response;
 	}
 }

@@ -10,6 +10,7 @@ import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.enums.VisitedFor;
@@ -48,7 +49,7 @@ public interface PatientVisitService {
 	int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-	String getPatientVisitFile(String visitId);
+	String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint);
 
 	void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId);
 
@@ -56,4 +57,7 @@ public interface PatientVisitService {
 			String firstName, String mobileNumber, Map<String, Object> parameters);
 
 	void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours, Date fromDate);
+
+	void includeHistoryInPdf(HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH,
+			Boolean showDA, Map<String, Object> parameters);
 }

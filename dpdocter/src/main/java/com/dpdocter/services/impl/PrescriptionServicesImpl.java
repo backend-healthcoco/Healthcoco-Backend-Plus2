@@ -43,7 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Advice;
-import com.dpdocter.beans.Age;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DoctorDrug;
@@ -56,12 +55,10 @@ import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
-import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
-import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -80,13 +77,13 @@ import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.GenericCodeWithReactionCollection;
+import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
-import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
 import com.dpdocter.collections.UserCollection;
@@ -98,7 +95,6 @@ import com.dpdocter.elasticsearch.repository.ESDoctorDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESGenericCodeWithReactionRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
-import com.dpdocter.enums.FONTSTYLE;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.Range;
@@ -118,13 +114,13 @@ import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.GenericCodeWithReactionRepository;
+import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
-import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.TemplateRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppointmentRequest;
@@ -153,6 +149,7 @@ import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.ReportsService;
@@ -228,9 +225,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	private DiagnosticTestRepository diagnosticTestRepository;
 
 	@Autowired
-	private ReferenceRepository referenceRepository;
-
-	@Autowired
 	private ESPrescriptionService esPrescriptionService;
 
 	@Autowired
@@ -247,6 +241,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private HistoryRepository historyRepository;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -2431,7 +2431,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user);
+						JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user, null, false, false, false, false, false);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -3167,8 +3167,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public String getPrescriptionFile(String prescriptionId) {
+	public String getPrescriptionFile(String prescriptionId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean isLabPrint) {
 		String response = null;
+		HistoryCollection historyCollection  = null;
 		try {
 			PrescriptionCollection prescriptionCollection = prescriptionRepository
 					.findOne(new ObjectId(prescriptionId));
@@ -3179,7 +3180,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(prescriptionCollection.getPatientId());
 
-				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user);
+				if(showPH || showPLH || showFH || showDA){
+					historyCollection  = historyRepository.findHistory(prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId());
+				}
+				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA, isLabPrint);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3198,13 +3202,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private JasperReportResponse createJasper(PrescriptionCollection prescriptionCollection, PatientCollection patient,
-			UserCollection user) throws IOException, ParseException {
+			UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean isLabPrint) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
 		int no = 0;
 		Boolean showIntructions = false, showDirection = false;
-		if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
+		if (!isLabPrint && prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 				if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 					DrugCollection drug = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
@@ -3308,12 +3312,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-		generatePatientDetails(
+		
+		if(historyCollection != null){
+			parameters.put("showHistory", true);
+			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
+		}
+		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, prescriptionCollection.getUniqueEmrId(), patient.getLocalPatientName(), user.getMobileNumber(),
+				patient, "<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--"), patient.getLocalPatientName(), user.getMobileNumber(),
 				parameters);
-		generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
+		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
 		String layout = printSettings != null
@@ -3339,196 +3348,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),
 				prescriptionSubReportA4FileName);
 		return response;
-	}
-
-	private void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
-			ObjectId doctorId) {
-		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
-		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
-		int headerLeftTextLength = 0, headerRightTextLength = 0;
-		Integer contentFontSize = 10;
-		if (printSettings != null) {
-			if (printSettings.getContentSetup() != null) {
-				contentFontSize = !DPDoctorUtils.anyStringEmpty(printSettings.getContentSetup().getFontSize())
-						? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", "")) : 10;
-			}
-			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
-				if (printSettings.getHeaderSetup().getTopLeftText() != null)
-					for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
-
-						boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-						boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-						if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
-							headerLeftTextLength++;
-							String text = str.getText();
-							if (isItalic)
-								text = "<i>" + text + "</i>";
-							if (isBold)
-								text = "<b>" + text + "</b>";
-
-							if (headerLeftText.isEmpty())
-								headerLeftText = "<span style='font-size:" + str.getFontSize() + "'>" + text
-										+ "</span>";
-							else
-								headerLeftText = headerLeftText + "<br/>" + "<span style='font-size:"
-										+ str.getFontSize() + "'>" + text + "</span>";
-						}
-					}
-				if (printSettings.getHeaderSetup().getTopRightText() != null)
-					for (PrintSettingsText str : printSettings.getHeaderSetup().getTopRightText()) {
-
-						boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-						boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-
-						if (!DPDoctorUtils.anyStringEmpty(str.getText())) {
-							headerRightTextLength++;
-							String text = str.getText();
-							if (isItalic)
-								text = "<i>" + text + "</i>";
-							if (isBold)
-								text = "<b>" + text + "</b>";
-
-							if (headerRightText.isEmpty())
-								headerRightText = "<span style='font-size:" + str.getFontSize() + "'>" + text
-										+ "</span>";
-							else
-								headerRightText = headerRightText + "<br/>" + "<span style='font-size:"
-										+ str.getFontSize() + "'>" + text + "</span>";
-						}
-					}
-			}
-
-			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()
-					&& printSettings.getHeaderSetup().getCustomLogo() && printSettings.getClinicLogoUrl() != null) {
-				logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
-			}
-
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter()) {
-				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
-					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
-					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
-					String text = str.getText();
-					if (isItalic)
-						text = "<i>" + text + "</i>";
-					if (isBold)
-						text = "<b>" + text + "</b>";
-
-					if (footerBottomText.isEmpty())
-						footerBottomText = "<span style='font-size:" + str.getFontSize() + "'>" + text + "</span>";
-					else
-						footerBottomText = footerBottomText + "" + "<span style='font-size:" + str.getFontSize() + "'>"
-								+ text + "</span>";
-				}
-			}
-
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowSignature()) {
-				UserCollection doctorUser = userRepository.findOne(doctorId);
-				if (doctorUser != null)
-					parameters.put("footerSignature", doctorUser.getTitle() + " " + doctorUser.getFirstName());
-			} else {
-				parameters.put("footerSignature", "");
-			}
-		}
-		parameters.put("contentFontSize", contentFontSize);
-		parameters.put("headerLeftText", headerLeftText);
-		parameters.put("headerRightText", headerRightText);
-		parameters.put("footerBottomText", footerBottomText);
-		parameters.put("logoURL", logoURL);
-		if (headerLeftTextLength > 2 || headerRightTextLength > 2) {
-			parameters.put("showTableOne", true);
-		} else {
-			parameters.put("showTableOne", false);
-		}
-	}
-
-	private void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
-			String firstName, String mobileNumber, Map<String, Object> parameters) {
-		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null),
-				patientLeftText = "", patientRightText = "";
-		if (patientDetails == null) {
-			patientDetails = new PatientDetails();
-		}
-		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name: </b>" + firstName.toUpperCase());
-		patientDetailList
-				.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
-
-		if (patient != null && patient.getDob() != null) {
-			Age ageObj = patient.getDob().getAge();
-			if (ageObj.getYears() > 14)
-				age = ageObj.getYears() + "yrs";
-			else {
-				if (ageObj.getYears() > 0)
-					age = ageObj.getYears() + "yrs";
-				if (ageObj.getMonths() > 0) {
-					if (DPDoctorUtils.anyStringEmpty(age))
-						age = ageObj.getMonths() + "months";
-					else
-						age = age + " " + ageObj.getMonths() + " months";
-				}
-				if (ageObj.getDays() > 0) {
-					if (DPDoctorUtils.anyStringEmpty(age))
-						age = ageObj.getDays() + "days";
-					else
-						age = age + " " + ageObj.getDays() + "days";
-				}
-			}
-		}
-
-		if (patientDetails.getShowDOB()) {
-			if (!DPDoctorUtils.anyStringEmpty(age, gender))
-				patientDetailList.add("<b>Age | Gender: </b>" + age + " | " + gender);
-			else if (!DPDoctorUtils.anyStringEmpty(age))
-				patientDetailList.add("<b>Age | Gender: </b>" + age + " | --");
-			else if (!DPDoctorUtils.anyStringEmpty(gender))
-				patientDetailList.add("<b>Age | Gender: </b>-- | " + gender);
-		}
-
-		patientDetailList.add("<b>RxID: </b>" + (uniqueEMRId != null ? uniqueEMRId : "--"));
-		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-
-		if (patientDetails.getShowBloodGroup() && patient != null
-				&& !DPDoctorUtils.anyStringEmpty(patient.getBloodGroup())) {
-			patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
-		}
-		if (patientDetails.getShowReferedBy()) {
-			if (patient != null && patient.getReferredBy() != null) {
-				ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
-				if (referencesCollection != null && !DPDoctorUtils.anyStringEmpty(referencesCollection.getReference()))
-					patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
-			}
-		}
-
-		boolean isBold = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
-				? containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
-		boolean isItalic = patientDetails.getStyle() != null && patientDetails.getStyle().getFontStyle() != null
-				? containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), patientDetails.getStyle().getFontStyle()) : false;
-		String fontSize = patientDetails.getStyle() != null && patientDetails.getStyle().getFontSize() != null
-				? patientDetails.getStyle().getFontSize() : "";
-
-		for (int i = 0; i < patientDetailList.size(); i++) {
-			String text = patientDetailList.get(i);
-			if (isItalic)
-				text = "<i>" + text + "</i>";
-			if (isBold)
-				text = "<b>" + text + "</b>";
-			text = "<span style='font-size:" + fontSize + "'>" + text + "</span>";
-
-			if (i % 2 == 0) {
-				if (!DPDoctorUtils.anyStringEmpty(patientLeftText))
-					patientLeftText = patientLeftText + "<br>" + text;
-				else
-					patientLeftText = text;
-			} else {
-				if (!DPDoctorUtils.anyStringEmpty(patientRightText))
-					patientRightText = patientRightText + "<br>" + text;
-				else
-					patientRightText = text;
-			}
-		}
-		parameters.put("patientLeftText", patientLeftText);
-		parameters.put("patientRightText", patientRightText);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -53,8 +55,10 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
+import com.dpdocter.collections.DiseasesCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
@@ -77,7 +81,9 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
+import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
@@ -123,6 +129,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+
+	@Autowired
+	private HistoryRepository historyRepository;
 
 	@Autowired
 	private ContactsServiceImpl contactsService;
@@ -187,6 +196,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Autowired
 	private TreatmentServicesRepository treatmentServicesRepository;
 
+	@Autowired
+	private DiseasesRepository diseasesRepository;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -818,7 +830,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						patientVisitCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 				user.setFirstName(patient.getLocalPatientName());
-				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
+				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user, null, false, false, false, false, false, false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -894,7 +906,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private JasperReportResponse createJasper(PatientVisitCollection patientVisitCollection, PatientCollection patient,
-			UserCollection user) throws IOException {
+			UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint) throws IOException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>"
@@ -910,7 +922,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (!DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 					DBObject prescriptionItems = new BasicDBObject();
 					List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(
-							prescriptionId.toString(), prescriptionItems, parameters);
+							prescriptionId.toString(), prescriptionItems, parameters, isLabPrint);
 					prescriptionItems.put("items", prescriptionJasperDetails);
 					resourceId = (String) prescriptionItems.get("resourceId");
 					prescriptions.add(prescriptionItems);
@@ -967,6 +979,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("clinicalNotes", clinicalNotes);
 		parameters.put("visitId", patientVisitCollection.getId().toString());
 
+		if(historyCollection != null){
+			parameters.put("showHistory", true);
+			includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
+		}
+		else parameters.put("showHistory", false);
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
@@ -1068,6 +1085,43 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	// }
 	// return patientTreatmentJasperDetails;
 	// }
+
+	@Override
+	public void includeHistoryInPdf(HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Map<String, Object> parameters) {
+		if(showPH && historyCollection.getMedicalhistory() != null && !historyCollection.getMedicalhistory().isEmpty())
+			parameters.put("PH",getDiseases(historyCollection.getMedicalhistory()));			
+		
+		if(showPLH && historyCollection.getPersonalHistory() != null){
+			 parameters.put("showPLH",showPLH);
+			 parameters.put("diet",historyCollection.getPersonalHistory().getDiet());
+			 parameters.put("addictions",historyCollection.getPersonalHistory().getAddictions());
+			 parameters.put("bowelHabit",historyCollection.getPersonalHistory().getBowelHabit());
+			 parameters.put("bladderHabit",historyCollection.getPersonalHistory().getBladderHabit());
+		}
+		
+		if(showFH && historyCollection.getFamilyhistory() != null && !historyCollection.getFamilyhistory().isEmpty())
+			parameters.put("FH",getDiseases(historyCollection.getFamilyhistory()));			
+		if(showDA && historyCollection.getDrugsAndAllergies() != null){
+			String drugs = null;
+			if(historyCollection.getDrugsAndAllergies().getDrugs() != null && !historyCollection.getDrugsAndAllergies().getDrugs().isEmpty()){
+				for(Drug drug : historyCollection.getDrugsAndAllergies().getDrugs()){
+					if(drugs == null)drugs = (drug.getDrugType() != null ? drug.getDrugType().getType()+" ":"")+drug.getDrugName();
+					else drugs = drugs+", "+(drug.getDrugType() != null ? drug.getDrugType().getType()+" ":"")+drug.getDrugName();
+						
+				}
+			}
+			parameters.put("ongoingDrugs",drugs);
+			parameters.put("allergies", historyCollection.getDrugsAndAllergies().getAllergies());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private String getDiseases(List<ObjectId> medicalhistory) {
+		List<DiseasesCollection> diseasesCollections =  IteratorUtils.toList(diseasesRepository.findAll(medicalhistory).iterator());
+		Collection<String> diseases = CollectionUtils.collect(diseasesCollections, new BeanToPropertyValueTransformer("disease"));
+		if(diseases != null && !diseases.isEmpty())return  diseases.toString().replaceAll("\\[", "").replaceAll("\\]", "");
+		else return null;
+	}
 
 	@Override
 	public void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
@@ -1398,7 +1452,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId,
-			DBObject prescriptionItemsObj, Map<String, Object> parameters) {
+			DBObject prescriptionItemsObj, Map<String, Object> parameters, Boolean isLabPrint) {
 		PrescriptionCollection prescriptionCollection = null;
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		try {
@@ -1430,7 +1484,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						&& prescriptionCollection.getLocationId() != null) {
 					int no = 0;
 					Boolean showIntructions = false, showDirection = false;
-					if (prescriptionCollection.getItems() != null)
+					if (prescriptionCollection.getItems() != null && !isLabPrint)
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 								DrugCollection drug = drugRepository
@@ -1790,8 +1844,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	@Override
-	public String getPatientVisitFile(String visitId) {
+	public String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint) {
 		String response = null;
+		HistoryCollection historyCollection = null;
 		try {
 			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 
@@ -1801,7 +1856,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						patientVisitCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
 
-				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user);
+				if(showPH || showPLH || showFH || showDA){
+					historyCollection  = historyRepository.findHistory(patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), patientVisitCollection.getPatientId());
+				}
+				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)

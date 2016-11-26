@@ -34,6 +34,7 @@ import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
@@ -53,6 +54,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
@@ -121,6 +123,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private LocationRepository locationRepository;
+
+	@Autowired
+	private HistoryRepository historyRepository;
 
 	@Autowired
 	private PatientRepository patientRepository;
@@ -945,8 +950,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	@Override
-	public String downloadPatientTreatment(String treatmentId) {
+	public String downloadPatientTreatment(String treatmentId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA) {
 		String response = null;
+		HistoryCollection historyCollection = null;
 		try {
 			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
 					.findOne(new ObjectId(treatmentId));
@@ -957,7 +963,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientTreatmentCollection.getPatientId());
 
-				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user);
+				if(showPH || showPLH || showFH || showDA){
+					historyCollection  = historyRepository.findHistory(patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getPatientId());
+				}
+				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1008,7 +1017,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						}
 
 						JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient,
-								user);
+								user, null, false, false, false, false);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -1065,7 +1074,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection,
-			PatientCollection patient, UserCollection user) throws IOException, ParseException {
+			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		if (patientTreatmentCollection.getTreatments() != null
@@ -1119,6 +1128,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
+			
+			if(historyCollection != null){
+				parameters.put("showHistory", true);
+				patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
+			}
+			
 			patientVisitService.generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails() : null),

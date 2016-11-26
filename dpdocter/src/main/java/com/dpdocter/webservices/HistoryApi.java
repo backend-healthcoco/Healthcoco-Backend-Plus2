@@ -26,7 +26,6 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
-import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
 import com.dpdocter.elasticsearch.document.ESDiseasesDocument;

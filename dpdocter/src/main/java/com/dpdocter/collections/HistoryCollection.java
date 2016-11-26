@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.BirthHistory;
 import com.dpdocter.beans.DrugsAndAllergies;
 import com.dpdocter.beans.GeneralData;
 import com.dpdocter.beans.PersonalHistory;

@@ -133,7 +133,7 @@ public interface PrescriptionServices {
 
 	PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId);
 
-	String getPrescriptionFile(String prescriptionId);
+	String getPrescriptionFile(String prescriptionId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean isLabPrint);
 
 	Drug makeDrugFavourite(String drugId, String doctorId, String locationId, String hospitalId);
 

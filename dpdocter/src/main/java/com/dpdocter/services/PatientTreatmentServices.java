@@ -49,5 +49,5 @@ public interface PatientTreatmentServices {
 	void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
 
-	String downloadPatientTreatment(String treatmentId);
+	String downloadPatientTreatment(String treatmentId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA);
 }

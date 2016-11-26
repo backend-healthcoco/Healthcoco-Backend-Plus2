@@ -657,13 +657,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						} else {
 							if (request.getCreatedBy().getType().equals(AppointmentCreatedBy.DOCTOR.getType())) {
 								if (request.getNotifyDoctorByEmail() != null && request.getNotifyDoctorByEmail())
-//									if (appointmentCollection.getState().getState()
-//											.equals(AppointmentState.CONFIRM.getState()))
 										sendEmail(doctorName, patientName, dateTime, clinicName,
-												"CONFIRMED_APPOINTMENT_TO_DOCTOR", userCollection.getEmailAddress());
-//									else
-//										sendEmail(doctorName, patientName, dateTime, clinicName,
-//												"RESCHEDULE_APPOINTMENT_TO_DOCTOR", userCollection.getEmailAddress());
+												"CONFIRMED_APPOINTMENT_TO_DOCTOR_BY_PATIENT", userCollection.getEmailAddress());
 
 								if (request.getNotifyDoctorBySms() != null && request.getNotifyDoctorBySms()) {
 									if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
@@ -940,6 +935,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(appointmentCollection, response);
 						PatientCard patientCard = new PatientCard();
 						BeanUtil.map(patientuserCollection, patientCard);
+						BeanUtil.map(patientCollection, patientCard);
 						patientCard.setUserId(patientuserCollection.getId().toString());
 						response.setPatient(patientCard);
 						if (userCollection != null)

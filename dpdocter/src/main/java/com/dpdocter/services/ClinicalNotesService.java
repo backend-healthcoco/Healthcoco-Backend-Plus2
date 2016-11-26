@@ -68,7 +68,7 @@ public interface ClinicalNotesService {
 
 	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,	String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
 
-	String getClinicalNotesFile(String clinicalNotesId);
+	String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG);
 
 	Boolean updateQuery();
 

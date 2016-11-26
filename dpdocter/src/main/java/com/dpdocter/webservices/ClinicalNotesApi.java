@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -580,10 +579,12 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES)
     @GET
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES, notes = PathProxy.ClinicalNotesUrls.DOWNLOAD_CLINICAL_NOTES)
-    public Response<String> downloadClinicalNotes(@PathParam("clinicalNotesId") String clinicalNotesId) {
+    public Response<String> downloadClinicalNotes(@PathParam("clinicalNotesId") String clinicalNotesId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
+    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
+    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA, @DefaultValue("false") @QueryParam("showUSG") Boolean showUSG) {
     	
     	Response<String> response = new Response<String>();
-    	response.setData(clinicalNotesService.getClinicalNotesFile(clinicalNotesId));
+    	response.setData(clinicalNotesService.getClinicalNotesFile(clinicalNotesId, showPH, showPLH, showFH, showDA, showUSG));
     	return response;
     }
     
