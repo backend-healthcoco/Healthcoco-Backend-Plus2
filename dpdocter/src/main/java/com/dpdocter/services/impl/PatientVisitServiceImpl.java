@@ -483,6 +483,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 			else {
 				patientVisitCollection = new PatientVisitCollection();
+				patientVisitCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+				patientVisitCollection.setLocationId(new ObjectId(request.getLocationId()));
+				patientVisitCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 				patientVisitCollection.setCreatedTime(new Date());
 				patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
