@@ -486,6 +486,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientVisitCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 				patientVisitCollection.setLocationId(new ObjectId(request.getLocationId()));
 				patientVisitCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+				patientVisitCollection.setPatientId(new ObjectId(request.getPatientId()));
 				patientVisitCollection.setCreatedTime(new Date());
 				patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = userRepository.findOne(patientVisitCollection.getDoctorId());
@@ -520,7 +521,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if(request.getTreatmentRequest() != null){
 				addTreatments(request, response, patientVisitCollection, visitId, appointment);
 			}
-
+			patientVisitCollection.setVisitedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
 			if (patientVisitCollection != null) {
 				response.setId(patientVisitCollection.getId().toString());
