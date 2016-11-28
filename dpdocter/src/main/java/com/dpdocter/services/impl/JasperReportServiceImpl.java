@@ -150,7 +150,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         
-        if((boolean) parameters.get("showHistory"))createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
+        if(parameters.get("showHistory") != null && (boolean) parameters.get("showHistory"))createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
                 
         if(componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType()) && parameters.get("clinicalNotes") != null)
         	((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
@@ -211,7 +211,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private void createHistory(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize, JRDesignStyle normalStyle, int columnWidth) {
 		int fieldWidth = 118;
-		if(contentFontSize > 13)fieldWidth = 140;
+		if(contentFontSize > 13)fieldWidth = 150;
 		else if(contentFontSize > 11)fieldWidth = 128;
 		
 		JRDesignBand band = new JRDesignBand();
@@ -245,7 +245,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private void createClinicalNotes(JasperDesign jasperDesign, int columnWidth, Integer contentFontSize) {
 		int fieldWidth = 118;
-		if(contentFontSize > 13)fieldWidth = 140;
+		if(contentFontSize > 13)fieldWidth = 145;
 		else if(contentFontSize > 11)fieldWidth = 128;
 	
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0);
@@ -371,30 +371,20 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private JRBand createPageHeader(JRDesignDatasetRun dsr, int columnWidth, Boolean showTableOne) throws JRException {
 		JRDesignBand band = new JRDesignBand();
-        band.setHeight(5); 
-        band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() || !$P{headerLeftText}.isEmpty() || !$P{headerRightText}.isEmpty()"));
+        band.setHeight(3); 
+        band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
+        
         JRDesignDatasetParameter param = new JRDesignDatasetParameter();  param.setName("logoURL");    
-        JRDesignExpression exp = new JRDesignExpression("$P{logoURL}");  param.setExpression(exp);
+        param.setExpression(new JRDesignExpression("$P{logoURL}"));
         dsr.addParameter(param);
         
         param = new JRDesignDatasetParameter();  param.setName("headerLeftText");
-        exp = new JRDesignExpression("$P{headerLeftText}");  param.setExpression(exp);
+        param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
         dsr.addParameter(param);
-//        band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
-//        JRDesignDatasetParameter param = new JRDesignDatasetParameter();  param.setName("logoURL");    
-//        param.setExpression(new JRDesignExpression("$P{logoURL}"));
-//        dsr.addParameter(param);
-//        
-//        param = new JRDesignDatasetParameter();  param.setName("headerLeftText");
-//        param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
-//        dsr.addParameter(param);
-//       
-//        param = new JRDesignDatasetParameter();  param.setName("headerRightText");
-//        param.setExpression(new JRDesignExpression("$P{headerRightText}"));
-//        dsr.addParameter(param);
-//        param = new JRDesignDatasetParameter();  param.setName("logoURL");
-//        exp = new JRDesignExpression("$P{logoURL}");  param.setExpression(exp);
-//        dsr.addParameter(param);
+       
+        param = new JRDesignDatasetParameter();  param.setName("headerRightText");
+        param.setExpression(new JRDesignExpression("$P{headerRightText}"));
+        dsr.addParameter(param);
        
         DesignCell columnHeader = new DesignCell();  
         if(showTableOne)columnHeader.setHeight(50);  
@@ -434,6 +424,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 //      band.addElement(reportElement);   
 //      band.setHeight(40);  
 
+        StandardColumn column = new StandardColumn();  column.setDetailCell(columnHeader);  column.setWidth(columnWidth);
+        StandardTable table = new StandardTable();  table.addColumn(column);  table.setDatasetRun(dsr);
+        JRDesignComponentElement reportElement = new JRDesignComponentElement();  
+        reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components","jr", "table"));  
+        reportElement.setHeight(3);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
+        reportElement.setComponent(table);
+         
+        band.addElement(reportElement);  
 		return band;
 	}
 
@@ -447,7 +445,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         jasperDesign.addStyle(normalStyle);
    
     	int fieldWidth = 118;
-		if(contentFontSize > 13)fieldWidth = 140;
+		if(contentFontSize > 13)fieldWidth = 145;
 		else if(contentFontSize > 11)fieldWidth = 128;
 	
         //add clinical notes items
@@ -612,9 +610,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private JRDesignBand addAdvice(JasperDesign jasperDesign, int columnWidth, String value, Integer contentFontSize) {
-		int fieldWidth = 60;
-		if(contentFontSize > 13)fieldWidth = 82;
-		else if(contentFontSize > 11)fieldWidth = 70;
+		int fieldWidth = 118;
+		if(contentFontSize > 13)fieldWidth = 150;
+		else if(contentFontSize > 11)fieldWidth = 128;
 				
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(22);
@@ -636,9 +634,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private JRDesignBand addLabTest(JasperDesign jasperDesign, int columnWidth, String value, Integer contentFontSize) {
-		int fieldWidth = 60;
-		if(contentFontSize > 13)fieldWidth = 82;
-		else if(contentFontSize > 11)fieldWidth = 70;
+		int fieldWidth = 118;
+		if(contentFontSize > 13)fieldWidth = 150;
+		else if(contentFontSize > 11)fieldWidth = 128;
 		
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(22);
