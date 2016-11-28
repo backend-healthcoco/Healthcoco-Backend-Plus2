@@ -43,15 +43,14 @@ public class ESRegistrationApi {
     @Path(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     @GET
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
-    public Response<ESPatientResponseDetails> searchPatient(@PathParam(value = "doctorId") String doctorId,
-	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+    public Response<ESPatientResponseDetails> searchPatient(@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
-	if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, searchTerm)) {
-	    logger.warn("Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
-	    throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, Location Id, Hospital Id and Search Term Cannot Be Empty");
+	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, searchTerm)) {
+	    logger.warn("Location Id, Hospital Id and Search Term Cannot Be Empty");
+	    throw new BusinessException(ServiceError.InvalidInput, "Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
 
-	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(doctorId, locationId, hospitalId, searchTerm, page, size);
+	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(locationId, hospitalId, searchTerm, page, size);
 
 	Response<ESPatientResponseDetails> response = new Response<ESPatientResponseDetails>();
 	response.setData(patients);
@@ -63,7 +62,7 @@ public class ESRegistrationApi {
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT_ADV)
     public Response<ESPatientResponseDetails> searchPatient(AdvancedSearch request) {
 
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId())) {
+	if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocationId(), request.getHospitalId())) {
 	    logger.warn("Invalid Input");
 	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	}

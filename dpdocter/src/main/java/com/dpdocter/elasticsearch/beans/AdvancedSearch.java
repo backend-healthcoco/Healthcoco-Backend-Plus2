@@ -3,7 +3,6 @@ package com.dpdocter.elasticsearch.beans;
 import java.util.List;
 
 public class AdvancedSearch {
-    private String doctorId;
 
     private String locationId;
 
@@ -14,14 +13,6 @@ public class AdvancedSearch {
     private int page;
 
     private int size;
-
-    public String getDoctorId() {
-	return doctorId;
-    }
-
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
 
     public String getLocationId() {
 	return locationId;
@@ -65,7 +56,7 @@ public class AdvancedSearch {
 
     @Override
     public String toString() {
-	return "AdvancedSearch [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", searchParameters=" + searchParameters
+	return "AdvancedSearch [locationId=" + locationId + ", hospitalId=" + hospitalId + ", searchParameters=" + searchParameters
 		+ ", page=" + page + ", size=" + size + "]";
     }
 }

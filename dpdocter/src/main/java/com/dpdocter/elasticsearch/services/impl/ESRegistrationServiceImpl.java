@@ -98,7 +98,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	}
 
 	@Override
-	public ESPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId,
+	public ESPatientResponseDetails searchPatient(String locationId, String hospitalId,
 			String searchTerm, int page, int size) {
 
 		List<ESPatientDocument> patients = new ArrayList<ESPatientDocument>();
@@ -107,7 +107,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		try {
 
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.termQuery("doctorId", doctorId))
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.should(QueryBuilders
@@ -205,12 +204,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@SuppressWarnings("deprecation")
 	private BoolQueryBuilder createAdvancedSearchCriteria(AdvancedSearch request) throws ParseException {
-		String doctorId = request.getDoctorId();
 		String locationId = request.getLocationId();
 		String hospitalId = request.getHospitalId();
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.termQuery("doctorId", doctorId))
-				.must(QueryBuilders.termQuery("locationId", locationId))
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.termQuery("locationId", locationId))
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId));
 
 		if (request.getSearchParameters() != null && !request.getSearchParameters().isEmpty()) {
@@ -238,13 +235,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 					} else if (searchType.equalsIgnoreCase(AdvancedSearchType.REFERRED_BY.getSearchType())) {
 						BoolQueryBuilder queryBuilderForReference = new BoolQueryBuilder();
-
-						if (!DPDoctorUtils.anyStringEmpty(doctorId))
-							queryBuilderForReference.must(QueryBuilders.orQuery(
-									QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")),
-									QueryBuilders.termQuery("doctorId", doctorId)));
-						else
-							queryBuilderForReference.mustNot(QueryBuilders.existsQuery("doctorId"));
 
 						if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 							queryBuilderForReference

@@ -2115,13 +2115,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 			}
@@ -2173,13 +2173,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 						roleCollections = roleRepository.findCustomStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.ADMIN.getRole())) {
 					if (size > 0)
@@ -2269,7 +2269,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 								roleCollections = roleRepository.findStaffs(
 										Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-												RoleEnum.HOSPITAL_ADMIN.getRole()),
+												RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 										roleIds, new ObjectId(locationId), new ObjectId(hospitalId));
 							} else if (role.equalsIgnoreCase(RoleEnum.ADMIN.getRole())) {
 								roleCollections = roleRepository.findLocationHospitalAdmin(
