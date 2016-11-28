@@ -929,6 +929,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							prescriptionId.toString(), prescriptionItems, parameters, isLabPrint);
 					prescriptionItems.put("items", prescriptionJasperDetails);
 					resourceId = (String) prescriptionItems.get("resourceId");
+					if(prescriptionItems.toMap().size()>1)
 					prescriptions.add(prescriptionItems);
 				}
 			}
