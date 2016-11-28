@@ -146,7 +146,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         Boolean showTableOne = (Boolean) parameters.get("showTableOne");
         jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne)); 
-        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+//        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         
@@ -371,7 +371,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private JRBand createPageHeader(JRDesignDatasetRun dsr, int columnWidth, Boolean showTableOne) throws JRException {
 		JRDesignBand band = new JRDesignBand();
-        band.setHeight(3); 
+        band.setHeight(1); 
         band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
         
         JRDesignDatasetParameter param = new JRDesignDatasetParameter();  param.setName("logoURL");    
@@ -387,8 +387,9 @@ public class JasperReportServiceImpl implements JasperReportService {
         dsr.addParameter(param);
        
         DesignCell columnHeader = new DesignCell();  
-        if(showTableOne)columnHeader.setHeight(50);  
-        else columnHeader.setHeight(90);
+//        if(showTableOne)columnHeader.setHeight(20);  
+//        else 
+        	columnHeader.setHeight(60);
         
         JRDesignTextField jrDesignTextField = new JRDesignTextField();
         JRDesignExpression jrExpression = new JRDesignExpression();jrExpression.setText("$P{headerLeftText}");jrDesignTextField.setExpression(jrExpression);
@@ -408,12 +409,6 @@ public class JasperReportServiceImpl implements JasperReportService {
         jrDesignTextField.setStretchWithOverflow(true); jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
         columnHeader.addElement(jrDesignTextField);
         
-//        JRDesignLine jrDesignLine = new JRDesignLine();
-//        jrDesignLine.setX(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setY(-17);
-//        
-//        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
-//        band.addElement(jrDesignLine);        
-        
 //      HtmlComponent htmlComponent = new HtmlComponent();
 //      htmlComponent.setHtmlContentExpression(new JRDesignExpression("$P{headerLeftText}"));
 //      htmlComponent.setScaleType(ScaleImageEnum.FILL_FRAME);
@@ -428,10 +423,17 @@ public class JasperReportServiceImpl implements JasperReportService {
         StandardTable table = new StandardTable();  table.addColumn(column);  table.setDatasetRun(dsr);
         JRDesignComponentElement reportElement = new JRDesignComponentElement();  
         reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components","jr", "table"));  
-        reportElement.setHeight(3);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
+        reportElement.setHeight(0);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
         reportElement.setComponent(table);
          
         band.addElement(reportElement);  
+        
+        JRDesignLine jrDesignLine = new JRDesignLine();
+        jrDesignLine.setX(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setY(0);
+        
+        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
+        band.addElement(jrDesignLine);        
+        
 		return band;
 	}
 
