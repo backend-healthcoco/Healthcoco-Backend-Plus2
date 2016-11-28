@@ -306,6 +306,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 				patientTreatmentCollection.setCreatedTime(new Date());
 				BeanUtil.map(request, patientTreatmentCollection);
+				patientTreatmentCollection.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = null;
 				if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 					userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -357,8 +358,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				treatmentResponses.add(treatmentResponse);
 			}
 			patientTreatmentCollection.setTreatments(treatments);
-			patientTreatmentCollection.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
-			;
+			
 			patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 			response = new PatientTreatmentResponse();
