@@ -146,7 +146,6 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         Boolean showTableOne = (Boolean) parameters.get("showTableOne");
         jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne)); 
-//        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         
@@ -215,7 +214,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		else if(contentFontSize > 11)fieldWidth = 128;
 		
 		JRDesignBand band = new JRDesignBand();
-		band.setHeight(20);
+		band.setHeight(10);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0);
@@ -248,6 +247,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if(contentFontSize > 13)fieldWidth = 145;
 		else if(contentFontSize > 11)fieldWidth = 128;
 	
+		JRDesignBand band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaint}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0);
@@ -265,7 +268,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         JRDesignDatasetRun dsr = new JRDesignDatasetRun();  dsr.setDatasetName("dataset1"); 
         dsr.setDataSourceExpression(new JRDesignExpression("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{diagrams})"));
    
-        JRDesignBand band = new JRDesignBand();
+        band = new JRDesignBand();
         band.setPrintWhenExpression(new JRDesignExpression("!$P{diagrams}.isEmpty()"));
         band.setHeight(135);
         band.setSplitType(SplitTypeEnum.STRETCH);
@@ -306,7 +309,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 	}
 
 	private void createPrescription(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) throws JRException {
+		
 		JRDesignBand band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+		band = new JRDesignBand();
 		band.setHeight(20);
 		
 		JRDesignTextField jrDesignTextField = new JRDesignTextField();
@@ -450,6 +458,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if(contentFontSize > 13)fieldWidth = 145;
 		else if(contentFontSize > 11)fieldWidth = 128;
 	
+		JRDesignBand band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
         //add clinical notes items
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$F{vitalSigns}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$F{presentComplaint}", fieldWidth, false, 0);
@@ -486,7 +498,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();  
         designSubreportParameter.setName("REPORT_CONNECTION");designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
         
-        JRDesignBand band = new JRDesignBand();
+        band = new JRDesignBand();
         band.setHeight(0);
         band.addElement(jSubreport);
         return band;
@@ -576,6 +588,10 @@ public class JasperReportServiceImpl implements JasperReportService {
         jasperDesign.addStyle(normalStyle);
    
         JRDesignBand band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+        band = new JRDesignBand();
 		band.setHeight(21);
 		
 		JRDesignTextField jrDesignTextField = new JRDesignTextField();
