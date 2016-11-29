@@ -927,7 +927,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					DBObject prescriptionItems = new BasicDBObject();
 					List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(
 							prescriptionId.toString(), prescriptionItems, parameters, isLabPrint);
-					prescriptionItems.put("items", prescriptionJasperDetails);
+					if(prescriptionJasperDetails != null && !prescriptionJasperDetails.isEmpty())prescriptionItems.put("items", prescriptionJasperDetails);
 					resourceId = (String) prescriptionItems.get("resourceId");
 					if(prescriptionItems.toMap().size()>1)
 					prescriptions.add(prescriptionItems);
@@ -1466,8 +1466,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				prescriptionItemsObj.put("resourceId",
 						"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
 								? prescriptionCollection.getUniqueEmrId() : "--"));
-				prescriptionItemsObj.put("advice",
-						prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
+				if(!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAdvice()))prescriptionItemsObj.put("advice", prescriptionCollection.getAdvice());
 				if (prescriptionCollection.getDiagnosticTests() != null
 						&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 					String labTest = "";
@@ -1482,9 +1481,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 					}
 					prescriptionItemsObj.put("labTest", labTest);
-				} else {
-					prescriptionItemsObj.put("labTest", null);
 				}
+
 				if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
 						&& prescriptionCollection.getLocationId() != null) {
 					int no = 0;
