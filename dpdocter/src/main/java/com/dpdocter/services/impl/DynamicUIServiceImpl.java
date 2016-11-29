@@ -56,35 +56,35 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		Set<String> profilePermissionsSet = new HashSet<String>();
 		Set<String> tabPermissionsSet = new HashSet<String>();
 		DoctorCollection doctorCollection =doctorRepository.findByUserId(new ObjectId(doctorId));
-		if(doctorCollection !=null)
-		{
+		if (doctorCollection != null) {
 			uiPermissions = new UIPermissions();
-			for(ObjectId specialityId : doctorCollection.getSpecialities())
-			{
-				UIPermissions tempPermissions = null;
-				String speciality = null;
-				SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
-				if(specialityCollection !=null )
-				{
-					speciality = specialityCollection.getSpeciality();
+			UIPermissions tempPermissions = null;
+			String speciality = null;
+			if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
+				tempPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
+			} else {
+				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
+
+					SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+					if (specialityCollection != null) {
+						speciality = specialityCollection.getSpeciality();
+					}
+
+					tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
 				}
-				
-				tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
-				
-				if(tempPermissions != null)
-				{
-					patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
-					clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
-					prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
-					profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
-					tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
-				}
-				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
-				uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
-				uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
-				uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
-				uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
 			}
+			if (tempPermissions != null) {
+				patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
+				clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
+				prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
+				profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
+				tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
+			}
+			uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
+			uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
+			uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
+			uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
+			uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
 		}
 		return uiPermissions;
 	}
