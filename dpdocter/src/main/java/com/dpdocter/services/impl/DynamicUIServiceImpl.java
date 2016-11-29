@@ -30,100 +30,94 @@ import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DynamicUIRequest;
 import com.dpdocter.services.DynamicUIService;
+
 @Service
-public class DynamicUIServiceImpl implements DynamicUIService{
+public class DynamicUIServiceImpl implements DynamicUIService {
 
 	@Autowired
 	DynamicUIRepository dynamicUIRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	DoctorRepository doctorRepository;
-	
+
 	@Autowired
 	SpecialityRepository specialityRepository;
-	
+
 	@Override
 	@Transactional
-	public UIPermissions getAllPermissionForDoctor(String doctorId)
-	{
+	public UIPermissions getAllPermissionForDoctor(String doctorId) {
 		UIPermissions uiPermissions = null;
 		Set<String> clinicalNotesPermissionsSet = new HashSet<String>();
 		Set<String> patientVisitPermissionsSet = new HashSet<String>();
 		Set<String> prescriptionPermissionsSet = new HashSet<String>();
 		Set<String> profilePermissionsSet = new HashSet<String>();
 		Set<String> tabPermissionsSet = new HashSet<String>();
-		DoctorCollection doctorCollection =doctorRepository.findByUserId(new ObjectId(doctorId));
-		if(doctorCollection !=null)
-		{
+		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+		if (doctorCollection != null) {
 			uiPermissions = new UIPermissions();
-			for(ObjectId specialityId : doctorCollection.getSpecialities())
-			{
-				UIPermissions tempPermissions = null;
-				String speciality = null;
-				SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
-				if(specialityCollection !=null )
-				{
-					speciality = specialityCollection.getSpeciality();
+			UIPermissions tempPermissions = null;
+			String speciality = null;
+			if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
+				tempPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
+			} else {
+				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
+
+					SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+					if (specialityCollection != null) {
+						speciality = specialityCollection.getSpeciality();
+					}
+
+					tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
 				}
-				
-				tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
-				
-				if(tempPermissions != null)
-				{
-					patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
-					clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
-					prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
-					profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
-					tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
-				}
-				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
-				uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
-				uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
-				uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
-				uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
 			}
+			if (tempPermissions != null) {
+				patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
+				clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
+				prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
+				profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
+				tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
+			}
+			uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
+			uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
+			uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
+			uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
+			uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
 		}
+
 		return uiPermissions;
 	}
-	
+
 	@Override
 	@Transactional
-	public DynamicUI getPermissionForDoctor(String doctorId)
-	{
+	public DynamicUI getPermissionForDoctor(String doctorId) {
 		DynamicUI dynamicUI = null;
 		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
-		if(dynamicUICollection != null)
-		{
+		if (dynamicUICollection != null) {
 			dynamicUI = new DynamicUI();
 			BeanUtil.map(dynamicUICollection, dynamicUI);
-		}
-		else if(dynamicUICollection == null || dynamicUICollection.getUiPermissions() == null)
-		{
+		} else if (dynamicUICollection == null || dynamicUICollection.getUiPermissions() == null) {
 			dynamicUI = new DynamicUI();
 			dynamicUI.setUiPermissions(getDefaultPermissions());
 			dynamicUI.setDoctorId(doctorId);
 		}
 		return dynamicUI;
 	}
-	
+
 	@Override
 	@Transactional
-	public DynamicUI postPermissions(DynamicUIRequest dynamicUIRequest)
-	{
+	public DynamicUI postPermissions(DynamicUIRequest dynamicUIRequest) {
 		DynamicUI dynamicUI = null;
-		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(dynamicUIRequest.getDoctorId()));
-		if(dynamicUICollection != null)
-		{
+		DynamicUICollection dynamicUICollection = dynamicUIRepository
+				.findByDoctorId(new ObjectId(dynamicUIRequest.getDoctorId()));
+		if (dynamicUICollection != null) {
 			dynamicUICollection.setUiPermissions(dynamicUIRequest.getUiPermissions());
 			dynamicUICollection = dynamicUIRepository.save(dynamicUICollection);
 			dynamicUI = new DynamicUI();
 			BeanUtil.map(dynamicUICollection, dynamicUI);
-		}
-		else
-		{
+		} else {
 			dynamicUICollection = new DynamicUICollection();
 			BeanUtil.map(dynamicUIRequest, dynamicUICollection);
 			dynamicUICollection = dynamicUIRepository.save(dynamicUICollection);
@@ -132,9 +126,8 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		}
 		return dynamicUI;
 	}
-	
-	private UIPermissions getAllPermissionBySpeciality(String speciality)
-	{
+
+	private UIPermissions getAllPermissionBySpeciality(String speciality) {
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
 		ArrayList<String> patientVisitPermission = null;
@@ -208,9 +201,8 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		}
 		return uiPermissions;
 	}
-	
-	private UIPermissions getDefaultPermissions()
-	{
+
+	private UIPermissions getDefaultPermissions() {
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
 		ArrayList<String> prescriptionPermission = null;
@@ -232,41 +224,41 @@ public class DynamicUIServiceImpl implements DynamicUIService{
 		tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 		uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 		uiPermissions.setPrescriptionPermissions(prescriptionPermission);
-		uiPermissions.setProfilePermissions(profilePermission); 
+		uiPermissions.setProfilePermissions(profilePermission);
 		uiPermissions.setTabPermissions(tabPermission);
 		uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 		return uiPermissions;
 	}
-	
-	/*private List<String> initailizeGeneralList()
-	{
-		SpecialityTypeEnum[] specialityTypeEnums = values();
-		
-		return null;
-	}*/
-	
+
+	/*
+	 * private List<String> initailizeGeneralList() { SpecialityTypeEnum[]
+	 * specialityTypeEnums = values();
+	 * 
+	 * return null; }
+	 */
+
 	private String[] clinicalNotesPermission() {
-	    return Arrays.toString(ClinicalNotesPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(ClinicalNotesPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] prescriptionPermission() {
-	    return Arrays.toString(PrescriptionPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(PrescriptionPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] patientVisitPermission() {
-	    return Arrays.toString(PatientVisitPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(PatientVisitPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] historyPermission() {
-	    return Arrays.toString(ProfilePermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(ProfilePermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] tabPermission() {
-	    return Arrays.toString(TabPermissionsEnum.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(TabPermissionsEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
 	private String[] specialityType() {
-	    return Arrays.toString(SpecialityTypeEnum.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(SpecialityTypeEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
-		
+
 }
