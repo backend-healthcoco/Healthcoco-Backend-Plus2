@@ -118,30 +118,30 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	@Override
 	public List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm, String category) {
+			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<?> response = null;
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
 			searchTerm = searchTerm.toUpperCase();
 		switch (Range.valueOf(range.toUpperCase())) {
 
 		case GLOBAL:
-			response = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category);
+			response = getGlobalDrugs(page, size, updatedTime, discarded, searchTerm, category, searchByGenericName);
 			break;
 		case CUSTOM:
 			response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
-					category);
+					category, searchByGenericName);
 			break;
 		case BOTH:
 			response = getCustomGlobalDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-					searchTerm, category);
+					searchTerm, category, searchByGenericName);
 			break;
 		case FAVOURITES:
 			response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-					searchTerm, category);
+					searchTerm, category, searchByGenericName);
 			break;
 		case WEBBOTH:
 			response = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-					searchTerm, category);
+					searchTerm, category, searchByGenericName);
 			break;
 		default:
 			break;
@@ -150,11 +150,16 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 
 	}
 
-	private List<DrugDocument> getCustomGlobalDrugsForWeb(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category) {
+	private List<DrugDocument> getCustomGlobalDrugsForWeb(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<DrugDocument> response = null;
 		try {
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			SearchQuery searchQuery = null;
+			if(searchByGenericName){
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "genericNames.name");
+			}else{
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			}
+			
 			List<ESDrugDocument> drugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 			if(drugDocuments != null && !drugDocuments.isEmpty()){
 				response = new ArrayList<DrugDocument>();
@@ -177,14 +182,19 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDoctorDrugDocument> getFavouritesDrugs(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category) {
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<ESDoctorDrugDocument> response = null;
 		try {
 			if (doctorId == null)
 				response = new ArrayList<ESDoctorDrugDocument>();
 			else {
-				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-						updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+				SearchQuery searchQuery = null;
+				if(searchByGenericName){
+					searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+				}else{
+					searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+				}
+				
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDrugDocument.class);
 			}
 		} catch (Exception e) {
@@ -196,11 +206,16 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDrugDocument> getCustomGlobalDrugs(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category) {
+			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<ESDrugDocument> response = null;
 		try {
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			SearchQuery searchQuery = null;
+			if(searchByGenericName){
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "genericNames.name");
+			}else{
+				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			}
+			
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -211,11 +226,15 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDrugDocument> getGlobalDrugs(int page, int size, String updatedTime, boolean discarded,
-			String searchTerm, String category) {
+			String searchTerm, String category, Boolean searchByGenericName) {
 		List<ESDrugDocument> response = null;
 		try {
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded,
-					null, searchTerm, null, category, null, "drugName");
+			SearchQuery searchQuery = null;
+			if(searchByGenericName){
+				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null, searchTerm, null, category, null, "genericNames.name");
+			}else {
+				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
+			}
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -226,14 +245,18 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	}
 
 	private List<ESDrugDocument> getCustomDrugs(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category) {
+			String hospitalId, String updatedTime, boolean discarded, String searchTerm, String category, Boolean searchByGenericName) {
 		List<ESDrugDocument> response = null;
 		try {
 			if (doctorId == null)
 				response = new ArrayList<ESDrugDocument>();
 			else {
-				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-						updatedTime, discarded, null, searchTerm, category,null, "drugName");
+				SearchQuery searchQuery = null;
+				if(searchByGenericName){
+					searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, category,null, "genericNames.name");
+				}else {
+					searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, category,null, "drugName");
+				}
 				response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 			}
 		} catch (Exception e) {
@@ -261,6 +284,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		case BOTH:
 			labTestDocuments = getCustomGlobalLabTests(page, size, locationId, hospitalId, updatedTime, discarded,
 					searchTerm);
+			break;
+		default:
 			break;
 		}
 		if (labTestDocuments != null) {
@@ -400,6 +425,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		case BOTH:
 			response = getCustomGlobalDiagnosticTests(page, size, locationId, hospitalId, updatedTime, discarded,
 					searchTerm);
+			break;
+		default:
 			break;
 		}
 		return response;

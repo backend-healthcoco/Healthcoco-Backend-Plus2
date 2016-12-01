@@ -1,5 +1,7 @@
 package common.util.web;
 
+import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -177,8 +179,13 @@ public class DPDoctorUtils {
 		if (!DPDoctorUtils.anyStringEmpty(disease))
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 		if(!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0){
-	    	if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
-	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+			
+			if(searchTermFieldName[0].equalsIgnoreCase("genericNames.name")){
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames", boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm))));
+			}else{
+				if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+		    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));	
+			}
 	    }
  	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
  	   
@@ -222,10 +229,12 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId));
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0) {
-			if (searchTermFieldName.length == 1)
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
-			else
-				boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+			if(searchTermFieldName[0].equalsIgnoreCase("genericNames.name")){
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames", boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm))));
+			}else{
+				if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+		    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));	
+			}
 		}
 		if (!discarded)
 			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
@@ -278,8 +287,12 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("diseases", disease));
 
 	    if(!DPDoctorUtils.anyStringEmpty(searchTerm) && searchTermFieldName.length > 0){
-	    	if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
-	    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));
+	    	if(searchTermFieldName[0].equalsIgnoreCase("genericNames.name")){
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("genericNames", boolQuery().must(QueryBuilders.matchPhrasePrefixQuery("genericNames.name", searchTerm))));
+			}else{
+				if(searchTermFieldName.length == 1)boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName[0], searchTerm));
+		    	else boolQueryBuilder.must(QueryBuilders.multiMatchQuery(searchTerm, searchTermFieldName));	
+			}
 	    }
 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
 

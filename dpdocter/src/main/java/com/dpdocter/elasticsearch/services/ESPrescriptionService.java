@@ -18,7 +18,7 @@ public interface ESPrescriptionService {
 	boolean addLabTest(ESLabTestDocument request);
 
 	List<?> searchDrug(String range, int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm, String category);
+			String updatedTime, Boolean discarded, String searchTerm, String category, Boolean searchByGenericName);
 
 	List<LabTest> searchLabTest(String range, int page, int size, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded, String searchTerm);
