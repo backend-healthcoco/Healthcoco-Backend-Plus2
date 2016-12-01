@@ -36,4 +36,10 @@ public interface UserLocationRepository extends MongoRepository<UserLocationColl
     @Query(value = "{'userId': ?0, 'locationId': ?1}", count = true)
 	Integer countByUserIdAndLocationId(ObjectId userId, ObjectId locationId);
 
+    @Query("{'locationId' : ?0, 'isActivate' : true}")
+	List<UserLocationCollection> findByLocationIdAndIsActive(ObjectId locationId, Pageable pageable);
+
+    @Query("{'locationId' : ?0, 'isActivate' : true}")
+	List<UserLocationCollection> findByLocationIdAndIsActive(ObjectId locationId, Sort sort);
+
 }

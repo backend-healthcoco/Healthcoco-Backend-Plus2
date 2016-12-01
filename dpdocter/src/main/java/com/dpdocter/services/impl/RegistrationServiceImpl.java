@@ -2233,17 +2233,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId,
-			String updatedTime, String role) {
+			String updatedTime, String role, Boolean active) {
 		List<ClinicDoctorResponse> response = null;
 		try {
 			List<UserLocationCollection> userLocationCollections = null;
-			if (size > 0)
-				userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId),
-						new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-				userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId),
-						new Sort(Sort.Direction.DESC, "createdTime"));
-
+			if(active){
+				if (size > 0)
+					userLocationCollections = userLocationRepository.findByLocationIdAndIsActive(new ObjectId(locationId),
+							new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else
+					userLocationCollections = userLocationRepository.findByLocationIdAndIsActive(new ObjectId(locationId),
+							new Sort(Sort.Direction.DESC, "createdTime"));
+			}else{
+				if (size > 0)
+					userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId),
+							new PageRequest(page, size, Direction.DESC, "createdTime"));
+				else
+					userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId),
+							new Sort(Sort.Direction.DESC, "createdTime"));
+			}
 			if (userLocationCollections != null) {
 				response = new ArrayList<ClinicDoctorResponse>();
 				for (UserLocationCollection userLocationCollection : userLocationCollections) {

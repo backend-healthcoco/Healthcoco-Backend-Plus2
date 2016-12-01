@@ -87,7 +87,7 @@ public interface RegistrationService {
 
     ESDoctorDocument getESDoctorDocument(RegisterDoctorResponse doctorResponse);
 
-    List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId, String updatedTime, String role);
+    List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId, String updatedTime, String role, Boolean active);
 
     Role deleteRole(String roleId, Boolean discarded);
 
