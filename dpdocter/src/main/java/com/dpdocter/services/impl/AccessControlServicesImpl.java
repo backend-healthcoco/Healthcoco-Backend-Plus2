@@ -10,6 +10,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,7 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AcosRepository;
 import com.dpdocter.repository.ArosAcosRepository;
 import com.dpdocter.repository.ArosRepository;
+import com.dpdocter.response.ArosAcosLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 
 import common.util.web.DPDoctorUtils;
@@ -40,29 +44,31 @@ public class AccessControlServicesImpl implements AccessControlServices {
     @Autowired
     private ArosAcosRepository arosAcosRepository;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+    
     @Override
     @Transactional
     public AccessControl getAccessControls(ObjectId roleOrUserId, ObjectId locationId, ObjectId hospitalId) {
 	AccessControl response = null;
 	try {	
 	    response = new AccessControl();
-	    ArosCollection arosCollection = arosRepository.find(roleOrUserId, locationId, hospitalId);
-	    if (arosCollection != null) {
-		ArosAcosCollection arosAcosCollection = arosAcosRepository.findByArosId(arosCollection.getId());
-		if (arosAcosCollection != null && !arosAcosCollection.getAcosIds().isEmpty()) {
-			List<AcosCollection> acosCollections = acosRepository.findAll(arosAcosCollection.getAcosIds());
-
+	    Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("roleOrUserId").is(roleOrUserId).and("locationId").is(locationId).and("hospitalId").is(hospitalId)),
+	    		Aggregation.lookup("aros_acos_cl", "_id", "arosId", "arosAcos"), Aggregation.unwind("arosAcos"), Aggregation.unwind("arosAcos.acosIds"),
+	    		Aggregation.lookup("acos_cl", "arosAcos.acosIds", "_id", "acos"), Aggregation.unwind("acos"));
+	    
+	    List<ArosAcosLookupResponse> acosLookupResponses = mongoTemplate.aggregate(aggregation, ArosCollection.class, ArosAcosLookupResponse.class).getMappedResults();
+		if (acosLookupResponses != null && !acosLookupResponses.isEmpty()) {
 			List<AccessModule> accessModules = new ArrayList<AccessModule>();
 
-		    for (AcosCollection acosCollection : acosCollections) {
+		    for (ArosAcosLookupResponse arosAcosLookupResponse : acosLookupResponses) {
 			AccessModule accessModule = new AccessModule();
-			BeanUtil.map(acosCollection, accessModule);
+			BeanUtil.map(arosAcosLookupResponse.getAcos(), accessModule);
 			accessModules.add(accessModule);
+			response.setId(arosAcosLookupResponse.getArosAcos().getId().toString());
 		    }
 		    response.setAccessModules(accessModules);
-		    response.setId(arosAcosCollection.getId().toString());
 		}
-	    }
 	    response.setRoleOrUserId(roleOrUserId.toString());
 	    if(!DPDoctorUtils.anyStringEmpty(locationId))response.setLocationId(locationId.toString());
 	    if(!DPDoctorUtils.anyStringEmpty(hospitalId))response.setHospitalId(hospitalId.toString());
