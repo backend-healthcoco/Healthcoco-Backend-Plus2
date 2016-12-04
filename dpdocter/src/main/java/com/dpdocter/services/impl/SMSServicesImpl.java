@@ -142,7 +142,9 @@ public class SMSServicesImpl implements SMSServices {
 			message.setRoute(ROUTE);
 			message.setSenderId(SENDER_ID);
 			message.setUnicode(UNICODE);
+			Boolean isSMSInAccount = true;
 			UserMobileNumbers userNumber = null;
+			SubscriptionDetailCollection subscriptionDetailCollection = null;
 
 			if (!isEnvProduction) {
 				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
@@ -151,41 +153,51 @@ public class SMSServicesImpl implements SMSServices {
 				in.close();
 				fileIn.close();
 			}
-			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-				if (!isEnvProduction) {
-					if (userNumber != null && smsDetails.getSms() != null
-							&& smsDetails.getSms().getSmsAddress() != null) {
-						String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
-						if (userNumber.mobileNumber.contains(recipient)) {
-							smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
-							SMS sms = new SMS();
-							BeanUtil.map(smsDetails.getSms(), sms);
-							if (sms.getSmsText() != null)
-								sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
-							smsList.add(sms);
-							message.setSms(smsList);
-							String xmlSMSData = createXMLData(message);
-							responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-							smsTrackDetail.setResponseId(responseId);
-						}
-					}
-				} else {
-					SMS sms = new SMS();
-					BeanUtil.map(smsDetails.getSms(), sms);
-					if (sms.getSmsText() != null)
-						sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
-					smsList.add(sms);
-					message.setSms(smsList);
-					String xmlSMSData = createXMLData(message);
-					responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
-					smsTrackDetail.setResponseId(responseId);
-				}
+			if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId())) {
+
+				subscriptionDetailCollection = subscriptionDetailRepository
+						.findSuscriptionDetailBylocationId(smsTrackDetail.getLocationId());
 			}
 
-			if (save)
-				smsTrackRepository.save(smsTrackDetail);
-			if (!DPDoctorUtils.anyStringEmpty(responseId))
-				response = true;
+			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+				if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
+					isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);
+				if (isSMSInAccount) {
+					if (!isEnvProduction) {
+						if (userNumber != null && smsDetails.getSms() != null
+								&& smsDetails.getSms().getSmsAddress() != null) {
+							String recipient = smsDetails.getSms().getSmsAddress().getRecipient();
+							if (userNumber.mobileNumber.contains(recipient)) {
+								smsDetails.getSms().getSmsAddress().setRecipient(COUNTRY_CODE + recipient);
+								SMS sms = new SMS();
+								BeanUtil.map(smsDetails.getSms(), sms);
+								if (sms.getSmsText() != null)
+									sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
+								smsList.add(sms);
+								message.setSms(smsList);
+								String xmlSMSData = createXMLData(message);
+								responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+								smsTrackDetail.setResponseId(responseId);
+							}
+						}
+					} else {
+						SMS sms = new SMS();
+						BeanUtil.map(smsDetails.getSms(), sms);
+						if (sms.getSmsText() != null)
+							sms.setSmsText(UriUtils.encode(sms.getSmsText(), "UTF-8"));
+						smsList.add(sms);
+						message.setSms(smsList);
+						String xmlSMSData = createXMLData(message);
+						responseId = hitSMSUrl(SMS_POST_URL, xmlSMSData);
+						smsTrackDetail.setResponseId(responseId);
+					}
+				}
+
+				if (save)
+					smsTrackRepository.save(smsTrackDetail);
+				if (!DPDoctorUtils.anyStringEmpty(responseId))
+					response = true;
+			}
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -597,35 +609,32 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 
-	public Boolean checkNoOFsms(String massage, String locationId) {
+	public Boolean checkNoOFsms(String massage, SubscriptionDetailCollection subscriptionDetailCollection) {
 		Boolean response = false;
-
 		CharsetEncoder asciiEncoder = Charset.forName("US-ASCII").newEncoder();
 		Double count;
 		int div;
-		SubscriptionDetailCollection subscriptionDetailCollection = null;
 		boolean status = asciiEncoder.canEncode(massage);
 		Double length = (double) massage.length();
 		if (status)
 			div = 160;
 		else
 			div = 70;
-		count = (length / 160) - Math.floor(length / 160);
+		count = (length / 160) - Math.floor(length / div);
 		if (count > 0) {
 			count = Math.floor(length / div) + 1;
 		} else {
 			count = Math.floor(length / div);
 
 		}
-		if (!DPDoctorUtils.anyStringEmpty(locationId)) {
-			subscriptionDetailCollection = subscriptionDetailRepository
-					.findSuscriptionDetailByLocationId(new ObjectId(locationId));
-			if (subscriptionDetailCollection.getNoOfsms() > 0 && subscriptionDetailCollection != null) {
-				subscriptionDetailCollection
-						.setNoOfsms(subscriptionDetailCollection.getNoOfsms() - Integer.parseInt(count.toString()));
+
+		if (subscriptionDetailCollection != null) {
+			if (subscriptionDetailCollection.getNoOfsms() > 0) {
+				subscriptionDetailCollection.setNoOfsms(subscriptionDetailCollection.getNoOfsms() - count.intValue());
 				subscriptionDetailCollection = subscriptionDetailRepository.save(subscriptionDetailCollection);
 				response = true;
-			}
+			} else
+				throw new BusinessException(ServiceError.Unknown, "Error while Sending low sms in Doctor Account");
 
 		} else {
 			throw new BusinessException(ServiceError.Unknown, "Error while Sending  Invalid location Id");
