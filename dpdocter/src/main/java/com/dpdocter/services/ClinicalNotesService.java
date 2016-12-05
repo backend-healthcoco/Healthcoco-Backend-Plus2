@@ -9,11 +9,14 @@ import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.PA;
+import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
@@ -104,5 +107,18 @@ public interface ClinicalNotesService {
 
 	MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
+	
+	IndicationOfUSG deleteIndicationOfUSG(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	IndicationOfUSG addEditIndicationOfUSG(IndicationOfUSG indicationOfUSG);
+
+	PA addEditPA(PA pa);
+
+	PA deletePA(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	PV deletePV(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	PV addEditPV(PV pv);
 
 }

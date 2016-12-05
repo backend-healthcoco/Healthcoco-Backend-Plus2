@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.amazonaws.services.s3.model.transform.XmlResponsesSaxParser.BucketReplicationConfigurationHandler;
+import com.dpdocter.beans.BirthHistory;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralData;
@@ -651,5 +653,36 @@ public class HistoryApi {
 	return response;
     }
     
+	@Path(value = PathProxy.HistoryUrls.SUBMIT_BIRTH_HITORY)
+	@POST
+	@ApiOperation(value = PathProxy.HistoryUrls.SUBMIT_BIRTH_HITORY, notes = PathProxy.HistoryUrls.SUBMIT_BIRTH_HITORY)
+	public Response<BirthHistory> submitBirthHistory(BirthHistory request) {
+		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getHospitalId(),
+				request.getLocationId())) {
+			logger.warn("Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Patient Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		BirthHistory birthHistory = historyServices.submitBirthHistory(request);
+
+		Response<BirthHistory> response = new Response<BirthHistory>();
+		response.setData(birthHistory);
+		return response;
+	}
+
+	@Path(value = PathProxy.HistoryUrls.GET_BIRTH_HISTORY)
+	@GET
+	@ApiOperation(value = PathProxy.HistoryUrls.GET_BIRTH_HISTORY, notes = PathProxy.HistoryUrls.GET_BIRTH_HISTORY)
+	public Response<BirthHistory> getBirthHistory(@QueryParam("patientId") String patientId) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.warn("Patient Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
+		}
+		BirthHistory birthHistory = historyServices.getBirthHistory(patientId);
+
+		Response<BirthHistory> response = new Response<BirthHistory>();
+		response.setData(birthHistory);
+		return response;
+	}
     
 }

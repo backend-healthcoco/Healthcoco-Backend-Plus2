@@ -15,6 +15,7 @@ public class BirthHistory extends GenericCollection {
 	private Double weight;
 	private Integer birthOrder;
 	private String birthProblem;
+	private Double bmi;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
@@ -132,13 +133,21 @@ public class BirthHistory extends GenericCollection {
 		this.patientId = patientId;
 	}
 
+	public Double getBmi() {
+		return bmi;
+	}
+
+	public void setBmi(Double bmi) {
+		this.bmi = bmi;
+	}
+
 	@Override
 	public String toString() {
 		return "BirthHistory [id=" + id + ", birthPlace=" + birthPlace + ", obstetricianName=" + obstetricianName
 				+ ", gestationType=" + gestationType + ", prematureWeeks=" + prematureWeeks + ", birthType=" + birthType
 				+ ", height=" + height + ", weight=" + weight + ", birthOrder=" + birthOrder + ", birthProblem="
-				+ birthProblem + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + "]";
+				+ birthProblem + ", bmi=" + bmi + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + "]";
 	}
 
 }

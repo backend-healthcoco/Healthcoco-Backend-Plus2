@@ -20,6 +20,7 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
@@ -306,6 +307,23 @@ public class ESClinicalNotesApi {
 	List<ESObstetricHistoryDocument> obstetricHistories = esClinicalNotesService.searchObstetricHistory(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 	Response<ESObstetricHistoryDocument> response = new Response<ESObstetricHistoryDocument>();
 	response.setDataList(obstetricHistories);
+	return response;
+    }
+    
+    @Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INDICATION_OF_USG)
+    @GET
+    @ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_INDICATION_OF_USG, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_INDICATION_OF_USG)
+    public Response<ESIndicationOfUSGDocument> searchIndicationOfUSG(@PathParam("range") String range, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	    @QueryParam(value = "hospitalId") String hospitalId, @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam(value = "searchTerm") String searchTerm) {
+    	if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+    	}
+	List<ESIndicationOfUSGDocument> esIndicationOfUSGs = esClinicalNotesService.searchIndicationOfUSG(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+	Response<ESIndicationOfUSGDocument> response = new Response<ESIndicationOfUSGDocument>();
+	response.setDataList(esIndicationOfUSGs);
 	return response;
     }
     

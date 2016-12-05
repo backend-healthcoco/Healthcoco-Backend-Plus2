@@ -166,6 +166,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 			profilePermission.add(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+			profilePermission.add(GynacPermissionsEnum.PA.getPermissions());
+			profilePermission.add(GynacPermissionsEnum.PV.getPermissions());
 			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);

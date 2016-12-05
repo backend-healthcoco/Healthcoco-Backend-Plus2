@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum BirthType {
 
-	VAGINAL("VAGINAL") , C_SECTION("C_SECCTION");
+	VAGINAL("VAGINAL") , C_SECTION("C_SECTION");
 	
 	private String type;
 

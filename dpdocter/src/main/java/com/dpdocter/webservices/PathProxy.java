@@ -200,6 +200,12 @@ public interface PathProxy {
 		public static final String ADD_OBSTETRICS_HISTORY = "/obstetricHistory/add";
 		
 		public static final String ADD_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/add";
+		
+		public static final String ADD_INDICATION_OF_USG = "/indicationOfUSG/add";
+		
+		public static final String ADD_PA = "/pa/add";
+		
+		public static final String ADD_PV = "/pv/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
@@ -234,6 +240,12 @@ public interface PathProxy {
 		public static final String DELETE_OBSTETRIC_HISTORY = "/obstetricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
 		public static final String DELETE_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_INDICATION_OF_USG = "/presentIndicationOfUSG/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+		public static final String DELETE_PA = "/pa/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -472,6 +484,10 @@ public interface PathProxy {
 		// "/removeVisits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_MULTIPLE_DATA = "getMultipleData";
+		
+		public static final String SUBMIT_BIRTH_HITORY = "/submitBirthHistory";
+		
+		public static final String GET_BIRTH_HISTORY = "/getBirthHistory/{patientId}";
 	}
 
 	public static final String DOCTOR_PROFILE_URL = BASE_URL + "/doctorProfile";
@@ -629,6 +645,8 @@ public interface PathProxy {
 		public static final String SEARCH_OBSTETRIC_HISTORY = "searchObstetricHistory/{range}";
 		
 		public static final String SEARCH_MENSTRUAL_HISTORY = "searchMenstrualHistory/{range}";
+		
+		public static final String SEARCH_INDICATION_OF_USG = "searchIndicationOfUSG/{range}";
 
 	}
 

@@ -6,11 +6,14 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPADocument;
+import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
@@ -86,5 +89,20 @@ public interface ESClinicalNotesService {
 
 	List<ESObstetricHistoryDocument> searchObstetricHistory(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESIndicationOfUSGDocument> searchIndicationOfUSG(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	boolean addIndicationOfUSG(ESIndicationOfUSGDocument request);
+
+	boolean addPA(ESPADocument request);
+
+	List<ESPADocument> searchPA(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESPVDocument> searchPV(String range, int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm);
+
+	boolean addPV(ESPVDocument request);
 
 }

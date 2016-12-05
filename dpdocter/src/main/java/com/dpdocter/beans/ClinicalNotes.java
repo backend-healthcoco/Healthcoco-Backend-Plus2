@@ -41,6 +41,12 @@ public class ClinicalNotes extends GenericCollection {
 	private String menstrualHistory;
 
 	private String obstetricHistory;
+	
+	private String indicationOfUSG;
+	
+	private String pv;
+	
+	private String pa;
 
 	private String doctorId;
 
@@ -280,6 +286,30 @@ public class ClinicalNotes extends GenericCollection {
 		this.obstetricHistory = obstetricHistory;
 	}
 
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+	
+	public String getPv() {
+		return pv;
+	}
+
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+
+	public String getPa() {
+		return pa;
+	}
+
+	public void setPa(String pa) {
+		this.pa = pa;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
@@ -287,9 +317,10 @@ public class ClinicalNotes extends GenericCollection {
 				+ ", diagnosis=" + diagnosis + ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam="
 				+ generalExam + ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint="
 				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
-				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory
-				+ ", discarded=" + discarded + ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns="
-				+ vitalSigns + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
+				+ ", pv=" + pv + ", pa=" + pa + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId="
+				+ visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + ", appointmentId="
+				+ appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

@@ -77,6 +77,15 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	@Field
 	private String obstetricHistory;
+	
+	@Field
+	private String indicationOfUSG;
+	
+	@Field
+	private String pv;
+	
+	@Field
+	private String pa;
 
 	@Field
 	private List<String> comments;
@@ -359,6 +368,30 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.obstetricHistory = obstetricHistory;
 	}
 
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+
+	public String getPv() {
+		return pv;
+	}
+
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+
+	public String getPa() {
+		return pa;
+	}
+
+	public void setPa(String pa) {
+		this.pa = pa;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
@@ -368,9 +401,10 @@ public class ClinicalNotesCollection extends GenericCollection {
 				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
 				+ systemExam + ", complaint=" + complaint + ", presentComplaint=" + presentComplaint
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
-				+ ", obstetricHistory=" + obstetricHistory + ", comments=" + comments + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
-				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
-				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
+				+ ", pa=" + pa + ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
+				+ ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

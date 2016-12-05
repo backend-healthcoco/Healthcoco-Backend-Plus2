@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.BirthHistory;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
@@ -42,6 +43,7 @@ import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.collections.BirthHistoryCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiseasesCollection;
@@ -60,6 +62,7 @@ import com.dpdocter.enums.Range;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BirthHistoryRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiseasesRepository;
@@ -139,6 +142,9 @@ public class HistoryServicesImpl implements HistoryServices {
 
     @Autowired
     private NotesRepository notesRepository;
+    
+    @Autowired
+    private BirthHistoryRepository birthHistoryRepository;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -2281,4 +2287,62 @@ public class HistoryServicesImpl implements HistoryServices {
     	}
     	return drugs;
         }
+    
+    @Override
+	@Transactional
+	public BirthHistory submitBirthHistory(BirthHistory birthHistory) {
+		BirthHistoryCollection birthHistoryCollection = null;
+		ObjectId patientObjectId = null;
+		if (!DPDoctorUtils.anyStringEmpty(birthHistory.getPatientId()))
+			patientObjectId = new ObjectId(birthHistory.getPatientId());
+		birthHistoryCollection = birthHistoryRepository.findByPatientId(patientObjectId);
+		if (birthHistoryCollection != null) {
+			BeanUtil.map(birthHistory, birthHistoryCollection);
+			birthHistoryCollection = birthHistoryRepository.save(birthHistoryCollection);
+			BeanUtil.map(birthHistoryCollection, birthHistory);
+		} else {
+			if (birthHistory != null) {
+				if (birthHistory.getHeight() != null && birthHistory.getWeight() != null) {
+					birthHistory.setBmi(birthHistory.getWeight() / (centimeterToMeter(birthHistory.getHeight())
+							* centimeterToMeter(birthHistory.getHeight())));
+				}
+				birthHistoryCollection = new BirthHistoryCollection();
+				BeanUtil.map(birthHistory, birthHistoryCollection);
+				birthHistoryCollection = birthHistoryRepository.save(birthHistoryCollection);
+				BeanUtil.map(birthHistoryCollection, birthHistory);
+			}
+		}
+		return birthHistory;
+	}
+    
+    @Override
+    @Transactional
+    public BirthHistory getBirthHistory(String patientId)
+    {
+    	ObjectId patientObjectId = null;
+    	BirthHistory birthHistory = null;
+     	if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
+    	BirthHistoryCollection birthHistoryCollection = birthHistoryRepository.findByPatientId(patientObjectId);
+    	if(birthHistoryCollection == null)
+    	{
+    		throw new BusinessException(ServiceError.NoRecord,"Birth history not found");
+    	}
+    	else
+    	{
+    		birthHistory = new BirthHistory();
+    		BeanUtil.map(birthHistoryCollection,birthHistory);
+    	}
+    	return birthHistory;
+    }
+    
+    private Double centimeterToMeter(Integer centimeter)
+    {
+    	Double meter = null;
+    	if(centimeter != null)
+    	{
+    		Double centimeterInDouble = centimeter.doubleValue();
+    		meter = (double) (centimeterInDouble / 100);
+    	}
+    	return meter;
+    }
 }

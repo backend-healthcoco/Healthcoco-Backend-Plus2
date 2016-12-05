@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.BirthHistory;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
@@ -88,5 +89,9 @@ public interface HistoryServices {
 	HistoryDetailsResponse assignDrugsAndAllergies(DrugsAndAllergiesAddRequest request);
 
 	HistoryDetailsResponse assignPersonalHistory(PersonalHistoryAddRequest request);
+
+	BirthHistory submitBirthHistory(BirthHistory birthHistory);
+
+	BirthHistory getBirthHistory(String patientId);
 
 }

@@ -27,11 +27,14 @@ import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPADocument;
+import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
@@ -42,11 +45,14 @@ import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagramsRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESGeneralExamRepository;
+import com.dpdocter.elasticsearch.repository.ESIndicationOfUSGRepository;
 import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
 import com.dpdocter.elasticsearch.repository.ESMenstrualHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESNotesRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESObstetricHistoryRepository;
+import com.dpdocter.elasticsearch.repository.ESPARepository;
+import com.dpdocter.elasticsearch.repository.ESPVRepository;
 import com.dpdocter.elasticsearch.repository.ESPresentComplaintHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESPresentComplaintRepository;
 import com.dpdocter.elasticsearch.repository.ESProvisionalDiagnosisRepository;
@@ -104,6 +110,15 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
     
     @Autowired
     private ESObstetricHistoryRepository esObstetricHistoryRepository;
+    
+    @Autowired
+    private ESIndicationOfUSGRepository esIndicationOfUSGRepository;
+    
+    @Autowired
+    private ESPARepository espaRepository;
+    
+    @Autowired
+    private ESPVRepository espvRepository;
     
     @Autowired
     private TransactionalManagementService transnationalService;
@@ -473,6 +488,71 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	return response;
     }
     
+	@Override
+	public List<ESIndicationOfUSGDocument> searchIndicationOfUSG(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESIndicationOfUSGDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalIndicationOfUSG(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomIndicationOfUSG(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalIndicationOfUSG(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+
+	@Override
+	public List<ESPADocument> searchPA(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPADocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalPA(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomPA(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalPA(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+
+	@Override
+	public List<ESPVDocument> searchPV(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPVDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalPV(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomPV(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalPV(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
     
     @SuppressWarnings("unchecked")
 	private List<ESComplaintsDocument> getCustomGlobalComplaints(int page, int size, String doctorId, String locationId, String hospitalId,
@@ -1858,4 +1938,424 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 //	}
 //	return response;
 //    }
+            
+	@Override
+	public boolean addPA(ESPADocument request) {
+		boolean response = false;
+		try {
+			espaRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PA, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving P/A");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ESPADocument> getCustomGlobalPA(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPADocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PA, page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
+					null, "pa");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPADocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/A");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ESPADocument> getGlobalPA(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPADocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PA, page, size,
+					updatedTime, discarded, null, searchTerm, specialities, null, null, "pa");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPADocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/A");
+		}
+		return response;
+	}
+
+	private List<ESPADocument> getCustomPA(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPADocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESPADocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "pa");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESPADocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Indication of USG");
+		}
+		return response;
+	}
+	
+    
+	@Override
+	public boolean addIndicationOfUSG(ESIndicationOfUSGDocument request) {
+		boolean response = false;
+		try {
+			esIndicationOfUSGRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.INDICATION_OF_USG, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Indication of USG");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ESIndicationOfUSGDocument> getCustomGlobalIndicationOfUSG(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESIndicationOfUSGDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INDICATION_OF_USG, page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
+					null, "indicationOfUSG");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Indication of USG");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ESIndicationOfUSGDocument> getGlobalIndicationOfUSG(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESIndicationOfUSGDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDICATION_OF_USG, page, size,
+					updatedTime, discarded, null, searchTerm, specialities, null, null, "indicationOfUSG");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Indication of USG");
+		}
+		return response;
+	}
+
+	private List<ESIndicationOfUSGDocument> getCustomIndicationOfUSG(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESIndicationOfUSGDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESIndicationOfUSGDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "indicationOfUSG");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESIndicationOfUSGDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Indication of USG");
+		}
+		return response;
+	}
+	
+	/**
+	 * Start of functionality to add PV
+	 */
+	@Override
+	public boolean addPV(ESPVDocument request) {
+		boolean response = false;
+		try {
+			espvRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PV, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving P/V");
+		}
+		return response;
+
+	}
+	/**
+	 * End of functionality to add PV
+	 */
+	
+	/**
+	 * 
+	 * @param page - page no for pagination
+	 * @param size - size for pagination
+	 * @param doctorId 
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm - searchterm for search
+	 * @return
+	 */
+
+	@SuppressWarnings("unchecked")
+	private List<ESPVDocument> getCustomGlobalPV(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPVDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PV, page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
+					null, "pv");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPVDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/V");
+		}
+		return response;
+
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<ESPVDocument> getGlobalPV(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPVDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PV, page, size,
+					updatedTime, discarded, null, searchTerm, specialities, null, null, "pv");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPVDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/V");
+		}
+		return response;
+	}
+ 
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	private List<ESPVDocument> getCustomPV(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPVDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESPVDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "pv");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESPVDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PV");
+		}
+		return response;
+	}
 }

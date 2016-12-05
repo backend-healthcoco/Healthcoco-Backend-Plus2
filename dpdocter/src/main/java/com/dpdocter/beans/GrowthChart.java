@@ -1,29 +1,16 @@
 package com.dpdocter.beans;
 
-public class GrowthChart {
+import java.util.List;
 
-	private String id;
-	private String patientId;
+import com.dpdocter.collections.GenericCollection;
+
+public class GrowthChart extends GenericCollection {
+
 	private Integer height;
 	private Double weight;
+	private Double bmi;
 	private Integer skullCircumference;
 	private String progress;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
 
 	public Integer getHeight() {
 		return height;
@@ -39,6 +26,14 @@ public class GrowthChart {
 
 	public void setWeight(Double weight) {
 		this.weight = weight;
+	}
+
+	public Double getBmi() {
+		return bmi;
+	}
+
+	public void setBmi(Double bmi) {
+		this.bmi = bmi;
 	}
 
 	public Integer getSkullCircumference() {
@@ -59,8 +54,8 @@ public class GrowthChart {
 
 	@Override
 	public String toString() {
-		return "GrowthChart [id=" + id + ", patientId=" + patientId + ", height=" + height + ", weight=" + weight
-				+ ", skullCircumference=" + skullCircumference + ", progress=" + progress + "]";
+		return "GrowthChart [height=" + height + ", weight=" + weight + ", bmi=" + bmi + ", skullCircumference="
+				+ skullCircumference + ", progress=" + progress + "]";
 	}
 
 }

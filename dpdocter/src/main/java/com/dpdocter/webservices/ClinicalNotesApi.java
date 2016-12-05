@@ -25,11 +25,14 @@ import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.PA;
+import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
@@ -38,11 +41,14 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPADocument;
+import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
@@ -738,6 +744,71 @@ public class ClinicalNotesApi {
 	return response;
     }
     
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG, notes = PathProxy.ClinicalNotesUrls.ADD_INDICATION_OF_USG)
+	public Response<IndicationOfUSG> addIndicationOfUSG(IndicationOfUSG request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getIndicationOfUSG())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		IndicationOfUSG indicationOfUSG = clinicalNotesService.addEditIndicationOfUSG(request);
+
+		transactionalManagementService.addResource(new ObjectId(indicationOfUSG.getId()), Resource.INDICATION_OF_USG,
+				false);
+		ESIndicationOfUSGDocument esIndicationOfUSG = new ESIndicationOfUSGDocument();
+		BeanUtil.map(indicationOfUSG, esIndicationOfUSG);
+		esClinicalNotesService.addIndicationOfUSG(esIndicationOfUSG);
+		Response<IndicationOfUSG> response = new Response<IndicationOfUSG>();
+		response.setData(indicationOfUSG);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PA)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PA, notes = PathProxy.ClinicalNotesUrls.ADD_PA)
+	public Response<PA> addIndicationOfUSG(PA request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPa())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		PA pa = clinicalNotesService.addEditPA(request);
+
+		transactionalManagementService.addResource(new ObjectId(pa.getId()), Resource.PA,
+				false);
+		ESPADocument espa = new ESPADocument();
+		BeanUtil.map(pa, espa);
+		esClinicalNotesService.addPA(espa);
+		Response<PA> response = new Response<PA>();
+		response.setData(pa);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PV)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PV, notes = PathProxy.ClinicalNotesUrls.ADD_PV)
+	public Response<PV> addIndicationOfUSG(PV request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPv())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		PV pv = clinicalNotesService.addEditPV(request);
+
+		transactionalManagementService.addResource(new ObjectId(pv.getId()), Resource.PV,
+				false);
+		ESPVDocument espv = new ESPVDocument();
+		BeanUtil.map(pv, espv);
+		esClinicalNotesService.addPV(espv);
+		Response<PV> response = new Response<PV>();
+		response.setData(pv);
+		return response;
+	}
 
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_PROVISIONAL_DIAGNOSIS)
     @DELETE
@@ -877,27 +948,74 @@ public class ClinicalNotesApi {
 	return response;
     }
     
-    @Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
+    @Path(value = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG)
     @DELETE
-    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY, notes = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
-    public Response<ObstetricHistory> deleteObstetricHistory(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG, notes = PathProxy.ClinicalNotesUrls.DELETE_INDICATION_OF_USG)
+    public Response<IndicationOfUSG> deleteIndicationOfUSG(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
     	    logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
     	    throw new BusinessException(ServiceError.InvalidInput, "Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
     	}
-    	ObstetricHistory obstetricHistory = clinicalNotesService.deleteObstetricHistory(id, doctorId, locationId, hospitalId, discarded);
+    	IndicationOfUSG indicationOfUSG = clinicalNotesService.deleteIndicationOfUSG(id, doctorId, locationId, hospitalId, discarded);
 	
-    	if(obstetricHistory != null){
-			transactionalManagementService.addResource(new ObjectId(obstetricHistory.getId()), Resource.OBSTETRIC_HISTORY, false);
-			ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
-			BeanUtil.map(obstetricHistory, esObstetricHistory);
-			esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
+    	if(indicationOfUSG != null){
+			transactionalManagementService.addResource(new ObjectId(indicationOfUSG.getId()), Resource.INDICATION_OF_USG, false);
+			ESIndicationOfUSGDocument esIndicationOfUSG = new ESIndicationOfUSGDocument();
+			BeanUtil.map(indicationOfUSG, esIndicationOfUSG);
+			esClinicalNotesService.addIndicationOfUSG(esIndicationOfUSG);
 		}
-	Response<ObstetricHistory> response = new Response<ObstetricHistory>();
-	response.setData(obstetricHistory);
+	Response<IndicationOfUSG> response = new Response<IndicationOfUSG>();
+	response.setData(indicationOfUSG);
 	return response;
     }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.DELETE_PA)
+    @DELETE
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PA, notes = PathProxy.ClinicalNotesUrls.DELETE_PA)
+    public Response<PA> deletePA(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
+    	PA pa = clinicalNotesService.deletePA(id, doctorId, locationId, hospitalId, discarded);
+	
+    	if(pa != null){
+			transactionalManagementService.addResource(new ObjectId(pa.getId()), Resource.PA, false);
+			ESPADocument espa = new ESPADocument();
+			BeanUtil.map(pa, espa);
+			esClinicalNotesService.addPA(espa);
+		}
+	Response<PA> response = new Response<PA>();
+	response.setData(pa);
+	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.DELETE_PV)
+    @DELETE
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PV, notes = PathProxy.ClinicalNotesUrls.DELETE_PV)
+    public Response<PV> deleteObstetricHistory(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+    	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+    	    logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+    	}
+    	PV pv = clinicalNotesService.deletePV(id, doctorId, locationId, hospitalId, discarded);
+	
+    	if(pv != null){
+			transactionalManagementService.addResource(new ObjectId(pv.getId()), Resource.PV, false);
+			ESPVDocument espv = new ESPVDocument();
+			BeanUtil.map(pv, espv);
+			esClinicalNotesService.addPV(espv);
+		}
+	Response<PV> response = new Response<PV>();
+	response.setData(pv);
+	return response;
+    }
+
 
 }

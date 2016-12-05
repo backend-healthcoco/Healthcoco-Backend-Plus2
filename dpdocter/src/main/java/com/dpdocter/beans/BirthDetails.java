@@ -1,22 +1,19 @@
 package com.dpdocter.beans;
 
-public class BirthDetails {
+import java.util.List;
 
-	private String id;
+import com.dpdocter.collections.GenericCollection;
+
+public class BirthDetails extends GenericCollection{
 	
-	private BirthHistory birthHistory;
-
-	private BirthAchievement birthAchievement;
-
-	private GrowthChart growthChart;
-
+	private String id;
+	private List<BirthAchievement> birthAchievements;
+	private List<GrowthChart> growthCharts;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
 	private String patientId;
 	
-	
-
 	public String getId() {
 		return id;
 	}
@@ -25,28 +22,20 @@ public class BirthDetails {
 		this.id = id;
 	}
 
-	public BirthHistory getBirthHistory() {
-		return birthHistory;
+	public List<BirthAchievement> getBirthAchievements() {
+		return birthAchievements;
 	}
 
-	public void setBirthHistory(BirthHistory birthHistory) {
-		this.birthHistory = birthHistory;
+	public void setBirthAchievements(List<BirthAchievement> birthAchievements) {
+		this.birthAchievements = birthAchievements;
 	}
 
-	public BirthAchievement getBirthAchievement() {
-		return birthAchievement;
+	public List<GrowthChart> getGrowthCharts() {
+		return growthCharts;
 	}
 
-	public void setBirthAchievement(BirthAchievement birthAchievement) {
-		this.birthAchievement = birthAchievement;
-	}
-
-	public GrowthChart getGrowthChart() {
-		return growthChart;
-	}
-
-	public void setGrowthChart(GrowthChart growthChart) {
-		this.growthChart = growthChart;
+	public void setGrowthCharts(List<GrowthChart> growthCharts) {
+		this.growthCharts = growthCharts;
 	}
 
 	public String getDoctorId() {
@@ -83,9 +72,9 @@ public class BirthDetails {
 
 	@Override
 	public String toString() {
-		return "BirthDetails [id=" + id + ", birthHistory=" + birthHistory + ", birthAchievement=" + birthAchievement
-				+ ", growthChart=" + growthChart + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + "]";
+		return "BirthDetails [id=" + id + ", birthAchievements=" + birthAchievements + ", growthCharts=" + growthCharts
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", patientId=" + patientId + "]";
 	}
 
 }
