@@ -22,9 +22,9 @@ import com.dpdocter.beans.BirthdaySMSDetailsForPatients;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -74,12 +74,12 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 					new Criteria("patient.discarded").is(false));
 
 			Aggregation aggregation = Aggregation.newAggregation(
-					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "userLocationId", "doctorClinic"),
+//					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "userLocationId", "doctorClinic"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.lookup("patient_cl", "userId", "doctorId", "patient"), Aggregation.unwind("patient"),
 					Aggregation.match(criteria), projectList, Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			AggregationResults<BirthdaySMSDetailsForPatients> results = mongoTemplate.aggregate(aggregation,
-					UserLocationCollection.class, BirthdaySMSDetailsForPatients.class);
+					DoctorClinicProfileCollection.class, BirthdaySMSDetailsForPatients.class);
 
 			List<BirthdaySMSDetailsForPatients> birthdaySMSDetailsForPatientsList = results.getMappedResults();
 

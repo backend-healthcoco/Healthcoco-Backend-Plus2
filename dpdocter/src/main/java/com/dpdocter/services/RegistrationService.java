@@ -117,4 +117,6 @@ public interface RegistrationService {
 
 	Boolean updatePIDOnClinicLevel();
 
+	Boolean updateDoctorClinicProfile();
+
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DoctorFacility;
-import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorClinicProfile {
 	private String id;

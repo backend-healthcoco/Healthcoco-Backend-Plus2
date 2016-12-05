@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "doctor_otp_cl")
 @CompoundIndexes({
-    @CompoundIndex(def = "{'userLocationId' : 1, 'patientId': 1}")
+    @CompoundIndex(def = "{'doctorId' : 1, 'locationId' : 1, 'patientId': 1}")
 })
 public class DoctorOTPCollection extends GenericCollection {
 
@@ -20,7 +20,10 @@ public class DoctorOTPCollection extends GenericCollection {
     private ObjectId otpId;
 
     @Field
-    private ObjectId userLocationId;
+    private ObjectId doctorId;
+
+	@Field
+    private ObjectId locationId;
 
     @Field
     private ObjectId patientId;
@@ -41,24 +44,34 @@ public class DoctorOTPCollection extends GenericCollection {
 	this.otpId = otpId;
     }
 
-    public ObjectId getUserLocationId() {
-	return userLocationId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setUserLocationId(ObjectId userLocationId) {
-	this.userLocationId = userLocationId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    @Override
-    public String toString() {
-	return "DoctorOTPCollection [id=" + id + ", otpId=" + otpId + ", userLocationId=" + userLocationId + ", patientId=" + patientId + "]";
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorOTPCollection [id=" + id + ", otpId=" + otpId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", patientId=" + patientId + "]";
+	}
+
 }

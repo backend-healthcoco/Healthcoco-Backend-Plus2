@@ -112,4 +112,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query(value = "{'role': ?0}", count = true)
 	public Integer countByRole(String role);
 
+    @Query("{'locationId': ?0, 'role': ?1}")
+	public RoleCollection findLocationAdmin(ObjectId locationId, String role);
+
 }

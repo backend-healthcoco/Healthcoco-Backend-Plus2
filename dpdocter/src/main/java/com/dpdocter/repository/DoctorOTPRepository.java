@@ -12,7 +12,7 @@ import com.dpdocter.collections.DoctorOTPCollection;
 
 public interface DoctorOTPRepository extends MongoRepository<DoctorOTPCollection, ObjectId>, PagingAndSortingRepository<DoctorOTPCollection, ObjectId> {
 
-    @Query("{'userLocationId': ?0, 'patientId': ?1}")
-    List<DoctorOTPCollection> find(ObjectId userLocationId, ObjectId patientId, Pageable pageRequest);
+    @Query("{'doctorId': ?0, 'locationId': ?1, 'patientId': ?2}")
+    List<DoctorOTPCollection> find(ObjectId doctorId, ObjectId locationId, ObjectId patientId, Pageable pageRequest);
 
 }

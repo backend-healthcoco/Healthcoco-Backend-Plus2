@@ -239,20 +239,6 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
-	@GET
-	@ApiOperation(value = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR, notes = PathProxy.SignUpUrls.RESEND_VERIFICATION_EMAIL_TO_DOCTOR)
-	public Response<Boolean> resendVerificationEmail(@PathParam(value = "emailaddress") String emailaddress) {
-		if (DPDoctorUtils.anyStringEmpty(emailaddress)) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(signUpService.resendVerificationEmail(emailaddress));
-		return response;
-	}
-
-	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT, notes = PathProxy.SignUpUrls.SUBMIT_DOCTOR_CONTACT)

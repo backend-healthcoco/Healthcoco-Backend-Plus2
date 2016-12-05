@@ -30,23 +30,23 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
-import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginPatientRequest;
@@ -78,7 +78,7 @@ public class LoginServiceImpl implements LoginService {
 	private HospitalRepository hospitalRepository;
 
 	@Autowired
-	private UserLocationRepository userLocationRepository;
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	private AccessControlServices accessControlServices;
@@ -177,10 +177,9 @@ public class LoginServiceImpl implements LoginService {
 
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					List<UserLocationCollection> userLocationCollections = userLocationRepository
-							.findByUserIdAndIsActivate(userCollection.getId());
-					if (userLocationCollections != null) {
-						Collection<ObjectId> locationIds = CollectionUtils.collect(userLocationCollections,
+					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findLocationIdByDoctorIdAndIsActivate(userCollection.getId());
+					if (doctorClinicProfileCollections != null) {
+						Collection<ObjectId> locationIds = CollectionUtils.collect(doctorClinicProfileCollections,
 								new BeanToPropertyValueTransformer("locationId"));
 						List<LocationCollection> locationCollections = IteratorUtils
 								.toList(locationRepository.findAll(locationIds).iterator());

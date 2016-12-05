@@ -5,7 +5,6 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.UserState;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * @author veeraj

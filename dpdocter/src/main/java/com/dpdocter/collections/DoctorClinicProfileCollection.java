@@ -21,6 +21,21 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	@Indexed
 	private ObjectId userLocationId;
 
+	@Indexed
+    private ObjectId doctorId;
+
+    @Indexed
+    private ObjectId locationId;
+
+    @Field
+    private Boolean isActivate = false;
+
+    @Field
+    private Boolean isVerified = true;
+
+    @Field
+    private Boolean discarded = false;
+
 	@Field
 	private String patientInitial = "P";
 
@@ -70,13 +85,45 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-
-	public ObjectId getUserLocationId() {
-		return userLocationId;
+	
+	public ObjectId getDoctorId() {
+		return doctorId;
 	}
 
-	public void setUserLocationId(ObjectId userLocationId) {
-		this.userLocationId = userLocationId;
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public Boolean getIsActivate() {
+		return isActivate;
+	}
+
+	public void setIsActivate(Boolean isActivate) {
+		this.isActivate = isActivate;
+	}
+
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public List<String> getAppointmentBookingNumber() {
@@ -193,13 +240,13 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", patientInitial="
-				+ patientInitial + ", patientCounter=" + patientCounter + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
-				+ revisitConsultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
-				+ workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
-				+ noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed
-				+ ", rankingCount=" + rankingCount + "]";
+		return "DoctorClinicProfileCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded
+				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
+				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
+				+ ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot=" + appointmentSlot
+				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
+				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
+				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS + "]";
 	}
-
 }

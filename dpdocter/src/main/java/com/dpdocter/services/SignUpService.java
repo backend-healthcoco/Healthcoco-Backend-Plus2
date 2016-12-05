@@ -35,5 +35,4 @@ public interface SignUpService {
 
     boolean checkMobileNumberExistForPatient(String mobileNumber);
 
-	Boolean resendVerificationEmail(String emailaddress);
 }

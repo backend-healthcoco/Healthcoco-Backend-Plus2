@@ -55,7 +55,6 @@ import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -115,7 +114,6 @@ import com.dpdocter.repository.SMSTrackRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
-import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
 import com.dpdocter.response.AppointmentPatientReminderResponse;
@@ -186,9 +184,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
     @Autowired
     private LocationRepository locationRepository;
-
-    @Autowired
-    private UserLocationRepository userLocationRepository;
 
     @Autowired
     private DoctorClinicProfileRepository doctorClinicProfileRepository;
@@ -759,27 +754,25 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	    DoctorCollection doctorCollection = doctorRepository.findByUserId(resourceId);
 	    UserCollection userCollection = userRepository.findOne(resourceId);
 	    if (doctorCollection != null && userCollection != null) {
-		List<UserLocationCollection> userLocationCollections = null;
+		List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
 		if (locationId == null)
-		    userLocationCollections = userLocationRepository.findByUserIdAndIsActivate(resourceId);
+			doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorId(resourceId);
 		else {
-		    UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(resourceId, locationId);
-		    userLocationCollections = new ArrayList<UserLocationCollection>();
-		    userLocationCollections.add(userLocationCollection);
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(resourceId, locationId);
+		    doctorClinicProfileCollections = new ArrayList<DoctorClinicProfileCollection>();
+		    doctorClinicProfileCollections.add(doctorClinicProfileCollection);
 		}
-		for (UserLocationCollection collection : userLocationCollections) {
-		    LocationCollection locationCollection = locationRepository.findOne(collection.getLocationId());
-			GeoPoint geoPoint = null;
+		for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
+		    LocationCollection locationCollection = locationRepository.findOne(doctorClinicProfileCollection.getLocationId());
+		    GeoPoint geoPoint = null;
 			if (locationCollection.getLatitude() != null && locationCollection.getLongitude() != null)
 				geoPoint = new GeoPoint(locationCollection.getLatitude(), locationCollection.getLongitude());
-
-		    DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByLocationId(collection.getId());
 		    ESDoctorDocument doctorDocument = new ESDoctorDocument();
 		    if (locationCollection != null){
 		    	BeanUtil.map(locationCollection, doctorDocument);
 		    	
 				ESLocationDocument esLocationDocument = new ESLocationDocument();
-				BeanUtil.map(clinicProfileCollection, esLocationDocument);
+				BeanUtil.map(doctorClinicProfileCollection, esLocationDocument);
 				BeanUtil.map(locationCollection, esLocationDocument);
 				
 				if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
@@ -797,9 +790,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		    }
 		    if (userCollection != null)BeanUtil.map(userCollection, doctorDocument);
 		    if (doctorCollection != null)BeanUtil.map(doctorCollection, doctorDocument);
-		    if (clinicProfileCollection != null){
-		    	BeanUtil.map(clinicProfileCollection, doctorDocument);
-		    }
+		    if (doctorClinicProfileCollection != null)BeanUtil.map(doctorClinicProfileCollection, doctorDocument);
+
 		    if (locationCollection != null)
 			doctorDocument.setLocationId(locationCollection.getId().toString());
 		    if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {

@@ -12,20 +12,17 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -38,10 +35,10 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.TokenRepository;
-import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
@@ -52,8 +49,6 @@ import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.GenerateUniqueUserNameService;
-import com.dpdocter.services.MailBodyGenerator;
-import com.dpdocter.services.MailService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -74,16 +69,10 @@ public class SignUpServiceImpl implements SignUpService {
     private UserRoleRepository userRoleRepository;
 
     @Autowired
-    private UserLocationRepository userLocationRepository;
+    private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
     @Autowired
     private PatientRepository patientRepository;
-
-    @Autowired
-    private MailService mailService;
-
-    @Autowired
-    private MailBodyGenerator mailBodyGenerator;
 
     @Autowired
     private FileManager fileManager;
@@ -107,9 +96,6 @@ public class SignUpServiceImpl implements SignUpService {
     
     @Autowired
     private GenerateUniqueUserNameService generateUniqueUserNameService;
-
-    @Autowired
-    private MongoTemplate mongoTemplate;
 
     @Autowired
     private ESRegistrationService esRegistrationService;
@@ -147,17 +133,17 @@ public class SignUpServiceImpl implements SignUpService {
 	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
 	    	return "We were unable to verify your Healthcoco+ account."
 	    			+ " Please contact support@healthcoco.com for completing your account verification.";
-		UserLocationCollection userLocationCollection = userLocationRepository.findOne(tokenCollection.getResourceId());
-		if (userLocationCollection == null) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findOne(tokenCollection.getResourceId());
+		if (doctorClinicProfileRepository == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
 		}
-		UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
+		UserCollection userCollection = userRepository.findOne(doctorClinicProfileCollection.getDoctorId());
 		userCollection.setIsVerified(true);
 		userCollection.setUserState(UserState.NOTACTIVATED);
 		userRepository.save(userCollection);
 
-		userLocationCollection.setIsVerified(true);
-		userLocationRepository.save(userLocationCollection);
+		doctorClinicProfileCollection.setIsVerified(true);
+		doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 		tokenCollection.setIsUsed(true);
 		tokenRepository.save(tokenCollection);
 		return "You have successfully verified your email address."
@@ -309,9 +295,8 @@ public class SignUpServiceImpl implements SignUpService {
 		logger.warn("User not found");
 		throw new BusinessException(ServiceError.NotFound, "User not found");
 	    } else {
-	    	ObjectId doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
-			if(!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))doctorObjectId = new ObjectId(request.getDoctorId());
-	    	if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
+	    	ObjectId locationObjectId = null , hospitalObjectId= null;
+			if(!DPDoctorUtils.anyStringEmpty(request.getLocationId()))locationObjectId = new ObjectId(request.getLocationId());
 	    	if(!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))hospitalObjectId = new ObjectId(request.getHospitalId());
 	    	
 	    PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userCollection.getId(), locationObjectId, hospitalObjectId);	
@@ -622,44 +607,4 @@ public class SignUpServiceImpl implements SignUpService {
 
     }
 
-	@Override
-	@Transactional
-	public Boolean resendVerificationEmail(String emailaddress) {
-		UserCollection userCollection = null;
-		Boolean response = false;
-		try {
-			Criteria criteria = new Criteria("userName").regex(emailaddress, "i");
-			Query query = new Query(); query.addCriteria(criteria);
-			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-			if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
-
-			if (userCollection != null) {
-				List<UserLocationCollection> userLocationCollections = userLocationRepository.findByUserId(userCollection.getId());
-				UserLocationCollection userLocationCollection = null;
-				if(userLocationCollections != null && !userLocationCollections.isEmpty()){
-					userLocationCollection = userLocationCollections.get(0);
-				    // save token
-				    TokenCollection tokenCollection = new TokenCollection();
-				    tokenCollection.setResourceId(userLocationCollection.getId());
-				    tokenCollection.setCreatedTime(new Date());
-				    tokenCollection = tokenRepository.save(tokenCollection);
-
-				    // send activation email
-				    String body = mailBodyGenerator.generateActivationEmailBody((userCollection.getTitle() != null?userCollection.getTitle()+" ":"")+userCollection.getFirstName(), tokenCollection.getId(), "mailTemplate.vm", null, null);
-				    mailService.sendEmail(userCollection.getEmailAddress(), signupSubject, body, null);
-					
-				    response = true;
-				}
-	
-			} else {
-			logger.error("User Not Found For The Given User Id");
-			throw new BusinessException(ServiceError.NotFound, "User Not Found For The Given User Id");
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error While sending verification email");
-		    throw new BusinessException(ServiceError.Unknown, "Error While sending verification email");
-		}
-		return response;
-	}
 }

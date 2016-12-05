@@ -35,8 +35,6 @@ public interface PathProxy {
 
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
 
-		public static final String RESEND_VERIFICATION_EMAIL_TO_DOCTOR = "/resendVerificationEmail/{emailaddress}";
-
 	}
 
 	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
@@ -156,7 +154,11 @@ public interface PathProxy {
 		public static final String REGISTER_PATIENTS_IN_BULK = "/registerPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL = "/updatePIDOnClinicLevel";
+		
+		public static final String UPDATE_DOCTOR_CLINIC_PROFILE = "/updateDoctorClinicProfile";
+		
 		public static final String ADD_SUGGESTION = "/suggestion/add";
+		
 		public static final String GET_SUGGESTION = "/getSuggestion/{userId}";
 	}
 

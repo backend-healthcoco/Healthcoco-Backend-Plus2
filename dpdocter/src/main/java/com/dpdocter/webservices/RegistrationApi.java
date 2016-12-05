@@ -874,6 +874,16 @@ public class RegistrationApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_DOCTOR_CLINIC_PROFILE)
+	@GET
+	public Response<Boolean> updateDoctorClinicProfile() {
+
+		Boolean changePatientNumberResponse = registrationService.updateDoctorClinicProfile();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(changePatientNumberResponse);
+		return response;
+	}
+
 	@Path(value = PathProxy.RegistrationUrls.ADD_SUGGESTION)
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_SUGGESTION, notes = PathProxy.RegistrationUrls.ADD_SUGGESTION)

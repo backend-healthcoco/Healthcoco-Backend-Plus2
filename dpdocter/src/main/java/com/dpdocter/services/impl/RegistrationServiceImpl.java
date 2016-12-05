@@ -1732,32 +1732,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 			// save user location.
-			UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(),
-					new ObjectId(request.getLocationId()));
-			userLocationCollection.setCreatedTime(new Date());
-			userLocationCollection.setIsActivate(request.getIsActivate());
-			userLocationRepository.save(userLocationCollection);
+			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
+			doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
+			doctorClinicProfileCollection.setCreatedTime(new Date());
+			doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
 			// save token
 			TokenCollection tokenCollection = new TokenCollection();
-			tokenCollection.setResourceId(userLocationCollection.getId());
+			tokenCollection.setResourceId(doctorClinicProfileCollection.getId());
 			tokenCollection.setCreatedTime(new Date());
 			tokenCollection = tokenRepository.save(tokenCollection);
-
-			// send activation email
-			// String body =
-			// mailBodyGenerator.generateActivationEmailBody(userCollection.getFirstName(),
-			// tokenCollection.getId(), "mailTemplate.vm");
-			// mailService.sendEmail(userCollection.getEmailAddress(),
-			// signupSubject, body, null);
-			//
-			// body =
-			// mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getUserName(),
-			// userCollection.getFirstName(),
-			// userCollection.getMiddleName(), userCollection.getLastName(),
-			// userCollection.getId(), uriInfo);
-			// mailService.sendEmail(userCollection.getEmailAddress(),
-			// forgotUsernamePasswordSub, body, null);
 
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			RoleCollection adminRoleCollection = roleRepository.findByRole(RoleEnum.LOCATION_ADMIN.getRole(),
@@ -1792,29 +1778,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			response.setHospitalId(request.getHospitalId());
 			response.setLocationId(request.getLocationId());
 			response.setUserId(userCollection.getId().toString());
-
-			// if (userCollection.getMobileNumber() != null) {
-			// SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-			// smsTrackDetail.setDoctorId(userCollection.getId());
-			// smsTrackDetail.setHospitalId(request.getHospitalId());
-			// smsTrackDetail.setLocationId(request.getLocationId());
-			//
-			// SMSDetail smsDetail = new SMSDetail();
-			// smsDetail.setPatientId(userCollection.getId());
-			//
-			// SMS sms = new SMS();
-			// sms.setSmsText("OTP Verification");
-			//
-			// SMSAddress smsAddress = new SMSAddress();
-			// smsAddress.setRecipient(userCollection.getMobileNumber());
-			// sms.setSmsAddress(smsAddress);
-			//
-			// smsDetail.setSms(sms);
-			// List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-			// smsDetails.add(smsDetail);
-			// smsTrackDetail.setSmsDetails(smsDetails);
-			// sMSServices.sendSMS(smsTrackDetail, false);
-			// }
 
 			if (doctorRole != null) {
 				List<Role> roles = new ArrayList<Role>();
@@ -1856,7 +1819,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			UserCollection userCollection = userRepository.findByUserNameAndEmailAddress(request.getEmailAddress(),
 					request.getEmailAddress());
-			Integer count = userLocationRepository.countByUserIdAndLocationId(userCollection.getId(),
+			Integer count = doctorClinicProfileRepository.countByUserIdAndLocationId(userCollection.getId(),
 					new ObjectId(request.getLocationId()));
 			if (count != null && count > 0) {
 				logger.warn("User is already added in clinic");
@@ -1874,11 +1837,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 				doctorCollection = doctorRepository.save(doctorCollection);
 			}
 
-			UserLocationCollection userLocationCollection = new UserLocationCollection(userCollection.getId(),
-					new ObjectId(request.getLocationId()));
-			userLocationCollection.setIsActivate(request.getIsActivate());
-			userLocationCollection.setCreatedTime(new Date());
-			userLocationRepository.save(userLocationCollection);
+			DoctorClinicProfileCollection doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+			doctorClinicProfileCollection.setDoctorId(userCollection.getId());
+			doctorClinicProfileCollection.setLocationId(new ObjectId(request.getLocationId()));
+			doctorClinicProfileCollection.setCreatedTime(new Date());
+			doctorClinicProfileCollection.setIsActivate(request.getIsActivate());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 
 			List<RoleCollection> roleCollections = roleRepository.findByLocationIdAndHospitalId(
 					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
@@ -2236,33 +2200,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String updatedTime, String role, Boolean active) {
 		List<ClinicDoctorResponse> response = null;
 		try {
-			List<UserLocationCollection> userLocationCollections = null;
-			if(active){
-				if (size > 0)
-					userLocationCollections = userLocationRepository.findByLocationIdAndIsActive(new ObjectId(locationId),
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					userLocationCollections = userLocationRepository.findByLocationIdAndIsActive(new ObjectId(locationId),
-							new Sort(Sort.Direction.DESC, "createdTime"));
-			}else{
-				if (size > 0)
-					userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId),
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else
-					userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId),
-							new Sort(Sort.Direction.DESC, "createdTime"));
-			}
-			if (userLocationCollections != null) {
+			List<DoctorClinicProfileCollection> doctorClinicProfileCollections = null;
+			if (size > 0)
+				doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(locationId),
+						new PageRequest(page, size, Direction.DESC, "createdTime"));
+			else
+				doctorClinicProfileCollections = doctorClinicProfileRepository.findByLocationId(new ObjectId(locationId),
+						new Sort(Sort.Direction.DESC, "createdTime"));
+
+			if (doctorClinicProfileCollections != null) {
 				response = new ArrayList<ClinicDoctorResponse>();
-				for (UserLocationCollection userLocationCollection : userLocationCollections) {
+				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
 					ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
-					UserCollection userCollection = userRepository.findOne(userLocationCollection.getUserId());
+					UserCollection userCollection = userRepository.findOne(doctorClinicProfileCollection.getDoctorId());
 					if (userCollection != null) {
 						DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
 						BeanUtil.map(userCollection, clinicDoctorResponse);
 						clinicDoctorResponse.setUserId(userCollection.getId().toString());
-						clinicDoctorResponse.setIsActivate(userLocationCollection.getIsActivate());
-						clinicDoctorResponse.setDiscarded(userLocationCollection.getDiscarded());
+						clinicDoctorResponse.setIsActivate(doctorClinicProfileCollection.getIsActivate());
+						clinicDoctorResponse.setDiscarded(doctorClinicProfileCollection.getDiscarded());
 						if (doctorCollection != null)
 							clinicDoctorResponse.setRegisterNumber(doctorCollection.getRegisterNumber());
 						List<UserRoleCollection> userRoleCollection = userRoleRepository
@@ -2364,11 +2320,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Transactional
 	public void activateDeactivateUser(String userId, String locationId, Boolean isActivate) {
 		try {
-			UserLocationCollection userLocationCollection = userLocationRepository
-					.findByUserIdAndLocationId(new ObjectId(userId), new ObjectId(locationId));
-			if (userLocationCollection != null) {
-				userLocationCollection.setIsActivate(isActivate);
-				userLocationRepository.save(userLocationCollection);
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(userId), new ObjectId(locationId));
+			if (doctorClinicProfileCollection != null) {
+				doctorClinicProfileCollection.setIsActivate(isActivate);
+				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2460,12 +2415,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 				} else {
 					feedbackCollection.setIsVisible(true);
 				}
-				UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 						feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
-				if (userLocationCollection != null) {
-					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-							.findByLocationId(userLocationCollection.getId());
-					if (doctorClinicProfileCollection != null) {
+				if (doctorClinicProfileCollection != null) {
 						if (feedbackCollection.getIsRecommended())
 							doctorClinicProfileCollection
 									.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
@@ -2474,7 +2426,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 									.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() - 1);
 						doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 					}
-				}
+				
 				UserCollection patient = null;
 				PatientCollection patientCollection = new PatientCollection();
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getUserId()))
@@ -2594,12 +2546,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				feedbackCollection.setUpdatedTime(new Date());
 				feedbackCollection.setIsVisible(isVisible);
 				feedbackCollection = feedbackRepository.save(feedbackCollection);
-				UserLocationCollection userLocationCollection = userLocationRepository.findByUserIdAndLocationId(
-						feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
-				if (userLocationCollection != null) {
-					DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-							.findByLocationId(userLocationCollection.getId());
-					if (doctorClinicProfileCollection != null) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
+				if (doctorClinicProfileCollection != null) {
 						if (isVisible)
 							doctorClinicProfileCollection
 									.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews() + 1);
@@ -2608,8 +2556,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 									.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews() - 1);
 						doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 					}
-
-				}
 				BeanUtil.map(feedbackCollection, response);
 			}
 		} catch (Exception e) {
@@ -2895,13 +2841,44 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public Boolean updatePIDOnClinicLevel() {
 		Boolean response = false;
 		try{
-			List<DoctorClinicProfileCollection> clinicProfileCollections = doctorClinicProfileRepository.findAll();
-			for(DoctorClinicProfileCollection clinicProfileCollection : clinicProfileCollections){
-				UserLocationCollection userLocationCollection = userLocationRepository.findOne(clinicProfileCollection.getUserLocationId());
-				LocationCollection locationCollection = locationRepository.findOne(userLocationCollection.getLocationId());
-				locationCollection.setPatientCounter(clinicProfileCollection.getPatientCounter());
-				locationCollection.setPatientInitial(clinicProfileCollection.getPatientInitial());
-				locationRepository.save(locationCollection);
+			List<LocationCollection> locationCollections  = locationRepository.findAll();
+			for(LocationCollection locationCollection : locationCollections){
+			    RoleCollection roleCollection = roleRepository.findLocationAdmin(locationCollection.getId(), RoleEnum.LOCATION_ADMIN.getRole());
+			    List<UserRoleCollection> userRoleCollection = userRoleRepository.findByRoleId(roleCollection.getId());
+			    if(userRoleCollection !=null && !userRoleCollection.isEmpty()){
+			    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(userRoleCollection.get(0).getUserId(), locationCollection.getId());
+			    	locationCollection.setPatientCounter(clinicProfileCollection.getPatientCounter());
+					locationCollection.setPatientInitial(clinicProfileCollection.getPatientInitial());
+					locationRepository.save(locationCollection);
+					response = true;
+			    }
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean updateDoctorClinicProfile() {
+		Boolean response = false;
+		try{
+			List<UserLocationCollection> userLocationCollections  = userLocationRepository.findAll();
+			for(UserLocationCollection userLocationCollection : userLocationCollections){
+			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByUserLocationId(userLocationCollection.getId());
+			    if(doctorClinicProfileCollection == null){
+			    	doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+			    	doctorClinicProfileCollection.setCreatedTime(new Date());
+			    }
+			    doctorClinicProfileCollection.setUpdatedTime(new Date());
+			    doctorClinicProfileCollection.setDoctorId(userLocationCollection.getUserId());
+			    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
+			    doctorClinicProfileCollection.setDiscarded(userLocationCollection.getDiscarded());
+			    doctorClinicProfileCollection.setIsActivate(userLocationCollection.getIsActivate());
+			    doctorClinicProfileCollection.setIsVerified(userLocationCollection.getIsVerified());
+			    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				response = true;
 			}
 		}catch (Exception e) {

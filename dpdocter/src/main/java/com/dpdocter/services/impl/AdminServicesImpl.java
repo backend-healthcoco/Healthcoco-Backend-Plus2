@@ -5,20 +5,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -27,17 +20,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.ContactUs;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GeocodedLocation;
-import com.dpdocter.beans.Hospital;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.beans.Speciality;
-import com.dpdocter.beans.User;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ContactUsCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -45,16 +33,11 @@ import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
-import com.dpdocter.collections.HospitalCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.SpecialityCollection;
-import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserLocationCollection;
-import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
@@ -70,8 +53,6 @@ import com.dpdocter.elasticsearch.repository.ESMedicalCouncilRepository;
 import com.dpdocter.elasticsearch.repository.ESProfessionalMembershipRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.enums.AppType;
-import com.dpdocter.enums.RoleEnum;
-import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -87,11 +68,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MedicalCouncilRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.ResumeRepository;
-import com.dpdocter.repository.RoleRepository;
-import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.repository.UserRoleRepository;
-import com.dpdocter.response.DoctorResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.FileManager;
@@ -99,7 +76,6 @@ import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -172,15 +148,6 @@ public class AdminServicesImpl implements AdminServices {
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private UserRoleRepository userRoleRepository;
-
-    @Autowired
-    private UserLocationRepository userLocationRepository;
-
-    @Autowired
     private ProfessionalMembershipRepository professionalMembershipRepository;
 
     @Autowired
@@ -212,124 +179,6 @@ public class AdminServicesImpl implements AdminServices {
    
     @Value(value = "${mail.get.app.link.subject}")
     private String getAppLinkSubject;
-
-	@Override
-	@Transactional
-	public List<User> getInactiveUsers(int page, int size) {
-		List<User> response = null;
-		try{
-			List<UserCollection> userCollections = null;
-			if(size > 0)userCollections = userRepository.findInactiveDoctors(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else userCollections = userRepository.findInactiveDoctors(true, new Sort(Direction.DESC, "createdTime"));
-			if(userCollections != null){
-				response = new ArrayList<User>();
-				BeanUtil.map(userCollections, response);
-			}
-		}catch(Exception e){
-			logger.error("Error while getting inactive users "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive users "+ e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public List<Hospital> getHospitals(int page, int size) {
-		List<Hospital> response = null;
-		try{
-			List<HospitalCollection> hospitalCollections = null;
-			if(size > 0)hospitalCollections = hospitalRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
-			else hospitalCollections = hospitalRepository.findAll(new Sort(Direction.DESC, "createdTime"));
-			if(hospitalCollections != null){
-				response = new ArrayList<Hospital>();
-				BeanUtil.map(hospitalCollections, response);
-			}
-		}catch(Exception e){
-			logger.error("Error while getting hospitals "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive hospitals "+ e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, String searchTerm) {
-		List<Location> response = null;
-		try{
-			List<LocationCollection> locationCollections = null;
-			ObjectId hospitalObjectId= null;
-			if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
-	    	
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				if(DPDoctorUtils.anyStringEmpty(hospitalObjectId)){
-					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findAll(new PageRequest(page, size, Direction.DESC, "updatedTime")).getContent();
-						else locationCollections = locationRepository.findAll(new Sort(Direction.DESC, "updatedTime"));
-					}else{	
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
-					}
-				}else{
-					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByHospitalId(hospitalObjectId, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findByHospitalId(hospitalObjectId, new Sort(Direction.DESC, "updatedTime"));
-					}else{	
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, new Sort(Direction.DESC, "updatedTime"));
-					}
-				}
-			}else{
-				if(DPDoctorUtils.anyStringEmpty(hospitalObjectId)){
-					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findByNameOrEmailAddress(searchTerm, new Sort(Direction.DESC, "updatedTime"));
-					}else{
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(isClinic, isLab, searchTerm, new Sort(Direction.DESC, "updatedTime"));
-					}				
-				}else{
-					if(!isClinic && !isLab){
-						if(size > 0)locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalObjectId, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findByNameOrEmailAddressAndHospitalId(hospitalObjectId, searchTerm, new Sort(Direction.DESC, "updatedTime"));
-					}else{
-						if(size > 0)locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, searchTerm, new PageRequest(page, size, Direction.DESC, "updatedTime"));
-						else locationCollections = locationRepository.findClinicsAndLabs(hospitalObjectId, isClinic, isLab, searchTerm, new Sort(Direction.DESC, "updatedTime"));	
-					}
-				}
-			}
-			
-			if(locationCollections != null){
-				response = new ArrayList<Location>();
-				for(LocationCollection locationCollection : locationCollections){
-						if (locationCollection.getImages() != null && !locationCollection.getImages().isEmpty()) {
-							for (ClinicImage clinicImage : locationCollection.getImages()) {
-							    if (clinicImage.getImageUrl() != null) {
-								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-							    }
-							    if (clinicImage.getThumbnailUrl() != null) {
-								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-							    }
-							}
-						    }
-						    if (locationCollection.getLogoUrl() != null)
-						    	locationCollection.setLogoUrl(getFinalImageURL(locationCollection.getLogoUrl()));
-						    if (locationCollection.getLogoThumbnailUrl() != null)
-						    	locationCollection.setLogoThumbnailUrl(getFinalImageURL(locationCollection.getLogoThumbnailUrl()));
-						    Location location = new Location();
-						    BeanUtil.map(locationCollection, location);
-						    response.add(location);
-				    }
-				}
-		}catch(Exception e){
-			logger.error("Error while getting clinics "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
-		}
-		return response;
-	}
-
 	@Override
 	@Transactional
 	public Resume addResumes(Resume request) {
@@ -355,34 +204,6 @@ public class AdminServicesImpl implements AdminServices {
 			logger.error("Error while adding resume "+ e.getMessage());
 			e.printStackTrace();
 		    throw new BusinessException(ServiceError.Unknown,"Error while adding resume "+ e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public List<Resume> getResumes(int page, int size, String type) {
-		List<Resume> response = null;
-		try{
-			List<ResumeCollection> resumeCollections = null;
-			if(DPDoctorUtils.anyStringEmpty(type)){
-				if(size > 0)resumeCollections = resumeRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
-				else resumeCollections = resumeRepository.findAll(new Sort(Direction.DESC, "createdTime"));
-			}else{
-				if(size > 0)resumeCollections = resumeRepository.find(type, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else resumeCollections = resumeRepository.find(type, new Sort(Direction.DESC, "createdTime"));
-			}
-			if(resumeCollections != null){
-				response = new ArrayList<Resume>();
-				for(ResumeCollection resumeCollection : resumeCollections){
-					resumeCollection.setPath(getFinalImageURL(resumeCollection.getPath()));
-				}
-				BeanUtil.map(resumeCollections, response);
-			}
-		}catch(Exception e){
-			logger.error("Error while getting clinics "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
 		}
 		return response;
 	}
@@ -611,114 +432,6 @@ public class AdminServicesImpl implements AdminServices {
 		    }
 		}
 	}
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-		    return imagePath + imageURL;
-		} else
-		    return null;
-	    }
-
-	@Override
-	public List<DoctorResponse> getDoctors(int page, int size, String locationId, String state, String searchTerm) {
-		List<DoctorResponse> response = null;
-		try{
-			 Aggregation aggregation = null;
-			 
-			 Criteria criteria = null;
-			 if(!DPDoctorUtils.anyStringEmpty(state)){
-				 criteria = new Criteria("userState").is(state);
-			 }else{
-				 criteria = new Criteria("userState").ne(UserState.ADMIN);
-			 }
-			 
-			 if(!DPDoctorUtils.anyStringEmpty(locationId)){
-				 List<UserLocationCollection> userLocationCollections = userLocationRepository.findByLocationId(new ObjectId(locationId));
-				 @SuppressWarnings("unchecked")
-				 Collection<ObjectId> userIds = CollectionUtils.collect(userLocationCollections, new BeanToPropertyValueTransformer("userId"));
-				 criteria.and("id").in(userIds);
-			 }
-			 
-			 if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-					 criteria = new Criteria().orOperator(new Criteria("emailAddress").regex("^"+searchTerm,"i").andOperator(criteria), new Criteria("firstName").regex("^"+searchTerm).andOperator(criteria));
-			 }
-	
-			 if(size > 0){
-					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
-							 new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-				              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))),Aggregation.skip((page) * size), Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
-			 }else{
-					 aggregation = Aggregation.newAggregation(Aggregation.match(criteria), new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",new BasicDBObject()
-			              .append("if", new BasicDBObject("$eq", Arrays.asList("$emailAddress", "$userName"))).append("then", "$$KEEP").append("else", "$$PRUNE")))), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
-			 }
-		
-	    AggregationResults<UserCollection> results = mongoTemplate.aggregate(aggregation, UserCollection.class, UserCollection.class);
-	    List<UserCollection> userCollections = results.getMappedResults();
-	    if(userCollections != null && !userCollections.isEmpty()){
-	    	response = new ArrayList<DoctorResponse>();
-	    	for(UserCollection userCollection : userCollections){
-		    	DoctorResponse doctorResponse = new DoctorResponse();
-		    	BeanUtil.map(userCollection, doctorResponse);
-		    	List<UserRoleCollection> userRoleCollection = userRoleRepository.findByUserId(userCollection.getId());
-				@SuppressWarnings("unchecked")
-			    Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollection, new BeanToPropertyValueTransformer("roleId"));
-			    if(roleIds != null && !roleIds.isEmpty()){
-			    	Integer count = roleRepository.findCountByIdAndRole(roleIds, RoleEnum.LOCATION_ADMIN.getRole());
-			    	if(count != null && count > 0)doctorResponse.setRole(RoleEnum.LOCATION_ADMIN.getRole());
-			    }
-			    response.add(doctorResponse);
-		    }
-	    }
-	    }catch(Exception e){
-			logger.error("Error while getting doctors "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting doctors "+ e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	public List<Location> getLabs(int page, int size, String hospitalId) {
-		List<Location> response = null;
-		try{
-			List<LocationCollection> locationCollections = null;
-			if(DPDoctorUtils.anyStringEmpty(hospitalId)){
-				if(size > 0)locationCollections = locationRepository.findLabs(true, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else locationCollections = locationRepository.findLabs(true, new Sort(Direction.DESC, "createdTime"));
-			}else{
-				ObjectId hospitalObjectId= null;
-				if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
-		    	
-				if(size > 0)locationCollections = locationRepository.findLabs(hospitalObjectId, true, new PageRequest(page, size, Direction.DESC, "createdTime"));
-				else locationCollections = locationRepository.findLabs(hospitalObjectId, true, new Sort(Direction.DESC, "createdTime"));
-			}
-			if(locationCollections != null){
-				response = new ArrayList<Location>();
-//				for(LocationCollection location : locationCollections){
-//						if (location.getImages() != null && !location.getImages().isEmpty()) {
-//							for (ClinicImage clinicImage : location.getImages()) {
-//							    if (clinicImage.getImageUrl() != null) {
-//								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
-//							    }
-//							    if (clinicImage.getThumbnailUrl() != null) {
-//								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
-//							    }
-//							}
-//						    }
-//						    if (location.getLogoUrl() != null)
-//						    	location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
-//						    if (location.getLogoThumbnailUrl() != null)
-//						    	location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
-//					}
-					BeanUtil.map(locationCollections, response);
-				}
-		}catch(Exception e){
-			logger.error("Error while getting clinics "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
-		}
-		return response;
-	}
-
 	@Override
 	@Transactional
 	public ContactUs addContactUs(ContactUs request) {
@@ -736,50 +449,6 @@ public class AdminServicesImpl implements AdminServices {
 			logger.error("Error while adding contact us "+ e.getMessage());
 			e.printStackTrace();
 		    throw new BusinessException(ServiceError.Unknown,"Error while adding contact us "+ e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	@Transactional
-	public List<ContactUs> getContactUs(int page, int size) {
-		List<ContactUs> response = null;
-		try{
-			List<ContactUsCollection> contactUs = null;
-			if(size > 0)contactUs = contactUsRepository.findAll(new PageRequest(page, size, Direction.DESC, "createdTime")).getContent();
-			else contactUs = contactUsRepository.findAll(new Sort(Direction.DESC, "createdTime"));
-			
-			if(contactUs != null){
-				response = new ArrayList<ContactUs>();
-				BeanUtil.map(contactUs, response);
-			}
-		}catch(Exception e){
-			logger.error("Error while getting clinics "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting inactive clinics "+ e.getMessage());
-		}
-		return response;
-	}
-
-	@Override
-	public List<Speciality> getUniqueSpecialities(String searchTerm, String updatedTime, int page, int size) {
-	   List<Speciality> response = null;
-	  try {
-			Aggregation aggregation = null;
-			
-			if(DPDoctorUtils.anyStringEmpty(searchTerm)){
-				aggregation = Aggregation.newAggregation(Aggregation.group("speciality").first("speciality").as("speciality"), Aggregation.sort(Sort.Direction.ASC, "speciality"));
-			}else{
-				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("speciality").regex("^"+searchTerm,"i")), Aggregation.group("speciality").first("speciality").as("speciality"), Aggregation.sort(Sort.Direction.ASC, "speciality"));
-			}
-			
-			AggregationResults <Speciality> groupResults = mongoTemplate.aggregate(aggregation, SpecialityCollection.class, Speciality.class);
-			response = groupResults.getMappedResults();
-			
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
