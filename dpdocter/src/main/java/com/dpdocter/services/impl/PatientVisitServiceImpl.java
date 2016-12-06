@@ -1141,6 +1141,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						? Integer.parseInt(printSettings.getContentSetup().getFontSize().replaceAll("pt", "")) : 10;
 			}
 			if (printSettings.getHeaderSetup() != null && printSettings.getHeaderSetup().getCustomHeader()) {
+				parameters.put("headerHtml", printSettings.getHeaderSetup().getHeaderHtml());
 				if (printSettings.getHeaderSetup().getTopLeftText() != null)
 					for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
 

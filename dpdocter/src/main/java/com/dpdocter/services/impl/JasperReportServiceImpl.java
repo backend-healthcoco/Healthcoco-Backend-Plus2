@@ -22,6 +22,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
+import net.sf.jasperreports.components.html.HtmlComponent;
 import net.sf.jasperreports.components.list.DesignListContents;
 import net.sf.jasperreports.components.list.StandardListComponent;
 import net.sf.jasperreports.components.table.DesignCell;
@@ -156,7 +157,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         dsr.setDataSourceExpression(expression);
         
         Boolean showTableOne = (Boolean) parameters.get("showTableOne");
-        jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne)); 
+        jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters)); 
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         
@@ -390,70 +391,87 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 	}
 
-	private JRBand createPageHeader(JRDesignDatasetRun dsr, int columnWidth, Boolean showTableOne) throws JRException {
+	private JRBand createPageHeader(JRDesignDatasetRun dsr, int columnWidth, Boolean showTableOne, Map<String, Object> parameters) throws JRException {
 		band = new JRDesignBand();
         band.setHeight(1); 
-        band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
         
-        param = new JRDesignDatasetParameter();  param.setName("logoURL");    
-        param.setExpression(new JRDesignExpression("$P{logoURL}"));
-        dsr.addParameter(param);
-        
-        param = new JRDesignDatasetParameter();  param.setName("headerLeftText");
-        param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
-        dsr.addParameter(param);
-       
-        param = new JRDesignDatasetParameter();  param.setName("headerRightText");
-        param.setExpression(new JRDesignExpression("$P{headerRightText}"));
-        dsr.addParameter(param);
-       
-        DesignCell columnHeader = new DesignCell();  
-        columnHeader.setHeight(60);
-        
-        jrDesignTextField = new JRDesignTextField();
-        expression = new JRDesignExpression();expression.setText("$P{headerLeftText}");jrDesignTextField.setExpression(expression);
-        jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth((38*columnWidth)/100);
-        jrDesignTextField.setMarkup("html");jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);jrDesignTextField.setStretchWithOverflow(true);
-        columnHeader.addElement(jrDesignTextField);
-        
-        JRDesignImage jrDesignImage = new JRDesignImage(null);
-        jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
-        jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);expression = new JRDesignExpression();expression.setText("$P{logoURL}");jrDesignImage.setExpression(expression);
-        jrDesignImage.setX(((38*columnWidth)/100)+1);jrDesignImage.setY(0);jrDesignImage.setHeight(50);jrDesignImage.setWidth(50);
-        columnHeader.addElement(jrDesignImage);     
-        
-        jrDesignTextField = new JRDesignTextField();
-        expression = new JRDesignExpression();expression.setText("$P{headerRightText}");jrDesignTextField.setExpression(expression);
-        jrDesignTextField.setX((((62*columnWidth)/100)));jrDesignTextField.setY(0);jrDesignTextField.setHeight(20); jrDesignTextField.setWidth((38*columnWidth)/100);jrDesignTextField.setMarkup("html");
-        jrDesignTextField.setStretchWithOverflow(true); jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-        columnHeader.addElement(jrDesignTextField);
-        
-//      HtmlComponent htmlComponent = new HtmlComponent();
-//      htmlComponent.setHtmlContentExpression(new JRDesignExpression("$P{headerLeftText}"));
-//      htmlComponent.setScaleType(ScaleImageEnum.FILL_FRAME);
-//      JRDesignComponentElement reportElement = new JRDesignComponentElement();  
-//      reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/htmlcomponent","hc", "html"));  
-//      reportElement.setHeight(40);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
-//      reportElement.setComponent(htmlComponent);htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
-//      band.addElement(reportElement);   
-//      band.setHeight(40);  
+        if(parameters.get("headerHtml") != null){
+        	param = new JRDesignDatasetParameter();  param.setName("headerHtml");    
+	        param.setExpression(new JRDesignExpression("$P{headerHtml}"));
+	        dsr.addParameter(param);
+	        
+          HtmlComponent htmlComponent = new HtmlComponent();
+          htmlComponent.setHtmlContentExpression(new JRDesignExpression("$P{headerHtml}"));
+          htmlComponent.setScaleType(ScaleImageEnum.FILL_FRAME);
+          JRDesignComponentElement reportElement = new JRDesignComponentElement();  
+          reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/htmlcomponent","hc", "html"));  
+          reportElement.setHeight(40);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
+          reportElement.setComponent(htmlComponent);htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
+          band.addElement(reportElement);   
+          band.setHeight(40);  
+          
+          jrDesignLine = new JRDesignLine();
+          jrDesignLine.setX(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
+          if(showTableOne)jrDesignLine.setY(0);  
+          else jrDesignLine.setY(0);
+          
+          jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
+          band.addElement(jrDesignLine);        
+          
 
-        StandardColumn column = new StandardColumn();  column.setDetailCell(columnHeader);  column.setWidth(columnWidth);
-        StandardTable table = new StandardTable();  table.addColumn(column);  table.setDatasetRun(dsr);
-        JRDesignComponentElement reportElement = new JRDesignComponentElement();  
-        reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components","jr", "table"));  
-        reportElement.setHeight(0);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
-        reportElement.setComponent(table);
-         
-        band.addElement(reportElement);  
-        
-        jrDesignLine = new JRDesignLine();
-        jrDesignLine.setX(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
-        if(showTableOne)jrDesignLine.setY(-27);  
-        else jrDesignLine.setY(0);
-        
-        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
-        band.addElement(jrDesignLine);        
+        }else{
+	        band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
+	        
+	        param = new JRDesignDatasetParameter();  param.setName("logoURL");    
+	        param.setExpression(new JRDesignExpression("$P{logoURL}"));
+	        dsr.addParameter(param);
+	        
+	        param = new JRDesignDatasetParameter();  param.setName("headerLeftText");
+	        param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
+	        dsr.addParameter(param);
+	       
+	        param = new JRDesignDatasetParameter();  param.setName("headerRightText");
+	        param.setExpression(new JRDesignExpression("$P{headerRightText}"));
+	        dsr.addParameter(param);
+	       
+	        DesignCell columnHeader = new DesignCell();  
+	        columnHeader.setHeight(60);
+	        
+	        jrDesignTextField = new JRDesignTextField();
+	        expression = new JRDesignExpression();expression.setText("$P{headerLeftText}");jrDesignTextField.setExpression(expression);
+	        jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth((38*columnWidth)/100);
+	        jrDesignTextField.setMarkup("html");jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);jrDesignTextField.setStretchWithOverflow(true);
+	        columnHeader.addElement(jrDesignTextField);
+	        
+	        JRDesignImage jrDesignImage = new JRDesignImage(null);
+	        jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
+	        jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);expression = new JRDesignExpression();expression.setText("$P{logoURL}");jrDesignImage.setExpression(expression);
+	        jrDesignImage.setX(((38*columnWidth)/100)+1);jrDesignImage.setY(0);jrDesignImage.setHeight(50);jrDesignImage.setWidth(50);
+	        columnHeader.addElement(jrDesignImage);     
+	        
+	        jrDesignTextField = new JRDesignTextField();
+	        expression = new JRDesignExpression();expression.setText("$P{headerRightText}");jrDesignTextField.setExpression(expression);
+	        jrDesignTextField.setX((((62*columnWidth)/100)));jrDesignTextField.setY(0);jrDesignTextField.setHeight(20); jrDesignTextField.setWidth((38*columnWidth)/100);jrDesignTextField.setMarkup("html");
+	        jrDesignTextField.setStretchWithOverflow(true); jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+	        columnHeader.addElement(jrDesignTextField);
+	        
+	        StandardColumn column = new StandardColumn();  column.setDetailCell(columnHeader);  column.setWidth(columnWidth);
+	        StandardTable table = new StandardTable();  table.addColumn(column);  table.setDatasetRun(dsr);
+	        JRDesignComponentElement reportElement = new JRDesignComponentElement();  
+	        reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components","jr", "table"));  
+	        reportElement.setHeight(0);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
+	        reportElement.setComponent(table);
+	         
+	        band.addElement(reportElement);  
+	        jrDesignLine = new JRDesignLine();
+	        jrDesignLine.setX(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
+	        if(showTableOne)jrDesignLine.setY(-27);  
+	        else jrDesignLine.setY(0);
+	        
+	        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
+	        band.addElement(jrDesignLine);        
+	        
+	        }
         
 		return band;
 	}
