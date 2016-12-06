@@ -57,7 +57,6 @@ public class PatientCard {
 
 	private Boolean isPatientOTPVerified = false;
 
-//	@Transient
 	private User user;
 	
 	public String getId() {

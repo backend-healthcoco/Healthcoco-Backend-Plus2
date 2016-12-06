@@ -86,6 +86,8 @@ public class Location {
 	private int noOfClinicRecommendations = 0;
 
 	private Boolean isClinicRecommended=false;
+	
+	private Hospital hospital;
 
 	public String getId() {
 		return id;
@@ -390,7 +392,15 @@ public class Location {
 	public void setIsClinicRecommended(Boolean isClinicRecommended) {
 		this.isClinicRecommended = isClinicRecommended;
 	}
-	
+
+	public Hospital getHospital() {
+		return hospital;
+	}
+
+	public void setHospital(Hospital hospital) {
+		this.hospital = hospital;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -404,9 +414,9 @@ public class Location {
 				+ ", isLab=" + isLab + ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited="
 				+ isNABLAccredited + ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", locationUId="
 				+ locationUId + ", clinicAddress=" + clinicAddress + ", isActivate=" + isActivate
-				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
-				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + ", locationType=" + locationType
-				+ "]";
+				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
+				+ ", locationType=" + locationType + ", patientInitial=" + patientInitial + ", patientCounter="
+				+ patientCounter + ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", isClinicRecommended="
+				+ isClinicRecommended + ", hospital=" + hospital + "]";
 	}
-
 }

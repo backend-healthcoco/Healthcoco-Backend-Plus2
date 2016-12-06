@@ -3742,12 +3742,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
 							esDoctorDrugDocument.setId(drugCollection.getId().toString());
 							esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-
-							esDoctorDrugDocument = new ESDoctorDrugDocument();
-							BeanUtil.map(drugCollection, esDoctorDrugDocument);
-							BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-							// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-							esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
 						}
 					}
 					response = true;
