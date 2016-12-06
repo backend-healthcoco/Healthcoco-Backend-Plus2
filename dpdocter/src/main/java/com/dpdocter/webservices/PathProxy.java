@@ -188,19 +188,19 @@ public interface PathProxy {
 		public static final String ADD_NOTES = "/notes/add";
 
 		public static final String ADD_DIAGRAM = "/diagram/add";
-		
+
 		public static final String ADD_PRESENT_COMPLAINT = "/presentComplaint/add";
-		
+
 		public static final String ADD_PROVISIONAL_DIAGNOSIS = "/provisionalDiagnosis/add";
-		
+
 		public static final String ADD_GENERAL_EXAM = "/generalExam/add";
-		
+
 		public static final String ADD_SYSTEM_EXAM = "/systemExam/add";
-		
+
 		public static final String ADD_MENSTRUAL_HISTORY = "/menstrualHistory/add";
-		
+
 		public static final String ADD_OBSTETRICS_HISTORY = "/obstetricHistory/add";
-		
+
 		public static final String ADD_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/add";
 		
 		public static final String ADD_INDICATION_OF_USG = "/indicationOfUSG/add";
@@ -228,19 +228,19 @@ public interface PathProxy {
 		public static final String DOWNLOAD_CLINICAL_NOTES = "/download/{clinicalNotesId}";
 
 		public static final String UPDATE_QUERY_CLINICAL_NOTES = "/updateQuery";
-		
+
 		public static final String DELETE_PRESENT_COMPLAINT = "/presentComplaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_PROVISIONAL_DIAGNOSIS = "/provisionalDiagnosis/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_GENERAL_EXAM = "/generalExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_SYSTEM_EXAM = "/systemExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_MENSTRUAL_HISTORY = "/menstrualHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_OBSTETRIC_HISTORY = "/obstetricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
 		public static final String DELETE_INDICATION_OF_USG = "/presentIndicationOfUSG/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
@@ -418,9 +418,9 @@ public interface PathProxy {
 		public static final String ADD_FAVOURITE_DRUG = "/favouriteDrug/add";
 
 		public static final String ADD_GENERIC_NAME_IN_DRUGS = "/addGenericNameInDrugs";
-		
+
 		public static final String DRUGS_INTERACTION = "/drugs/interaction";
-		
+
 		public static final String ADD_GENERIC_CODES_WITH_REACTION = "/genericCodes/";
 	}
 
@@ -448,9 +448,9 @@ public interface PathProxy {
 		public static final String ASSIGN_MEDICAL_HISTORY = "/assignMedicalHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String ASSIGN_FAMILY_HISTORY = "/assignFamilyHistory/{diseaseId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String ASSIGN_PERSONAL_HISTORY = "/assignPersonalHistory";
-		
+
 		public static final String ASSIGN_DRUG_ALLERGIES = "/assignDrugsAndAllergies";
 
 		public static final String HANDLE_MEDICAL_HISTORY = "/medicalHistory";
@@ -476,7 +476,7 @@ public interface PathProxy {
 		public static final String GET_PATIENT_HISTORY = "/{patientId}";
 
 		public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
-		
+
 		public static final String GET_HISTORY = "/getHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		// public static final String ADD_VISITS_TO_HISTORY =
@@ -556,7 +556,7 @@ public interface PathProxy {
 		public static final String ADD_EDIT_DOB = "addEditDOB";
 
 		public static final String SET_RECOMMENDATION = "/recommendation/{doctorId}/{locationId}/{patientId}";
-		
+
 		public static final String SET_CLINIC_RECOMMENDATION = "/recommendation/{locationId}/{patientId}";
 
 	}
@@ -633,19 +633,19 @@ public interface PathProxy {
 		public static final String SEARCH_INVESTIGATIONS = "searchInvestigations/{range}";
 
 		public static final String SEARCH_OBSERVATIONS = "searchObservations/{range}";
-		
+
 		public static final String SEARCH_PRESENT_COMPLAINT = "searchPresentComplaint/{range}";
-		
+
 		public static final String SEARCH_PRESENT_COMPLAINT_HISTORY = "searchPresentComplaintHistory/{range}";
-		
+
 		public static final String SEARCH_PROVISIONAL_DIAGNOSIS = "searchProvisionalDiagnosis/{range}";
-		
+
 		public static final String SEARCH_GENERAL_EXAM = "searchGeneralExam/{range}";
-		
+
 		public static final String SEARCH_SYSTEM_EXAM = "searchSystemExam/{range}";
-		
+
 		public static final String SEARCH_OBSTETRIC_HISTORY = "searchObstetricHistory/{range}";
-		
+
 		public static final String SEARCH_MENSTRUAL_HISTORY = "searchMenstrualHistory/{range}";
 		
 		public static final String SEARCH_INDICATION_OF_USG = "searchIndicationOfUSG/{range}";
@@ -844,6 +844,8 @@ public interface PathProxy {
 
 		public static final String SEND_APP_LINK = "/sendLink";
 
+		public static final String Add_SUBCRIPTION_DETAIL = "/addSubscriptionDetails";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
@@ -890,10 +892,10 @@ public interface PathProxy {
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
-	
+
 	public interface DynamicUIUrls {
-		public static final String GET_ALL_PERMISSIONS_FOR_DOCTOR= "/getAllPermissionsForDoctor/{doctorId}";
-		public static final String GET_PERMISSIONS_FOR_DOCTOR= "/getPermissionsForDoctor/{doctorId}";
+		public static final String GET_ALL_PERMISSIONS_FOR_DOCTOR = "/getAllPermissionsForDoctor/{doctorId}";
+		public static final String GET_PERMISSIONS_FOR_DOCTOR = "/getPermissionsForDoctor/{doctorId}";
 		public static final String POST_PERMISSIONS = "/postPermissions";
 	}
 

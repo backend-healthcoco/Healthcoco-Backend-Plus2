@@ -75,7 +75,7 @@ public class BlogServicesImpl implements BlogService {
 				criteria = criteria.and(category);
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
-						Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
+						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -150,19 +150,18 @@ public class BlogServicesImpl implements BlogService {
 		Blog response = null;
 		try {
 			BlogLikesCollection blogLikesCollection = null;
-			UserCollection 	userCollection = userRepository.findOne(new ObjectId(userId));
+			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
 
 			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
 			if (userCollection != null && blogCollection != null) {
 				blogLikesCollection = blogLikesRepository.findbyBlogIdAndUserId(new ObjectId(blogId),
 						new ObjectId(userId));
 				if (blogLikesCollection != null) {
-					if (!blogLikesCollection.getDiscarded()){
-						blogCollection.setNoOfLikes(blogCollection.getNoOfLikes()- 1);
-					blogLikesCollection.setDiscarded(true);
-					}
-					else{
-						blogCollection.setNoOfLikes(blogCollection.getNoOfLikes() +1);
+					if (!blogLikesCollection.getDiscarded()) {
+						blogCollection.setNoOfLikes(blogCollection.getNoOfLikes() - 1);
+						blogLikesCollection.setDiscarded(true);
+					} else {
+						blogCollection.setNoOfLikes(blogCollection.getNoOfLikes() + 1);
 						blogLikesCollection.setDiscarded(false);
 					}
 

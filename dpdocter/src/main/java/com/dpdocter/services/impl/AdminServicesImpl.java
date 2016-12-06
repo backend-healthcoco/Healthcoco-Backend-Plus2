@@ -11,12 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +20,6 @@ import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
-import com.dpdocter.beans.Speciality;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ContactUsCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -37,7 +31,6 @@ import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.ResumeCollection;
 import com.dpdocter.collections.SMSTrackDetail;
-import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
@@ -83,131 +76,131 @@ import common.util.web.DPDoctorUtils;
 public class AdminServicesImpl implements AdminServices {
 
 	private static Logger logger = Logger.getLogger(AdminServicesImpl.class.getName());
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	HospitalRepository hospitalRepository;
-	
+
 	@Autowired
 	LocationRepository locationRepository;
-	
+
 	@Autowired
 	ResumeRepository resumeRepository;
-	
+
 	@Autowired
 	ContactUsRepository contactUsRepository;
-	
+
 	@Autowired
-    private FileManager fileManager;
+	private FileManager fileManager;
 
-    @Autowired
-    private CityRepository cityRepository;
+	@Autowired
+	private CityRepository cityRepository;
 
-    @Autowired
-    private LocationServices locationServices;
+	@Autowired
+	private LocationServices locationServices;
 
-    @Autowired
-    private ESCityService esCityService;
+	@Autowired
+	private ESCityService esCityService;
 
-    @Autowired
-    private MailService mailService;
+	@Autowired
+	private MailService mailService;
 
-    @Autowired
-    private MailBodyGenerator mailBodyGenerator;
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
 
-    @Autowired
-    private EducationInstituteRepository educationInstituteRepository;
-    
-    @Autowired
-    private EducationQualificationRepository educationQualificationRepository;
+	@Autowired
+	private EducationInstituteRepository educationInstituteRepository;
 
-    @Autowired
-    private ESEducationInstituteRepository esEducationInstituteRepository;
+	@Autowired
+	private EducationQualificationRepository educationQualificationRepository;
 
-    @Autowired
-    private ESEducationQualificationRepository esEducationQualificationRepository;
+	@Autowired
+	private ESEducationInstituteRepository esEducationInstituteRepository;
 
-    @Autowired
-    private DiagnosticTestRepository diagnosticTestRepository;
+	@Autowired
+	private ESEducationQualificationRepository esEducationQualificationRepository;
 
-    @Autowired
-    private ESDiagnosticTestRepository esDiagnosticTestRepository;
+	@Autowired
+	private DiagnosticTestRepository diagnosticTestRepository;
 
-    @Autowired
-    private ESDrugRepository esDrugRepository;
+	@Autowired
+	private ESDiagnosticTestRepository esDiagnosticTestRepository;
 
-    @Autowired
-    private DrugRepository drugRepository;
+	@Autowired
+	private ESDrugRepository esDrugRepository;
 
-    @Autowired
-    private DrugTypeRepository drugTypeRepository;
+	@Autowired
+	private DrugRepository drugRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+	@Autowired
+	private DrugTypeRepository drugTypeRepository;
 
-    @Autowired
-    private ProfessionalMembershipRepository professionalMembershipRepository;
+	@Autowired
+	private ProfessionalMembershipRepository professionalMembershipRepository;
 
-    @Autowired
-    private ESProfessionalMembershipRepository esProfessionalMembershipRepository;
+	@Autowired
+	private ESProfessionalMembershipRepository esProfessionalMembershipRepository;
 
-    @Autowired
-    private MedicalCouncilRepository medicalCouncilRepository;
+	@Autowired
+	private MedicalCouncilRepository medicalCouncilRepository;
 
-    @Autowired
-    private ESMedicalCouncilRepository esMedicalCouncilRepository;
+	@Autowired
+	private ESMedicalCouncilRepository esMedicalCouncilRepository;
 
-    @Autowired
-    private SMSServices sMSServices;
+	@Autowired
+	private SMSServices sMSServices;
 
-    @Value(value = "${image.path}")
-    private String imagePath;
+	@Value(value = "${image.path}")
+	private String imagePath;
 
-    @Value(value = "${app.link.message}")
-    private String appLinkMessage;
-   
-    @Value(value = "${patient.app.bit.link}")
-    private String patientAppBitLink;
-   
-    @Value(value = "${doctor.app.bit.link}")
-    private String doctorAppBitLink;
-   
-    @Value(value = "${ipad.app.bit.link}")
-    private String ipadAppBitLink;
-   
-    @Value(value = "${mail.get.app.link.subject}")
-    private String getAppLinkSubject;
+	@Value(value = "${app.link.message}")
+	private String appLinkMessage;
+
+	@Value(value = "${patient.app.bit.link}")
+	private String patientAppBitLink;
+
+	@Value(value = "${doctor.app.bit.link}")
+	private String doctorAppBitLink;
+
+	@Value(value = "${ipad.app.bit.link}")
+	private String ipadAppBitLink;
+
+	@Value(value = "${mail.get.app.link.subject}")
+	private String getAppLinkSubject;
+
 	@Override
 	@Transactional
 	public Resume addResumes(Resume request) {
 		Resume response = null;
-		try{
+		try {
 			ResumeCollection resumeCollection = new ResumeCollection();
 			BeanUtil.map(request, resumeCollection);
 			resumeCollection.setCreatedTime(new Date());
 			if (request.getFile() != null) {
 				request.getFile().setFileName(request.getFile().getFileName() + (new Date()).getTime());
 				String path = "resumes" + File.separator + request.getType();
-				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFile(), path, false);
+				ImageURLResponse imageURLResponse = fileManager.saveImageAndReturnImageUrl(request.getFile(), path,
+						false);
 				resumeCollection.setPath(imageURLResponse.getImageUrl());
-			    }
+			}
 			resumeCollection = resumeRepository.save(resumeCollection);
-			if(resumeCollection != null){
+			if (resumeCollection != null) {
 				response = new Resume();
 				BeanUtil.map(resumeCollection, response);
 			}
-			String body = mailBodyGenerator.generateEmailBody(resumeCollection.getName(), resumeCollection.getType(), "applyForPostTemplate.vm");
-			 mailService.sendEmail(resumeCollection.getEmailAddress(), "Your application has been received", body, null);
-		}catch(Exception e){
-			logger.error("Error while adding resume "+ e.getMessage());
+			String body = mailBodyGenerator.generateEmailBody(resumeCollection.getName(), resumeCollection.getType(),
+					"applyForPostTemplate.vm");
+			mailService.sendEmail(resumeCollection.getEmailAddress(), "Your application has been received", body, null);
+		} catch (Exception e) {
+			logger.error("Error while adding resume " + e.getMessage());
 			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while adding resume "+ e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while adding resume " + e.getMessage());
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public void importCity() {
@@ -218,35 +211,34 @@ public class AdminServicesImpl implements AdminServices {
 
 		try {
 			br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			CityCollection cityCollection = new CityCollection();
-			cityCollection.setCity(obj[0]);
-			cityCollection.setState(obj[1]);
-			cityCollection.setCountry("India");
-			List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(cityCollection.getCity() + " "
-				    + cityCollection.getState() + " "+cityCollection.getCountry());
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				CityCollection cityCollection = new CityCollection();
+				cityCollection.setCity(obj[0]);
+				cityCollection.setState(obj[1]);
+				cityCollection.setCountry("India");
+				List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+						cityCollection.getCity() + " " + cityCollection.getState() + " " + cityCollection.getCountry());
 
-			    if (geocodedLocations != null && !geocodedLocations.isEmpty())
-				BeanUtil.map(geocodedLocations.get(0), cityCollection);
+				if (geocodedLocations != null && !geocodedLocations.isEmpty())
+					BeanUtil.map(geocodedLocations.get(0), cityCollection);
 
-			    cityCollection = cityRepository.save(cityCollection);
-			    ESCityDocument esCityDocument = new ESCityDocument();
+				cityCollection = cityRepository.save(cityCollection);
+				ESCityDocument esCityDocument = new ESCityDocument();
 				BeanUtil.map(cityCollection, esCityDocument);
 				esCityDocument.setGeoPoint(new GeoPoint(cityCollection.getLatitude(), cityCollection.getLongitude()));
 				esCityService.addCities(esCityDocument);
-		    }
-		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
 			}
-		    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -259,67 +251,66 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = ",";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			String drugType = obj[2];
-			 DrugTypeCollection drugTypeCollection = drugTypeRepository.findByType(drugType);
-			 
-			 DrugType type = null;
-			 if (drugTypeCollection != null) {
-			 type = new DrugType();
-			 drugTypeCollection.setType(drugType);
-			 BeanUtil.map(drugTypeCollection, type);
-			
-			 }
-			
-			 DrugCollection drugCollection = new DrugCollection();
-			 drugCollection.setCreatedBy("ADMIN");
-			 drugCollection.setCreatedTime(new Date());
-			 drugCollection.setUpdatedTime(new Date());
-			 drugCollection.setDiscarded(false);
-			 drugCollection.setDrugName(obj[1]);
-			 drugCollection.setDrugType(type);
-			 drugCollection.setDoctorId(null);
-			 drugCollection.setHospitalId(null);
-			 drugCollection.setLocationId(null);
-			 drugCollection.setDrugCode(obj[0]);
-			 drugCollection.setPackSize(obj[3]);
-			 drugCollection.setCompanyName(obj[4]);
-			 
-			 if(obj.length > 5){
-				 String[] genericCodesArray = obj[5].split("\\+");
-				 
-				 if(genericCodesArray.length > 0){
-					 List<String> genericCodes = new ArrayList<String>();
-					 for(String code : genericCodesArray)genericCodes.add(code);
-					 drugCollection.setGenericCodes(genericCodes);
-				 }
-			 }
-			 
-			 drugCollection = drugRepository.save(drugCollection);
-	
-			 ESDrugDocument esDrugDocument = new ESDrugDocument();
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				String drugType = obj[2];
+				DrugTypeCollection drugTypeCollection = drugTypeRepository.findByType(drugType);
+
+				DrugType type = null;
+				if (drugTypeCollection != null) {
+					type = new DrugType();
+					drugTypeCollection.setType(drugType);
+					BeanUtil.map(drugTypeCollection, type);
+
+				}
+
+				DrugCollection drugCollection = new DrugCollection();
+				drugCollection.setCreatedBy("ADMIN");
+				drugCollection.setCreatedTime(new Date());
+				drugCollection.setUpdatedTime(new Date());
+				drugCollection.setDiscarded(false);
+				drugCollection.setDrugName(obj[1]);
+				drugCollection.setDrugType(type);
+				drugCollection.setDoctorId(null);
+				drugCollection.setHospitalId(null);
+				drugCollection.setLocationId(null);
+				drugCollection.setDrugCode(obj[0]);
+				drugCollection.setPackSize(obj[3]);
+				drugCollection.setCompanyName(obj[4]);
+
+				if (obj.length > 5) {
+					String[] genericCodesArray = obj[5].split("\\+");
+
+					if (genericCodesArray.length > 0) {
+						List<String> genericCodes = new ArrayList<String>();
+						for (String code : genericCodesArray)
+							genericCodes.add(code);
+						drugCollection.setGenericCodes(genericCodes);
+					}
+				}
+
+				drugCollection = drugRepository.save(drugCollection);
+
+				ESDrugDocument esDrugDocument = new ESDrugDocument();
 				BeanUtil.map(drugCollection, esDrugDocument);
-				if(drugCollection.getDrugType()!=null){
+				if (drugCollection.getDrugType() != null) {
 					esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
 					esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
 				}
 				esDrugRepository.save(esDrugDocument);
-		    }
-			
-			
-		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
 			}
-		    }
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -332,28 +323,27 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = "\\?";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
-			diagnosticTestCollection.setTestName(obj[0]);
-			diagnosticTestRepository.save(diagnosticTestCollection);
-			ESDiagnosticTestDocument document = new  ESDiagnosticTestDocument();
-			BeanUtil.map(diagnosticTestCollection, document);
-			esDiagnosticTestRepository.save(document);
-		    }
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				DiagnosticTestCollection diagnosticTestCollection = new DiagnosticTestCollection();
+				diagnosticTestCollection.setTestName(obj[0]);
+				diagnosticTestRepository.save(diagnosticTestCollection);
+				ESDiagnosticTestDocument document = new ESDiagnosticTestDocument();
+				BeanUtil.map(diagnosticTestCollection, document);
+				esDiagnosticTestRepository.save(document);
+			}
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		    }
 		}
 	}
 
@@ -366,32 +356,31 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = "\\?";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			EducationInstituteCollection educationInstituteCollection = new EducationInstituteCollection();
-			educationInstituteCollection.setName(obj[0]);
-			educationInstituteCollection.setCreatedBy("ADMIN");
-			educationInstituteCollection.setCreatedTime(new Date());
-			educationInstituteCollection.setUpdatedTime(new Date());
-			
-			educationInstituteRepository.save(educationInstituteCollection);
-			ESEducationInstituteDocument document = new  ESEducationInstituteDocument();
-			BeanUtil.map(educationInstituteCollection, document);
-			esEducationInstituteRepository.save(document);
-		    }
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				EducationInstituteCollection educationInstituteCollection = new EducationInstituteCollection();
+				educationInstituteCollection.setName(obj[0]);
+				educationInstituteCollection.setCreatedBy("ADMIN");
+				educationInstituteCollection.setCreatedTime(new Date());
+				educationInstituteCollection.setUpdatedTime(new Date());
+
+				educationInstituteRepository.save(educationInstituteCollection);
+				ESEducationInstituteDocument document = new ESEducationInstituteDocument();
+				BeanUtil.map(educationInstituteCollection, document);
+				esEducationInstituteRepository.save(document);
+			}
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		    }
 		}
 	}
 
@@ -404,56 +393,55 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = "\\?";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			EducationQualificationCollection educationQualificationCollection = new EducationQualificationCollection();
-			educationQualificationCollection.setName(obj[0]);
-			educationQualificationCollection.setCreatedBy("ADMIN");
-			educationQualificationCollection.setCreatedTime(new Date());
-			educationQualificationCollection.setUpdatedTime(new Date());
-			
-			educationQualificationRepository.save(educationQualificationCollection);
-			ESEducationQualificationDocument document = new  ESEducationQualificationDocument();
-			BeanUtil.map(educationQualificationCollection, document);
-			esEducationQualificationRepository.save(document);
-		    }
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				EducationQualificationCollection educationQualificationCollection = new EducationQualificationCollection();
+				educationQualificationCollection.setName(obj[0]);
+				educationQualificationCollection.setCreatedBy("ADMIN");
+				educationQualificationCollection.setCreatedTime(new Date());
+				educationQualificationCollection.setUpdatedTime(new Date());
+
+				educationQualificationRepository.save(educationQualificationCollection);
+				ESEducationQualificationDocument document = new ESEducationQualificationDocument();
+				BeanUtil.map(educationQualificationCollection, document);
+				esEducationQualificationRepository.save(document);
+			}
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		    }
 		}
 	}
+
 	@Override
 	@Transactional
 	public ContactUs addContactUs(ContactUs request) {
 		ContactUs response = null;
-		try{
+		try {
 			ContactUsCollection contactUsCollection = new ContactUsCollection();
 			BeanUtil.map(request, contactUsCollection);
 			contactUsCollection.setCreatedTime(new Date());
 			contactUsCollection = contactUsRepository.save(contactUsCollection);
-			if(contactUsCollection != null){
+			if (contactUsCollection != null) {
 				response = new ContactUs();
 				BeanUtil.map(contactUsCollection, response);
 			}
-		}catch(Exception e){
-			logger.error("Error while adding contact us "+ e.getMessage());
+		} catch (Exception e) {
+			logger.error("Error while adding contact us " + e.getMessage());
 			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while adding contact us "+ e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while adding contact us " + e.getMessage());
 		}
 		return response;
 	}
 
-	@Override
 	public void importProfessionalMembership() {
 		String csvFile = "/home/ubuntu/Memberships.csv";
 		BufferedReader br = null;
@@ -461,32 +449,31 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = "\\?";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			ProfessionalMembershipCollection professionalMembershipCollection = new ProfessionalMembershipCollection();
-			professionalMembershipCollection.setMembership(obj[0]);
-			professionalMembershipCollection.setCreatedBy("ADMIN");
-			professionalMembershipCollection.setCreatedTime(new Date());
-			professionalMembershipCollection.setUpdatedTime(new Date());
-			
-			professionalMembershipRepository.save(professionalMembershipCollection);
-			ESProfessionalMembershipDocument document = new  ESProfessionalMembershipDocument();
-			BeanUtil.map(professionalMembershipCollection, document);
-			esProfessionalMembershipRepository.save(document);
-		    }
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				ProfessionalMembershipCollection professionalMembershipCollection = new ProfessionalMembershipCollection();
+				professionalMembershipCollection.setMembership(obj[0]);
+				professionalMembershipCollection.setCreatedBy("ADMIN");
+				professionalMembershipCollection.setCreatedTime(new Date());
+				professionalMembershipCollection.setUpdatedTime(new Date());
+
+				professionalMembershipRepository.save(professionalMembershipCollection);
+				ESProfessionalMembershipDocument document = new ESProfessionalMembershipDocument();
+				BeanUtil.map(professionalMembershipCollection, document);
+				esProfessionalMembershipRepository.save(document);
+			}
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		    }
 		}
 	}
 
@@ -498,33 +485,32 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = "\\?";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			String[] obj = line.split(cvsSplitBy);
-			MedicalCouncilCollection medicalCouncilCollection = new MedicalCouncilCollection();
-			medicalCouncilCollection.setMedicalCouncil(obj[0]);
-			medicalCouncilCollection.setCreatedBy("ADMIN");
-			medicalCouncilCollection.setCreatedTime(new Date());
-			medicalCouncilCollection.setUpdatedTime(new Date());
-			
-			medicalCouncilRepository.save(medicalCouncilCollection);
-			ESMedicalCouncilDocument esMedicalCouncilDocument = new ESMedicalCouncilDocument();
-			BeanUtil.map(medicalCouncilCollection, esMedicalCouncilDocument);
-			esMedicalCouncilRepository.save(esMedicalCouncilDocument);
-		    }
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] obj = line.split(cvsSplitBy);
+				MedicalCouncilCollection medicalCouncilCollection = new MedicalCouncilCollection();
+				medicalCouncilCollection.setMedicalCouncil(obj[0]);
+				medicalCouncilCollection.setCreatedBy("ADMIN");
+				medicalCouncilCollection.setCreatedTime(new Date());
+				medicalCouncilCollection.setUpdatedTime(new Date());
+
+				medicalCouncilRepository.save(medicalCouncilCollection);
+				ESMedicalCouncilDocument esMedicalCouncilDocument = new ESMedicalCouncilDocument();
+				BeanUtil.map(medicalCouncilCollection, esMedicalCouncilDocument);
+				esMedicalCouncilRepository.save(esMedicalCouncilDocument);
+			}
 
 		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-		    }
-		}				
+		}
 	}
 
 	@Override
@@ -532,28 +518,38 @@ public class AdminServicesImpl implements AdminServices {
 
 		Boolean response = false;
 		try {
-			String appType = "", appBitLink = "", appDeviceType = "";  
-			if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO.getType())){
-				appType = "Healthcoco"; appBitLink = patientAppBitLink; appDeviceType = "phone";
-			}else if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PLUS.getType())){
-				appType = "Healthcoco+"; appBitLink = doctorAppBitLink; appDeviceType = "phone";
-			}else if(request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PAD.getType())){
-				appType = "Healthcoco Pad"; appBitLink = ipadAppBitLink; appDeviceType = "ipad";
-			} 
-		
-			if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())){
-				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null, appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink), request.getMobileNumber(), "Get App Link");
+			String appType = "", appBitLink = "", appDeviceType = "";
+			if (request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO.getType())) {
+				appType = "Healthcoco";
+				appBitLink = patientAppBitLink;
+				appDeviceType = "phone";
+			} else if (request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PLUS.getType())) {
+				appType = "Healthcoco+";
+				appBitLink = doctorAppBitLink;
+				appDeviceType = "phone";
+			} else if (request.getAppType().getType().equalsIgnoreCase(AppType.HEALTHCOCO_PAD.getType())) {
+				appType = "Healthcoco Pad";
+				appBitLink = ipadAppBitLink;
+				appDeviceType = "ipad";
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
+						appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink),
+						request.getMobileNumber(), "Get App Link");
 				sMSServices.sendSMS(smsTrackDetail, false);
 				response = true;
-			}else if(!DPDoctorUtils.anyStringEmpty(request.getEmailAddress())){
-			    String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, appDeviceType, "appLinkTemplate.vm");
-				mailService.sendEmail(request.getEmailAddress(), getAppLinkSubject.replace("{appType}", appType), body, null);
+			} else if (!DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+				String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, appDeviceType,
+						"appLinkTemplate.vm");
+				mailService.sendEmail(request.getEmailAddress(), getAppLinkSubject.replace("{appType}", appType), body,
+						null);
 				response = true;
-			} 		
+			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 
