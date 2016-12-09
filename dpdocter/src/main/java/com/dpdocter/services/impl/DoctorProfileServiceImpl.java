@@ -44,7 +44,6 @@ import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
@@ -52,13 +51,11 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
-import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -78,6 +75,7 @@ import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AccessControlServices;
@@ -108,13 +106,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	private SpecialityRepository specialityRepository;
 
 	@Autowired
-	private LocationRepository locationRepository;
-
-	@Autowired
 	private FileManager fileManager;
-
-	@Autowired
-	private UserRoleRepository userRoleRepository;
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -433,28 +425,27 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<DoctorRegistrationDetail> registrationDetails = null;
 		List<String> professionalMemberships = null;
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
+		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 		try {
-			userCollection = userRepository.findOne(new ObjectId(doctorId));
-			doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-			if (userCollection == null || doctorCollection == null) {
-				logger.error("No user found");
-				throw new BusinessException(ServiceError.NoRecord, "No user found");
-			}
-			if (locationId == null) {
-				List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findByDoctorIdAndIsActivate(userCollection.getId());
-
-				if (doctorClinicProfileCollections != null && !doctorClinicProfileCollections.isEmpty()) {
-					for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-						clinicProfile.add(getDoctorClinic(doctorClinicProfileCollection, patientId, isMobileApp,
-								doctorClinicProfileCollections.size()));
+			Criteria criteria = new Criteria("isActivate").is(true).and("doctorId").is(new ObjectId(doctorId));
+			if(!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
+			
+			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollections")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					userCollection = doctorClinicProfileLookupResponse.getUser();
+					doctorCollection = doctorClinicProfileLookupResponse.getDoctor();
+					if (userCollection == null || doctorCollection == null) {
+						logger.error("No user found");
+						throw new BusinessException(ServiceError.NoRecord, "No user found");
 					}
-				}
-			} else {
-				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(userCollection.getId(), new ObjectId(locationId));
-				if (doctorClinicProfileCollection != null) {
-						clinicProfile.add(getDoctorClinic(doctorClinicProfileCollection, patientId, isMobileApp, 1));
-
-				}
+					clinicProfile.add(getDoctorClinic(doctorClinicProfileLookupResponse, patientId, isMobileApp, doctorClinicProfileLookupResponses.size()));
+					}
 			}
 
 			doctorProfile = new DoctorProfile();
@@ -504,14 +495,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return doctorProfile;
 	}
 
-	@SuppressWarnings("unchecked")
-	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileCollection doctorClinicCollection, String patientId,
+	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse, String patientId,
 			Boolean isMobileApp, int locationSize) {
 		DoctorClinicProfile doctorClinic = new DoctorClinicProfile();
 		try {
-			List<UserRoleCollection> userRoleCollections = userRoleRepository
-					.findByUserId(doctorClinicCollection.getDoctorId());
-			LocationCollection locationCollection = locationRepository.findOne(doctorClinicCollection.getLocationId());
+			LocationCollection locationCollection = doctorClinicProfileLookupResponse.getLocation();
 
 			if (locationCollection != null) {
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
@@ -536,12 +524,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				doctorClinic.setClinicAddress(address);
 				BeanUtil.map(locationCollection, doctorClinic);
 			}
-			if (doctorClinicCollection != null)
-				BeanUtil.map(doctorClinicCollection, doctorClinic);
-			doctorClinic.setLocationId(doctorClinicCollection.getLocationId().toString());
-			doctorClinic.setDoctorId(doctorClinicCollection.getDoctorId().toString());
+			if (doctorClinicProfileLookupResponse != null)
+				BeanUtil.map(doctorClinicProfileLookupResponse, doctorClinic);
+			doctorClinic.setLocationId(doctorClinicProfileLookupResponse.getLocationId().toString());
+			doctorClinic.setDoctorId(doctorClinicProfileLookupResponse.getDoctorId().toString());
 
-			Criteria criteria = new Criteria("doctorId").is(doctorClinicCollection.getDoctorId()).and("locationId")
+			Criteria criteria = new Criteria("doctorId").is(doctorClinicProfileLookupResponse.getDoctorId()).and("locationId")
 					.is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"),
@@ -557,12 +545,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			List<Role> roles = null;
 
-			Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollections,
+			@SuppressWarnings("unchecked")
+			Collection<ObjectId> roleIds = CollectionUtils.collect(doctorClinicProfileLookupResponse.getUserRoleCollections(),
 					new BeanToPropertyValueTransformer("roleId"));
 			List<RoleCollection> roleCollections = roleRepository.find(roleIds, locationCollection.getId(),
 					locationCollection.getHospitalId());
 			for (RoleCollection otherRoleCollection : roleCollections) {
-
 				if (isMobileApp && locationSize == 1
 						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
@@ -592,11 +580,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
-							.findByDoctorIdLocationIdAndPatientId(doctorClinicCollection.getDoctorId(),
-									doctorClinicCollection.getLocationId(), new ObjectId(patientId));
+							.findByDoctorIdLocationIdAndPatientId(doctorClinicProfileLookupResponse.getDoctorId(),
+									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId));
 					if(recommendationsCollection != null)doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
 				}
-
 			}
 		} catch (BusinessException be) {
 			logger.error(be);

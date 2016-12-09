@@ -35,15 +35,6 @@ public class GeneralTests {
 	}
 
 	public static void main(String[] args) throws IOException, ParseException{
-		DateFormat newDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");    
-		Date d = newDateFormat.parse("27/10/2014 19:15:00");
-		System.out.println(d);
-//		System.out.println(new Date(Long.parseLong("1475667939000")));
-//		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-//	    int currentDay = localCalendar.get(Calendar.DAY_OF_YEAR);
-//	    int currentYear = localCalendar.get(Calendar.YEAR);
-//	    localCalendar.setTime(new Date(Long.parseLong("1475667939000")));
-//	    System.out.println(currentYear == localCalendar.get(Calendar.YEAR) && currentDay == localCalendar.get(Calendar.DAY_OF_YEAR));
-	    	
-	    }
+		System.out.println(DPDoctorUtils.getSHA3SecurePassword("neha1234".toCharArray()));
+	}
 }  	

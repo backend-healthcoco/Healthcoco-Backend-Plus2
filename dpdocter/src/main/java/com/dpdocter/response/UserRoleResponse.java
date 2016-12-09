@@ -2,9 +2,10 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.UserRoleCollection;
 
-public class UserRoleResponse {
+public class UserRoleResponse extends GenericCollection{
 
 	private String id;
 

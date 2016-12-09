@@ -467,7 +467,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment updateAppointment(AppointmentRequest request, Boolean updateVisit) {
 		Appointment response = null;
 		try {
-			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
+			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient")),
@@ -1227,14 +1228,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 								Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 								Aggregation.skip((page) * size), Aggregation.limit(size),
-								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.from"))), 
+								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))), 
 						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();	
 			}else{
 				appointmentLookupResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 								Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.from"))), 
+								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))), 
 						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 			}
 			

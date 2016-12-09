@@ -6,14 +6,16 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
-import com.dpdocter.beans.Location;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.DoctorFacility;
 
-public class DoctorClinicProfileLookupResponse {
+public class DoctorClinicProfileLookupResponse extends GenericCollection{
 
 	private ObjectId id;
 
@@ -57,9 +59,13 @@ public class DoctorClinicProfileLookupResponse {
 
 	private LocationCollection location;
 	
+	private HospitalCollection hospital;
+	
 	private DoctorCollection doctor;
 	
 	private UserCollection user;
+	
+	List<UserRoleCollection> userRoleCollections;
 	
 	public ObjectId getId() {
 		return id;
@@ -245,6 +251,22 @@ public class DoctorClinicProfileLookupResponse {
 		this.user = user;
 	}
 
+	public List<UserRoleCollection> getUserRoleCollections() {
+		return userRoleCollections;
+	}
+
+	public void setUserRoleCollections(List<UserRoleCollection> userRoleCollections) {
+		this.userRoleCollections = userRoleCollections;
+	}
+
+	public HospitalCollection getHospital() {
+		return hospital;
+	}
+
+	public void setHospital(HospitalCollection hospital) {
+		this.hospital = hospital;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileLookupResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -255,7 +277,7 @@ public class DoctorClinicProfileLookupResponse {
 				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
 				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", location=" + location + ", doctor=" + doctor + ", user=" + user + "]";
+				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user
+				+ ", userRoleCollections=" + userRoleCollections + "]";
 	}
-
 }

@@ -158,7 +158,8 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         Boolean showTableOne = (Boolean) parameters.get("showTableOne");
         jasperDesign.setPageHeader(createPageHeader(dsr, columnWidth, showTableOne, parameters)); 
-        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne));
+        if(parameters.get("headerHtml") != null)((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createPatienDetailBand(dsr, jasperDesign, columnWidth, showTableOne, parameters.get("headerHtml")));
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
         
         if(parameters.get("showHistory") != null && (boolean) parameters.get("showHistory"))createHistory(jasperDesign, parameters, contentFontSize, normalStyle, columnWidth);
@@ -352,7 +353,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 	}
 
-	private JRBand createPatienDetailBand(JRDesignDatasetRun dsr, JasperDesign jasperDesign, int columnWidth, Boolean showTableOne) throws JRException { 
+	private JRBand createPatienDetailBand(JRDesignDatasetRun dsr, JasperDesign jasperDesign, int columnWidth, Boolean showTableOne, Object headerHtml) throws JRException { 
 
         band = new JRDesignBand(); 
         band.setHeight(10);
@@ -382,7 +383,8 @@ public class JasperReportServiceImpl implements JasperReportService {
         JRDesignComponentElement reportElement = new JRDesignComponentElement();  
         reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components","jr", "table"));  
         reportElement.setHeight(10);  reportElement.setWidth(columnWidth);  reportElement.setX(0); 
-        if(showTableOne)reportElement.setY(-20);
+        if(headerHtml != null)reportElement.setY(0);
+        else if(showTableOne)reportElement.setY(-20);
         else reportElement.setY(0);
         reportElement.setComponent(table);
     
@@ -402,23 +404,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 	        
           HtmlComponent htmlComponent = new HtmlComponent();
           htmlComponent.setHtmlContentExpression(new JRDesignExpression("$P{headerHtml}"));
-          htmlComponent.setScaleType(ScaleImageEnum.FILL_FRAME);
+          htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
+          
           JRDesignComponentElement reportElement = new JRDesignComponentElement();  
           reportElement.setComponentKey(new ComponentKey("http://jasperreports.sourceforge.net/htmlcomponent","hc", "html"));  
-          reportElement.setHeight(40);  reportElement.setWidth(columnWidth);  reportElement.setX(0);  reportElement.setY(0);  
+          reportElement.setHeight(40); 
+          reportElement.setWidth(columnWidth);  
+          reportElement.setX(0);  reportElement.setY(0);  
           reportElement.setComponent(htmlComponent);htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
           band.addElement(reportElement);   
           band.setHeight(40);  
           
-          jrDesignLine = new JRDesignLine();
-          jrDesignLine.setX(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
-          if(showTableOne)jrDesignLine.setY(0);  
-          else jrDesignLine.setY(0);
-          
-          jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_BOTTOM);
-          band.addElement(jrDesignLine);        
-          
-
         }else{
 	        band.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
 	        
