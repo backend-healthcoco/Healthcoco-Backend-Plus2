@@ -4,9 +4,10 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.collections.AcosCollection;
 import com.dpdocter.collections.ArosAcosCollection;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.Type;
 
-public class ArosAcosLookupResponse {
+public class ArosAcosLookupResponse extends GenericCollection{
 
 	private String id;
 	

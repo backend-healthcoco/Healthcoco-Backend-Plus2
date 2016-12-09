@@ -58,7 +58,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 		mongo = new Mongo("127.0.0.1", 51567);
 	}
 
-	@Test
+//	@Test
 	public void testLogin() throws UnsupportedEncodingException {
 		LoginRequest request = new LoginRequest();
 		request.setUsername("manishmethani6@gmail.com");

@@ -2,20 +2,17 @@ package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.IteratorUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -42,15 +39,12 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DoctorClinicProfileRepository;
-import com.dpdocter.repository.HospitalRepository;
-import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
+import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
 import com.dpdocter.services.OTPService;
@@ -64,21 +58,6 @@ public class LoginServiceImpl implements LoginService {
 
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private UserRoleRepository userRoleRepository;
-
-	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
-	private LocationRepository locationRepository;
-
-	@Autowired
-	private HospitalRepository hospitalRepository;
-
-	@Autowired
-	private DoctorClinicProfileRepository doctorClinicProfileRepository;
 
 	@Autowired
 	private AccessControlServices accessControlServices;
@@ -107,7 +86,6 @@ public class LoginServiceImpl implements LoginService {
 	/**
 	 * This method is used for login purpose.
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
@@ -151,10 +129,12 @@ public class LoginServiceImpl implements LoginService {
 				response.setUser(user);
 				return response;
 			}
-			List<UserRoleCollection> userRoleCollections = userRoleRepository.findByUserId(userCollection.getId());
+			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId())),
+							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"), Aggregation.unwind("roleCollection")), UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 
-			for (UserRoleCollection userRoleCollection : userRoleCollections) {
-				RoleCollection roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
+			for (UserRoleLookupResponse userRoleLookupResponse : userRoleLookupResponses) {
+				RoleCollection roleCollection = userRoleLookupResponse.getRoleCollection();
 				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
 						|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
 					logger.warn("Invalid User");
@@ -177,16 +157,18 @@ public class LoginServiceImpl implements LoginService {
 
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					List<DoctorClinicProfileCollection> doctorClinicProfileCollections = doctorClinicProfileRepository.findLocationIdByDoctorIdAndIsActivate(userCollection.getId());
-					if (doctorClinicProfileCollections != null) {
-						Collection<ObjectId> locationIds = CollectionUtils.collect(doctorClinicProfileCollections,
-								new BeanToPropertyValueTransformer("locationId"));
-						List<LocationCollection> locationCollections = IteratorUtils
-								.toList(locationRepository.findAll(locationIds).iterator());
+					
+					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+									Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id", "hospital"), Aggregation.unwind("hospital")), 
+							DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+					if (doctorClinicProfileLookupResponses != null) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
 						Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
-						for (LocationCollection locationCollection : locationCollections) {
-							HospitalCollection hospitalCollection = null;
+						for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+							LocationCollection locationCollection = doctorClinicProfileLookupResponse.getLocation();
+							HospitalCollection hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
 							LocationAndAccessControl locationAndAccessControl = new LocationAndAccessControl();
 							BeanUtil.map(locationCollection, locationAndAccessControl);
 							locationAndAccessControl
@@ -197,34 +179,30 @@ public class LoginServiceImpl implements LoginService {
 									.setImages(getFinalClinicImages(locationAndAccessControl.getImages()));
 							List<Role> roles = null;
 
-							Collection<ObjectId> roleIds = CollectionUtils.collect(userRoleCollections,
-									new BeanToPropertyValueTransformer("roleId"));
-							List<RoleCollection> roleCollections = roleRepository.find(roleIds,
-									locationCollection.getId(), locationCollection.getHospitalId());
 							Boolean isStaff = false;
-							for (RoleCollection otherRoleCollection : roleCollections) {
+							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {
 
-								if (isMobileApp && locationCollections.size() == 1
-										&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-												|| otherRoleCollection.getRole()
+								if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
+										&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+												|| otherRoleCollection.getRoleCollection().getRole()
 														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-												|| otherRoleCollection.getRole()
+												|| otherRoleCollection.getRoleCollection().getRole()
 														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))) {
 									logger.warn("You are staff member so please login from website.");
 									throw new BusinessException(ServiceError.NotAuthorized,
 											"You are staff member so please login from website.");
 								} else if (isMobileApp
-										&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-												|| otherRoleCollection.getRole()
+										&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+												|| otherRoleCollection.getRoleCollection().getRole()
 														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-												|| otherRoleCollection.getRole()
+												|| otherRoleCollection.getRoleCollection().getRole()
 														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))) {
 									isStaff = true;
 								}
 
 								if (otherRoleCollection != null) {
 									AccessControl accessControl = accessControlServices.getAccessControls(
-											otherRoleCollection.getId(), locationCollection.getId(),
+											new ObjectId(otherRoleCollection.getId()), locationCollection.getId(),
 											locationCollection.getHospitalId());
 
 									Role role = new Role();
@@ -239,7 +217,7 @@ public class LoginServiceImpl implements LoginService {
 							}
 							if (!isStaff) {
 								if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {
-									hospitalCollection = hospitalRepository.findOne(locationCollection.getHospitalId());
+									hospitalCollection = doctorClinicProfileLookupResponse.getHospital();
 									Hospital hospital = new Hospital();
 									BeanUtil.map(hospitalCollection, hospital);
 									hospital.setHospitalImageUrl(getFinalImageURL(hospital.getHospitalImageUrl()));
