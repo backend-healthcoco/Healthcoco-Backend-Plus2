@@ -680,7 +680,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public List<Records> getRecordsByIds(List<ObjectId> recordIds) {
+	public List<Records> getRecordsByIds(List<ObjectId> recordIds, ObjectId visitId) {
 		List<Records> records = null;
 		try {
 			List<RecordsCollection> recordsCollections = recordsRepository.findAll(recordIds);
@@ -690,10 +690,13 @@ public class RecordsServiceImpl implements RecordsService {
 					Records record = new Records();
 					BeanUtil.map(recordCollection, record);
 					record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByRecordId(recordCollection.getId());
-					if (patientVisitCollection != null)
-						record.setVisitId(patientVisitCollection.getId().toString());
+					if(DPDoctorUtils.anyStringEmpty(visitId)){
+						PatientVisitCollection patientVisitCollection = patientVisitRepository.findByRecordId(recordCollection.getId());
+						if (patientVisitCollection != null)
+							record.setVisitId(patientVisitCollection.getId().toString());
+					}else{
+						record.setVisitId(visitId.toString());
+					}
 					records.add(record);
 				}
 			}

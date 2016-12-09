@@ -65,6 +65,7 @@ import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
@@ -84,7 +85,6 @@ import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.HistoryRepository;
-import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PatientVisitRepository;
@@ -98,6 +98,7 @@ import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
+import com.dpdocter.response.PatientVisitLookupResponse;
 import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
@@ -165,9 +166,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
-
-	@Autowired
-	private LocationRepository locationRepository;
 
 	@Autowired
 	private DiagnosticTestRepository diagnosticTestRepository;
@@ -338,10 +336,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 			PatientVisitCollection patientTrackCollection = patientVisitRepository.find(doctorObjectId,
 					locationObjectId, hospitalObjectId, patientObjectId);
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientObjectId,
-					locationObjectId, hospitalObjectId);
 			UserCollection userCollection = userRepository.findOne(doctorObjectId);
-
+			
 			if (patientTrackCollection == null) {
 				patientTrackCollection = new PatientVisitCollection();
 				patientTrackCollection.setDoctorId(doctorObjectId);
@@ -351,16 +347,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				patientTrackCollection.setCreatedTime(new Date());
 				patientTrackCollection
 						.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
-				if (patientCollection != null) {
-					patientTrackCollection.setPatientId(patientCollection.getUserId());
-				}
-				if (userCollection != null) {
-					if (userCollection.getFirstName() != null) {
-						patientTrackCollection
-								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+				patientTrackCollection.setPatientId(patientObjectId);
+				
+				if (userCollection.getFirstName() != null) {
+						patientTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 										+ userCollection.getFirstName());
 					}
-				}
 
 				List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
 				visitedforList.add(visitedFor);
@@ -539,7 +531,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if ((response.getPatientTreatment() == null || response.getPatientTreatment().isEmpty())
 						&& (patientVisitCollection.getTreatmentId() != null
 								&& !patientVisitCollection.getTreatmentId().isEmpty())) {
-					List<PatientTreatment> list = patientTreatmentServices.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
+					List<PatientTreatment> list = patientTreatmentServices.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 					response.setPatientTreatment(list);
 				}
 			}
@@ -770,14 +762,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 					if (patientVisitCollection.getPrescriptionId() != null) {
 						List<Prescription> prescriptions = prescriptionServices
-								.getPrescriptionsByIds(patientVisitCollection.getPrescriptionId());
+								.getPrescriptionsByIds(patientVisitCollection.getPrescriptionId(), patientVisitCollection.getId());
 						patientVisitResponse.setPrescriptions(prescriptions);
 					}
 
 					if (patientVisitCollection.getClinicalNotesId() != null) {
 						List<ClinicalNotes> clinicalNotes = new ArrayList<ClinicalNotes>();
 						for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-							ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString());
+							ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString(), patientVisitCollection.getId());
 							if (clinicalNote != null) {
 								if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
 									clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
@@ -789,13 +781,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 
 					if (patientVisitCollection.getRecordId() != null) {
-						List<Records> records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
+						List<Records> records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId(), patientVisitCollection.getId());
 						patientVisitResponse.setRecords(records);
 					}
 
 					if (patientVisitCollection.getTreatmentId() != null) {
 						List<PatientTreatment> patientTreatment = patientTreatmentServices
-								.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
+								.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 						patientVisitResponse.setPatientTreatment(patientTreatment);
 					}
 					response.add(patientVisitResponse);
@@ -821,20 +813,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Transactional
 	public Boolean email(String visitId, String emailAddress) {
 		Boolean response = false;
-		PatientVisitCollection patientVisitCollection = null;
 		MailAttachment mailAttachment = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 
 		try {
-			patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 
-			if (patientVisitCollection != null) {
+			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location")), 
+					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
+			if (patientVisitLookupResponse != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientVisitCollection.getPatientId(), patientVisitCollection.getLocationId(),
-						patientVisitCollection.getHospitalId());
-				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
+						patientVisitLookupResponse.getHospitalId());
+				UserCollection user = userRepository.findOne(patientVisitLookupResponse.getPatientId());
 				user.setFirstName(patient.getLocalPatientName());
-				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user, null, false, false, false, false, false, false);
+				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user, null, false, false, false, false, false, false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -846,18 +841,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 					mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
 					mailAttachments.add(mailAttachment);
-					if (patientVisitCollection.getRecordId() != null) {
-						for (ObjectId recordId : patientVisitCollection.getRecordId()) {
-							Records record = recordsService.getRecordById(recordId.toString());
-							MailResponse mailResponse = recordsService.getRecordMailData(record.getId(),
-									record.getDoctorId(), record.getLocationId(), record.getHospitalId());
+					if (patientVisitLookupResponse.getRecords() != null) {
+						for (RecordsCollection record : patientVisitLookupResponse.getRecords()) {
+							MailResponse mailResponse = recordsService.getRecordMailData(record.getId().toString(),
+									record.getDoctorId().toString(), record.getLocationId().toString(), record.getHospitalId().toString());
 							if (mailResponse.getMailAttachment() != null)
 								mailAttachments.add(mailResponse.getMailAttachment());
 						}
 					}
-					UserCollection doctorUser = userRepository.findOne(patientVisitCollection.getDoctorId());
-					LocationCollection locationCollection = locationRepository
-							.findOne(patientVisitCollection.getLocationId());
+					UserCollection doctorUser = patientVisitLookupResponse.getDoctor();
+					LocationCollection locationCollection = patientVisitLookupResponse.getLocation();
 					String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
 							? locationCollection.getStreetAddress() + ", " : "")
 							+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
@@ -878,17 +871,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 					SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 					sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-					String body = mailBodyGenerator.generateEMREmailBody(user.getFirstName(),
+					String body = mailBodyGenerator.generateEMREmailBody(patient.getLocalPatientName(),
 							doctorUser.getTitle() + " " + doctorUser.getFirstName(),
 							locationCollection.getLocationName(), address,
-							sdf.format(patientVisitCollection.getCreatedTime()), "Visit Details", "emrMailTemplate.vm");
+							sdf.format(patientVisitLookupResponse.getCreatedTime()), "Visit Details", "emrMailTemplate.vm");
 					mailService.sendEmailMultiAttach(emailAddress,
 							doctorUser.getTitle() + " " + doctorUser.getFirstName() + " sent you Visit Details", body,
 							mailAttachments);
 
-					emailTrackCollection.setDoctorId(patientVisitCollection.getDoctorId());
-					emailTrackCollection.setHospitalId(patientVisitCollection.getHospitalId());
-					emailTrackCollection.setLocationId(patientVisitCollection.getLocationId());
+					emailTrackCollection.setDoctorId(patientVisitLookupResponse.getDoctorId());
+					emailTrackCollection.setHospitalId(patientVisitLookupResponse.getHospitalId());
+					emailTrackCollection.setLocationId(patientVisitLookupResponse.getLocationId());
 					emailTrackCollection.setType(ComponentType.ALL.getType());
 					emailTrackCollection.setSubject("Patient Visit");
 					emailTackService.saveEmailTrack(emailTrackCollection);
@@ -909,20 +902,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
-	private JasperReportResponse createJasper(PatientVisitCollection patientVisitCollection, PatientCollection patient,
+	private JasperReportResponse createJasper(PatientVisitLookupResponse patientVisitLookupResponse, PatientCollection patient,
 			UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint) throws IOException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>"
-				+ (patientVisitCollection.getUniqueEmrId() != null ? patientVisitCollection.getUniqueEmrId() : "--");
+				+ (patientVisitLookupResponse.getUniqueEmrId() != null ? patientVisitLookupResponse.getUniqueEmrId() : "--");
 
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				patientVisitCollection.getDoctorId(), patientVisitCollection.getLocationId(),
-				patientVisitCollection.getHospitalId(), ComponentType.ALL.getType());
+				patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
+				patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType());
 		List<DBObject> prescriptions = null;
-		if (patientVisitCollection.getPrescriptionId() != null) {
+		if (patientVisitLookupResponse.getPrescriptionId() != null) {
 			prescriptions = new ArrayList<DBObject>();
-			for (ObjectId prescriptionId : patientVisitCollection.getPrescriptionId()) {
+			for (ObjectId prescriptionId : patientVisitLookupResponse.getPrescriptionId()) {
 				if (!DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 					DBObject prescriptionItems = new BasicDBObject();
 					List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(
@@ -935,12 +928,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		List<ClinicalNotesJasperDetails> clinicalNotes = null;
-		if (patientVisitCollection.getClinicalNotesId() != null) {
+		if (patientVisitLookupResponse.getClinicalNotesId() != null) {
 			clinicalNotes = new ArrayList<ClinicalNotesJasperDetails>();
 			String contentLineStyle = (printSettings != null
 					&& !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 							? printSettings.getContentLineStyle() : LineStyle.INLINE.name();
-			for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
+			for (ObjectId clinicalNotesId : patientVisitLookupResponse.getClinicalNotesId()) {
 				if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 					ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
 							clinicalNotesId.toString(), contentLineStyle, parameters);
@@ -961,9 +954,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		// }
 		// }
 		// }
-		if (patientVisitCollection.getTreatmentId() != null) {
+		if (patientVisitLookupResponse.getTreatmentId() != null) {
 			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository
-					.findByIds(patientVisitCollection.getTreatmentId());
+					.findByIds(patientVisitLookupResponse.getTreatmentId());
 			String treatments = "";
 			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
 				for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
@@ -982,7 +975,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		parameters.put("prescriptions", prescriptions);
 		parameters.put("clinicalNotes", clinicalNotes);
-		parameters.put("visitId", patientVisitCollection.getId().toString());
+		parameters.put("visitId", patientVisitLookupResponse.getId().toString());
 
 		if(historyCollection != null){
 			parameters.put("showHistory", true);
@@ -993,14 +986,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters);
-		generatePrintSetup(parameters, printSettings, patientVisitCollection.getDoctorId());
+		generatePrintSetup(parameters, printSettings, patientVisitLookupResponse.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "VISITS-"
-				+ patientVisitCollection.getUniqueEmrId() + new Date().getTime();
+				+ patientVisitLookupResponse.getUniqueEmrId() + new Date().getTime();
 		Integer topMargin = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
 		Integer bottonMargin = printSettings != null
@@ -1231,9 +1224,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	@Override
-	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
+	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,
 			String firstName, String mobileNumber, Map<String, Object> parameters) {
-		String age = null, gender = (patient != null && patient.getGender() != null ? patient.getGender() : null),
+		String age = null, gender = (patientCard != null && patientCard.getGender() != null ? patientCard.getGender() : null),
 				patientLeftText = "", patientRightText = "";
 		if (patientDetails == null) {
 			patientDetails = new PatientDetails();
@@ -1241,10 +1234,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		List<String> patientDetailList = new ArrayList<String>();
 		patientDetailList.add("<b>Patient Name: </b>" + firstName.toUpperCase());
 		patientDetailList
-				.add("<b>Patient ID: </b>" + (patient != null && patient.getPID() != null ? patient.getPID() : "--"));
+				.add("<b>Patient ID: </b>" + (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 
-		if (patient != null && patient.getDob() != null) {
-			Age ageObj = patient.getDob().getAge();
+		if (patientCard != null && patientCard.getDob() != null) {
+			Age ageObj = patientCard.getDob().getAge();
 			if (ageObj.getYears() > 14)
 				age = ageObj.getYears() + "yrs";
 			else {
@@ -1278,12 +1271,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
 		patientDetailList.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 
-		if (patientDetails.getShowBloodGroup() && patient != null
-				&& !DPDoctorUtils.anyStringEmpty(patient.getBloodGroup())) {
-			patientDetailList.add("<b>Blood Group: </b>" + patient.getBloodGroup());
+		if (patientDetails.getShowBloodGroup() && patientCard != null
+				&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
+			patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
 		}
-		if (patientDetails.getShowReferedBy() && patient != null && patient.getReferredBy() != null) {
-			ReferencesCollection referencesCollection = referenceRepository.findOne(patient.getReferredBy());
+		if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
+			ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
 			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))
 				patientDetailList.add("<b>Referred By: </b>" + referencesCollection.getReference());
 		}
@@ -1677,13 +1670,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (patientVisitCollection.getPrescriptionId() != null
 						&& !patientVisitCollection.getPrescriptionId().isEmpty()) {
 					prescriptions.addAll(
-							prescriptionServices.getPrescriptionsByIds(patientVisitCollection.getPrescriptionId()));
+							prescriptionServices.getPrescriptionsByIds(patientVisitCollection.getPrescriptionId(), patientVisitCollection.getId()));
 				}
 
 				if (patientVisitCollection.getClinicalNotesId() != null
 						&& !patientVisitCollection.getClinicalNotesId().isEmpty()) {
 					for (ObjectId clinicalNotesId : patientVisitCollection.getClinicalNotesId()) {
-						ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString());
+						ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString(), patientVisitCollection.getId());
 						if (clinicalNote != null) {
 							if (clinicalNote.getDiagrams() != null && !clinicalNote.getDiagrams().isEmpty()) {
 								clinicalNote.setDiagrams(getFinalDiagrams(clinicalNote.getDiagrams()));
@@ -1693,7 +1686,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 				}
 				if (patientVisitCollection.getRecordId() != null && !patientVisitCollection.getRecordId().isEmpty()) {
-					records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId());
+					records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId(), patientVisitCollection.getId());
 					if (records != null && !records.isEmpty()) {
 						records.addAll(records);
 					}
@@ -1701,7 +1694,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (patientVisitCollection.getTreatmentId() != null
 						&& !patientVisitCollection.getTreatmentId().isEmpty()) {
 					patientTreatments = patientTreatmentServices
-							.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId());
+							.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
 					if (patientTreatments != null && !patientTreatments.isEmpty()) {
 						patientTreatments.addAll(patientTreatments);
 					}
@@ -1831,7 +1824,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			visitedFors.add(VisitedFor.REPORTS);
 			visitedFors.add(VisitedFor.TREATMENT);
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId).and("visitedFor").in(visitedFors);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -1852,18 +1845,22 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
-			PatientVisitCollection patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
+			PatientVisitLookupResponse patientVisitLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
+					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location")), 
+					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
-			if (patientVisitCollection != null) {
+			if (patientVisitLookupResponse != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientVisitCollection.getPatientId(), patientVisitCollection.getLocationId(),
-						patientVisitCollection.getHospitalId());
-				UserCollection user = userRepository.findOne(patientVisitCollection.getPatientId());
+						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
+						patientVisitLookupResponse.getHospitalId());
+				UserCollection user = userRepository.findOne(patientVisitLookupResponse.getPatientId());
 
 				if(showPH || showPLH || showFH || showDA){
-					historyCollection  = historyRepository.findHistory(patientVisitCollection.getLocationId(), patientVisitCollection.getHospitalId(), patientVisitCollection.getPatientId());
+					historyCollection  = historyRepository.findHistory(patientVisitLookupResponse.getLocationId(), patientVisitLookupResponse.getHospitalId(), patientVisitLookupResponse.getPatientId());
 				}
-				JasperReportResponse jasperReportResponse = createJasper(patientVisitCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint);
+				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user, historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)

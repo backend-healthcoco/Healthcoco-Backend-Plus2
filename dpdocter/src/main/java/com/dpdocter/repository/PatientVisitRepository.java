@@ -51,7 +51,6 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
     @Query("{'treatmentId' : ?0}")
     PatientVisitCollection findByTreatmentId(ObjectId treatmentId);
 
-
     @Query("{'prescriptionId' : ?0}")
     PatientVisitCollection findByPrescriptionId(ObjectId prescriptionId);
 

@@ -165,7 +165,7 @@ public class ClinicalNotesApi {
 	@GET
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID, notes = PathProxy.ClinicalNotesUrls.GET_CLINICAL_NOTES_ID)
 	public Response<ClinicalNotes> getNotesById(@PathParam(value = "clinicalNotesId") String clinicalNotesId) {
-		ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId);
+		ClinicalNotes clinicalNotes = clinicalNotesService.getNotesById(clinicalNotesId, null);
 		if (clinicalNotes.getDiagrams() != null && !clinicalNotes.getDiagrams().isEmpty()) {
 			clinicalNotes.setDiagrams(getFinalDiagrams(clinicalNotes.getDiagrams()));
 		}

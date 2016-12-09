@@ -1517,7 +1517,7 @@ public class HistoryServicesImpl implements HistoryServices {
 	try {
 	    switch (generalRecords.getDataType()) {
 	    case CLINICAL_NOTES:
-		ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(generalRecords.getData().toString());
+		ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(generalRecords.getData().toString(), null);
 		if (clinicalNote != null) {
 		    generalData = new GeneralData();
 		    generalData.setData(clinicalNote);

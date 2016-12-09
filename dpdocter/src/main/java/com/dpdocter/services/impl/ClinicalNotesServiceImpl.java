@@ -117,7 +117,6 @@ import com.dpdocter.repository.PresentComplaintHistoryRepository;
 import com.dpdocter.repository.PresentComplaintRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
-import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.SystemExamRepository;
 import com.dpdocter.repository.UserRepository;
@@ -229,9 +228,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private PatientVisitRepository patientVisitRepository;
-
-	@Autowired
-	private ReferenceRepository referenceRepository;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
@@ -617,7 +613,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public ClinicalNotes getNotesById(String id) {
+	public ClinicalNotes getNotesById(String id, ObjectId visitId) {
 		ClinicalNotes clinicalNote = null;
 		try {
 			ClinicalNotesCollection clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(id));
@@ -669,10 +665,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 													DiagramsCollection.class, Diagram.class).getMappedResults(),
 											clinicalNotesCollection.getDiagrams()));
 
-				PatientVisitCollection patientVisitCollection = patientVisitRepository
-						.findByClinialNotesId(clinicalNotesCollection.getId());
-				if (patientVisitCollection != null)
-					clinicalNote.setVisitId(patientVisitCollection.getId().toString());
+				if(DPDoctorUtils.anyStringEmpty(visitId)){
+					PatientVisitCollection patientVisitCollection = patientVisitRepository
+							.findByClinialNotesId(clinicalNotesCollection.getId());
+					if (patientVisitCollection != null)
+						clinicalNote.setVisitId(patientVisitCollection.getId().toString());
+				}else{
+					clinicalNote.setVisitId(visitId.toString());
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

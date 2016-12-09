@@ -40,7 +40,7 @@ public interface PatientTreatmentServices {
 			String hospitalId, String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded,
 			Boolean inHistory, String status);
 
-	List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId);
+	List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId, ObjectId visitId);
 
 	public List<PatientTreatmentResponse> getPatientTreatmentByPatientId(int page, int size, String doctorId,
 			String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded,

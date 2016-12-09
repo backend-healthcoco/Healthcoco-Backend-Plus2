@@ -38,6 +38,7 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
@@ -58,6 +59,7 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
+import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
@@ -141,6 +143,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
+
+	@Autowired
+	private PatientVisitRepository patientVisitRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -499,7 +504,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Override
 	@Transactional
-	public List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId) {
+	public List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId, ObjectId visitId) {
 
 		List<PatientTreatment> response = null;
 		List<PatientTreatmentCollection> patientTreatmentCollectionList = null;
@@ -528,6 +533,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 					BeanUtil.map(patientTreatmentCollection, patientTreatment);
 					patientTreatment.setTreatments(treatmentResponses);
+					if(DPDoctorUtils.anyStringEmpty(visitId)){
+						PatientVisitCollection patientVisitCollection = patientVisitRepository.findByTreatmentId(patientTreatmentCollection.getId());
+						if (patientVisitCollection != null)
+							patientTreatment.setVisitId(patientVisitCollection.getId().toString());
+					}else{
+						patientTreatment.setVisitId(visitId.toString());
+					}
 					response.add(patientTreatment);
 				}
 

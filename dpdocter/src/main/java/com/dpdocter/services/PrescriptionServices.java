@@ -58,7 +58,7 @@ public interface PrescriptionServices {
 	List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId, String locationId,
 			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
-	List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds);
+	List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId);
 
 	Prescription getPrescriptionById(String prescriptionId);
 

@@ -1266,7 +1266,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds) {
+	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId) {
 		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		try {
@@ -1295,11 +1295,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 						prescription.setItems(prescriptionItemDetailsList);
 					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescriptionCollection.getId());
-					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId().toString());
-
+					if(DPDoctorUtils.anyStringEmpty(visitId)){
+						PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
+						if (patientVisitCollection != null)
+							prescription.setVisitId(patientVisitCollection.getId().toString());
+					}else{
+						prescription.setVisitId(visitId.toString());
+					}
 					if (tests != null && !tests.isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : tests) {
