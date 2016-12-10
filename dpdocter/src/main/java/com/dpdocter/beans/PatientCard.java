@@ -2,11 +2,15 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.collections.PatientGroupCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 
-
-public class PatientCard {
+public class PatientCard extends GenericCollection {
 	private String id;
 
 	private String userId;
@@ -28,7 +32,7 @@ public class PatientCard {
 	private String PID;
 
 	private String gender;
-	
+
 	private String countryCode;
 
 	private String mobileNumber;
@@ -57,8 +61,15 @@ public class PatientCard {
 
 	private Boolean isPatientOTPVerified = false;
 
+	private String referredBy;
+
+	// @Transient
 	private User user;
-	
+
+	private List<PatientGroupCollection> patientGroupCollections;
+
+	private Address address;
+
 	public String getId() {
 		return id;
 	}
@@ -259,6 +270,30 @@ public class PatientCard {
 		this.countryCode = countryCode;
 	}
 
+	public List<PatientGroupCollection> getPatientGroupCollections() {
+		return patientGroupCollections;
+	}
+
+	public void setPatientGroupCollections(List<PatientGroupCollection> patientGroupCollections) {
+		this.patientGroupCollections = patientGroupCollections;
+	}
+
+	public String getReferredBy() {
+		return referredBy;
+	}
+
+	public void setReferredBy(String referredBy) {
+		this.referredBy = referredBy;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -269,7 +304,8 @@ public class PatientCard {
 				+ dateOfVisit + ", groups=" + groups + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
 				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
-				+ ", isPatientOTPVerified=" + isPatientOTPVerified + ", user=" + user + "]";
+				+ ", isPatientOTPVerified=" + isPatientOTPVerified + ", referredBy=" + referredBy + ", user=" + user
+				+ ", patientGroupCollections=" + patientGroupCollections + ", address=" + address + "]";
 	}
 
 	public User getUser() {

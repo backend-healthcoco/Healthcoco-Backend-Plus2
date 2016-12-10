@@ -516,7 +516,7 @@ public class ContactsServiceImpl implements ContactsService {
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
 			String hospitalId, String updatedTime, boolean discarded) {
 		List<RegisteredPatientDetails> registeredPatientDetails = null;
-		List<PatientCollection> patientCollections = null;
+		List<PatientCard> patientCards = null;
 		List<Group> groups = null;
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
@@ -539,49 +539,59 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
-			patientCollections = mongoTemplate.aggregate(
+			patientCards = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 							Aggregation.sort(Direction.DESC, "createdTime")),
-					PatientCollection.class, PatientCollection.class).getMappedResults();
+					PatientCollection.class, PatientCard.class).getMappedResults();
 
-			if (!patientCollections.isEmpty()) {
+			if (!patientCards.isEmpty()) {
 				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
-				for (PatientCollection patientCollection : patientCollections) {
-					UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-					List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
-							.findByPatientId(patientCollection.getUserId());
+				for (PatientCard patientCard : patientCards) {
+					//UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
+					/*List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
+							.findByPatientId(patientCollection.getUserId());*/
 					@SuppressWarnings("unchecked")
-					Collection<ObjectId> groupIds = CollectionUtils.collect(patientGroupCollections,
+					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 							new BeanToPropertyValueTransformer("groupId"));
+					patientCard.setPatientGroupCollections(null);
 					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
-					if (userCollection != null) {
-						BeanUtil.map(userCollection, registeredPatientDetail);
-						if (userCollection.getId() != null) {
-							registeredPatientDetail.setUserId(userCollection.getId().toString());
+					if (patientCard.getUser() != null) {
+						//System.out.println(patientCard.getUser());
+						BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
+						//System.out.println(registeredPatientDetail);
+						if (patientCard.getUser().getId() != null) {
+							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
 						}
 					}
+					//System.out.println(patientCard);
 					Patient patient = new Patient();
-					BeanUtil.map(patientCollection, patient);
-					patient.setPatientId(userCollection.getId().toString());
-					ObjectId referredBy = patientCollection.getReferredBy();
-					patientCollection.setReferredBy(null);
-					BeanUtil.map(patientCollection, registeredPatientDetail);
+					BeanUtil.map(patientCard, patient);
+					patient.setPatientId(patientCard.getUser().getId().toString());
+					ObjectId referredBy = null;
+					if(patientCard.getReferredBy() != null)
+					{
+						referredBy = new ObjectId(patientCard.getReferredBy());
+					}
+					patientCard.setReferredBy(null);
+					BeanUtil.map(patientCard, registeredPatientDetail);
 
 					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
 					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorObjectId,
-								userCollection.getId(), hospitalObjectId, locationObjectId);
+								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
 						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-								doctorObjectId, userCollection.getId(), hospitalObjectId, locationObjectId);
-						recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(),
-								userCollection.getId(), patientCollection.getHospitalId(),
-								patientCollection.getLocationId());
+								doctorObjectId, new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
+						recordsCount = recordsRepository.getRecordsForOtherDoctors(new ObjectId(patientCard.getDoctorId()),
+								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
+								new ObjectId(patientCard.getLocationId()));
 					} else {
 						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
-								userCollection.getId(), hospitalObjectId, locationObjectId);
+								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
 						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
-								userCollection.getId(), hospitalObjectId, locationObjectId);
-						recordsCount = recordsRepository.getRecordsForOtherLocations(userCollection.getId(),
+								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
+						recordsCount = recordsRepository.getRecordsForOtherLocations(new ObjectId(patientCard.getUser().getId()),
 								hospitalObjectId, locationObjectId);
 					}
 
@@ -590,9 +600,9 @@ public class ContactsServiceImpl implements ContactsService {
 							|| (recordsCount != null && recordsCount > 0))
 						patient.setIsDataAvailableWithOtherDoctor(true);
 					patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
-							userCollection.getId().toString()));
+							patientCard.getUser().getId().toString()));
 					registeredPatientDetail.setPatient(patient);
-					registeredPatientDetail.setAddress(patientCollection.getAddress());
+					registeredPatientDetail.setAddress(patientCard.getAddress());
 
 					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 						groups = mongoTemplate
@@ -611,14 +621,14 @@ public class ContactsServiceImpl implements ContactsService {
 					}
 					registeredPatientDetail.setGroups(groups);
 
-					registeredPatientDetail.setDoctorId(patientCollection.getDoctorId().toString());
-					registeredPatientDetail.setLocationId(patientCollection.getLocationId().toString());
-					registeredPatientDetail.setHospitalId(patientCollection.getHospitalId().toString());
-					registeredPatientDetail.setCreatedTime(patientCollection.getCreatedTime());
-					registeredPatientDetail.setPID(patientCollection.getPID());
-
-					if (patientCollection.getDob() != null) {
-						registeredPatientDetail.setDob(patientCollection.getDob());
+					registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());
+					registeredPatientDetail.setLocationId(patientCard.getLocationId().toString());
+					registeredPatientDetail.setHospitalId(patientCard.getHospitalId().toString());
+					registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
+					registeredPatientDetail.setPID(patientCard.getPID());
+					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
+					if (patientCard.getDob() != null) {
+						registeredPatientDetail.setDob(patientCard.getDob());
 					}
 
 					Reference reference = new Reference();

@@ -11,9 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DoctorOTPCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -69,6 +73,9 @@ public class OTPServiceImpl implements OTPService {
 
     @Autowired
 	PushNotificationServices pushNotificationServices;
+    
+    @Autowired
+	private MongoTemplate mongoTemplate;
 	
     @Value(value = "${mail.recordsShareOtpBeforeVerification.subject}")
     private String recordsShareOtpBeforeVerification;
@@ -89,9 +96,12 @@ public class OTPServiceImpl implements OTPService {
     	
 	    OTP = LoginUtils.generateOTP();
 	    UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
-	    UserCollection patient = userRepository.findOne(patientObjectId);
-	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-	    if (userCollection != null && patient != null) {
+	    //UserCollection patient = userRepository.findOne(patientObjectId);
+	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+	    PatientCard patientCard = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
+				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId)), 
+				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+	    if (userCollection != null && patientCard != null) {
 
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
 
@@ -112,17 +122,18 @@ public class OTPServiceImpl implements OTPService {
 		doctorOTPCollection.setPatientId(new ObjectId(patientId));
 		doctorOTPCollection = doctorOTPRepository.save(doctorOTPCollection);
 
-		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patientCollection.getLocalPatientName(),
+		SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(doctorId, locationId, hospitalId, patientId, patientCard.getLocalPatientName(),
 				"OTP to share Healthcoco records with "+doctorName+" is "+OTP+". Pls don't share this with anyone. Stay Healthy and Happy!!",
-			patient.getMobileNumber(), "OTPVerification");
+				patientCard.getUser().getMobileNumber(), "OTPVerification");
+		System.out.println("Mobile Number :: "+patientCard.getUser().getMobileNumber());
 		sMSServices.sendSMS(smsTrackDetail, false);
 
-		if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
-		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCollection.getEmailAddress(),
-			    patientCollection.getLocalPatientName(), doctorName);
-		    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
+		if (patientCard != null && patientCard.getEmailAddress() != null && !patientCard.getEmailAddress().isEmpty()) {
+		    String body = mailBodyGenerator.generateRecordsShareOtpBeforeVerificationEmailBody(patientCard.getEmailAddress(),
+		    		patientCard.getLocalPatientName(), doctorName);
+		    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
 		}
-		pushNotificationServices.notifyUser(patient.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null);
+		pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null);
 	    } else {
 		logger.error("Invalid doctorId or patientId");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
@@ -148,10 +159,13 @@ public class OTPServiceImpl implements OTPService {
     	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
     	
 	    UserCollection userCollection = userRepository.findOne(doctorObjectId);
-	    UserCollection patient = userRepository.findOne(patientObjectId);
+	   // UserCollection patient = userRepository.findOne(patientObjectId);
 
-	    PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-	    if (userCollection != null && patient != null && patientId != null) {
+	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
+	    PatientCard patientCard = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
+				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId)), 
+				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+	    if (userCollection != null && patientCard != null && patientId != null) {
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
 		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId, patientObjectId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));
 		if (doctorOTPCollection != null) {
@@ -162,12 +176,12 @@ public class OTPServiceImpl implements OTPService {
 				otpCollection.setState(OTPState.VERIFIED);
 				otpCollection = otpRepository.save(otpCollection);
 				response = true;
-				if (patientCollection != null && patientCollection.getEmailAddress() != null && !patientCollection.getEmailAddress().isEmpty()) {
-				    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCollection.getEmailAddress(),
-				    		patientCollection.getLocalPatientName(), doctorName);
-				    mailService.sendEmail(patientCollection.getEmailAddress(), recordsShareOtpAfterVerification + " " + userCollection.getTitle() + " "+ userCollection.getFirstName(), body, null);
+				if (patientCard != null && patientCard.getEmailAddress() != null && !patientCard.getEmailAddress().isEmpty()) {
+				    String body = mailBodyGenerator.generateRecordsShareOtpAfterVerificationEmailBody(patientCard.getEmailAddress(),
+				    		patientCard.getLocalPatientName(), doctorName);
+				    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpAfterVerification + " " + userCollection.getTitle() + " "+ userCollection.getFirstName(), body, null);
 				}
-				pushNotificationServices.notifyUser(patient.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null);
+				pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null);
 			    } else {
 				logger.error("OTP is expired");
 				throw new BusinessException(ServiceError.NotFound, "OTP is expired");

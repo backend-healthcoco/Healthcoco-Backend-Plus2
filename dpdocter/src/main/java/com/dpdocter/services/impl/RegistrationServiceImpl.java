@@ -53,6 +53,7 @@ import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -127,6 +128,7 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
+import com.dpdocter.response.UserLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
@@ -869,47 +871,48 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String hospitalId) {
 		List<RegisteredPatientDetails> users = null;
 		try {
-			List<UserCollection> userCollections = userRepository.findByMobileNumber(phoneNumber);
-			if (userCollections != null) {
+			List<UserLookupResponse> userLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(phoneNumber)), 
+					Aggregation.lookup("patient_cl", "_id", "userId", "patients")), UserCollection.class, UserLookupResponse.class).getMappedResults();
+			if (userLookupResponses != null) {
 				users = new ArrayList<RegisteredPatientDetails>();
-				for (UserCollection userCollection : userCollections) {
-					if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress())) {
+				for (UserLookupResponse userLookupResponse : userLookupResponses) {
+					if (!userLookupResponse.getUserName().equalsIgnoreCase(userLookupResponse.getEmailAddress())) {
 						RegisteredPatientDetails user = new RegisteredPatientDetails();
 
 						if (locationId != null && hospitalId != null) {
-							List<PatientCollection> patientCollections = patientRepository
-									.findByUserId(userCollection.getId());
+							/*List<PatientCollection> patientCollections = patientRepository
+									.findByUserId(userCollection.getId());*/
 							boolean isPartOfClinic = false;
-							if (patientCollections != null) {
-								for (PatientCollection patientCollection : patientCollections) {
-									if (patientCollection.getLocationId() != null
-											&& patientCollection.getHospitalId() != null) {
-										if (patientCollection.getLocationId().equals(locationId)
-												&& patientCollection.getHospitalId().equals(hospitalId)) {
-											user.setLocalPatientName(patientCollection.getLocalPatientName());
+							if (userLookupResponse.getPatients() != null) {
+								for (PatientCard patientCard : userLookupResponse.getPatients()) {
+									if (patientCard.getLocationId() != null
+											&& patientCard.getHospitalId() != null) {
+										if (patientCard.getLocationId().equals(locationId)
+												&& patientCard.getHospitalId().equals(hospitalId)) {
+											user.setLocalPatientName(patientCard.getLocalPatientName());
 											isPartOfClinic = true;
 											break;
 										}
 									} else {
 										Patient patient = new Patient();
-										BeanUtil.map(patientCollection, patient);
-										BeanUtil.map(patientCollection, user);
-										BeanUtil.map(userCollection, user);
-										user.setImageUrl(patientCollection.getImageUrl());
-										user.setThumbnailUrl(patientCollection.getThumbnailUrl());
-										patient.setPatientId(patientCollection.getUserId().toString());
+										BeanUtil.map(patientCard, patient);
+										BeanUtil.map(patientCard, user);
+										BeanUtil.map(userLookupResponse, user);
+										user.setImageUrl(patientCard.getImageUrl());
+										user.setThumbnailUrl(patientCard.getThumbnailUrl());
+										patient.setPatientId(patientCard.getUserId().toString());
 										user.setPatient(patient);
 									}
 								}
 							}
 							if (!isPartOfClinic) {
 
-								user.setUserId(userCollection.getId().toString());
-								user.setFirstName(userCollection.getFirstName());
-								user.setMobileNumber(userCollection.getMobileNumber());
+								user.setUserId(userLookupResponse.getId().toString());
+								user.setFirstName(userLookupResponse.getFirstName());
+								user.setMobileNumber(userLookupResponse.getMobileNumber());
 							} else {
-								BeanUtil.map(userCollection, user);
-								user.setUserId(userCollection.getId().toString());
+								BeanUtil.map(userLookupResponse, user);
+								user.setUserId(userLookupResponse.getId().toString());
 							}
 							user.setIsPartOfClinic(isPartOfClinic);
 						}
