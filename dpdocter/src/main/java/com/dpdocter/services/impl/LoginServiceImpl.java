@@ -135,8 +135,7 @@ public class LoginServiceImpl implements LoginService {
 
 			for (UserRoleLookupResponse userRoleLookupResponse : userRoleLookupResponses) {
 				RoleCollection roleCollection = userRoleLookupResponse.getRoleCollection();
-				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())
-						|| roleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole())) {
+				if (roleCollection.getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
 					logger.warn("Invalid User");
 					throw new BusinessException(ServiceError.NotAuthorized, "Invalid User");
 
@@ -187,7 +186,9 @@ public class LoginServiceImpl implements LoginService {
 												|| otherRoleCollection.getRoleCollection().getRole()
 														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))) {
+														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+														|| otherRoleCollection.getRoleCollection().getRole()
+														.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 									logger.warn("You are staff member so please login from website.");
 									throw new BusinessException(ServiceError.NotAuthorized,
 											"You are staff member so please login from website.");
@@ -196,7 +197,9 @@ public class LoginServiceImpl implements LoginService {
 												|| otherRoleCollection.getRoleCollection().getRole()
 														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))) {
+														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+														|| otherRoleCollection.getRoleCollection().getRole()
+														.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 									isStaff = true;
 								}
 

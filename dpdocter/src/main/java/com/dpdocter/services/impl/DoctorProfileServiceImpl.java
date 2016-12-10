@@ -554,13 +554,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				if (isMobileApp && locationSize == 1
 						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))) {
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+								|| otherRoleCollection.getRole()
+								.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 					logger.warn("You are staff member so please login from website.");
 					throw new BusinessException(ServiceError.NotAuthorized,
 							"You are staff member so please login from website.");
 				} else if (isMobileApp && !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))) {
+						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+						|| otherRoleCollection.getRole()
+						.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 					return null;
 				}
 
