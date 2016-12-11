@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.BirthHistory;
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugsAndAllergies;
@@ -93,6 +94,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -2200,65 +2202,100 @@ public class HistoryServicesImpl implements HistoryServices {
 	}
     
     @Override
-    @Transactional
-    public HistoryDetailsResponse getHistory( String patientId, String doctorId, String hospitalId, String locationId , List<String> type)
-    {
-    	HistoryDetailsResponse response =null;
-    	ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null , hospitalObjectId= null;
-		if(!DPDoctorUtils.anyStringEmpty(patientId))patientObjectId = new ObjectId(patientId);
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))doctorObjectId = new ObjectId(doctorId);
-    	if(!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
-    	if(!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
-    	
-    	HistoryCollection historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId,
-				patientObjectId);
-    	
-		if (historyCollection == null) {
-			throw new BusinessException(ServiceError.NoRecord, "History record not found");
-		} else {
-			response = new HistoryDetailsResponse();
-			response.setDoctorId(String.valueOf(historyCollection.getDoctorId()));
-			response.setLocationId(String.valueOf(historyCollection.getLocationId()));
-			response.setHospitalId(String.valueOf(historyCollection.getHospitalId()));
-			response.setPatientId(String.valueOf(historyCollection.getPatientId()));
-			if(type == null || type.isEmpty())
-			{
-				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
-				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
-				    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-				    response.setMedicalhistory(medicalHistory);
-				}
-				response.setDrugsAndAllergies(historyCollection.getDrugsAndAllergies());
-				response.setPersonalHistory(historyCollection.getPersonalHistory());
-				List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
-				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
-				    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
-				    response.setFamilyhistory(familyHistory);
-				}
-			}
-			if (type.contains(HistoryType.MEDICAL.getType())) {
-				List<ObjectId> medicalHistoryIds = historyCollection.getMedicalhistory();
-				if (medicalHistoryIds != null && !medicalHistoryIds.isEmpty()) {
-				    List<DiseaseListResponse> medicalHistory = getDiseasesByIds(medicalHistoryIds);
-				    response.setMedicalhistory(medicalHistory);
-				}
-			}
-			if (type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
-				response.setDrugsAndAllergies(historyCollection.getDrugsAndAllergies());
-			}
-			if (type.contains(HistoryType.PERSONAL.getType())) {
-				response.setPersonalHistory(historyCollection.getPersonalHistory());
-			}
-			if (type.contains(HistoryType.FAMILY.getType())) {
-				List<ObjectId> familyHistoryIds = historyCollection.getFamilyhistory();
-				if (familyHistoryIds != null && !familyHistoryIds.isEmpty()) {
-				    List<DiseaseListResponse> familyHistory = getDiseasesByIds(familyHistoryIds);
-				    response.setFamilyhistory(familyHistory);
-				}
-			}
+	@Transactional
+	public HistoryDetailsResponse getHistory(String patientId, String doctorId, String hospitalId, String locationId,
+			List<String> type) {
+		HistoryDetailsResponse response = null;
+		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+		Criteria criteria = new Criteria();
+		if (!DPDoctorUtils.anyStringEmpty(patientId))
+			patientObjectId = new ObjectId(patientId);
+		criteria = criteria.and("patientId").is(patientObjectId);
+		if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			doctorObjectId = new ObjectId(doctorId);
+		criteria = criteria.and("doctorId").is(doctorObjectId);
+		if (!DPDoctorUtils.anyStringEmpty(locationId))
+			locationObjectId = new ObjectId(locationId);
+		criteria = criteria.and("locationId").is(locationObjectId);
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+			hospitalObjectId = new ObjectId(hospitalId);
+		criteria = criteria.and("hospitalId").is(hospitalObjectId);
+
+		Aggregation aggregation = null;
+		if (type == null || type.isEmpty()) {
+
+			aggregation = Aggregation
+					.newAggregation(Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
+							Aggregation
+									.lookup("diseases_cl", "familyhistory", "_id",
+											"familyhistory"),
+							Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
+									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+									.append("familyhistory", new BasicDBObject("$push", "$familyhistory"))
+									.append("medicalhistory", new BasicDBObject("$push", "$medicalhistory")))));
+
 		}
-    	return response;
-    }
+		if (type.contains(HistoryType.MEDICAL.getType())) {
+			aggregation = Aggregation
+					.newAggregation(
+							Aggregation
+									.lookup("diseases_cl", "medicalhistory", "_id",
+											"medicalhistory"),
+							Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
+									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+									.append("medicalhistory", new BasicDBObject("$push", "$medicalhistory")))));
+		}
+
+		if (type.contains(HistoryType.FAMILY.getType())) {
+			aggregation = Aggregation
+					.newAggregation(
+							Aggregation
+									.lookup("diseases_cl", "familyhistory", "_id",
+											"familyhistory"),
+							Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("doctorName", new BasicDBObject("$first", "$doctorName"))
+									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
+									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+									.append("familyhistory", new BasicDBObject("$push", "$familyhistory")))));
+		}
+		List<HistoryDetailsResponse> historyDetailsresponse = mongoTemplate
+				.aggregate(aggregation, HistoryCollection.class, HistoryDetailsResponse.class).getMappedResults();
+		if (historyDetailsresponse == null || historyDetailsresponse.isEmpty()) {
+			throw new BusinessException(ServiceError.NoRecord, "History record not found");
+		}
+
+		response = historyDetailsresponse.get(0);
+		if (!type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
+			response.setDrugsAndAllergies(null);
+		}
+		if (!type.contains(HistoryType.PERSONAL.getType())) {
+			response.setPersonalHistory(null);
+		}
+		return response;
+
+	}
     
     @SuppressWarnings("unchecked")
 	private List<Drug> getDrugsByIds(List<String> drugIds) {
