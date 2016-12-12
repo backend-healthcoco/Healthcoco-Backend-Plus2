@@ -17,10 +17,10 @@ public interface PatientTreatmentServices {
 
 	TreatmentServiceCost addEditServiceCost(TreatmentServiceCost request);
 
-	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request,Boolean isAppointmentAdd);
+	PatientTreatmentResponse addEditPatientTreatment(PatientTreatmentAddEditRequest request, Boolean isAppointmentAdd);
 
-	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
-			Boolean discarded);
+	PatientTreatmentResponse deletePatientTreatment(String treatmentId, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
 
 	PatientTreatmentResponse getPatientTreatmentById(String treatmentId);
 
@@ -49,5 +49,9 @@ public interface PatientTreatmentServices {
 	void emailPatientTreatment(String treatmentId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
 
-	String downloadPatientTreatment(String treatmentId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA);
+	String downloadPatientTreatment(String treatmentId, Boolean showPH, Boolean showPLH, Boolean showFH,
+			Boolean showDA);
+
+	int getTreatmentsCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified);
 }

@@ -495,11 +495,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Fields.field("treatments.quantity", "$treatments.quantity")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.unwind("treatments"),
+							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))),
 							Aggregation
-									.match(new Criteria("_id").is(new ObjectId(treatmentId))),
-							Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-									"treatmentService"),Aggregation.unwind("treatmentService"),
-							projectList,
+									.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+											"treatmentService"),
+							Aggregation.unwind("treatmentService"), projectList,
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("id", "$_id")
 											.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -563,12 +563,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId)),
+							Aggregation.unwind("treatments"),
 							Aggregation
-									.unwind("treatments"),
-							Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-									"treatment"),Aggregation
-							.unwind("treatment"),
-							projectList,
+									.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+											"treatment"),
+							Aggregation.unwind("treatment"), projectList,
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("id", "$_id")
 											.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -659,10 +658,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatment"),Aggregation.unwind("treatment"),
-								projectList,
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								Aggregation.unwind("treatment"), projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -688,10 +686,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			else
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatment"),Aggregation.unwind("treatment"),
-								projectList,
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								Aggregation.unwind("treatment"), projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -782,10 +779,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatment"),
-								projectList,Aggregation.unwind("treatment"),
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								projectList, Aggregation.unwind("treatment"),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -811,10 +807,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			else
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
-								Aggregation
-										.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-												"treatment"),Aggregation.unwind("treatment"),
-								projectList,
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								Aggregation.unwind("treatment"), projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -1323,5 +1318,24 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			return imagePath + imageURL;
 		} else
 			return null;
+	}
+
+	@Override
+	public int getTreatmentsCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified) {
+		int count;
+		try {
+			if (isOTPVerified)
+				count = patientTreamentRepository.countByPatientId(patientObjectId);
+			else
+				count = patientTreamentRepository.countByPatientIdDoctorLocationHospital(patientObjectId,
+						doctorObjectId, locationObjectId, hospitalObjectId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return count;
 	}
 }
