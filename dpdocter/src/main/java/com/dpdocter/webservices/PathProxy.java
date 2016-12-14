@@ -306,6 +306,17 @@ public interface PathProxy {
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
 
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
+		
+		public static final String ADD_USER_RECORDS = "/user/add";
+
+		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
+
+		public static final String GET_USER_RECORDS_PATIENT_ID = "user/{userId}";
+		
+		public static final String GET_USER_RECORDS_ALLOWANCE = "user/allowance";
+		
+		public static final String DELETE_OR_HIDE_USER_RECORD = "user/{recordId}/delete";
+
 	}
 
 	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";

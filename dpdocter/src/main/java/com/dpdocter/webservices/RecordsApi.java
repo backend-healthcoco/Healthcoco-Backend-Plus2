@@ -26,6 +26,8 @@ import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
+import com.dpdocter.beans.UserAllowanceDetails;
+import com.dpdocter.beans.UserRecords;
 import com.dpdocter.enums.RecordsState;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -400,4 +402,104 @@ public class RecordsApi {
 		return response;
 	}
 
+	@POST
+	@Path(value = PathProxy.RecordsUrls.ADD_USER_RECORDS)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.RecordsUrls.ADD_USER_RECORDS, notes = PathProxy.RecordsUrls.ADD_USER_RECORDS)
+	public Response<UserRecords> addUserRecords(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		UserRecords request = data.getValueAs(UserRecords.class);
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId()) || file == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		UserRecords records = recordsService.addUserRecordsMultipart(file, request);
+
+		if (records != null) {
+			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+		}
+
+		Response<UserRecords> response = new Response<UserRecords>();
+		response.setData(records);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORD_BY_ID)
+	@GET
+	@ApiOperation(value = "GET_USER_RECORD_BY_ID", notes = "GET_USER_RECORD_BY_ID")
+	public Response<UserRecords> getUserRecordById(@PathParam("recordId") String recordId) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
+		}
+
+		UserRecords record = recordsService.getUserRecordById(recordId);
+
+		Response<UserRecords> response = new Response<UserRecords>();
+		response.setData(record);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
+	@GET
+	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
+	public Response<UserRecords> getUserRecordsByuserId(@PathParam("userId") String userId,
+			@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam("isDoctor") Boolean isDoctor) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("User Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "User Id Cannot Be Empty");
+		}else if(isDoctor && DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)){
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId or HospitalId Cannot Be Empty");
+		}
+		Response<UserRecords> response = new Response<UserRecords>();
+		if(isDoctor){
+			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, userId);
+			if(!isOTPVerified) {
+				return response;
+			}
+		}
+		List<UserRecords> records = recordsService.getUserRecordsByuserId(userId, page, size, updatedTime, discarded, isDoctor);		
+		response.setDataList(records);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS_ALLOWANCE)
+	@GET
+	@ApiOperation(value = "GET_USER_RECORDS_ALLOWANCE", notes = "GET_USER_RECORDS_ALLOWANCE")
+	public Response<UserAllowanceDetails> getUserRecordAllowance(@QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber) {
+		if (DPDoctorUtils.anyStringEmpty(userId) && DPDoctorUtils.anyStringEmpty(mobileNumber)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
+		}
+
+		UserAllowanceDetails record = recordsService.getUserRecordAllowance(userId, mobileNumber);
+
+		Response<UserAllowanceDetails> response = new Response<UserAllowanceDetails>();
+		response.setData(record);
+		return response;
+
+	}
+
+	@Path(value = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD, notes = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD)
+	public Response<UserRecords> deleteUserRecord(@PathParam("recordId") String recordId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @DefaultValue("false") @QueryParam("isVisible") Boolean isVisible) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		UserRecords records = recordsService.deleteUserRecord(recordId, discarded, isVisible);
+		Response<UserRecords> response = new Response<UserRecords>();
+		response.setData(records);
+		return response;
+	}
 }

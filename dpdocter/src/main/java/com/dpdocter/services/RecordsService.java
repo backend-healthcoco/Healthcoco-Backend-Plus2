@@ -8,6 +8,8 @@ import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Tags;
+import com.dpdocter.beans.UserAllowanceDetails;
+import com.dpdocter.beans.UserRecords;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
@@ -61,5 +63,15 @@ public interface RecordsService {
 	String saveRecordsImage(FormDataBodyPart file, String patientIdString);
 
 	Records changeRecordState(String recordId, String recordsState);
+
+	UserRecords addUserRecordsMultipart(FormDataBodyPart file, UserRecords request);
+
+	UserRecords getUserRecordById(String recordId);
+
+	List<UserRecords> getUserRecordsByuserId(String userId, int page, int size, String updatedTime, Boolean discarded, Boolean isDoctor);
+
+	UserAllowanceDetails getUserRecordAllowance(String userId, String mobileNumber);
+
+	UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible);
 
 }
