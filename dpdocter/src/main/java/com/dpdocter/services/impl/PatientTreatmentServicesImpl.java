@@ -148,9 +148,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Autowired
 	private PatientVisitService patientVisitService;
 
-	@Autowired
-	private PatientVisitRepository patientVisitRepository;
-
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -593,6 +591,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			if (response == null || response.isEmpty()) {
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
 
+			}else{
+				for(PatientTreatment patientTreatment:response){
+					
+				}
+				
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
