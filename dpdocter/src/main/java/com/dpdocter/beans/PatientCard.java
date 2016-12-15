@@ -69,6 +69,8 @@ public class PatientCard extends GenericCollection {
 	private List<PatientGroupCollection> patientGroupCollections;
 
 	private Address address;
+	
+	private Reference reference;
 
 	public String getId() {
 		return id;
@@ -294,6 +296,14 @@ public class PatientCard extends GenericCollection {
 		this.address = address;
 	}
 
+	public Reference getReference() {
+		return reference;
+	}
+
+	public void setReference(Reference reference) {
+		this.reference = reference;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -305,7 +315,8 @@ public class PatientCard extends GenericCollection {
 				+ ", hospitalId=" + hospitalId + ", doctorSepecificPatientId=" + doctorSepecificPatientId
 				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
 				+ ", isPatientOTPVerified=" + isPatientOTPVerified + ", referredBy=" + referredBy + ", user=" + user
-				+ ", patientGroupCollections=" + patientGroupCollections + ", address=" + address + "]";
+				+ ", patientGroupCollections=" + patientGroupCollections + ", address=" + address + ", reference="
+				+ reference + "]";
 	}
 
 	public User getUser() {

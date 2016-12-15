@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.URLConnection;
 
 import javax.imageio.ImageIO;
@@ -153,13 +154,20 @@ public class FileManagerImpl implements FileManager {
 
     @Override
     @Transactional
-    public void saveRecord(FormDataBodyPart file, String recordPath) {
+    public Double saveRecord(FormDataBodyPart file, String recordPath, Double allowedSize, Boolean checkSize) {
 	BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 	AmazonS3 s3client = new AmazonS3Client(credentials);
+	Double fileSizeInMB = 0.0;
 	try {
 		InputStream fis = file.getEntityAs(InputStream.class);
 	    ObjectMetadata metadata = new ObjectMetadata();
 	    byte[] contentBytes = IOUtils.toByteArray(fis);
+	    if(checkSize){
+	    	fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000*1000)).doubleValue();
+	    	if(fileSizeInMB > allowedSize){
+	    		throw new BusinessException(ServiceError.Unknown, allowedSize+" MB are left. You cannot upload file more than this");
+	    	}
+	    }
 	    metadata.setContentLength(contentBytes.length);
 	    metadata.setContentEncoding(file.getContentDisposition().getType());
 	    metadata.setContentType(file.getMediaType().getType());
@@ -173,8 +181,11 @@ public class FileManagerImpl implements FileManager {
 	    System.out.println(
 		    "Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
 	    System.out.println("Error Message: " + ace.getMessage());
+	} catch (BusinessException e) {
+		throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	} catch (Exception e) {
 	    System.out.println("Error Message: " + e.getMessage());
 	}
+	return fileSizeInMB;
     }
 }

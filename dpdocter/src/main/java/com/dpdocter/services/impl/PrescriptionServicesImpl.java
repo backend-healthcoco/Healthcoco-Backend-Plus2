@@ -15,6 +15,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.mail.MessagingException;
+
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -37,6 +40,8 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -44,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.DoctorDrug;
 import com.dpdocter.beans.Drug;
@@ -155,6 +161,7 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
@@ -344,6 +351,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While saving drugs", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
 		}
 		return response;
@@ -355,7 +368,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Drug response = null;
 		try {
 			DrugCollection drugCollection = drugRepository.findOne(new ObjectId(request.getId()));
-			if(drugCollection.getDoctorId() != null && drugCollection.getLocationId() != null && drugCollection.getHospitalId() != null){
+			if (drugCollection.getDoctorId() != null && drugCollection.getLocationId() != null
+					&& drugCollection.getHospitalId() != null) {
 				drugCollection.setUpdatedTime(new Date());
 				drugCollection.setDuration(request.getDuration());
 				drugCollection.setDosage(request.getDosage());
@@ -386,12 +400,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
 			}
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
-					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),	new ObjectId(request.getHospitalId()));
-			if(doctorDrugCollection == null){
+			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
+					drugCollection.getId(), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+					new ObjectId(request.getHospitalId()));
+			if (doctorDrugCollection == null) {
 				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
-						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()), 1,
-						false, drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
+						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+						new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
+						drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
 						drugCollection.getGenericNames(), drugCollection.getCreatedBy());
 				doctorDrugCollection.setCreatedTime(new Date());
 			} else {
@@ -415,6 +431,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Editing Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While editing drugs", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
 		}
 		return response;
@@ -470,6 +492,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Deleting Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting Drug", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 		}
 		return response;
@@ -491,6 +519,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting drug for drugId:"+drugId, e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
 		}
 		return drugAddEditResponse;
@@ -543,6 +577,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Template");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While saving template", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Template");
 		}
 		return response;
@@ -657,7 +697,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public TemplateAddEditResponseDetails getTemplate(String templateId, String doctorId, String hospitalId,
 			String locationId) {
 		TemplateAddEditResponseDetails response = null;
-		TemplateCollection templateCollection = new TemplateCollection();
 		try {
 			ObjectId templateObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(templateId))
@@ -668,22 +707,49 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
+			Criteria criteria = new Criteria().andOperator(new Criteria("id").is(templateObjectId),
+					new Criteria("doctorId").is(doctorObjectId), new Criteria("locationId").is(locationObjectId),
+					new Criteria("hospitalId").is(hospitalObjectId));
 
-			templateCollection = templateRepository.getTemplate(templateObjectId, doctorObjectId, hospitalObjectId,
-					locationObjectId);
-			if (templateCollection != null) {
-				response = new TemplateAddEditResponseDetails();
-				BeanUtil.map(templateCollection, response);
-				int i = 0;
-				for (TemplateItem item : templateCollection.getItems()) {
-					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
-					Drug drug = new Drug();
-					if (drugCollection != null)
-						BeanUtil.map(drugCollection, drug);
-					response.getItems().get(i).setDrug(drug);
-					i++;
-				}
-			}
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
+					Fields.field("doctorId", "$doctorId"), Fields.field("discarded", "$discarded"),
+					Fields.field("items.drug", "$drug"), Fields.field("items.duration", "$items.duration"),
+					Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime")));
+
+			Aggregation aggregation = Aggregation
+					.newAggregation(
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+							Aggregation.match(criteria),
+							Aggregation.lookup("drug_cl", "items.drugId", "_id",
+									"drug"),
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays",
+													true))),
+							projectList,
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("items", new BasicDBObject("$addToSet", "$items"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+
+			AggregationResults<TemplateAddEditResponseDetails> groupResults = mongoTemplate.aggregate(aggregation,
+					TemplateCollection.class, TemplateAddEditResponseDetails.class);
+			List<TemplateAddEditResponseDetails> templateAddEditResponse = groupResults.getMappedResults();
+			response = templateAddEditResponse.get(0);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Template");
@@ -869,8 +935,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			String doctorName) {
 		try {
 			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);
-			PatientCollection patientCollection = patientRepository
-					.findByUserIdLocationIdAndHospitalId(patientId, locationId, hospitalId);
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientId,
+					locationId, hospitalId);
 			if (userCollection != null) {
 				String message = downloadAppMessageToPatient;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -1158,7 +1224,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public List<Prescription> getPrescriptions(int page, int size, String doctorId, String hospitalId,
 			String locationId, String patientId, String updatedTime, boolean isOTPVerified, boolean discarded,
 			boolean inHistory) {
-		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
@@ -1190,71 +1255,114 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			} else {
 				pushNotificationServices.notifyUser(patientId, "Global records", null, null);
 			}
+
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
+					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("diagnosticTests.test", "$test"),
+					Fields.field("diagnosticTests.recordId", "$diagnosticTests.recordId")));
 			Aggregation aggregation = null;
 
-			if (size > 0)
+			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$test")
+								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
+						projectList,
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+								.append("name", new BasicDBObject("$first", "$name"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("items", new BasicDBObject("$addToSet", "$items"))
+								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+								.append("advice", new BasicDBObject("$first", "$advice"))
+								.append("diagnosticTests", new BasicDBObject("$addToSet", "$diagnosticTests"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+								.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+								.append("visitId", new BasicDBObject("$first", "$visitId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
-			else
+
+			} else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$test")
+								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
+						projectList,
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+								.append("name", new BasicDBObject("$first", "$name"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("items", new BasicDBObject("$addToSet", "$items"))
+								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+								.append("advice", new BasicDBObject("$first", "$advice"))
+								.append("diagnosticTests", new BasicDBObject("$addToSet", "$diagnosticTests"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+								.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+								.append("visitId", new BasicDBObject("$first", "$visitId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			AggregationResults<PrescriptionCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PrescriptionCollection.class, PrescriptionCollection.class);
-			prescriptionCollections = aggregationResults.getMappedResults();
+			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PrescriptionCollection.class, Prescription.class);
+			prescriptions = aggregationResults.getMappedResults();
 
-			if (prescriptionCollections != null) {
-				prescriptions = new ArrayList<Prescription>();
-				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
-
-					Prescription prescription = new Prescription();
-					List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
-					prescriptionCollection.setDiagnosticTests(null);
-					BeanUtil.map(prescriptionCollection, prescription);
-					if (prescriptionCollection.getItems() != null) {
-						List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
-						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
-							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-							if (prescriptionItem.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository
-										.findOne(new ObjectId(prescriptionItem.getDrugId()));
-								Drug drug = new Drug();
-								if (drugCollection != null)
-									BeanUtil.map(drugCollection, drug);
-								prescriptionItemDetails.setDrug(drug);
-							}
-							prescriptionItemDetailsList.add(prescriptionItemDetails);
-						}
-						prescription.setItems(prescriptionItemDetailsList);
-					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescriptionCollection.getId());
-					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId().toString());
-
-					if (tests != null && !tests.isEmpty()) {
-						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
-						for (TestAndRecordData data : tests) {
-							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(new ObjectId(data.getTestId()));
-								DiagnosticTest diagnosticTest = new DiagnosticTest();
-								if (diagnosticTestCollection != null) {
-									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-								}
-								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
-							}
-						}
-						prescription.setDiagnosticTests(diagnosticTests);
-					}
-					prescriptions.add(prescription);
-				}
-			} else {
-				logger.warn("Prescription Not Found");
-				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(" Error Occurred While Getting Prescription");
@@ -1263,63 +1371,70 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return prescriptions;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public List<Prescription> getPrescriptionsByIds(List<ObjectId> prescriptionIds, ObjectId visitId) {
-		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		try {
-			prescriptionCollections = IteratorUtils.toList(prescriptionRepository.findAll(prescriptionIds).iterator());
-			if (prescriptionCollections != null) {
-				prescriptions = new ArrayList<Prescription>();
-				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
-
-					Prescription prescription = new Prescription();
-					List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
-					prescriptionCollection.setDiagnosticTests(null);
-					BeanUtil.map(prescriptionCollection, prescription);
-					if (prescriptionCollection.getItems() != null) {
-						List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
-						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
-							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-							DrugCollection drugCollection = drugRepository
-									.findOne(new ObjectId(prescriptionItem.getDrugId()));
-							if (drugCollection != null) {
-								Drug drug = new Drug();
-								BeanUtil.map(drugCollection, drug);
-								prescriptionItemDetails.setDrug(drug);
-							}
-							prescriptionItemDetailsList.add(prescriptionItemDetails);
-						}
-						prescription.setItems(prescriptionItemDetailsList);
-					}
-					if(DPDoctorUtils.anyStringEmpty(visitId)){
-						PatientVisitCollection patientVisitCollection = patientVisitRepository.findByPrescriptionId(prescriptionCollection.getId());
-						if (patientVisitCollection != null)
-							prescription.setVisitId(patientVisitCollection.getId().toString());
-					}else{
-						prescription.setVisitId(visitId.toString());
-					}
-					if (tests != null && !tests.isEmpty()) {
-						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
-						for (TestAndRecordData data : tests) {
-							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(new ObjectId(data.getTestId()));
-								DiagnosticTest diagnosticTest = new DiagnosticTest();
-								if (diagnosticTestCollection != null) {
-									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-								}
-								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
-							}
-						}
-						prescription.setDiagnosticTests(diagnosticTests);
-					}
-					prescriptions.add(prescription);
-				}
-			} else {
+			Criteria criteria = new Criteria().andOperator(new Criteria("visitId").is(visitId),
+					new Criteria("_id").in(prescriptionIds));
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
+					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("diagnosticTests.test", "$test"),
+					Fields.field("diagnosticTests.recordId", "$diagnosticTests.recordId")));
+			Aggregation aggregation = Aggregation.newAggregation(
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+					Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$test").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(
+							new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays",
+											true))),
+					projectList, Aggregation.match(criteria),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("items", new BasicDBObject("$addToSet", "$items"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("advice", new BasicDBObject("$first", "$advice"))
+									.append("diagnosticTests", new BasicDBObject("$addToSet", "$diagnosticTests"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PrescriptionCollection.class, Prescription.class);
+			prescriptions = aggregationResults.getMappedResults();
+			if (prescriptions == null || prescriptionIds.isEmpty()) {
 				logger.warn("Prescription Not Found");
 				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 			}
@@ -1336,7 +1451,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public List<TemplateAddEditResponseDetails> getTemplates(int page, int size, String doctorId, String hospitalId,
 			String locationId, String updatedTime, boolean discarded) {
 		List<TemplateAddEditResponseDetails> response = null;
-		List<TemplateCollection> templateCollections = null;
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
@@ -1357,38 +1471,84 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(doctorObjectId);
 
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId"),
+					Fields.field("doctorId", "$doctorId"), Fields.field("discarded", "$discarded"),
+					Fields.field("items.drug", "$drug"), Fields.field("items.duration", "$items.duration"),
+					Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime")));
+
 			Aggregation aggregation = null;
 
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-
-			templateCollections = mongoTemplate
-					.aggregate(aggregation, TemplateCollection.class, TemplateCollection.class).getMappedResults();
-			if (templateCollections != null && !templateCollections.isEmpty()) {
-				response = new ArrayList<TemplateAddEditResponseDetails>();
-				for (TemplateCollection templateCollection : templateCollections) {
-					TemplateAddEditResponseDetails template = new TemplateAddEditResponseDetails();
-					BeanUtil.map(templateCollection, template);
-					int i = 0;
-					if (templateCollection.getItems() != null)
-						for (TemplateItem item : templateCollection.getItems()) {
-							if (item.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
-								Drug drug = new Drug();
-								if (drugCollection != null)
-									BeanUtil.map(drugCollection, drug);
-								template.getItems().get(i).setDrug(drug);
-								i++;
-							}
-						}
-					response.add(template);
-				}
+			if (size > 0) {
+				aggregation = Aggregation
+						.newAggregation(
+								new CustomAggregationOperation(
+										new BasicDBObject("$unwind",
+												new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays",
+														true))),
+								Aggregation.match(criteria),
+								Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+								projectList,
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("discarded",
+														new BasicDBObject("$first", "$discarded"))
+												.append("items",
+														new BasicDBObject("$addToSet", "$items")
+																.append("createdTime",
+																		new BasicDBObject("$first", "$createdTime"))
+																.append("updatedTime",
+																		new BasicDBObject("$first", "$updatedTime"))
+																.append("createdBy",
+																		new BasicDBObject("$first", "$createdBy"))))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size));
 			}
+
+			else
+				aggregation = Aggregation
+						.newAggregation(
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays",
+												true))),
+								Aggregation.match(criteria),
+								Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+								projectList,
+
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("name", new BasicDBObject("$first", "$name"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("discarded", new BasicDBObject("$first", "$discarded"))
+												.append("items",
+														new BasicDBObject("$addToSet", "$items"))												
+																.append("createdTime",
+																		new BasicDBObject("$first", "$createdTime"))
+																.append("updatedTime",
+																		new BasicDBObject("$first", "$updatedTime"))
+																.append("createdBy",
+																		new BasicDBObject("$first", "$createdBy")))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			response = mongoTemplate
+					.aggregate(aggregation, TemplateCollection.class, TemplateAddEditResponseDetails.class)
+					.getMappedResults();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Template");
@@ -1404,7 +1564,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Integer prescriptionCount = 0;
 		try {
 
-			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);;
+			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId);
+			;
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
 					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -1804,52 +1965,68 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public Prescription getPrescriptionById(String prescriptionId) {
 		Prescription prescription = null;
 		try {
-			PrescriptionCollection prescriptionCollection = prescriptionRepository
-					.findOne(new ObjectId(prescriptionId));
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
+					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("diagnosticTests.test", "$test"),
+					Fields.field("diagnosticTests.recordId", "$diagnosticTests.recordId")));
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("_id").is(new ObjectId(prescriptionId))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+					Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$test")
+							.append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(
+							new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$visit")
+											.append("preserveNullAndEmptyArrays",
+													true))),
+					projectList,
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("id", "$_id").append("name", new BasicDBObject("$first", "$name"))
+									.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("discarded", new BasicDBObject("$first", "$discarded"))
+									.append("items", new BasicDBObject("$addToSet", "$items"))
+									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+									.append("advice", new BasicDBObject("$first", "$advice"))
+									.append("diagnosticTests", new BasicDBObject("$addToSet", "$diagnosticTests"))
+									.append("time", new BasicDBObject("$first", "$time"))
+									.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+									.append("patientId", new BasicDBObject("$first", "$patientId"))
+									.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("visitId", new BasicDBObject("$first", "$visitId"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+									.append("createdBy", new BasicDBObject("$first", "$createdBy")))));
+			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PrescriptionCollection.class, Prescription.class);
+			List<Prescription> prescriptions = aggregationResults.getMappedResults();
 
-			if (prescriptionCollection != null) {
-				prescription = new Prescription();
-				List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
-				prescriptionCollection.setDiagnosticTests(null);
-				BeanUtil.map(prescriptionCollection, prescription);
-				if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty()) {
-					List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-					for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-						DrugCollection drugCollection = drugRepository
-								.findOne(new ObjectId(prescriptionItem.getDrugId()));
-						if (drugCollection != null) {
-							Drug drug = new Drug();
-							BeanUtil.map(drugCollection, drug);
-							prescriptionItemDetail.setDrug(drug);
-						}
-						prescriptionItemDetails.add(prescriptionItemDetail);
-					}
-					prescription.setItems(prescriptionItemDetails);
-				}
-				PatientVisitCollection patientVisitCollection = patientVisitRepository
-						.findByPrescriptionId(prescriptionCollection.getId());
-				if (patientVisitCollection != null)
-					prescription.setVisitId(patientVisitCollection.getId().toString());
-
-				if (tests != null && !tests.isEmpty()) {
-					List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
-					for (TestAndRecordData data : tests) {
-						if (data.getTestId() != null) {
-							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-									.findOne(new ObjectId(data.getTestId()));
-							DiagnosticTest diagnosticTest = new DiagnosticTest();
-							if (diagnosticTestCollection != null) {
-								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-							}
-							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
-						}
-					}
-					prescription.setDiagnosticTests(diagnosticTests);
-				}
-
-			} else {
+			if (prescriptions != null && !prescriptions.isEmpty())
+				prescription = prescriptions.get(0);
+			else {
 				throw new BusinessException(ServiceError.NotFound,
 						"No Prescription Found For the Given Prescription or Patient Id");
 			}
@@ -2420,8 +2597,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 						user = userRepository.findOne(prescriptionCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								prescriptionCollection.getPatientId(), 
-								prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
+								prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
+								prescriptionCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
 						emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
 						emailTrackCollection.setHospitalId(prescriptionCollection.getHospitalId());
@@ -2433,7 +2610,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user, null, false, false, false, false, false);
+						JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user,
+								null, false, false, false, false, false);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -2506,10 +2684,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							&& prescriptionCollection.getLocationId().equals(locationId)) {
 
 						UserCollection userCollection = userRepository.findOne(prescriptionCollection.getPatientId());
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(),
-										prescriptionCollection.getLocationId(),
-										prescriptionCollection.getHospitalId());
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
+								prescriptionCollection.getHospitalId());
 						if (patientCollection != null) {
 							String prescriptionDetails = "";
 							int i = 0;
@@ -2877,70 +3054,127 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Transactional
 	public List<Prescription> getPrescriptions(String patientId, int page, int size, String updatedTime,
 			Boolean discarded) {
-		List<PrescriptionCollection> prescriptionCollections = null;
 		List<Prescription> prescriptions = null;
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
 		try {
+
 			if (discarded)
 				discards[1] = true;
 
 			long createdTimestamp = Long.parseLong(updatedTime);
-			if (size > 0)
-				prescriptionCollections = prescriptionRepository.getPrescription(new ObjectId(patientId),
-						new Date(createdTimestamp), discards,
-						new PageRequest(page, size, Direction.DESC, "createdTime"));
-			else
-				prescriptionCollections = prescriptionRepository.getPrescription(new ObjectId(patientId),
-						new Date(createdTimestamp), discards, new Sort(Sort.Direction.DESC, "createdTime"));
+			Criteria criteria = new Criteria().andOperator(new Criteria("patientId").is(new ObjectId(patientId)),
+					new Criteria("discarded").in(discards), new Criteria("updatedTime").gt(new Date(createdTimestamp)));
 
-			if (prescriptionCollections != null) {
-				prescriptions = new ArrayList<Prescription>();
-				for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
+					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
+					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
+					Fields.field("items.dosageTime", "$items.dosageTime"),
+					Fields.field("items.direction", "$items.direction"),
+					Fields.field("items.instructions", "$items.instructions"),
+					Fields.field("diagnosticTests.test", "$test"),
+					Fields.field("diagnosticTests.recordId", "$diagnosticTests.recordId")));
+			Aggregation aggregation = null;
 
-					Prescription prescription = new Prescription();
-					List<TestAndRecordData> tests = prescriptionCollection.getDiagnosticTests();
-					prescriptionCollection.setDiagnosticTests(null);
-					BeanUtil.map(prescriptionCollection, prescription);
-					if (prescriptionCollection.getItems() != null) {
-						List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
-						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-							PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
-							BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-							if (prescriptionItem.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository
-										.findOne(new ObjectId(prescriptionItem.getDrugId()));
-								Drug drug = new Drug();
-								if (drugCollection != null)
-									BeanUtil.map(drugCollection, drug);
-								prescriptionItemDetails.setDrug(drug);
-							}
-							prescriptionItemDetailsList.add(prescriptionItemDetails);
-						}
-						prescription.setItems(prescriptionItemDetailsList);
-					}
-					PatientVisitCollection patientVisitCollection = patientVisitRepository
-							.findByPrescriptionId(prescriptionCollection.getId());
-					if (patientVisitCollection != null)
-						prescription.setVisitId(patientVisitCollection.getId().toString());
-					if (tests != null && !tests.isEmpty()) {
-						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
-						for (TestAndRecordData data : tests) {
-							if (data.getTestId() != null) {
-								DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-										.findOne(new ObjectId(data.getTestId()));
-								DiagnosticTest diagnosticTest = new DiagnosticTest();
-								if (diagnosticTestCollection != null) {
-									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-								}
-								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
-							}
-						}
-						prescription.setDiagnosticTests(diagnosticTests);
-					}
-					prescriptions.add(prescription);
-				}
-			} else {
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$test")
+								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
+						projectList,
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+								.append("name", new BasicDBObject("$first", "$name"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("items", new BasicDBObject("$addToSet", "$items"))
+								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+								.append("advice", new BasicDBObject("$first", "$advice"))
+								.append("diagnosticTests", new BasicDBObject("$addToSet", "$diagnosticTests"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+								.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+								.append("visitId", new BasicDBObject("$first", "$visitId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+
+			} else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$diagnosticTests").append("preserveNullAndEmptyArrays",
+										true))),
+						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTests.testId", "_id", "test"),
+						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$test")
+								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
+						projectList,
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
+								.append("name", new BasicDBObject("$first", "$name"))
+								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+								.append("locationId", new BasicDBObject("$first", "$locationId"))
+								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("discarded", new BasicDBObject("$first", "$discarded"))
+								.append("items", new BasicDBObject("$addToSet", "$items"))
+								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+								.append("advice", new BasicDBObject("$first", "$advice"))
+								.append("diagnosticTests", new BasicDBObject("$addToSet", "$diagnosticTests"))
+								.append("time", new BasicDBObject("$first", "$time"))
+								.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+								.append("patientId", new BasicDBObject("$first", "$patientId"))
+								.append("isFeedbackAvailable", new BasicDBObject("$first", "$isFeedbackAvailable"))
+								.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+								.append("visitId", new BasicDBObject("$first", "$visitId"))
+								.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+								.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+								.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PrescriptionCollection.class, Prescription.class);
+			prescriptions = aggregationResults.getMappedResults();
+
+			if (prescriptions == null || prescriptions.isEmpty()) {
+
 				logger.warn("Prescription Not Found");
 				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
 			}
@@ -3169,23 +3403,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	@Override
-	public String getPrescriptionFile(String prescriptionId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean isLabPrint) {
+	public String getPrescriptionFile(String prescriptionId, Boolean showPH, Boolean showPLH, Boolean showFH,
+			Boolean showDA, Boolean isLabPrint) {
 		String response = null;
-		HistoryCollection historyCollection  = null;
+		HistoryCollection historyCollection = null;
 		try {
 			PrescriptionCollection prescriptionCollection = prescriptionRepository
 					.findOne(new ObjectId(prescriptionId));
 
 			if (prescriptionCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						prescriptionCollection.getPatientId(), 
-						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId());
+						prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
+						prescriptionCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(prescriptionCollection.getPatientId());
 
-				if(showPH || showPLH || showFH || showDA){
-					historyCollection  = historyRepository.findHistory(prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId());
+				if (showPH || showPLH || showFH || showDA) {
+					historyCollection = historyRepository.findHistory(prescriptionCollection.getLocationId(),
+							prescriptionCollection.getHospitalId(), prescriptionCollection.getPatientId());
 				}
-				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA, isLabPrint);
+				JasperReportResponse jasperReportResponse = createJasper(prescriptionCollection, patient, user,
+						historyCollection, showPH, showPLH, showFH, showDA, isLabPrint);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3204,7 +3441,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private JasperReportResponse createJasper(PrescriptionCollection prescriptionCollection, PatientCollection patient,
-			UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean isLabPrint) throws IOException, ParseException {
+			UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH,
+			Boolean showDA, Boolean isLabPrint) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
@@ -3237,11 +3475,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						String directions = "";
 						if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
 							showDirection = true;
-							if (prescriptionItem.getDirection().get(0).getDirection() != null){
-									if (directions == "")
-										directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
-									else
-										directions = directions + "," + (prescriptionItem.getDirection().get(0).getDirection());
+							if (prescriptionItem.getDirection().get(0).getDirection() != null) {
+								if (directions == "")
+									directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
+								else
+									directions = directions + ","
+											+ (prescriptionItem.getDirection().get(0).getDirection());
 							}
 						}
 						if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
@@ -3314,16 +3553,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
-		
-		if(historyCollection != null){
+
+		if (historyCollection != null) {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, "<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null ? prescriptionCollection.getUniqueEmrId() : "--"), patient.getLocalPatientName(), user.getMobileNumber(),
-				parameters);
+				patient,
+				"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
+						? prescriptionCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
@@ -3333,9 +3574,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String pageSize = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
 		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null ? printSettings.getPageSetup().getTopMargin(): 20) : 20;
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
+						? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
 		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
+						? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
 		Integer leftMargin = printSettings != null
 				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
 						? printSettings.getPageSetup().getLeftMargin() : 20)
@@ -3761,45 +4006,59 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Override
 	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
 		List<DrugInteractionResposne> response = null;
-		try{
+		try {
 			Map<Integer, String> genericCodes = new HashMap<Integer, String>();
 			Map<Drug, Set<String>> drugMap = new LinkedHashMap<Drug, Set<String>>();
-			for(Drug drug : request){
-				if(drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()){
+			for (Drug drug : request) {
+				if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
 					Set<String> codes = new HashSet<String>();
-					for(GenericCode genericNames : drug.getGenericNames()){
-						if(!codes.contains(genericNames.getCode()))codes.add(genericNames.getCode());
-						if(!genericCodes.containsValue(genericNames.getCode()))genericCodes.put(genericCodes.size(), genericNames.getCode());
+					for (GenericCode genericNames : drug.getGenericNames()) {
+						if (!codes.contains(genericNames.getCode()))
+							codes.add(genericNames.getCode());
+						if (!genericCodes.containsValue(genericNames.getCode()))
+							genericCodes.put(genericCodes.size(), genericNames.getCode());
 					}
 					drugMap.put(drug, codes);
 				}
 			}
-			
-			boolean[][] codeMatrix = new boolean[genericCodes.size()][genericCodes.size()];	
-			for(int row = 0; row < codeMatrix.length; row++){
-			    for(int column = 0; column < codeMatrix[row].length; column++){
-			    	if(row != column && !codeMatrix[row][column] && !codeMatrix[column][row]){
-			    		if(!checkGenericContainsInSameDrug(genericCodes.get(row), genericCodes.get(column), drugMap)){
-			    				codeMatrix[row][column] = true;
-			    				codeMatrix[column][row] = true;
-			    				List<ESGenericCodeWithReaction> esGenericCodeWithReactions = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-			    						.withQuery(new BoolQueryBuilder().must(QueryBuilders.matchQuery("codes", genericCodes.get(row)))
-			    								.must(QueryBuilders.matchQuery("codes",genericCodes.get(column)))).build(), ESGenericCodeWithReaction.class);
-			    				if(esGenericCodeWithReactions != null && !esGenericCodeWithReactions.isEmpty()){
-			    					if(response == null)response = new ArrayList<>();
-			    					for(Entry<Drug, Set<String>> entry : drugMap.entrySet()){
-			    						if(entry.getValue().contains(genericCodes.get(row))){
-			    							for(Entry<Drug, Set<String>> entry2 : drugMap.entrySet()){
-				    							if(entry2.getValue().contains(genericCodes.get(column))){
-				    								response.add(new DrugInteractionResposne(entry.getKey().getDrugName()+" has "+esGenericCodeWithReactions.get(0).getReactionType()+" reaction with "+entry2.getKey().getDrugName(), esGenericCodeWithReactions.get(0).getReactionType()));			
-				    							}
-				    						}
-			    						}	    						
-			    					}
-			    				}
-			    			}
-			    	}
-			    }
+
+			boolean[][] codeMatrix = new boolean[genericCodes.size()][genericCodes.size()];
+			for (int row = 0; row < codeMatrix.length; row++) {
+				for (int column = 0; column < codeMatrix[row].length; column++) {
+					if (row != column && !codeMatrix[row][column] && !codeMatrix[column][row]) {
+						if (!checkGenericContainsInSameDrug(genericCodes.get(row), genericCodes.get(column), drugMap)) {
+							codeMatrix[row][column] = true;
+							codeMatrix[column][row] = true;
+							List<ESGenericCodeWithReaction> esGenericCodeWithReactions = elasticsearchTemplate
+									.queryForList(
+											new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder()
+													.must(QueryBuilders.matchQuery("codes", genericCodes.get(row)))
+													.must(QueryBuilders.matchQuery("codes", genericCodes.get(column))))
+													.build(),
+											ESGenericCodeWithReaction.class);
+							if (esGenericCodeWithReactions != null && !esGenericCodeWithReactions.isEmpty()) {
+								if (response == null)
+									response = new ArrayList<>();
+								for (Entry<Drug, Set<String>> entry : drugMap.entrySet()) {
+									if (entry.getValue().contains(genericCodes.get(row))) {
+										for (Entry<Drug, Set<String>> entry2 : drugMap.entrySet()) {
+											if (entry2.getValue().contains(genericCodes.get(column))) {
+												response.add(
+														new DrugInteractionResposne(
+																entry.getKey().getDrugName() + " has "
+																		+ esGenericCodeWithReactions.get(0)
+																				.getReactionType()
+																		+ " reaction with "
+																		+ entry2.getKey().getDrugName(),
+																esGenericCodeWithReactions.get(0).getReactionType()));
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3811,9 +4070,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	public boolean checkGenericContainsInSameDrug(String a, String b, Map<Drug, Set<String>> drugMap) {
 		boolean response = false;
-		for(Entry<Drug, Set<String>> entry : drugMap.entrySet()){
-			if(entry.getValue().contains(a) && entry.getValue().contains(b)){
-				response = true;break;			
+		for (Entry<Drug, Set<String>> entry : drugMap.entrySet()) {
+			if (entry.getValue().contains(a) && entry.getValue().contains(b)) {
+				response = true;
+				break;
 			}
 		}
 		return response;
@@ -3827,36 +4087,38 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String cvsSplitBy = ",";
 
 		try {
-		    br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-			 String[] codes = line.split(cvsSplitBy);
-			 for(int i=1 ;i<codes.length;i++){
-				GenericCodeWithReactionCollection genericCodeWithReactionCollection = genericCodeWithReactionRepository.find(Arrays.asList(codes[0],codes[i]));
-				if(genericCodeWithReactionCollection == null){
-					genericCodeWithReactionCollection = new GenericCodeWithReactionCollection(Arrays.asList(codes[0],codes[i]));
-					genericCodeWithReactionCollection.setCreatedBy("ADMIN");
-					genericCodeWithReactionCollection.setCreatedTime(new Date());
-					genericCodeWithReactionCollection = genericCodeWithReactionRepository.save(genericCodeWithReactionCollection);
-					
-					ESGenericCodeWithReaction codeWithReaction = new ESGenericCodeWithReaction();
-					BeanUtil.map(genericCodeWithReactionCollection, codeWithReaction);
-					esGenericCodeWithReactionRepository.save(codeWithReaction);
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] codes = line.split(cvsSplitBy);
+				for (int i = 1; i < codes.length; i++) {
+					GenericCodeWithReactionCollection genericCodeWithReactionCollection = genericCodeWithReactionRepository
+							.find(Arrays.asList(codes[0], codes[i]));
+					if (genericCodeWithReactionCollection == null) {
+						genericCodeWithReactionCollection = new GenericCodeWithReactionCollection(
+								Arrays.asList(codes[0], codes[i]));
+						genericCodeWithReactionCollection.setCreatedBy("ADMIN");
+						genericCodeWithReactionCollection.setCreatedTime(new Date());
+						genericCodeWithReactionCollection = genericCodeWithReactionRepository
+								.save(genericCodeWithReactionCollection);
+
+						ESGenericCodeWithReaction codeWithReaction = new ESGenericCodeWithReaction();
+						BeanUtil.map(genericCodeWithReactionCollection, codeWithReaction);
+						esGenericCodeWithReactionRepository.save(codeWithReaction);
+					}
 				}
 			}
-	    }
 		} catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-	    }
-	}	
+		}
 		return true;
 	}
-		
+
 }

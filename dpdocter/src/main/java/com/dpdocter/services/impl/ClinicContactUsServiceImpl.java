@@ -106,7 +106,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 		if (contactId != null && !(contactId.isEmpty())) {
 			try {
 				ClinicContactUsCollection clinicContactUsCollection = clinicContactUsRepository
-						.findByContactId(contactId);
+						.findOne(new ObjectId(contactId));
 				if (clinicContactUsCollection != null) {
 					clinicContactUsCollection.setContactState(contactState);
 					clinicContactUsCollection = clinicContactUsRepository.save(clinicContactUsCollection);

@@ -86,6 +86,9 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	@Field
 	private String pa;
+	
+	@Field
+	private String ps;
 
 	@Field
 	private List<String> comments;
@@ -392,6 +395,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.pa = pa;
 	}
 
+	public String getPs() {
+		return ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
@@ -402,8 +413,8 @@ public class ClinicalNotesCollection extends GenericCollection {
 				+ systemExam + ", complaint=" + complaint + ", presentComplaint=" + presentComplaint
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
-				+ ", pa=" + pa + ", comments=" + comments + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
+				+ ", pa=" + pa + ", ps=" + ps + ", comments=" + comments + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
 				+ ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
 				+ ", time=" + time + ", fromDate=" + fromDate + "]";
 	}

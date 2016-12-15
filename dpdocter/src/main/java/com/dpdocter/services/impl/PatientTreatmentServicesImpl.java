@@ -22,11 +22,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
@@ -80,6 +83,7 @@ import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -144,9 +148,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	@Autowired
 	private PatientVisitService patientVisitService;
 
-	@Autowired
-	private PatientVisitRepository patientVisitRepository;
-
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -311,7 +313,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 				patientTreatmentCollection.setCreatedTime(new Date());
 				BeanUtil.map(request, patientTreatmentCollection);
-				patientTreatmentCollection.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
+				patientTreatmentCollection
+						.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
 				UserCollection userCollection = null;
 				if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 					userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -342,28 +345,28 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			}
 			List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
 			List<Treatment> treatments = new ArrayList<Treatment>();
-			if(request.getTreatments() != null && !request.getTreatments().isEmpty())
-			for (TreatmentRequest treatmentRequest : request.getTreatments()) {
+			if (request.getTreatments() != null && !request.getTreatments().isEmpty())
+				for (TreatmentRequest treatmentRequest : request.getTreatments()) {
 
-				if (treatmentRequest.getStatus() == null) {
-					treatmentRequest.setStatus(PatientTreatmentStatus.NOT_STARTED);
+					if (treatmentRequest.getStatus() == null) {
+						treatmentRequest.setStatus(PatientTreatmentStatus.NOT_STARTED);
+					}
+					Treatment treatment = new Treatment();
+					TreatmentResponse treatmentResponse = new TreatmentResponse();
+					BeanUtil.map(treatmentRequest, treatment);
+					BeanUtil.map(treatmentRequest, treatmentResponse);
+					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
+							.findOne(new ObjectId(treatmentRequest.getTreatmentServiceId()));
+					if (treatmentServicesCollection != null) {
+						TreatmentService treatmentService = new TreatmentService();
+						BeanUtil.map(treatmentServicesCollection, treatmentService);
+						treatmentResponse.setTreatmentService(treatmentService);
+					}
+					treatments.add(treatment);
+					treatmentResponses.add(treatmentResponse);
 				}
-				Treatment treatment = new Treatment();
-				TreatmentResponse treatmentResponse = new TreatmentResponse();
-				BeanUtil.map(treatmentRequest, treatment);
-				BeanUtil.map(treatmentRequest, treatmentResponse);
-				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-						.findOne(new ObjectId(treatmentRequest.getTreatmentServiceId()));
-				if (treatmentServicesCollection != null) {
-					TreatmentService treatmentService = new TreatmentService();
-					BeanUtil.map(treatmentServicesCollection, treatmentService);
-					treatmentResponse.setTreatmentService(treatmentService);
-				}
-				treatments.add(treatment);
-				treatmentResponses.add(treatmentResponse);
-			}
 			patientTreatmentCollection.setTreatments(treatments);
-			
+
 			patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
 
 			response = new PatientTreatmentResponse();
@@ -471,33 +474,62 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public PatientTreatmentResponse getPatientTreatmentById(String treatmentId) {
 		PatientTreatmentResponse response;
 		try {
-			PatientTreatmentCollection patientTreatmentCollection = patientTreamentRepository
-					.findOne(new ObjectId(treatmentId));
-			if (patientTreatmentCollection != null) {
-				List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
-				if(patientTreatmentCollection.getTreatments() != null && ! patientTreatmentCollection.getTreatments().isEmpty())
-				for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
+							Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+							Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+							Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
+							Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
+							Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
+							Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+							Fields.field("createdBy", "$createdBy"),
+							Fields.field("treatments.treatmentService", "$treatmentService"),
+							Fields.field("treatments.status", "$treatments.status"),
+							Fields.field("treatments.cost", "$treatments.cost"),
+							Fields.field("treatments.note", "$treatments.note"),
+							Fields.field("treatments.discount", "$treatments.discount"),
+							Fields.field("treatments.finalCost", "$treatments.finalCost"),
+							Fields.field("treatments.quantity", "$treatments.quantity")));
+			Aggregation aggregation = Aggregation
+					.newAggregation(Aggregation.unwind("treatments"),
+							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))),
+							Aggregation
+									.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+											"treatmentService"),
+							Aggregation.unwind("treatmentService"), projectList,
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("visitId", new BasicDBObject("$first", "$visitId"))
+											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+											.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+											.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+											.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+											.append("time", new BasicDBObject("$first", "$time"))
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+											.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
 
-					TreatmentResponse treatmentResponse = new TreatmentResponse();
-					BeanUtil.map(treatment, treatmentResponse);
-					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-							.findOne(treatment.getTreatmentServiceId());
-					if (treatmentServicesCollection != null) {
-						TreatmentService treatmentService = new TreatmentService();
-						BeanUtil.map(treatmentServicesCollection, treatmentService);
-						treatmentResponse.setTreatmentService(treatmentService);
-					}
-					treatmentResponses.add(treatmentResponse);
-				}
-				response = new PatientTreatmentResponse();
-				BeanUtil.map(patientTreatmentCollection, response);
-				response.setTreatments(treatmentResponses);
-			} else {
+			AggregationResults<PatientTreatmentResponse> groupResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
+			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
+			response = patientDetailsresponse.get(0);
+
+			if (response.getId() == null) {
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
-			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments" + e);
 		}
 		return response;
 	}
@@ -507,44 +539,63 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	public List<PatientTreatment> getPatientTreatmentByIds(List<ObjectId> treatmentId, ObjectId visitId) {
 
 		List<PatientTreatment> response = null;
-		List<PatientTreatmentCollection> patientTreatmentCollectionList = null;
 
 		try {
-			patientTreatmentCollectionList = patientTreamentRepository.findByIds(treatmentId);
-			if (patientTreatmentCollectionList != null) {
-				response = new ArrayList<PatientTreatment>();
-				for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollectionList) {
-					PatientTreatment patientTreatment = new PatientTreatment();
-					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
-					if(patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty())
-					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 
-						TreatmentResponse treatmentResponse = new TreatmentResponse();
-						BeanUtil.map(treatment, treatmentResponse);
-						TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-								.findOne(treatment.getTreatmentServiceId());
-						if (treatmentServicesCollection != null) {
-							TreatmentService treatmentService = new TreatmentService();
-							BeanUtil.map(treatmentServicesCollection, treatmentService);
-							treatmentResponse.setTreatmentService(treatmentService);
-						}
-						treatmentResponses.add(treatmentResponse);
-					}
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
+					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
+					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy"), Fields.field("treatments.treatmentService", "$treatment"),
+					Fields.field("treatments.status", "$treatments.status"),
+					Fields.field("treatments.cost", "$treatments.cost"),
+					Fields.field("treatments.note", "$treatments.note"),
+					Fields.field("treatments.discount", "$treatments.discount"),
+					Fields.field("treatments.finalCost", "$treatments.finalCost"),
+					Fields.field("treatments.quantity", "$treatments.quantity")));
 
-					BeanUtil.map(patientTreatmentCollection, patientTreatment);
-					patientTreatment.setTreatments(treatmentResponses);
-					if(DPDoctorUtils.anyStringEmpty(visitId)){
-						PatientVisitCollection patientVisitCollection = patientVisitRepository.findByTreatmentId(patientTreatmentCollection.getId());
-						if (patientVisitCollection != null)
-							patientTreatment.setVisitId(patientVisitCollection.getId().toString());
-					}else{
-						patientTreatment.setVisitId(visitId.toString());
-					}
-					response.add(patientTreatment);
+			Aggregation aggregation = Aggregation
+					.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId)),
+							Aggregation.unwind("treatments"),
+							Aggregation
+									.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+											"treatment"),
+							Aggregation.unwind("treatment"), projectList,
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("visitId", new BasicDBObject("$first", "$visitId"))
+											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+											.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+											.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+											.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+											.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+											.append("time", new BasicDBObject("$first", "$time"))
+											.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+											.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
+			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
+					.getMappedResults();
+			if (response == null || response.isEmpty()) {
+				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
+
+			}else{
+				for(PatientTreatment patientTreatment:response){
+					
 				}
-
-			} else {
-				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
+				
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
@@ -591,41 +642,82 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			// Aggregation.lookup("treatment_services_cl",
 			// "treatments.treatmentServiceId", "_id",
 			// "treatments.treatmentServices")
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
+					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
+					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy"), Fields.field("treatments.treatmentService", "$treatment"),
+					Fields.field("treatments.status", "$treatments.status"),
+					Fields.field("treatments.cost", "$treatments.cost"),
+					Fields.field("treatments.note", "$treatments.note"),
+					Fields.field("treatments.discount", "$treatments.discount"),
+					Fields.field("treatments.finalCost", "$treatments.finalCost"),
+					Fields.field("treatments.quantity", "$treatments.quantity")));
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								Aggregation.unwind("treatment"), projectList,
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("patientId", new BasicDBObject("$first", "$patientId"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("visitId", new BasicDBObject("$first", "$visitId"))
+												.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+												.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+												.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+												.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+												.append("discarded", new BasicDBObject("$first", "$discarded"))
+												.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+												.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+												.append("time", new BasicDBObject("$first", "$time"))
+												.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+												.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								Aggregation.unwind("treatment"), projectList,
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("patientId", new BasicDBObject("$first", "$patientId"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("visitId", new BasicDBObject("$first", "$visitId"))
+												.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+												.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+												.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+												.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+												.append("discarded", new BasicDBObject("$first", "$discarded"))
+												.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+												.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+												.append("time", new BasicDBObject("$first", "$time"))
+												.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+												.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			AggregationResults<PatientTreatmentCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientTreatmentCollection.class, PatientTreatmentCollection.class);
-			List<PatientTreatmentCollection> patientTreatmentCollections = aggregationResults.getMappedResults();
-			if (patientTreatmentCollections != null && !patientTreatmentCollections.isEmpty()) {
-				response = new ArrayList<PatientTreatmentResponse>();
+			AggregationResults<PatientTreatmentResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
+			response = aggregationResults.getMappedResults();
 
-				for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
-					PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
-					BeanUtil.map(patientTreatmentCollection, patientTreatmentResponse);
-					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
-					if(patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty())
-					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-						TreatmentResponse treatmentResponse = new TreatmentResponse();
-						BeanUtil.map(treatment, treatmentResponse);
-						TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-								.findOne(treatment.getTreatmentServiceId());
-						if (treatmentServicesCollection != null) {
-							TreatmentService treatmentService = new TreatmentService();
-							BeanUtil.map(treatmentServicesCollection, treatmentService);
-							treatmentResponse.setTreatmentService(treatmentService);
-						}
-						treatmentResponses.add(treatmentResponse);
-					}
-					patientTreatmentResponse.setTreatments(treatmentResponses);
-					response.add(patientTreatmentResponse);
-				}
-			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
@@ -671,41 +763,82 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			// Aggregation.lookup("treatment_services_cl",
 			// "treatments.treatmentServiceId", "_id",
 			// "treatments.treatmentServices")
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
+					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
+					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+					Fields.field("createdBy", "$createdBy"), Fields.field("treatments.treatmentService", "$treatment"),
+					Fields.field("treatments.status", "$treatments.status"),
+					Fields.field("treatments.cost", "$treatments.cost"),
+					Fields.field("treatments.note", "$treatments.note"),
+					Fields.field("treatments.discount", "$treatments.discount"),
+					Fields.field("treatments.finalCost", "$treatments.finalCost"),
+					Fields.field("treatments.quantity", "$treatments.quantity")));
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								projectList, Aggregation.unwind("treatment"),
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("patientId", new BasicDBObject("$first", "$patientId"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("visitId", new BasicDBObject("$first", "$visitId"))
+												.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+												.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+												.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+												.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+												.append("discarded", new BasicDBObject("$first", "$discarded"))
+												.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+												.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+												.append("time", new BasicDBObject("$first", "$time"))
+												.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+												.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+								Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
+								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+										"treatment"),
+								Aggregation.unwind("treatment"), projectList,
+								new CustomAggregationOperation(new BasicDBObject("$group",
+										new BasicDBObject("id", "$_id")
+												.append("patientId", new BasicDBObject("$first", "$patientId"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+												.append("visitId", new BasicDBObject("$first", "$visitId"))
+												.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+												.append("totalCost", new BasicDBObject("$first", "$totalCost"))
+												.append("totalDiscount", new BasicDBObject("$first", "$totalDiscount"))
+												.append("grandTotal", new BasicDBObject("$first", "$grandTotal"))
+												.append("discarded", new BasicDBObject("$first", "$discarded"))
+												.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+												.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+												.append("time", new BasicDBObject("$first", "$time"))
+												.append("fromDate", new BasicDBObject("$first", "$fromDate"))
+												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$createdBy"))
+												.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			AggregationResults<PatientTreatmentCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientTreatmentCollection.class, PatientTreatmentCollection.class);
-			List<PatientTreatmentCollection> patientTreatmentCollections = aggregationResults.getMappedResults();
-			if (patientTreatmentCollections != null && !patientTreatmentCollections.isEmpty()) {
-				response = new ArrayList<PatientTreatmentResponse>();
+			AggregationResults<PatientTreatmentResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
+			response = aggregationResults.getMappedResults();
 
-				for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
-					PatientTreatmentResponse patientTreatmentResponse = new PatientTreatmentResponse();
-					BeanUtil.map(patientTreatmentCollection, patientTreatmentResponse);
-					List<TreatmentResponse> treatmentResponses = new ArrayList<TreatmentResponse>();
-					if(patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty())
-					for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-						TreatmentResponse treatmentResponse = new TreatmentResponse();
-						BeanUtil.map(treatment, treatmentResponse);
-						TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-								.findOne(treatment.getTreatmentServiceId());
-						if (treatmentServicesCollection != null) {
-							TreatmentService treatmentService = new TreatmentService();
-							BeanUtil.map(treatmentServicesCollection, treatmentService);
-							treatmentResponse.setTreatmentService(treatmentService);
-						}
-						treatmentResponses.add(treatmentResponse);
-					}
-					patientTreatmentResponse.setTreatments(treatmentResponses);
-					response.add(patientTreatmentResponse);
-				}
-			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
@@ -962,7 +1095,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	@Override
-	public String downloadPatientTreatment(String treatmentId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA) {
+	public String downloadPatientTreatment(String treatmentId, Boolean showPH, Boolean showPLH, Boolean showFH,
+			Boolean showDA) {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
@@ -971,14 +1105,16 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (patientTreatmentCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientTreatmentCollection.getPatientId(), 
-						patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
+						patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
+						patientTreatmentCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(patientTreatmentCollection.getPatientId());
 
-				if(showPH || showPLH || showFH || showDA){
-					historyCollection  = historyRepository.findHistory(patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getPatientId());
+				if (showPH || showPLH || showFH || showDA) {
+					historyCollection = historyRepository.findHistory(patientTreatmentCollection.getLocationId(),
+							patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getPatientId());
 				}
-				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA);
+				JasperReportResponse jasperReportResponse = createJasper(patientTreatmentCollection, patient, user,
+						historyCollection, showPH, showPLH, showFH, showDA);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -1015,8 +1151,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 						user = userRepository.findOne(patientTreatmentCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								patientTreatmentCollection.getPatientId(), 
-								patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId());
+								patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getLocationId(),
+								patientTreatmentCollection.getHospitalId());
 						user.setFirstName(patient.getLocalPatientName());
 						emailTrackCollection.setDoctorId(patientTreatmentCollection.getDoctorId());
 						emailTrackCollection.setHospitalId(patientTreatmentCollection.getHospitalId());
@@ -1086,7 +1222,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 	}
 
 	private JasperReportResponse createJasper(PatientTreatmentCollection patientTreatmentCollection,
-			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA) throws IOException, ParseException {
+			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
+			Boolean showPLH, Boolean showFH, Boolean showDA) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		if (patientTreatmentCollection.getTreatments() != null
@@ -1140,12 +1277,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
-			
-			if(historyCollection != null){
+
+			if (historyCollection != null) {
 				parameters.put("showHistory", true);
 				patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 			}
-			
+
 			patientVisitService.generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails() : null),
@@ -1184,5 +1321,24 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			return imagePath + imageURL;
 		} else
 			return null;
+	}
+
+	@Override
+	public int getTreatmentsCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified) {
+		int count;
+		try {
+			if (isOTPVerified)
+				count = patientTreamentRepository.countByPatientId(patientObjectId);
+			else
+				count = patientTreamentRepository.countByPatientIdDoctorLocationHospital(patientObjectId,
+						doctorObjectId, locationObjectId, hospitalObjectId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return count;
 	}
 }

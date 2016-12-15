@@ -8,21 +8,18 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
 public class PatientTreatmentResponse extends GenericCollection {
+
 	private String id;
 
-	private List<TreatmentResponse> treatments;
-
 	private String patientId;
+
+	private String uniqueEmrId;
 
 	private String locationId;
 
 	private String hospitalId;
 
 	private String doctorId;
-
-	private String visitId;
-
-	private String uniqueEmrId;
 
 	private double totalCost = 0.0;
 
@@ -34,11 +31,14 @@ public class PatientTreatmentResponse extends GenericCollection {
 
 	private Boolean inHistory = false;
 
+	private String visitId;
+
 	private String appointmentId;
 
 	private WorkingHours time;
 
 	private Date fromDate;
+	private List<TreatmentResponse> treatments;
 
 	public String getAppointmentId() {
 		return appointmentId;

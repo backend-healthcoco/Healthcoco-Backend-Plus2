@@ -2,8 +2,6 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
@@ -13,23 +11,23 @@ import com.dpdocter.enums.AppointmentType;
 
 public class AppointmentLookupResponse extends GenericCollection {
 
-	private ObjectId id;
+	private String id;
     
     private String subject;
     
     private String explanation;
 
-    private ObjectId doctorId;
+    private String doctorId;
     
-    private ObjectId locationId;
+    private String locationId;
     
-    private ObjectId hospitalId;
+    private String hospitalId;
     
     private String appointmentId;
     
     private WorkingHours time;
 
-    private ObjectId patientId;
+    private String patientId;
     
     private AppointmentState state = AppointmentState.NEW;
     
@@ -57,7 +55,7 @@ public class AppointmentLookupResponse extends GenericCollection {
 
     private Boolean notifyDoctorByEmail;
     
-    private ObjectId visitId;
+    private String visitId;
     
     private User doctor;
     
@@ -65,11 +63,11 @@ public class AppointmentLookupResponse extends GenericCollection {
     
     private User patient;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -89,27 +87,27 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	public ObjectId getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getLocationId() {
+	public String getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(ObjectId locationId) {
+	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
 
-	public ObjectId getHospitalId() {
+	public String getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(ObjectId hospitalId) {
+	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
@@ -129,11 +127,11 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.time = time;
 	}
 
-	public ObjectId getPatientId() {
+	public String getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(ObjectId patientId) {
+	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
 
@@ -241,11 +239,11 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.notifyDoctorByEmail = notifyDoctorByEmail;
 	}
 
-	public ObjectId getVisitId() {
+	public String getVisitId() {
 		return visitId;
 	}
 
-	public void setVisitId(ObjectId visitId) {
+	public void setVisitId(String visitId) {
 		this.visitId = visitId;
 	}
 

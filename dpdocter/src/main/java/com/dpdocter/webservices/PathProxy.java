@@ -208,6 +208,8 @@ public interface PathProxy {
 		public static final String ADD_PA = "/pa/add";
 		
 		public static final String ADD_PV = "/pv/add";
+		
+		public static final String ADD_PS = "/ps/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
@@ -248,6 +250,8 @@ public interface PathProxy {
 		public static final String DELETE_PA = "/pa/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		
 		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_PS = "/ps/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -306,6 +310,17 @@ public interface PathProxy {
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
 
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
+		
+		public static final String ADD_USER_RECORDS = "/user/add";
+
+		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
+
+		public static final String GET_USER_RECORDS_PATIENT_ID = "user/{userId}";
+		
+		public static final String GET_USER_RECORDS_ALLOWANCE = "user/allowance";
+		
+		public static final String DELETE_OR_HIDE_USER_RECORD = "user/{recordId}/delete";
+
 	}
 
 	public static final String PRESCRIPTION_BASE_URL = BASE_URL + "/prescription";
@@ -649,6 +664,12 @@ public interface PathProxy {
 		public static final String SEARCH_MENSTRUAL_HISTORY = "searchMenstrualHistory/{range}";
 		
 		public static final String SEARCH_INDICATION_OF_USG = "searchIndicationOfUSG/{range}";
+		
+		public static final String SEARCH_PA = "pa/{range}";
+		
+		public static final String SEARCH_PV = "pv/{range}";
+		
+		public static final String SEARCH_PS = "ps/{range}";
 
 	}
 

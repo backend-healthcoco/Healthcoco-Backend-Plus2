@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.BirthdaySMSServices;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.SMSServices;
 
 @Service
@@ -45,6 +48,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	@Autowired
 	private SMSServices sMSServices;
+	
+	@Autowired
+	private MailService mailService;
 
 	@Value(value = "${sms.birthday.wish.to.doctor")
 	private String birthdayWishSMStoDoctor;
@@ -120,6 +126,12 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 		Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Sending Birthday SMS to patients");
+			 try {
+				mailService.sendExceptionMail("Backend Business Exception :: While Sending Birthday SMS to patients", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Sending Birthday SMS to patients");
 
 		}
@@ -174,6 +186,13 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Sending Birthday SMS to Doctor");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While Sending Birthday SMS to Doctor",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Sending Birthday SMS to Doctor");
 
 		}

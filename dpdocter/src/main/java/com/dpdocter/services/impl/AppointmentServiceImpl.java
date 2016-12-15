@@ -230,6 +230,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			BeanUtil.map(cityCollection, city);
 		} catch (Exception e) {
 			e.printStackTrace();
+			 try {
+					mailService.sendExceptionMail("Backend Business Exception :: While adding city", e.getMessage());
+				} catch (MessagingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return city;
@@ -246,8 +252,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 			cityCollection.setIsActivated(activate);
 			cityRepository.save(cityCollection);
 		} catch (BusinessException be) {
+			 try {
+					mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city", be.getMessage());
+				} catch (MessagingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			throw be;
 		} catch (Exception e) {
+			
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		return true;
@@ -271,6 +290,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting cities",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -287,6 +313,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting city", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -322,6 +354,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			BeanUtil.map(landmarkLocalityCollection, landmarkLocality);
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating landmark locality", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return landmarkLocality;
@@ -477,16 +515,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 				AppointmentCollection appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(appointmentLookupResponse, appointmentCollection);
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						appointmentLookupResponse.getPatientId(), appointmentLookupResponse.getLocationId(),
-						appointmentLookupResponse.getHospitalId());
+						new ObjectId(appointmentLookupResponse.getPatientId()), new ObjectId(appointmentLookupResponse.getLocationId()),
+						new ObjectId(appointmentLookupResponse.getHospitalId()));
 
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-							.findByDoctorIdLocationId(appointmentLookupResponse.getDoctorId(), appointmentLookupResponse.getLocationId());
+							.findByDoctorIdLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()), new ObjectId(appointmentLookupResponse.getLocationId()));
 
 					AppointmentCollection appointmentCollectionToCheck = null;
 					if (request.getState().equals(AppointmentState.RESCHEDULE))
 						appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-								appointmentLookupResponse.getDoctorId(), appointmentLookupResponse.getLocationId(),
+								new ObjectId(appointmentLookupResponse.getDoctorId()), new ObjectId(appointmentLookupResponse.getLocationId()),
 								request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),
 								request.getToDate(), AppointmentState.CANCEL.getState());
 					if (appointmentCollectionToCheck == null) {
@@ -1246,8 +1284,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Appointment appointment = new Appointment();
 					PatientCard patient = null;
 					if (collection.getType().equals(AppointmentType.APPOINTMENT)) {
-						patient = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(collection.getPatientId())
-								.and("locationId").is(collection.getLocationId()).and("hospitalId").is(collection.getHospitalId())), 
+						patient = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
+								.and("locationId").is(new ObjectId(collection.getLocationId())).and("hospitalId").is(new ObjectId(collection.getHospitalId()))), 
 								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
 						
 					}
@@ -1421,8 +1459,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response.setHospital(location.getHospital());
 				List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(new ObjectId(locationId))),
-								Aggregation.lookup("doctor_cl", "doctorId", "userId", "doctor"), Aggregation.unwind("doctor"),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user")), DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"), Aggregation.unwind("doctor")),
+								 
+						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 				
 				for (Iterator<DoctorClinicProfileLookupResponse> iterator = doctorClinicProfileLookupResponses.iterator(); iterator
 						.hasNext();) {
@@ -1761,14 +1801,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 					User doctor = appointmentLookupResponse.getDoctor();
 					User patient = appointmentLookupResponse.getPatient();
 					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-							appointmentLookupResponse.getPatientId(), 
-							appointmentLookupResponse.getLocationId(), appointmentLookupResponse.getHospitalId());
+							new ObjectId(appointmentLookupResponse.getPatientId()), 
+							new ObjectId(appointmentLookupResponse.getLocationId()), new ObjectId(appointmentLookupResponse.getHospitalId()));
 					
 					Location locationCollection = appointmentLookupResponse.getLocation();
 					if (doctor != null && locationCollection != null && patient != null) {
 						DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-								.findByDoctorIdLocationId(appointmentLookupResponse.getDoctorId(),
-										appointmentLookupResponse.getLocationId());
+								.findByDoctorIdLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()),
+										new ObjectId(appointmentLookupResponse.getLocationId()));
 
 						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
 
@@ -2112,8 +2152,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			appointment = new Appointment();
 			BeanUtil.map(appointmentLookupResponse, appointment);
 			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-					appointmentLookupResponse.getPatientId(), 
-					appointmentLookupResponse.getLocationId(), appointmentLookupResponse.getHospitalId());
+					new ObjectId(appointmentLookupResponse.getPatientId()), 
+					new ObjectId(appointmentLookupResponse.getLocationId()), new ObjectId(appointmentLookupResponse.getHospitalId()));
 			
 			PatientCard patient = new PatientCard();
 			BeanUtil.map(patientCollection, patient);

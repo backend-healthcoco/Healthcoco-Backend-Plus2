@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Patient;
@@ -15,7 +16,7 @@ public class OTReportsLookupResponse {
 	private String id;
 	private String patientId;
 	private Patient patient;
-	private Long operationDate;
+	private Date operationDate;
 	private AnaesthesiaTypeEnum anaesthesiaType;
 	private String provisionalDiagnosis;
 	private Surgery surgery;
@@ -51,10 +52,10 @@ public class OTReportsLookupResponse {
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
-	public Long getOperationDate() {
+	public Date getOperationDate() {
 		return operationDate;
 	}
-	public void setOperationDate(Long operationDate) {
+	public void setOperationDate(Date operationDate) {
 		this.operationDate = operationDate;
 	}
 	public AnaesthesiaTypeEnum getAnaesthesiaType() {

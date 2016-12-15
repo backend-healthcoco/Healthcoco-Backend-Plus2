@@ -72,7 +72,7 @@ public class BlogServicesImpl implements BlogService {
 			if (!DPDoctorUtils.anyStringEmpty(title))
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
 			if (!DPDoctorUtils.anyStringEmpty(category))
-				criteria = criteria.and(category);
+				criteria = criteria.and("category").is(category);
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
 						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
@@ -91,9 +91,10 @@ public class BlogServicesImpl implements BlogService {
 				blog.setArticle(this.getBlogArticle(blog.getArticleId()));
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
-				if (userId != null) {
+				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+					if(blogLikesCollection!=null)
 					blog.setIsliked(blogLikesCollection.getDiscarded());
 				}
 				response.add(blog);

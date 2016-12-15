@@ -9,6 +9,6 @@ public interface FileManager {
 
     String saveThumbnailAndReturnThumbNailUrl(FileDetails fileDetails, String path);
 
-    void saveRecord(FormDataBodyPart file, String recordPath);
+    Double saveRecord(FormDataBodyPart file, String recordPath, Double allowedSize, Boolean checkSize);
 
 }
