@@ -497,7 +497,8 @@ public class HistoryServicesImpl implements HistoryServices {
 							if (diagnosticTestCollection != null) {
 								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 							}
-							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+							diagnosticTests
+									.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 						}
 					}
 					response.setDiagnosticTests(diagnosticTests);
@@ -980,8 +981,8 @@ public class HistoryServicesImpl implements HistoryServices {
 										if (diagnosticTestCollection != null) {
 											BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 										}
-										diagnosticTests
-												.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+												data.getRecordId().toString()));
 									}
 								}
 								response.setDiagnosticTests(diagnosticTests);
@@ -2736,7 +2737,6 @@ public class HistoryServicesImpl implements HistoryServices {
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("doctorName", new BasicDBObject("$first", "$doctorName"))
 									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
 									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
 									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
@@ -2766,7 +2766,6 @@ public class HistoryServicesImpl implements HistoryServices {
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("doctorName", new BasicDBObject("$first", "$doctorName"))
 									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
 									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
 									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
@@ -2794,7 +2793,6 @@ public class HistoryServicesImpl implements HistoryServices {
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("doctorName", new BasicDBObject("$first", "$doctorName"))
 									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
 									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
 									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
@@ -2807,14 +2805,15 @@ public class HistoryServicesImpl implements HistoryServices {
 		}
 
 		response = historyDetailsresponse.get(0);
-		if (!type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
+		if (type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
+			response.setDrugsAndAllergies(response.getDrugsAndAllergies());
+		} else
 			response.setDrugsAndAllergies(null);
-		}
-		if (!type.contains(HistoryType.PERSONAL.getType())) {
+		if (type.contains(HistoryType.PERSONAL.getType())) {
+			response.setPersonalHistory(response.getPersonalHistory());
+		} else
 			response.setPersonalHistory(null);
-		}
 		return response;
-
 	}
 
 	@SuppressWarnings("unchecked")
