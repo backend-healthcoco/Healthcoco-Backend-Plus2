@@ -492,7 +492,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
-						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEM_EXAMINATION, false);
+						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEMATIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
@@ -911,7 +911,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
-						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEM_EXAMINATION, false);
+						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEMATIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
@@ -2256,7 +2256,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			break;
 		}
 		
-		case SYSTEM_EXAMINATION: {
+		case SYSTEMATIC_EXAMINATION: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
