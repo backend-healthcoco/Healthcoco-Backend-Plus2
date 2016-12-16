@@ -635,7 +635,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				for (TemplateItem templateItem : template.getItems()) {
 					TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 					BeanUtil.map(templateItem, templateItemDetail);
-					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(templateItem.getDrugId()));
+					DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -854,7 +854,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (diagnosticTest.getId() != null) {
 						if (tests == null)
 							tests = new ArrayList<TestAndRecordData>();
-						tests.add(new TestAndRecordData(diagnosticTest.getId(), null));
+						tests.add(new TestAndRecordData(new ObjectId(diagnosticTest.getId()), null));
 					} else if (diagnosticTest.getTestName() != null) {
 						DiagnosticTestCollection diagnosticTestCollection = null;
 						diagnosticTestCollection = new DiagnosticTestCollection();
@@ -876,7 +876,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
 						if (tests == null)
 							tests = new ArrayList<TestAndRecordData>();
-						tests.add(new TestAndRecordData(diagnosticTestCollection.getId().toString(), null));
+						tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
 					}
 				}
 				prescriptionCollection.setDiagnosticTests(tests);
@@ -906,12 +906,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
 				for (TestAndRecordData data : prescriptionTest) {
 					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(new ObjectId(data.getTestId()));
+							.findOne(data.getTestId());
 					DiagnosticTest diagnosticTest = new DiagnosticTest();
 					if (diagnosticTestCollection != null) {
 						BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					}
-					tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+					tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 				}
 				response.setDiagnosticTests(tests);
 			}
@@ -1054,7 +1054,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (diagnosticTest.getId() != null) {
 						if (tests == null)
 							tests = new ArrayList<TestAndRecordData>();
-						tests.add(new TestAndRecordData(diagnosticTest.getId(), null));
+						tests.add(new TestAndRecordData(new ObjectId(diagnosticTest.getId()), null));
 					} else if (diagnosticTest.getTestName() != null) {
 						DiagnosticTestCollection diagnosticTestCollection = null;
 						diagnosticTestCollection = new DiagnosticTestCollection();
@@ -1074,7 +1074,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
 						BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
 						esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
-						tests.add(new TestAndRecordData(diagnosticTestCollection.getId().toString(), null));
+						tests.add(new TestAndRecordData(diagnosticTestCollection.getId(), null));
 					}
 				}
 				prescriptionCollection.setDiagnosticTests(tests);
@@ -1108,12 +1108,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
 				for (TestAndRecordData data : prescriptionTests) {
 					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(new ObjectId(data.getTestId()));
+							.findOne(data.getTestId());
 					DiagnosticTest diagnosticTest = new DiagnosticTest();
 					if (diagnosticTestCollection != null) {
 						BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					}
-					tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+					tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 				}
 				response.setDiagnosticTests(tests);
 			}
@@ -1180,13 +1180,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							for (TestAndRecordData data : tests) {
 								if (data.getTestId() != null) {
 									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-											.findOne(new ObjectId(data.getTestId()));
+											.findOne(data.getTestId());
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
 									diagnosticTests
-											.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+											.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 								}
 							}
 							response.setDiagnosticTests(diagnosticTests);
@@ -1594,7 +1594,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 				BeanUtil.map(templateItem, templateItemDetail);
 				if (templateItem.getDrugId() != null) {
-					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(templateItem.getDrugId()));
+					DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -2748,7 +2748,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								List<ObjectId> testIds = new ArrayList<ObjectId>();
 								for (TestAndRecordData testAndRecordData : prescriptionCollection
 										.getDiagnosticTests()) {
-									testIds.add(new ObjectId(testAndRecordData.getTestId()));
+									testIds.add(testAndRecordData.getTestId());
 								}
 
 								Collection<String> tests = CollectionUtils.collect(
@@ -3374,12 +3374,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					tests = new ArrayList<TestAndRecordDataResponse>();
 					for (TestAndRecordData recordData : prescriptionCollection.getDiagnosticTests()) {
 						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-								.findOne(new ObjectId(recordData.getTestId()));
+								.findOne(recordData.getTestId());
 						if (diagnosticTestCollection != null) {
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 							TestAndRecordDataResponse dataResponse = new TestAndRecordDataResponse(diagnosticTest,
-									recordData.getRecordId());
+									recordData.getRecordId().toString());
 							tests.add(dataResponse);
 						}
 					}
@@ -3532,7 +3532,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 				if (tests.getTestId() != null) {
 					DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-							.findOne(new ObjectId(tests.getTestId()));
+							.findOne(tests.getTestId());
 					if (diagnosticTestCollection != null) {
 						if (DPDoctorUtils.anyStringEmpty(labTest))
 							labTest = diagnosticTestCollection.getTestName();

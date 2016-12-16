@@ -450,12 +450,12 @@ public class ReportsServiceImpl implements ReportsService {
 							for (TestAndRecordData data : tests) {
 								if (data.getTestId() != null) {
 									DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-											.findOne(new ObjectId(data.getTestId()));
+											.findOne(data.getTestId());
 									DiagnosticTest diagnosticTest = new DiagnosticTest();
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
-									diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+									diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 								}
 							}
 							prescription.setDiagnosticTests(diagnosticTests);

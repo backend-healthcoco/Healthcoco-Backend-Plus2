@@ -264,7 +264,7 @@ public class RecordsServiceImpl implements RecordsService {
 				List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 				for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
 					if (data.getTestId().equals(recordsCollection.getDiagnosticTestId().toString())) {
-						data.setRecordId(recordsCollection.getId().toString());
+						data.setRecordId(recordsCollection.getId());
 					}
 					tests.add(data);
 				}
@@ -1286,7 +1286,7 @@ public class RecordsServiceImpl implements RecordsService {
 					List<TestAndRecordData> tests = new ArrayList<TestAndRecordData>();
 					for (TestAndRecordData data : prescriptionCollection.getDiagnosticTests()) {
 						if (data.getTestId().equals(recordsCollection.getDiagnosticTestId())) {
-							data.setRecordId(recordsCollection.getId().toString());
+							data.setRecordId(recordsCollection.getId());
 						}
 						tests.add(data);
 					}

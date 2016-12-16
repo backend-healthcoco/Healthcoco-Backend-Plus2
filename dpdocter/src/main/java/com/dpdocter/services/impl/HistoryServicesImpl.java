@@ -492,12 +492,12 @@ public class HistoryServicesImpl implements HistoryServices {
 					for (TestAndRecordData data : tests) {
 						if (data.getTestId() != null) {
 							DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-									.findOne(new ObjectId(data.getTestId()));
+									.findOne(data.getTestId());
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							if (diagnosticTestCollection != null) {
 								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 							}
-							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 						}
 					}
 					response.setDiagnosticTests(diagnosticTests);
@@ -975,13 +975,13 @@ public class HistoryServicesImpl implements HistoryServices {
 								for (TestAndRecordData data : tests) {
 									if (data.getTestId() != null) {
 										DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-												.findOne(new ObjectId(data.getTestId()));
+												.findOne(data.getTestId());
 										DiagnosticTest diagnosticTest = new DiagnosticTest();
 										if (diagnosticTestCollection != null) {
 											BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 										}
 										diagnosticTests
-												.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId()));
+												.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
 									}
 								}
 								response.setDiagnosticTests(diagnosticTests);

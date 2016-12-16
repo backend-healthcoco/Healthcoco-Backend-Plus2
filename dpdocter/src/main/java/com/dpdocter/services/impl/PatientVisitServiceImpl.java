@@ -1475,7 +1475,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					String labTest = "";
 					for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {
 						DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository
-								.findOne(new ObjectId(tests.getTestId()));
+								.findOne(tests.getTestId());
 						if (diagnosticTestCollection != null) {
 							if (DPDoctorUtils.anyStringEmpty(labTest))
 								labTest = diagnosticTestCollection.getTestName();

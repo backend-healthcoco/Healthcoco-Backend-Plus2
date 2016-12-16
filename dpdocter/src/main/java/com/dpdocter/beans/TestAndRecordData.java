@@ -1,36 +1,35 @@
 package com.dpdocter.beans;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TestAndRecordData {
 
-    private String testId;
+	private ObjectId testId;
 
-    private String recordId;
+	private ObjectId recordId;
 
-    public TestAndRecordData(String testId, String recordId) {
+	public TestAndRecordData(ObjectId testId, ObjectId recordId) {
 		this.testId = testId;
 		this.recordId = recordId;
 	}
 
-	public String getTestId() {
+	public ObjectId getTestId() {
 		return testId;
 	}
 
-
-	public void setTestId(String testId) {
+	public void setTestId(ObjectId testId) {
 		this.testId = testId;
 	}
 
+	public ObjectId getRecordId() {
+		return recordId;
+	}
 
-	public String getRecordId() {
-	return recordId;
-    }
-
-    public void setRecordId(String recordId) {
-	this.recordId = recordId;
-    }
+	public void setRecordId(ObjectId recordId) {
+		this.recordId = recordId;
+	}
 
 	@Override
 	public String toString() {
