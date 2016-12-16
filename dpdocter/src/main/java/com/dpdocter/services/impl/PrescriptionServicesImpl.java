@@ -15,6 +15,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.mail.MessagingException;
+
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -348,6 +351,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While saving drugs", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
 		}
 		return response;
@@ -422,6 +431,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Editing Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While editing drugs", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
 		}
 		return response;
@@ -477,6 +492,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Deleting Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting Drug", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
 		}
 		return response;
@@ -498,6 +519,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting drug for drugId:"+drugId, e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drug");
 		}
 		return drugAddEditResponse;
@@ -550,6 +577,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Template");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While saving template", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Template");
 		}
 		return response;

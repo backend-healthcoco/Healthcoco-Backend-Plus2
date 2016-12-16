@@ -1572,7 +1572,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
         		 	}
         	    }
 
-        		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.SYSTEM_EXAMINATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"systemExam");
+        		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.SYSTEMATIC_EXAMINATION, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,"systemExam");
         		response = elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class);
         	} catch (Exception e) {
         	    e.printStackTrace();
@@ -1610,7 +1610,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
         		 	}
         	    }
 
-        		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.SYSTEM_EXAMINATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "systemExam");
+        		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.SYSTEMATIC_EXAMINATION, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "systemExam");
         		response = elasticsearchTemplate.queryForList(searchQuery, ESSystemExamDocument.class);
         		} catch (Exception e) {
         	    e.printStackTrace();
@@ -1780,7 +1780,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				try {
 				    esSystemExamRepository.save(request);
 				    response = true;
-				    transnationalService.addResource(new ObjectId(request.getId()), Resource.SYSTEM_EXAMINATION, true);
+				    transnationalService.addResource(new ObjectId(request.getId()), Resource.SYSTEMATIC_EXAMINATION, true);
 				} catch (Exception e) {
 				    e.printStackTrace();
 				    logger.error(e + " Error Occurred While Saving Investigations");

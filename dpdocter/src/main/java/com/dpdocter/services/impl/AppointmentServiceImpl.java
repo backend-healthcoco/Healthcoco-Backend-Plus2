@@ -230,6 +230,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			BeanUtil.map(cityCollection, city);
 		} catch (Exception e) {
 			e.printStackTrace();
+			 try {
+					mailService.sendExceptionMail("Backend Business Exception :: While adding city", e.getMessage());
+				} catch (MessagingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return city;
@@ -246,8 +252,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 			cityCollection.setIsActivated(activate);
 			cityRepository.save(cityCollection);
 		} catch (BusinessException be) {
+			 try {
+					mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city", be.getMessage());
+				} catch (MessagingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			throw be;
 		} catch (Exception e) {
+			
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating city", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		return true;
@@ -271,6 +290,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting cities",
+						e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -287,6 +313,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting city", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -322,6 +354,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			BeanUtil.map(landmarkLocalityCollection, landmarkLocality);
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While activating/deactivating landmark locality", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return landmarkLocality;

@@ -5,69 +5,79 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class VitalSigns {
 
-    private String pulse;
+	private String pulse;
 
-    private String temperature;
+	private String temperature;
 
-    private String breathing;
+	private String breathing;
 
-    private BloodPressure bloodPressure;
+	private BloodPressure bloodPressure;
 
-    private String height;
+	private String height;
 
-    private String weight;
+	private String weight;
 
-    public String getPulse() {
-	return pulse;
-    }
+	private String spo2;
 
-    public void setPulse(String pulse) {
-	this.pulse = pulse;
-    }
+	public String getPulse() {
+		return pulse;
+	}
 
-    public String getTemperature() {
-	return temperature;
-    }
+	public void setPulse(String pulse) {
+		this.pulse = pulse;
+	}
 
-    public void setTemperature(String temperature) {
-	this.temperature = temperature;
-    }
+	public String getTemperature() {
+		return temperature;
+	}
 
-    public String getBreathing() {
-	return breathing;
-    }
+	public void setTemperature(String temperature) {
+		this.temperature = temperature;
+	}
 
-    public void setBreathing(String breathing) {
-	this.breathing = breathing;
-    }
+	public String getBreathing() {
+		return breathing;
+	}
 
-    public BloodPressure getBloodPressure() {
-	return bloodPressure;
-    }
+	public void setBreathing(String breathing) {
+		this.breathing = breathing;
+	}
 
-    public void setBloodPressure(BloodPressure bloodPressure) {
-	this.bloodPressure = bloodPressure;
-    }
+	public BloodPressure getBloodPressure() {
+		return bloodPressure;
+	}
 
-    public String getHeight() {
-	return height;
-    }
+	public void setBloodPressure(BloodPressure bloodPressure) {
+		this.bloodPressure = bloodPressure;
+	}
 
-    public void setHeight(String height) {
-	this.height = height;
-    }
+	public String getHeight() {
+		return height;
+	}
 
-    public String getWeight() {
-	return weight;
-    }
+	public void setHeight(String height) {
+		this.height = height;
+	}
 
-    public void setWeight(String weight) {
-	this.weight = weight;
-    }
+	public String getWeight() {
+		return weight;
+	}
 
-    @Override
-    public String toString() {
-	return "VitalSigns [pulse=" + pulse + ", temperature=" + temperature + ", breathing=" + breathing + ", bloodPressure=" + bloodPressure + ", height="
-		+ height + ", weight=" + weight + "]";
-    }
+	public void setWeight(String weight) {
+		this.weight = weight;
+	}
+
+	public String getSpo2() {
+		return spo2;
+	}
+
+	public void setSpo2(String spo2) {
+		this.spo2 = spo2;
+	}
+
+	@Override
+	public String toString() {
+		return "VitalSigns [pulse=" + pulse + ", temperature=" + temperature + ", breathing=" + breathing
+				+ ", bloodPressure=" + bloodPressure + ", height=" + height + ", weight=" + weight + "]";
+	}
 }

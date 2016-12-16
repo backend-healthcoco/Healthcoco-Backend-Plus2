@@ -25,14 +25,14 @@ public class ClinicalNotesAddRequest {
 
 	private List<Diagnoses> diagnoses;
 
-    private String observation;
+	private String observation;
 
-    private String investigation;
+	private String investigation;
 
-    private String diagnosis;
+	private String diagnosis;
 
-    private String note;
-	
+	private String note;
+
 	private List<String> diagrams;
 
 	private String provisionalDiagnosis;
@@ -42,7 +42,7 @@ public class ClinicalNotesAddRequest {
 	private String systemExam;
 
 	private String complaint;
-	
+
 	private String presentComplaint;
 
 	private String presentComplaintHistory;
@@ -50,6 +50,14 @@ public class ClinicalNotesAddRequest {
 	private String menstrualHistory;
 
 	private String obstetricHistory;
+
+	private String indicationOfUSG;
+
+	private String pv;
+
+	private String pa;
+
+	private String ps;
 
 	private String doctorId;
 
@@ -70,27 +78,27 @@ public class ClinicalNotesAddRequest {
 	private WorkingHours time;
 
 	private Date fromDate;
-	
+
 	private List<Notes> notes;
-	
+
 	private List<Complaint> complaints;
-	
+
 	private List<Observation> observations;
-	
+
 	private List<Investigation> investigations;
-	
+
 	private List<ProvisionalDiagnosis> provisionalDiagnoses;
-	
+
 	private List<PresentComplaint> presentComplaints;
-	
+
 	private List<PresentComplaintHistory> presentComplaintHistories;
-	
+
 	private List<GeneralExam> generalExams;
-	
+
 	private List<SystemExam> systemExams;
-	
+
 	private List<MenstrualHistory> menstrualHistories;
-	
+
 	private List<ObstetricHistory> obstetricHistories;
 
 	public String getId() {
@@ -197,7 +205,6 @@ public class ClinicalNotesAddRequest {
 		this.fromDate = fromDate;
 	}
 
-	
 	public AppointmentRequest getAppointmentRequest() {
 		return appointmentRequest;
 	}
@@ -245,8 +252,6 @@ public class ClinicalNotesAddRequest {
 	public void setComplaint(String complaint) {
 		this.complaint = complaint;
 	}
-	
-	
 
 	public String getProvisionalDiagnosis() {
 		return provisionalDiagnosis;
@@ -390,6 +395,38 @@ public class ClinicalNotesAddRequest {
 
 	public void setObstetricHistories(List<ObstetricHistory> obstetricHistories) {
 		this.obstetricHistories = obstetricHistories;
+	}
+
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+
+	public String getPv() {
+		return pv;
+	}
+
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+
+	public String getPa() {
+		return pa;
+	}
+
+	public void setPa(String pa) {
+		this.pa = pa;
+	}
+
+	public String getPs() {
+		return ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -14,6 +15,7 @@ import com.dpdocter.elasticsearch.document.ESProfessionDocument;
 import com.dpdocter.elasticsearch.repository.ESProfessionRepository;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.MailService;
 
 import common.util.web.Response;
 
@@ -25,6 +27,9 @@ public class TestExceptionAPI {
 
 	@Autowired
     ESProfessionRepository esProfessionRepository;
+	
+	@Autowired
+	MailService mailService;
 	
     @GET
     @Path("/exception/{id}")
@@ -42,4 +47,13 @@ public class TestExceptionAPI {
     	response.setData(documents);
     	return response;
     }
+    
+	@GET
+	@Path("/mail")
+	public Response<Boolean> testMail() throws MessagingException {
+		Boolean status = mailService.sendExceptionMail("Testing Business Exception mail");
+		Response<Boolean> response = new Response<>();
+		response.setData(status);
+		return response;
+	}
 }

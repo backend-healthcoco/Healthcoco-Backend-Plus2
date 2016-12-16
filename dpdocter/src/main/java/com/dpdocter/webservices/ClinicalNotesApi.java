@@ -675,7 +675,7 @@ public class ClinicalNotesApi {
 	
     SystemExam systemExam = clinicalNotesService.addEditSystemExam(request);
 
-	transactionalManagementService.addResource(new ObjectId(systemExam.getId()), Resource.SYSTEM_EXAMINATION, false);
+	transactionalManagementService.addResource(new ObjectId(systemExam.getId()), Resource.SYSTEMATIC_EXAMINATION, false);
 	ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 	BeanUtil.map(systemExam, esSystemExam);
 	esClinicalNotesService.addSystemExam(esSystemExam);
@@ -915,7 +915,7 @@ public class ClinicalNotesApi {
     	SystemExam systemExam = clinicalNotesService.deleteSystemExam(id, doctorId, locationId, hospitalId, discarded);
 	
     	if(systemExam != null){
-			transactionalManagementService.addResource(new ObjectId(systemExam.getId()), Resource.SYSTEM_EXAMINATION, false);
+			transactionalManagementService.addResource(new ObjectId(systemExam.getId()), Resource.SYSTEMATIC_EXAMINATION, false);
 			ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 			BeanUtil.map(systemExam, esSystemExam);
 			esClinicalNotesService.addSystemExam(esSystemExam);

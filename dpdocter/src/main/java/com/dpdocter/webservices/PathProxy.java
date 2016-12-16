@@ -154,11 +154,11 @@ public interface PathProxy {
 		public static final String REGISTER_PATIENTS_IN_BULK = "/registerPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL = "/updatePIDOnClinicLevel";
-		
+
 		public static final String UPDATE_DOCTOR_CLINIC_PROFILE = "/updateDoctorClinicProfile";
-		
+
 		public static final String ADD_SUGGESTION = "/suggestion/add";
-		
+
 		public static final String GET_SUGGESTION = "/getSuggestion/{userId}";
 	}
 
@@ -202,11 +202,11 @@ public interface PathProxy {
 		public static final String ADD_OBSTETRICS_HISTORY = "/obstetricHistory/add";
 
 		public static final String ADD_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/add";
-		
+
 		public static final String ADD_INDICATION_OF_USG = "/indicationOfUSG/add";
-		
+
 		public static final String ADD_PA = "/pa/add";
-		
+
 		public static final String ADD_PV = "/pv/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
@@ -242,11 +242,11 @@ public interface PathProxy {
 		public static final String DELETE_OBSTETRIC_HISTORY = "/obstetricHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PRESENT_COMPLAINT_HISTORY = "/presentComplaintHistory/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_INDICATION_OF_USG = "/presentIndicationOfUSG/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PA = "/pa/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 	}
 
@@ -306,15 +306,15 @@ public interface PathProxy {
 		public static final String SAVE_RECORDS_IMAGE = "/saveImage";
 
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
-		
+
 		public static final String ADD_USER_RECORDS = "/user/add";
 
 		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
 
 		public static final String GET_USER_RECORDS_PATIENT_ID = "user/{userId}";
-		
+
 		public static final String GET_USER_RECORDS_ALLOWANCE = "user/allowance";
-		
+
 		public static final String DELETE_OR_HIDE_USER_RECORD = "user/{recordId}/delete";
 
 	}
@@ -497,9 +497,9 @@ public interface PathProxy {
 		// "/removeVisits/{visitId}/{patientId}/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_MULTIPLE_DATA = "getMultipleData";
-		
+
 		public static final String SUBMIT_BIRTH_HITORY = "/submitBirthHistory";
-		
+
 		public static final String GET_BIRTH_HISTORY = "/getBirthHistory/{patientId}";
 	}
 
@@ -658,7 +658,7 @@ public interface PathProxy {
 		public static final String SEARCH_OBSTETRIC_HISTORY = "searchObstetricHistory/{range}";
 
 		public static final String SEARCH_MENSTRUAL_HISTORY = "searchMenstrualHistory/{range}";
-		
+
 		public static final String SEARCH_INDICATION_OF_USG = "searchIndicationOfUSG/{range}";
 
 	}

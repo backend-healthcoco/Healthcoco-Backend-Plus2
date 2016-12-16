@@ -51,6 +51,15 @@ public class MailServiceImpl implements MailService {
 
     @Value(value = "${mail.aws.region}")
     private String AWS_REGION;
+    
+    @Value(value = "${mail.exception.to}")
+    private String TO;
+    
+    @Value(value = "${mail.excetion.subject}")
+    private String SUBJECT;
+    
+    @Value(value = "${is.env.production}")
+    private String PROD_ENV;
 
     @Override
     @Transactional
@@ -162,4 +171,25 @@ public class MailServiceImpl implements MailService {
 	}
 	return respone;
     }
+
+	@Override
+	public Boolean sendExceptionMail(String body) throws MessagingException {
+		Boolean status = false;
+		if(PROD_ENV.equalsIgnoreCase("true"))
+		{
+			status = sendEmail(TO, SUBJECT, body, null);
+		}
+		return status;
+		
+	}
+
+	@Override
+	public Boolean sendExceptionMail(String subject, String body) throws MessagingException {
+		Boolean status = false;
+		if(PROD_ENV.equalsIgnoreCase("true"))
+		{
+			status = sendEmail(TO,subject, body, null);
+		}
+		return status;
+	}
 }

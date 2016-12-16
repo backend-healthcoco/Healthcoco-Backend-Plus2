@@ -558,9 +558,8 @@ public class ContactsServiceImpl implements ContactsService {
 					patientCard.setPatientGroupCollections(null);
 					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
 					if (patientCard.getUser() != null) {
-						//System.out.println(patientCard.getUser());
+
 						BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
-						//System.out.println(registeredPatientDetail);
 						if (patientCard.getUser().getId() != null) {
 							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
 						}
@@ -569,6 +568,7 @@ public class ContactsServiceImpl implements ContactsService {
 					Patient patient = new Patient();
 					BeanUtil.map(patientCard, patient);
 					patient.setPatientId(patientCard.getUser().getId().toString());
+
 					ObjectId referredBy = null;
 					if(patientCard.getReferredBy() != null)
 					{

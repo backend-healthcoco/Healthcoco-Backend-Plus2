@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.mail.MessagingException;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -490,7 +492,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
-						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEM_EXAMINATION, false);
+						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEMATIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
@@ -606,6 +608,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding Clinical notes", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return clinicalNotes;
@@ -677,6 +685,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting notes for id:"+id, e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return clinicalNote;
@@ -895,7 +911,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
-						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEM_EXAMINATION, false);
+						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEMATIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
@@ -1015,6 +1031,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While editing clinical notes", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
@@ -1038,6 +1060,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting note for id:"+id, e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1090,6 +1118,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(" Error Occurred While Getting Clinical Notes");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes");
 		}
 		return clinicalNotes;
@@ -1179,6 +1213,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing complaint", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return complaint;
@@ -1215,6 +1255,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing observation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return observation;
@@ -1252,6 +1298,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing provisional diagnosis", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return provisionalDiagnosis;
@@ -1288,6 +1340,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing general examination", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return generalExam;
@@ -1324,6 +1382,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing systematic examination", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return systemExam;
@@ -1360,6 +1424,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing menstrual history", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return menstrualHistory;
@@ -1396,6 +1466,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing present complaint", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return presentComplaint;
@@ -1432,6 +1508,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing present complaint history", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return presentComplaintHistory;
@@ -1468,6 +1550,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing obstetrics history", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return obstetricHistory;
@@ -1506,6 +1594,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing investigation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return investigation;
@@ -1541,6 +1635,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagnosis", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return diagnosis;
@@ -1576,6 +1676,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing notes", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return notes;
@@ -1631,6 +1737,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagram", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return diagram;
@@ -1674,6 +1786,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting complaint", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1716,6 +1834,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting observation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1758,6 +1882,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting investigation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1801,6 +1931,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting diagnosis", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1843,6 +1979,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting notes", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1885,6 +2027,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting diagram", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
@@ -1907,6 +2055,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes count", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Clinical Notes Count");
 		}
 		return clinicalNotesCount;
@@ -2102,7 +2256,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			break;
 		}
 		
-		case SYSTEM_EXAMINATION: {
+		case SYSTEMATIC_EXAMINATION: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
@@ -2241,6 +2395,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom global complaints", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 		}
 		return response;
@@ -2274,7 +2434,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While Getting global complaints", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting global complaints");
 		}
 		return response;
 	}
@@ -2290,6 +2456,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom complaints", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 		}
 		return response;
@@ -2323,6 +2495,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom global investigation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 		}
 		return response;
@@ -2355,6 +2533,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting global investigation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 		}
 		return response;
@@ -2375,6 +2559,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom investigation", e.getMessage());
+			} catch (MessagingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Investigations");
 		}
 		return response;
