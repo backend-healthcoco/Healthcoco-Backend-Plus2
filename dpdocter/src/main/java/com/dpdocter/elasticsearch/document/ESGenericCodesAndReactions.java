@@ -1,0 +1,66 @@
+package com.dpdocter.elasticsearch.document;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.MultiField;
+
+import com.dpdocter.beans.Code;
+
+@Document(indexName = "generic_codes_and_reactions_in", type = "generic_codes_and_reactions")
+public class ESGenericCodesAndReactions {
+
+	@Id
+	private String id;
+	
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<Code> codes;
+	
+	@Field(type = FieldType.String)
+	private String reactionType;
+	
+    @Field(type = FieldType.Date)
+    private Date updatedTime = new Date();
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public List<Code> getCodes() {
+		return codes;
+	}
+
+	public void setCodes(List<Code> codes) {
+		this.codes = codes;
+	}
+
+	public String getReactionType() {
+		return reactionType;
+	}
+
+	public void setReactionType(String reactionType) {
+		this.reactionType = reactionType;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	@Override
+	public String toString() {
+		return "ESGenericCodesAndReactions [id=" + id + ", codes=" + codes + ", reactionType=" + reactionType
+				+ ", updatedTime=" + updatedTime + "]";
+	}    
+}
