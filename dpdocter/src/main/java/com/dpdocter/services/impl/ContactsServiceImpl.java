@@ -552,6 +552,7 @@ public class ContactsServiceImpl implements ContactsService {
 					//UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
 					/*List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
 							.findByPatientId(patientCollection.getUserId());*/
+					patientCard.setColorCode(patientCard.getUser().getColorCode());
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 							new BeanToPropertyValueTransformer("groupId"));
@@ -565,6 +566,7 @@ public class ContactsServiceImpl implements ContactsService {
 						}
 					}
 					//System.out.println(patientCard);
+					
 					Patient patient = new Patient();
 					BeanUtil.map(patientCard, patient);
 					patient.setPatientId(patientCard.getUser().getId().toString());
