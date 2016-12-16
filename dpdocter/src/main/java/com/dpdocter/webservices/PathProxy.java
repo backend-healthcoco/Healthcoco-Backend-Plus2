@@ -670,6 +670,8 @@ public interface PathProxy {
 		public static final String SEARCH_PV = "pv/{range}";
 		
 		public static final String SEARCH_PS = "ps/{range}";
+		
+		
 
 	}
 
