@@ -180,43 +180,47 @@ public class LoginServiceImpl implements LoginService {
 
 							Boolean isStaff = false;
 							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {
+								if((otherRoleCollection.getRoleCollection().getHospitalId() == null && 
+										otherRoleCollection.getRoleCollection().getLocationId() == null) ||
+										(otherRoleCollection.getRoleCollection().getHospitalId().toString().equalsIgnoreCase(hospitalCollection.getId().toString()) &&
+										otherRoleCollection.getRoleCollection().getLocationId().toString().equalsIgnoreCase(locationCollection.getId().toString()))){
+									if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
+											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+															|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+										logger.warn("You are staff member so please login from website.");
+										throw new BusinessException(ServiceError.NotAuthorized,
+												"You are staff member so please login from website.");
+									} else if (isMobileApp
+											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+															|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+										isStaff = true;
+									}
 
-								if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
-										&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-														|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
-									logger.warn("You are staff member so please login from website.");
-									throw new BusinessException(ServiceError.NotAuthorized,
-											"You are staff member so please login from website.");
-								} else if (isMobileApp
-										&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-												|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-														|| otherRoleCollection.getRoleCollection().getRole()
-														.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
-									isStaff = true;
+									if (otherRoleCollection != null) {
+										AccessControl accessControl = accessControlServices.getAccessControls(
+												new ObjectId(otherRoleCollection.getId()), locationCollection.getId(),
+												locationCollection.getHospitalId());
+
+										Role role = new Role();
+										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);
+										role.setAccessModules(accessControl.getAccessModules());
+
+										if (roles == null)
+											roles = new ArrayList<Role>();
+										roles.add(role);
+									}
+									locationAndAccessControl.setRoles(roles);
 								}
-
-								if (otherRoleCollection != null) {
-									AccessControl accessControl = accessControlServices.getAccessControls(
-											new ObjectId(otherRoleCollection.getId()), locationCollection.getId(),
-											locationCollection.getHospitalId());
-
-									Role role = new Role();
-									BeanUtil.map(otherRoleCollection, role);
-									role.setAccessModules(accessControl.getAccessModules());
-
-									if (roles == null)
-										roles = new ArrayList<Role>();
-									roles.add(role);
-								}
-								locationAndAccessControl.setRoles(roles);
 							}
 							if (!isStaff) {
 								if (!checkHospitalId.containsKey(locationCollection.getHospitalId())) {

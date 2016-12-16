@@ -65,25 +65,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 					UserRoleCollection.class, UserRoleCollection.class);
 			List<UserRoleCollection> userRoleList = groupResults.getMappedResults();
 			response = new ArrayList<SubscriptionDetail>();
-			roleCollection = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.toString());
-			if (roleCollection == null) {
-				roleCollection = new RoleCollection();
-				roleCollection.setCreatedTime(new Date());
-				roleCollection.setRole(RoleEnum.SUPER_ADMIN.toString());
-				roleCollection = roleRepository.save(roleCollection);
+			superAdminRole = roleRepository.findByRole(RoleEnum.SUPER_ADMIN.toString());
+			if (superAdminRole == null) {
+				superAdminRole = new RoleCollection();
+				superAdminRole.setCreatedTime(new Date());
+				superAdminRole.setRole(RoleEnum.SUPER_ADMIN.toString());
+				superAdminRole = roleRepository.save(roleCollection);
 			}
 			for (UserRoleCollection userRoleCollection : userRoleList) {
 				// create SuperAdmin role
 				roleCollection = roleRepository.findOne(userRoleCollection.getRoleId());
-				superAdminRole = new RoleCollection();
-				superAdminRole.setCreatedTime(new Date());
-				superAdminRole.setRole(RoleEnum.SUPER_ADMIN.toString());
-				superAdminRole.setHospitalId(roleCollection.getHospitalId());
-				superAdminRole.setLocationId(roleCollection.getLocationId());
-				superAdminRole = roleRepository.save(superAdminRole);
+				//superAdminRole = new RoleCollection();
+				//superAdminRole.setCreatedTime(new Date());
+				//superAdminRole.setRole(RoleEnum.SUPER_ADMIN.toString());
+//				superAdminRole.setHospitalId(roleCollection.getHospitalId());
+//				superAdminRole.setLocationId(roleCollection.getLocationId());
+				//superAdminRole = roleRepository.save(superAdminRole);
 				// create SuperAdmin userRole
 				superAdminRoleCollection = new UserRoleCollection();
-				superAdminRoleCollection.setRoleId(superAdminRole.getId());
+				superAdminRoleCollection.setRoleId(roleCollection.getId());
 				superAdminRoleCollection.setUserId(userRoleCollection.getUserId());
 				superAdminRoleCollection.setCreatedTime(new Date());
 				superAdminRoleCollection = userRoleRepository.save(superAdminRoleCollection);

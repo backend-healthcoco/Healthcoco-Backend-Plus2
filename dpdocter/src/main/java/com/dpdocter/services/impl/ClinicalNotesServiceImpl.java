@@ -3208,6 +3208,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						vitalSigns = bloodPressure;
 				}
 			}
+			String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
+			spo2 = (spo2 != null && !spo2.isEmpty()
+					? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + spo2;
+				else
+					vitalSigns = spo2;
+			}
 
 			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 		} else

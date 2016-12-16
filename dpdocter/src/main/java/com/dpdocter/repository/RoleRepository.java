@@ -76,17 +76,17 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query("{'$or': [{'id':{$in :?0}, 'locationId': ?1, 'hospitalId': ?2},{'id':{$in :?0}, 'locationId': null, 'hospitalId': null}]}")
 	public List<RoleCollection> find(Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
-    @Query("{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
-	public List<RoleCollection> find(String role, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+    @Query("{'$or': [{'role': ?0, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3},{'role': ?0, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
+    public List<RoleCollection> find(String role, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
     @Query("{'$or': [{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}, {'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
 	public List<RoleCollection> findStaffs(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
-    @Query("{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
-	public List<RoleCollection> findLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+    @Query("{'$or': [{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3},{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
+    public List<RoleCollection> findLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
-    @Query("{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}")
-	public List<RoleCollection> findNotLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
+    @Query("{'$or': [{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3},{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
+    public List<RoleCollection> findNotLocationHospitalAdmin(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
     @Query(value = "{'role': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
 	public Integer countByRole(String role, ObjectId locationId, ObjectId hospitalId);

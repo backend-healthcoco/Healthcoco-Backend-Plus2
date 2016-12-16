@@ -41,7 +41,6 @@ import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
-import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
@@ -62,7 +61,6 @@ import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
-import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
@@ -590,12 +588,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					.getMappedResults();
 			if (response == null || response.isEmpty()) {
 				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
-
-			}else{
-				for(PatientTreatment patientTreatment:response){
-					
-				}
-				
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
