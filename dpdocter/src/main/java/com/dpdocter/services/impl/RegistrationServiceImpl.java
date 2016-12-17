@@ -46,6 +46,7 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
@@ -140,6 +141,7 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -436,7 +438,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patient.setPatientId(userCollection.getId().toString());
 
 			Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-			if(!DPDoctorUtils.anyStringEmpty(patient.getDoctorId())){
+			if (!DPDoctorUtils.anyStringEmpty(patient.getDoctorId())) {
 				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
 						patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(),
 						patientCollection.getLocationId());
@@ -444,15 +446,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(),
 						patientCollection.getLocationId());
 				recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(),
-						userCollection.getId(), patientCollection.getHospitalId(),
-						patientCollection.getLocationId());
-			}else{
-				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(userCollection.getId(), patientCollection.getHospitalId(),
-						patientCollection.getLocationId());
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(userCollection.getId(), patientCollection.getHospitalId(),
-						patientCollection.getLocationId());
-				recordsCount = recordsRepository.getRecordsForOtherLocations(userCollection.getId(), patientCollection.getHospitalId(),
-						patientCollection.getLocationId());
+						userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+			} else {
+				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(userCollection.getId(),
+						patientCollection.getHospitalId(), patientCollection.getLocationId());
+				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
+						userCollection.getId(), patientCollection.getHospitalId(), patientCollection.getLocationId());
+				recordsCount = recordsRepository.getRecordsForOtherLocations(userCollection.getId(),
+						patientCollection.getHospitalId(), patientCollection.getLocationId());
 			}
 
 			if ((prescriptionCount != null && prescriptionCount > 0)
@@ -662,7 +663,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 			} else {
-				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId, locationObjectId, hospitalObjectId);
+				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
+						locationObjectId, hospitalObjectId);
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
@@ -683,8 +685,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
 					patientCollection.setPID(patientCollection.getPID());
 				} else {
-					patientCollection.setPID(patientIdGenerator(request.getLocationId(),
-							request.getHospitalId()));
+					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId()));
 				}
 				if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
 					patientCollection.setProfession(request.getProfession());
@@ -768,7 +769,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					userCollection.setThumbnailUrl(null);
 					registeredPatientDetails.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 				}
-				if(!userCollection.isSignedUp()){
+				if (!userCollection.isSignedUp()) {
 					userCollection.setFirstName(request.getLocalPatientName());
 					userCollection.setUpdatedTime(new Date());
 					userCollection = userRepository.save(userCollection);
@@ -784,7 +785,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patient.setPatientId(userCollection.getId().toString());
 
 				Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-				if(!DPDoctorUtils.anyStringEmpty(doctorObjectId)){
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
 							patientCollection.getDoctorId(), userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
@@ -794,13 +795,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 					recordsCount = recordsRepository.getRecordsForOtherDoctors(patientCollection.getDoctorId(),
 							userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
-				}else{
-					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(userCollection.getId(), patientCollection.getHospitalId(),
+				} else {
+					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
+							userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
-					clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(userCollection.getId(), patientCollection.getHospitalId(),
+					clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
+							userCollection.getId(), patientCollection.getHospitalId(),
 							patientCollection.getLocationId());
-					recordsCount = recordsRepository.getRecordsForOtherLocations(userCollection.getId(), patientCollection.getHospitalId(),
-							patientCollection.getLocationId());
+					recordsCount = recordsRepository.getRecordsForOtherLocations(userCollection.getId(),
+							patientCollection.getHospitalId(), patientCollection.getLocationId());
 				}
 
 				if ((prescriptionCount != null && prescriptionCount > 0)
@@ -872,8 +875,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String hospitalId) {
 		List<RegisteredPatientDetails> users = null;
 		try {
-			List<UserLookupResponse> userLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(phoneNumber)), 
-					Aggregation.lookup("patient_cl", "_id", "userId", "patients")), UserCollection.class, UserLookupResponse.class).getMappedResults();
+			List<UserLookupResponse> userLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(phoneNumber)),
+							Aggregation.lookup("patient_cl", "_id", "userId", "patients")),
+					UserCollection.class, UserLookupResponse.class).getMappedResults();
 			if (userLookupResponses != null) {
 				users = new ArrayList<RegisteredPatientDetails>();
 				for (UserLookupResponse userLookupResponse : userLookupResponses) {
@@ -881,13 +886,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 						RegisteredPatientDetails user = new RegisteredPatientDetails();
 
 						if (locationId != null && hospitalId != null) {
-							/*List<PatientCollection> patientCollections = patientRepository
-									.findByUserId(userCollection.getId());*/
+							/*
+							 * List<PatientCollection> patientCollections =
+							 * patientRepository
+							 * .findByUserId(userCollection.getId());
+							 */
 							boolean isPartOfClinic = false;
 							if (userLookupResponse.getPatients() != null) {
 								for (PatientCard patientCard : userLookupResponse.getPatients()) {
-									if (patientCard.getLocationId() != null
-											&& patientCard.getHospitalId() != null) {
+									if (patientCard.getLocationId() != null && patientCard.getHospitalId() != null) {
 										if (patientCard.getLocationId().equals(locationId)
 												&& patientCard.getHospitalId().equals(hospitalId)) {
 											user.setLocalPatientName(patientCard.getLocalPatientName());
@@ -993,33 +1000,45 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(doctorObjectId);
 			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId,userId)) {
-				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("userId").is(userObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId, userId)) {
+				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("userId")
+						.is(userObjectId);
 			}
 			patientCard = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-							Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"), Aggregation.unwind("reference"),
+							Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays",
+											true))),
 							Aggregation.sort(Direction.DESC, "createdTime")),
 					PatientCollection.class, PatientCard.class).getUniqueMappedResult();
-			/*UserCollection userCollection = userRepository.findOne(userObjectId);*/
+			/*
+			 * UserCollection userCollection =
+			 * userRepository.findOne(userObjectId);
+			 */
 			if (patientCard.getUser() != null) {
-				/*PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						userObjectId, locationObjectId, hospitalObjectId);*/
+				/*
+				 * PatientCollection patientCollection =
+				 * patientRepository.findByUserIdLocationIdAndHospitalId(
+				 * userObjectId, locationObjectId, hospitalObjectId);
+				 */
 				if (patientCard != null) {
 
 					Reference reference = null;
 					if (patientCard.getReference() != null) {
-						
-						
-							reference = new Reference();
-							BeanUtil.map(patientCard.getReference(), reference);
-						
+
+						reference = new Reference();
+						BeanUtil.map(patientCard.getReference(), reference);
+
 					}
 					patientCard.setReferredBy(null);
-					/*List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
-							.findByPatientId(patientCollection.getUserId());*/
+					/*
+					 * List<PatientGroupCollection> patientGroupCollections =
+					 * patientGroupRepository
+					 * .findByPatientId(patientCollection.getUserId());
+					 */
 
 					registeredPatientDetails = new RegisteredPatientDetails();
 					BeanUtil.map(patientCard, registeredPatientDetails);
@@ -1034,21 +1053,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patient.setPatientId(patientCard.getUser().getId().toString());
 
 					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-					if(!DPDoctorUtils.anyStringEmpty(doctorObjectId)){
+					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
-								new ObjectId(patientCard.getDoctorId()),new ObjectId(patientCard.getUser().getId()),new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
+								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
 						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-								new ObjectId(patientCard.getDoctorId()),new ObjectId(patientCard.getUser().getId()),new ObjectId(patientCard.getHospitalId()),
+								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+						recordsCount = recordsRepository.getRecordsForOtherDoctors(
+								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+					} else {
+						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
+								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
 								new ObjectId(patientCard.getLocationId()));
-						recordsCount = recordsRepository.getRecordsForOtherDoctors(new ObjectId(patientCard.getDoctorId()),new ObjectId(patientCard.getUser().getId()),new ObjectId(patientCard.getHospitalId()),
+						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
+								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
 								new ObjectId(patientCard.getLocationId()));
-					}else{
-						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(new ObjectId(patientCard.getUser().getId()),new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
-						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(new ObjectId(patientCard.getUser().getId()),new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
-						recordsCount = recordsRepository.getRecordsForOtherLocations(new ObjectId(patientCard.getUser().getId()),new ObjectId(patientCard.getHospitalId()),
+						recordsCount = recordsRepository.getRecordsForOtherLocations(
+								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
 								new ObjectId(patientCard.getLocationId()));
 					}
 
@@ -1185,10 +1208,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String hospitalId, String updatedTime, boolean discarded) {
 		List<ReferenceDetail> response = null;
 		try {
-			AggregationResults<ReferenceDetail> aggregationResults = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
-							discarded, "reference", null, null),
-					ReferencesCollection.class, ReferenceDetail.class);
+			AggregationResults<ReferenceDetail> aggregationResults = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, "reference", null, null),
+							ReferencesCollection.class, ReferenceDetail.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1224,25 +1248,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 			int currentYear = localCalendar.get(Calendar.YEAR);
 
 			ObjectId locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(locationId))locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))hospitalObjectId = new ObjectId(hospitalId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
 
-			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId, start, end);
-			if (patientCount == null)patientSize = 0;
-			 LocationCollection location = locationRepository.findOne(locationObjectId);
-			 if(location == null){
-				 logger.warn("Invalid Location Id");
-				 throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-			 }
-			 String patientInitial = location.getPatientInitial();
-			 int patientCounter = location.getPatientCounter();
-			if (patientCounter <= patientSize)patientCounter = patientCounter + patientSize;
-				generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
-						+ DPDoctorUtils.getPrefixedNumber(currentMonth)
-						+ DPDoctorUtils.getPrefixedNumber(currentYear % 100)
-						+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
+					start, end);
+			if (patientCount == null)
+				patientSize = 0;
+			LocationCollection location = locationRepository.findOne(locationObjectId);
+			if (location == null) {
+				logger.warn("Invalid Location Id");
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
+			String patientInitial = location.getPatientInitial();
+			int patientCounter = location.getPatientCounter();
+			if (patientCounter <= patientSize)
+				patientCounter = patientCounter + patientSize;
+			generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
+					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
+					+ DPDoctorUtils.getPrefixedNumber(patientCounter);
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
@@ -1259,15 +1289,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public PatientInitialAndCounter getPatientInitialAndCounter(String locationId) {
 		PatientInitialAndCounter patientInitialAndCounter = null;
 		try {
-			 LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			 if (locationCollection != null) {
-				 patientInitialAndCounter = new PatientInitialAndCounter();
-				 BeanUtil.map(locationCollection, patientInitialAndCounter);
-				 patientInitialAndCounter.setLocationId(locationId);
-			 } else {
-				 logger.warn("Invalid Location Id");
-				 throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-			 }
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			if (locationCollection != null) {
+				patientInitialAndCounter = new PatientInitialAndCounter();
+				BeanUtil.map(locationCollection, patientInitialAndCounter);
+				patientInitialAndCounter.setLocationId(locationId);
+			} else {
+				logger.warn("Invalid Location Id");
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
@@ -1283,21 +1313,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public Boolean updatePatientInitialAndCounter(String locationId, String patientInitial, int patientCounter) {
 		Boolean response = false;
 		try {
-			 LocationCollection locationCollection =
-			 locationRepository.findOne(new ObjectId(locationId));
-			 if (locationCollection != null) {
-				 response = checkIfPatientInitialAndCounterExist(locationId, patientInitial, patientCounter);
-			 if (response) {
-				 locationCollection.setPatientInitial(patientInitial);
-				 locationCollection.setPatientCounter(patientCounter);
-				 locationCollection.setUpdatedTime(new Date());
-				 locationCollection = locationRepository.save(locationCollection);
-				 response = true;
-			  }
-			 } else {
-				 logger.warn("Invalid Location Id");
-				 throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-			 }
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			if (locationCollection != null) {
+				response = checkIfPatientInitialAndCounterExist(locationId, patientInitial, patientCounter);
+				if (response) {
+					locationCollection.setPatientInitial(patientInitial);
+					locationCollection.setPatientCounter(patientCounter);
+					locationCollection.setUpdatedTime(new Date());
+					locationCollection = locationRepository.save(locationCollection);
+					response = true;
+				}
+			} else {
+				logger.warn("Invalid Location Id");
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
@@ -1309,8 +1338,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private Boolean checkIfPatientInitialAndCounterExist(String locationId, String patientInitial,
-			int patientCounter) {
+	private Boolean checkIfPatientInitialAndCounterExist(String locationId, String patientInitial, int patientCounter) {
 		Boolean response = false;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -1322,7 +1350,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					+ DPDoctorUtils.getPrefixedNumber(currentYear % 100);
 			String generatedId = patientInitial + date;
 
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("PID").regex(generatedId + ".*");
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("PID")
+					.regex(generatedId + ".*");
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.limit(1));
@@ -1993,10 +2022,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				roleCollection = new RoleCollection();
 				BeanUtil.map(request, roleCollection);
 				roleCollection.setCreatedTime(new Date());
-				if(!DPDoctorUtils.allStringsEmpty(request.getLocationId())){
-					LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+				if (!DPDoctorUtils.allStringsEmpty(request.getLocationId())) {
+					LocationCollection locationCollection = locationRepository
+							.findOne(new ObjectId(request.getLocationId()));
 					roleCollection.setCreatedBy(locationCollection.getLocationName());
-				}else{
+				} else {
 					roleCollection.setCreatedBy("ADMIN");
 				}
 			} else {
@@ -2031,9 +2061,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private void checkIfRoleAlreadyExist(String role, String locationId, String hospitalId) {
 		try {
 			Integer count = 0;
-			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 				count = roleRepository.countByRole(role, new ObjectId(locationId), new ObjectId(hospitalId));
-			else 
+			else
 				count = roleRepository.countByRole(role);
 			if (count != null && count > 0) {
 				logger.error("Role already exist with this name");
@@ -2064,7 +2094,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			default:
 				break;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2074,18 +2104,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	}
 
-	private List<Role> getCustomGlobalRole(int page, int size, String locationId, String hospitalId, String updatedTime, String role) {
+	private List<Role> getCustomGlobalRole(int page, int size, String locationId, String hospitalId, String updatedTime,
+			String role) {
 		List<Role> response = null;
 		List<RoleCollection> roleCollections = null;
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			if (DPDoctorUtils.anyStringEmpty(role)) {
 				if (size > 0)
-					roleCollections = roleRepository.findCustomGlobalRole(new ObjectId(locationId), new ObjectId(hospitalId),
-							new Date(createdTimeStamp), new PageRequest(page, size, Direction.DESC, "createdTime"));
+					roleCollections = roleRepository.findCustomGlobalRole(new ObjectId(locationId),
+							new ObjectId(hospitalId), new Date(createdTimeStamp),
+							new PageRequest(page, size, Direction.DESC, "createdTime"));
 				else
-					roleCollections = roleRepository.findCustomGlobalRole(new ObjectId(locationId), new ObjectId(hospitalId),
-							new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
+					roleCollections = roleRepository.findCustomGlobalRole(new ObjectId(locationId),
+							new ObjectId(hospitalId), new Date(createdTimeStamp),
+							new Sort(Sort.Direction.DESC, "createdTime"));
 			} else {
 				if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
 					if (size > 0)
@@ -2101,13 +2134,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
+										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
+										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				}
 			}
@@ -2119,7 +2154,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					AccessControl accessControl = accessControlServices.getAccessControls(roleCollection.getId(),
 							roleCollection.getLocationId(), roleCollection.getHospitalId());
 					BeanUtil.map(roleCollection, roleObj);
-					if(accessControl != null)roleObj.setAccessModules(accessControl.getAccessModules());
+					if (accessControl != null)
+						roleObj.setAccessModules(accessControl.getAccessModules());
 					response.add(roleObj);
 				}
 			}
@@ -2159,13 +2195,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 						roleCollections = roleRepository.findCustomStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
+										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
+										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.ADMIN.getRole())) {
 					if (size > 0)
@@ -2219,8 +2257,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 			Criteria criteria = new Criteria();
-			if(!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
-			
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
 			if (size > 0)
 				/*
 				 * doctorClinicProfileCollections =
@@ -2228,16 +2267,18 @@ public class RegistrationServiceImpl implements RegistrationService {
 				 * ObjectId(locationId), new PageRequest(page, size,
 				 * Direction.DESC, "createdTime"));
 				 */
-				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollections"),
-								Aggregation.skip((page) * size), Aggregation.limit(size)),
-						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
+				doctorClinicProfileLookupResponses = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+										Aggregation.unwind("user"),
+										Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollections"),
+										Aggregation.skip((page) * size), Aggregation.limit(size)),
+								DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			else
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
@@ -2261,20 +2302,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 				response = new ArrayList<ClinicDoctorResponse>();
 				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
 					ClinicDoctorResponse clinicDoctorResponse = new ClinicDoctorResponse();
-					//UserCollection userCollection = userRepository.findOne(doctorClinicProfileLookupResponse.getDoctorId());
+					// UserCollection userCollection =
+					// userRepository.findOne(doctorClinicProfileLookupResponse.getDoctorId());
 					if (doctorClinicProfileLookupResponse.getUser() != null) {
-						//DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
+						// DoctorCollection doctorCollection =
+						// doctorRepository.findByUserId(userCollection.getId());
 						BeanUtil.map(doctorClinicProfileLookupResponse.getUser(), clinicDoctorResponse);
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
 						if (doctorClinicProfileLookupResponse.getDoctor() != null)
-							clinicDoctorResponse.setRegisterNumber(doctorClinicProfileLookupResponse.getDoctor().getRegisterNumber());
-						/*List<UserRoleCollection> userRoleCollection = userRoleRepository
-								.findByUserId(userCollection.getId());*/
+							clinicDoctorResponse.setRegisterNumber(
+									doctorClinicProfileLookupResponse.getDoctor().getRegisterNumber());
+						/*
+						 * List<UserRoleCollection> userRoleCollection =
+						 * userRoleRepository
+						 * .findByUserId(userCollection.getId());
+						 */
 
 						@SuppressWarnings("unchecked")
-						Collection<ObjectId> roleIds = CollectionUtils.collect(doctorClinicProfileLookupResponse.getUserRoleCollections(),
+						Collection<ObjectId> roleIds = CollectionUtils.collect(
+								doctorClinicProfileLookupResponse.getUserRoleCollections(),
 								new BeanToPropertyValueTransformer("roleId"));
 						List<RoleCollection> roleCollections = null;
 						if (DPDoctorUtils.anyStringEmpty(role)) {
@@ -2287,7 +2335,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 							} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 								roleCollections = roleRepository.findStaffs(
 										Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
-												RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(), RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+												RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
+												RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 										roleIds, new ObjectId(locationId), new ObjectId(hospitalId));
 							} else if (role.equalsIgnoreCase(RoleEnum.ADMIN.getRole())) {
 								roleCollections = roleRepository.findLocationHospitalAdmin(
@@ -2369,7 +2418,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Transactional
 	public void activateDeactivateUser(String userId, String locationId, Boolean isActivate) {
 		try {
-			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(new ObjectId(userId), new ObjectId(locationId));
+			DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+					.findByDoctorIdLocationId(new ObjectId(userId), new ObjectId(locationId));
 			if (doctorClinicProfileCollection != null) {
 				doctorClinicProfileCollection.setIsActivate(isActivate);
 				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
@@ -2464,25 +2514,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 				} else {
 					feedbackCollection.setIsVisible(true);
 				}
-				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
-						feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
 				if (doctorClinicProfileCollection != null) {
-						if (feedbackCollection.getIsRecommended())
-							doctorClinicProfileCollection
-									.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
-						else
-							doctorClinicProfileCollection
-									.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() - 1);
-						doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-					}
-				
+					if (feedbackCollection.getIsRecommended())
+						doctorClinicProfileCollection
+								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
+					else
+						doctorClinicProfileCollection
+								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() - 1);
+					doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				}
+
 				UserCollection patient = null;
 				PatientCollection patientCollection = new PatientCollection();
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getUserId()))
 					patient = userRepository.findOne(feedbackCollection.getUserId());
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						feedbackCollection.getUserId(), 
-						feedbackCollection.getLocationId(), feedbackCollection.getHospitalId());
+						feedbackCollection.getUserId(), feedbackCollection.getLocationId(),
+						feedbackCollection.getHospitalId());
 
 				UserCollection doctor = null;
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getDoctorId()))
@@ -2561,14 +2611,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-			if(!DPDoctorUtils.anyStringEmpty(doctorObjectId)){
-				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorObjectId, patientObjectId, hospitalObjectId, locationObjectId);
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorObjectId, patientObjectId, hospitalObjectId, locationObjectId);
-				recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorObjectId, patientObjectId, hospitalObjectId, locationObjectId);
-			}else{
-				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(patientObjectId, hospitalObjectId, locationObjectId);
-				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(patientObjectId, hospitalObjectId, locationObjectId);
-				recordsCount = recordsRepository.getRecordsForOtherLocations(patientObjectId, hospitalObjectId, locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
+				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorObjectId,
+						patientObjectId, hospitalObjectId, locationObjectId);
+				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(doctorObjectId,
+						patientObjectId, hospitalObjectId, locationObjectId);
+				recordsCount = recordsRepository.getRecordsForOtherDoctors(doctorObjectId, patientObjectId,
+						hospitalObjectId, locationObjectId);
+			} else {
+				prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(patientObjectId,
+						hospitalObjectId, locationObjectId);
+				clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(patientObjectId,
+						hospitalObjectId, locationObjectId);
+				recordsCount = recordsRepository.getRecordsForOtherLocations(patientObjectId, hospitalObjectId,
+						locationObjectId);
 			}
 
 			if ((prescriptionCount != null && prescriptionCount > 0)
@@ -2595,16 +2651,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 				feedbackCollection.setUpdatedTime(new Date());
 				feedbackCollection.setIsVisible(isVisible);
 				feedbackCollection = feedbackRepository.save(feedbackCollection);
-				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByDoctorIdLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
 				if (doctorClinicProfileCollection != null) {
-						if (isVisible)
-							doctorClinicProfileCollection
-									.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews() + 1);
-						else
-							doctorClinicProfileCollection
-									.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews() - 1);
-						doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-					}
+					if (isVisible)
+						doctorClinicProfileCollection
+								.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews() + 1);
+					else
+						doctorClinicProfileCollection
+								.setNoOfReviews(doctorClinicProfileCollection.getNoOfReviews() - 1);
+					doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+				}
 				BeanUtil.map(feedbackCollection, response);
 			}
 		} catch (Exception e) {
@@ -2673,22 +2730,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 					Feedback feedback = new Feedback();
 					BeanUtil.map(feedbackCollection, feedback);
 					Criteria criteria = new Criteria();
-					/*if (!DPDoctorUtils.anyStringEmpty(feedback.getDoctorId())) {
-						criteria.and("doctorId").is(new ObjectId(feedback.getDoctorId()));
-					}*/
-					if (!DPDoctorUtils.anyStringEmpty(feedback.getLocationId(), feedback.getHospitalId(),feedback.getUserId())) {
-						criteria.and("locationId").is(new ObjectId(feedback.getLocationId())).and("hospitalId").is(new ObjectId(feedback.getHospitalId())).and("userId").is(new ObjectId(feedback.getUserId()));
+					/*
+					 * if
+					 * (!DPDoctorUtils.anyStringEmpty(feedback.getDoctorId())) {
+					 * criteria.and("doctorId").is(new
+					 * ObjectId(feedback.getDoctorId())); }
+					 */
+					if (!DPDoctorUtils.anyStringEmpty(feedback.getLocationId(), feedback.getHospitalId(),
+							feedback.getUserId())) {
+						criteria.and("locationId").is(new ObjectId(feedback.getLocationId())).and("hospitalId")
+								.is(new ObjectId(feedback.getHospitalId())).and("userId")
+								.is(new ObjectId(feedback.getUserId()));
 					}
 					PatientCard patientCard = mongoTemplate.aggregate(
 							Aggregation.newAggregation(Aggregation.match(criteria),
 									Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-									Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+									Aggregation.lookup("patient_group_cl", "userId", "patientId",
+											"patientGroupCollections"),
 									Aggregation.sort(Direction.DESC, "createdTime")),
 							PatientCollection.class, PatientCard.class).getUniqueMappedResult();
-					/*UserCollection userCollection = userRepository.findOne(new ObjectId(feedback.getUserId()));
-					PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-							feedbackCollection.getUserId(), 
-							feedbackCollection.getLocationId(), feedbackCollection.getHospitalId());*/
+					/*
+					 * UserCollection userCollection =
+					 * userRepository.findOne(new
+					 * ObjectId(feedback.getUserId())); PatientCollection
+					 * patientCollection =
+					 * patientRepository.findByUserIdLocationIdAndHospitalId(
+					 * feedbackCollection.getUserId(),
+					 * feedbackCollection.getLocationId(),
+					 * feedbackCollection.getHospitalId());
+					 */
 					if (patientCard != null && patientCard.getUser() != null) {
 						User user = new User();
 						BeanUtil.map(patientCard.getUser(), user);
@@ -2786,64 +2856,88 @@ public class RegistrationServiceImpl implements RegistrationService {
 		int lineCount = 0;
 		try {
 			br = new BufferedReader(new FileReader(csvFile));
-		    while ((line = br.readLine()) != null) {
-		    	
-				if(lineCount > 0){
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
 					String[] fields = line.split(cvsSplitBy);
-					if(!DPDoctorUtils.anyStringEmpty(fields[0]) && !fields[0].equalsIgnoreCase("NULL") && !DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NULL")
-							&& fields[0].length() == 10 && fields[1].length() >= 2){
+					if (!DPDoctorUtils.anyStringEmpty(fields[0]) && !fields[0].equalsIgnoreCase("NULL")
+							&& !DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NULL")
+							&& fields[0].length() == 10 && fields[1].length() >= 2) {
 						PatientRegistrationRequest request = new PatientRegistrationRequest();
 						request.setMobileNumber(fields[0]);
 						int count = 0;
-						List<UserCollection> userCollections = userRepository.findByMobileNumber(request.getEmailAddress());
+						List<UserCollection> userCollections = userRepository
+								.findByMobileNumber(request.getEmailAddress());
 						if (userCollections != null && !userCollections.isEmpty()) {
 							for (UserCollection userCollection : userCollections) {
 								if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
 									count++;
 							}
 						}
-						
+
 						if (count < Integer.parseInt(patientCount)) {
 							request.setFirstName(fields[1]);
 							request.setLocalPatientName(fields[1]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NULL"))request.setGender(fields[2].toUpperCase());
-							if(!DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NULL")){
+							if (!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NULL"))
+								request.setGender(fields[2].toUpperCase());
+							if (!DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NULL")) {
 								String[] dob = fields[3].split("/");
-								DOB dobObject = new DOB(Integer.parseInt(dob[0]), Integer.parseInt(dob[1]), Integer.parseInt(dob[2]));
+								DOB dobObject = new DOB(Integer.parseInt(dob[0]), Integer.parseInt(dob[1]),
+										Integer.parseInt(dob[2]));
 								request.setDob(dobObject);
 							}
-							if(!DPDoctorUtils.anyStringEmpty(fields[4]) && !fields[4].equalsIgnoreCase("NULL"))request.setEmailAddress(fields[4]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NULL"))request.setBloodGroup(fields[5]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[6]) && !fields[6].equalsIgnoreCase("NULL"))request.setProfession(fields[6]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NULL"))request.setSecMobile(fields[7]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NULL"))request.setAdhaarId(fields[8]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NULL"))request.setPanCardNumber(fields[9]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NULL"))request.setDrivingLicenseId(fields[10]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[11]) && !fields[11].equalsIgnoreCase("NULL"))request.setInsuranceId(fields[11]);
-							if(!DPDoctorUtils.anyStringEmpty(fields[12]) && !fields[12].equalsIgnoreCase("NULL"))request.setInsuranceName(fields[12]);
-							
-							String country = null, city = null, state = null, postalCode = null, locality = null, streetAddress = null;
-	 
-							if(!DPDoctorUtils.anyStringEmpty(fields[13]) && !fields[13].equalsIgnoreCase("NULL"))streetAddress = fields[13];
-							if(!DPDoctorUtils.anyStringEmpty(fields[14]) && !fields[14].equalsIgnoreCase("NULL"))locality = fields[14];
-							if(!DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NULL"))city = fields[15];
-							if(!DPDoctorUtils.anyStringEmpty(fields[16]) && !fields[16].equalsIgnoreCase("NULL"))state = fields[16];
-							if(!DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NULL"))country = fields[17];
-							if(!DPDoctorUtils.anyStringEmpty(fields[18]) && !fields[18].equalsIgnoreCase("NULL"))postalCode = fields[18];
-							
-							if(!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality, streetAddress)){
-								Address address = new Address(country, city, state, postalCode, locality, null, null, streetAddress);
+							if (!DPDoctorUtils.anyStringEmpty(fields[4]) && !fields[4].equalsIgnoreCase("NULL"))
+								request.setEmailAddress(fields[4]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NULL"))
+								request.setBloodGroup(fields[5]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[6]) && !fields[6].equalsIgnoreCase("NULL"))
+								request.setProfession(fields[6]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NULL"))
+								request.setSecMobile(fields[7]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NULL"))
+								request.setAdhaarId(fields[8]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NULL"))
+								request.setPanCardNumber(fields[9]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NULL"))
+								request.setDrivingLicenseId(fields[10]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[11]) && !fields[11].equalsIgnoreCase("NULL"))
+								request.setInsuranceId(fields[11]);
+							if (!DPDoctorUtils.anyStringEmpty(fields[12]) && !fields[12].equalsIgnoreCase("NULL"))
+								request.setInsuranceName(fields[12]);
+
+							String country = null, city = null, state = null, postalCode = null, locality = null,
+									streetAddress = null;
+
+							if (!DPDoctorUtils.anyStringEmpty(fields[13]) && !fields[13].equalsIgnoreCase("NULL"))
+								streetAddress = fields[13];
+							if (!DPDoctorUtils.anyStringEmpty(fields[14]) && !fields[14].equalsIgnoreCase("NULL"))
+								locality = fields[14];
+							if (!DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NULL"))
+								city = fields[15];
+							if (!DPDoctorUtils.anyStringEmpty(fields[16]) && !fields[16].equalsIgnoreCase("NULL"))
+								state = fields[16];
+							if (!DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NULL"))
+								country = fields[17];
+							if (!DPDoctorUtils.anyStringEmpty(fields[18]) && !fields[18].equalsIgnoreCase("NULL"))
+								postalCode = fields[18];
+
+							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
+									streetAddress)) {
+								Address address = new Address(country, city, state, postalCode, locality, null, null,
+										streetAddress);
 								request.setAddress(address);
 							}
-							if(!DPDoctorUtils.anyStringEmpty(fields[19]) && !fields[19].equalsIgnoreCase("NULL")){
-								DateFormat newDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");    
+							if (!DPDoctorUtils.anyStringEmpty(fields[19]) && !fields[19].equalsIgnoreCase("NULL")) {
+								DateFormat newDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 								Date dateOfVisit = newDateFormat.parse(fields[19]);
 								request.setDateOfVisit(dateOfVisit.getTime());
 							}
-							if(!DPDoctorUtils.anyStringEmpty(fields[20]) && !fields[20].equalsIgnoreCase("NULL")){
-								ReferencesCollection referencesCollection = referrenceRepository.find(fields[20], doctorId, locationId, hospitalId);
+							if (!DPDoctorUtils.anyStringEmpty(fields[20]) && !fields[20].equalsIgnoreCase("NULL")) {
+								ReferencesCollection referencesCollection = referrenceRepository.find(fields[20],
+										doctorId, locationId, hospitalId);
 								Reference reference = new Reference();
-								if(referencesCollection != null)reference.setId(referencesCollection.getId().toString());
+								if (referencesCollection != null)
+									reference.setId(referencesCollection.getId().toString());
 								reference.setReference(fields[20]);
 								request.setReferredBy(reference);
 							}
@@ -2851,35 +2945,36 @@ public class RegistrationServiceImpl implements RegistrationService {
 							request.setLocationId(locationId);
 							request.setHospitalId(hospitalId);
 							RegisteredPatientDetails registeredPatientDetails = registerNewPatient(request);
-							
-							transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
+
+							transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()),
+									Resource.PATIENT, false);
 							esRegRistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
-						}else{
-							System.out.println(patientCount+" patients already exist with mobile number "+request.getMobileNumber());
+						} else {
+							System.out.println(patientCount + " patients already exist with mobile number "
+									+ request.getMobileNumber());
 						}
-					}else{
-						System.out.println("Invalid user- MobileNumber: "+fields[0]+" Name: "+fields[1]);
+					} else {
+						System.out.println("Invalid user- MobileNumber: " + fields[0] + " Name: " + fields[1]);
 					}
 				}
 				lineCount++;
 				response = true;
-		    }
-		    
-		    } catch (Exception e) {
-		    e.printStackTrace();
-		} 
-		finally {
-		    if (br != null) {
-			try {
-			    br.close();
-			} catch (IOException e) {
-			    e.printStackTrace();
 			}
-		    }
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return response;
 	}
-	
+
 	private ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient) {
 		ESPatientDocument esPatientDocument = null;
 		try {
@@ -2891,31 +2986,36 @@ public class RegistrationServiceImpl implements RegistrationService {
 				BeanUtil.map(patient.getPatient(), esPatientDocument);
 			}
 			BeanUtil.map(patient, esPatientDocument);
-			if (patient.getBackendPatientId() != null)esPatientDocument.setId(patient.getBackendPatientId());
-			if (patient.getReferredBy() != null)esPatientDocument.setReferredBy(patient.getReferredBy().getId());
+			if (patient.getBackendPatientId() != null)
+				esPatientDocument.setId(patient.getBackendPatientId());
+			if (patient.getReferredBy() != null)
+				esPatientDocument.setReferredBy(patient.getReferredBy().getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return esPatientDocument;
 	}
-	
+
 	@Override
 	public Boolean updatePIDOnClinicLevel() {
 		Boolean response = false;
-		try{
-			List<LocationCollection> locationCollections  = locationRepository.findAll();
-			for(LocationCollection locationCollection : locationCollections){
-			    RoleCollection roleCollection = roleRepository.findLocationAdmin(locationCollection.getId(), RoleEnum.LOCATION_ADMIN.getRole());
-			    List<UserRoleCollection> userRoleCollection = userRoleRepository.findByRoleId(roleCollection.getId());
-			    if(userRoleCollection !=null && !userRoleCollection.isEmpty()){
-			    	DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(userRoleCollection.get(0).getUserId(), locationCollection.getId());
-			    	locationCollection.setPatientCounter(clinicProfileCollection.getPatientCounter());
+		try {
+			List<LocationCollection> locationCollections = locationRepository.findAll();
+			for (LocationCollection locationCollection : locationCollections) {
+				RoleCollection roleCollection = roleRepository.findLocationAdmin(locationCollection.getId(),
+						RoleEnum.LOCATION_ADMIN.getRole());
+				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByRoleId(roleCollection.getId());
+				if (userRoleCollection != null && !userRoleCollection.isEmpty()) {
+					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
+							.findByDoctorIdLocationId(userRoleCollection.get(0).getUserId(),
+									locationCollection.getId());
+					locationCollection.setPatientCounter(clinicProfileCollection.getPatientCounter());
 					locationCollection.setPatientInitial(clinicProfileCollection.getPatientInitial());
 					locationRepository.save(locationCollection);
 					response = true;
-			    }
+				}
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error");
@@ -2926,24 +3026,25 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	public Boolean updateDoctorClinicProfile() {
 		Boolean response = false;
-		try{
-			List<UserLocationCollection> userLocationCollections  = userLocationRepository.findAll();
-			for(UserLocationCollection userLocationCollection : userLocationCollections){
-			    DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository.findByUserLocationId(userLocationCollection.getId());
-			    if(doctorClinicProfileCollection == null){
-			    	doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-			    	doctorClinicProfileCollection.setCreatedTime(new Date());
-			    }
-			    doctorClinicProfileCollection.setUpdatedTime(new Date());
-			    doctorClinicProfileCollection.setDoctorId(userLocationCollection.getUserId());
-			    doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
-			    doctorClinicProfileCollection.setDiscarded(userLocationCollection.getDiscarded());
-			    doctorClinicProfileCollection.setIsActivate(userLocationCollection.getIsActivate());
-			    doctorClinicProfileCollection.setIsVerified(userLocationCollection.getIsVerified());
-			    doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+		try {
+			List<UserLocationCollection> userLocationCollections = userLocationRepository.findAll();
+			for (UserLocationCollection userLocationCollection : userLocationCollections) {
+				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
+						.findByUserLocationId(userLocationCollection.getId());
+				if (doctorClinicProfileCollection == null) {
+					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+					doctorClinicProfileCollection.setCreatedTime(new Date());
+				}
+				doctorClinicProfileCollection.setUpdatedTime(new Date());
+				doctorClinicProfileCollection.setDoctorId(userLocationCollection.getUserId());
+				doctorClinicProfileCollection.setLocationId(userLocationCollection.getLocationId());
+				doctorClinicProfileCollection.setDiscarded(userLocationCollection.getDiscarded());
+				doctorClinicProfileCollection.setIsActivate(userLocationCollection.getIsActivate());
+				doctorClinicProfileCollection.setIsVerified(userLocationCollection.getIsVerified());
+				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
 				response = true;
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error");

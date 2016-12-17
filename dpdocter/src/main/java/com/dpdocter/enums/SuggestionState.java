@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum SuggestionState {
-	PENDING("PENDING"), ACCEPTED("ACCEPTED"), CANCELED("CANCELED");
+	PENDING("PENDING"), ACCEPTED("ACCEPTED"), CANCELED("CANCELLED");
 
 	String state;
 
