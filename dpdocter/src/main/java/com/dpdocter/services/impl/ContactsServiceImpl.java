@@ -552,7 +552,7 @@ public class ContactsServiceImpl implements ContactsService {
 					//UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
 					/*List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
 							.findByPatientId(patientCollection.getUserId());*/
-					patientCard.setColorCode(patientCard.getUser().getColorCode());
+					
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 							new BeanToPropertyValueTransformer("groupId"));
@@ -570,6 +570,7 @@ public class ContactsServiceImpl implements ContactsService {
 					Patient patient = new Patient();
 					BeanUtil.map(patientCard, patient);
 					patient.setPatientId(patientCard.getUser().getId().toString());
+					
 
 					ObjectId referredBy = null;
 					if(patientCard.getReferredBy() != null)
@@ -605,6 +606,7 @@ public class ContactsServiceImpl implements ContactsService {
 							patientCard.getUser().getId().toString()));
 					registeredPatientDetail.setPatient(patient);
 					registeredPatientDetail.setAddress(patientCard.getAddress());
+					
 
 					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 						groups = mongoTemplate
@@ -640,7 +642,7 @@ public class ContactsServiceImpl implements ContactsService {
 							BeanUtil.map(referencesCollection, reference);
 					}
 					registeredPatientDetail.setReferredBy(reference);
-
+					registeredPatientDetail.setColorCode(patientCard.getUser().getColorCode());
 					registeredPatientDetails.add(registeredPatientDetail);
 				}
 			}
