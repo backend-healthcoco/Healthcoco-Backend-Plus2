@@ -497,8 +497,14 @@ public class HistoryServicesImpl implements HistoryServices {
 							if (diagnosticTestCollection != null) {
 								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 							}
-							diagnosticTests
-									.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+
+							if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+								diagnosticTests.add(
+										new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+							} else {
+								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+							}
+
 						}
 					}
 					response.setDiagnosticTests(diagnosticTests);
@@ -981,8 +987,13 @@ public class HistoryServicesImpl implements HistoryServices {
 										if (diagnosticTestCollection != null) {
 											BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 										}
-										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
-												data.getRecordId().toString()));
+										if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+											diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+													data.getRecordId().toString()));
+										} else {
+											diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+										}
+
 									}
 								}
 								response.setDiagnosticTests(diagnosticTests);

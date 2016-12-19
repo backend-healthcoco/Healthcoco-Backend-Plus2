@@ -298,23 +298,31 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private GenericCodeWithReactionRepository genericCodeWithReactionRepository;
 
-	LoadingCache<String,List<Code>> Cache = CacheBuilder.newBuilder()
-	            .maximumSize(100) // maximum 100 records can be cached
-	            .expireAfterAccess(30, TimeUnit.MINUTES) // cache will expire after 30 minutes of access
-	            .build(new CacheLoader<String, List<Code>>(){ // build the cacheloader
+	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100) // maximum
+																						// 100
+																						// records
+																						// can
+																						// be
+																						// cached
+			.expireAfterAccess(30, TimeUnit.MINUTES) // cache will expire after
+														// 30 minutes of access
+			.build(new CacheLoader<String, List<Code>>() { // build the
+															// cacheloader
 
-	                @Override
-	                public List<Code> load(String id) throws Exception {
-	                  if(getDataFromElasticSearch(id)!=null)return getDataFromElasticSearch(id);
-	                	else return null;
-	                }
-	                
-					public Map<String,List<Code>> loadAll(Iterable<? extends String> keys) {
-	                    return loadDataFromElasticSearch(keys);
-	                }
-	                
-	      });
-	
+				@Override
+				public List<Code> load(String id) throws Exception {
+					if (getDataFromElasticSearch(id) != null)
+						return getDataFromElasticSearch(id);
+					else
+						return null;
+				}
+
+				public Map<String, List<Code>> loadAll(Iterable<? extends String> keys) {
+					return loadDataFromElasticSearch(keys);
+				}
+
+			});
+
 	@Override
 	@Transactional
 	public Drug addDrug(DrugAddEditRequest request) {
@@ -541,7 +549,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drug");
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting drug for drugId:"+drugId, e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting drug for drugId:" + drugId,
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -932,7 +941,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (diagnosticTestCollection != null) {
 						BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					}
-					tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+					if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+						tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+					} else {
+						tests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+					}
+
 				}
 				response.setDiagnosticTests(tests);
 			}
@@ -1134,7 +1148,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (diagnosticTestCollection != null) {
 						BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 					}
-					tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+					if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+						tests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+					} else {
+						tests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+					}
+
 				}
 				response.setDiagnosticTests(tests);
 			}
@@ -1206,8 +1225,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
-									diagnosticTests
-											.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+									if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+												data.getRecordId().toString()));
+									} else {
+										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+									}
+
 								}
 							}
 							response.setDiagnosticTests(diagnosticTests);
@@ -1556,14 +1580,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
-												.append("items",
-														new BasicDBObject("$addToSet", "$items"))												
-																.append("createdTime",
-																		new BasicDBObject("$first", "$createdTime"))
-																.append("updatedTime",
-																		new BasicDBObject("$first", "$updatedTime"))
-																.append("createdBy",
-																		new BasicDBObject("$first", "$createdBy")))),
+												.append("items", new BasicDBObject("$addToSet", "$items"))
+												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 								Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			response = mongoTemplate
@@ -3399,8 +3419,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						if (diagnosticTestCollection != null) {
 							DiagnosticTest diagnosticTest = new DiagnosticTest();
 							BeanUtil.map(diagnosticTestCollection, diagnosticTest);
-							TestAndRecordDataResponse dataResponse = new TestAndRecordDataResponse(diagnosticTest,
-									recordData.getRecordId().toString());
+							TestAndRecordDataResponse dataResponse;
+							if (!DPDoctorUtils.anyStringEmpty(recordData.getRecordId())) {
+								dataResponse = new TestAndRecordDataResponse(diagnosticTest,
+										recordData.getRecordId().toString());
+							} else {
+								dataResponse = new TestAndRecordDataResponse(diagnosticTest, null);
+							}
+
 							tests.add(dataResponse);
 						}
 					}
@@ -4024,98 +4050,111 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-//	@Override
-//	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
-//		List<DrugInteractionResposne> response = null;
-//		try {
-//			Map<Integer, String> genericCodes = new HashMap<Integer, String>();
-//			Map<Drug, Set<String>> drugMap = new LinkedHashMap<Drug, Set<String>>();
-//			for (Drug drug : request) {
-//				if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
-//					Set<String> codes = new HashSet<String>();
-//					for (GenericCode genericNames : drug.getGenericNames()) {
-//						if (!codes.contains(genericNames.getCode()))
-//							codes.add(genericNames.getCode());
-//						if (!genericCodes.containsValue(genericNames.getCode()))
-//							genericCodes.put(genericCodes.size(), genericNames.getCode());
-//					}
-//					drugMap.put(drug, codes);
-//				}
-//			}
-//
-//			boolean[][] codeMatrix = new boolean[genericCodes.size()][genericCodes.size()];
-//			for (int row = 0; row < codeMatrix.length; row++) {
-//				for (int column = 0; column < codeMatrix[row].length; column++) {
-//					if (row != column && !codeMatrix[row][column] && !codeMatrix[column][row]) {
-//						if (!checkGenericContainsInSameDrug(genericCodes.get(row), genericCodes.get(column), drugMap)) {
-//							codeMatrix[row][column] = true;
-//							codeMatrix[column][row] = true;
-//							List<ESGenericCodeWithReaction> esGenericCodeWithReactions = elasticsearchTemplate
-//									.queryForList(
-//											new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder()
-//													.must(QueryBuilders.matchQuery("codes", genericCodes.get(row)))
-//													.must(QueryBuilders.matchQuery("codes", genericCodes.get(column))))
-//													.build(),
-//											ESGenericCodeWithReaction.class);
-//							if (esGenericCodeWithReactions != null && !esGenericCodeWithReactions.isEmpty()) {
-//								if (response == null)
-//									response = new ArrayList<>();
-//								for (Entry<Drug, Set<String>> entry : drugMap.entrySet()) {
-//									if (entry.getValue().contains(genericCodes.get(row))) {
-//										for (Entry<Drug, Set<String>> entry2 : drugMap.entrySet()) {
-//											if (entry2.getValue().contains(genericCodes.get(column))) {
-//												response.add(
-//														new DrugInteractionResposne(
-//																entry.getKey().getDrugName() + " has "
-//																		+ esGenericCodeWithReactions.get(0)
-//																				.getReactionType()
-//																		+ " reaction with "
-//																		+ entry2.getKey().getDrugName(),
-//																esGenericCodeWithReactions.get(0).getReactionType()));
-//											}
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error(e + " Error Occurred While drugInteraction");
-//			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
-//		}
-//		return response;
-//	}
+	// @Override
+	// public List<DrugInteractionResposne> drugInteraction(List<Drug> request)
+	// {
+	// List<DrugInteractionResposne> response = null;
+	// try {
+	// Map<Integer, String> genericCodes = new HashMap<Integer, String>();
+	// Map<Drug, Set<String>> drugMap = new LinkedHashMap<Drug, Set<String>>();
+	// for (Drug drug : request) {
+	// if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty())
+	// {
+	// Set<String> codes = new HashSet<String>();
+	// for (GenericCode genericNames : drug.getGenericNames()) {
+	// if (!codes.contains(genericNames.getCode()))
+	// codes.add(genericNames.getCode());
+	// if (!genericCodes.containsValue(genericNames.getCode()))
+	// genericCodes.put(genericCodes.size(), genericNames.getCode());
+	// }
+	// drugMap.put(drug, codes);
+	// }
+	// }
+	//
+	// boolean[][] codeMatrix = new
+	// boolean[genericCodes.size()][genericCodes.size()];
+	// for (int row = 0; row < codeMatrix.length; row++) {
+	// for (int column = 0; column < codeMatrix[row].length; column++) {
+	// if (row != column && !codeMatrix[row][column] &&
+	// !codeMatrix[column][row]) {
+	// if (!checkGenericContainsInSameDrug(genericCodes.get(row),
+	// genericCodes.get(column), drugMap)) {
+	// codeMatrix[row][column] = true;
+	// codeMatrix[column][row] = true;
+	// List<ESGenericCodeWithReaction> esGenericCodeWithReactions =
+	// elasticsearchTemplate
+	// .queryForList(
+	// new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder()
+	// .must(QueryBuilders.matchQuery("codes", genericCodes.get(row)))
+	// .must(QueryBuilders.matchQuery("codes", genericCodes.get(column))))
+	// .build(),
+	// ESGenericCodeWithReaction.class);
+	// if (esGenericCodeWithReactions != null &&
+	// !esGenericCodeWithReactions.isEmpty()) {
+	// if (response == null)
+	// response = new ArrayList<>();
+	// for (Entry<Drug, Set<String>> entry : drugMap.entrySet()) {
+	// if (entry.getValue().contains(genericCodes.get(row))) {
+	// for (Entry<Drug, Set<String>> entry2 : drugMap.entrySet()) {
+	// if (entry2.getValue().contains(genericCodes.get(column))) {
+	// response.add(
+	// new DrugInteractionResposne(
+	// entry.getKey().getDrugName() + " has "
+	// + esGenericCodeWithReactions.get(0)
+	// .getReactionType()
+	// + " reaction with "
+	// + entry2.getKey().getDrugName(),
+	// esGenericCodeWithReactions.get(0).getReactionType()));
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// logger.error(e + " Error Occurred While drugInteraction");
+	// throw new BusinessException(ServiceError.Unknown, "Error Occurred While
+	// drugInteraction");
+	// }
+	// return response;
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
 		List<DrugInteractionResposne> response = null;
 		try {
-				List<String> genericCodes=new ArrayList<String>();
-			
-			for(int k=0;k<request.size();k++){
-				Collection<String> codes = CollectionUtils.collect(request.get(k).getGenericNames(), new BeanToPropertyValueTransformer("code"));
+			List<String> genericCodes = new ArrayList<String>();
+
+			for (int k = 0; k < request.size(); k++) {
+				Collection<String> codes = CollectionUtils.collect(request.get(k).getGenericNames(),
+						new BeanToPropertyValueTransformer("code"));
 				for (String word : codes) {
-			        word = word.toLowerCase();
-			    }
+					word = word.toLowerCase();
+				}
 				genericCodes.addAll(codes);
 			}
 			Cache.getAll(genericCodes);
-			
-		    for(int drugCount = 0; drugCount<request.size()-1; drugCount++){
-			   for(int j=drugCount+1;j<request.size();j++){
-				  
-				  Boolean reaction = checkReactionBetweenDrugGenericCodes(request.get(drugCount).getGenericNames(), request.get(j).getGenericNames());
-				  if(reaction){
-					  if(response == null)response = new ArrayList<DrugInteractionResposne>();
-					  DrugInteractionResposne interactionResposne = new DrugInteractionResposne(request.get(drugCount).getDrugName()+"  reacts with  "+request.get(j).getDrugName(), "");
-					  response.add(interactionResposne);
-				  }				  
-			   }
-		   }
+
+			for (int drugCount = 0; drugCount < request.size() - 1; drugCount++) {
+				for (int j = drugCount + 1; j < request.size(); j++) {
+
+					Boolean reaction = checkReactionBetweenDrugGenericCodes(request.get(drugCount).getGenericNames(),
+							request.get(j).getGenericNames());
+					if (reaction) {
+						if (response == null)
+							response = new ArrayList<DrugInteractionResposne>();
+						DrugInteractionResposne interactionResposne = new DrugInteractionResposne(
+								request.get(drugCount).getDrugName() + "  reacts with  " + request.get(j).getDrugName(),
+								"");
+						response.add(interactionResposne);
+					}
+				}
+			}
 
 		} catch (ExecutionException e) {
 			e.printStackTrace();
@@ -4127,44 +4166,48 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-	
-	private Boolean checkReactionBetweenDrugGenericCodes(List<GenericCode> genericCodesOfFirstDrug, List<GenericCode> genericCodesOfOtherDrug) {
-		Boolean response = false;
-		try{
-		List<GenericCode> commonCodes = commonCodesBetweenTwoDrugs(genericCodesOfFirstDrug, genericCodesOfOtherDrug);
-		Comparator<Code> comparator = new Comparator<Code>() {
-		      public int compare(Code code1,Code code2) {
-		        return code1.getGenericCode().compareTo(code2.getGenericCode());
-		      }
-		    };
-		    
-//		List<String> listOfReactions = new ArrayList<String>();
-		for(int sizeOfGenericCodesinFirstDrug = 0; sizeOfGenericCodesinFirstDrug<genericCodesOfFirstDrug.size(); sizeOfGenericCodesinFirstDrug++){
-			
-			if(!commonCodes.contains(genericCodesOfFirstDrug.get(sizeOfGenericCodesinFirstDrug))){
 
-				List<Code> codes = Cache.get(genericCodesOfFirstDrug.get(sizeOfGenericCodesinFirstDrug).getCode());
-				
-			       if(codes.size()!=0){
-			             for(int j=0; j<genericCodesOfOtherDrug.size(); j++){
-				            if(!commonCodes.contains(genericCodesOfOtherDrug.get(j))){
-		                        Code code = new Code(genericCodesOfOtherDrug.get(j).getCode(),"");
-		                        
-		                        int index= Collections.binarySearch(codes, code, comparator);
-		                        if(index>=0 && index<codes.size()){
-		                        	return true;
-//		                        	if(codes.get(index).getReaction().equalsIgnoreCase("MAJOR")) return "MAJOR";
-//		                        	listOfReactions.add(codes.get(index).getReaction());
-		                         }
-					     }
-			        }
-			     }
+	private Boolean checkReactionBetweenDrugGenericCodes(List<GenericCode> genericCodesOfFirstDrug,
+			List<GenericCode> genericCodesOfOtherDrug) {
+		Boolean response = false;
+		try {
+			List<GenericCode> commonCodes = commonCodesBetweenTwoDrugs(genericCodesOfFirstDrug,
+					genericCodesOfOtherDrug);
+			Comparator<Code> comparator = new Comparator<Code>() {
+				public int compare(Code code1, Code code2) {
+					return code1.getGenericCode().compareTo(code2.getGenericCode());
+				}
+			};
+
+			// List<String> listOfReactions = new ArrayList<String>();
+			for (int sizeOfGenericCodesinFirstDrug = 0; sizeOfGenericCodesinFirstDrug < genericCodesOfFirstDrug
+					.size(); sizeOfGenericCodesinFirstDrug++) {
+
+				if (!commonCodes.contains(genericCodesOfFirstDrug.get(sizeOfGenericCodesinFirstDrug))) {
+
+					List<Code> codes = Cache.get(genericCodesOfFirstDrug.get(sizeOfGenericCodesinFirstDrug).getCode());
+
+					if (codes.size() != 0) {
+						for (int j = 0; j < genericCodesOfOtherDrug.size(); j++) {
+							if (!commonCodes.contains(genericCodesOfOtherDrug.get(j))) {
+								Code code = new Code(genericCodesOfOtherDrug.get(j).getCode(), "");
+
+								int index = Collections.binarySearch(codes, code, comparator);
+								if (index >= 0 && index < codes.size()) {
+									return true;
+									// if(codes.get(index).getReaction().equalsIgnoreCase("MAJOR"))
+									// return "MAJOR";
+									// listOfReactions.add(codes.get(index).getReaction());
+								}
+							}
+						}
+					}
+				}
 			}
-		}   
-//		 if(listOfReactions.contains("MODERATE"))return "MODERATE";
-//		 else if(listOfReactions.contains("MINOR"))return "MINOR";
-		  
-		}catch (ExecutionException e) {
+			// if(listOfReactions.contains("MODERATE"))return "MODERATE";
+			// else if(listOfReactions.contains("MINOR"))return "MINOR";
+
+		} catch (ExecutionException e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
 		}
@@ -4172,11 +4215,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	}
 
 	private List<GenericCode> commonCodesBetweenTwoDrugs(List<GenericCode> first, List<GenericCode> second) {
-		List<GenericCode> commonCodes = new ArrayList<GenericCode> ();
-		for(GenericCode code:first)
-		{
-			if(second.contains(code))
-			{
+		List<GenericCode> commonCodes = new ArrayList<GenericCode>();
+		for (GenericCode code : first) {
+			if (second.contains(code)) {
 				commonCodes.add(code);
 			}
 		}
@@ -4194,47 +4235,50 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-//	@Override
-//	public Boolean addGenericsWithReaction() {
-//		String csvFile = "/home/ubuntu/AnalgesicsAntipyretics.csv";
-//		BufferedReader br = null;
-//		String line = "";
-//		String cvsSplitBy = ",";
-//
-//		try {
-//			br = new BufferedReader(new FileReader(csvFile));
-//			while ((line = br.readLine()) != null) {
-//				String[] codes = line.split(cvsSplitBy);
-//				for (int i = 1; i < codes.length; i++) {
-//					GenericCodeWithReactionCollection genericCodeWithReactionCollection = genericCodeWithReactionRepository
-//							.find(Arrays.asList(codes[0], codes[i]));
-//					if (genericCodeWithReactionCollection == null) {
-//						genericCodeWithReactionCollection = new GenericCodeWithReactionCollection(
-//								Arrays.asList(codes[0], codes[i]));
-//						genericCodeWithReactionCollection.setCreatedBy("ADMIN");
-//						genericCodeWithReactionCollection.setCreatedTime(new Date());
-//						genericCodeWithReactionCollection = genericCodeWithReactionRepository
-//								.save(genericCodeWithReactionCollection);
-//
-//						ESGenericCodeWithReaction codeWithReaction = new ESGenericCodeWithReaction();
-//						BeanUtil.map(genericCodeWithReactionCollection, codeWithReaction);
-//						esGenericCodeWithReactionRepository.save(codeWithReaction);
-//					}
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (br != null) {
-//				try {
-//					br.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		return true;
-//	}
+	// @Override
+	// public Boolean addGenericsWithReaction() {
+	// String csvFile = "/home/ubuntu/AnalgesicsAntipyretics.csv";
+	// BufferedReader br = null;
+	// String line = "";
+	// String cvsSplitBy = ",";
+	//
+	// try {
+	// br = new BufferedReader(new FileReader(csvFile));
+	// while ((line = br.readLine()) != null) {
+	// String[] codes = line.split(cvsSplitBy);
+	// for (int i = 1; i < codes.length; i++) {
+	// GenericCodeWithReactionCollection genericCodeWithReactionCollection =
+	// genericCodeWithReactionRepository
+	// .find(Arrays.asList(codes[0], codes[i]));
+	// if (genericCodeWithReactionCollection == null) {
+	// genericCodeWithReactionCollection = new
+	// GenericCodeWithReactionCollection(
+	// Arrays.asList(codes[0], codes[i]));
+	// genericCodeWithReactionCollection.setCreatedBy("ADMIN");
+	// genericCodeWithReactionCollection.setCreatedTime(new Date());
+	// genericCodeWithReactionCollection = genericCodeWithReactionRepository
+	// .save(genericCodeWithReactionCollection);
+	//
+	// ESGenericCodeWithReaction codeWithReaction = new
+	// ESGenericCodeWithReaction();
+	// BeanUtil.map(genericCodeWithReactionCollection, codeWithReaction);
+	// esGenericCodeWithReactionRepository.save(codeWithReaction);
+	// }
+	// }
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// if (br != null) {
+	// try {
+	// br.close();
+	// } catch (IOException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// }
+	// return true;
+	// }
 
 	@Override
 	public Boolean addGenericsWithReaction() {
@@ -4247,47 +4291,53 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			br = new BufferedReader(new FileReader(csvFile));
 			while ((line = br.readLine()) != null) {
 				String[] codes = line.split(cvsSplitBy);
-				
+
 				Code codeOfId = new Code(codes[0], "");
-				
-				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository.findOne(codes[0]);
-				if(esGenericCodesAndReactionsOfZeroIndex == null){
+
+				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+						.findOne(codes[0]);
+				if (esGenericCodesAndReactionsOfZeroIndex == null) {
 					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
 					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
 				}
 				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
-				if(codesList == null)codesList = new ArrayList<Code>();
-				
+				if (codesList == null)
+					codesList = new ArrayList<Code>();
+
 				for (int i = 1; i < codes.length; i++) {
-					Code code = new Code(codes[i],null);
-					if(!codesList.contains(code))codesList.add(code);
-					
-					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codes[i]);
-					if(esGenericCodesAndReactions == null){
+					Code code = new Code(codes[i], null);
+					if (!codesList.contains(code))
+						codesList.add(code);
+
+					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
+							.findOne(codes[i]);
+					if (esGenericCodesAndReactions == null) {
 						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
 						esGenericCodesAndReactions.setId(codes[i]);
 						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
-					}else{
+					} else {
 						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
-						if(!codesListOfOther.contains(codeOfId))codesListOfOther.add(codeOfId);
-						
+						if (!codesListOfOther.contains(codeOfId))
+							codesListOfOther.add(codeOfId);
+
 						Collections.sort(codesListOfOther, new Comparator<Code>() {
-						    public int compare(Code one, Code other) {
-						        return one.getGenericCode().compareTo(other.getGenericCode());
-						    }
-						}); 
+							public int compare(Code one, Code other) {
+								return one.getGenericCode().compareTo(other.getGenericCode());
+							}
+						});
 						esGenericCodesAndReactions.setCodes(codesListOfOther);
 					}
-					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);				
+					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
 				}
-				
+
 				Collections.sort(codesList, new Comparator<Code>() {
-				    public int compare(Code one, Code other) {
-				        return one.getGenericCode().compareTo(other.getGenericCode());
-				    }
-				}); 
+					public int compare(Code one, Code other) {
+						return one.getGenericCode().compareTo(other.getGenericCode());
+					}
+				});
 				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
-				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactionsOfZeroIndex);
+				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+						.save(esGenericCodesAndReactionsOfZeroIndex);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4305,26 +4355,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	private List<Code> getDataFromElasticSearch(String id) {
 		BoolQueryBuilder booleanQueryBuilder = new BoolQueryBuilder();
-		booleanQueryBuilder.must(QueryBuilders.termQuery("_id",id));
+		booleanQueryBuilder.must(QueryBuilders.termQuery("_id", id));
 		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).build();
-		List<ESGenericCodesAndReactions> esGenericCodesAndReactions = elasticsearchTemplate.queryForList(searchQuery, ESGenericCodesAndReactions.class);	
-		if(esGenericCodesAndReactions != null && !esGenericCodesAndReactions.isEmpty())return esGenericCodesAndReactions.get(0).getCodes();
-		else return null;
+		List<ESGenericCodesAndReactions> esGenericCodesAndReactions = elasticsearchTemplate.queryForList(searchQuery,
+				ESGenericCodesAndReactions.class);
+		if (esGenericCodesAndReactions != null && !esGenericCodesAndReactions.isEmpty())
+			return esGenericCodesAndReactions.get(0).getCodes();
+		else
+			return null;
 	}
-	
+
 	protected Map<String, List<Code>> loadDataFromElasticSearch(Iterable<? extends String> keys) {
 		BoolQueryBuilder booleanQueryBuilder = new BoolQueryBuilder();
-		booleanQueryBuilder.must(QueryBuilders.termsQuery("_id",keys));
+		booleanQueryBuilder.must(QueryBuilders.termsQuery("_id", keys));
 		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(booleanQueryBuilder).build();
-		List<ESGenericCodesAndReactions> esGenericCodesAndReactions = elasticsearchTemplate.queryForList(searchQuery, ESGenericCodesAndReactions.class);
-	    HashMap<String,List<Code>> codeWithReactions =new HashMap<String,List<Code>>();
-		
-	    if(esGenericCodesAndReactions != null && !esGenericCodesAndReactions.isEmpty())
-	    for(int i=0; i<esGenericCodesAndReactions.size(); i++){
-	    	codeWithReactions.put(esGenericCodesAndReactions.get(i).getId(),esGenericCodesAndReactions.get(i).getCodes());
-		}
-		for(String key : keys){
-			if(!codeWithReactions.containsKey(key))codeWithReactions.put(key, new ArrayList<Code>());
+		List<ESGenericCodesAndReactions> esGenericCodesAndReactions = elasticsearchTemplate.queryForList(searchQuery,
+				ESGenericCodesAndReactions.class);
+		HashMap<String, List<Code>> codeWithReactions = new HashMap<String, List<Code>>();
+
+		if (esGenericCodesAndReactions != null && !esGenericCodesAndReactions.isEmpty())
+			for (int i = 0; i < esGenericCodesAndReactions.size(); i++) {
+				codeWithReactions.put(esGenericCodesAndReactions.get(i).getId(),
+						esGenericCodesAndReactions.get(i).getCodes());
+			}
+		for (String key : keys) {
+			if (!codeWithReactions.containsKey(key))
+				codeWithReactions.put(key, new ArrayList<Code>());
 		}
 		return codeWithReactions;
 	}

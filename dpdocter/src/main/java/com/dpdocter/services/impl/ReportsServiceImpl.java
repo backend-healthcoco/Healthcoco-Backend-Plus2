@@ -80,28 +80,28 @@ public class ReportsServiceImpl implements ReportsService {
 
 	@Autowired
 	OTReportsRepository otReportsRepository;
-	
+
 	@Autowired
 	DeliveryReportsRepository deliveryReportsRepository;
-	
+
 	@Autowired
 	PrescriptionRepository prescriptionRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	PatientRepository patientRepository;
-	
+
 	@Autowired
 	LocationRepository locationRepository;
-	
+
 	@Autowired
 	HospitalRepository hospitalRepository;
-	
+
 	@Autowired
 	MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	PrescriptionServices prescriptionServices;
 
@@ -114,224 +114,226 @@ public class ReportsServiceImpl implements ReportsService {
 	@Autowired
 	private DiagnosticTestRepository diagnosticTestRepository;
 
-	
 	@Override
 	@Transactional
 	public IPDReports submitIPDReport(IPDReports ipdReports) {
 		IPDReports response = null;
 		IPDReportsCollection ipdReportsCollection = new IPDReportsCollection();
 		UserCollection userCollection = userRepository.findOne(new ObjectId(ipdReports.getDoctorId()));
-		
-		if(ipdReports != null)
-		{
+
+		if (ipdReports != null) {
 			BeanUtil.map(ipdReports, ipdReportsCollection);
 			try {
 				ipdReportsCollection.setCreatedTime(new Date());
 				ipdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				ipdReportsCollection = ipdReportsRepository.save(ipdReportsCollection);
-				
-				
-				if(ipdReportsCollection != null)
-				{
+
+				if (ipdReportsCollection != null) {
 					BeanUtil.map(ipdReportsCollection, ipdReports);
 					response = new IPDReports();
 					response = ipdReports;
 				}
 			} catch (Exception e) {
-			    e.printStackTrace();
-			    logger.error(e + " Error occured while creating IPD Records");
-			    throw new BusinessException(ServiceError.Unknown, "Error occured while creating IPD Records");
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating IPD Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while creating IPD Records");
 			}
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
 		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
 		UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
-		if(opdReports != null)
-		{
-			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
-			if(opdReportsCollectionOld != null)
-			{
+		if (opdReports != null) {
+			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
+					.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
+			if (opdReportsCollectionOld != null) {
 				BeanUtil.map(opdReportsCollectionOld, opdReportsCollection);
 				// set other field while editing
 				opdReportsCollection.setAmountReceived(opdReports.getAmountReceived());
 				opdReportsCollection.setReceiptDate(opdReports.getAmountReceived());
 				opdReportsCollection.setReceiptNo(opdReports.getReceiptNo());
 				opdReportsCollection.setRemarks(opdReports.getRemarks());
-			}
-			else
-			{
+			} else {
 				BeanUtil.map(opdReports, opdReportsCollection);
 			}
 			opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 			try {
-				
-				if(opdReportsCollection != null)
-				{
+
+				if (opdReportsCollection != null) {
 					response = new OPDReports();
 					BeanUtil.map(opdReportsCollection, response);
 				}
 			} catch (Exception e) {
-			    e.printStackTrace();
-			    logger.error(e + " Error occured while creating OPD Records");
-			    throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating OPD Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while OPD Records");
 			}
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public OTReports submitOTReport(OTReports otReports) {
 		OTReports response = null;
 		OTReportsCollection otReportsCollection = new OTReportsCollection();
 		UserCollection userCollection = userRepository.findOne(new ObjectId(otReports.getDoctorId()));
-		if(otReports != null)
-		{
+		if (otReports != null) {
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
 				otReportsCollection.setCreatedTime(new Date());
 				otReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				otReportsCollection = otReportsRepository.save(otReportsCollection);
-				
-				if(otReportsCollection != null)
-				{
+
+				if (otReportsCollection != null) {
 					BeanUtil.map(otReportsCollection, otReports);
 					response = new OTReports();
 					response = otReports;
 				}
 			} catch (Exception e) {
-			    e.printStackTrace();
-			    logger.error(e + " Error occured while creating OT Records");
-			    throw new BusinessException(ServiceError.Unknown, "Error occured while OT Records");
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating OT Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while OT Records");
 			}
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports) {
 		DeliveryReports response = null;
 		DeliveryReportsCollection deliveryReportsCollection = new DeliveryReportsCollection();
 		UserCollection userCollection = userRepository.findOne(new ObjectId(deliveryReports.getDoctorId()));
-		if(deliveryReports != null)
-		{
+		if (deliveryReports != null) {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
 				deliveryReportsCollection.setCreatedTime(new Date());
 				deliveryReports.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
 				deliveryReportsCollection = deliveryReportsRepository.save(deliveryReportsCollection);
-				if(deliveryReportsCollection != null)
-				{
+				if (deliveryReportsCollection != null) {
 					BeanUtil.map(deliveryReportsCollection, deliveryReports);
 					response = new DeliveryReports();
 					response = deliveryReports;
 				}
 			} catch (Exception e) {
-			    e.printStackTrace();
-			    logger.error(e + " Error occured while creating Delivery Records");
-			    throw new BusinessException(ServiceError.Unknown, "Error occured while Delivery Records");
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating Delivery Records");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while Delivery Records");
 			}
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-    public List<IPDReports> getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to, int page, int size, String updatedTime) {
+	public List<IPDReports> getIPDReportsList(String locationId, String doctorId, String patientId, String from,
+			String to, int page, int size, String updatedTime) {
 		List<IPDReports> response = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
-		try {		
-			
-			//long updatedTimeStamp = Long.parseLong(updatedTime);
-			//Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
-		    Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
-		    
-		    if(doctorId != null)criteria.and("doctorId").is(new ObjectId(doctorId));
-		    
-		    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(new ObjectId(patientId));
-		    
-		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-		    if(!DPDoctorUtils.anyStringEmpty(from)){
-		    	localCalendar.setTime(new Date(Long.parseLong(from)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+		try {
 
-			    DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-			    
-		    	criteria.and("createdTime").gte(fromTime);
-		    }
-		    else if(!DPDoctorUtils.anyStringEmpty(to)){
-		    	localCalendar.setTime(new Date(Long.parseLong(to)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
 
-			    DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-		    	
-		    	criteria.and("createdTime").lte(toTime);
-		    }
-		    if(size > 0) ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.skip(page*size), Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), IPDReportsCollection.class, IPDReportLookupResponse.class).getMappedResults();
-		    else ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), IPDReportsCollection.class, IPDReportLookupResponse.class).getMappedResults();
-			
-		    if (ipdReportLookupResponses != null) {
-		    	response = new ArrayList<IPDReports>();
-			    for(IPDReportLookupResponse collection : ipdReportLookupResponses){
-			    	IPDReports ipdReports = new IPDReports();
-			     	BeanUtil.map(collection, ipdReports);
-			    	if(collection.getDoctor() != null){
-			    		UserCollection doctor = collection.getDoctor();
-			    		if(doctor != null)ipdReports.setDoctorName(doctor.getFirstName());
-			    	}
-			    	if(collection.getLocation() != null){
-			    		LocationCollection locationCollection = collection.getLocation();
-			    		if(locationCollection != null){
-			    			ipdReports.setLocationName(locationCollection.getLocationName());
-			    		}
-			    	}
-			    	if(collection.getHospitalId() !=null){
-			    		HospitalCollection hospitalCollection = collection.getHospital();
-			    		if(hospitalCollection != null){
-			    			ipdReports.setHospitalName(hospitalCollection.getHospitalName());
-			    		}
-			    	}
-			    	if(collection.getPatientId() !=null)
-			    	{
-			    		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()), new ObjectId(collection.getHospitalId()));
-			    		if(patientCollection != null){
-			    			Patient patient = new Patient();
-			    			BeanUtil.map(patientCollection, patient);
-			    			ipdReports.setPatient(patient);
-			    		}
-			    	}
-			    	response.add(ipdReports);
-			    }
+			if (doctorId != null)
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+
+				criteria.and("createdTime").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+
+				criteria.and("createdTime").lte(toTime);
+			}
+			if (size > 0)
+				ipdReportLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"), Aggregation.skip(page * size), Aggregation.limit(size),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						IPDReportsCollection.class, IPDReportLookupResponse.class).getMappedResults();
+			else
+				ipdReportLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						IPDReportsCollection.class, IPDReportLookupResponse.class).getMappedResults();
+
+			if (ipdReportLookupResponses != null) {
+				response = new ArrayList<IPDReports>();
+				for (IPDReportLookupResponse collection : ipdReportLookupResponses) {
+					IPDReports ipdReports = new IPDReports();
+					BeanUtil.map(collection, ipdReports);
+					if (collection.getDoctor() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							ipdReports.setDoctorName(doctor.getFirstName());
+					}
+					if (collection.getLocation() != null) {
+						LocationCollection locationCollection = collection.getLocation();
+						if (locationCollection != null) {
+							ipdReports.setLocationName(locationCollection.getLocationName());
+						}
+					}
+					if (collection.getHospitalId() != null) {
+						HospitalCollection hospitalCollection = collection.getHospital();
+						if (hospitalCollection != null) {
+							ipdReports.setHospitalName(hospitalCollection.getHospitalName());
+						}
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							ipdReports.setPatient(patient);
+						}
+					}
+					response.add(ipdReports);
+				}
 			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
- }
-
-	
+	}
 
 	@Override
 	@Transactional
@@ -340,91 +342,114 @@ public class ReportsServiceImpl implements ReportsService {
 		// TODO Auto-generated method stub
 		List<OPDReports> response = null;
 		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
-		try {		
-			
-			//long updatedTimeStamp = Long.parseLong(updatedTime);
-			//Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
+		try {
+
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
 			Criteria criteria = new Criteria();
-		    if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
-		    
-		    if(doctorId != null)criteria.and("doctorId").is(new ObjectId(doctorId));
-		    
-		    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(new ObjectId(patientId));
-		    
-		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-		    if(!DPDoctorUtils.anyStringEmpty(from)){
-		    	localCalendar.setTime(new Date(Long.parseLong(from)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
 
-			    DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-			    
-		    	criteria.and("createdTime").gte(fromTime);
-		    }
-		    else if(!DPDoctorUtils.anyStringEmpty(to)){
-		    	localCalendar.setTime(new Date(Long.parseLong(to)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+			if (doctorId != null)
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 
-			    DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-		    	
-		    	criteria.and("createdTime").lte(toTime);
-		    }
-		    
-		    if(size > 0) opdReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"), Aggregation.unwind("prescription"),
-		    		Aggregation.skip(page*size), Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), 
-		    		OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
-		    else opdReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"), Aggregation.unwind("prescription"),
-		    		Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
-			
-		    if (opdReportsLookupResponses != null) {
-			    response = new ArrayList<OPDReports>();   
-			    for(OPDReportsLookupResponse collection : opdReportsLookupResponses){
-			    	OPDReports opdReports = new OPDReports();
-			     	BeanUtil.map(collection, opdReports);
-			    	if(collection.getDoctorId() != null){
-			    		UserCollection doctor = collection.getDoctor();
-			    		if(doctor != null)opdReports.setDoctorName(doctor.getFirstName());
-			    	}
-			    	if(collection.getLocationId() != null){
-			    		LocationCollection locationCollection = collection.getLocation();
-			    		if(locationCollection != null){
-			    			opdReports.setLocationName(locationCollection.getLocationName());
-			    		}
-			    	}
-			    	if(collection.getHospitalId() !=null){
-			    		HospitalCollection hospitalCollection = collection.getHospital();
-			    		if(hospitalCollection != null){
-			    			opdReports.setHospitalName(hospitalCollection.getHospitalName());
-			    		}
-			    	}
-			    	if(collection.getPatientId() !=null)
-			    	{
-			    		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()), new ObjectId(collection.getHospitalId()));
-			    		if(patientCollection != null){
-			    			Patient patient = new Patient();
-			    			BeanUtil.map(patientCollection, patient);
-			    			opdReports.setPatient(patient);
-			    		}
-			    	}
-			    	
-			    	if(collection.getPrescription() !=null)
-			    	{
-			    		Prescription prescription = new Prescription();
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+
+				criteria.and("createdTime").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+
+				criteria.and("createdTime").lte(toTime);
+			}
+
+			if (size > 0)
+				opdReportsLookupResponses = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+										Aggregation.unwind("hospital"),
+										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+										Aggregation.unwind("prescription"), Aggregation.skip(page * size),
+										Aggregation.limit(size),
+										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+								OPDReportsCollection.class, OPDReportsLookupResponse.class)
+						.getMappedResults();
+			else
+				opdReportsLookupResponses = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+										Aggregation.unwind("hospital"),
+										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+										Aggregation.unwind("prescription"),
+										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+								OPDReportsCollection.class, OPDReportsLookupResponse.class)
+						.getMappedResults();
+
+			if (opdReportsLookupResponses != null) {
+				response = new ArrayList<OPDReports>();
+				for (OPDReportsLookupResponse collection : opdReportsLookupResponses) {
+					OPDReports opdReports = new OPDReports();
+					BeanUtil.map(collection, opdReports);
+					if (collection.getDoctorId() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							opdReports.setDoctorName(doctor.getFirstName());
+					}
+					if (collection.getLocationId() != null) {
+						LocationCollection locationCollection = collection.getLocation();
+						if (locationCollection != null) {
+							opdReports.setLocationName(locationCollection.getLocationName());
+						}
+					}
+					if (collection.getHospitalId() != null) {
+						HospitalCollection hospitalCollection = collection.getHospital();
+						if (hospitalCollection != null) {
+							opdReports.setHospitalName(hospitalCollection.getHospitalName());
+						}
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							opdReports.setPatient(patient);
+						}
+					}
+
+					if (collection.getPrescription() != null) {
+						Prescription prescription = new Prescription();
 						List<TestAndRecordData> tests = collection.getPrescription().getDiagnosticTests();
 						collection.getPrescription().setDiagnosticTests(null);
 						BeanUtil.map(collection.getPrescription(), prescription);
-						if (collection.getPrescription().getItems() != null && !collection.getPrescription().getItems().isEmpty()) {
+						if (collection.getPrescription().getItems() != null
+								&& !collection.getPrescription().getItems().isEmpty()) {
 							List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
 							for (PrescriptionItem prescriptionItem : collection.getPrescription().getItems()) {
 								PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
@@ -455,21 +480,27 @@ public class ReportsServiceImpl implements ReportsService {
 									if (diagnosticTestCollection != null) {
 										BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 									}
-									diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, data.getRecordId().toString()));
+									if (!DPDoctorUtils.anyStringEmpty(data.getRecordId())) {
+										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+												data.getRecordId().toString()));
+									} else {
+										diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, null));
+									}
+
 								}
 							}
 							prescription.setDiagnosticTests(diagnosticTests);
 						}
-						if(prescription != null){
+						if (prescription != null) {
 							opdReports.setPrescription(prescription);
-			    		}
-			    	}
-			    	response.add(opdReports);
-			    }
+						}
+					}
+					response.add(opdReports);
+				}
 			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -481,102 +512,117 @@ public class ReportsServiceImpl implements ReportsService {
 		// TODO Auto-generated method stub
 		List<OTReports> response = null;
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
-		try {		
-			
-			//long updatedTimeStamp = Long.parseLong(updatedTime);
-			//Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
-		    Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
-		    
-		    if(doctorId != null)criteria.and("doctorId").is(new ObjectId(doctorId));
-		    
-		    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(new ObjectId(patientId));
-		    
-		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-		    if(!DPDoctorUtils.anyStringEmpty(from)){
-		    	localCalendar.setTime(new Date(Long.parseLong(from)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+		try {
 
-			    DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-			    
-		    	criteria.and("createdTime").gte(fromTime);
-		    }
-		    else if(!DPDoctorUtils.anyStringEmpty(to)){
-		    	localCalendar.setTime(new Date(Long.parseLong(to)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
 
-			    DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-		    	
-		    	criteria.and("createdTime").lte(toTime);
-		    }
+			if (doctorId != null)
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 
-		    if(size > 0) otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.skip(page*size), Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), OTReportsCollection.class, OTReportsLookupResponse.class).getMappedResults();
-		    else otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), OTReportsCollection.class, OTReportsLookupResponse.class).getMappedResults();
-			
-		    if (otReportsLookupResponses != null) {
-			    response = new ArrayList<OTReports>();   
-			    for(OTReportsLookupResponse collection : otReportsLookupResponses){
-			    	OTReports otReports = new OTReports();
-			     	BeanUtil.map(collection, otReports);
-			    	if(collection.getDoctorId() != null){
-			    		UserCollection doctor = collection.getDoctor();
-			    		if(doctor != null)otReports.setDoctorName(doctor.getFirstName());
-			    	}
-			    	LocationCollection locationCollection = collection.getLocation();
-			    	if(locationCollection != null){
-			    			otReports.setLocationName(locationCollection.getLocationName());
-			    			
-			    		}
-			    	HospitalCollection hospitalCollection = collection.getHospital();
-			    		if(hospitalCollection != null){
-			    			otReports.setHospitalName(hospitalCollection.getHospitalName());
-			    		}
-			    	if(collection.getPatientId() !=null)
-			    	{
-			    		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()), new ObjectId(collection.getHospitalId()));
-			    		if(patientCollection != null){
-			    			Patient patient = new Patient();
-			    			BeanUtil.map(patientCollection, patient);
-			    			otReports.setPatient(patient);
-			    		}
-			    	}
-			    	if(collection.getSurgery().getEndTime() != null && collection.getSurgery().getStartTime() != null)
-			    	{
-			    		Long diff = collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime();
-			    	    TimeDuration timeDuration = new TimeDuration();
-			    	   
-			    	    Long diffSeconds = diff / 1000 % 60;
-			            Long diffMinutes = diff / (60 * 1000) % 60;
-			            Long diffHours = diff / (60 * 60 * 1000);
-			            Integer diffInDays = (int) ((collection.getSurgery().getEndTime() - collection.getSurgery().getStartTime()) / (1000 * 60 * 60 * 24));
-			            
-			            timeDuration.setSeconds(diffSeconds.intValue());
-			            timeDuration.setMinutes(diffMinutes.intValue());
-			            timeDuration.setHours(diffHours.intValue());
-			            timeDuration.setDays(diffInDays);
-			            
-			            otReports.setTimeDuration(timeDuration);
-			    	}
-			    	
-			    	
-			    	response.add(otReports);
-			    }
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+
+				criteria.and("createdTime").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+
+				criteria.and("createdTime").lte(toTime);
+			}
+
+			if (size > 0)
+				otReportsLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"), Aggregation.skip(page * size), Aggregation.limit(size),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						OTReportsCollection.class, OTReportsLookupResponse.class).getMappedResults();
+			else
+				otReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+						Aggregation.unwind("hospital"), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						OTReportsCollection.class, OTReportsLookupResponse.class).getMappedResults();
+
+			if (otReportsLookupResponses != null) {
+				response = new ArrayList<OTReports>();
+				for (OTReportsLookupResponse collection : otReportsLookupResponses) {
+					OTReports otReports = new OTReports();
+					BeanUtil.map(collection, otReports);
+					if (collection.getDoctorId() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							otReports.setDoctorName(doctor.getFirstName());
+					}
+					LocationCollection locationCollection = collection.getLocation();
+					if (locationCollection != null) {
+						otReports.setLocationName(locationCollection.getLocationName());
+
+					}
+					HospitalCollection hospitalCollection = collection.getHospital();
+					if (hospitalCollection != null) {
+						otReports.setHospitalName(hospitalCollection.getHospitalName());
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							otReports.setPatient(patient);
+						}
+					}
+					if (collection.getSurgery().getEndTime() != null
+							&& collection.getSurgery().getStartTime() != null) {
+						Long diff = collection.getSurgery().getStartTime() - collection.getSurgery().getEndTime();
+						TimeDuration timeDuration = new TimeDuration();
+
+						Long diffSeconds = diff / 1000 % 60;
+						Long diffMinutes = diff / (60 * 1000) % 60;
+						Long diffHours = diff / (60 * 60 * 1000);
+						Integer diffInDays = (int) ((collection.getSurgery().getEndTime()
+								- collection.getSurgery().getStartTime()) / (1000 * 60 * 60 * 24));
+
+						timeDuration.setSeconds(diffSeconds.intValue());
+						timeDuration.setMinutes(diffMinutes.intValue());
+						timeDuration.setHours(diffHours.intValue());
+						timeDuration.setDays(diffInDays);
+
+						otReports.setTimeDuration(timeDuration);
+					}
+
+					response.add(otReports);
+				}
 			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -588,85 +634,104 @@ public class ReportsServiceImpl implements ReportsService {
 		// TODO Auto-generated method stub
 		List<DeliveryReports> response = null;
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
-		try {		
-			
-			//long updatedTimeStamp = Long.parseLong(updatedTime);
-			//Criteria criteria = new Criteria("updatedTime").gte(new Date(updatedTimeStamp));
-		   Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
-		    
-		    if(doctorId != null)criteria.and("doctorId").is(new ObjectId(doctorId));
-		    
-		    if(!DPDoctorUtils.anyStringEmpty(patientId))criteria.and("patientId").is(new ObjectId(patientId));
-		    
-		    Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-		    if(!DPDoctorUtils.anyStringEmpty(from)){
-		    	localCalendar.setTime(new Date(Long.parseLong(from)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+		try {
 
-			    DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-			    
-		    	criteria.and("createdTime").gte(fromTime);
-		    }
-		    else if(!DPDoctorUtils.anyStringEmpty(to)){
-		    	localCalendar.setTime(new Date(Long.parseLong(to)));
-			    int currentDay = localCalendar.get(Calendar.DATE);
-			    int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			    int currentYear = localCalendar.get(Calendar.YEAR);
+			// long updatedTimeStamp = Long.parseLong(updatedTime);
+			// Criteria criteria = new Criteria("updatedTime").gte(new
+			// Date(updatedTimeStamp));
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
 
-			    DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-		    	
-		    	criteria.and("createdTime").lte(toTime);
-		    }
+			if (doctorId != null)
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 
-		    if(size > 0) deliveryReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.skip(page*size), Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class).getMappedResults();
-		    else deliveryReportsLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-		    		Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-		    		Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-		    		Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"), Aggregation.unwind("hospital"),
-		    		Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class).getMappedResults();
-			
-		    if (deliveryReportsLookupResponses != null) {
-			    response = new ArrayList<DeliveryReports>();   
-			    for(DeliveryReportsLookupResponse collection : deliveryReportsLookupResponses){
-			    	DeliveryReports deliveryReports = new DeliveryReports();
-			     	BeanUtil.map(collection, deliveryReports);
-			    	if(collection.getDoctorId() != null){
-			    		UserCollection doctor = collection.getDoctor();
-			    		if(doctor != null)deliveryReports.setDoctorName(doctor.getFirstName());
-			    	}
-			    	LocationCollection locationCollection = collection.getLocation();
-			    		if(locationCollection != null){
-			    			deliveryReports.setLocationName(locationCollection.getLocationName());
-			    			
-			    		}
-			    	HospitalCollection hospitalCollection = collection.getHospital();
-			    		if(hospitalCollection != null){
-			    			deliveryReports.setHospitalName(hospitalCollection.getHospitalName());
-			    		}
-			    	if(collection.getPatientId() !=null)
-			    	{
-			    		PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()), new ObjectId(collection.getHospitalId()));
-			    		if(patientCollection != null){
-			    			Patient patient = new Patient();
-			    			BeanUtil.map(patientCollection, patient);
-			    			deliveryReports.setPatient(patient);
-			    		}
-			    	}
-			    	
-			    	
-			    	response.add(deliveryReports);
-			    }
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				criteria.and("patientId").is(new ObjectId(patientId));
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(from)) {
+				localCalendar.setTime(new Date(Long.parseLong(from)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+
+				criteria.and("createdTime").gte(fromTime);
+			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+				localCalendar.setTime(new Date(Long.parseLong(to)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+
+				criteria.and("createdTime").lte(toTime);
+			}
+
+			if (size > 0)
+				deliveryReportsLookupResponses = mongoTemplate
+						.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"), Aggregation.skip(page * size), Aggregation.limit(size),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+								DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class)
+						.getMappedResults();
+			else
+				deliveryReportsLookupResponses = mongoTemplate
+						.aggregate(
+								Aggregation.newAggregation(Aggregation.match(criteria),
+										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+										Aggregation.unwind("doctor"),
+										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+										Aggregation.unwind("location"),
+										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+										Aggregation.unwind("hospital"),
+										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+								DeliveryReportsCollection.class, DeliveryReportsLookupResponse.class)
+						.getMappedResults();
+
+			if (deliveryReportsLookupResponses != null) {
+				response = new ArrayList<DeliveryReports>();
+				for (DeliveryReportsLookupResponse collection : deliveryReportsLookupResponses) {
+					DeliveryReports deliveryReports = new DeliveryReports();
+					BeanUtil.map(collection, deliveryReports);
+					if (collection.getDoctorId() != null) {
+						UserCollection doctor = collection.getDoctor();
+						if (doctor != null)
+							deliveryReports.setDoctorName(doctor.getFirstName());
+					}
+					LocationCollection locationCollection = collection.getLocation();
+					if (locationCollection != null) {
+						deliveryReports.setLocationName(locationCollection.getLocationName());
+
+					}
+					HospitalCollection hospitalCollection = collection.getHospital();
+					if (hospitalCollection != null) {
+						deliveryReports.setHospitalName(hospitalCollection.getHospitalName());
+					}
+					if (collection.getPatientId() != null) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								new ObjectId(collection.getPatientId()), new ObjectId(collection.getLocationId()),
+								new ObjectId(collection.getHospitalId()));
+						if (patientCollection != null) {
+							Patient patient = new Patient();
+							BeanUtil.map(patientCollection, patient);
+							deliveryReports.setPatient(patient);
+						}
+					}
+
+					response.add(deliveryReports);
+				}
 			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
@@ -674,15 +739,20 @@ public class ReportsServiceImpl implements ReportsService {
 	@Override
 	public Boolean addPrescriptionOPDReports() {
 		Boolean response = false;
-		try{
+		try {
 			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findAll();
-			for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
-				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),String.valueOf(prescriptionCollection.getId()), String.valueOf(prescriptionCollection.getDoctorId()), String.valueOf(prescriptionCollection.getLocationId()), String.valueOf(prescriptionCollection.getHospitalId()), prescriptionCollection.getCreatedTime(), prescriptionCollection.getUpdatedTime());
+			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
+				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+						String.valueOf(prescriptionCollection.getId()),
+						String.valueOf(prescriptionCollection.getDoctorId()),
+						String.valueOf(prescriptionCollection.getLocationId()),
+						String.valueOf(prescriptionCollection.getHospitalId()), prescriptionCollection.getCreatedTime(),
+						prescriptionCollection.getUpdatedTime());
 				opdReports = submitOPDReport(opdReports);
 			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
