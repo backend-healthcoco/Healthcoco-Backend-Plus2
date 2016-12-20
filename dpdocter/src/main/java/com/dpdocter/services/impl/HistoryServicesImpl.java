@@ -2720,110 +2720,63 @@ public class HistoryServicesImpl implements HistoryServices {
 		criteria = criteria.and("hospitalId").is(hospitalObjectId);
 
 		Aggregation aggregation = null;
-		if (type == null || type.isEmpty()) {
 
-			aggregation = Aggregation
-					.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
-											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
-											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
-											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$medicalhistory")
-											.append("preserveNullAndEmptyArrays",
-													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory")))));
+		aggregation = Aggregation
+				.newAggregation(
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$specialNotes").append("preserveNullAndEmptyArrays",
+												true))),
+						Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
+						Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
+						Aggregation.match(criteria),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
+										true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$medicalhistory").append(
+												"preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("id", "$_id")
+										.append("patientId", new BasicDBObject("$first", "$patientId"))
+										.append("locationId", new BasicDBObject("$first", "$locationId"))
+										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+										.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
+										.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+										.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+										.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+										.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory")))));
 
-		}
-		if (type.contains(HistoryType.MEDICAL.getType())) {
-			aggregation = Aggregation
-					.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes").append("preserveNullAndEmptyArrays",
-											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.lookup("diseases_cl", "medicalhistory", "_id", "medicalhistory"),
-
-							Aggregation.match(criteria),
-
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$medicalhistory")
-											.append("preserveNullAndEmptyArrays", true))),
-
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory")))));
-		}
-
-		if (type.contains(HistoryType.FAMILY.getType())) {
-			aggregation = Aggregation
-					.newAggregation(
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$familyhistory").append("preserveNullAndEmptyArrays",
-											true))),
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$specialNotes")
-											.append("preserveNullAndEmptyArrays", true))),
-
-							Aggregation.lookup("diseases_cl", "familyhistory", "_id", "familyhistory"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind", new BasicDBObject("path", "$familyhistory")
-											.append("preserveNullAndEmptyArrays", true))),
-
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory")))));
-		}
 		List<HistoryDetailsResponse> historyDetailsresponse = mongoTemplate
 				.aggregate(aggregation, HistoryCollection.class, HistoryDetailsResponse.class).getMappedResults();
 		if (historyDetailsresponse == null || historyDetailsresponse.isEmpty()) {
 			throw new BusinessException(ServiceError.NoRecord, "History record not found");
 		}
-
-		response = historyDetailsresponse.get(0);
+		HistoryDetailsResponse historyDetailresponse = historyDetailsresponse.get(0);
+		response = new HistoryDetailsResponse();
+		if (type == null || type.isEmpty() || DPDoctorUtils.anyStringEmpty(type.get(0))) {
+			BeanUtil.map(historyDetailresponse, response);
+		}
+		if (type.contains(HistoryType.MEDICAL.getType())) {
+			response.setMedicalhistory(historyDetailresponse.getMedicalhistory());
+		}
+		if (type.contains(HistoryType.FAMILY.getType())) {
+			response.setFamilyhistory(historyDetailresponse.getFamilyhistory());
+		}
 		if (type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
-			response.setDrugsAndAllergies(response.getDrugsAndAllergies());
-		} else
-			response.setDrugsAndAllergies(null);
+			response.setDrugsAndAllergies(historyDetailresponse.getDrugsAndAllergies());
+		}
 		if (type.contains(HistoryType.PERSONAL.getType())) {
-			response.setPersonalHistory(response.getPersonalHistory());
-		} else
-			response.setPersonalHistory(null);
+			response.setPersonalHistory(historyDetailresponse.getPersonalHistory());
+		}
 		return response;
 	}
 
