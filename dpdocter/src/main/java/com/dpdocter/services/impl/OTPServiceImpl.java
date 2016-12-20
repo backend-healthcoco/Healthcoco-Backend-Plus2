@@ -98,9 +98,12 @@ public class OTPServiceImpl implements OTPService {
 	    UserCollection userCollection = userRepository.findOne(new ObjectId(doctorId));
 	    //UserCollection patient = userRepository.findOne(patientObjectId);
 	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-	    PatientCard patientCard = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
+	    PatientCard patientCard = null;
+	    
+	    List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
 				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId)), 
-				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
+	    if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
 	    if (userCollection != null && patientCard != null) {
 
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
@@ -162,9 +165,11 @@ public class OTPServiceImpl implements OTPService {
 	   // UserCollection patient = userRepository.findOne(patientObjectId);
 
 	    //PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(patientObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-	    PatientCard patientCard = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
+	    PatientCard patientCard = null;
+	    List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(patientObjectId)
 				.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("doctorId").is(doctorObjectId)), 
-				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+				Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
+	    if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
 	    if (userCollection != null && patientCard != null && patientId != null) {
 		String doctorName = (userCollection.getTitle() != null ? userCollection.getTitle() : "") + " " + userCollection.getFirstName();
 		List<DoctorOTPCollection> doctorOTPCollection = doctorOTPRepository.find(doctorObjectId, locationObjectId, patientObjectId, new PageRequest(0, 1, new Sort(Sort.Direction.DESC, "createdTime")));

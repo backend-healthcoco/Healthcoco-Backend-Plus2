@@ -1004,7 +1004,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("userId")
 						.is(userObjectId);
 			}
-			patientCard = mongoTemplate.aggregate(
+			List<PatientCard> patientCards = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
@@ -1013,20 +1013,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 									new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays",
 											true))),
 							Aggregation.sort(Direction.DESC, "createdTime")),
-					PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+					PatientCollection.class, PatientCard.class).getMappedResults();
 			/*
 			 * UserCollection userCollection =
 			 * userRepository.findOne(userObjectId);
 			 */
-			if (patientCard.getUser() != null) {
+			if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
+			if (patientCard != null && patientCard.getUser() != null) {
 				/*
 				 * PatientCollection patientCollection =
 				 * patientRepository.findByUserIdLocationIdAndHospitalId(
 				 * userObjectId, locationObjectId, hospitalObjectId);
 				 */
-				if (patientCard != null) {
-
-					Reference reference = null;
+				Reference reference = null;
 					if (patientCard.getReference() != null) {
 
 						reference = new Reference();
@@ -1093,7 +1092,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 								GroupCollection.class, Group.class).getMappedResults();
 						registeredPatientDetails.setGroups(groups);
 					}
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

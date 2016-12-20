@@ -800,9 +800,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
-			PatientCard patientCard = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
+			PatientCard patientCard = null;
+			List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
 					.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId").is(new ObjectId(request.getHospitalId()))), 
-					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
+			if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
 			AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 					request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),
@@ -1284,9 +1286,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Appointment appointment = new Appointment();
 					PatientCard patient = null;
 					if (collection.getType().equals(AppointmentType.APPOINTMENT)) {
-						patient = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
+						List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
 								.and("locationId").is(new ObjectId(collection.getLocationId())).and("hospitalId").is(new ObjectId(collection.getHospitalId()))), 
-								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getUniqueMappedResult();
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
+						if(patientCards != null && !patientCards.isEmpty())patient = patientCards.get(0);
 						
 					}
 					BeanUtil.map(collection, appointment);
