@@ -2761,7 +2761,13 @@ public class HistoryServicesImpl implements HistoryServices {
 			throw new BusinessException(ServiceError.NoRecord, "History record not found");
 		}
 		HistoryDetailsResponse historyDetailresponse = historyDetailsresponse.get(0);
+
 		response = new HistoryDetailsResponse();
+		response.setDoctorId(historyDetailresponse.getDoctorId());
+		response.setLocationId(historyDetailresponse.getLocationId());
+		response.setHospitalId(historyDetailresponse.getHospitalId());
+		response.setPatientId(historyDetailresponse.getPatientId());
+		response.setDoctorName(historyDetailresponse.getDoctorName());
 		if (type == null || type.isEmpty() || DPDoctorUtils.anyStringEmpty(type.get(0))) {
 			BeanUtil.map(historyDetailresponse, response);
 		}

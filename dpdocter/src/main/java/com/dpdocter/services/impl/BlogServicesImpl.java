@@ -94,8 +94,8 @@ public class BlogServicesImpl implements BlogService {
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
-					if(blogLikesCollection!=null)
-					blog.setIsliked(blogLikesCollection.getDiscarded());
+					if (blogLikesCollection != null)
+						blog.setIsliked(!blogLikesCollection.getDiscarded());
 				}
 				response.add(blog);
 			}
