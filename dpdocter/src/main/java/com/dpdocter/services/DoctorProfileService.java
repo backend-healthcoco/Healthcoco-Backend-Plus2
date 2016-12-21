@@ -9,7 +9,6 @@ import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
-import com.dpdocter.beans.Recommendation;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;

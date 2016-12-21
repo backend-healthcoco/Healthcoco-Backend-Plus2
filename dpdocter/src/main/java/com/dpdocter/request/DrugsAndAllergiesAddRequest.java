@@ -2,10 +2,6 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
-import com.dpdocter.beans.Drug;
-
 public class DrugsAndAllergiesAddRequest {
 
 	private List<String> drugIds;

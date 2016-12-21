@@ -1,12 +1,6 @@
 package com.dpdocter.thread;
 
-import javax.mail.MessagingException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.services.MailService;
 
 public class EmailThread extends Thread {
 

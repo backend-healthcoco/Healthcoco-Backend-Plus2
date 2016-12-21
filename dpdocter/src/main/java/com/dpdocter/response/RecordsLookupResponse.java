@@ -1,14 +1,7 @@
 package com.dpdocter.response;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.RecordsState;
 
 public class RecordsLookupResponse extends GenericCollection {
 

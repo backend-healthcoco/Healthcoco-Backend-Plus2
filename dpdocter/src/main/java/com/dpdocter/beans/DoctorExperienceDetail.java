@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorExperienceDetail {
     private String organization;

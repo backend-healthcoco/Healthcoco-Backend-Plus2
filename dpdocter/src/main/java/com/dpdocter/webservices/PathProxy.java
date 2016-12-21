@@ -932,4 +932,22 @@ public interface PathProxy {
 		public static final String LIKE_THE_BLOG = "/likeTheBlog/{blogId}/{userId}";
 
 	}
+
+	public static final String BILLING_BASE_URL = BASE_URL + "/billing";
+
+	public interface BillingUrls {
+		
+		public static final String UPDATE_INVOICE_RECEIPT_INITIALS = "/updateInitials";
+
+		public static final String ADD_EDIT_INVOICE = "/invoice/add";
+
+		public static final String ADD_EDIT_RECEIPT = "/receipt/add";
+		
+		public static final String GET_INVOICES = "/invoice";
+
+		public static final String GET_RECEIPTS = "/receipt";
+
+
+	}
+
 }

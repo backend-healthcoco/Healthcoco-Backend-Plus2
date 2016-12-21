@@ -118,13 +118,11 @@ public class ESLocationDocument {
 	@Field(type = FieldType.Integer)
 	private int noOfClinicRecommendations = 0;
 
-	public int getNoOfClinicRecommendations() {
-		return noOfClinicRecommendations;
-	}
+	@Field(type = FieldType.String)
+	private String invoiceInitial = "INV";
 
-	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
-		this.noOfClinicRecommendations = noOfClinicRecommendations;
-	}
+	@Field(type = FieldType.String)
+	private String receiptInitial = "RC";
 
 	public String getId() {
 		return id;
@@ -390,6 +388,30 @@ public class ESLocationDocument {
 		this.clinicRankingCount = clinicRankingCount;
 	}
 
+	public int getNoOfClinicRecommendations() {
+		return noOfClinicRecommendations;
+	}
+
+	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
+		this.noOfClinicRecommendations = noOfClinicRecommendations;
+	}
+
+	public String getInvoiceInitial() {
+		return invoiceInitial;
+	}
+
+	public void setInvoiceInitial(String invoiceInitial) {
+		this.invoiceInitial = invoiceInitial;
+	}
+
+	public String getReceiptInitial() {
+		return receiptInitial;
+	}
+
+	public void setReceiptInitial(String receiptInitial) {
+		this.receiptInitial = receiptInitial;
+	}
+
 	@Override
 	public String toString() {
 		return "ESLocationDocument [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
@@ -404,6 +426,7 @@ public class ESLocationDocument {
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
 				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
 				+ isLocationListed + ", clinicAddress=" + clinicAddress + ", clinicRankingCount=" + clinicRankingCount
-				+ "]";
+				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", invoiceInitial=" + invoiceInitial
+				+ ", receiptInitial=" + receiptInitial + "]";
 	}
 }

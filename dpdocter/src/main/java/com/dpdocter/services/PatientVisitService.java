@@ -7,7 +7,6 @@ import java.util.Map;
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.DoctorContactsResponse;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.WorkingHours;

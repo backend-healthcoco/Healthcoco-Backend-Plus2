@@ -1696,17 +1696,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 				if (patientVisitCollection.getRecordId() != null && !patientVisitCollection.getRecordId().isEmpty()) {
 					records = recordsService.getRecordsByIds(patientVisitCollection.getRecordId(), patientVisitCollection.getId());
-					if (records != null && !records.isEmpty()) {
-						records.addAll(records);
-					}
+//					if (records != null && !records.isEmpty()) {
+//						records.addAll(records);
+//					}
 				}
 				if (patientVisitCollection.getTreatmentId() != null
 						&& !patientVisitCollection.getTreatmentId().isEmpty()) {
 					patientTreatments = patientTreatmentServices
 							.getPatientTreatmentByIds(patientVisitCollection.getTreatmentId(), patientVisitCollection.getId());
-					if (patientTreatments != null && !patientTreatments.isEmpty()) {
-						patientTreatments.addAll(patientTreatments);
-					}
+//					if (patientTreatments != null && !patientTreatments.isEmpty()) {
+//						patientTreatments.addAll(patientTreatments);
+//					}
 				}
 				response = new PatientVisitResponse();
 				BeanUtil.map(patientVisitCollection, response);

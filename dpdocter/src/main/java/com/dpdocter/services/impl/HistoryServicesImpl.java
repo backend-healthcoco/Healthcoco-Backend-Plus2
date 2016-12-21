@@ -1649,10 +1649,6 @@ public class HistoryServicesImpl implements HistoryServices {
 				historyFilter.set(i, historyFilter.get(i).toUpperCase());
 			}
 
-			ObjectId patientObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-
 			long createdTime = Long.parseLong(updatedTime);
 			AggregationOperation matchForFilter = null;
 			Aggregation aggregation = null;
@@ -2757,31 +2753,31 @@ public class HistoryServicesImpl implements HistoryServices {
 
 		List<HistoryDetailsResponse> historyDetailsresponse = mongoTemplate
 				.aggregate(aggregation, HistoryCollection.class, HistoryDetailsResponse.class).getMappedResults();
-		if (historyDetailsresponse == null || historyDetailsresponse.isEmpty()) {
-			throw new BusinessException(ServiceError.NoRecord, "History record not found");
-		}
-		HistoryDetailsResponse historyDetailresponse = historyDetailsresponse.get(0);
+		if (historyDetailsresponse != null && !historyDetailsresponse.isEmpty()) {
+			HistoryDetailsResponse historyDetailresponse = historyDetailsresponse.get(0);
 
-		response = new HistoryDetailsResponse();
-		response.setDoctorId(historyDetailresponse.getDoctorId());
-		response.setLocationId(historyDetailresponse.getLocationId());
-		response.setHospitalId(historyDetailresponse.getHospitalId());
-		response.setPatientId(historyDetailresponse.getPatientId());
-		response.setDoctorName(historyDetailresponse.getDoctorName());
-		if (type == null || type.isEmpty() || DPDoctorUtils.anyStringEmpty(type.get(0))) {
-			BeanUtil.map(historyDetailresponse, response);
-		}
-		if (type.contains(HistoryType.MEDICAL.getType())) {
-			response.setMedicalhistory(historyDetailresponse.getMedicalhistory());
-		}
-		if (type.contains(HistoryType.FAMILY.getType())) {
-			response.setFamilyhistory(historyDetailresponse.getFamilyhistory());
-		}
-		if (type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
-			response.setDrugsAndAllergies(historyDetailresponse.getDrugsAndAllergies());
-		}
-		if (type.contains(HistoryType.PERSONAL.getType())) {
-			response.setPersonalHistory(historyDetailresponse.getPersonalHistory());
+			response = new HistoryDetailsResponse();
+			response.setDoctorId(historyDetailresponse.getDoctorId());
+			response.setLocationId(historyDetailresponse.getLocationId());
+			response.setHospitalId(historyDetailresponse.getHospitalId());
+			response.setPatientId(historyDetailresponse.getPatientId());
+			response.setDoctorName(historyDetailresponse.getDoctorName());
+			if (type == null || type.isEmpty() || DPDoctorUtils.anyStringEmpty(type.get(0))) {
+				BeanUtil.map(historyDetailresponse, response);
+			}
+			if (type.contains(HistoryType.MEDICAL.getType())) {
+				response.setMedicalhistory(historyDetailresponse.getMedicalhistory());
+			}
+			if (type.contains(HistoryType.FAMILY.getType())) {
+				response.setFamilyhistory(historyDetailresponse.getFamilyhistory());
+			}
+			if (type.contains(HistoryType.DRUG_ALLERGIES.getType())) {
+				response.setDrugsAndAllergies(historyDetailresponse.getDrugsAndAllergies());
+			}
+			if (type.contains(HistoryType.PERSONAL.getType())) {
+				response.setPersonalHistory(historyDetailresponse.getPersonalHistory());
+			}
+
 		}
 		return response;
 	}

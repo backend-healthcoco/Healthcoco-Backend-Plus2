@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorProfile {
 	private String id;

@@ -2,10 +2,13 @@ package com.dpdocter.request;
 
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
 public class TreatmentRequest {
 
+	private TreatmentService treatmentService;
+	
 	private String treatmentServiceId;
 
 	private PatientTreatmentStatus status;
@@ -19,6 +22,14 @@ public class TreatmentRequest {
 	private double finalCost=0.0;
 
 	private Quantity quantity;
+
+	public TreatmentService getTreatmentService() {
+		return treatmentService;
+	}
+
+	public void setTreatmentService(TreatmentService treatmentService) {
+		this.treatmentService = treatmentService;
+	}
 
 	public String getTreatmentServiceId() {
 		return treatmentServiceId;
@@ -75,6 +86,12 @@ public class TreatmentRequest {
 	public void setQuantity(Quantity quantity) {
 		this.quantity = quantity;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "TreatmentRequest [treatmentService=" + treatmentService + ", treatmentServiceId=" + treatmentServiceId
+				+ ", status=" + status + ", cost=" + cost + ", note=" + note + ", discount=" + discount + ", finalCost="
+				+ finalCost + ", quantity=" + quantity + "]";
+	}
 
 }

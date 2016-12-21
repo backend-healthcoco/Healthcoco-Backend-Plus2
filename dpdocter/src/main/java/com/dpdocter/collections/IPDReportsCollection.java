@@ -2,8 +2,8 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "ipd_reports_cl")
 public class IPDReportsCollection extends GenericCollection {

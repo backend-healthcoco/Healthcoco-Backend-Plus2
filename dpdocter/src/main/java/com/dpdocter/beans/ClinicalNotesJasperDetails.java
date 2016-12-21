@@ -3,9 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.mongodb.DBObject;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class ClinicalNotesJasperDetails {

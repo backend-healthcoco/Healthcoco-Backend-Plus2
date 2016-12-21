@@ -12,9 +12,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.VersionControl;
-import com.dpdocter.collections.DoctorContactUsCollection;
 import com.dpdocter.collections.VersionControlCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;

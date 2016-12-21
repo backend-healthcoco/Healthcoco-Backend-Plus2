@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class GrowthChart extends GenericCollection {

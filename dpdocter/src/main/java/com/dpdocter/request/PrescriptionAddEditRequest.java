@@ -3,7 +3,6 @@ package com.dpdocter.request;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.WorkingHours;

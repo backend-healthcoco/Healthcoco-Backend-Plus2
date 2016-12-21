@@ -26,8 +26,6 @@ import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
-import com.dpdocter.elasticsearch.document.ESPADocument;
-import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;

@@ -20,7 +20,6 @@ import com.dpdocter.beans.SendAppLink;
 import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.repository.SubscriptionDetailRepository;
 import com.dpdocter.services.AdminServices;
 import com.dpdocter.services.SubscriptionService;
 

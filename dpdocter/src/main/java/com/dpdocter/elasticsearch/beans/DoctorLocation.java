@@ -112,6 +112,12 @@ public class DoctorLocation {
 	@Field(type = FieldType.Integer)
 	private int noOfClinicRecommendations = 0;
 
+	@Field(type = FieldType.String)
+	private String invoiceInitial = "INV";
+
+	@Field(type = FieldType.String)
+	private String receiptInitial = "RC";
+
 	public String getLocationId() {
 		return locationId;
 	}
@@ -376,6 +382,30 @@ public class DoctorLocation {
 		this.clinicRankingCount = clinicRankingCount;
 	}
 
+	public int getNoOfClinicRecommendations() {
+		return noOfClinicRecommendations;
+	}
+
+	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
+		this.noOfClinicRecommendations = noOfClinicRecommendations;
+	}
+
+	public String getInvoiceInitial() {
+		return invoiceInitial;
+	}
+
+	public void setInvoiceInitial(String invoiceInitial) {
+		this.invoiceInitial = invoiceInitial;
+	}
+
+	public String getReceiptInitial() {
+		return receiptInitial;
+	}
+
+	public void setReceiptInitial(String receiptInitial) {
+		this.receiptInitial = receiptInitial;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorLocation [locationId=" + locationId + ", hospitalId=" + hospitalId + ", locationName="
@@ -390,15 +420,8 @@ public class DoctorLocation {
 				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
 				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
 				+ isLocationListed + ", clinicAddress=" + clinicAddress + ", clinicRankingCount=" + clinicRankingCount
-				+ "]";
-	}
-
-	public int getNoOfClinicRecommendations() {
-		return noOfClinicRecommendations;
-	}
-
-	public void setNoOfClinicRecommendations(int noOfClinicRecommendations) {
-		this.noOfClinicRecommendations = noOfClinicRecommendations;
+				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", invoiceInitial=" + invoiceInitial
+				+ ", receiptInitial=" + receiptInitial + "]";
 	}
 
 }

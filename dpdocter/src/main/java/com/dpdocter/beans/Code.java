@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import java.util.Comparator;
-
 public class Code {
 
 	private String genericCode;

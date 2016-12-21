@@ -4,8 +4,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DOB {
     private int days;

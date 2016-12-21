@@ -18,7 +18,6 @@ import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
-import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 
 public interface ESClinicalNotesService {
 

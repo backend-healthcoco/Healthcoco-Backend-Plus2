@@ -7,7 +7,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DoctorContactStateType;
 import com.dpdocter.enums.GenderType;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * 

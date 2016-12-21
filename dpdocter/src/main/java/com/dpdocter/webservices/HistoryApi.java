@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.services.s3.model.transform.XmlResponsesSaxParser.BucketReplicationConfigurationHandler;
 import com.dpdocter.beans.BirthHistory;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Diagram;

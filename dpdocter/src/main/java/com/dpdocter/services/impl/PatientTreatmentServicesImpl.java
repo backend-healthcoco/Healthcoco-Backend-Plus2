@@ -475,7 +475,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			ProjectionOperation projectList = new ProjectionOperation(
 					Fields.from(Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 							Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-							Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+							Fields.field("visitId", "$patientVisit._id"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
 							Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
 							Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
 							Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
@@ -492,10 +492,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Aggregation aggregation = Aggregation
 					.newAggregation(Aggregation.unwind("treatments"),
 							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))),
-							Aggregation
-									.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
-											"treatmentService"),
-							Aggregation.unwind("treatmentService"), projectList,
+							Aggregation	.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id","treatmentService"),
+							Aggregation.unwind("treatmentService"),
+							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId","patientVisit"),
+							Aggregation.unwind("patientVisit"), projectList,
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("id", "$_id")
 											.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -543,7 +543,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("visitId", "$patientVisit._id"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
 					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
 					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
 					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
@@ -563,7 +563,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Aggregation
 									.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 											"treatment"),
-							Aggregation.unwind("treatment"), projectList,
+							Aggregation.unwind("treatment"), 
+							Aggregation.lookup("patient_visit_cl", "_id", "treatmentId","patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							projectList,
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("id", "$_id")
 											.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -637,7 +640,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("visitId", "$patientVisit_id"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
 					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
 					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
 					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
@@ -655,7 +658,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 										"treatment"),
-								Aggregation.unwind("treatment"), projectList,
+								Aggregation.unwind("treatment"), 
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId","patientVisit"),
+								Aggregation.unwind("patientVisit"),
+								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -683,7 +689,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 										"treatment"),
-								Aggregation.unwind("treatment"), projectList,
+								Aggregation.unwind("treatment"), Aggregation.lookup("patient_visit_cl", "_id", "treatmentId","patientVisit"),
+								Aggregation.unwind("patientVisit"),
+								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -758,7 +766,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("visitId", "$visitId"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("visitId", "$patientVisit._d"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
 					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
 					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
 					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
@@ -777,6 +785,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 										"treatment"),
 								projectList, Aggregation.unwind("treatment"),
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId","patientVisit"),
+								Aggregation.unwind("patientVisit"),
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))
@@ -804,7 +814,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						.newAggregation(Aggregation.match(criteria), Aggregation.unwind("treatments"),
 								Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 										"treatment"),
-								Aggregation.unwind("treatment"), projectList,
+								Aggregation.unwind("treatment"), 
+								Aggregation.lookup("patient_visit_cl", "_id", "treatmentId","patientVisit"),
+								Aggregation.unwind("patientVisit"),
+								projectList,
 								new CustomAggregationOperation(new BasicDBObject("$group",
 										new BasicDBObject("id", "$_id")
 												.append("patientId", new BasicDBObject("$first", "$patientId"))

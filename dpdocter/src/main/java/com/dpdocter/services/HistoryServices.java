@@ -18,8 +18,6 @@ import com.dpdocter.response.DiseaseListResponse;
 import com.dpdocter.response.HistoryDetailsResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
 
-import common.util.web.Response;
-
 public interface HistoryServices {
 
     List<DiseaseAddEditResponse> addDiseases(List<DiseaseAddEditRequest> request);

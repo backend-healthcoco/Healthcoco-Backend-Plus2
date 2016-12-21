@@ -121,7 +121,13 @@ public class LocationCollection extends GenericCollection {
 
 	@Field
 	private LocationType locationType;
-	
+
+	@Field
+	private String invoiceInitial = "INV";
+
+	@Field
+	private String receiptInitial = "RC";
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -410,6 +416,22 @@ public class LocationCollection extends GenericCollection {
 		this.locationType = locationType;
 	}
 
+	public String getInvoiceInitial() {
+		return invoiceInitial;
+	}
+
+	public void setInvoiceInitial(String invoiceInitial) {
+		this.invoiceInitial = invoiceInitial;
+	}
+
+	public String getReceiptInitial() {
+		return receiptInitial;
+	}
+
+	public void setReceiptInitial(String receiptInitial) {
+		this.receiptInitial = receiptInitial;
+	}
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -425,7 +447,8 @@ public class LocationCollection extends GenericCollection {
 				+ isHomeServiceAvailable + ", locationUId=" + locationUId + ", isActivate=" + isActivate
 				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
 				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + ", noOfClinicRecommendations="
-				+ noOfClinicRecommendations + ", locationType=" + locationType + "]";
+				+ noOfClinicRecommendations + ", locationType=" + locationType + ", invoiceInitial=" + invoiceInitial
+				+ ", receiptInitial=" + receiptInitial + "]";
 	}
 
 }
