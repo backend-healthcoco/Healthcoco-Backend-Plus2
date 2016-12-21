@@ -1,5 +1,7 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TreatmentService;
@@ -9,6 +11,8 @@ public class TreatmentResponse {
 
 	private TreatmentService treatmentService;
 
+	private String treatmentServiceId;
+	
 	private PatientTreatmentStatus status;
 
 	private double cost = 0.0;
@@ -21,7 +25,7 @@ public class TreatmentResponse {
 
 	private Quantity quantity;
 
-//	private List<TreatmentService> treatmentServices;
+	private List<TreatmentService> treatmentServices;
 
 	public PatientTreatmentStatus getStatus() {
 		return status;
@@ -71,12 +75,6 @@ public class TreatmentResponse {
 		this.quantity = quantity;
 	}
 
-	@Override
-	public String toString() {
-		return "TreatmentResponse [treatmentService=" + treatmentService + ", status=" + status + ", cost=" + cost
-				+ ", note=" + note + ", quantity=" + quantity + "]";
-	}
-
 	public Discount getDiscount() {
 		return discount;
 	}
@@ -84,4 +82,28 @@ public class TreatmentResponse {
 	public void setDiscount(Discount discount) {
 		this.discount = discount;
 	}
+
+	public List<TreatmentService> getTreatmentServices() {
+		return treatmentServices;
+	}
+
+	public void setTreatmentServices(List<TreatmentService> treatmentServices) {
+		this.treatmentServices = treatmentServices;
+	}
+
+	public String getTreatmentServiceId() {
+		return treatmentServiceId;
+	}
+
+	public void setTreatmentServiceId(String treatmentServiceId) {
+		this.treatmentServiceId = treatmentServiceId;
+	}
+
+	@Override
+	public String toString() {
+		return "TreatmentResponse [treatmentService=" + treatmentService + ", treatmentServiceId=" + treatmentServiceId
+				+ ", status=" + status + ", cost=" + cost + ", note=" + note + ", discount=" + discount + ", finalCost="
+				+ finalCost + ", quantity=" + quantity + ", treatmentServices=" + treatmentServices + "]";
+	}
+
 }

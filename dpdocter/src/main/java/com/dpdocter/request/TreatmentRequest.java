@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.TreatmentService;
@@ -23,6 +25,8 @@ public class TreatmentRequest {
 
 	private Quantity quantity;
 
+	private List<TreatmentService> treatmentServices;
+	
 	public TreatmentService getTreatmentService() {
 		return treatmentService;
 	}
@@ -87,11 +91,19 @@ public class TreatmentRequest {
 		this.quantity = quantity;
 	}
 
+	public List<TreatmentService> getTreatmentServices() {
+		return treatmentServices;
+	}
+
+	public void setTreatmentServices(List<TreatmentService> treatmentServices) {
+		this.treatmentServices = treatmentServices;
+	}
+
 	@Override
 	public String toString() {
 		return "TreatmentRequest [treatmentService=" + treatmentService + ", treatmentServiceId=" + treatmentServiceId
 				+ ", status=" + status + ", cost=" + cost + ", note=" + note + ", discount=" + discount + ", finalCost="
-				+ finalCost + ", quantity=" + quantity + "]";
+				+ finalCost + ", quantity=" + quantity + ", treatmentServices=" + treatmentServices + "]";
 	}
 
 }
