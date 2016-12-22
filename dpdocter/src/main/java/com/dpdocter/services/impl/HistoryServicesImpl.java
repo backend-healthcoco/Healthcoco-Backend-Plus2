@@ -472,7 +472,7 @@ public class HistoryServicesImpl implements HistoryServices {
 						BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 						if (prescriptionItem.getDrugId() != null) {
 							DrugCollection drugCollection = drugRepository
-									.findOne(new ObjectId(prescriptionItem.getDrugId()));
+									.findOne(prescriptionItem.getDrugId());
 							Drug drug = new Drug();
 							if (drugCollection != null)
 								BeanUtil.map(drugCollection, drug);
@@ -962,7 +962,7 @@ public class HistoryServicesImpl implements HistoryServices {
 									BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 									if (prescriptionItem.getDrugId() != null) {
 										DrugCollection drugCollection = drugRepository
-												.findOne(new ObjectId(prescriptionItem.getDrugId()));
+												.findOne(prescriptionItem.getDrugId());
 										Drug drug = new Drug();
 										if (drugCollection != null)
 											BeanUtil.map(drugCollection, drug);

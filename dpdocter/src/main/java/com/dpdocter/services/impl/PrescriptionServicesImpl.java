@@ -840,14 +840,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							items = new ArrayList<PrescriptionItem>();
 						items.add(item);
 						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-								.findByDrugIdDoctorIdLocaationIdHospitalId(new ObjectId(item.getDrugId()),
+								.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(),
 										new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 										new ObjectId(request.getHospitalId()));
 						if (doctorDrugCollection != null) {
 							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount() + 1);
 							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository
-									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(),
+									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(), request.getDoctorId(),
 											request.getLocationId(), request.getHospitalId());
 							if (esDoctorDrugDocument != null) {
 								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
@@ -855,8 +855,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								esDoctorDrugRepository.save(esDoctorDrugDocument);
 							}
 						} else {
-							DrugCollection drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
-							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()),
+							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+							doctorDrugCollection = new DoctorDrugCollection(item.getDrugId(),
 									new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 									new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
 									drugCollection.getDosage(), drugCollection.getDosageTime(),
@@ -1049,22 +1049,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							item.setDuration(null);
 						}
 						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-								.findByDrugIdDoctorIdLocaationIdHospitalId(new ObjectId(item.getDrugId()),
+								.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(),
 										new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 										new ObjectId(request.getHospitalId()));
 						if (doctorDrugCollection != null) {
 							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount() + 1);
 							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository
-									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(), request.getDoctorId(),
+									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(), request.getDoctorId(),
 											request.getLocationId(), request.getHospitalId());
 							if (esDoctorDrugDocument != null) {
 								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
 								esDoctorDrugRepository.save(esDoctorDrugDocument);
 							}
 						} else {
-							DrugCollection drugCollection = drugRepository.findOne(new ObjectId(item.getDrugId()));
-							doctorDrugCollection = new DoctorDrugCollection(new ObjectId(item.getDrugId()),
+							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+							doctorDrugCollection = new DoctorDrugCollection(item.getDrugId(),
 									new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 									new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
 									drugCollection.getDosage(), drugCollection.getDosageTime(),
@@ -1129,7 +1129,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 						DrugCollection drugCollection = drugRepository
-								.findOne(new ObjectId(prescriptionItem.getDrugId()));
+								.findOne(prescriptionItem.getDrugId());
 						Drug drug = new Drug();
 						if (drugCollection != null)
 							BeanUtil.map(drugCollection, drug);
@@ -1200,7 +1200,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 								if (prescriptionItem.getDrugId() != null) {
 									DrugCollection drugCollection = drugRepository
-											.findOne(new ObjectId(prescriptionItem.getDrugId()));
+											.findOne(prescriptionItem.getDrugId());
 									Drug drug = new Drug();
 									if (drugCollection != null)
 										BeanUtil.map(drugCollection, drug);
@@ -1666,7 +1666,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 					if (prescriptionItem.getDrugId() != null) {
 						DrugCollection drugCollection = drugRepository
-								.findOne(new ObjectId(prescriptionItem.getDrugId()));
+								.findOne(prescriptionItem.getDrugId());
 						Drug drug = new Drug();
 						if (drugCollection != null)
 							BeanUtil.map(drugCollection, drug);
@@ -2736,7 +2736,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 									if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 										DrugCollection drug = drugRepository
-												.findOne(new ObjectId(prescriptionItem.getDrugId()));
+												.findOne(prescriptionItem.getDrugId());
 										if (drug != null) {
 											i++;
 
@@ -3498,7 +3498,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (!isLabPrint && prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
 			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 				if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-					DrugCollection drug = drugRepository.findOne(new ObjectId(prescriptionItem.getDrugId()));
+					DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
 					if (drug != null) {
 						String drugType = drug.getDrugType() != null
 								? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "") : "";

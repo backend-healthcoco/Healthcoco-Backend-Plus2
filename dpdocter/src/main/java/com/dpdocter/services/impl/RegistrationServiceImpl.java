@@ -1004,21 +1004,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("userId")
 						.is(userObjectId);
 			}
-			List<PatientCard> patientCards = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-							Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays",
-											true))),
-							Aggregation.sort(Direction.DESC, "createdTime")),
-					PatientCollection.class, PatientCard.class).getMappedResults();
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+					Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.sort(Direction.DESC, "createdTime"));
+			
+			List<PatientCard> patientCards = mongoTemplate
+					.aggregate(aggregation, PatientCollection.class, PatientCard.class).getMappedResults();
 			/*
 			 * UserCollection userCollection =
 			 * userRepository.findOne(userObjectId);
 			 */
-			if(patientCards != null && !patientCards.isEmpty())patientCard = patientCards.get(0);
+			if (patientCards != null && !patientCards.isEmpty())
+				patientCard = patientCards.get(0);
 			if (patientCard != null && patientCard.getUser() != null) {
 				/*
 				 * PatientCollection patientCollection =
@@ -1026,72 +1027,73 @@ public class RegistrationServiceImpl implements RegistrationService {
 				 * userObjectId, locationObjectId, hospitalObjectId);
 				 */
 				Reference reference = null;
-					if (patientCard.getReference() != null) {
+				if (patientCard.getReference() != null) {
 
-						reference = new Reference();
-						BeanUtil.map(patientCard.getReference(), reference);
+					reference = new Reference();
+					BeanUtil.map(patientCard.getReference(), reference);
 
-					}
-					patientCard.setReferredBy(null);
-					/*
-					 * List<PatientGroupCollection> patientGroupCollections =
-					 * patientGroupRepository
-					 * .findByPatientId(patientCollection.getUserId());
-					 */
+				}
+				patientCard.setReferredBy(null);
+				/*
+				 * List<PatientGroupCollection> patientGroupCollections =
+				 * patientGroupRepository
+				 * .findByPatientId(patientCollection.getUserId());
+				 */
 
-					registeredPatientDetails = new RegisteredPatientDetails();
-					BeanUtil.map(patientCard, registeredPatientDetails);
-					BeanUtil.map(patientCard.getUser(), registeredPatientDetails);
-					registeredPatientDetails.setImageUrl(patientCard.getImageUrl());
-					registeredPatientDetails.setThumbnailUrl(patientCard.getThumbnailUrl());
+				registeredPatientDetails = new RegisteredPatientDetails();
+				BeanUtil.map(patientCard, registeredPatientDetails);
+				BeanUtil.map(patientCard.getUser(), registeredPatientDetails);
+				registeredPatientDetails.setImageUrl(patientCard.getImageUrl());
+				registeredPatientDetails.setThumbnailUrl(patientCard.getThumbnailUrl());
 
-					registeredPatientDetails.setUserId(patientCard.getUser().getId().toString());
-					registeredPatientDetails.setReferredBy(reference);
-					Patient patient = new Patient();
-					BeanUtil.map(patientCard, patient);
-					patient.setPatientId(patientCard.getUser().getId().toString());
+				registeredPatientDetails.setUserId(patientCard.getUser().getId().toString());
+				registeredPatientDetails.setReferredBy(reference);
+				Patient patient = new Patient();
+				BeanUtil.map(patientCard, patient);
+				patient.setPatientId(patientCard.getUser().getId().toString());
 
-					Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
-					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
-								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
-								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
-								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-						recordsCount = recordsRepository.getRecordsForOtherDoctors(
-								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
-								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
-					} else {
-						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
-								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
-						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
-								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
-						recordsCount = recordsRepository.getRecordsForOtherLocations(
-								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
-					}
+				Integer prescriptionCount = 0, clinicalNotesCount = 0, recordsCount = 0;
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
+					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(
+							new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
+							new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+					clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
+							new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
+							new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
+					recordsCount = recordsRepository.getRecordsForOtherDoctors(new ObjectId(patientCard.getDoctorId()),
+							new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
+							new ObjectId(patientCard.getLocationId()));
+				} else {
+					prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
+							new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
+							new ObjectId(patientCard.getLocationId()));
+					clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
+							new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
+							new ObjectId(patientCard.getLocationId()));
+					recordsCount = recordsRepository.getRecordsForOtherLocations(
+							new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
+							new ObjectId(patientCard.getLocationId()));
+				}
 
-					if ((prescriptionCount != null && prescriptionCount > 0)
-							|| (clinicalNotesCount != null && clinicalNotesCount > 0)
-							|| (recordsCount != null && recordsCount > 0))
-						patient.setIsDataAvailableWithOtherDoctor(true);
+				if ((prescriptionCount != null && prescriptionCount > 0)
+						|| (clinicalNotesCount != null && clinicalNotesCount > 0)
+						|| (recordsCount != null && recordsCount > 0))
+					patient.setIsDataAvailableWithOtherDoctor(true);
 
-					patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
-							patientCard.getUser().getId().toString()));
-					registeredPatientDetails.setPatient(patient);
-					registeredPatientDetails.setAddress(patientCard.getAddress());
-					@SuppressWarnings("unchecked")
-					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
-							new BeanToPropertyValueTransformer("groupId"));
-					if (groupIds != null && !groupIds.isEmpty()) {
-						groups = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds))),
-								GroupCollection.class, Group.class).getMappedResults();
-						registeredPatientDetails.setGroups(groups);
-					}
+				patient.setIsPatientOTPVerified(otpService.checkOTPVerified(doctorId, locationId, hospitalId,
+						patientCard.getUser().getId().toString()));
+				registeredPatientDetails.setPatient(patient);
+				registeredPatientDetails.setAddress(patientCard.getAddress());
+				@SuppressWarnings("unchecked")
+				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
+						new BeanToPropertyValueTransformer("groupId"));
+				if (groupIds != null && !groupIds.isEmpty()) {
+					groups = mongoTemplate
+							.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds))),
+									GroupCollection.class, Group.class)
+							.getMappedResults();
+					registeredPatientDetails.setGroups(groups);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

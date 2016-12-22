@@ -455,7 +455,7 @@ public class ReportsServiceImpl implements ReportsService {
 								PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 								DrugCollection drugCollection = drugRepository
-										.findOne(new ObjectId(prescriptionItem.getDrugId()));
+										.findOne(prescriptionItem.getDrugId());
 								if (drugCollection != null) {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);

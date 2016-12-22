@@ -633,7 +633,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 				if (prescriptionItem.getDrugId() != null) {
 					DrugCollection drugCollection = drugRepository
-							.findOne(new ObjectId(prescriptionItem.getDrugId()));
+							.findOne(prescriptionItem.getDrugId());
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -1494,7 +1494,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 							if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 								DrugCollection drug = drugRepository
-										.findOne(new ObjectId(prescriptionItem.getDrugId()));
+										.findOne(prescriptionItem.getDrugId());
 								if (drug != null) {
 									String drugType = drug.getDrugType() != null
 											? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")

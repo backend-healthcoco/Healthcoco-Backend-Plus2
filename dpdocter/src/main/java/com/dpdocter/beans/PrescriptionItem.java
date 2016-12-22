@@ -2,10 +2,11 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionItem {
-    private String drugId;
+    private ObjectId drugId;
 
     private Duration duration;
 
@@ -17,15 +18,17 @@ public class PrescriptionItem {
 
     private String instructions;
 
-    public String getDrugId() {
-	return drugId;
-    }
+    
 
-    public void setDrugId(String drugId) {
-	this.drugId = drugId;
-    }
+    public ObjectId getDrugId() {
+		return drugId;
+	}
 
-    public Duration getDuration() {
+	public void setDrugId(ObjectId drugId) {
+		this.drugId = drugId;
+	}
+
+	public Duration getDuration() {
 	return duration;
     }
 
