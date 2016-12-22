@@ -2,7 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
-import com.dpdocter.beans.TemplateItem;
+import com.dpdocter.beans.TemplateAddItem;
 import com.dpdocter.collections.GenericCollection;
 
 public class TemplateAddEditResponse extends GenericCollection {
@@ -16,7 +16,7 @@ public class TemplateAddEditResponse extends GenericCollection {
 
     private String hospitalId;
 
-    private List<TemplateItem> items;
+    private List<TemplateAddItem> items;
 
     private Boolean discarded = false;
 
@@ -60,11 +60,11 @@ public class TemplateAddEditResponse extends GenericCollection {
 	this.hospitalId = hospitalId;
     }
 
-    public List<TemplateItem> getItems() {
+    public List<TemplateAddItem> getItems() {
 	return items;
     }
 
-    public void setItems(List<TemplateItem> items) {
+    public void setItems(List<TemplateAddItem> items) {
 	this.items = items;
     }
 

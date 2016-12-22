@@ -1,40 +1,40 @@
 package com.dpdocter.beans;
 
 import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class TemplateItem {
-    private ObjectId drugId;
+	private ObjectId drugId;
 
-    private Duration duration;
+	private Duration duration;
 
-    private String dosage;
+	private String dosage;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private List<Long> dosageTime;
 
-    private String instructions;
+	private List<DrugDirection> direction;
+
+	private String instructions;
 
 	public ObjectId getDrugId() {
-	return drugId;
-    }
+		return drugId;
+	}
 
-    public void setDrugId(ObjectId drugId) {
-	this.drugId = drugId;
-    }
+	public void setDrugId(ObjectId drugId) {
+		this.drugId = drugId;
+	}
 
-    public Duration getDuration() {
-	return duration;
-    }
+	public Duration getDuration() {
+		return duration;
+	}
 
-    public void setDuration(Duration duration) {
-	this.duration = duration;
-    }
+	public void setDuration(Duration duration) {
+		this.duration = duration;
+	}
 
-    public String getDosage() {
+	public String getDosage() {
 		return dosage;
 	}
 
@@ -51,20 +51,20 @@ public class TemplateItem {
 	}
 
 	public List<DrugDirection> getDirection() {
-	return direction;
-    }
+		return direction;
+	}
 
-    public void setDirection(List<DrugDirection> direction) {
-	this.direction = direction;
-    }
+	public void setDirection(List<DrugDirection> direction) {
+		this.direction = direction;
+	}
 
-    public String getInstructions() {
-	return instructions;
-    }
+	public String getInstructions() {
+		return instructions;
+	}
 
-    public void setInstructions(String instructions) {
-	this.instructions = instructions;
-    }
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
 
 	@Override
 	public String toString() {

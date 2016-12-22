@@ -2,7 +2,8 @@ package com.dpdocter.request;
 
 import java.util.List;
 
-import com.dpdocter.beans.TemplateItem;
+import com.dpdocter.beans.TemplateAddItem;
+
 
 public class TemplateAddEditRequest {
     private String id;
@@ -15,7 +16,7 @@ public class TemplateAddEditRequest {
 
     private String hospitalId;
 
-    private List<TemplateItem> items;
+    private List<TemplateAddItem> items;
 
     public String getId() {
 	return id;
@@ -57,11 +58,11 @@ public class TemplateAddEditRequest {
 	this.hospitalId = hospitalId;
     }
 
-    public List<TemplateItem> getItems() {
+    public List<TemplateAddItem> getItems() {
 	return items;
     }
 
-    public void setItems(List<TemplateItem> items) {
+    public void setItems(List<TemplateAddItem> items) {
 	this.items = items;
     }
 

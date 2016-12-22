@@ -71,6 +71,7 @@ import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.beans.TemplateAddItem;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
@@ -663,10 +664,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response = new TemplateAddEditResponseDetails();
 				BeanUtil.map(template, response);
 				List<TemplateItemDetail> templateItemDetails = new ArrayList<TemplateItemDetail>();
-				for (TemplateItem templateItem : template.getItems()) {
+				for (TemplateAddItem templateItem : template.getItems()) {
 					TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 					BeanUtil.map(templateItem, templateItemDetail);
-					DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(templateItem.getDrugId()));
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
@@ -1632,11 +1633,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			response = new TemplateAddEditResponseDetails();
 			BeanUtil.map(template, response);
 			List<TemplateItemDetail> templateItemDetails = new ArrayList<TemplateItemDetail>();
-			for (TemplateItem templateItem : template.getItems()) {
+			for (TemplateAddItem templateItem : template.getItems()) {
 				TemplateItemDetail templateItemDetail = new TemplateItemDetail();
 				BeanUtil.map(templateItem, templateItemDetail);
 				if (templateItem.getDrugId() != null) {
-					DrugCollection drugCollection = drugRepository.findOne(templateItem.getDrugId());
+					DrugCollection drugCollection = drugRepository.findOne(new ObjectId(templateItem.getDrugId()));
 					Drug drug = new Drug();
 					if (drugCollection != null)
 						BeanUtil.map(drugCollection, drug);
