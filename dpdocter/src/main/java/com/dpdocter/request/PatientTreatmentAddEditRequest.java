@@ -10,8 +10,6 @@ public class PatientTreatmentAddEditRequest {
 
 	private String id;
 
-
-
 	private List<TreatmentRequest> treatments;
 
 	private String patientId;

@@ -483,7 +483,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 							Fields.field("createdBy", "$createdBy"),
 							Fields.field("treatments.treatmentService", "$treatmentService"),
-							Fields.field("treatments.treatmentServiceId", "$treatmentService._id"),
+							Fields.field("treatments.treatmentServiceId", "$treatments.treatmentServiceId"),
 							Fields.field("treatments.status", "$treatments.status"),
 							Fields.field("treatments.cost", "$treatments.cost"),
 							Fields.field("treatments.note", "$treatments.note"),
@@ -551,7 +551,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy"), Fields.field("treatments.treatmentService", "$treatment"),
-					Fields.field("treatments.treatmentServiceId", "$treatmentService._id"),
+					Fields.field("treatments.treatmentServiceId", "$treatments.treatmentServiceId"),
 					Fields.field("treatments.status", "$treatments.status"),
 					Fields.field("treatments.cost", "$treatments.cost"),
 					Fields.field("treatments.note", "$treatments.note"),
@@ -642,14 +642,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("visitId", "$patientVisit_id"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("visitId", "$patientVisit._id"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
 					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
 					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
 					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
 					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy"), Fields.field("treatments.treatmentService", "$treatment"),
-					Fields.field("treatments.treatmentServiceId", "$treatmentService._id"),
+					Fields.field("treatments.treatmentServiceId", "$treatments.treatmentServiceId"),
 					Fields.field("treatments.status", "$treatments.status"),
 					Fields.field("treatments.cost", "$treatments.cost"),
 					Fields.field("treatments.note", "$treatments.note"),
@@ -723,7 +723,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
-			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments"+e);
 		}
 		return response;
 	}
@@ -769,14 +769,14 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(
 					Fields.field("patientId", "$patientId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("visitId", "$patientVisit._d"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
+					Fields.field("visitId", "$patientVisit._id"), Fields.field("uniqueEmrId", "$uniqueEmrId"),
 					Fields.field("totalCost", "$totalCost"), Fields.field("totalDiscount", "$totalDiscount"),
 					Fields.field("grandTotal", "$grandTotal"), Fields.field("discarded", "$discarded"),
 					Fields.field("inHistory", "$inHistory"), Fields.field("appointmentId", "$appointmentId"),
 					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
 					Fields.field("createdBy", "$createdBy"), Fields.field("treatments.treatmentService", "$treatment"),
-					Fields.field("treatments.treatmentServiceId", "$treatmentService._id"),
+					Fields.field("treatments.treatmentServiceId", "$treatments.treatmentServiceId"),
 					Fields.field("treatments.status", "$treatments.status"),
 					Fields.field("treatments.cost", "$treatments.cost"),
 					Fields.field("treatments.note", "$treatments.note"),

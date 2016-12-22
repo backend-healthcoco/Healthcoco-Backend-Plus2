@@ -24,6 +24,7 @@ public class PatientCollection extends GenericCollection {
 
 	@Field
 	private String firstName;
+	
 	@Field
 	private String localPatientName;
 

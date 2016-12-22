@@ -89,6 +89,10 @@ public class Location {
 	
 	private Hospital hospital;
 
+	private String invoiceInitial = "INV";
+
+	private String receiptInitial = "RC";
+
 	public String getId() {
 		return id;
 	}
@@ -401,6 +405,22 @@ public class Location {
 		this.hospital = hospital;
 	}
 
+	public String getInvoiceInitial() {
+		return invoiceInitial;
+	}
+
+	public void setInvoiceInitial(String invoiceInitial) {
+		this.invoiceInitial = invoiceInitial;
+	}
+
+	public String getReceiptInitial() {
+		return receiptInitial;
+	}
+
+	public void setReceiptInitial(String receiptInitial) {
+		this.receiptInitial = receiptInitial;
+	}
+
 	@Override
 	public String toString() {
 		return "Location [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state=" + state
@@ -417,6 +437,8 @@ public class Location {
 				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
 				+ ", locationType=" + locationType + ", patientInitial=" + patientInitial + ", patientCounter="
 				+ patientCounter + ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", isClinicRecommended="
-				+ isClinicRecommended + ", hospital=" + hospital + "]";
+				+ isClinicRecommended + ", hospital=" + hospital + ", invoiceInitial=" + invoiceInitial
+				+ ", receiptInitial=" + receiptInitial + "]";
 	}
+
 }
