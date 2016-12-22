@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.WorkingHours;
 
 public class PrescriptionAddEditRequest {
@@ -18,7 +18,7 @@ public class PrescriptionAddEditRequest {
 
 	private String hospitalId;
 
-	private List<PrescriptionItem> items;
+	private List<PrescriptionAddItem> items;
 
 	private String patientId;
 
@@ -104,11 +104,11 @@ public class PrescriptionAddEditRequest {
 		this.hospitalId = hospitalId;
 	}
 
-	public List<PrescriptionItem> getItems() {
+	public List<PrescriptionAddItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<PrescriptionItem> items) {
+	public void setItems(List<PrescriptionAddItem> items) {
 		this.items = items;
 	}
 

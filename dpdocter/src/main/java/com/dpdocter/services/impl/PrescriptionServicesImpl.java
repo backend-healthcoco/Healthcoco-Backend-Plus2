@@ -64,6 +64,7 @@ import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
@@ -1125,11 +1126,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				BeanUtil.map(prescription, response);
 				List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
 				if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
-					for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+					for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
 						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 						DrugCollection drugCollection = drugRepository
-								.findOne(prescriptionItem.getDrugId());
+								.findOne(new ObjectId(prescriptionItem.getDrugId()));
 						Drug drug = new Drug();
 						if (drugCollection != null)
 							BeanUtil.map(drugCollection, drug);
@@ -1661,12 +1662,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			response.setDiagnosticTests(prescriptionTest);
 			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
 			if (prescription.getItems() != null) {
-				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+				for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
 					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 					if (prescriptionItem.getDrugId() != null) {
 						DrugCollection drugCollection = drugRepository
-								.findOne(prescriptionItem.getDrugId());
+								.findOne(new ObjectId(prescriptionItem.getDrugId()));
 						Drug drug = new Drug();
 						if (drugCollection != null)
 							BeanUtil.map(drugCollection, drug);

@@ -11,161 +11,160 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "prescription_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class PrescriptionCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String uniqueEmrId;
+	@Field
+	private String uniqueEmrId;
 
-    @Field
-    private String name;
+	@Field
+	private String name;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private List<PrescriptionItem> items;
+	@Field
+	private List<PrescriptionItem> items;
 
-    @Field
-    private List<TestAndRecordData> diagnosticTests;
+	@Field
+	private List<TestAndRecordData> diagnosticTests;
 
-    @Indexed
-    private ObjectId patientId;
+	@Indexed
+	private ObjectId patientId;
 
-    @Field
-    private String prescriptionCode;
+	@Field
+	private String prescriptionCode;
 
-    @Field
-    private Boolean inHistory = false;
+	@Field
+	private Boolean inHistory = false;
 
-    @Field
-    private String advice;
+	@Field
+	private String advice;
 
-    @Field
-    private Boolean isFeedbackAvailable = false;
-    
-    @Field
+	@Field
+	private Boolean isFeedbackAvailable = false;
+
+	@Field
 	private String appointmentId;
 
-    @Field
+	@Field
 	private WorkingHours time;
 
-    @Field
+	@Field
 	private Date fromDate;
 
-    public ObjectId getId() {
-	return id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public List<PrescriptionItem> getItems() {
-	return items;
-    }
+	public List<PrescriptionItem> getItems() {
+		return items;
+	}
 
-    public void setItems(List<PrescriptionItem> items) {
-	this.items = items;
-    }
+	public void setItems(List<PrescriptionItem> items) {
+		this.items = items;
+	}
 
-    public ObjectId getPatientId() {
-	return patientId;
-    }
+	public ObjectId getPatientId() {
+		return patientId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public String getPrescriptionCode() {
-	return prescriptionCode;
-    }
+	public String getPrescriptionCode() {
+		return prescriptionCode;
+	}
 
-    public void setPrescriptionCode(String prescriptionCode) {
-	this.prescriptionCode = prescriptionCode;
-    }
+	public void setPrescriptionCode(String prescriptionCode) {
+		this.prescriptionCode = prescriptionCode;
+	}
 
-    public String getAdvice() {
-	return advice;
-    }
+	public String getAdvice() {
+		return advice;
+	}
 
-    public void setAdvice(String advice) {
-	this.advice = advice;
-    }
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
 
-    public Boolean getInHistory() {
-	return inHistory;
-    }
+	public Boolean getInHistory() {
+		return inHistory;
+	}
 
-    public void setInHistory(Boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
 
-    public Boolean getIsFeedbackAvailable() {
-	return isFeedbackAvailable;
-    }
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
 
-    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-	this.isFeedbackAvailable = isFeedbackAvailable;
-    }
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;
@@ -182,7 +181,7 @@ public class PrescriptionCollection extends GenericCollection {
 	public void setDiagnosticTests(List<TestAndRecordData> diagnosticTests) {
 		this.diagnosticTests = diagnosticTests;
 	}
-	
+
 	public String getAppointmentId() {
 		return appointmentId;
 	}
