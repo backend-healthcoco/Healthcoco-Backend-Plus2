@@ -523,9 +523,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			List<PatientTreatmentResponse> patientDetailsresponse = groupResults.getMappedResults();
 			response = patientDetailsresponse.get(0);
 
-			if (response.getId() == null) {
-				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given id");
-			}
+			
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments" + e);
@@ -591,9 +589,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 											.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
 					.getMappedResults();
-			if (response == null || response.isEmpty()) {
-				throw new BusinessException(ServiceError.NotFound, "No treatment found for the given ids");
-			}
+			
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");

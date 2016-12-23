@@ -849,8 +849,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount() + 1);
 							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository
-									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(), request.getDoctorId(),
-											request.getLocationId(), request.getHospitalId());
+									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(),
+											request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 							if (esDoctorDrugDocument != null) {
 								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
 								doctorDrugCollection.setUpdatedTime(new Date());
@@ -1058,8 +1058,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount() + 1);
 							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository
-									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(), request.getDoctorId(),
-											request.getLocationId(), request.getHospitalId());
+									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(),
+											request.getDoctorId(), request.getLocationId(), request.getHospitalId());
 							if (esDoctorDrugDocument != null) {
 								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
 								esDoctorDrugRepository.save(esDoctorDrugDocument);
@@ -1481,10 +1481,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PrescriptionCollection.class, Prescription.class);
 			prescriptions = aggregationResults.getMappedResults();
-			if (prescriptions == null || prescriptionIds.isEmpty()) {
-				logger.warn("Prescription Not Found");
-				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
-			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Prescription");
@@ -2067,12 +2064,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					PrescriptionCollection.class, Prescription.class);
 			List<Prescription> prescriptions = aggregationResults.getMappedResults();
 
-			if (prescriptions != null && !prescriptions.isEmpty())
-				prescription = prescriptions.get(0);
-			else {
-				throw new BusinessException(ServiceError.NotFound,
-						"No Prescription Found For the Given Prescription or Patient Id");
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
@@ -2737,8 +2728,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									&& !prescriptionCollection.getItems().isEmpty())
 								for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
 									if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-										DrugCollection drug = drugRepository
-												.findOne(prescriptionItem.getDrugId());
+										DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
 										if (drug != null) {
 											i++;
 
