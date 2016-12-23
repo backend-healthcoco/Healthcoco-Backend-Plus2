@@ -2063,7 +2063,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PrescriptionCollection.class, Prescription.class);
 			List<Prescription> prescriptions = aggregationResults.getMappedResults();
-
+			if(prescriptions != null && !prescriptions.isEmpty()){
+				prescription = prescriptions.get(0);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting prescription : " + e.getCause().getMessage());
