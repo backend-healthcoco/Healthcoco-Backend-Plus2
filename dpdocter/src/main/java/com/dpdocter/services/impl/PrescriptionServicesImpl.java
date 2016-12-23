@@ -3206,11 +3206,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					PrescriptionCollection.class, Prescription.class);
 			prescriptions = aggregationResults.getMappedResults();
 
-			if (prescriptions == null || prescriptions.isEmpty()) {
-
-				logger.warn("Prescription Not Found");
-				throw new BusinessException(ServiceError.NotFound, "Prescription Not Found");
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(" Error Occurred While Getting Prescription");
