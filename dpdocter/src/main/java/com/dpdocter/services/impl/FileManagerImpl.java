@@ -33,6 +33,8 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class FileManagerImpl implements FileManager {
 
@@ -61,7 +63,7 @@ public class FileManagerImpl implements FileManager {
 		byte[] base64 = Base64.decodeBase64(fileDetails.getFileEncoded());
 	    InputStream fis = new ByteArrayInputStream(base64);
 	    String contentType = URLConnection.guessContentTypeFromStream(fis);
-	    if(contentType.equalsIgnoreCase("exe"))
+	    if(!DPDoctorUtils.anyStringEmpty(contentType) && contentType.equalsIgnoreCase("exe"))
 		{
 			throw new BusinessException(ServiceError.NotAcceptable , "Invalid File");
 		}

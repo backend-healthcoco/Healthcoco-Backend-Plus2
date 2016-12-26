@@ -3099,8 +3099,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria().andOperator(new Criteria("patientId").is(new ObjectId(patientId)),
-					new Criteria("discarded").in(discards), new Criteria("updatedTime").gt(new Date(createdTimestamp)));
-
+					new Criteria("updatedTime").gt(new Date(createdTimestamp)));
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),

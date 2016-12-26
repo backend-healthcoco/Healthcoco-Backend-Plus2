@@ -589,7 +589,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 											.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
 					.getMappedResults();
-			
+
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
