@@ -864,15 +864,15 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
-	@GET
-	public Response<Boolean> updatePIDOnClinicLevel() {
-
-		Boolean changePatientNumberResponse = registrationService.updatePIDOnClinicLevel();
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(changePatientNumberResponse);
-		return response;
-	}
+//	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
+//	@GET
+//	public Response<Boolean> updatePIDOnClinicLevel() {
+//
+//		Boolean changePatientNumberResponse = registrationService.updatePIDOnClinicLevel();
+//		Response<Boolean> response = new Response<Boolean>();
+//		response.setData(changePatientNumberResponse);
+//		return response;
+//	}
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_DOCTOR_CLINIC_PROFILE)
 	@GET

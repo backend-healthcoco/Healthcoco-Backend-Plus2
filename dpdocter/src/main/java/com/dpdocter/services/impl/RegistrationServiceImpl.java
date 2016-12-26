@@ -997,9 +997,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 				hospitalObjectId = new ObjectId(hospitalId);
 
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").is(doctorObjectId);
-			}
+//			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+//				criteria.and("doctorId").is(doctorObjectId);
+//			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId, userId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("userId")
 						.is(userObjectId);
@@ -1009,8 +1009,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 					Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))),
-					Aggregation.sort(Direction.DESC, "createdTime"));
+							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))));
 			
 			List<PatientCard> patientCards = mongoTemplate
 					.aggregate(aggregation, PatientCollection.class, PatientCard.class).getMappedResults();
@@ -2994,33 +2993,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			e.printStackTrace();
 		}
 		return esPatientDocument;
-	}
-
-	@Override
-	public Boolean updatePIDOnClinicLevel() {
-		Boolean response = false;
-		try {
-			List<LocationCollection> locationCollections = locationRepository.findAll();
-			for (LocationCollection locationCollection : locationCollections) {
-				RoleCollection roleCollection = roleRepository.findLocationAdmin(locationCollection.getId(),
-						RoleEnum.LOCATION_ADMIN.getRole());
-				List<UserRoleCollection> userRoleCollection = userRoleRepository.findByRoleId(roleCollection.getId());
-				if (userRoleCollection != null && !userRoleCollection.isEmpty()) {
-					DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
-							.findByDoctorIdLocationId(userRoleCollection.get(0).getUserId(),
-									locationCollection.getId());
-					locationCollection.setPatientCounter(clinicProfileCollection.getPatientCounter());
-					locationCollection.setPatientInitial(clinicProfileCollection.getPatientInitial());
-					locationRepository.save(locationCollection);
-					response = true;
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error");
-		}
-		return response;
 	}
 
 	@Override

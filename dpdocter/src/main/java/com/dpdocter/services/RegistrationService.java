@@ -115,8 +115,6 @@ public interface RegistrationService {
 
 	Boolean registerPatients(String doctorId, String locationId, String hospitalId);
 
-	Boolean updatePIDOnClinicLevel();
-
 	Boolean updateDoctorClinicProfile();
 
 }

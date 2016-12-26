@@ -37,12 +37,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
     private Boolean discarded = false;
 
 	@Field
-	private String patientInitial = "P";
-
-	@Field
-	private int patientCounter = 1;
-
-	@Field
 	private List<String> appointmentBookingNumber;
 
 	@Field
@@ -190,22 +184,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.timeZone = timeZone;
 	}
 
-	public String getPatientInitial() {
-		return patientInitial;
-	}
-
-	public void setPatientInitial(String patientInitial) {
-		this.patientInitial = patientInitial;
-	}
-
-	public int getPatientCounter() {
-		return patientCounter;
-	}
-
-	public void setPatientCounter(int patientCounter) {
-		this.patientCounter = patientCounter;
-	}
-
 	public Boolean getIsDoctorListed() {
 		return isDoctorListed;
 	}
@@ -242,7 +220,6 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded
-				+ ", patientInitial=" + patientInitial + ", patientCounter=" + patientCounter
 				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
 				+ ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot=" + appointmentSlot
 				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews

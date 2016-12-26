@@ -1,20 +1,27 @@
 package com.dpdocter.tests;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 
-import common.util.web.DPDoctorUtils;
+import com.dpdocter.beans.User;
 
 
 public class GeneralTests {
 
 		public static void main(String[] args) throws UnsupportedEncodingException{
 
-			int scale = 100;
-			BigDecimal num1 = new BigDecimal(9200);
-			BigDecimal num2 = new BigDecimal(1000*1000);
-			System.out.println(num1.divide(num2).doubleValue());
 			
-			System.out.println(DPDoctorUtils.getSHA3SecurePassword("neha".toCharArray()));
+			LinkedList linkedList = new LinkedList();
+//			linkedList.add(e)
+//			Comparator<String> queueComparator = new VowelComparator();
+			PriorityQueue<String> priorityQueue = new PriorityQueue<String>();
+			priorityQueue.add("orange");
+			priorityQueue.add("fig");
+			priorityQueue.add("watermelon");
+			priorityQueue.add("lemon");
+			while (priorityQueue.size() != 0) {
+				System.out.println(priorityQueue.remove());
+			}
 		}
 }
