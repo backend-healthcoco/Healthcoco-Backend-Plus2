@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum UnitType {
-	PERCENT("%"), RUPEES("INR");
+	PERCENT("%"), INR("INR");
 	private String unit;
 
 	private UnitType(String unit) {
