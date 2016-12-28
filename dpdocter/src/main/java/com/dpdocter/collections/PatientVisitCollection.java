@@ -64,30 +64,6 @@ public class PatientVisitCollection extends GenericCollection {
 	@Field
 	private Date fromDate;
 
-	public WorkingHours getTime() {
-		return time;
-	}
-
-	public void setTime(WorkingHours time) {
-		this.time = time;
-	}
-
-	public Date getFromDate() {
-		return fromDate;
-	}
-
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
-
-	public String getAppointmentId() {
-		return appointmentId;
-	}
-
-	public void setAppointmentId(String appointmentId) {
-		this.appointmentId = appointmentId;
-	}
-
 	@Field
 	private Boolean discarded = false;
 
@@ -203,12 +179,38 @@ public class PatientVisitCollection extends GenericCollection {
 		this.treatmentId = treatmentId;
 	}
 
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
-				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", recordId="
-				+ recordId + ", appointmentId=" + appointmentId + ", discarded=" + discarded + "]";
+				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", treatmentId="
+				+ treatmentId + ", recordId=" + recordId + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", fromDate=" + fromDate + ", discarded=" + discarded + "]";
 	}
 }

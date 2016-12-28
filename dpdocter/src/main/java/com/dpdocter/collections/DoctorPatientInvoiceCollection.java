@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.InvoiceItems;
+import com.dpdocter.beans.InvoiceItem;
 
 @Document(collection = "doctor_patient_invoice_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -35,7 +35,10 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	private String uniqueInvoiceId;
 	
 	@Field
-	private List<InvoiceItems> invoiceItems;   
+	private ObjectId receiptId;
+	
+	@Field
+	private List<InvoiceItem> invoiceItems;   
 	
 	@Field
 	private Double grandTotal;
@@ -48,6 +51,9 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	
 	@Field
 	private Double balanceAmount;
+
+	@Field
+	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -97,11 +103,11 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
-	public List<InvoiceItems> getInvoiceItems() {
+	public List<InvoiceItem> getInvoiceItems() {
 		return invoiceItems;
 	}
 
-	public void setInvoiceItems(List<InvoiceItems> invoiceItems) {
+	public void setInvoiceItems(List<InvoiceItem> invoiceItems) {
 		this.invoiceItems = invoiceItems;
 	}
 
@@ -137,11 +143,29 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.balanceAmount = balanceAmount;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public ObjectId getReceiptId() {
+		return receiptId;
+	}
+
+	public void setReceiptId(ObjectId receiptId) {
+		this.receiptId = receiptId;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal + ", usedAdvanceAmount="
-				+ usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount + "]";
+				+ ", receiptId=" + receiptId + ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
+				+ balanceAmount + ", discarded=" + discarded + "]";
 	}
+
 }

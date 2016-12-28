@@ -1286,12 +1286,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Appointment appointment = new Appointment();
 					PatientCard patient = null;
 					if (collection.getType().equals(AppointmentType.APPOINTMENT)) {
-						List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
+						List<PatientCard> patientCards = mongoTemplate.aggregate(
+								Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
 								.and("locationId").is(new ObjectId(collection.getLocationId())).and("hospitalId").is(new ObjectId(collection.getHospitalId()))), 
-								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), 
+								Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
 						if(patientCards != null && !patientCards.isEmpty())patient = patientCards.get(0);
 						
 					}
+					System.out.println(patient);
+					System.out.println(collection);
 					BeanUtil.map(collection, appointment);
 					patient.setId(patient.getUserId());
 					if(patient.getUser() != null)patient.setColorCode(patient.getUser().getColorCode());
@@ -1910,10 +1914,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59, DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 		
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					Aggregation.match(new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
+							.and("hospitalId").is(hospitalObjectId)
 							.and("date").gt(start).lte(end).and("discarded").is(false)),
 					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
 					Aggregation.lookup("user_cl", "patientId", "_id", "patient.user"), Aggregation.unwind("patient.user"),
+//					Aggregation.match(new Criteria("$patient.locationId").is(locationObjectId).and("$patient.hospitalId").is(hospitalObjectId)),
 					Aggregation.sort(new Sort(Direction.DESC, "sequenceNo"))), 
 					PatientQueueCollection.class, PatientQueue.class).getMappedResults();
 				for (PatientQueue collection : response) {
@@ -1963,7 +1969,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (patientQueueCollection == null)
 				patientQueueCollection = new PatientQueueCollection();
 
-			patientQueueCollection.setAppointmentId(appointmentId);
+			if(!DPDoctorUtils.anyStringEmpty(appointmentId))patientQueueCollection.setAppointmentId(appointmentId);
 			patientQueueCollection.setDoctorId(doctorObjectId);
 			patientQueueCollection.setLocationId(locationObjectId);
 			patientQueueCollection.setHospitalId(hospitalObjectId);
@@ -2079,6 +2085,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									.and("date").gt(start).lte(end).and("discarded").is(false)),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
 							Aggregation.lookup("user_cl", "patientId", "_id", "patient.user"), Aggregation.unwind("patient.user"),
+//							Aggregation.match(new Criteria("patient.locationId").is(locationObjectId).and("patient.hospitalId").is(hospitalObjectId)),
 							Aggregation.sort(new Sort(Direction.ASC, "sequenceNo"))), 
 							PatientQueueCollection.class, PatientQueue.class).getMappedResults();
 					if(response != null && !response.isEmpty())

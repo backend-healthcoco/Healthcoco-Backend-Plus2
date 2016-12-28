@@ -13,14 +13,6 @@ import com.dpdocter.enums.Type;
 @Document(collection = "clinic_contact_us_cl")
 public class ClinicContactUsCollection extends GenericCollection {
 
-	public Date getContactLaterOnDate() {
-		return contactLaterOnDate;
-	}
-
-	public void setContactLaterOnDate(Date contactLaterOnDate) {
-		this.contactLaterOnDate = contactLaterOnDate;
-	}
-
 	@Id
 	private ObjectId id;
 	@Field
@@ -133,5 +125,22 @@ public class ClinicContactUsCollection extends GenericCollection {
 	public void setContactState(DoctorContactStateType contactState) {
 		this.contactState = contactState;
 	}
+
+	public Date getContactLaterOnDate() {
+		return contactLaterOnDate;
+	}
+
+	public void setContactLaterOnDate(Date contactLaterOnDate) {
+		this.contactLaterOnDate = contactLaterOnDate;
+	}
+
+	@Override
+	public String toString() {
+		return "ClinicContactUsCollection [id=" + id + ", locationName=" + locationName + ", emailAddress="
+				+ emailAddress + ", type=" + type + ", doctorId=" + doctorId + ", country=" + country + ", state="
+				+ state + ", city=" + city + ", contactLaterOnDate=" + contactLaterOnDate + ", clinicNumber="
+				+ clinicNumber + ", streetAddress=" + streetAddress + ", contactState=" + contactState + "]";
+	}
+
 
 }

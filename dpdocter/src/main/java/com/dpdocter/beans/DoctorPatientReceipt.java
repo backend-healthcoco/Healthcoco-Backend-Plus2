@@ -1,68 +1,47 @@
-package com.dpdocter.collections;
+package com.dpdocter.beans;
 
 import java.util.Date;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.beans.InvoiceIdWithAmount;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
+import com.dpdocter.response.InvoiceIdWithAmountResponse;
 
-@Document(collection = "doctor_patient_receipt_cl")
-public class DoctorPatientReceiptCollection extends GenericCollection{
+public class DoctorPatientReceipt {
 
-	@Id
-	private ObjectId id;
+	private String id;
 	
-	@Field
 	private String uniqueReceiptId;
 	
-	@Field
 	private ReceiptType receiptType; 
 	
-	@Indexed
-	private ObjectId doctorId;
+	private String doctorId;
 	
-	@Field
-	private ObjectId locationId;
+	private String locationId;
 	
-	@Field
-	private ObjectId hospitalId;
+	private String hospitalId;
 	
-	@Field
-	private ObjectId patientId;
+	private String patientId;
 	
-	@Field
 	private ModeOfPayment modeOfPayment;
 	
-	@Field
-	private List<InvoiceIdWithAmount> invoiceIdsWithAmount;   
+	private List<InvoiceIdWithAmountResponse> invoiceIdsWithAmount;   
 	
-	@Field
 	private Double amountPaid;
 	
-	@Field
 	private Double remainingAdvanceAmount;
 	
-	@Field
 	private Double balanceAmount;
 	
-	@Field
 	private Date receivedDate;
 
-	@Field
 	private Boolean discarded = false;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -82,35 +61,35 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 		this.receiptType = receiptType;
 	}
 
-	public ObjectId getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getLocationId() {
+	public String getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(ObjectId locationId) {
+	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
 
-	public ObjectId getHospitalId() {
+	public String getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(ObjectId hospitalId) {
+	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	public ObjectId getPatientId() {
+	public String getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(ObjectId patientId) {
+	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
 
@@ -122,11 +101,11 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 		this.modeOfPayment = modeOfPayment;
 	}
 
-	public List<InvoiceIdWithAmount> getInvoiceIdsWithAmount() {
+	public List<InvoiceIdWithAmountResponse> getInvoiceIdsWithAmount() {
 		return invoiceIdsWithAmount;
 	}
 
-	public void setInvoiceIdsWithAmount(List<InvoiceIdWithAmount> invoiceIdsWithAmount) {
+	public void setInvoiceIdsWithAmount(List<InvoiceIdWithAmountResponse> invoiceIdsWithAmount) {
 		this.invoiceIdsWithAmount = invoiceIdsWithAmount;
 	}
 
@@ -172,11 +151,11 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 
 	@Override
 	public String toString() {
-		return "DoctorPatientReceiptCollection [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
+		return "DoctorPatientReceipt [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
 				+ receiptType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", invoiceIdsWithAmount="
-				+ invoiceIdsWithAmount + ", amountPaid=" + amountPaid + ", remainingAdvanceAmount="
-				+ remainingAdvanceAmount + ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate
-				+ ", discarded=" + discarded + "]";
+				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", invoiceIdsWithAmount=" + invoiceIdsWithAmount
+				+ ", amountPaid=" + amountPaid + ", remainingAdvanceAmount=" + remainingAdvanceAmount
+				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
+				+ "]";
 	}
 }

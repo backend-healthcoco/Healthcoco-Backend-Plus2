@@ -1,9 +1,29 @@
 package com.dpdocter.services;
 
+import java.util.List;
+
+import com.dpdocter.DoctorPatientReceiptRequest;
+import com.dpdocter.beans.DoctorPatientInvoice;
+import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 
 public interface BillingService {
 
 	InvoiceAndReceiptInitials updateInitials(InvoiceAndReceiptInitials request);
+
+	DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request);
+
+	List<DoctorPatientInvoice> getInvoices(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded);
+
+	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
+
+	DoctorPatientReceipt addEditReceipt(DoctorPatientReceiptRequest request);
+
+	List<DoctorPatientReceipt> getReceipts(int page, int size, String doctorId, String locationId, String hospitalId,
+			String patientId, String updatedTime, Boolean discarded);
+
+	DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded);
+
+	Double getAvailableAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 }

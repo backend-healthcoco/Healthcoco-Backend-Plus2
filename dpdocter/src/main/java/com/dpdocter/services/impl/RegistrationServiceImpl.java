@@ -1000,10 +1000,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 //			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 //				criteria.and("doctorId").is(doctorObjectId);
 //			}
-			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId, userId)) {
+//			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId, userId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId).and("userId")
 						.is(userObjectId);
-			}
+//			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
@@ -1040,6 +1040,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				 */
 
 				registeredPatientDetails = new RegisteredPatientDetails();
+				patientCard.setId(patientCard.getUserId());
+				
+				BeanUtil.map(patientCard, patientCard.getUser());
+				patientCard.setUserId(patientCard.getUserId());
+				patientCard.setId(patientCard.getUserId());
 				BeanUtil.map(patientCard, registeredPatientDetails);
 				BeanUtil.map(patientCard.getUser(), registeredPatientDetails);
 				registeredPatientDetails.setImageUrl(patientCard.getImageUrl());

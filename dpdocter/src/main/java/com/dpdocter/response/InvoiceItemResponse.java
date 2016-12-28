@@ -1,16 +1,22 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
-import org.bson.types.ObjectId;
-
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.Tax;
+import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
-public class InvoiceItems {
+public class InvoiceItemResponse {
 
-	private ObjectId doctorId;
+	private String itemId;
+	
+	private String doctorId;
+	
+	private String doctorName;
 	
 	private String name;
 	
-	private String type;// = [SERVICE || PRODUCT] 
+	private InvoiceItemType type; 
 	
 	private Quantity quantity;
 	
@@ -24,12 +30,28 @@ public class InvoiceItems {
 
 	private Double finalCost = 0.0;
 
-	public ObjectId getDoctorId() {
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
 	}
 
 	public String getName() {
@@ -40,11 +62,11 @@ public class InvoiceItems {
 		this.name = name;
 	}
 
-	public String getType() {
+	public InvoiceItemType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(InvoiceItemType type) {
 		this.type = type;
 	}
 
@@ -98,8 +120,8 @@ public class InvoiceItems {
 
 	@Override
 	public String toString() {
-		return "InvoiceItems [doctorId=" + doctorId + ", name=" + name + ", type=" + type + ", quantity=" + quantity
-				+ ", status=" + status + ", cost=" + cost + ", discount=" + discount + ", tax=" + tax + ", finalCost="
-				+ finalCost + "]";
-	}
+		return "InvoiceItemResponse [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName
+				+ ", name=" + name + ", type=" + type + ", quantity=" + quantity + ", status=" + status + ", cost="
+				+ cost + ", discount=" + discount + ", tax=" + tax + ", finalCost=" + finalCost + "]";
+	}	
 }
