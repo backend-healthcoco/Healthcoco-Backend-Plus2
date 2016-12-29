@@ -952,6 +952,9 @@ public interface PathProxy {
 		public static final String DELETE_INVOICE = "/invoice/{invoiceId}/delete";
 
 		public static final String DELETE_RECEIPT = "/receipt/{receiptId}/delete";
+		
+		public static final String ADD_INVOICE_AND_PAY = "/invoice/addAndPay";
+		
 
 	}
 

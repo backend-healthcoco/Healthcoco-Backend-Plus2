@@ -179,4 +179,22 @@ public class BillingApi {
 		response.setData(doctorPatientInvoice);
 		return response;
 	}
+
+//	@Path(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
+//	@POST
+//	@ApiOperation(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY, notes = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
+//	public Response<DoctorPatientInvoice> addEditInvoice(DoctorPatientInvoice request) {
+//		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()) ||
+//				request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
+//			logger.warn("Invalid Input");
+//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//		}
+//
+//		DoctorPatientInvoice doctorPatientInvoice = billingService.addEditInvoice(request);
+//		
+//		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
+//		response.setData(doctorPatientInvoice);
+//		return response;
+//	}
+	
 }
