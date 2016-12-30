@@ -943,7 +943,7 @@ public interface PathProxy {
 
 		public static final String ADD_EDIT_RECEIPT = "/receipt/add";
 		
-		public static final String GET_INVOICES = "/invoice";
+		public static final String GET_INVOICES = "/invoice/{type}";
 
 		public static final String GET_AVAILABLE_ADVANCE_AMOUNT = "/advanceAmount/{locationId}/{hospitalId}/{patientId}";
 		

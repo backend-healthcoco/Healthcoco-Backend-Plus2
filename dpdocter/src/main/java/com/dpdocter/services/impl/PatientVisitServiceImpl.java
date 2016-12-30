@@ -955,7 +955,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		// }
 		// }
 		// }
-		if (patientVisitLookupResponse.getTreatmentId() != null) {
+		if (patientVisitLookupResponse.getTreatmentId() != null && !patientVisitLookupResponse.getTreatmentId().isEmpty()) {
 			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository
 					.findByIds(patientVisitLookupResponse.getTreatmentId());
 			String treatments = "";

@@ -925,7 +925,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						response = new Appointment();
 						BeanUtil.map(appointmentCollection, response);
 						BeanUtil.map(patientCard.getUser(), patientCard);
-						BeanUtil.map(patientCard, patientCard);
 						patientCard.setUserId(patientCard.getUserId());
 						patientCard.setId(patientCard.getUserId());
 						patientCard.setColorCode(patientCard.getUser().getColorCode());
@@ -1285,19 +1284,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
 					Appointment appointment = new Appointment();
 					PatientCard patient = null;
-					if (collection.getType().equals(AppointmentType.APPOINTMENT)) {
+					if (collection.getType().equals(AppointmentType.APPOINTMENT.getType())) {
+						System.out.println(collection);
 						List<PatientCard> patientCards = mongoTemplate.aggregate(
 								Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
 								.and("locationId").is(new ObjectId(collection.getLocationId())).and("hospitalId").is(new ObjectId(collection.getHospitalId()))), 
 								Aggregation.lookup("user_cl", "userId", "_id", "user"), 
 								Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
 						if(patientCards != null && !patientCards.isEmpty())patient = patientCards.get(0);
-						
+						BeanUtil.map(collection, appointment);
+						patient.setId(patient.getUserId());
+						if(patient.getUser() != null)patient.setColorCode(patient.getUser().getColorCode());
+						appointment.setPatient(patient);
 					}
-					BeanUtil.map(collection, appointment);
-					patient.setId(patient.getUserId());
-					if(patient.getUser() != null)patient.setColorCode(patient.getUser().getColorCode());
-					appointment.setPatient(patient);
 					if (collection.getDoctor() != null) {
 						appointment.setDoctorName(collection.getDoctor().getTitle()+" "+collection.getDoctor().getFirstName());
 					}

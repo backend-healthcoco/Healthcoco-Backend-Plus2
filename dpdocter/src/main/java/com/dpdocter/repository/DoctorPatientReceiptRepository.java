@@ -12,7 +12,7 @@ import com.dpdocter.collections.DoctorPatientReceiptCollection;
 
 public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPatientReceiptCollection, ObjectId>, PagingAndSortingRepository<DoctorPatientReceiptCollection, ObjectId>{
 
-	@Query("{'name': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'patientId': ?3, 'remainingAdvanceAmount': {'$gt': 0.0}, 'discarded': false}")
+	@Query("{'receiptType': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3, 'patientId': ?4, 'remainingAdvanceAmount': {'$gt': 0.0}, 'discarded': false}")
 	List<DoctorPatientReceiptCollection> findAvailableAdvanceReceipts(String name, ObjectId doctorId,
 			ObjectId locationId, ObjectId hospitalId, ObjectId patientId, Sort sort);
 

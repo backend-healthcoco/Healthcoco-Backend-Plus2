@@ -6,6 +6,8 @@ import com.dpdocter.DoctorPatientReceiptRequest;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
+import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
+import com.dpdocter.webservices.DoctorPatientInvoiceAndReceiptRequest;
 
 public interface BillingService {
 
@@ -13,7 +15,7 @@ public interface BillingService {
 
 	DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request);
 
-	List<DoctorPatientInvoice> getInvoices(int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded);
+	List<DoctorPatientInvoice> getInvoices(String type, int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded);
 
 	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
 
@@ -25,5 +27,7 @@ public interface BillingService {
 	DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded);
 
 	Double getAvailableAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
+
+	DoctorPatientInvoiceAndReceiptResponse addInvoiceAndPay(DoctorPatientInvoiceAndReceiptRequest request);
 
 }

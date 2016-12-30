@@ -23,6 +23,7 @@ import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.services.BillingService;
 
 import common.util.web.DPDoctorUtils;
@@ -78,7 +79,7 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_INVOICES)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_INVOICES, notes = PathProxy.BillingUrls.GET_INVOICES)
-	public Response<DoctorPatientInvoice> getInvoices(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DoctorPatientInvoice> getInvoices(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
@@ -88,7 +89,7 @@ public class BillingApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		List<DoctorPatientInvoice> doctorPatientInvoices = billingService.getInvoices(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded);
+		List<DoctorPatientInvoice> doctorPatientInvoices = billingService.getInvoices(type, page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded);
 		
 		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
 		response.setDataList(doctorPatientInvoices);
@@ -180,21 +181,21 @@ public class BillingApi {
 		return response;
 	}
 
-//	@Path(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
-//	@POST
-//	@ApiOperation(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY, notes = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
-//	public Response<DoctorPatientInvoice> addEditInvoice(DoctorPatientInvoice request) {
-//		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()) ||
-//				request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
-//			logger.warn("Invalid Input");
-//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-//		}
-//
-//		DoctorPatientInvoice doctorPatientInvoice = billingService.addEditInvoice(request);
-//		
-//		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
-//		response.setData(doctorPatientInvoice);
-//		return response;
-//	}
+	@Path(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
+	@POST
+	@ApiOperation(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY, notes = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
+	public Response<DoctorPatientInvoiceAndReceiptResponse> addInvoiceAndPay(DoctorPatientInvoiceAndReceiptRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()) ||
+				request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DoctorPatientInvoiceAndReceiptResponse doctorPatientInvoice = billingService.addInvoiceAndPay(request);
+		
+		Response<DoctorPatientInvoiceAndReceiptResponse> response = new Response<DoctorPatientInvoiceAndReceiptResponse>();
+		response.setData(doctorPatientInvoice);
+		return response;
+	}
 	
 }
