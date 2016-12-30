@@ -522,7 +522,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 											.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-											.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
+											.append("treatments", new BasicDBObject("$push", "$treatments")))));
 
 			AggregationResults<PatientTreatmentResponse> groupResults = mongoTemplate.aggregate(aggregation,
 					PatientTreatmentCollection.class, PatientTreatmentResponse.class);
@@ -589,7 +589,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 									.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-									.append("treatments", new BasicDBObject("$addToSet", "$treatments")))));
+									.append("treatments", new BasicDBObject("$push", "$treatments")))));
 			response = mongoTemplate.aggregate(aggregation, PatientTreatmentCollection.class, PatientTreatment.class)
 					.getMappedResults();
 
@@ -685,7 +685,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 										.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-										.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+										.append("treatments", new BasicDBObject("$push", "$treatments")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -718,7 +718,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 										.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-										.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+										.append("treatments", new BasicDBObject("$push", "$treatments")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<PatientTreatmentResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -817,7 +817,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 										.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-										.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+										.append("treatments", new BasicDBObject("$push", "$treatments")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -850,7 +850,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 										.append("createdBy", new BasicDBObject("$first", "$createdBy"))
-										.append("treatments", new BasicDBObject("$addToSet", "$treatments")))),
+										.append("treatments", new BasicDBObject("$push", "$treatments")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<PatientTreatmentResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
