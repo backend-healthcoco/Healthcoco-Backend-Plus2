@@ -807,7 +807,7 @@ public class RegistrationApi {
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "type") String type) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}

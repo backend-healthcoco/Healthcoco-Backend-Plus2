@@ -71,6 +71,10 @@ public class DoctorClinicProfile {
 
 	private Integer noOfServices = 0;
 
+	private List<Feedback> feedbacks;
+
+	private Integer noOfFeedbacks = 0;
+
 	private List<Role> roles;
 
 	private Boolean isDoctorListed = true;
@@ -361,21 +365,20 @@ public class DoctorClinicProfile {
 		this.rankingCount = rankingCount;
 	}
 
-	@Override
-	public String toString() {
-		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
-				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber="
-				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
-				+ revisitConsultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
-				+ workingSchedules + ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
-				+ noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
-				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
-				+ isHomeServiceAvailable + ", locality=" + locality + ", timeZone=" + timeZone
-				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", roles="
-				+ roles + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount + "]";
+	public List<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(List<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public Integer getNoOfFeedbacks() {
+		return noOfFeedbacks;
+	}
+
+	public void setNoOfFeedbacks(Integer noOfFeedbacks) {
+		this.noOfFeedbacks = noOfFeedbacks;
 	}
 
 	public Boolean getIsSendBirthdaySMS() {
@@ -392,5 +395,24 @@ public class DoctorClinicProfile {
 
 	public void setIsDoctorRecommended(Boolean isDoctorRecommended) {
 		this.isDoctorRecommended = isDoctorRecommended;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", clinicAddress=" + clinicAddress + ", locationName=" + locationName
+				+ ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", appointmentBookingNumber="
+				+ appointmentBookingNumber + ", consultationFee=" + consultationFee + ", revisitConsultationFee="
+				+ revisitConsultationFee + ", appointmentSlot=" + appointmentSlot + ", workingSchedules="
+				+ workingSchedules + ", facility=" + facility + ", images=" + images + ", logoUrl=" + logoUrl
+				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", noOfReviews=" + noOfReviews + ", noOfRecommenations="
+				+ noOfRecommenations + ", isClinic=" + isClinic + ", isLab=" + isLab + ", isOnlineReportsAvailable="
+				+ isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited + ", isHomeServiceAvailable="
+				+ isHomeServiceAvailable + ", locality=" + locality + ", timeZone=" + timeZone
+				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", feedbacks="
+				+ feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles + ", isDoctorListed="
+				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
+				+ ", isDoctorRecommended=" + isDoctorRecommended + "]";
 	}
 }

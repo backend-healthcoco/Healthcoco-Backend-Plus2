@@ -27,6 +27,8 @@ import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
+import com.dpdocter.beans.Feedback;
+import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MedicalCouncil;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Role;
@@ -36,6 +38,8 @@ import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
+import com.dpdocter.collections.FeedbackCollection;
+import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
@@ -484,6 +488,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			// set clinic profile details
 			doctorProfile.setClinicProfile(clinicProfile);
+			
+			
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -542,6 +548,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setTreatmentServiceCosts(treatmentServicesCosts);
 			doctorClinic.setNoOfServices(
 					(int) mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
+
+			
+			List<Feedback> feedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(criteria.and("isVisible").is(true)),Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), 
+					Aggregation.skip((0) * 5),
+					Aggregation.limit(5)),FeedbackCollection.class, Feedback.class).getMappedResults();
+			doctorClinic.setFeedbacks(feedbacks);
+			doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
 
 			List<Role> roles = null;
 

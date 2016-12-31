@@ -9,10 +9,16 @@ import com.dpdocter.enums.UserState;
 public class User {
     private String id;
 
+    private String locationId;
+
+    private String hospitalId;
+
     private String title;
 
     private String firstName;
 
+    private String localPatientName;
+    
     private String userName;
 
     private String emailAddress;
@@ -187,14 +193,12 @@ public class User {
 		this.specialities = specialities;
 	}
 
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName=" + userName
-				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob="
-				+ dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber=" + secPhoneNumber + ", isPartOfClinic="
-				+ isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode="
-				+ colorCode + ", userState=" + userState + ", userUId=" + userUId + ", specialities=" + specialities
-				+ "]";
+	public String getLocalPatientName() {
+		return localPatientName;
+	}
+
+	public void setLocalPatientName(String localPatientName) {
+		this.localPatientName = localPatientName;
 	}
 
 	public String getCountryCode() {
@@ -203,6 +207,33 @@ public class User {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", title=" + title
+				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", userName=" + userName
+				+ ", emailAddress=" + emailAddress + ", countryCode=" + countryCode + ", mobileNumber=" + mobileNumber
+				+ ", gender=" + gender + ", dob=" + dob + ", bloodGroup=" + bloodGroup + ", secPhoneNumber="
+				+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", userUId=" + userUId
+				+ ", specialities=" + specialities + "]";
 	}
 
 }

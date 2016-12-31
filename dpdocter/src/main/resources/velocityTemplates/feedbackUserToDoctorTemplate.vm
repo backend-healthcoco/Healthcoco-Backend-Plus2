@@ -19,7 +19,7 @@
 
         <div>
          <p style="color:#2c3335;font-size:15px;">Hello ${fName},<br><br>
-         Your feedback with reference to ${doctorName} and ${clinicName} has been recorded.
+         Your feedback with reference to ${doctorName} ${clinicName} has been recorded.
          Your Issue ID is: ${uniqueFeedbackId}<br><br>We are working to solve your issues as soon as we can.
 
           <br><br>Stay Healthy and Happy,<br>Team Healthcoco.

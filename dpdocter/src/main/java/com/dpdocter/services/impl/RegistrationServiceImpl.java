@@ -32,6 +32,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -2463,7 +2465,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (feedbackCollection != null
 					&& (feedbackCollection.getType().getType().equals(FeedbackType.APPOINTMENT.getType())
 							|| feedbackCollection.getType().getType().equals(FeedbackType.PRESCRIPTION.getType())
-							|| feedbackCollection.getType().getType().equals(FeedbackType.REPORT.getType()))) {
+							|| feedbackCollection.getType().getType().equals(FeedbackType.REPORT.getType())
+							|| feedbackCollection.getType().getType().equals(FeedbackType.DOCTOR.getType())
+							|| feedbackCollection.getType().getType().equals(FeedbackType.LAB.getType()))) {
+				
 				if (feedbackCollection.getType().getType().equals(FeedbackType.PRESCRIPTION.getType())
 						&& request.getResourceId() != null) {
 					PrescriptionCollection prescriptionCollection = prescriptionRepository
@@ -2493,21 +2498,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 						recordsCollection.setUpdatedTime(new Date());
 						recordsRepository.save(recordsCollection);
 					}
-				} else {
-					feedbackCollection.setIsVisible(true);
 				}
-				DoctorClinicProfileCollection doctorClinicProfileCollection = doctorClinicProfileRepository
-						.findByDoctorIdLocationId(feedbackCollection.getDoctorId(), feedbackCollection.getLocationId());
-				if (doctorClinicProfileCollection != null) {
-					if (feedbackCollection.getIsRecommended())
-						doctorClinicProfileCollection
-								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() + 1);
-					else
-						doctorClinicProfileCollection
-								.setNoOfRecommenations(doctorClinicProfileCollection.getNoOfRecommenations() - 1);
-					doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				}
-
+				
+				
 				UserCollection patient = null;
 				PatientCollection patientCollection = new PatientCollection();
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getUserId()))
@@ -2526,23 +2519,32 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 				feedbackCollection.setCreatedBy(patientCollection.getLocalPatientName());
 				feedbackCollection = feedbackRepository.save(feedbackCollection);
-
+				BeanUtil.map(feedbackCollection, response);
+				if (patientCollection != null && patient != null) {
+					User user = new User();
+					BeanUtil.map(patient, user);
+					BeanUtil.map(patientCollection, user);
+					user.setImageUrl(getFinalImageURL(user.getImageUrl()));
+					user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+					response.setPatient(user);
+				}
 				if (patient != null && doctor != null && locationCollection != null
 						&& patient.getEmailAddress() != null) {
 					String body = mailBodyGenerator.generateFeedbackEmailBody(patientCollection.getLocalPatientName(),
-							doctor.getTitle() + " " + doctor.getFirstName(), locationCollection.getLocationName(),
+							(doctor != null ? doctor.getTitle() + " " + doctor.getFirstName()+" and" :""), locationCollection.getLocationName(),
 							feedbackCollection.getUniqueFeedbackId(), "feedbackUserToDoctorTemplate.vm");
 					mailService.sendEmail(patient.getEmailAddress(), addFeedbackForDoctorSubject, body, null);
 				}
 			} else {
+				feedbackCollection = feedbackRepository.save(feedbackCollection);
+				BeanUtil.map(feedbackCollection, response);
 				if (feedbackCollection.getEmailAddress() != null) {
 					String body = mailBodyGenerator.generateFeedbackEmailBody(feedbackCollection.getCreatedBy(), null,
 							null, null, "feedbackTemplate.vm");
 					mailService.sendEmail(feedbackCollection.getEmailAddress(), addFeedbackSubject, body, null);
 				}
 			}
-			BeanUtil.map(feedbackCollection, response);
-
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -2660,98 +2662,76 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String updatedTime, String type) {
 		List<Feedback> response = null;
 		try {
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
 			long createdTimeStamp = Long.parseLong(updatedTime);
-			List<FeedbackCollection> feedbackCollections = null;
-			if (DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
-				// THis is for ADMIN so isVisible = false
-				if (DPDoctorUtils.anyStringEmpty(type)) {
-					if (size > 0)
-						feedbackCollections = feedbackRepository.find(new Date(createdTimeStamp),
-								new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-					else
-						feedbackCollections = feedbackRepository.find(new Date(createdTimeStamp),
-								new Sort(Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						feedbackCollections = feedbackRepository.findByType(type, new Date(createdTimeStamp),
-								new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-					else
-						feedbackCollections = feedbackRepository.findByType(type, new Date(createdTimeStamp),
-								new Sort(Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)) {
-					if (size > 0)
-						feedbackCollections = feedbackRepository.find(doctorObjectId, true, new Date(createdTimeStamp),
-								new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-					else
-						feedbackCollections = feedbackRepository.find(doctorObjectId, true, new Date(createdTimeStamp),
-								new Sort(Direction.DESC, "createdTime"));
-				} else {
-					if (size > 0)
-						feedbackCollections = feedbackRepository.find(doctorObjectId, locationObjectId,
-								hospitalObjectId, true, new Date(createdTimeStamp),
-								new PageRequest(page, size, Sort.Direction.DESC, "createdTime"));
-					else
-						feedbackCollections = feedbackRepository.find(doctorObjectId, locationObjectId,
-								hospitalObjectId, true, new Date(createdTimeStamp),
-								new Sort(Direction.DESC, "createdTime"));
-				}
+			
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+					Fields.field("type", "$type"), 
+					Fields.field("appType", "$appType"),
+					Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("resourceId", "$resourceId"), Fields.field("userId", "$userId"),
+					Fields.field("explanation", "$explanation"), Fields.field("deviceType", "$deviceType"),
+					Fields.field("deviceInfo", "$deviceInfo"), Fields.field("isVisible", "$isVisible"),
+					Fields.field("isRecommended", "$isRecommended"),
+					Fields.field("uniqueFeedbackId", "$uniqueFeedbackId"), Fields.field("emailAddress", "$emailAddress"),
+					Fields.field("isUserAnonymous", "$isUserAnonymous"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), 
+					Fields.field("patient.id", "$user.id"),
+					Fields.field("patient.locationId", "$locationId"),
+					Fields.field("patient.hospitalId", "$hospitalId"),
+					Fields.field("patient.firstName", "$user.firstName"), 
+					Fields.field("patient.localPatientName", "$patientCard.localPatientName"),
+					Fields.field("patient.emailAddress", "$user.emailAddress"),
+					Fields.field("patient.countryCode", "$user.countryCode"),
+					Fields.field("patient.mobileNumber", "$user.mobileNumber"),
+					Fields.field("patient.gender", "$patientCard.gender"),
+					Fields.field("patient.dob", "$patientCard.dob"),
+					Fields.field("patient.imageUrl", "$patientCard.imageUrl"),
+					Fields.field("patient.thumbnailUrl", "$patientCard.thumbnailUrl"),
+					Fields.field("patient.colorCode", "$patientCard.colorCode"),
+					Fields.field("patient.userUId", "$patientCard.userUId"),
+					Fields.field("patient.bloodGroup", "$patientCard.bloodGroup")));
+	
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("isVisible").is(true);
+			
+			Criteria patientCriteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(locationId)){
+				criteria.and("locationId").is(new ObjectId(locationId));
+				patientCriteria.and("patientCard.locationId").is(new ObjectId(locationId));
 			}
-			if (feedbackCollections != null) {
-				response = new ArrayList<Feedback>();
-				for (FeedbackCollection feedbackCollection : feedbackCollections) {
-					Feedback feedback = new Feedback();
-					BeanUtil.map(feedbackCollection, feedback);
-					Criteria criteria = new Criteria();
-					/*
-					 * if
-					 * (!DPDoctorUtils.anyStringEmpty(feedback.getDoctorId())) {
-					 * criteria.and("doctorId").is(new
-					 * ObjectId(feedback.getDoctorId())); }
-					 */
-					if (!DPDoctorUtils.anyStringEmpty(feedback.getLocationId(), feedback.getHospitalId(),
-							feedback.getUserId())) {
-						criteria.and("locationId").is(new ObjectId(feedback.getLocationId())).and("hospitalId")
-								.is(new ObjectId(feedback.getHospitalId())).and("userId")
-								.is(new ObjectId(feedback.getUserId()));
-					}
-					PatientCard patientCard = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(criteria),
-									Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-									Aggregation.lookup("patient_group_cl", "userId", "patientId",
-											"patientGroupCollections"),
-									Aggregation.sort(Direction.DESC, "createdTime")),
-							PatientCollection.class, PatientCard.class).getUniqueMappedResult();
-					/*
-					 * UserCollection userCollection =
-					 * userRepository.findOne(new
-					 * ObjectId(feedback.getUserId())); PatientCollection
-					 * patientCollection =
-					 * patientRepository.findByUserIdLocationIdAndHospitalId(
-					 * feedbackCollection.getUserId(),
-					 * feedbackCollection.getLocationId(),
-					 * feedbackCollection.getHospitalId());
-					 */
-					if (patientCard != null && patientCard.getUser() != null) {
-						User user = new User();
-						BeanUtil.map(patientCard.getUser(), user);
-						BeanUtil.map(patientCard, user);
-						user.setImageUrl(getFinalImageURL(user.getImageUrl()));
-						user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
-						feedback.setPatient(user);
-					}
-					response.add(feedback);
-				}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)){
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
+				patientCriteria.and("patientCard.hospitalId").is(new ObjectId(hospitalId));
 			}
+			if(!DPDoctorUtils.anyStringEmpty(type))
+				criteria.and("type").is(type);
+			
+			if(size > 0)response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"), Aggregation.unwind("patientCard"),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.match(patientCriteria),projectList,
+							Aggregation.skip((page) * size), Aggregation.limit(size),
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), 
+					FeedbackCollection.class, Feedback.class).getMappedResults();
+			else response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"), Aggregation.unwind("patientCard"),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.match(patientCriteria),projectList,
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), 
+					FeedbackCollection.class, Feedback.class).getMappedResults();
+			
+				for (Feedback feedbackCollection : response) {
+					if (feedbackCollection.getPatient() != null) {
+						feedbackCollection.getPatient().setImageUrl(getFinalImageURL(feedbackCollection.getPatient().getImageUrl()));
+						feedbackCollection.getPatient().setThumbnailUrl(getFinalImageURL(feedbackCollection.getPatient().getThumbnailUrl()));
+//						feedbackCollection.setPatient(user);
+					}
+//					response.add(feedback);
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

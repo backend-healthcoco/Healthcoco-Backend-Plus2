@@ -42,6 +42,8 @@ public class Feedback extends GenericCollection {
     
     private Boolean isUserAnonymous = false;
     
+//    private Patient patientCard;
+    
     public String getId() {
 	return id;
     }
@@ -178,6 +180,14 @@ public class Feedback extends GenericCollection {
 		this.isUserAnonymous = isUserAnonymous;
 	}
 
+//	public Patient getPatientCard() {
+//		return patientCard;
+//	}
+//
+//	public void setPatientCard(Patient patientCard) {
+//		this.patientCard = patientCard;
+//	}
+
 	@Override
 	public String toString() {
 		return "Feedback [id=" + id + ", type=" + type + ", appType=" + appType + ", resourceId=" + resourceId
@@ -187,4 +197,5 @@ public class Feedback extends GenericCollection {
 				+ ", uniqueFeedbackId=" + uniqueFeedbackId + ", emailAddress=" + emailAddress + ", isUserAnonymous="
 				+ isUserAnonymous + "]";
 	}
+
 }
