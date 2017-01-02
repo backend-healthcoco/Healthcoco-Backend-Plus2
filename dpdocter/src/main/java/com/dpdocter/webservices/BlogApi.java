@@ -65,4 +65,49 @@ public class BlogApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BlogsUrls.GET__MOST_LIKES_OR_VIEWED_BLOGS)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.GET__MOST_LIKES_OR_VIEWED_BLOGS, notes = PathProxy.BlogsUrls.GET__MOST_LIKES_OR_VIEWED_BLOGS)
+	public Response<Blog> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
+			@QueryParam(value = "title") String title, @QueryParam(value = "forMostLike") boolean forMostLike) {
+		List<Blog> blogresponse = blogService.getMostLikedOrViewedBlogs(size, page, category, title, userId,
+				forMostLike);
+		Response<Blog> response = new Response<Blog>();
+		response.setDataList(blogresponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.BlogsUrls.GET_COUNT)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_COUNT, notes = PathProxy.BlogsUrls.GET_COUNT)
+	public Response<Long> countBlogs(@QueryParam("category") String category, @QueryParam("title") String title) {
+		Long count = blogService.countBlogs(category, title);
+		Response<Long> response = new Response<Long>();
+		response.setData(count);
+		return response;
+	}
+
+	@Path(value = PathProxy.BlogsUrls.ADD_EDIT_FEVOURITE_BLOGS)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.ADD_EDIT_FEVOURITE_BLOGS, notes = PathProxy.BlogsUrls.ADD_EDIT_FEVOURITE_BLOGS)
+	public Response<Boolean> addFevouriteBlogs(@PathParam("blogId") String blogId, @PathParam("userId") String userId) {
+		Boolean added = blogService.addFevouriteBlog(blogId, userId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(added);
+		return response;
+	}
+
+	@Path(value = PathProxy.BlogsUrls.GET_FEVOURITE_BLOGS)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_FEVOURITE_BLOGS, notes = PathProxy.BlogsUrls.GET_FEVOURITE_BLOGS)
+	public Response<Object> getFevouriteBlogs(@QueryParam(value = "size") int size,
+			@QueryParam(value = "page") int page, @QueryParam(value = "userId") String userId,
+			@QueryParam(value = "category") String category, @QueryParam(value = "title") String title) {
+		List<Blog> blogList = blogService.getFevouriteBlogs(size, page, category, userId, title);
+		Response<Object> response = new Response<Object>();
+		response.setDataList(blogList);
+		return response;
+	}
+
 }

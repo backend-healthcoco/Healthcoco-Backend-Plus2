@@ -28,6 +28,16 @@ public class Blog extends GenericCollection {
 
 	private Boolean discarded = false;
 
+	private Boolean isFavourite = false;
+
+	public Boolean getIsFavourite() {
+		return isFavourite;
+	}
+
+	public void setIsFavourite(Boolean isFavourite) {
+		this.isFavourite = isFavourite;
+	}
+
 	public String getUserId() {
 		return userId;
 	}
