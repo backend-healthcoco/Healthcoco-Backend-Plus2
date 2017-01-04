@@ -23,6 +23,8 @@ public class Prescription extends GenericCollection {
 
 	private List<PrescriptionItemDetail> items;
 
+	private List<TestAndRecordData> tests;
+	
 	private Boolean inHistory = false;
 
 	private Boolean discarded = false;
@@ -179,13 +181,22 @@ public class Prescription extends GenericCollection {
 		this.fromDate = fromDate;
 	}
 
+	public List<TestAndRecordData> getTests() {
+		return tests;
+	}
+
+	public void setTests(List<TestAndRecordData> tests) {
+		this.tests = tests;
+	}
+
 	@Override
 	public String toString() {
 		return "Prescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", inHistory="
-				+ inHistory + ", discarded=" + discarded + ", diagnosticTests=" + diagnosticTests + ", advice=" + advice
-				+ ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable=" + isFeedbackAvailable
-				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", items=" + items + ", tests=" + tests
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", diagnosticTests=" + diagnosticTests
+				+ ", advice=" + advice + ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable="
+				+ isFeedbackAvailable + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate
+				+ "]";
 	}
 
 }

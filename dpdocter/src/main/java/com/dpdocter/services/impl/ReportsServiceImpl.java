@@ -26,7 +26,6 @@ import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.Prescription;
-import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.TestAndRecordData;

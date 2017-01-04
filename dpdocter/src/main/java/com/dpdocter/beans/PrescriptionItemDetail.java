@@ -16,7 +16,7 @@ public class PrescriptionItemDetail {
     private List<DrugDirection> direction;
 
     private String instructions;
-
+    
 	public Drug getDrug() {
 		return drug;
 	}
@@ -68,6 +68,7 @@ public class PrescriptionItemDetail {
 	@Override
 	public String toString() {
 		return "PrescriptionItemDetail [drug=" + drug + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", instructions=" + instructions
+				+ "]";
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Transient;
 
 import com.dpdocter.request.AppointmentRequest;
 
@@ -20,6 +21,9 @@ public class PrescriptionItem {
 
 	private String instructions;
 
+	@Transient
+	private Long arrayIndex1;
+	
 	public ObjectId getDrugId() {
 		return drugId;
 	}
@@ -68,9 +72,19 @@ public class PrescriptionItem {
 		this.instructions = instructions;
 	}
 
+	public Long getArrayIndex1() {
+		return arrayIndex1;
+	}
+
+	public void setArrayIndex1(Long arrayIndex1) {
+		this.arrayIndex1 = arrayIndex1;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionItem [drugId=" + drugId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + "]";
+				+ dosageTime + ", direction=" + direction + ", instructions=" + instructions + ", arrayIndex1="
+				+ arrayIndex1 + "]";
 	}
+
 }
