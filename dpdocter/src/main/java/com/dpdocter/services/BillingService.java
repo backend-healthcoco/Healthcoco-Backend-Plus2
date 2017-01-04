@@ -30,4 +30,6 @@ public interface BillingService {
 
 	DoctorPatientInvoiceAndReceiptResponse addInvoiceAndPay(DoctorPatientInvoiceAndReceiptRequest request);
 
+	InvoiceAndReceiptInitials getInitials(String locationId);
+
 }

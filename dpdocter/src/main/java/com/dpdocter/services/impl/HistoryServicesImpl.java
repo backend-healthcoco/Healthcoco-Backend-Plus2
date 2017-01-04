@@ -39,7 +39,6 @@ import com.dpdocter.beans.MedicalData;
 import com.dpdocter.beans.MedicalHistoryHandler;
 import com.dpdocter.beans.PersonalHistory;
 import com.dpdocter.beans.Prescription;
-import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.Records;

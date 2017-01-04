@@ -66,6 +66,29 @@ public class BillingServiceImpl implements BillingService {
 	MongoTemplate mongoTemplate;
 	
 	@Override
+	public InvoiceAndReceiptInitials getInitials(String locationId) {
+		InvoiceAndReceiptInitials response = null;
+		try{
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			if(locationCollection != null){
+				response = new InvoiceAndReceiptInitials();
+				response.setLocationId(locationId);
+				response.setInvoiceInitial(locationCollection.getInvoiceInitial());
+				response.setReceiptInitial(locationCollection.getReceiptInitial());
+			}else{
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid location Id");
+			}
+		}catch(BusinessException be){
+			logger.error(be);
+			throw be;
+		}catch(Exception e){
+			logger.error("Error while updating billing initials"+e);
+			throw new BusinessException(ServiceError.Unknown, "Error while updating billing initials"+e);
+		}
+		return response;
+	}
+	
+	@Override
 	public InvoiceAndReceiptInitials updateInitials(InvoiceAndReceiptInitials request) {
 		InvoiceAndReceiptInitials response = null;
 		try{

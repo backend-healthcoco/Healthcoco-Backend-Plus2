@@ -139,7 +139,11 @@ public class MailServiceImpl implements MailService {
 	    if (mailAttachments != null && !mailAttachments.isEmpty()) {
 		for (MailAttachment mailAttachment : mailAttachments) {
 			mimeMessage.setFileName(mailAttachment.getAttachmentName());
-		    DataSource ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
+			DataSource ds;
+			if (mailAttachment.getFileSystemResource() == null)
+			    ds = new ByteArrayDataSource(mailAttachment.getInputStream(), "application/octet-stream");
+			else
+			    ds = new ByteArrayDataSource(new FileInputStream(mailAttachment.getFileSystemResource().getFile()), "application/octet-stream");
 		    
 			MimeBodyPart filePart = new MimeBodyPart();
 		    

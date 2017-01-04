@@ -43,6 +43,22 @@ public class BillingApi {
 	@Autowired
 	private BillingService billingService;
 
+	@Path(value = PathProxy.BillingUrls.GET_INVOICE_RECEIPT_INITIALS)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_INVOICE_RECEIPT_INITIALS, notes = PathProxy.BillingUrls.GET_INVOICE_RECEIPT_INITIALS)
+	public Response<InvoiceAndReceiptInitials> getInitials(@PathParam("locationId") String locationId) {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		InvoiceAndReceiptInitials invoiceAndReceiptInitials = billingService.getInitials(locationId);
+		
+		Response<InvoiceAndReceiptInitials> response = new Response<InvoiceAndReceiptInitials>();
+		response.setData(invoiceAndReceiptInitials);
+		return response;
+	}
+
 	@Path(value = PathProxy.BillingUrls.UPDATE_INVOICE_RECEIPT_INITIALS)
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.UPDATE_INVOICE_RECEIPT_INITIALS, notes = PathProxy.BillingUrls.UPDATE_INVOICE_RECEIPT_INITIALS)

@@ -754,7 +754,7 @@ public class RegistrationApi {
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_FEEDBACK, notes = PathProxy.RegistrationUrls.ADD_FEEDBACK)
 	public Response<Feedback> addFeedback(Feedback request) {
-		if (request == null) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getExplanation())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
