@@ -252,6 +252,12 @@ public interface PathProxy {
 		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PS = "/ps/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
+		
+		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
+		
+		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";

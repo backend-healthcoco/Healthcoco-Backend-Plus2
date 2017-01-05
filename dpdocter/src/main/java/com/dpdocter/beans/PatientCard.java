@@ -2,6 +2,7 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;

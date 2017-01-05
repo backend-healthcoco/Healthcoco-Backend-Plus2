@@ -29,6 +29,8 @@ public class ClinicDoctorResponse {
     private String mobileNumber;
 
     private String registerNumber;
+    
+    private String colorCode;
 
     public String getUserId() {
 	return userId;
@@ -118,11 +120,19 @@ public class ClinicDoctorResponse {
 		this.registerNumber = registerNumber;
 	}
 
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName + ", role="
 				+ role + ", isActivate=" + isActivate + ", lastSession=" + lastSession + ", discarded=" + discarded
 				+ ", userState=" + userState + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", registerNumber=" + registerNumber + "]";
+				+ ", registerNumber=" + registerNumber + ", colorCode=" + colorCode + "]";
 	}
 }

@@ -2292,6 +2292,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						// DoctorCollection doctorCollection =
 						// doctorRepository.findByUserId(userCollection.getId());
 						BeanUtil.map(doctorClinicProfileLookupResponse.getUser(), clinicDoctorResponse);
+						
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
@@ -2347,6 +2348,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								roles.add(roleObj);
 							}
 							clinicDoctorResponse.setRole(roles);
+							clinicDoctorResponse.setColorCode(doctorClinicProfileLookupResponse.getUser().getColorCode());
 							response.add(clinicDoctorResponse);
 						}
 					}

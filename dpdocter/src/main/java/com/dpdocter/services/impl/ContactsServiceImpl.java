@@ -552,14 +552,13 @@ public class ContactsServiceImpl implements ContactsService {
 					//UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
 					/*List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
 							.findByPatientId(patientCollection.getUserId());*/
-					
+
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 							new BeanToPropertyValueTransformer("groupId"));
 					patientCard.setPatientGroupCollections(null);
 					RegisteredPatientDetails registeredPatientDetail = new RegisteredPatientDetails();
 					if (patientCard.getUser() != null) {
-
 						BeanUtil.map(patientCard.getUser(), registeredPatientDetail);
 						if (patientCard.getUser().getId() != null) {
 							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
@@ -570,13 +569,12 @@ public class ContactsServiceImpl implements ContactsService {
 					Patient patient = new Patient();
 					BeanUtil.map(patientCard, patient);
 					patient.setPatientId(patientCard.getUser().getId().toString());
-					
-
 					ObjectId referredBy = null;
 					if(patientCard.getReferredBy() != null)
 					{
 						referredBy = new ObjectId(patientCard.getReferredBy());
 					}
+
 					patientCard.setReferredBy(null);
 					BeanUtil.map(patientCard, registeredPatientDetail);
 
@@ -606,7 +604,7 @@ public class ContactsServiceImpl implements ContactsService {
 							patientCard.getUser().getId().toString()));
 					registeredPatientDetail.setPatient(patient);
 					registeredPatientDetail.setAddress(patientCard.getAddress());
-					
+
 
 					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 						groups = mongoTemplate
@@ -631,6 +629,7 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setCreatedTime(patientCard.getCreatedTime());
 					registeredPatientDetail.setPID(patientCard.getPID());
 					registeredPatientDetail.setMobileNumber(patientCard.getUser().getMobileNumber());
+
 					if (patientCard.getDob() != null) {
 						registeredPatientDetail.setDob(patientCard.getDob());
 					}

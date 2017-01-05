@@ -24,6 +24,7 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
@@ -64,8 +65,10 @@ import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.OphthalmologyService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.services.impl.OphthalmologyServiceImpl;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -95,6 +98,9 @@ public class ClinicalNotesApi {
 
 	@Autowired
 	private OTPService otpService;
+	
+	@Autowired
+	private OphthalmologyService ophthalmologyService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -1017,5 +1023,55 @@ public class ClinicalNotesApi {
 	return response;
     }
 
+    @Path(value = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION)
+    @POST
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.ADD_EDIT_EYE_OBSERVATION)
+    public Response<EyeObservation> addEditEyeObservation(EyeObservation eyeObservation)
+    {
+    	if(eyeObservation == null)
+    	{
+    		throw new BusinessException(ServiceError.InvalidInput);
+    	}
+    	eyeObservation = ophthalmologyService.addEditEyeObservation(eyeObservation);
+    	Response<EyeObservation> response = new Response<>();
+    	response.setData(eyeObservation);
+    	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION)
+    @DELETE
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION, notes = PathProxy.ClinicalNotesUrls.DELETE_EYE_OBSERVATION)
+   
+    public Response<EyeObservation> deleteEyeObservation(@PathParam("id") String id,@QueryParam("discarded") Boolean discarded)
+    {
+    	EyeObservation eyeObservation = null;
+    	if(id == null || id.isEmpty() || discarded == null)
+    	{
+    		throw new BusinessException(ServiceError.InvalidInput);
+    	}
+    	eyeObservation = ophthalmologyService.deleteEyeObservation(id,discarded);
+    	Response<EyeObservation> response = new Response<>();
+    	response.setData(eyeObservation);
+    	return response;
+    }
+    
+    @Path(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
+    @GET
+    @ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS, notes = PathProxy.ClinicalNotesUrls.GET_EYE_OBSERVATIONS)
+	public Response<EyeObservation> getEyeObservations(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId,@QueryParam(value = "patientId") String patientId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded ,@DefaultValue("false") @QueryParam(value = "isOTPVerified") Boolean isOTPVerified) {
+		List<EyeObservation> eyeObservations = null;
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input.");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.");
+		}
+    	eyeObservations = ophthalmologyService.getEyeObservations(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded,isOTPVerified);
+    	Response<EyeObservation> response = new Response<>();
+    	response.setDataList(eyeObservations);
+    	return response;
+	}
 
 }
