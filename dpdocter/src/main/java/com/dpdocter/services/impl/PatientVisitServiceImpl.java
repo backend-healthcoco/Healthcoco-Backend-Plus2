@@ -44,9 +44,7 @@ import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.Prescription;
-import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
@@ -627,23 +625,23 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		BeanUtil.map(prescriptionResponse, prescription);
 		prescription.setDiagnosticTests(prescriptionTest);
 
-		if (prescriptionResponse.getItems() != null) {
-			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
-			for (PrescriptionAddItem prescriptionItem : prescriptionResponse.getItems()) {
-				PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
-				BeanUtil.map(prescriptionItem, prescriptionItemDetails);
-				if (prescriptionItem.getDrugId() != null) {
-					DrugCollection drugCollection = drugRepository
-							.findOne(new ObjectId(prescriptionItem.getDrugId()));
-					Drug drug = new Drug();
-					if (drugCollection != null)
-						BeanUtil.map(drugCollection, drug);
-					prescriptionItemDetails.setDrug(drug);
-				}
-				prescriptionItemDetailsList.add(prescriptionItemDetails);
-			}
-			prescription.setItems(prescriptionItemDetailsList);
-		}
+//		if (prescriptionResponse.getItems() != null) {
+//			List<PrescriptionItemDetail> prescriptionItemDetailsList = new ArrayList<PrescriptionItemDetail>();
+//			for (PrescriptionAddItem prescriptionItem : prescriptionResponse.getItems()) {
+//				PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
+//				BeanUtil.map(prescriptionItem, prescriptionItemDetails);
+//				if (prescriptionItem.getDrugId() != null) {
+//					DrugCollection drugCollection = drugRepository
+//							.findOne(new ObjectId(prescriptionItem.getDrugId()));
+//					Drug drug = new Drug();
+//					if (drugCollection != null)
+//						BeanUtil.map(drugCollection, drug);
+//					prescriptionItemDetails.setDrug(drug);
+//				}
+//				prescriptionItemDetailsList.add(prescriptionItemDetails);
+//			}
+//			prescription.setItems(prescriptionItemDetailsList);
+//		}
 		if (prescriptionResponse != null) {
 			if (patientVisitCollection.getVisitedFor() != null) {
 				if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.PRESCRIPTION))

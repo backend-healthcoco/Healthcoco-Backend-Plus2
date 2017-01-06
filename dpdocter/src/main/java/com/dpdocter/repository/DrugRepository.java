@@ -89,4 +89,10 @@ public interface DrugRepository extends MongoRepository<DrugCollection, ObjectId
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugCollection> getGlobalDrugsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
+	@Query("{'id': ?0, 'doctorId': ?1}")
+	DrugCollection findByIdAndDoctorId(ObjectId drugId, ObjectId doctorObjectId);
+
+	@Query("{'id': ?0, 'doctorId': ?1, 'locationId': ?2, 'hospitalId': ?3}")
+	DrugCollection find(ObjectId drugId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId);
+
 }

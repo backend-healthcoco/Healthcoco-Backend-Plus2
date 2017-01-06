@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -15,6 +16,7 @@ import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.Strength;
 
 @Document(collection = "drug_cl")
+@CompoundIndexes({ @CompoundIndex(def = "{'drugCode' : 1, 'doctorId': 1}", unique= true) })
 public class DrugCollection extends GenericCollection {
     @Id
     private ObjectId id;
@@ -49,7 +51,7 @@ public class DrugCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-    @Indexed(unique = true)
+//    @Indexed(unique = true)
     @Field
     private String drugCode;
 
@@ -77,6 +79,9 @@ public class DrugCollection extends GenericCollection {
     @Field
     private List<String> categories;
     
+    @Field
+    private long rankingCount = 0;
+
     public ObjectId getId() {
 	return id;
     }
@@ -238,6 +243,14 @@ public class DrugCollection extends GenericCollection {
 		this.genericNames = genericNames;
 	}
 
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
@@ -245,7 +258,7 @@ public class DrugCollection extends GenericCollection {
 				+ genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
 				+ ", discarded=" + discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize="
 				+ packSize + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", categories=" + categories + "]";
+				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
+				+ rankingCount + "]";
 	}
-
 }

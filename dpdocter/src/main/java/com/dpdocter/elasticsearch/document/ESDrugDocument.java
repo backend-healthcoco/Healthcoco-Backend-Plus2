@@ -78,7 +78,10 @@ public class ESDrugDocument {
 
     @Field(type = FieldType.Nested)
     private List<GenericCode> genericNames;
-    
+
+    @Field
+    private long rankingCount = 0;
+
     public String getId() {
 	return id;
     }
@@ -247,6 +250,14 @@ public class ESDrugDocument {
 		this.genericNames = genericNames;
 	}
 
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
 	@Override
 	public String toString() {
 		return "ESDrugDocument [id=" + id + ", drugName=" + drugName + ", explanation=" + explanation + ", drugCode="
@@ -255,6 +266,6 @@ public class ESDrugDocument {
 				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
 				+ MRP + ", genericCodes=" + genericCodes + ", duration=" + duration + ", dosage=" + dosage
 				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
-				+ ", genericNames=" + genericNames + "]";
+				+ ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
 	}
 }

@@ -1515,10 +1515,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
 				location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
 				location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
-				for (ClinicImage image : location.getImages()) {
-					image.setImageUrl(getFinalImageURL(image.getImageUrl()));
-					image.setThumbnailUrl(getFinalImageURL(image.getThumbnailUrl()));
+				if(location.getImages() != null && !location.getImages().isEmpty()){
+					for (ClinicImage image : location.getImages()) {
+						image.setImageUrl(getFinalImageURL(image.getImageUrl()));
+						image.setThumbnailUrl(getFinalImageURL(image.getThumbnailUrl()));
 
+					}
 				}
 				response.setLocation(location);
 				response.setHospital(location.getHospital());

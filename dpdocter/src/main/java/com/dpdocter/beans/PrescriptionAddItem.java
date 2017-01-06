@@ -2,7 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddItem {
@@ -17,8 +16,6 @@ public class PrescriptionAddItem {
     private List<DrugDirection> direction;
 
     private String instructions;
-
-    
 
     public String getDrugId() {
 		return drugId;
