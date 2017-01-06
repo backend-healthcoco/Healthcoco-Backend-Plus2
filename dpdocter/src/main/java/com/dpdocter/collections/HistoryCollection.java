@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -51,6 +52,9 @@ public class HistoryCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> specialNotes;
 
+	@Transient
+	private long count;
+	
 	public HistoryCollection(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
 		super();
 		this.doctorId = doctorId;
@@ -147,12 +151,20 @@ public class HistoryCollection extends GenericCollection {
 		this.personalHistory = personalHistory;
 	}
 
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
 	@Override
 	public String toString() {
 		return "HistoryCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", patientId=" + patientId + ", generalRecords=" + generalRecords + ", familyhistory="
 				+ familyhistory + ", medicalhistory=" + medicalhistory + ", drugsAndAllergies=" + drugsAndAllergies
-				+ ", personalHistory=" + personalHistory + ", specialNotes=" + specialNotes + "]";
+				+ ", personalHistory=" + personalHistory + ", specialNotes=" + specialNotes + ", count=" + count + "]";
 	}
 
 }

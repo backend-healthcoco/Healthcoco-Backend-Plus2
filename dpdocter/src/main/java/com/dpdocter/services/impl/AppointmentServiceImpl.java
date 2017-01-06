@@ -1337,7 +1337,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if(patientCards != null && !patientCards.isEmpty())patient = patientCards.get(0);
 						
 						patient.setId(patient.getUserId());
-						if(patient.getUser() != null)patient.setColorCode(patient.getUser().getColorCode());
+						if(patient.getUser() != null){
+							patient.setColorCode(patient.getUser().getColorCode());
+							patient.setMobileNumber(patient.getUser().getMobileNumber());
+						}
 						
 					}
 					BeanUtil.map(collection, appointment);

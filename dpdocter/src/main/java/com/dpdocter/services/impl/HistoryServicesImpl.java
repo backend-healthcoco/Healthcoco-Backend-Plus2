@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1930,17 +1931,21 @@ public class HistoryServicesImpl implements HistoryServices {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer historyCount = 0;
 		try {
-			List<HistoryCollection> historyCollections = null;
-			if (isOTPVerified)
-				historyCollections = historyRepository.findHistory(patientObjectId);
-			else {
-				HistoryCollection historyCollection = historyRepository.findHistory(locationObjectId, hospitalObjectId,
-						patientObjectId);
-				if (historyCollection != null) {
-					historyCollections = new ArrayList<HistoryCollection>();
-					historyCollections.add(historyCollection);
-				}
+			
+			Criteria criteria = new Criteria("patientId").is(patientObjectId);
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
+					criteria.and("doctorId").is(doctorObjectId);
 			}
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
+//					Aggregation.unwind("generalRecords"),
+//					Aggregation.group("_id","generalRecords.data").count().as("count")); 
+//			historyCount = (int) mongoTemplate.count(new Query(criteria), HistoryCollection.class);
+			
+			List<HistoryCollection> historyCollections = mongoTemplate.aggregate(aggregation, HistoryCollection.class, HistoryCollection.class).getMappedResults();
+			
 			if (historyCollections != null) {
 				for (HistoryCollection historyCollection : historyCollections) {
 					if (historyCollection.getGeneralRecords() != null
