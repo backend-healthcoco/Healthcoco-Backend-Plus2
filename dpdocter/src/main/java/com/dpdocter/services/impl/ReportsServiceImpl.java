@@ -388,8 +388,8 @@ public class ReportsServiceImpl implements ReportsService {
 										Aggregation.unwind("location"),
 										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
 										Aggregation.unwind("hospital"),
-										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
-										Aggregation.unwind("prescription"), Aggregation.skip(page * size),
+										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescriptionCollection"),
+										Aggregation.unwind("prescriptionCollection"), Aggregation.skip(page * size),
 										Aggregation.limit(size),
 										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
 								OPDReportsCollection.class, OPDReportsLookupResponse.class)
@@ -404,8 +404,8 @@ public class ReportsServiceImpl implements ReportsService {
 										Aggregation.unwind("location"),
 										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
 										Aggregation.unwind("hospital"),
-										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
-										Aggregation.unwind("prescription"),
+										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescriptionCollection"),
+										Aggregation.unwind("prescriptionCollection"),
 										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
 								OPDReportsCollection.class, OPDReportsLookupResponse.class)
 						.getMappedResults();
@@ -414,6 +414,7 @@ public class ReportsServiceImpl implements ReportsService {
 				response = new ArrayList<OPDReports>();
 				for (OPDReportsLookupResponse collection : opdReportsLookupResponses) {
 					OPDReports opdReports = new OPDReports();
+					
 					BeanUtil.map(collection, opdReports);
 					if (collection.getDoctorId() != null) {
 						UserCollection doctor = collection.getDoctor();
@@ -443,15 +444,18 @@ public class ReportsServiceImpl implements ReportsService {
 						}
 					}
 
-					if (collection.getPrescription() != null) {
+					if (collection.getPrescriptionCollection() != null) {
 						Prescription prescription = new Prescription();
-						List<TestAndRecordData> tests = collection.getPrescription().getDiagnosticTests();
-						collection.getPrescription().setDiagnosticTests(null);
-						BeanUtil.map(collection.getPrescription(), prescription);
-						if (collection.getPrescription().getItems() != null
-								&& !collection.getPrescription().getItems().isEmpty()) {
+						List<TestAndRecordData> tests = collection.getPrescriptionCollection().getDiagnosticTests();
+						collection.getPrescriptionCollection().setDiagnosticTests(null);
+						
+						List<PrescriptionItem> items = collection.getPrescriptionCollection().getItems();
+						collection.getPrescriptionCollection().setItems(null);
+						
+						BeanUtil.map(collection.getPrescriptionCollection(), prescription);
+						if (items != null && !items.isEmpty()) {
 							List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-							for (PrescriptionItem prescriptionItem : collection.getPrescription().getItems()) {
+							for (PrescriptionItem prescriptionItem : items) {
 								PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
 								DrugCollection drugCollection = drugRepository
@@ -466,7 +470,7 @@ public class ReportsServiceImpl implements ReportsService {
 							prescription.setItems(prescriptionItemDetails);
 						}
 						PatientVisitCollection patientVisitCollection = patientVisitRepository
-								.findByPrescriptionId(collection.getPrescription().getId());
+								.findByPrescriptionId(collection.getPrescriptionCollection().getId());
 						if (patientVisitCollection != null)
 							prescription.setVisitId(patientVisitCollection.getId().toString());
 

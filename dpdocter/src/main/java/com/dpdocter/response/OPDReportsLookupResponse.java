@@ -13,7 +13,7 @@ public class OPDReportsLookupResponse extends GenericCollection{
 	private String patientId;
 	private Patient patient;
 	private String prescriptionId;
-	private PrescriptionCollection prescription;
+	private PrescriptionCollection prescriptionCollection;
 	private String amountReceived;
 	private String receiptNo;
 	private Long receiptDate;
@@ -48,11 +48,12 @@ public class OPDReportsLookupResponse extends GenericCollection{
 	public void setPrescriptionId(String prescriptionId) {
 		this.prescriptionId = prescriptionId;
 	}
-	public PrescriptionCollection getPrescription() {
-		return prescription;
+	
+	public PrescriptionCollection getPrescriptionCollection() {
+		return prescriptionCollection;
 	}
-	public void setPrescription(PrescriptionCollection prescription) {
-		this.prescription = prescription;
+	public void setPrescriptionCollection(PrescriptionCollection prescriptionCollection) {
+		this.prescriptionCollection = prescriptionCollection;
 	}
 	public String getAmountReceived() {
 		return amountReceived;
@@ -117,7 +118,7 @@ public class OPDReportsLookupResponse extends GenericCollection{
 	@Override
 	public String toString() {
 		return "OPDReportsLookupResponse [id=" + id + ", patientId=" + patientId + ", patient=" + patient
-				+ ", prescriptionId=" + prescriptionId + ", prescription=" + prescription + ", amountReceived="
+				+ ", prescriptionId=" + prescriptionId + ", prescriptionCollection=" + prescriptionCollection + ", amountReceived="
 				+ amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks
 				+ ", doctorId=" + doctorId + ", doctor=" + doctor + ", locationId=" + locationId + ", location="
 				+ location + ", hospitalId=" + hospitalId + ", hospital=" + hospital + "]";
