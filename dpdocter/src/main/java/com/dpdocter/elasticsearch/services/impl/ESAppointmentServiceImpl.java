@@ -6,7 +6,9 @@ import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -313,19 +315,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			    if(count > 0)esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds)).withPageable(new PageRequest(0, count)).build(), ESTreatmentServiceCostDocument.class); 
 			}
 		    if(esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()){return null;}		
-	        Collection<String> locationIds = CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("locationId"));
+		    Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("locationId")));
+	        Set<String> doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("doctorId")));
 	        
-	        Collection<String> doctorIds = CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("doctorId"));
-	    	boolQueryBuilder.must(QueryBuilders.termQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
+	        locationIds.remove(null);doctorIds.remove(null);
+	        if((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())){return null;}
+	        boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
 		 }
 	    
 	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {
 			List<ESComplaintsDocument> esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom);
 		    if(esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()){return null;}		
-	        Collection<String> locationIds = CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("locationId"));
+		    Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("locationId")));
+	        Set<String> doctorIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId")));
 	        
-	        Collection<String> doctorIds = CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId"));
-	    	boolQueryBuilder.must(QueryBuilders.termQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
+	        locationIds.remove(null);doctorIds.remove(null);
+	        if((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())){return null;}
+	    	boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
 		 }
 	    
 	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
