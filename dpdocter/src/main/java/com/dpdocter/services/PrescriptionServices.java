@@ -151,4 +151,6 @@ public interface PrescriptionServices {
 	List<DrugInteractionResposne> drugInteraction(List<Drug> request);
 
 	Boolean addGenericsWithReaction();
+
+	Boolean addFavouritesToDrug();
 }

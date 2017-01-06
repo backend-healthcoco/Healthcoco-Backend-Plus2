@@ -3,7 +3,7 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
-import com.dpdocter.beans.PrescriptionAddItem;
+import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
@@ -20,7 +20,7 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 
 	private String hospitalId;
 
-	private List<PrescriptionAddItem> items;
+	private List<PrescriptionItemDetail> items;
 
 	private String patientId;
 
@@ -80,11 +80,11 @@ public class PrescriptionAddEditResponse extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public List<PrescriptionAddItem> getItems() {
+	public List<PrescriptionItemDetail> getItems() {
 		return items;
 	}
 
-	public void setItems(List<PrescriptionAddItem> items) {
+	public void setItems(List<PrescriptionItemDetail> items) {
 		this.items = items;
 	}
 

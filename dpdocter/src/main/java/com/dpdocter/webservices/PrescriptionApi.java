@@ -871,8 +871,19 @@ public class PrescriptionApi {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		Drug drugAddEditResponse = prescriptionServices.makeDrugFavourite(drugId, doctorId, locationId, hospitalId);
+		transnationalService.addResource(new ObjectId(drugAddEditResponse.getId()), Resource.DRUG, false);
+		if (drugAddEditResponse != null) {
+			ESDrugDocument esDrugDocument = new ESDrugDocument();
+			BeanUtil.map(drugAddEditResponse, esDrugDocument);
+			if (drugAddEditResponse.getDrugType() != null) {
+				esDrugDocument.setDrugTypeId(drugAddEditResponse.getDrugType().getId());
+				esDrugDocument.setDrugType(drugAddEditResponse.getDrugType().getType());
+			}
+			esPrescriptionService.addDrug(esDrugDocument);
+		}
 		Response<Drug> response = new Response<Drug>();
-		response.setData(prescriptionServices.makeDrugFavourite(drugId, doctorId, locationId, hospitalId));
+		response.setData(drugAddEditResponse);
 		return response;
 	}
 
@@ -967,5 +978,15 @@ public class PrescriptionApi {
 		response.setData(prescriptionServices.addGenericsWithReaction());
 		return response;
 	}
+
+	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITES_TO_DRUGS)
+	@GET
+	public Response<Boolean> addFavouritesToDrug() {
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(prescriptionServices.addFavouritesToDrug());
+		return response;
+	}
+
 
 }

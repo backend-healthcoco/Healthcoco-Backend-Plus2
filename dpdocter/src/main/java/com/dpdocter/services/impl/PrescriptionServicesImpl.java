@@ -352,27 +352,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 			}
+			drugCollection.setRankingCount(1);
 			drugCollection = drugRepository.save(drugCollection);
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-					drugCollection.getId(), drugCollection.getDoctorId(), drugCollection.getLocationId(),
-					drugCollection.getHospitalId());
-			if (doctorDrugCollection == null) {
-				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(), drugCollection.getDoctorId(),
-						drugCollection.getLocationId(), drugCollection.getHospitalId(), 1, false,
-						drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(),
-						drugCollection.getDirection(), drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-				doctorDrugCollection.setCreatedTime(new Date());
-			}
-			doctorDrugCollection.setUpdatedTime(new Date());
-			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-			if (doctorDrugCollection != null) {
-				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-				BeanUtil.map(drugCollection, esDoctorDrugDocument);
-				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-				esDoctorDrugDocument.setId(drugCollection.getId().toString());
-				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-			}
+//			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
+//					drugCollection.getId(), drugCollection.getDoctorId(), drugCollection.getLocationId(),
+//					drugCollection.getHospitalId());
+//			if (doctorDrugCollection == null) {
+//				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(), drugCollection.getDoctorId(),
+//						drugCollection.getLocationId(), drugCollection.getHospitalId(), 1, false,
+//						drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(),
+//						drugCollection.getDirection(), drugCollection.getGenericNames(), drugCollection.getCreatedBy());
+//				doctorDrugCollection.setCreatedTime(new Date());
+//			}
+//			doctorDrugCollection.setUpdatedTime(new Date());
+//			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+//			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+//			if (doctorDrugCollection != null) {
+//				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+//				BeanUtil.map(drugCollection, esDoctorDrugDocument);
+//				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+//				esDoctorDrugDocument.setId(drugCollection.getId().toString());
+//				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+//			}
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -427,32 +428,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
 			}
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-					drugCollection.getId(), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-					new ObjectId(request.getHospitalId()));
-			if (doctorDrugCollection == null) {
-				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
-						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-						new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
-						drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
-						drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-				doctorDrugCollection.setCreatedTime(new Date());
-			} else {
-				doctorDrugCollection.setDirection(request.getDirection());
-				doctorDrugCollection.setDosage(request.getDosage());
-				doctorDrugCollection.setDosageTime(request.getDosageTime());
-				doctorDrugCollection.setDuration(request.getDuration());
-			}
-			doctorDrugCollection.setUpdatedTime(new Date());
-			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-			if (doctorDrugCollection != null) {
-				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-				BeanUtil.map(drugCollection, esDoctorDrugDocument);
-				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-				esDoctorDrugDocument.setId(drugCollection.getId().toString());
-				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-			}
+//			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
+//					drugCollection.getId(), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+//					new ObjectId(request.getHospitalId()));
+//			if (doctorDrugCollection == null) {
+//				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
+//						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+//						new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
+//						drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
+//						drugCollection.getGenericNames(), drugCollection.getCreatedBy());
+//				doctorDrugCollection.setCreatedTime(new Date());
+//			} else {
+//				doctorDrugCollection.setDirection(request.getDirection());
+//				doctorDrugCollection.setDosage(request.getDosage());
+//				doctorDrugCollection.setDosageTime(request.getDosageTime());
+//				doctorDrugCollection.setDuration(request.getDuration());
+//			}
+//			doctorDrugCollection.setUpdatedTime(new Date());
+//			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+//			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
+//			if (doctorDrugCollection != null) {
+//				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+//				BeanUtil.map(drugCollection, esDoctorDrugDocument);
+//				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+//				esDoctorDrugDocument.setId(drugCollection.getId().toString());
+//				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+//			}
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -488,21 +489,21 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						response = new Drug();
 						BeanUtil.map(drugCollection, response);
 
-						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-								.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
-										new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
-						if (doctorDrugCollection != null) {
-							doctorDrugCollection.setDiscarded(discarded);
-							doctorDrugCollection.setUpdatedTime(new Date());
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							if (doctorDrugCollection != null) {
-								ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-								BeanUtil.map(drugCollection, esDoctorDrugDocument);
-								BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-								esDoctorDrugDocument.setId(drugCollection.getId().toString());
-								esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-							}
-						}
+//						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
+//								.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
+//										new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+//						if (doctorDrugCollection != null) {
+//							doctorDrugCollection.setDiscarded(discarded);
+//							doctorDrugCollection.setUpdatedTime(new Date());
+//							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+//							if (doctorDrugCollection != null) {
+//								ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+//								BeanUtil.map(drugCollection, esDoctorDrugDocument);
+//								BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+//								esDoctorDrugDocument.setId(drugCollection.getId().toString());
+//								esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+//							}
+//						}
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.NotAuthorized,
@@ -791,6 +792,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Transactional
 	public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request, Boolean isAppointmentAdd) {
 		PrescriptionAddEditResponse response = null;
+		List<PrescriptionItemDetail> itemDetails = null;
 		try {
 			Appointment appointment = null;
 			if (isAppointmentAdd) {
@@ -817,6 +819,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescriptionCollection.getItems() != null) {
 				List<PrescriptionItem> items = null;
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
+					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					if (item.getDrugId() != null) {
 						List<DrugDirection> directions = null;
 						if (item.getDirection() != null && !item.getDirection().isEmpty()) {
@@ -835,43 +838,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						} else {
 							item.setDuration(null);
 						}
-						if (items == null)
+						if (items == null){
 							items = new ArrayList<PrescriptionItem>();
-						items.add(item);
-						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-								.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(),
-										new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-										new ObjectId(request.getHospitalId()));
-						if (doctorDrugCollection != null) {
-							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount() + 1);
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository
-									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(),
-											request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-							if (esDoctorDrugDocument != null) {
-								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
-								doctorDrugCollection.setUpdatedTime(new Date());
-								esDoctorDrugRepository.save(esDoctorDrugDocument);
-							}
-						} else {
-							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-							doctorDrugCollection = new DoctorDrugCollection(item.getDrugId(),
-									new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-									new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
-									drugCollection.getDosage(), drugCollection.getDosageTime(),
-									drugCollection.getDirection(), drugCollection.getGenericNames(),
-									drugCollection.getCreatedBy());
-							doctorDrugCollection.setCreatedTime(new Date());
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-							if (doctorDrugCollection != null) {
-								ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-								BeanUtil.map(drugCollection, esDoctorDrugDocument);
-								BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-								esDoctorDrugDocument.setId(drugCollection.getId().toString());
-								esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-							}
+							itemDetails= new ArrayList<PrescriptionItemDetail>();
 						}
+						BeanUtil.map(item, prescriptionItemDetail);
+						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+						Drug drug = new Drug();
+						if (drugCollection != null)BeanUtil.map(drugCollection, drug);
+						prescriptionItemDetail.setDrug(drug);
+						items.add(item);
+						itemDetails.add(prescriptionItemDetail);
 					}
 				}
 				prescriptionCollection.setItems(items);
@@ -945,10 +922,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					} else {
 						tests.add(new TestAndRecordDataResponse(diagnosticTest, null));
 					}
-
 				}
 				response.setDiagnosticTests(tests);
 			}
+			response.setItems(itemDetails);
 			response.setVisitId(request.getVisitId());
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
@@ -1006,6 +983,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public PrescriptionAddEditResponseDetails editPrescription(PrescriptionAddEditRequest request) {
 		PrescriptionAddEditResponseDetails response = null;
 		PrescriptionAddEditResponse prescription = null;
+		List<PrescriptionItemDetail> itemDetails = null;
 		try {
 			Appointment appointment = null;
 			if (request.getAppointmentRequest() != null) {
@@ -1029,6 +1007,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescriptionCollection.setUniqueEmrId(oldPrescription.getUniqueEmrId());
 			if (prescriptionCollection.getItems() != null) {
 				for (PrescriptionItem item : prescriptionCollection.getItems()) {
+					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 					if (item.getDrugId() != null) {
 						List<DrugDirection> directions = null;
 						if (item.getDirection() != null && !item.getDirection().isEmpty()) {
@@ -1047,38 +1026,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						} else {
 							item.setDuration(null);
 						}
-						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-								.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId(),
-										new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-										new ObjectId(request.getHospitalId()));
-						if (doctorDrugCollection != null) {
-							doctorDrugCollection.setRankingCount(doctorDrugCollection.getRankingCount() + 1);
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							ESDoctorDrugDocument esDoctorDrugDocument = esDoctorDrugRepository
-									.findByDrugIdDoctorIdLocaationIdHospitalId(item.getDrugId().toString(),
-											request.getDoctorId(), request.getLocationId(), request.getHospitalId());
-							if (esDoctorDrugDocument != null) {
-								esDoctorDrugDocument.setRankingCount(doctorDrugCollection.getRankingCount());
-								esDoctorDrugRepository.save(esDoctorDrugDocument);
-							}
-						} else {
-							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-							doctorDrugCollection = new DoctorDrugCollection(item.getDrugId(),
-									new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-									new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
-									drugCollection.getDosage(), drugCollection.getDosageTime(),
-									drugCollection.getDirection(), drugCollection.getGenericNames(),
-									drugCollection.getCreatedBy());
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-							transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-							if (doctorDrugCollection != null) {
-								ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-								BeanUtil.map(drugCollection, esDoctorDrugDocument);
-								BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-								esDoctorDrugDocument.setId(drugCollection.getId().toString());
-								esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-							}
+						if (itemDetails == null){
+							itemDetails= new ArrayList<PrescriptionItemDetail>();
 						}
+						BeanUtil.map(item, prescriptionItemDetail);
+						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+						Drug drug = new Drug();
+						if (drugCollection != null)BeanUtil.map(drugCollection, drug);
+						prescriptionItemDetail.setDrug(drug);
+						itemDetails.add(prescriptionItemDetail);
 					}
 				}
 			}
@@ -1122,21 +1078,21 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescription != null) {
 				response = new PrescriptionAddEditResponseDetails();
 				BeanUtil.map(prescription, response);
-				List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-				if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
-					for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
-						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-						DrugCollection drugCollection = drugRepository
-								.findOne(new ObjectId(prescriptionItem.getDrugId()));
-						Drug drug = new Drug();
-						if (drugCollection != null)
-							BeanUtil.map(drugCollection, drug);
-						prescriptionItemDetail.setDrug(drug);
-						prescriptionItemDetails.add(prescriptionItemDetail);
-					}
-				}
-				response.setItems(prescriptionItemDetails);
+//				List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+//				if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
+//					for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
+//						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+//						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+//						DrugCollection drugCollection = drugRepository
+//								.findOne(new ObjectId(prescriptionItem.getDrugId()));
+//						Drug drug = new Drug();
+//						if (drugCollection != null)
+//							BeanUtil.map(drugCollection, drug);
+//						prescriptionItemDetail.setDrug(drug);
+//						prescriptionItemDetails.add(prescriptionItemDetail);
+//					}
+//				}
+//				response.setItems(prescriptionItemDetails);
 			}
 			if (prescriptionTests != null && !prescriptionTests.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
@@ -1672,23 +1628,23 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescription.setDiagnosticTests(null);
 			BeanUtil.map(prescription, response);
 			response.setDiagnosticTests(prescriptionTest);
-			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-			if (prescription.getItems() != null) {
-				for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
-					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-					if (prescriptionItem.getDrugId() != null) {
-						DrugCollection drugCollection = drugRepository
-								.findOne(new ObjectId(prescriptionItem.getDrugId()));
-						Drug drug = new Drug();
-						if (drugCollection != null)
-							BeanUtil.map(drugCollection, drug);
-						prescriptionItemDetail.setDrug(drug);
-						prescriptionItemDetails.add(prescriptionItemDetail);
-					}
-				}
-			}
-			response.setItems(prescriptionItemDetails);
+//			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
+//			if (prescription.getItems() != null) {
+//				for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
+//					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+//					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+//					if (prescriptionItem.getDrugId() != null) {
+//						DrugCollection drugCollection = drugRepository
+//								.findOne(new ObjectId(prescriptionItem.getDrugId()));
+//						Drug drug = new Drug();
+//						if (drugCollection != null)
+//							BeanUtil.map(drugCollection, drug);
+//						prescriptionItemDetail.setDrug(drug);
+//						prescriptionItemDetails.add(prescriptionItemDetail);
+//					}
+//				}
+//			}
+//			response.setItems(prescriptionItemDetails);
 		}
 		return response;
 	}
@@ -2129,7 +2085,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				break;
 
 			case FAVOURITES:
-				response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+//				getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			default:
 				break;
@@ -3673,32 +3630,28 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			ObjectId drugObjectId = new ObjectId(drugId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-			DrugCollection drugCollection = drugRepository.findOne(drugObjectId);
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-					drugObjectId, doctorObjectId, locationObjectId, hospitalObjectId);
-			if (drugCollection != null) {
-				if (doctorDrugCollection == null) {
-					doctorDrugCollection = new DoctorDrugCollection(drugObjectId, doctorObjectId, locationObjectId,
-							hospitalObjectId, 1, false, drugCollection.getDuration(), drugCollection.getDosage(),
-							drugCollection.getDosageTime(), drugCollection.getDirection(),
-							drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-					doctorDrugCollection.setCreatedTime(new Date());
-					doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-					transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-					if (doctorDrugCollection != null) {
-						ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-						BeanUtil.map(drugCollection, esDoctorDrugDocument);
-						BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-						esDoctorDrugDocument.setId(drugCollection.getId().toString());
-						esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-					}
+			DrugCollection drugCollection = drugRepository.findByIdAndDoctorId(drugObjectId, doctorObjectId);
+			if(drugCollection == null){
+				drugCollection = drugRepository.findOne(drugObjectId);
+				if(drugCollection == null){
+					logger.error("Invalid drug Id");
+					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 				}
-				response = new Drug();
-				BeanUtil.map(drugCollection, response);
-			} else {
-				logger.error("Invalid drug Id");
-				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
+				drugCollection.setLocationId(locationObjectId);
+				drugCollection.setHospitalId(hospitalObjectId);
+				drugCollection.setDoctorId(doctorObjectId);
+				drugCollection.setRankingCount(1);
+				drugCollection.setId(null);
+			}else{
+				drugCollection.setLocationId(locationObjectId);
+				drugCollection.setHospitalId(hospitalObjectId);
+				drugCollection.setRankingCount(drugCollection.getRankingCount()+1);
+				drugCollection.setUpdatedTime(new Date());
 			}
+			drugCollection = drugRepository.save(drugCollection);
+			response = new Drug();
+			BeanUtil.map(drugCollection, response);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While making Drug Favourite");
@@ -3866,52 +3819,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	}
 
-	// @Override
-	// public Boolean makeCustomDrugFavourite() {
-	// Boolean response = false;
-	// List<DrugCollection> drugs = null;
-	// try {
-	// Criteria criteria = new Criteria("doctorId").ne(null);
-	// Aggregation aggregation =
-	// Aggregation.newAggregation(Aggregation.match(criteria));
-	// AggregationResults<DrugCollection> results =
-	// mongoTemplate.aggregate(aggregation, DrugCollection.class,
-	// DrugCollection.class);
-	// drugs = results.getMappedResults();
-	// for (DrugCollection drug : drugs) {
-	// DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-	// .findByDrugIdDoctorIdLocaationIdHospitalId(drug.getId(),
-	// drug.getDoctorId(),
-	// drug.getLocationId(), drug.getHospitalId());
-	// if (doctorDrugCollection == null) {
-	// doctorDrugCollection = new DoctorDrugCollection(drug.getId(),
-	// drug.getDoctorId(),
-	// drug.getLocationId(), drug.getHospitalId(), 1, false, drug.getDuration(),
-	// drug.getDosage(), drug.getDosageTime(), drug.getDirection(),
-	// drug.getGenericNames(), drug.getCreatedBy());
-	// doctorDrugCollection.setCreatedTime(new Date());
-	// doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-	// transnationalService.addResource(doctorDrugCollection.getId(),
-	// Resource.DOCTORDRUG, false);
-	// if (doctorDrugCollection != null) {
-	// ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-	// BeanUtil.map(drug, esDoctorDrugDocument);
-	// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-	// esDoctorDrugDocument.setId(drug.getId().toString());
-	// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-	// doctorDrugCollection.getId());
-	// }
-	// }
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// logger.error(e + " Error Occurred While Making Custom Drugs Favourite");
-	// throw new BusinessException(ServiceError.Unknown, "Error Occurred While
-	// Making Custom Drugs Favourite");
-	// }
-	// return response;
-	// }
-
 	@Override
 	public Drug addFavouriteDrug(DrugAddEditRequest request) {
 		Drug response = null;
@@ -3945,15 +3852,32 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				drugCollection = drugRepository.save(drugCollection);
 			} else {
-				drugCollection = drugRepository.findOne(new ObjectId(request.getId()));
-				if (drugCollection.getDoctorId() != null && drugCollection.getLocationId() != null
-						&& drugCollection.getHospitalId() != null) {
+				
+				drugCollection = drugRepository.findByIdAndDoctorId(new ObjectId(request.getId()), new ObjectId(request.getDoctorId()));
+				if(drugCollection == null){
+					drugCollection = drugRepository.findOne(new ObjectId(request.getId()));
+					if(drugCollection == null){
+						logger.error("Invalid drug Id");
+						throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
+					}
+					drugCollection.setLocationId(new ObjectId(request.getLocationId()));
+					drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					drugCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					drugCollection.setRankingCount(1);
+					drugCollection.setId(null);
+				}else{
+					drugCollection.setLocationId(new ObjectId(request.getLocationId()));
+					drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					drugCollection.setRankingCount(drugCollection.getRankingCount()+1);
 					drugCollection.setUpdatedTime(new Date());
-					drugCollection.setDuration(request.getDuration());
-					drugCollection.setDosage(request.getDosage());
-					drugCollection.setDosageTime(request.getDosageTime());
-					drugCollection.setDirection(request.getDirection());
-					if (drugCollection.getDrugType() != null) {
+				}
+				drugCollection.setUpdatedTime(new Date());
+				drugCollection.setDuration(request.getDuration());
+				drugCollection.setDosage(request.getDosage());
+				drugCollection.setDosageTime(request.getDosageTime());
+				drugCollection.setDirection(request.getDirection());
+				
+				if (drugCollection.getDrugType() != null) {
 						if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
 							drugCollection.setDrugType(null);
 						else {
@@ -3967,28 +3891,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 					}
 					drugCollection = drugRepository.save(drugCollection);
-				}
 			}
 
-			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-					drugCollection.getId(), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-					new ObjectId(request.getHospitalId()));
-			if (doctorDrugCollection != null) {
-				doctorDrugCollection.setUpdatedTime(new Date());
-				doctorDrugCollection.setDuration(request.getDuration());
-				doctorDrugCollection.setDosage(request.getDosage());
-				doctorDrugCollection.setDosageTime(request.getDosageTime());
-				doctorDrugCollection.setDirection(request.getDirection());
-			} else {
-				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
-						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-						new ObjectId(request.getHospitalId()), 1, false, request.getDuration(), request.getDosage(),
-						request.getDosageTime(), request.getDirection(), drugCollection.getGenericNames(),
-						drugCollection.getCreatedBy());
-				doctorDrugCollection.setUpdatedTime(new Date());
-				doctorDrugCollection.setCreatedTime(new Date());
-			}
-			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
 			transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 			if (drugCollection != null) {
 				ESDrugDocument esDrugDocument = new ESDrugDocument();
@@ -3999,19 +3903,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				esPrescriptionService.addDrug(esDrugDocument);
 			}
-
-			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-			if (doctorDrugCollection != null) {
-				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-				BeanUtil.map(drugCollection, esDoctorDrugDocument);
-				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-				esDoctorDrugDocument.setId(drugCollection.getId().toString());
-				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-			}
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
-			BeanUtil.map(doctorDrugCollection, response);
-			response.setId(drugCollection.getId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Drug");
@@ -4071,79 +3964,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
-
-	// @Override
-	// public List<DrugInteractionResposne> drugInteraction(List<Drug> request)
-	// {
-	// List<DrugInteractionResposne> response = null;
-	// try {
-	// Map<Integer, String> genericCodes = new HashMap<Integer, String>();
-	// Map<Drug, Set<String>> drugMap = new LinkedHashMap<Drug, Set<String>>();
-	// for (Drug drug : request) {
-	// if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty())
-	// {
-	// Set<String> codes = new HashSet<String>();
-	// for (GenericCode genericNames : drug.getGenericNames()) {
-	// if (!codes.contains(genericNames.getCode()))
-	// codes.add(genericNames.getCode());
-	// if (!genericCodes.containsValue(genericNames.getCode()))
-	// genericCodes.put(genericCodes.size(), genericNames.getCode());
-	// }
-	// drugMap.put(drug, codes);
-	// }
-	// }
-	//
-	// boolean[][] codeMatrix = new
-	// boolean[genericCodes.size()][genericCodes.size()];
-	// for (int row = 0; row < codeMatrix.length; row++) {
-	// for (int column = 0; column < codeMatrix[row].length; column++) {
-	// if (row != column && !codeMatrix[row][column] &&
-	// !codeMatrix[column][row]) {
-	// if (!checkGenericContainsInSameDrug(genericCodes.get(row),
-	// genericCodes.get(column), drugMap)) {
-	// codeMatrix[row][column] = true;
-	// codeMatrix[column][row] = true;
-	// List<ESGenericCodeWithReaction> esGenericCodeWithReactions =
-	// elasticsearchTemplate
-	// .queryForList(
-	// new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder()
-	// .must(QueryBuilders.matchQuery("codes", genericCodes.get(row)))
-	// .must(QueryBuilders.matchQuery("codes", genericCodes.get(column))))
-	// .build(),
-	// ESGenericCodeWithReaction.class);
-	// if (esGenericCodeWithReactions != null &&
-	// !esGenericCodeWithReactions.isEmpty()) {
-	// if (response == null)
-	// response = new ArrayList<>();
-	// for (Entry<Drug, Set<String>> entry : drugMap.entrySet()) {
-	// if (entry.getValue().contains(genericCodes.get(row))) {
-	// for (Entry<Drug, Set<String>> entry2 : drugMap.entrySet()) {
-	// if (entry2.getValue().contains(genericCodes.get(column))) {
-	// response.add(
-	// new DrugInteractionResposne(
-	// entry.getKey().getDrugName() + " has "
-	// + esGenericCodeWithReactions.get(0)
-	// .getReactionType()
-	// + " reaction with "
-	// + entry2.getKey().getDrugName(),
-	// esGenericCodeWithReactions.get(0).getReactionType()));
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// logger.error(e + " Error Occurred While drugInteraction");
-	// throw new BusinessException(ServiceError.Unknown, "Error Occurred While
-	// drugInteraction");
-	// }
-	// return response;
-	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -4405,6 +4225,42 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				codeWithReactions.put(key, new ArrayList<Code>());
 		}
 		return codeWithReactions;
+	}
+
+	@Override
+	public Boolean addFavouritesToDrug() {
+		Boolean response = false;
+		try{
+			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
+			for(DoctorDrugCollection doctorDrugCollection : doctorDrugCollections){
+				DrugCollection drugCollection = drugRepository.find(doctorDrugCollection.getDrugId(), doctorDrugCollection.getDoctorId(), doctorDrugCollection.getLocationId(), doctorDrugCollection.getHospitalId());
+				if(drugCollection != null){
+					drugCollection.setRankingCount(doctorDrugCollection.getRankingCount());
+				}
+				else{
+					DrugCollection globalDrugCollection = drugRepository.findOne(doctorDrugCollection.getDrugId());
+					drugCollection = new DrugCollection();
+					BeanUtil.map(globalDrugCollection, drugCollection);
+					BeanUtil.map(doctorDrugCollection, drugCollection);
+					drugCollection.setId(null);
+				}
+				drugCollection = drugRepository.save(drugCollection);
+				transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+				if (drugCollection != null) {
+					ESDrugDocument esDrugDocument = new ESDrugDocument();
+					BeanUtil.map(drugCollection, esDrugDocument);
+					if (drugCollection.getDrugType() != null) {
+						esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
+						esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
+					}
+					esPrescriptionService.addDrug(esDrugDocument);
+				}
+			}
+			response = true;
+		}catch(Exception e){
+			throw new BusinessException(ServiceError.Unknown, ""+e);
+		}
+		return response;
 	}
 
 }

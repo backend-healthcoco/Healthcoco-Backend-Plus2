@@ -437,6 +437,8 @@ public interface PathProxy {
 		public static final String DRUGS_INTERACTION = "/drugs/interaction";
 
 		public static final String ADD_GENERIC_CODES_WITH_REACTION = "/genericCodes/";
+		
+		public static final String ADD_FAVOURITES_TO_DRUGS = "/addFavouritesToDrug";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
