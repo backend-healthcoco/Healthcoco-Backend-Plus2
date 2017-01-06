@@ -135,4 +135,5 @@ public class ClinicDoctorResponse {
 				+ ", userState=" + userState + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
 				+ ", registerNumber=" + registerNumber + ", colorCode=" + colorCode + "]";
 	}
+
 }

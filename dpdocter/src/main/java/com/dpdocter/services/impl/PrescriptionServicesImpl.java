@@ -2086,7 +2086,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			case FAVOURITES:
 				response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
-//				getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			default:
 				break;
@@ -4233,20 +4232,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try{
 			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
 			for(DoctorDrugCollection doctorDrugCollection : doctorDrugCollections){
-				DrugCollection drugCollection = drugRepository.find(doctorDrugCollection.getDrugId(), doctorDrugCollection.getDoctorId(), doctorDrugCollection.getLocationId(), doctorDrugCollection.getHospitalId());
+				DrugCollection drugCollection = drugRepository.find(doctorDrugCollection.getDrugId(), 
+						doctorDrugCollection.getDoctorId(), doctorDrugCollection.getLocationId(), doctorDrugCollection.getHospitalId());
 				if(drugCollection != null){
 					drugCollection.setRankingCount(doctorDrugCollection.getRankingCount());
 				}
 				else{
 					DrugCollection globalDrugCollection = drugRepository.findOne(doctorDrugCollection.getDrugId());
-					drugCollection = new DrugCollection();
-					BeanUtil.map(globalDrugCollection, drugCollection);
-					BeanUtil.map(doctorDrugCollection, drugCollection);
-					drugCollection.setId(null);
+					if(globalDrugCollection != null){
+						drugCollection = new DrugCollection();
+						BeanUtil.map(globalDrugCollection, drugCollection);
+						BeanUtil.map(doctorDrugCollection, drugCollection);
+						drugCollection.setId(null);
+					}
 				}
-				drugCollection = drugRepository.save(drugCollection);
-				transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
 				if (drugCollection != null) {
+					drugCollection = drugRepository.save(drugCollection);
+					transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
+					
 					ESDrugDocument esDrugDocument = new ESDrugDocument();
 					BeanUtil.map(drugCollection, esDrugDocument);
 					if (drugCollection.getDrugType() != null) {

@@ -214,7 +214,11 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
-		if (anyStringEmpty(sortBy)) {
+		if(resource.getType().equalsIgnoreCase(Resource.DRUG.getType())){
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+		}
+		else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
@@ -262,6 +266,7 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
+		
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -271,11 +276,7 @@ public class DPDoctorUtils {
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
-				if (size > 0)
-					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(page, size, Direction.DESC, sortBy)).build();
-				else
-					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 			} else {
 				if (size > 0)
@@ -351,7 +352,11 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
-		if (anyStringEmpty(sortBy)) {
+		if(resource.getType().equalsIgnoreCase(Resource.DRUG.getType())){
+			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+		}
+		else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();

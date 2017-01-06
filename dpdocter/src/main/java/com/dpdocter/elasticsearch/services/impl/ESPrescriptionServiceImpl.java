@@ -145,8 +145,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchTerm, category, searchByGenericName);
 			break;
 		case FAVOURITES:
-			response = getFavouritesDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
-					searchTerm, category, searchByGenericName);
+			response = getCustomDrugs(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm,
+					category, searchByGenericName);
 			break;
 		case WEBBOTH:
 			response = getCustomGlobalDrugsForWeb(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
@@ -172,7 +172,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     				.terms("keys")
     				.field("drugName")
     				.size(50)
-    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
     		.withIndices("drugs_in").withTypes("drugs")
     		.withQuery(searchQuery.getQuery())
     		.build();
@@ -250,7 +250,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     				.terms("keys")
     				.field("drugName")
     				.size(50)
-    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
     		.withIndices("drugs_in").withTypes("drugs")
     		.withQuery(searchQuery.getQuery())
     		.build();
@@ -296,7 +296,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     				.terms("keys")
     				.field("drugName")
     				.size(50)
-    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
     		.withIndices("drugs_in").withTypes("drugs")
     		.withQuery(searchQuery.getQuery())
     		.build();
@@ -346,7 +346,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    				.terms("keys")
 	    				.field("drugName")
 	    				.size(50)
-	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)))
+	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
 	    		.withIndices("drugs_in").withTypes("drugs")
 	    		.withQuery(searchQuery.getQuery())
 	    		.build();
