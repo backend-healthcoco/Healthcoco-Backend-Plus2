@@ -1514,8 +1514,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
 							new ObjectId(locationId), new ObjectId(patientId));
+					if(recommendationsCollection!=null)
+					location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
 				}
-				location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
+				
 				location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
 				location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
 				if(location.getImages() != null && !location.getImages().isEmpty()){
