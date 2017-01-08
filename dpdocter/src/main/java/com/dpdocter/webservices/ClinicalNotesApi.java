@@ -775,7 +775,7 @@ public class ClinicalNotesApi {
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PA)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PA, notes = PathProxy.ClinicalNotesUrls.ADD_PA)
-	public Response<PA> addIndicationOfUSG(PA request) {
+	public Response<PA> addEditPA(PA request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPa())) {
 			logger.warn("Invalid Input");
@@ -797,7 +797,7 @@ public class ClinicalNotesApi {
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PV)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PV, notes = PathProxy.ClinicalNotesUrls.ADD_PV)
-	public Response<PV> addIndicationOfUSG(PV request) {
+	public Response<PV> addEditPV(PV request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getPv())) {
 			logger.warn("Invalid Input");
@@ -1003,7 +1003,7 @@ public class ClinicalNotesApi {
     @Path(value = PathProxy.ClinicalNotesUrls.DELETE_PV)
     @DELETE
     @ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PV, notes = PathProxy.ClinicalNotesUrls.DELETE_PV)
-    public Response<PV> deleteObstetricHistory(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+    public Response<PV> deletePV(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
 	    @PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
     	if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {

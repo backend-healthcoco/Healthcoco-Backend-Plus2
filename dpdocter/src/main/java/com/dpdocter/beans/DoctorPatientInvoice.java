@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.InvoiceItemResponse;
 
@@ -31,6 +33,8 @@ public class DoctorPatientInvoice extends GenericCollection{
 
 	private Boolean discarded = false;
 
+	private List<String> receiptIds;
+	
 	public String getId() {
 		return id;
 	}
@@ -127,12 +131,20 @@ public class DoctorPatientInvoice extends GenericCollection{
 		this.discarded = discarded;
 	}
 
+	public List<String> getReceiptIds() {
+		return receiptIds;
+	}
+
+	public void setReceiptIds(List<String> receiptIds) {
+		this.receiptIds = receiptIds;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoice [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
 				+ ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal + ", usedAdvanceAmount="
 				+ usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount
-				+ ", discarded=" + discarded + "]";
+				+ ", discarded=" + discarded + ", receiptIds=" + receiptIds + "]";
 	}
 }

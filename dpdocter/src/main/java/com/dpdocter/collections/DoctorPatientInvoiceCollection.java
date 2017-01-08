@@ -35,7 +35,7 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	private String uniqueInvoiceId;
 	
 	@Field
-	private ObjectId receiptId;
+	private List<ObjectId> receiptIds;
 	
 	@Field
 	private List<InvoiceItem> invoiceItems;   
@@ -151,19 +151,19 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.discarded = discarded;
 	}
 
-	public ObjectId getReceiptId() {
-		return receiptId;
+	public List<ObjectId> getReceiptIds() {
+		return receiptIds;
 	}
 
-	public void setReceiptId(ObjectId receiptId) {
-		this.receiptId = receiptId;
+	public void setReceiptIds(List<ObjectId> receiptIds) {
+		this.receiptIds = receiptIds;
 	}
 
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", receiptId=" + receiptId + ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal
+				+ ", receiptIds=" + receiptIds + ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
 				+ balanceAmount + ", discarded=" + discarded + "]";
 	}

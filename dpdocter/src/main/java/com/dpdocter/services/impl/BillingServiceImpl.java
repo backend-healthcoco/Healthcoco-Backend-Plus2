@@ -267,11 +267,12 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 			}else if(doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.INVOICE.name())){
 				
-				if(request.getInvoiceIds() != null && ! request.getInvoiceIds().isEmpty()){
+				if(request.getInvoiceIds() != null && !request.getInvoiceIds().isEmpty()){
 					DoctorPatientInvoiceCollection doctorPatientInvoiceCollection  = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getInvoiceIds().get(0)));
 					if(doctorPatientInvoiceCollection == null){
 						throw new BusinessException(ServiceError.InvalidInput, "Invalid Invoice Id");
 					}
+					List<ObjectId> receiptIds = doctorPatientInvoiceCollection.getReceiptIds();
 					if(request.getUsedAdvanceAmount() > 0){
 						
 						List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository.
@@ -304,6 +305,9 @@ public class BillingServiceImpl implements BillingService {
 							invoiceIds.add(invoiceIdWithAmount);
 							receiptCollection.setInvoiceIdsWithAmount(invoiceIds);
 							receiptCollection.setUpdatedTime(new Date());
+							
+							if(receiptIds == null)receiptIds = new ArrayList<ObjectId>();
+							receiptIds.add(receiptCollection.getId());
 							doctorPatientReceiptRepository.save(receiptCollection);
 						}
 						}
@@ -317,9 +321,11 @@ public class BillingServiceImpl implements BillingService {
 					InvoiceIdWithAmount invoiceIdWithAmount = new InvoiceIdWithAmount();
 					invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
 					doctorPatientReceiptCollection.setInvoiceIdsWithAmount(Arrays.asList(invoiceIdWithAmount));
-					doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+					doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 					
-					doctorPatientInvoiceCollection.setReceiptId(doctorPatientReceiptCollection.getId());
+					if(receiptIds == null)receiptIds = new ArrayList<ObjectId>();
+					receiptIds.add(doctorPatientReceiptCollection.getId());
+					doctorPatientInvoiceCollection.setReceiptIds(receiptIds);
 					doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 				}else{
 					throw new BusinessException(ServiceError.InvalidInput, "Invoice Id cannot be null");
@@ -455,7 +461,8 @@ public class BillingServiceImpl implements BillingService {
 				invoiceItems.add(invoiceItem);
 				doctorPatientInvoiceCollection.setInvoiceItems(invoiceItems);
 			}
-			
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+			List<ObjectId> receiptIds = doctorPatientInvoiceCollection.getReceiptIds();
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
 			BeanUtil.map(request, doctorPatientReceiptCollection);
 			doctorPatientReceiptCollection.setCreatedBy((!DPDoctorUtils.anyStringEmpty(userCollection.getTitle())?userCollection.getTitle()+" ":"")+
@@ -502,6 +509,9 @@ public class BillingServiceImpl implements BillingService {
 						invoiceIds.add(invoiceIdWithAmount);
 						receiptCollection.setInvoiceIdsWithAmount(invoiceIds);
 						receiptCollection.setUpdatedTime(new Date());
+						
+						if(receiptIds == null)receiptIds=new ArrayList<ObjectId>();
+						receiptIds.add(receiptCollection.getId());
 						doctorPatientReceiptRepository.save(receiptCollection);
 					}
 					}
@@ -518,8 +528,11 @@ public class BillingServiceImpl implements BillingService {
 				}
 			doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 			
-			doctorPatientInvoiceCollection.setReceiptId(doctorPatientReceiptCollection.getId());
+			if(receiptIds == null)receiptIds=new ArrayList<ObjectId>();
+			receiptIds.add(doctorPatientReceiptCollection.getId());
+			doctorPatientInvoiceCollection.setReceiptIds(receiptIds);
 			doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+			
 			if(doctorPatientInvoiceCollection != null){
 				response = new DoctorPatientInvoiceAndReceiptResponse();
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
