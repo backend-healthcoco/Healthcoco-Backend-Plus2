@@ -25,14 +25,14 @@ public class ClinicalNotesEditRequest {
 
 	private List<Diagnoses> diagnoses;
 
-    private String observation;
+	private String observation;
 
-    private String investigation;
+	private String investigation;
 
-    private String diagnosis;
+	private String diagnosis;
 
-    private String note;
-	
+	private String note;
+
 	private List<String> diagrams;
 
 	private String provisionalDiagnosis;
@@ -42,7 +42,7 @@ public class ClinicalNotesEditRequest {
 	private String systemExam;
 
 	private String complaint;
-	
+
 	private String presentComplaint;
 
 	private String presentComplaintHistory;
@@ -70,27 +70,27 @@ public class ClinicalNotesEditRequest {
 	private WorkingHours time;
 
 	private Date fromDate;
-	
+
 	private List<Notes> notes;
-	
+
 	private List<Complaint> complaints;
-	
+
 	private List<Observation> observations;
-	
+
 	private List<Investigation> investigations;
-	
+
 	private List<ProvisionalDiagnosis> provisionalDiagnoses;
-	
+
 	private List<PresentComplaint> presentComplaints;
-	
+
 	private List<PresentComplaintHistory> presentComplaintHistories;
-	
+
 	private List<GeneralExam> generalExams;
-	
+
 	private List<SystemExam> systemExams;
-	
+
 	private List<MenstrualHistory> menstrualHistories;
-	
+
 	private List<ObstetricHistory> obstetricHistories;
 
 	private String indicationOfUSG;
@@ -100,6 +100,46 @@ public class ClinicalNotesEditRequest {
 	private String pa;
 
 	private String ps;
+
+	private List<String> indicationOfUSGs;
+
+	private List<String> pvs;
+
+	private List<String> pas;
+
+	private List<String> pss;
+
+	public List<String> getIndicationOfUSGs() {
+		return indicationOfUSGs;
+	}
+
+	public void setIndicationOfUSGs(List<String> indicationOfUSGs) {
+		this.indicationOfUSGs = indicationOfUSGs;
+	}
+
+	public List<String> getPvs() {
+		return pvs;
+	}
+
+	public void setPvs(List<String> pvs) {
+		this.pvs = pvs;
+	}
+
+	public List<String> getPas() {
+		return pas;
+	}
+
+	public void setPas(List<String> pas) {
+		this.pas = pas;
+	}
+
+	public List<String> getPss() {
+		return pss;
+	}
+
+	public void setPss(List<String> pss) {
+		this.pss = pss;
+	}
 
 	public String getId() {
 		return id;
