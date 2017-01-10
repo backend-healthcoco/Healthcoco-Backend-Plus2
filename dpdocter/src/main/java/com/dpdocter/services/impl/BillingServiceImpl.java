@@ -140,6 +140,9 @@ public class BillingServiceImpl implements BillingService {
 			else{
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
+				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
+				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
+				doctorPatientInvoiceCollection.setTotalTax(request.getTotalTax());
 				doctorPatientInvoiceCollection.setGrandTotal(request.getGrandTotal());
 				doctorPatientInvoiceCollection.setBalanceAmount((request.getGrandTotal()-doctorPatientInvoiceCollection.getGrandTotal())+
 						doctorPatientInvoiceCollection.getBalanceAmount());

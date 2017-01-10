@@ -2,6 +2,8 @@ package com.dpdocter.webservices;
 
 import java.util.List;
 
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Tax;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.response.InvoiceItemResponse;
 
@@ -18,6 +20,12 @@ public class DoctorPatientInvoiceAndReceiptRequest {
 	private String uniqueInvoiceId;
 	
 	private List<InvoiceItemResponse> invoiceItems;   
+	
+	private Discount totalDiscount;
+
+	private double totalCost = 0.0;
+
+	private Tax totalTax;
 	
 	private Double grandTotal;
 	
@@ -137,12 +145,37 @@ public class DoctorPatientInvoiceAndReceiptRequest {
 		this.amountPaid = amountPaid;
 	}
 
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceAndReceiptRequest [doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal + ", usedAdvanceAmount="
-				+ usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount
-				+ ", discarded=" + discarded + ", modeOfPayment=" + modeOfPayment + ", amountPaid=" + amountPaid + "]";
+				+ ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost
+				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", usedAdvanceAmount=" + usedAdvanceAmount
+				+ ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount + ", discarded=" + discarded
+				+ ", modeOfPayment=" + modeOfPayment + ", amountPaid=" + amountPaid + "]";
 	}
 }

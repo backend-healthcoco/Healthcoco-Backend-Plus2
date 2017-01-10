@@ -10,7 +10,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.InvoiceItem;
+import com.dpdocter.beans.Tax;
 
 @Document(collection = "doctor_patient_invoice_cl")
 @CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
@@ -40,6 +42,15 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	@Field
 	private List<InvoiceItem> invoiceItems;   
 	
+	@Field
+	private Discount totalDiscount;
+
+	@Field
+	private Double totalCost = 0.0;
+
+	@Field
+	private Tax totalTax;
+
 	@Field
 	private Double grandTotal;
 	
@@ -159,13 +170,37 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.receiptIds = receiptIds;
 	}
 
+	public Discount getTotalDiscount() {
+		return totalDiscount;
+	}
+
+	public void setTotalDiscount(Discount totalDiscount) {
+		this.totalDiscount = totalDiscount;
+	}
+
+	public Double getTotalCost() {
+		return totalCost;
+	}
+
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public Tax getTotalTax() {
+		return totalTax;
+	}
+
+	public void setTotalTax(Tax totalTax) {
+		this.totalTax = totalTax;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", receiptIds=" + receiptIds + ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal
+				+ ", receiptIds=" + receiptIds + ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount
+				+ ", totalCost=" + totalCost + ", totalTax=" + totalTax + ", grandTotal=" + grandTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
 				+ balanceAmount + ", discarded=" + discarded + "]";
 	}
-
 }

@@ -93,6 +93,14 @@ public class ClinicalNotesEditRequest {
 	
 	private List<ObstetricHistory> obstetricHistories;
 
+	private String indicationOfUSG;
+
+	private String pv;
+
+	private String pa;
+
+	private String ps;
+
 	public String getId() {
 		return id;
 	}
@@ -389,6 +397,38 @@ public class ClinicalNotesEditRequest {
 		this.obstetricHistories = obstetricHistories;
 	}
 
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+
+	public String getPv() {
+		return pv;
+	}
+
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+
+	public String getPa() {
+		return pa;
+	}
+
+	public void setPa(String pa) {
+		this.pa = pa;
+	}
+
+	public String getPs() {
+		return ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesEditRequest [id=" + id + ", patientId=" + patientId + ", diagnoses=" + diagnoses
@@ -404,6 +444,7 @@ public class ClinicalNotesEditRequest {
 				+ ", provisionalDiagnoses=" + provisionalDiagnoses + ", presentComplaints=" + presentComplaints
 				+ ", presentComplaintHistories=" + presentComplaintHistories + ", generalExams=" + generalExams
 				+ ", systemExams=" + systemExams + ", menstrualHistories=" + menstrualHistories
-				+ ", obstetricHistories=" + obstetricHistories + "]";
+				+ ", obstetricHistories=" + obstetricHistories + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
+				+ ", pa=" + pa + ", ps=" + ps + "]";
 	}
 }
