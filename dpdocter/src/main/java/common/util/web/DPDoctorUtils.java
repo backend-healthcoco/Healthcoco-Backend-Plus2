@@ -31,6 +31,8 @@ import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -214,11 +216,10 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
-		if(resource.getType().equalsIgnoreCase(Resource.DRUG.getType())){
+		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
-		}
-		else if (anyStringEmpty(sortBy)) {
+		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
@@ -266,7 +267,7 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
-		
+
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -277,7 +278,7 @@ public class DPDoctorUtils {
 		} else {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
+						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 			} else {
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -352,11 +353,10 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
-		if(resource.getType().equalsIgnoreCase(Resource.DRUG.getType())){
+		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
-		}
-		else if (anyStringEmpty(sortBy)) {
+		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
@@ -588,6 +588,32 @@ public class DPDoctorUtils {
 		cal.set(Calendar.MONTH, (cal.get(Calendar.MONTH) + months));
 		current = cal.getTime();
 		return current;
+
+	}
+
+	public static DateTime getStartTime(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		return new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+	}
+
+	public static DateTime getEndTime(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		return new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
 

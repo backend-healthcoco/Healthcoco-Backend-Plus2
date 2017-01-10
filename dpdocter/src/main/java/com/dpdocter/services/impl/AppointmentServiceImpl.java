@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1329,19 +1330,21 @@ public class AppointmentServiceImpl implements AppointmentService {
 					Appointment appointment = new Appointment();
 					PatientCard patient = null;
 					if (collection.getType().getType().equals(AppointmentType.APPOINTMENT.getType())) {
-						List<PatientCard> patientCards = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
-								.and("locationId").is(new ObjectId(collection.getLocationId())).and("hospitalId").is(new ObjectId(collection.getHospitalId()))), 
-								Aggregation.lookup("user_cl", "userId", "_id", "user"), 
-								Aggregation.unwind("user")), PatientCollection.class, PatientCard.class).getMappedResults();
-						if(patientCards != null && !patientCards.isEmpty())patient = patientCards.get(0);
-						
+						List<PatientCard> patientCards = mongoTemplate.aggregate(Aggregation.newAggregation(
+								Aggregation.match(new Criteria("userId").is(new ObjectId(collection.getPatientId()))
+										.and("locationId").is(new ObjectId(collection.getLocationId()))
+										.and("hospitalId").is(new ObjectId(collection.getHospitalId()))),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+								PatientCollection.class, PatientCard.class).getMappedResults();
+						if (patientCards != null && !patientCards.isEmpty())
+							patient = patientCards.get(0);
+
 						patient.setId(patient.getUserId());
-						if(patient.getUser() != null){
+						if (patient.getUser() != null) {
 							patient.setColorCode(patient.getUser().getColorCode());
 							patient.setMobileNumber(patient.getUser().getMobileNumber());
 						}
-						
+
 					}
 					BeanUtil.map(collection, appointment);
 					appointment.setPatient(patient);
@@ -1514,13 +1517,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
 							new ObjectId(locationId), new ObjectId(patientId));
-					if(recommendationsCollection!=null)
-					location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
+					if (recommendationsCollection != null)
+						location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
 				}
-				
+
 				location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
 				location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));
-				if(location.getImages() != null && !location.getImages().isEmpty()){
+				if (location.getImages() != null && !location.getImages().isEmpty()) {
 					for (ClinicImage image : location.getImages()) {
 						image.setImageUrl(getFinalImageURL(image.getImageUrl()));
 						image.setThumbnailUrl(getFinalImageURL(image.getThumbnailUrl()));
@@ -2035,17 +2038,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			localCalendar.setTime(date);
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-
-			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			DateTime start = DPDoctorUtils.getStartTime(date);
+			DateTime end = DPDoctorUtils.getStartTime(date);
 			PatientQueueCollection patientQueueCollection = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(appointmentId))
@@ -2304,5 +2298,26 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 		}
 		return appointment;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
+	@Override
+	@Transactional
+	public void getAppointment() {
+
+		System.out.println(DPDoctorUtils.getStartTime(new Date()));
+		List<AppointmentCollection> appointmentList = appointmentRepository
+				.findByAppointment(DPDoctorUtils.getStartTime(new Date()), DPDoctorUtils.getEndTime(new Date()));
+		if (appointmentList != null) {
+			for (AppointmentCollection appointmentCollection : appointmentList) {
+				updateQueue(appointmentCollection.getAppointmentId().toString(),
+						appointmentCollection.getDoctorId().toString(),
+						appointmentCollection.getLocationId().toString(),
+						appointmentCollection.getHospitalId().toString(),
+						appointmentCollection.getPatientId().toString(), new Date(),
+						appointmentCollection.getTime().getFromTime(), null, false);
+			}
+		}
 	}
 }
