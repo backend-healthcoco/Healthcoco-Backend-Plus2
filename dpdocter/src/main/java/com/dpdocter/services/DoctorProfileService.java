@@ -8,6 +8,7 @@ import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
@@ -58,7 +59,8 @@ public interface DoctorProfileService {
 
 	String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
 
-	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,Boolean isMobileApp);
+	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
+			Boolean isMobileApp);
 
 	List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
 
@@ -88,6 +90,11 @@ public interface DoctorProfileService {
 
 	DoctorDOBAddEditRequest addEditDOB(DoctorDOBAddEditRequest request);
 
-	public DoctorClinicProfile addEditRecommedation(String doctorId, String locationId,String patientId);
+	public DoctorClinicProfile addEditRecommedation(String doctorId, String locationId, String patientId);
+
+	public List<PatientCard> getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
+			long from, long to);
+
+	public long getPatientCount(String doctorId, String locationId, String hospitalId, long from, long to);
 
 }

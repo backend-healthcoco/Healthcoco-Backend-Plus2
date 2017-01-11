@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
@@ -28,20 +29,22 @@ import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.Feedback;
-import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.FeedbackCollection;
-import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.ProfessionalMembershipCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.RoleCollection;
@@ -432,13 +435,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 		try {
 			Criteria criteria = new Criteria("isActivate").is(true).and("doctorId").is(new ObjectId(doctorId));
-			if(!DPDoctorUtils.anyStringEmpty(locationId))criteria.and("locationId").is(new ObjectId(locationId));
-			
-			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
-					Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollections")),
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				criteria.and("locationId").is(new ObjectId(locationId));
+
+			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+							Aggregation.unwind("doctor"),
+							Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollections")),
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
@@ -448,8 +454,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						logger.error("No user found");
 						throw new BusinessException(ServiceError.NoRecord, "No user found");
 					}
-					clinicProfile.add(getDoctorClinic(doctorClinicProfileLookupResponse, patientId, isMobileApp, doctorClinicProfileLookupResponses.size()));
-					}
+					clinicProfile.add(getDoctorClinic(doctorClinicProfileLookupResponse, patientId, isMobileApp,
+							doctorClinicProfileLookupResponses.size()));
+				}
 			}
 
 			doctorProfile = new DoctorProfile();
@@ -488,8 +495,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			// set clinic profile details
 			doctorProfile.setClinicProfile(clinicProfile);
-			
-			
+
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -501,8 +507,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return doctorProfile;
 	}
 
-	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse, String patientId,
-			Boolean isMobileApp, int locationSize) {
+	private DoctorClinicProfile getDoctorClinic(DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse,
+			String patientId, Boolean isMobileApp, int locationSize) {
 		DoctorClinicProfile doctorClinic = new DoctorClinicProfile();
 		try {
 			LocationCollection locationCollection = doctorClinicProfileLookupResponse.getLocation();
@@ -535,8 +541,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setLocationId(doctorClinicProfileLookupResponse.getLocationId().toString());
 			doctorClinic.setDoctorId(doctorClinicProfileLookupResponse.getDoctorId().toString());
 
-			Criteria criteria = new Criteria("doctorId").is(doctorClinicProfileLookupResponse.getDoctorId()).and("locationId")
-					.is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId());
+			Criteria criteria = new Criteria("doctorId").is(doctorClinicProfileLookupResponse.getDoctorId())
+					.and("locationId").is(locationCollection.getId()).and("hospitalId")
+					.is(locationCollection.getHospitalId());
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("treatment_services_cl", "treatmentServiceId", "_id", "treatmentServicesList"),
 					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((0) * 5),
@@ -549,18 +556,21 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setNoOfServices(
 					(int) mongoTemplate.count(new Query(criteria), TreatmentServicesCostCollection.class));
 
-			
-			List<Feedback> feedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(
-					Aggregation.match(criteria.and("isVisible").is(true)),Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), 
-					Aggregation.skip((0) * 5),
-					Aggregation.limit(5)),FeedbackCollection.class, Feedback.class).getMappedResults();
+			List<Feedback> feedbacks = mongoTemplate
+					.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria.and("isVisible").is(true)),
+									Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+									Aggregation.skip((0) * 5), Aggregation.limit(5)),
+							FeedbackCollection.class, Feedback.class)
+					.getMappedResults();
 			doctorClinic.setFeedbacks(feedbacks);
 			doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
 
 			List<Role> roles = null;
 
 			@SuppressWarnings("unchecked")
-			Collection<ObjectId> roleIds = CollectionUtils.collect(doctorClinicProfileLookupResponse.getUserRoleCollections(),
+			Collection<ObjectId> roleIds = CollectionUtils.collect(
+					doctorClinicProfileLookupResponse.getUserRoleCollections(),
 					new BeanToPropertyValueTransformer("roleId"));
 			List<RoleCollection> roleCollections = roleRepository.find(roleIds, locationCollection.getId(),
 					locationCollection.getHospitalId());
@@ -569,16 +579,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-								|| otherRoleCollection.getRole()
-								.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 					logger.warn("You are staff member so please login from website.");
 					throw new BusinessException(ServiceError.NotAuthorized,
 							"You are staff member so please login from website.");
 				} else if (isMobileApp && !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-						|| otherRoleCollection.getRole()
-						.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 					return null;
 				}
 
@@ -600,7 +608,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					RecommendationsCollection recommendationsCollection = recommendationsRepository
 							.findByDoctorIdLocationIdAndPatientId(doctorClinicProfileLookupResponse.getDoctorId(),
 									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId));
-					if(recommendationsCollection != null)doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
+					if (recommendationsCollection != null)
+						doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
 				}
 			}
 		} catch (BusinessException be) {
@@ -676,16 +685,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
-				doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
-				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				response = new DoctorAppointmentNumbersAddEditRequest();
-				BeanUtil.map(doctorClinicProfileCollection, response);
-				response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+			doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorAppointmentNumbersAddEditRequest();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -703,17 +712,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
-				doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
-				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				response = new DoctorVisitingTimeAddEditRequest();
-				BeanUtil.map(doctorClinicProfileCollection, response);
-				response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
-			
+			doctorClinicProfileCollection.setWorkingSchedules(request.getWorkingSchedules());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorVisitingTimeAddEditRequest();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -731,16 +740,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
-				doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
-				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				response = new DoctorConsultationFeeAddEditRequest();
-				BeanUtil.map(doctorClinicProfileCollection, response);
-				response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+			doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorConsultationFeeAddEditRequest();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -759,15 +768,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
-			}	doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
-				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				response = new DoctorAppointmentSlotAddEditRequest();
-				BeanUtil.map(doctorClinicProfileCollection, response);
-				response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
+			}
+			doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorAppointmentSlotAddEditRequest();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -785,19 +795,19 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
 			doctorClinicProfileCollection.setAppointmentBookingNumber(request.getAppointmentBookingNumber());
-				doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
-				doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
-				doctorClinicProfileCollection.setFacility(request.getFacility());
-				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				response = new DoctorGeneralInfo();
-				BeanUtil.map(doctorClinicProfileCollection, response);
-				response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+			doctorClinicProfileCollection.setConsultationFee(request.getConsultationFee());
+			doctorClinicProfileCollection.setAppointmentSlot(request.getAppointmentSlot());
+			doctorClinicProfileCollection.setFacility(request.getFacility());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorGeneralInfo();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 		} catch (Exception e) {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown,
@@ -993,19 +1003,18 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
 					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
+			} else {
+				doctorClinicProfileCollection.setUpdatedTime(new Date());
 			}
-			else {
-					doctorClinicProfileCollection.setUpdatedTime(new Date());
-				}
-				doctorClinicProfileCollection.setFacility(request.getFacility());
-				doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				response = new DoctorAddEditFacilityRequest();
-				BeanUtil.map(doctorClinicProfileCollection, response);
-				response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
+			doctorClinicProfileCollection.setFacility(request.getFacility());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorAddEditFacilityRequest();
+			BeanUtil.map(doctorClinicProfileCollection, response);
+			response.setDoctorId(doctorClinicProfileCollection.getDoctorId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Editing Doctor Clinic Profile");
@@ -1069,15 +1078,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			DoctorClinicProfileCollection doctorClinicProfileCollection = null;
 			RecommendationsCollection recommendationsCollection = null;
 
-			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
-					doctorObjectId, locationObjectId);
-			
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorObjectId,
+					locationObjectId);
+
 			UserCollection userCollection = userRepository.findOne(patientObjectId);
 			if (doctorClinicProfileCollection == null) {
-					doctorClinicProfileCollection = new DoctorClinicProfileCollection();
-					doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
-					doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-					doctorClinicProfileCollection.setCreatedTime(new Date());
+				doctorClinicProfileCollection = new DoctorClinicProfileCollection();
+				doctorClinicProfileCollection.setLocationId(doctorClinicProfileCollection.getLocationId());
+				doctorClinicProfileCollection.setDoctorId(doctorClinicProfileCollection.getDoctorId());
+				doctorClinicProfileCollection.setCreatedTime(new Date());
 			}
 			if (userCollection != null) {
 				recommendationsCollection = recommendationsRepository
@@ -1105,7 +1114,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				}
 				recommendationsCollection = recommendationsRepository.save(recommendationsCollection);
 				doctorClinicProfileCollection = doctorClinicProfileRepository.save(doctorClinicProfileCollection);
-				transnationalService.checkDoctor(doctorClinicProfileCollection.getDoctorId(), doctorClinicProfileCollection.getLocationId());
+				transnationalService.checkDoctor(doctorClinicProfileCollection.getDoctorId(),
+						doctorClinicProfileCollection.getLocationId());
 				response = new DoctorClinicProfile();
 				BeanUtil.map(doctorClinicProfileCollection, response);
 				response.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
@@ -1119,6 +1129,88 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 
 		return response;
+	}
+
+	@Override
+	public List<PatientCard> getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
+			long from, long to) {
+		List<PatientCard> response = null;
+		try {
+			ObjectId doctorObjectId = null;
+			ObjectId locationObjectId = null;
+			ObjectId hospitalObjectId = null;
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria().and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			criteria = criteria.and("doctorId").is(doctorObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			criteria = criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			criteria = criteria.and("hospitalId").is(hospitalObjectId);
+			if (from > 0)
+
+				criteria = criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(from)));
+			if (to > 0)
+
+				criteria = criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
+
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			}
+
+			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientCollection.class, PatientCard.class);
+			response = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error getting Patient ");
+			throw new BusinessException(ServiceError.Unknown, "Error getting Patient");
+		}
+		return response;
+	}
+
+	public long getPatientCount(String doctorId, String locationId, String hospitalId, long from, long to) {
+		long count = 0;
+		try {
+			ObjectId doctorObjectId = null;
+			ObjectId locationObjectId = null;
+			ObjectId hospitalObjectId = null;
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria().and("discarded").is(false);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			criteria = criteria.and("doctorId").is(doctorObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			criteria = criteria.and("locationId").is(locationObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			criteria = criteria.and("hospitalId").is(hospitalObjectId);
+			if (from > 0)
+
+				criteria = criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(from)));
+			if (to > 0)
+
+				criteria = criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
+
+			Query query = new Query();
+			query.addCriteria(criteria);
+			count = mongoTemplate.count(query, PatientCollection.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error counting Patient ");
+			throw new BusinessException(ServiceError.Unknown, "Error counting Patient");
+		}
+		return count;
+
 	}
 
 }

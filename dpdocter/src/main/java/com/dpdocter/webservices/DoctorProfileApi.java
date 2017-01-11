@@ -26,6 +26,7 @@ import com.dpdocter.beans.EducationInstitute;
 import com.dpdocter.beans.EducationQualification;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MedicalCouncil;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.enums.Resource;
@@ -575,6 +576,32 @@ public class DoctorProfileApi {
 
 		transnationalService.checkLocation(new ObjectId(location.getId()));
 		response.setData(location);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PATIENT, notes = PathProxy.DoctorProfileUrls.GET_PATIENT)
+	public Response<Object> getPatient(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId, @QueryParam("from") long from, @QueryParam("to") long to) {
+
+		Response<Object> response = new Response<Object>();
+		List<PatientCard> patientCards = doctorProfileService.getPatient(page, size, doctorId, locationId, hospitalId,
+				from, to);
+		response.setDataList(patientCards);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_PATIENT_COUNT)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PATIENT_COUNT, notes = PathProxy.DoctorProfileUrls.GET_PATIENT_COUNT)
+	public Response<Long> getPatientCount(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("from") long from, @QueryParam("to") long to) {
+		Long total = doctorProfileService.getPatientCount(doctorId, locationId, hospitalId, from, to);
+		Response<Long> response = new Response<Long>();
+		response.setData(total);
 		return response;
 	}
 

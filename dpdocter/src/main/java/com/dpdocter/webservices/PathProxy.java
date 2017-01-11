@@ -252,11 +252,11 @@ public interface PathProxy {
 		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PS = "/ps/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
-		
+
 		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
-		
+
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
 	}
 
@@ -443,7 +443,7 @@ public interface PathProxy {
 		public static final String DRUGS_INTERACTION = "/drugs/interaction";
 
 		public static final String ADD_GENERIC_CODES_WITH_REACTION = "/genericCodes/";
-		
+
 		public static final String ADD_FAVOURITES_TO_DRUGS = "/addFavouritesToDrug";
 	}
 
@@ -581,6 +581,10 @@ public interface PathProxy {
 		public static final String SET_RECOMMENDATION = "/recommendation/{doctorId}/{locationId}/{patientId}";
 
 		public static final String SET_CLINIC_RECOMMENDATION = "/recommendation/{locationId}/{patientId}";
+
+		public static final String GET_PATIENT = "/getPatient";
+
+		public static final String GET_PATIENT_COUNT = "/getPatientCount";
 
 	}
 
