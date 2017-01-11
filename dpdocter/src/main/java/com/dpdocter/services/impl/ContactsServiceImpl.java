@@ -605,22 +605,17 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setPatient(patient);
 					registeredPatientDetail.setAddress(patientCard.getAddress());
 
-
+					Criteria groupCriteria = new Criteria("id").in(groupIds).and("discarded").is(false);
+					
+					
 					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-						groups = mongoTemplate
-								.aggregate(
-										Aggregation.newAggregation(Aggregation.match(
-												new Criteria("id").in(groupIds).and("doctorId").is(doctorObjectId)
-														.and("locationId").is(locationObjectId).and("hospitalId")
-														.is(hospitalObjectId).and("discarded").is(false))),
-										GroupCollection.class, Group.class)
-								.getMappedResults();
-					} else {
-						groups = mongoTemplate.aggregate(
-								Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds)
-										.and("doctorId").is(doctorObjectId).and("discarded").is(false))),
-								GroupCollection.class, Group.class).getMappedResults();
+						groupCriteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+					} 
+					if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+						groupCriteria.and("doctorId").is(doctorObjectId);
 					}
+					groups = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(groupCriteria)),
+							GroupCollection.class, Group.class).getMappedResults();
 					registeredPatientDetail.setGroups(groups);
 
 					registeredPatientDetail.setDoctorId(patientCard.getDoctorId().toString());

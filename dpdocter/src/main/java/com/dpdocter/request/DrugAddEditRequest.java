@@ -1,7 +1,6 @@
 package com.dpdocter.request;
 
 import java.util.List;
-import java.util.UUID;
 
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugType;
@@ -23,7 +22,7 @@ public class DrugAddEditRequest {
 
     private String locationId;
 
-    private UUID drugCode;
+    private String drugCode;
 
     private String companyName;
 
@@ -99,11 +98,11 @@ public class DrugAddEditRequest {
 	this.locationId = locationId;
     }
 
-    public UUID getDrugCode() {
+    public String getDrugCode() {
 	return drugCode;
     }
 
-    public void setDrugCode(UUID drugCode) {
+    public void setDrugCode(String drugCode) {
 	this.drugCode = drugCode;
     }
 

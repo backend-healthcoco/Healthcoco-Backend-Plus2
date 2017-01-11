@@ -70,7 +70,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.OphthalmologyService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.TransactionalManagementService;
-import com.dpdocter.services.impl.OphthalmologyServiceImpl;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;

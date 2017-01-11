@@ -53,7 +53,6 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.Code;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
-import com.dpdocter.beans.DoctorDrug;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDosage;
@@ -64,7 +63,6 @@ import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.Prescription;
-import com.dpdocter.beans.PrescriptionAddItem;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
@@ -100,7 +98,6 @@ import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESGenericCodesAndReactions;
-import com.dpdocter.elasticsearch.repository.ESDoctorDrugRepository;
 import com.dpdocter.elasticsearch.repository.ESGenericCodesAndReactionsRepository;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.enums.ComponentType;
@@ -286,9 +283,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
-
-	@Autowired
-	private ESDoctorDrugRepository esDoctorDrugRepository;
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
@@ -2314,48 +2308,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null, null),
 					DrugCollection.class, Drug.class);
 			response = results.getMappedResults();
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Getting Drugs");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
-		}
-		return response;
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<Drug> getFavouritesDrugs(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded) {
-		List<Drug> response = null;
-		try {
-
-			long createdTimeStamp = Long.parseLong(updatedTime);
-
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
-			if (!discarded)
-				criteria.and("discarded").is(discarded);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				criteria.and("doctorId").is(new ObjectId(doctorId));
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				criteria.and("locationId").is(new ObjectId(locationId));
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-
-			Aggregation aggregation = null;
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("drug_cl", "drugId", "_id", "drugs"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "rankingCount")),
-						Aggregation.skip((page) * size), Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("drug_cl", "drugId", "_id", "drugs"),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "rankingCount")));
-
-			AggregationResults<DoctorDrug> results = mongoTemplate.aggregate(aggregation, DoctorDrugCollection.class,
-					DoctorDrug.class);
-			List<DoctorDrug> doctorDrugs = results.getMappedResults();
-			CollectionUtils.collect(doctorDrugs, new BeanToPropertyValueTransformer("drugs"));
-			response = (List<Drug>) CollectionUtils.collect(doctorDrugs, new BeanToPropertyValueTransformer("drug"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
