@@ -5,14 +5,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "pv_cl")
-public class PVCollection extends GenericCollection {
+@Document(collection = "ps_cl")
+public class PSCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
 
 	@Field
-	private String pv;
+	private String ps;
 
 	@Field
 	private ObjectId doctorId;
@@ -37,12 +37,12 @@ public class PVCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getPv() {
-		return pv;
+	public String getPs() {
+		return ps;
 	}
 
-	public void setPv(String pv) {
-		this.pv = pv;
+	public void setPs(String ps) {
+		this.ps = ps;
 	}
 
 	public ObjectId getDoctorId() {
@@ -83,12 +83,6 @@ public class PVCollection extends GenericCollection {
 
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
-	}
-
-	@Override
-	public String toString() {
-		return "PVCollection [id=" + id + ", pv=" + pv + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", speciality=" + speciality + "]";
 	}
 
 }

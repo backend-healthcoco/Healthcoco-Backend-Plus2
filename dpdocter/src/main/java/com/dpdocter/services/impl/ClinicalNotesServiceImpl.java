@@ -46,6 +46,7 @@ import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
 import com.dpdocter.beans.PA;
+import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
@@ -67,6 +68,7 @@ import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.ObstetricHistoryCollection;
 import com.dpdocter.collections.PACollection;
+import com.dpdocter.collections.PSCollection;
 import com.dpdocter.collections.PVCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
@@ -112,6 +114,7 @@ import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.ObstetricHistoryRepository;
 import com.dpdocter.repository.PARepository;
+import com.dpdocter.repository.PSRepository;
 import com.dpdocter.repository.PVRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
@@ -173,24 +176,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private DiagnosisRepository diagnosisRepository;
-	
+
 	@Autowired
 	private PresentComplaintRepository presentComplaintRepository;
-	
+
 	@Autowired
 	private PresentComplaintHistoryRepository presentComplaintHistoryRepository;
-	
+
 	@Autowired
 	private ObstetricHistoryRepository obstetricHistoryRepository;
-	
+
 	@Autowired
 	private IndicationOfUSGRepository indicationOfUSGRepository;
-	
+
 	@Autowired
 	private PARepository paRepository;
-	
+
 	@Autowired
-	private PVRepository pvRepository ;
+	private PVRepository pvRepository;
 
 	@Autowired
 	private NotesRepository notesRepository;
@@ -224,12 +227,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private EmailTackService emailTackService;
-	
+
 	@Autowired
 	private PatientRepository patientRepository;
 
 	@Autowired
 	private PatientVisitRepository patientVisitRepository;
+
+	@Autowired
+	private PSRepository psRepository;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
@@ -239,10 +245,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private AppointmentService appointmentService;
-	
+
 	@Autowired
 	private ESClinicalNotesService esClinicalNotesService;
-	
+
 	@Autowired
 	private TransactionalManagementService transactionalManagementService;
 
@@ -292,17 +298,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						+ userCollection.getFirstName();
 				clinicalNotesCollection.setCreatedBy(createdBy);
 			}
-			
-			/*if(request.getPresentComplaint() != null || !request.getPresentComplaint().isEmpty())
-			{
-				ArrayList<String> presentComplaints = new ArrayList<String>(Arrays.asList(request.getPresentComplaint().split(",")));
-				for( String presentComplaint : presentComplaints)
-				{
-					PresentComplaint complaint = new PresentComplaint(presentComplaint, request.getDoctorId(), request.getLocationId(), request.getHospitalId(), false, null);
-				}
-			}
-			*/
-			//complaintIds = new ArrayList<ObjectId>();
+
+			/*
+			 * if(request.getPresentComplaint() != null ||
+			 * !request.getPresentComplaint().isEmpty()) { ArrayList<String>
+			 * presentComplaints = new
+			 * ArrayList<String>(Arrays.asList(request.getPresentComplaint().
+			 * split(","))); for( String presentComplaint : presentComplaints) {
+			 * PresentComplaint complaint = new
+			 * PresentComplaint(presentComplaint, request.getDoctorId(),
+			 * request.getLocationId(), request.getHospitalId(), false, null); }
+			 * }
+			 */
+			// complaintIds = new ArrayList<ObjectId>();
 			if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
 				for (Complaint complaint : request.getComplaints()) {
 					if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
@@ -320,14 +328,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						BeanUtil.map(complaintCollection, esComplaints);
 						esClinicalNotesService.addComplaints(esComplaints);
 
-						//complaintIds.add(complaintCollection.getId());
+						// complaintIds.add(complaintCollection.getId());
 					} else {
-						//complaintIds.add(new ObjectId(complaint.getId()));
+						// complaintIds.add(new ObjectId(complaint.getId()));
 					}
 				}
 			}
 
-			//observationIds = new ArrayList<ObjectId>();
+			// observationIds = new ArrayList<ObjectId>();
 			if (request.getObservations() != null && !request.getObservations().isEmpty()) {
 				for (Observation observation : request.getObservations()) {
 					if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
@@ -345,14 +353,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						BeanUtil.map(observationCollection, esObservations);
 						esClinicalNotesService.addObservations(esObservations);
 
-					//	observationIds.add(observationCollection.getId());
+						// observationIds.add(observationCollection.getId());
 					} else {
-					//	observationIds.add(new ObjectId(observation.getId()));
+						// observationIds.add(new
+						// ObjectId(observation.getId()));
 					}
 				}
 			}
 
-			//investigationIds = new ArrayList<ObjectId>();
+			// investigationIds = new ArrayList<ObjectId>();
 			if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
 				for (Investigation investigation : request.getInvestigations()) {
 					if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
@@ -370,14 +379,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						BeanUtil.map(investigationCollection, esInvestigations);
 						esClinicalNotesService.addInvestigations(esInvestigations);
 
-						//investigationIds.add(investigationCollection.getId());
+						// investigationIds.add(investigationCollection.getId());
 					} else {
-						//investigationIds.add(new ObjectId(investigation.getId()));
+						// investigationIds.add(new
+						// ObjectId(investigation.getId()));
 					}
 				}
 			}
 
-		//	noteIds = new ArrayList<ObjectId>();
+			// noteIds = new ArrayList<ObjectId>();
 			if (request.getNotes() != null && !request.getNotes().isEmpty()) {
 				for (Notes note : request.getNotes()) {
 					if (DPDoctorUtils.anyStringEmpty(note.getId())) {
@@ -392,11 +402,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ESNotesDocument esNotes = new ESNotesDocument();
 						BeanUtil.map(notesCollection, esNotes);
 						esClinicalNotesService.addNotes(esNotes);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
-			}
+				}
 			}
 			if (request.getProvisionalDiagnoses() != null && !request.getProvisionalDiagnoses().isEmpty()) {
 				for (ProvisionalDiagnosis provisionalDiagnosis : request.getProvisionalDiagnoses()) {
@@ -407,18 +417,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						provisionalDiagnosisCollection.setCreatedBy(createdBy);
 						provisionalDiagnosisCollection.setCreatedTime(createdTime);
 						provisionalDiagnosisCollection.setId(null);
-						provisionalDiagnosisCollection = provisionalDiagnosisRepository.save(provisionalDiagnosisCollection);
-						transactionalManagementService.addResource(provisionalDiagnosisCollection.getId(), Resource.PROVISIONAL_DIAGNOSIS, false);
+						provisionalDiagnosisCollection = provisionalDiagnosisRepository
+								.save(provisionalDiagnosisCollection);
+						transactionalManagementService.addResource(provisionalDiagnosisCollection.getId(),
+								Resource.PROVISIONAL_DIAGNOSIS, false);
 						ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new ESProvisionalDiagnosisDocument();
 						BeanUtil.map(provisionalDiagnosisCollection, esProvisionalDiagnosis);
 						esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosis);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getPresentComplaints() != null && !request.getPresentComplaints().isEmpty()) {
 				for (PresentComplaint presentComplaint : request.getPresentComplaints()) {
 					if (DPDoctorUtils.anyStringEmpty(presentComplaint.getId())) {
@@ -429,17 +441,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						presentComplaintCollection.setCreatedTime(createdTime);
 						presentComplaintCollection.setId(null);
 						presentComplaintCollection = presentComplaintRepository.save(presentComplaintCollection);
-						transactionalManagementService.addResource(presentComplaintCollection.getId(), Resource.PRESENT_COMPLAINT, false);
+						transactionalManagementService.addResource(presentComplaintCollection.getId(),
+								Resource.PRESENT_COMPLAINT, false);
 						ESPresentComplaintDocument esPresentComplaint = new ESPresentComplaintDocument();
 						BeanUtil.map(presentComplaintCollection, esPresentComplaint);
 						esClinicalNotesService.addPresentComplaint(esPresentComplaint);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getPresentComplaintHistories() != null && !request.getPresentComplaintHistories().isEmpty()) {
 				for (PresentComplaintHistory presentComplaintHistory : request.getPresentComplaintHistories()) {
 					if (DPDoctorUtils.anyStringEmpty(presentComplaintHistory.getId())) {
@@ -449,18 +462,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						presentComplaintHistoryCollection.setCreatedBy(createdBy);
 						presentComplaintHistoryCollection.setCreatedTime(createdTime);
 						presentComplaintHistoryCollection.setId(null);
-						presentComplaintHistoryCollection = presentComplaintHistoryRepository.save(presentComplaintHistoryCollection);
-						transactionalManagementService.addResource(presentComplaintHistoryCollection.getId(), Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
+						presentComplaintHistoryCollection = presentComplaintHistoryRepository
+								.save(presentComplaintHistoryCollection);
+						transactionalManagementService.addResource(presentComplaintHistoryCollection.getId(),
+								Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
 						ESPresentComplaintHistoryDocument esPresentComplaintHistory = new ESPresentComplaintHistoryDocument();
 						BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistory);
 						esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistory);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getGeneralExams() != null && !request.getGeneralExams().isEmpty()) {
 				for (GeneralExam generalExam : request.getGeneralExams()) {
 					if (DPDoctorUtils.anyStringEmpty(generalExam.getId())) {
@@ -471,17 +486,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						generalExamCollection.setCreatedTime(createdTime);
 						generalExamCollection.setId(null);
 						generalExamCollection = generalExamRepository.save(generalExamCollection);
-						transactionalManagementService.addResource(generalExamCollection.getId(), Resource.GENERAL_EXAMINATION, false);
+						transactionalManagementService.addResource(generalExamCollection.getId(),
+								Resource.GENERAL_EXAMINATION, false);
 						ESGeneralExamDocument esGeneralExam = new ESGeneralExamDocument();
 						BeanUtil.map(generalExamCollection, esGeneralExam);
 						esClinicalNotesService.addGeneralExam(esGeneralExam);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getSystemExams() != null && !request.getSystemExams().isEmpty()) {
 				for (SystemExam systemExam : request.getSystemExams()) {
 					if (DPDoctorUtils.anyStringEmpty(systemExam.getId())) {
@@ -492,17 +508,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
-						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEMATIC_EXAMINATION, false);
+						transactionalManagementService.addResource(systemExamCollection.getId(),
+								Resource.SYSTEMATIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getMenstrualHistories() != null && !request.getMenstrualHistories().isEmpty()) {
 				for (MenstrualHistory menstrualHistory : request.getMenstrualHistories()) {
 					if (DPDoctorUtils.anyStringEmpty(menstrualHistory.getId())) {
@@ -513,17 +530,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						menstrualHistoryCollection.setCreatedTime(createdTime);
 						menstrualHistoryCollection.setId(null);
 						menstrualHistoryCollection = menstrualHistoryRepository.save(menstrualHistoryCollection);
-						transactionalManagementService.addResource(menstrualHistoryCollection.getId(), Resource.MENSTRUAL_HISTORY, false);
+						transactionalManagementService.addResource(menstrualHistoryCollection.getId(),
+								Resource.MENSTRUAL_HISTORY, false);
 						ESMenstrualHistoryDocument esMenstrualHistory = new ESMenstrualHistoryDocument();
 						BeanUtil.map(menstrualHistoryCollection, esMenstrualHistory);
 						esClinicalNotesService.addMenstrualHistory(esMenstrualHistory);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getObstetricHistories() != null && !request.getObstetricHistories().isEmpty()) {
 				for (ObstetricHistory obstetricHistory : request.getObstetricHistories()) {
 					if (DPDoctorUtils.anyStringEmpty(obstetricHistory.getId())) {
@@ -534,17 +552,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						obstetricHistoryCollection.setCreatedTime(createdTime);
 						obstetricHistoryCollection.setId(null);
 						obstetricHistoryCollection = obstetricHistoryRepository.save(obstetricHistoryCollection);
-						transactionalManagementService.addResource(obstetricHistoryCollection.getId(), Resource.OBSTETRIC_HISTORY, false);
+						transactionalManagementService.addResource(obstetricHistoryCollection.getId(),
+								Resource.OBSTETRIC_HISTORY, false);
 						ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
 						BeanUtil.map(obstetricHistoryCollection, esObstetricHistory);
 						esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (Diagnoses diagnosis : request.getDiagnoses()) {
@@ -609,7 +628,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding Clinical notes", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding Clinical notes",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -673,26 +693,27 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 													DiagramsCollection.class, Diagram.class).getMappedResults(),
 											clinicalNotesCollection.getDiagrams()));
 
-				if(DPDoctorUtils.anyStringEmpty(visitId)){
+				if (DPDoctorUtils.anyStringEmpty(visitId)) {
 					PatientVisitCollection patientVisitCollection = patientVisitRepository
 							.findByClinialNotesId(clinicalNotesCollection.getId());
 					if (patientVisitCollection != null)
 						clinicalNote.setVisitId(patientVisitCollection.getId().toString());
-				}else{
+				} else {
 					clinicalNote.setVisitId(visitId.toString());
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			
+
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting notes for id:"+id, e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting notes for id:" + id,
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return clinicalNote;
@@ -702,7 +723,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	@Transactional
 	public ClinicalNotes editNotes(ClinicalNotesEditRequest request) {
 		ClinicalNotes clinicalNotes = null;
-		 List<ObjectId> diagnosisIds = null;
+		List<ObjectId> diagnosisIds = null;
 		List<ObjectId> diagramIds = null;
 		Appointment appointment = null;
 		Date createdTime = new Date();
@@ -720,7 +741,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				request.setFromDate(appointment.getFromDate());
 			}
 			BeanUtil.map(request, clinicalNotesCollection);
-			ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository.findOne(clinicalNotesCollection.getId());
+			ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository
+					.findOne(clinicalNotesCollection.getId());
 			String createdBy = oldClinicalNotesCollection.getCreatedBy();
 			if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
 				for (Complaint complaint : request.getComplaints()) {
@@ -739,14 +761,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						BeanUtil.map(complaintCollection, esComplaints);
 						esClinicalNotesService.addComplaints(esComplaints);
 
-						//complaintIds.add(complaintCollection.getId());
+						// complaintIds.add(complaintCollection.getId());
 					} else {
-						//complaintIds.add(new ObjectId(complaint.getId()));
+						// complaintIds.add(new ObjectId(complaint.getId()));
 					}
 				}
 			}
 
-			//observationIds = new ArrayList<ObjectId>();
+			// observationIds = new ArrayList<ObjectId>();
 			if (request.getObservations() != null && !request.getObservations().isEmpty()) {
 				for (Observation observation : request.getObservations()) {
 					if (DPDoctorUtils.anyStringEmpty(observation.getId())) {
@@ -764,14 +786,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						BeanUtil.map(observationCollection, esObservations);
 						esClinicalNotesService.addObservations(esObservations);
 
-					//	observationIds.add(observationCollection.getId());
+						// observationIds.add(observationCollection.getId());
 					} else {
-					//	observationIds.add(new ObjectId(observation.getId()));
+						// observationIds.add(new
+						// ObjectId(observation.getId()));
 					}
 				}
 			}
 
-			//investigationIds = new ArrayList<ObjectId>();
+			// investigationIds = new ArrayList<ObjectId>();
 			if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
 				for (Investigation investigation : request.getInvestigations()) {
 					if (DPDoctorUtils.anyStringEmpty(investigation.getId())) {
@@ -789,14 +812,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						BeanUtil.map(investigationCollection, esInvestigations);
 						esClinicalNotesService.addInvestigations(esInvestigations);
 
-						//investigationIds.add(investigationCollection.getId());
+						// investigationIds.add(investigationCollection.getId());
 					} else {
-						//investigationIds.add(new ObjectId(investigation.getId()));
+						// investigationIds.add(new
+						// ObjectId(investigation.getId()));
 					}
 				}
 			}
 
-		//	noteIds = new ArrayList<ObjectId>();
+			// noteIds = new ArrayList<ObjectId>();
 			if (request.getNotes() != null && !request.getNotes().isEmpty()) {
 				for (Notes note : request.getNotes()) {
 					if (DPDoctorUtils.anyStringEmpty(note.getId())) {
@@ -811,11 +835,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ESNotesDocument esNotes = new ESNotesDocument();
 						BeanUtil.map(notesCollection, esNotes);
 						esClinicalNotesService.addNotes(esNotes);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
-			}
+				}
 			}
 			if (request.getProvisionalDiagnoses() != null && !request.getProvisionalDiagnoses().isEmpty()) {
 				for (ProvisionalDiagnosis provisionalDiagnosis : request.getProvisionalDiagnoses()) {
@@ -826,18 +850,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						provisionalDiagnosisCollection.setCreatedBy(createdBy);
 						provisionalDiagnosisCollection.setCreatedTime(createdTime);
 						provisionalDiagnosisCollection.setId(null);
-						provisionalDiagnosisCollection = provisionalDiagnosisRepository.save(provisionalDiagnosisCollection);
-						transactionalManagementService.addResource(provisionalDiagnosisCollection.getId(), Resource.PROVISIONAL_DIAGNOSIS, false);
+						provisionalDiagnosisCollection = provisionalDiagnosisRepository
+								.save(provisionalDiagnosisCollection);
+						transactionalManagementService.addResource(provisionalDiagnosisCollection.getId(),
+								Resource.PROVISIONAL_DIAGNOSIS, false);
 						ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new ESProvisionalDiagnosisDocument();
 						BeanUtil.map(provisionalDiagnosisCollection, esProvisionalDiagnosis);
 						esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosis);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getPresentComplaints() != null && !request.getPresentComplaints().isEmpty()) {
 				for (PresentComplaint presentComplaint : request.getPresentComplaints()) {
 					if (DPDoctorUtils.anyStringEmpty(presentComplaint.getId())) {
@@ -848,17 +874,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						presentComplaintCollection.setCreatedTime(createdTime);
 						presentComplaintCollection.setId(null);
 						presentComplaintCollection = presentComplaintRepository.save(presentComplaintCollection);
-						transactionalManagementService.addResource(presentComplaintCollection.getId(), Resource.PRESENT_COMPLAINT, false);
+						transactionalManagementService.addResource(presentComplaintCollection.getId(),
+								Resource.PRESENT_COMPLAINT, false);
 						ESPresentComplaintDocument esPresentComplaint = new ESPresentComplaintDocument();
 						BeanUtil.map(presentComplaintCollection, esPresentComplaint);
 						esClinicalNotesService.addPresentComplaint(esPresentComplaint);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getPresentComplaintHistories() != null && !request.getPresentComplaintHistories().isEmpty()) {
 				for (PresentComplaintHistory presentComplaintHistory : request.getPresentComplaintHistories()) {
 					if (DPDoctorUtils.anyStringEmpty(presentComplaintHistory.getId())) {
@@ -868,18 +895,20 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						presentComplaintHistoryCollection.setCreatedBy(createdBy);
 						presentComplaintHistoryCollection.setCreatedTime(createdTime);
 						presentComplaintHistoryCollection.setId(null);
-						presentComplaintHistoryCollection = presentComplaintHistoryRepository.save(presentComplaintHistoryCollection);
-						transactionalManagementService.addResource(presentComplaintHistoryCollection.getId(), Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
+						presentComplaintHistoryCollection = presentComplaintHistoryRepository
+								.save(presentComplaintHistoryCollection);
+						transactionalManagementService.addResource(presentComplaintHistoryCollection.getId(),
+								Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
 						ESPresentComplaintHistoryDocument esPresentComplaintHistory = new ESPresentComplaintHistoryDocument();
 						BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistory);
 						esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistory);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getGeneralExams() != null && !request.getGeneralExams().isEmpty()) {
 				for (GeneralExam generalExam : request.getGeneralExams()) {
 					if (DPDoctorUtils.anyStringEmpty(generalExam.getId())) {
@@ -890,17 +919,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						generalExamCollection.setCreatedTime(createdTime);
 						generalExamCollection.setId(null);
 						generalExamCollection = generalExamRepository.save(generalExamCollection);
-						transactionalManagementService.addResource(generalExamCollection.getId(), Resource.GENERAL_EXAMINATION, false);
+						transactionalManagementService.addResource(generalExamCollection.getId(),
+								Resource.GENERAL_EXAMINATION, false);
 						ESGeneralExamDocument esGeneralExam = new ESGeneralExamDocument();
 						BeanUtil.map(generalExamCollection, esGeneralExam);
 						esClinicalNotesService.addGeneralExam(esGeneralExam);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getSystemExams() != null && !request.getSystemExams().isEmpty()) {
 				for (SystemExam systemExam : request.getSystemExams()) {
 					if (DPDoctorUtils.anyStringEmpty(systemExam.getId())) {
@@ -911,17 +941,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
-						transactionalManagementService.addResource(systemExamCollection.getId(), Resource.SYSTEMATIC_EXAMINATION, false);
+						transactionalManagementService.addResource(systemExamCollection.getId(),
+								Resource.SYSTEMATIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getMenstrualHistories() != null && !request.getMenstrualHistories().isEmpty()) {
 				for (MenstrualHistory menstrualHistory : request.getMenstrualHistories()) {
 					if (DPDoctorUtils.anyStringEmpty(menstrualHistory.getId())) {
@@ -932,17 +963,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						menstrualHistoryCollection.setCreatedTime(createdTime);
 						menstrualHistoryCollection.setId(null);
 						menstrualHistoryCollection = menstrualHistoryRepository.save(menstrualHistoryCollection);
-						transactionalManagementService.addResource(menstrualHistoryCollection.getId(), Resource.MENSTRUAL_HISTORY, false);
+						transactionalManagementService.addResource(menstrualHistoryCollection.getId(),
+								Resource.MENSTRUAL_HISTORY, false);
 						ESMenstrualHistoryDocument esMenstrualHistory = new ESMenstrualHistoryDocument();
 						BeanUtil.map(menstrualHistoryCollection, esMenstrualHistory);
 						esClinicalNotesService.addMenstrualHistory(esMenstrualHistory);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			if (request.getObstetricHistories() != null && !request.getObstetricHistories().isEmpty()) {
 				for (ObstetricHistory obstetricHistory : request.getObstetricHistories()) {
 					if (DPDoctorUtils.anyStringEmpty(obstetricHistory.getId())) {
@@ -953,17 +985,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						obstetricHistoryCollection.setCreatedTime(createdTime);
 						obstetricHistoryCollection.setId(null);
 						obstetricHistoryCollection = obstetricHistoryRepository.save(obstetricHistoryCollection);
-						transactionalManagementService.addResource(obstetricHistoryCollection.getId(), Resource.OBSTETRIC_HISTORY, false);
+						transactionalManagementService.addResource(obstetricHistoryCollection.getId(),
+								Resource.OBSTETRIC_HISTORY, false);
 						ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
 						BeanUtil.map(obstetricHistoryCollection, esObstetricHistory);
 						esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
-						//noteIds.add(notesCollection.getId());
+						// noteIds.add(notesCollection.getId());
 					} else {
-						//noteIds.add(new ObjectId(note.getId()));
+						// noteIds.add(new ObjectId(note.getId()));
 					}
 				}
 			}
-			
+
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (Diagnoses diagnosis : request.getDiagnoses()) {
@@ -1032,7 +1065,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While editing clinical notes", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While editing clinical notes",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1061,7 +1095,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While deleting note for id:"+id, e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting note for id:" + id,
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1091,23 +1126,34 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			long createdTimestamp = Long.parseLong(updatedTime);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
-			if(!discarded)criteria.and("discarded").is(discarded);
-			if(inHistory)criteria.and("inHistory").is(inHistory);
-			
-			if(!isOTPVerified){
-				if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId")
+					.is(patientObjectId);
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			if (inHistory)
+				criteria.and("inHistory").is(inHistory);
+
+			if (!isOTPVerified) {
+				if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
+					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+				if (!DPDoctorUtils.anyStringEmpty(doctorId))
+					criteria.and("doctorId").is(doctorObjectId);
 			}
-			
+
 			Aggregation aggregation = null;
-			
-			if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-			else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			
-			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation, ClinicalNotesCollection.class, ClinicalNotesCollection.class);
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<ClinicalNotesCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					ClinicalNotesCollection.class, ClinicalNotesCollection.class);
 			clinicalNotesCollections = aggregationResults.getMappedResults();
-			
+
 			if (clinicalNotesCollections != null && !clinicalNotesCollections.isEmpty()) {
 				clinicalNotes = new ArrayList<ClinicalNotes>();
 				for (ClinicalNotesCollection clinicalNotesCollection : clinicalNotesCollections) {
@@ -1119,7 +1165,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(" Error Occurred While Getting Clinical Notes");
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1167,12 +1214,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNote
 					.setDiagrams(
 							sortDiagrams(
-									mongoTemplate
-											.aggregate(
-													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-															.in(clinicalNotesCollection.getDiagrams()))),
-													DiagramsCollection.class, Diagram.class)
-											.getMappedResults(),
+									mongoTemplate.aggregate(
+											Aggregation.newAggregation(Aggregation.match(
+													new Criteria("id").in(clinicalNotesCollection.getDiagrams()))),
+											DiagramsCollection.class, Diagram.class).getMappedResults(),
 									clinicalNotesCollection.getDiagrams()));
 
 		PatientVisitCollection patientVisitCollection = patientVisitRepository
@@ -1214,7 +1259,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing complaint", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing complaint",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1256,7 +1302,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing observation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing observation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1299,7 +1346,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing provisional diagnosis", e.getMessage());
+				mailService.sendExceptionMail(
+						"Backend Business Exception :: While adding/editing provisional diagnosis", e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1341,7 +1389,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing general examination", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing general examination",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1383,7 +1432,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing systematic examination", e.getMessage());
+				mailService.sendExceptionMail(
+						"Backend Business Exception :: While adding/editing systematic examination", e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1425,7 +1475,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing menstrual history", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing menstrual history",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1434,7 +1485,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return menstrualHistory;
 	}
-	
+
 	@Override
 	@Transactional
 	public PresentComplaint addEditPresentComplaint(PresentComplaint presentComplaint) {
@@ -1467,7 +1518,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing present complaint", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing present complaint",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1476,7 +1528,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return presentComplaint;
 	}
-	
+
 	@Override
 	@Transactional
 	public PresentComplaintHistory addEditPresentComplaintHistory(PresentComplaintHistory presentComplaintHistory) {
@@ -1486,7 +1538,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(presentComplaintHistoryCollection.getId())) {
 				presentComplaintHistoryCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentComplaintHistoryCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(presentComplaintHistoryCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(presentComplaintHistoryCollection.getDoctorId());
 					if (userCollection != null) {
 						presentComplaintHistoryCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -1502,14 +1555,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				presentComplaintHistoryCollection.setCreatedTime(oldPresentComplaintHistoryCollection.getCreatedTime());
 				presentComplaintHistoryCollection.setDiscarded(oldPresentComplaintHistoryCollection.getDiscarded());
 			}
-			presentComplaintHistoryCollection = presentComplaintHistoryRepository.save(presentComplaintHistoryCollection);
+			presentComplaintHistoryCollection = presentComplaintHistoryRepository
+					.save(presentComplaintHistoryCollection);
 
 			BeanUtil.map(presentComplaintHistoryCollection, presentComplaintHistory);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing present complaint history", e.getMessage());
+				mailService.sendExceptionMail(
+						"Backend Business Exception :: While adding/editing present complaint history", e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1518,7 +1573,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return presentComplaintHistory;
 	}
-	
+
 	@Override
 	@Transactional
 	public ObstetricHistory addEditObstetricHistory(ObstetricHistory obstetricHistory) {
@@ -1538,7 +1593,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					obstetricHistoryCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				ObstetricHistoryCollection oldObstetricHistoryCollection= obstetricHistoryRepository
+				ObstetricHistoryCollection oldObstetricHistoryCollection = obstetricHistoryRepository
 						.findOne(obstetricHistoryCollection.getId());
 				obstetricHistoryCollection.setCreatedBy(oldObstetricHistoryCollection.getCreatedBy());
 				obstetricHistoryCollection.setCreatedTime(oldObstetricHistoryCollection.getCreatedTime());
@@ -1551,7 +1606,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing obstetrics history", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing obstetrics history",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1560,7 +1616,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return obstetricHistory;
 	}
-	
 
 	@Override
 	@Transactional
@@ -1595,7 +1650,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing investigation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing investigation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1636,7 +1692,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagnosis", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagnosis",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1677,7 +1734,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing notes", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing notes",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1738,7 +1796,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagram", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While adding/editing diagram",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1835,7 +1894,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While deleting observation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting observation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1883,7 +1943,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While deleting investigation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While deleting investigation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2056,7 +2117,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes count", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting clinical notes count",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2183,7 +2245,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
-		
+
 		case PRESENT_COMPLAINT: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2191,17 +2253,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalPresentComplaint(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomPresentComplaint(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomPresentComplaint(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalPresentComplaint(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalPresentComplaint(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case HISTORY_OF_PRESENT_COMPLAINT: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2209,17 +2273,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalPresentComplaintHistory(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomPresentComplaintHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomPresentComplaintHistory(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalPresentComplaintHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalPresentComplaintHistory(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case PROVISIONAL_DIAGNOSIS: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2227,17 +2293,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalProvisionalDiagnosis(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomProvisionalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomProvisionalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalProvisionalDiagnosis(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalProvisionalDiagnosis(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case GENERAL_EXAMINATION: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2248,14 +2316,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomGeneralExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalGeneralExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalGeneralExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case SYSTEMATIC_EXAMINATION: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2266,14 +2335,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomSystemExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalSystemExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalSystemExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case MENSTRUAL_HISTORY: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2281,17 +2351,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalMenstrualHistory(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomMenstrualHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomMenstrualHistory(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalMenstrualHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalMenstrualHistory(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case OBSTETRIC_HISTORY: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2299,17 +2371,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalObstetricHistory(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomObstetricHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomObstetricHistory(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalObstetricHistory(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalObstetricHistory(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case INDICATION_OF_USG: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2317,17 +2391,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalIndicationOfUSG(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomIndicationOfUSG(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomIndicationOfUSG(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalIndicationOfUSG(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalIndicationOfUSG(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case PA: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2345,7 +2421,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
-		
+
 		case PV: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -2357,6 +2433,23 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				break;
 			case BOTH:
 				response = getCustomGlobalPV(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case PS: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalPS(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomPS(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalPS(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			default:
 				break;
@@ -2388,7 +2481,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			AggregationResults<Complaint> results = mongoTemplate.aggregate(
 					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, specialities,null),
+							updatedTime, discarded, null, null, specialities, null),
 					ComplaintCollection.class, Complaint.class);
 			response = results.getMappedResults();
 
@@ -2396,7 +2489,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting custom global complaints", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom global complaints",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2426,16 +2520,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<Complaint> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					ComplaintCollection.class, Complaint.class);
+			AggregationResults<Complaint> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), ComplaintCollection.class,
+					Complaint.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While Getting global complaints", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While Getting global complaints",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2449,15 +2544,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<Complaint> response = null;
 		try {
-			AggregationResults<Complaint> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null),
-					ComplaintCollection.class, Complaint.class);
+			AggregationResults<Complaint> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							ComplaintCollection.class, Complaint.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting custom complaints", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom complaints",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2488,7 +2586,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			AggregationResults<Investigation> results = mongoTemplate.aggregate(
 					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, specialities,null),
+							updatedTime, discarded, null, null, specialities, null),
 					InvestigationCollection.class, Investigation.class);
 			response = results.getMappedResults();
 
@@ -2496,7 +2594,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting custom global investigation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom global investigation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2525,8 +2624,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<Investigation> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<Investigation> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					InvestigationCollection.class, Investigation.class);
 			response = results.getMappedResults();
 
@@ -2534,7 +2633,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting global investigation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting global investigation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2553,14 +2653,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			AggregationResults<Investigation> results = mongoTemplate
 					.aggregate(
 							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null,null),
+									updatedTime, discarded, null, null, null),
 							InvestigationCollection.class, Investigation.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			try {
-				mailService.sendExceptionMail("Backend Business Exception :: While getting custom investigation", e.getMessage());
+				mailService.sendExceptionMail("Backend Business Exception :: While getting custom investigation",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -2591,7 +2692,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			AggregationResults<Observation> results = mongoTemplate.aggregate(
 					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, specialities,null),
+							updatedTime, discarded, null, null, specialities, null),
 					ObservationCollection.class, Observation.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
@@ -2622,8 +2723,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<Observation> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<Observation> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					ObservationCollection.class, Observation.class);
 			response = results.getMappedResults();
 
@@ -2641,7 +2742,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		try {
 			AggregationResults<Observation> results = mongoTemplate
 					.aggregate(DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null,null), Observation.class, Observation.class);
+							updatedTime, discarded, null, null, null), Observation.class, Observation.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2673,7 +2774,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			AggregationResults<Diagnoses> results = mongoTemplate.aggregate(
 					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, specialities,null),
+							updatedTime, discarded, null, null, specialities, null),
 					DiagnosisCollection.class, Diagnoses.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
@@ -2704,9 +2805,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<Diagnoses> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					DiagnosisCollection.class, Diagnoses.class);
+			AggregationResults<Diagnoses> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), DiagnosisCollection.class,
+					Diagnoses.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -2721,9 +2822,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<Diagnoses> response = null;
 		try {
-			AggregationResults<Diagnoses> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null),
-					DiagnosisCollection.class, Diagnoses.class);
+			AggregationResults<Diagnoses> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							DiagnosisCollection.class, Diagnoses.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2752,11 +2855,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<Notes> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							NotesCollection.class, Notes.class);
+			AggregationResults<Notes> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					NotesCollection.class, Notes.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -2786,9 +2888,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<Notes> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					NotesCollection.class, Notes.class);
+			AggregationResults<Notes> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), NotesCollection.class, Notes.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -2804,8 +2905,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		List<Notes> response = null;
 		try {
 			AggregationResults<Notes> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), NotesCollection.class,
-					Notes.class);
+					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null),
+					NotesCollection.class, Notes.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2834,11 +2935,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<Diagram> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							DiagramsCollection.class, Diagram.class);
+			AggregationResults<Diagram> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					DiagramsCollection.class, Diagram.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -2869,9 +2969,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<Diagram> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					DiagramsCollection.class, Diagram.class);
+			AggregationResults<Diagram> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), DiagramsCollection.class,
+					Diagram.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2886,7 +2986,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		List<Diagram> response = null;
 		try {
 			AggregationResults<Diagram> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null),
+					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null),
 					DiagramsCollection.class, Diagram.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
@@ -2945,8 +3045,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 						user = userRepository.findOne(clinicalNotesCollection.getPatientId());
 						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								clinicalNotesCollection.getPatientId(), 
-								clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
+								clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
+								clinicalNotesCollection.getHospitalId());
 
 						emailTrackCollection.setDoctorId(new ObjectId(doctorId));
 						emailTrackCollection.setHospitalId(new ObjectId(hospitalId));
@@ -2957,8 +3057,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							emailTrackCollection.setPatientName(user.getFirstName());
 							emailTrackCollection.setPatientId(user.getId());
 						}
-						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient,
-								user, null, false, false, false, false, false);
+						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
+								null, false, false, false, false, false);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -3079,7 +3179,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@Override
-	public String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG) {
+	public String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH,
+			Boolean showDA, Boolean showUSG) {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
@@ -3088,13 +3189,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			if (clinicalNotesCollection != null) {
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						clinicalNotesCollection.getPatientId(), 
-						clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId());
+						clinicalNotesCollection.getPatientId(), clinicalNotesCollection.getLocationId(),
+						clinicalNotesCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(clinicalNotesCollection.getPatientId());
-				if(showPH || showPLH || showFH || showDA){
-					historyCollection  = historyRepository.findHistory(clinicalNotesCollection.getLocationId(), clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
+				if (showPH || showPLH || showFH || showDA) {
+					historyCollection = historyRepository.findHistory(clinicalNotesCollection.getLocationId(),
+							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
 				}
-				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user, historyCollection, showPH, showPLH, showFH, showDA, showUSG);
+				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
+						historyCollection, showPH, showPLH, showFH, showDA, showUSG);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3113,7 +3216,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
-			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG) throws IOException, ParseException {
+			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
+			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
@@ -3209,8 +3313,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			String spo2 = clinicalNotesCollection.getVitalSigns().getSpo2();
-			spo2 = (spo2 != null && !spo2.isEmpty()
-					? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
 			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + spo2;
@@ -3238,16 +3341,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(clinicalNotesCollection.getFromDate());
 			parameters.put("followUpAppointment", "Next Review on " + dateTime);
 		}
-		
-		if(historyCollection != null){
+
+		if (historyCollection != null) {
 			parameters.put("showHistory", true);
 			patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
 		}
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, "<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null ? clinicalNotesCollection.getUniqueEmrId() : "--"), patient.getLocalPatientName(),
-				user.getMobileNumber(), parameters);
+				patient,
+				"<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null
+						? clinicalNotesCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();
@@ -3352,12 +3457,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-
 	@Override
 	public Boolean updateQuery() {
 		Boolean response = false;
 		try {
-				response = true;
+			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3365,10 +3469,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private List<PresentComplaint> getCustomGlobalPresentComplaint(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<PresentComplaint> getCustomGlobalPresentComplaint(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentComplaint> response = new ArrayList<PresentComplaint>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3385,11 +3489,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<PresentComplaint> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							PresentComplaintCollection.class, PresentComplaint.class);
+			AggregationResults<PresentComplaint> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					PresentComplaintCollection.class, PresentComplaint.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3402,7 +3505,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<PresentComplaint> getGlobalPresentComplaint(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<PresentComplaint> getGlobalPresentComplaint(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
 		List<PresentComplaint> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3419,8 +3523,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PresentComplaint> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<PresentComplaint> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					PresentComplaintCollection.class, PresentComplaint.class);
 			response = results.getMappedResults();
 
@@ -3432,13 +3536,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<PresentComplaint> getCustomPresentComplaint(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<PresentComplaint> getCustomPresentComplaint(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentComplaint> response = null;
 		try {
-			AggregationResults<PresentComplaint> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), PresentComplaintCollection.class,
-					PresentComplaint.class);
+			AggregationResults<PresentComplaint> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							PresentComplaintCollection.class, PresentComplaint.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3448,11 +3554,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	
-
 	@SuppressWarnings("unchecked")
-	private List<PresentComplaintHistory> getCustomGlobalPresentComplaintHistory(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<PresentComplaintHistory> getCustomGlobalPresentComplaintHistory(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentComplaintHistory> response = new ArrayList<PresentComplaintHistory>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3469,11 +3573,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<PresentComplaintHistory> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							PresentComplaintHistoryCollection.class, PresentComplaintHistory.class);
+			AggregationResults<PresentComplaintHistory> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					PresentComplaintHistoryCollection.class, PresentComplaintHistory.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3486,7 +3589,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<PresentComplaintHistory> getGlobalPresentComplaintHistory(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<PresentComplaintHistory> getGlobalPresentComplaintHistory(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded) {
 		List<PresentComplaintHistory> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3503,9 +3607,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PresentComplaintHistory> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					PresentComplaintHistoryCollection.class, PresentComplaintHistory.class);
+			AggregationResults<PresentComplaintHistory> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+									specialities, null),
+							PresentComplaintHistoryCollection.class, PresentComplaintHistory.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3516,13 +3622,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<PresentComplaintHistory> getCustomPresentComplaintHistory(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<PresentComplaintHistory> getCustomPresentComplaintHistory(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentComplaintHistory> response = null;
 		try {
-			AggregationResults<PresentComplaintHistory> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), PresentComplaintHistoryCollection.class,
-					PresentComplaintHistory.class);
+			AggregationResults<PresentComplaintHistory> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					PresentComplaintHistoryCollection.class, PresentComplaintHistory.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3531,10 +3638,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private List<ProvisionalDiagnosis> getCustomGlobalProvisionalDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<ProvisionalDiagnosis> getCustomGlobalProvisionalDiagnosis(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<ProvisionalDiagnosis> response = new ArrayList<ProvisionalDiagnosis>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3551,11 +3658,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<ProvisionalDiagnosis> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							ProvisionalDiagnosisCollection.class, ProvisionalDiagnosis.class);
+			AggregationResults<ProvisionalDiagnosis> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					ProvisionalDiagnosisCollection.class, ProvisionalDiagnosis.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3568,7 +3674,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ProvisionalDiagnosis> getGlobalProvisionalDiagnosis(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<ProvisionalDiagnosis> getGlobalProvisionalDiagnosis(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded) {
 		List<ProvisionalDiagnosis> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3585,9 +3692,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<ProvisionalDiagnosis> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					ProvisionalDiagnosisCollection.class, ProvisionalDiagnosis.class);
+			AggregationResults<ProvisionalDiagnosis> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+									specialities, null),
+							ProvisionalDiagnosisCollection.class, ProvisionalDiagnosis.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3598,13 +3707,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<ProvisionalDiagnosis> getCustomProvisionalDiagnosis(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<ProvisionalDiagnosis> getCustomProvisionalDiagnosis(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<ProvisionalDiagnosis> response = null;
 		try {
-			AggregationResults<ProvisionalDiagnosis> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), ProvisionalDiagnosisCollection.class,
-					ProvisionalDiagnosis.class);
+			AggregationResults<ProvisionalDiagnosis> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					ProvisionalDiagnosisCollection.class, ProvisionalDiagnosis.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3613,11 +3723,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
-	private List<GeneralExam> getCustomGlobalGeneralExam(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<GeneralExam> getCustomGlobalGeneralExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<GeneralExam> response = new ArrayList<GeneralExam>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3634,11 +3743,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<GeneralExam> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							GeneralExamCollection.class, GeneralExam.class);
+			AggregationResults<GeneralExam> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					GeneralExamCollection.class, GeneralExam.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3651,7 +3759,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<GeneralExam> getGlobalGeneralExam(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<GeneralExam> getGlobalGeneralExam(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
 		List<GeneralExam> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3668,8 +3777,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<GeneralExam> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<GeneralExam> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					GeneralExamCollection.class, GeneralExam.class);
 			response = results.getMappedResults();
 
@@ -3681,13 +3790,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<GeneralExam> getCustomGeneralExam(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<GeneralExam> getCustomGeneralExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<GeneralExam> response = null;
 		try {
-			AggregationResults<GeneralExam> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), GeneralExamCollection.class,
-					GeneralExam.class);
+			AggregationResults<GeneralExam> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							GeneralExamCollection.class, GeneralExam.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3697,10 +3808,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-
 	@SuppressWarnings("unchecked")
-	private List<SystemExam> getCustomGlobalSystemExam(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<SystemExam> getCustomGlobalSystemExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<SystemExam> response = new ArrayList<SystemExam>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3717,11 +3827,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<SystemExam> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							SystemExamCollection.class, SystemExam.class);
+			AggregationResults<SystemExam> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					SystemExamCollection.class, SystemExam.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3734,7 +3843,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<SystemExam> getGlobalSystemExam(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<SystemExam> getGlobalSystemExam(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
 		List<SystemExam> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3751,27 +3861,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<SystemExam> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					SystemExamCollection.class, SystemExam.class);
-			response = results.getMappedResults();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting System Exam");
-		}
-		return response;
-	}
-
-	private List<SystemExam> getCustomSystemExam(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
-		List<SystemExam> response = null;
-		try {
-			AggregationResults<SystemExam> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), SystemExamCollection.class,
+			AggregationResults<SystemExam> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), SystemExamCollection.class,
 					SystemExam.class);
 			response = results.getMappedResults();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3779,10 +3873,28 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
+	private List<SystemExam> getCustomSystemExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<SystemExam> response = null;
+		try {
+			AggregationResults<SystemExam> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							SystemExamCollection.class, SystemExam.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting System Exam");
+		}
+		return response;
+	}
+
 	@SuppressWarnings("unchecked")
-	private List<MenstrualHistory> getCustomGlobalMenstrualHistory(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<MenstrualHistory> getCustomGlobalMenstrualHistory(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<MenstrualHistory> response = new ArrayList<MenstrualHistory>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3799,11 +3911,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<MenstrualHistory> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							MenstrualHistoryCollection.class, MenstrualHistory.class);
+			AggregationResults<MenstrualHistory> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					MenstrualHistoryCollection.class, MenstrualHistory.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3816,7 +3927,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<MenstrualHistory> getGlobalMenstrualHistory(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<MenstrualHistory> getGlobalMenstrualHistory(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
 		List<MenstrualHistory> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3833,8 +3945,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<MenstrualHistory> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<MenstrualHistory> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					MenstrualHistoryCollection.class, MenstrualHistory.class);
 			response = results.getMappedResults();
 
@@ -3846,13 +3958,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<MenstrualHistory> getCustomMenstrualHistory(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<MenstrualHistory> getCustomMenstrualHistory(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<MenstrualHistory> response = null;
 		try {
-			AggregationResults<MenstrualHistory> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), MenstrualHistoryCollection.class,
-					MenstrualHistory.class);
+			AggregationResults<MenstrualHistory> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							MenstrualHistoryCollection.class, MenstrualHistory.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3862,10 +3976,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	
 	@SuppressWarnings("unchecked")
-	private List<ObstetricHistory> getCustomGlobalObstetricHistory(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<ObstetricHistory> getCustomGlobalObstetricHistory(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<ObstetricHistory> response = new ArrayList<ObstetricHistory>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3882,11 +3995,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<ObstetricHistory> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							ObstetricHistoryCollection.class, ObstetricHistory.class);
+			AggregationResults<ObstetricHistory> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					ObstetricHistoryCollection.class, ObstetricHistory.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -3899,7 +4011,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ObstetricHistory> getGlobalObstetricHistory(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<ObstetricHistory> getGlobalObstetricHistory(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
 		List<ObstetricHistory> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -3916,8 +4029,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<ObstetricHistory> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<ObstetricHistory> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					ObstetricHistoryCollection.class, ObstetricHistory.class);
 			response = results.getMappedResults();
 
@@ -3929,13 +4042,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<ObstetricHistory> getCustomObstetricHistory(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<ObstetricHistory> getCustomObstetricHistory(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<ObstetricHistory> response = null;
 		try {
-			AggregationResults<ObstetricHistory> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), ObstetricHistoryCollection.class,
-					ObstetricHistory.class);
+			AggregationResults<ObstetricHistory> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							ObstetricHistoryCollection.class, ObstetricHistory.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3944,17 +4059,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public ProvisionalDiagnosis deleteProvisionalDiagnosis(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public ProvisionalDiagnosis deleteProvisionalDiagnosis(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded) {
 		ProvisionalDiagnosis response = null;
 		try {
-			ProvisionalDiagnosisCollection provisionalDiagnosisCollection = provisionalDiagnosisRepository.findOne(new ObjectId(id));
+			ProvisionalDiagnosisCollection provisionalDiagnosisCollection = provisionalDiagnosisRepository
+					.findOne(new ObjectId(id));
 			if (provisionalDiagnosisCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(provisionalDiagnosisCollection.getDoctorId(),
-						provisionalDiagnosisCollection.getHospitalId(), provisionalDiagnosisCollection.getLocationId())) {
+						provisionalDiagnosisCollection.getHospitalId(),
+						provisionalDiagnosisCollection.getLocationId())) {
 					if (provisionalDiagnosisCollection.getDoctorId().toString().equals(doctorId)
 							&& provisionalDiagnosisCollection.getHospitalId().toString().equals(hospitalId)
 							&& provisionalDiagnosisCollection.getLocationId().toString().equals(locationId)) {
@@ -3987,7 +4104,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public GeneralExam deleteGeneralExam(String id, String doctorId, String locationId, String hospitalId,
@@ -4033,14 +4150,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public PresentComplaintHistory deletePresentComplaintHistory(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public PresentComplaintHistory deletePresentComplaintHistory(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded) {
 		PresentComplaintHistory response = null;
 		try {
-			PresentComplaintHistoryCollection presentComplaintHistoryCollection = presentComplaintHistoryRepository.findOne(new ObjectId(id));
+			PresentComplaintHistoryCollection presentComplaintHistoryCollection = presentComplaintHistoryRepository
+					.findOne(new ObjectId(id));
 			if (presentComplaintHistoryCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(presentComplaintHistoryCollection.getDoctorId(),
-						presentComplaintHistoryCollection.getHospitalId(), presentComplaintHistoryCollection.getLocationId())) {
+						presentComplaintHistoryCollection.getHospitalId(),
+						presentComplaintHistoryCollection.getLocationId())) {
 					if (presentComplaintHistoryCollection.getDoctorId().toString().equals(doctorId)
 							&& presentComplaintHistoryCollection.getHospitalId().toString().equals(hospitalId)
 							&& presentComplaintHistoryCollection.getLocationId().toString().equals(locationId)) {
@@ -4116,13 +4235,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
+
 	@Override
 	@Transactional
 	public PresentComplaint deletePresentComplaint(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
 		PresentComplaint response = null;
 		try {
-			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findOne(new ObjectId(id));
+			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository
+					.findOne(new ObjectId(id));
 			if (presentComplaintCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(presentComplaintCollection.getDoctorId(),
 						presentComplaintCollection.getHospitalId(), presentComplaintCollection.getLocationId())) {
@@ -4165,7 +4286,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			Boolean discarded) {
 		ObstetricHistory response = null;
 		try {
-			ObstetricHistoryCollection obstetricHistoryCollection = obstetricHistoryRepository.findOne(new ObjectId(id));
+			ObstetricHistoryCollection obstetricHistoryCollection = obstetricHistoryRepository
+					.findOne(new ObjectId(id));
 			if (obstetricHistoryCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(obstetricHistoryCollection.getDoctorId(),
 						obstetricHistoryCollection.getHospitalId(), obstetricHistoryCollection.getLocationId())) {
@@ -4201,14 +4323,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
 		MenstrualHistory response = null;
 		try {
-			MenstrualHistoryCollection menstrualHistoryCollection = menstrualHistoryRepository.findOne(new ObjectId(id));
+			MenstrualHistoryCollection menstrualHistoryCollection = menstrualHistoryRepository
+					.findOne(new ObjectId(id));
 			if (menstrualHistoryCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(menstrualHistoryCollection.getDoctorId(),
 						menstrualHistoryCollection.getHospitalId(), menstrualHistoryCollection.getLocationId())) {
@@ -4244,7 +4367,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public IndicationOfUSG addEditIndicationOfUSG(IndicationOfUSG indicationOfUSG) {
@@ -4264,7 +4387,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					indicationOfUSGCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				IndicationOfUSGCollection oldIndicationOfUSGCollection= indicationOfUSGRepository
+				IndicationOfUSGCollection oldIndicationOfUSGCollection = indicationOfUSGRepository
 						.findOne(indicationOfUSGCollection.getId());
 				indicationOfUSGCollection.setCreatedBy(oldIndicationOfUSGCollection.getCreatedBy());
 				indicationOfUSGCollection.setCreatedTime(oldIndicationOfUSGCollection.getCreatedTime());
@@ -4322,10 +4445,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private List<IndicationOfUSG> getCustomGlobalIndicationOfUSG(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<IndicationOfUSG> getCustomGlobalIndicationOfUSG(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<IndicationOfUSG> response = new ArrayList<IndicationOfUSG>();
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -4342,11 +4465,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add("ALL");
 			}
 
-			AggregationResults<IndicationOfUSG> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
-							IndicationOfUSGCollection.class, IndicationOfUSG.class);
+			AggregationResults<IndicationOfUSG> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					IndicationOfUSGCollection.class, IndicationOfUSG.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -4359,7 +4481,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IndicationOfUSG> getGlobalIndicationOfUSG(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+	private List<IndicationOfUSG> getGlobalIndicationOfUSG(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
 		List<IndicationOfUSG> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -4376,8 +4499,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<IndicationOfUSG> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
+			AggregationResults<IndicationOfUSG> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
 					IndicationOfUSGCollection.class, IndicationOfUSG.class);
 			response = results.getMappedResults();
 
@@ -4389,13 +4512,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<IndicationOfUSG> getCustomIndicationOfUSG(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<IndicationOfUSG> getCustomIndicationOfUSG(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<IndicationOfUSG> response = null;
 		try {
-			AggregationResults<IndicationOfUSG> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), IndicationOfUSGCollection.class,
-					IndicationOfUSG.class);
+			AggregationResults<IndicationOfUSG> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							IndicationOfUSGCollection.class, IndicationOfUSG.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4404,8 +4529,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public PV addEditPV(PV pv) {
@@ -4425,8 +4549,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					pvCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				PVCollection oldPVCollecion= pvRepository
-						.findOne(pvCollection.getId());
+				PVCollection oldPVCollecion = pvRepository.findOne(pvCollection.getId());
 				pvCollection.setCreatedBy(oldPVCollecion.getCreatedBy());
 				pvCollection.setCreatedTime(oldPVCollecion.getCreatedTime());
 				pvCollection.setDiscarded(oldPVCollecion.getDiscarded());
@@ -4443,14 +4566,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@Override
-	public PV deletePV(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public PV deletePV(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 		PV response = null;
 		try {
 			PVCollection pvCollection = pvRepository.findOne(new ObjectId(id));
 			if (pvCollection != null) {
-				if (!DPDoctorUtils.anyStringEmpty(pvCollection.getDoctorId(),
-						pvCollection.getHospitalId(), pvCollection.getLocationId())) {
+				if (!DPDoctorUtils.anyStringEmpty(pvCollection.getDoctorId(), pvCollection.getHospitalId(),
+						pvCollection.getLocationId())) {
 					if (pvCollection.getDoctorId().toString().equals(doctorId)
 							&& pvCollection.getHospitalId().toString().equals(hospitalId)
 							&& pvCollection.getLocationId().toString().equals(locationId)) {
@@ -4483,7 +4605,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<PV> getCustomGlobalPV(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded) {
@@ -4506,7 +4628,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			AggregationResults<PV> results = mongoTemplate
 					.aggregate(
 							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
+									updatedTime, discarded, null, null, specialities, null),
 							PVCollection.class, PV.class);
 			response = results.getMappedResults();
 
@@ -4537,9 +4659,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PV> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					PVCollection.class, PV.class);
+			AggregationResults<PV> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), PVCollection.class, PV.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -4554,8 +4675,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String updatedTime, Boolean discarded) {
 		List<PV> response = null;
 		try {
-			AggregationResults<PV> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), PVCollection.class,
+			AggregationResults<PV> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), PVCollection.class,
 					PV.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
@@ -4565,7 +4686,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public PA addEditPA(PA pa) {
@@ -4585,8 +4706,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					paCollection.setCreatedBy("ADMIN");
 				}
 			} else {
-				PACollection oldPACollecion= paRepository
-						.findOne(paCollection.getId());
+				PACollection oldPACollecion = paRepository.findOne(paCollection.getId());
 				paCollection.setCreatedBy(oldPACollecion.getCreatedBy());
 				paCollection.setCreatedTime(oldPACollecion.getCreatedTime());
 				paCollection.setDiscarded(oldPACollecion.getDiscarded());
@@ -4603,14 +4723,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@Override
-	public PA deletePA(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public PA deletePA(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
 		PA response = null;
 		try {
 			PACollection paCollection = paRepository.findOne(new ObjectId(id));
 			if (paCollection != null) {
-				if (!DPDoctorUtils.anyStringEmpty(paCollection.getDoctorId(),
-						paCollection.getHospitalId(), paCollection.getLocationId())) {
+				if (!DPDoctorUtils.anyStringEmpty(paCollection.getDoctorId(), paCollection.getHospitalId(),
+						paCollection.getLocationId())) {
 					if (paCollection.getDoctorId().toString().equals(doctorId)
 							&& paCollection.getHospitalId().toString().equals(hospitalId)
 							&& paCollection.getLocationId().toString().equals(locationId)) {
@@ -4643,7 +4762,42 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
+
+	@Override
+	@Transactional
+	public PS addEditPS(PS ps) {
+		try {
+			PSCollection psCollection = new PSCollection();
+			BeanUtil.map(ps, psCollection);
+			if (DPDoctorUtils.anyStringEmpty(psCollection.getId())) {
+				psCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(psCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(psCollection.getDoctorId());
+					if (userCollection != null) {
+						psCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					psCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				PSCollection oldPSCollecion = psRepository.findOne(psCollection.getId());
+				psCollection.setCreatedBy(oldPSCollecion.getCreatedBy());
+				psCollection.setCreatedTime(oldPSCollecion.getCreatedTime());
+				psCollection.setDiscarded(oldPSCollecion.getDiscarded());
+			}
+			psCollection = psRepository.save(psCollection);
+
+			BeanUtil.map(psCollection, ps);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return ps;
+	}
+
 	@SuppressWarnings("unchecked")
 	private List<PA> getCustomGlobalPA(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded) {
@@ -4666,7 +4820,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			AggregationResults<PA> results = mongoTemplate
 					.aggregate(
 							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, specialities,null),
+									updatedTime, discarded, null, null, specialities, null),
 							PACollection.class, PA.class);
 			response = results.getMappedResults();
 
@@ -4697,9 +4851,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PA> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,null),
-					PACollection.class, PA.class);
+			AggregationResults<PA> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), PACollection.class, PA.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -4714,8 +4867,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String updatedTime, Boolean discarded) {
 		List<PA> response = null;
 		try {
-			AggregationResults<PA> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
-					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null,null), PACollection.class,
+			AggregationResults<PA> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), PACollection.class,
 					PA.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
@@ -4726,5 +4879,127 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	
+	@Override
+	public PS deletePS(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		PS response = null;
+		try {
+			PSCollection psCollection = psRepository.findOne(new ObjectId(id));
+			if (psCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(psCollection.getDoctorId(), psCollection.getHospitalId(),
+						psCollection.getLocationId())) {
+					if (psCollection.getDoctorId().toString().equals(doctorId)
+							&& psCollection.getHospitalId().toString().equals(hospitalId)
+							&& psCollection.getLocationId().toString().equals(locationId)) {
+
+						psCollection.setDiscarded(discarded);
+						psCollection.setUpdatedTime(new Date());
+						psRepository.save(psCollection);
+						response = new PS();
+						BeanUtil.map(psCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					psCollection.setDiscarded(discarded);
+					psCollection.setUpdatedTime(new Date());
+					psRepository.save(psCollection);
+					response = new PS();
+					BeanUtil.map(psCollection, response);
+				}
+			} else {
+				logger.warn("Indication of USG not found!");
+				throw new BusinessException(ServiceError.NoRecord, "P/A not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PS> getGlobalPS(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<PS> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<PS> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), PSCollection.class, PS.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/S");
+		}
+		return response;
+	}
+
+	private List<PS> getCustomPS(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<PS> response = null;
+		try {
+			AggregationResults<PS> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), PSCollection.class,
+					PS.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/S");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PS> getCustomGlobalPS(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<PS> response = new ArrayList<PS>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<PS> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, specialities, null),
+							PSCollection.class, PS.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/S");
+		}
+		return response;
+
+	}
+
 }
