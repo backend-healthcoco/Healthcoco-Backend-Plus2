@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Blog;
+import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
 
 import common.util.web.Response;
@@ -36,12 +38,12 @@ public class BlogApi {
 	@Path(value = PathProxy.BlogsUrls.GET_BLOGS)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS, notes = PathProxy.BlogsUrls.GET_BLOGS)
-	public Response<Blog> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+	public Response<BlogResponse> getBlogs(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
 			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
 			@QueryParam(value = "title") String title) {
-		List<Blog> blogresponse = blogService.getBlogs(size, page, category, userId, title);
-		Response<Blog> response = new Response<Blog>();
-		response.setDataList(blogresponse);
+		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);
+		Response<BlogResponse> response = new Response<BlogResponse>();
+		response.setData(blogresponse);
 		return response;
 	}
 
@@ -78,15 +80,7 @@ public class BlogApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BlogsUrls.GET_COUNT)
-	@GET
-	@ApiOperation(value = PathProxy.BlogsUrls.GET_COUNT, notes = PathProxy.BlogsUrls.GET_COUNT)
-	public Response<Long> countBlogs(@QueryParam("category") String category, @QueryParam("title") String title) {
-		Long count = blogService.countBlogs(category, title);
-		Response<Long> response = new Response<Long>();
-		response.setData(count);
-		return response;
-	}
+	
 
 	@Path(value = PathProxy.BlogsUrls.ADD_EDIT_FEVOURITE_BLOGS)
 	@GET
@@ -107,6 +101,16 @@ public class BlogApi {
 		List<Blog> blogList = blogService.getFevouriteBlogs(size, page, category, userId, title);
 		Response<Object> response = new Response<Object>();
 		response.setDataList(blogList);
+		return response;
+	}
+
+	@Path(value = PathProxy.BlogsUrls.GET_BLOGS_CATEGORY)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOGS_CATEGORY, notes = PathProxy.BlogsUrls.GET_BLOGS_CATEGORY)
+	public Response<Object> getBlogCategory() {
+
+		Response<Object> response = new Response<Object>();
+		response.setData(blogService.getBlogCategory());
 		return response;
 	}
 

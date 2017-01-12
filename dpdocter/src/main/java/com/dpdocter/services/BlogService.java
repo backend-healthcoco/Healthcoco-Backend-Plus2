@@ -3,11 +3,11 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.Blog;
+import com.dpdocter.enums.BlogCategoryType;
+import com.dpdocter.response.BlogResponse;
 
 public interface BlogService {
-	public List<Blog> getBlogs(int size, int page, String category, String userId, String title);
-
-	public long countBlogs(String category, String title);
+	public BlogResponse getBlogs(int size, int page, String category, String userId, String title);
 
 	public Blog getBlog(String id, String userId);
 
@@ -20,4 +20,5 @@ public interface BlogService {
 
 	public List<Blog> getFevouriteBlogs(int size, int page, String category, String userId, String title);
 
+	public BlogCategoryType[] getBlogCategory();
 }

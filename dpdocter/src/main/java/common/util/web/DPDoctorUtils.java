@@ -593,7 +593,7 @@ public class DPDoctorUtils {
 
 	public static DateTime getStartTime(Date date) {
 
-		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
 		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
@@ -606,7 +606,7 @@ public class DPDoctorUtils {
 
 	public static DateTime getEndTime(Date date) {
 
-		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
 		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
