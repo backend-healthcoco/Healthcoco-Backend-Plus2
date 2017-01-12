@@ -584,8 +584,6 @@ public interface PathProxy {
 
 		public static final String GET_PATIENT = "/getPatient";
 
-		public static final String GET_PATIENT_COUNT = "/getPatientCount";
-
 	}
 
 	public static final String PATIENT_VISIT_BASE_URL = BASE_URL + "/patientVisit";
@@ -935,6 +933,8 @@ public interface PathProxy {
 	public static final String BLOGS_BASE_URL = BASE_URL + "/blogs";
 
 	public interface BlogsUrls {
+		public static final String GET_BLOGS_CATEGORY = "/getBlogCategory";
+
 		public static final String GET_BLOGS = "/getBlogs";
 
 		public static final String GET_COUNT = "/getCount";

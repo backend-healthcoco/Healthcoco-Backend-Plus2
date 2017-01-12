@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
@@ -582,26 +583,14 @@ public class DoctorProfileApi {
 	@Path(value = PathProxy.DoctorProfileUrls.GET_PATIENT)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PATIENT, notes = PathProxy.DoctorProfileUrls.GET_PATIENT)
-	public Response<Object> getPatient(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DoctorContactsResponse> getPatient(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("from") long from, @QueryParam("to") long to) {
 
-		Response<Object> response = new Response<Object>();
-		List<PatientCard> patientCards = doctorProfileService.getPatient(page, size, doctorId, locationId, hospitalId,
-				from, to);
-		response.setDataList(patientCards);
-		return response;
-	}
-
-	@Path(value = PathProxy.DoctorProfileUrls.GET_PATIENT_COUNT)
-	@GET
-	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_PATIENT_COUNT, notes = PathProxy.DoctorProfileUrls.GET_PATIENT_COUNT)
-	public Response<Long> getPatientCount(@QueryParam("doctorId") String doctorId,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("from") long from, @QueryParam("to") long to) {
-		Long total = doctorProfileService.getPatientCount(doctorId, locationId, hospitalId, from, to);
-		Response<Long> response = new Response<Long>();
-		response.setData(total);
+		Response<DoctorContactsResponse> response = new Response<DoctorContactsResponse>();
+		DoctorContactsResponse doctorContactsResponse = doctorProfileService.getPatient(page, size, doctorId,
+				locationId, hospitalId, from, to);
+		response.setData(doctorContactsResponse);
 		return response;
 	}
 

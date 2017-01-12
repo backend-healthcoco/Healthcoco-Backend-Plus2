@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
@@ -1132,9 +1133,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	}
 
 	@Override
-	public List<PatientCard> getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
+	public DoctorContactsResponse getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
 			long from, long to) {
-		List<PatientCard> response = null;
+		DoctorContactsResponse response = new DoctorContactsResponse();
 		try {
 			ObjectId doctorObjectId = null;
 			ObjectId locationObjectId = null;
@@ -1167,50 +1168,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
-			response = aggregationResults.getMappedResults();
-
+			response.setPatientCards(aggregationResults.getMappedResults());
+			if (aggregationResults.getMappedResults() != null && !aggregationResults.getMappedResults().isEmpty())
+				response.setTotalSize(aggregationResults.getMappedResults().size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error getting Patient ");
 			throw new BusinessException(ServiceError.Unknown, "Error getting Patient");
 		}
 		return response;
-	}
-
-	public long getPatientCount(String doctorId, String locationId, String hospitalId, long from, long to) {
-		long count = 0;
-		try {
-			ObjectId doctorObjectId = null;
-			ObjectId locationObjectId = null;
-			ObjectId hospitalObjectId = null;
-			Aggregation aggregation = null;
-			Criteria criteria = new Criteria().and("discarded").is(false);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			criteria = criteria.and("doctorId").is(doctorObjectId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			criteria = criteria.and("locationId").is(locationObjectId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-			criteria = criteria.and("hospitalId").is(hospitalObjectId);
-			if (from > 0)
-
-				criteria = criteria.and("createdTime").gte(DPDoctorUtils.getStartTime(new Date(from)));
-			if (to > 0)
-
-				criteria = criteria.and("createdTime").lte(DPDoctorUtils.getEndTime(new Date(to)));
-
-			Query query = new Query();
-			query.addCriteria(criteria);
-			count = mongoTemplate.count(query, PatientCollection.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error counting Patient ");
-			throw new BusinessException(ServiceError.Unknown, "Error counting Patient");
-		}
-		return count;
-
 	}
 
 }
