@@ -3,6 +3,7 @@ package com.dpdocter.services;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorClinicProfile;
+import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
 import com.dpdocter.beans.DoctorProfile;
 import com.dpdocter.beans.EducationInstitute;
@@ -92,9 +93,9 @@ public interface DoctorProfileService {
 
 	public DoctorClinicProfile addEditRecommedation(String doctorId, String locationId, String patientId);
 
-	public List<PatientCard> getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
+	public DoctorContactsResponse getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
 			long from, long to);
 
-	public long getPatientCount(String doctorId, String locationId, String hospitalId, long from, long to);
+	
 
 }
