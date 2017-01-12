@@ -2508,8 +2508,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getUserId()))
 					patient = userRepository.findOne(feedbackCollection.getUserId());
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						feedbackCollection.getUserId(), feedbackCollection.getLocationId(),
-						feedbackCollection.getHospitalId());
+						feedbackCollection.getUserId(), null, null);
 
 				UserCollection doctor = null;
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getDoctorId()))
@@ -2519,7 +2518,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (!DPDoctorUtils.anyStringEmpty(feedbackCollection.getLocationId()))
 					locationCollection = locationRepository.findOne(feedbackCollection.getLocationId());
 
-				feedbackCollection.setCreatedBy(patientCollection.getLocalPatientName());
+				feedbackCollection.setCreatedBy(patient.getFirstName());
 				feedbackCollection = feedbackRepository.save(feedbackCollection);
 				BeanUtil.map(feedbackCollection, response);
 				if (patientCollection != null && patient != null) {

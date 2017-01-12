@@ -725,6 +725,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 					patientCard.setUserId(appointmentLookupResponse.getPatient().getId());
 					patientCard.setId(appointmentLookupResponse.getPatient().getId());
 					patientCard.setColorCode(appointmentLookupResponse.getPatient().getColorCode());
+					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 					response.setPatient(patientCard);
 					response.setDoctorName(doctorName);
 					if (appointmentLookupResponse.getLocation() != null) {
@@ -969,6 +971,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						patientCard.setUserId(patientCard.getUserId());
 						patientCard.setId(patientCard.getUserId());
 						patientCard.setColorCode(patientCard.getUser().getColorCode());
+						patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
+						patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 						response.setPatient(patientCard);
 						if (userCollection != null)
 							response.setDoctorName(userCollection.getTitle() + " " + userCollection.getFirstName());
@@ -1290,7 +1294,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromTime);
-			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
+			} 
+			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
@@ -1344,7 +1349,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 							patient.setColorCode(patient.getUser().getColorCode());
 							patient.setMobileNumber(patient.getUser().getMobileNumber());
 						}
-
+						patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
+						patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 					}
 					BeanUtil.map(collection, appointment);
 					appointment.setPatient(patient);
@@ -2011,8 +2017,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.sort(new Sort(Direction.DESC, "sequenceNo"))),
 					PatientQueueCollection.class, PatientQueue.class).getMappedResults();
 			for (PatientQueue collection : response) {
-				if (collection.getPatient().getUser() != null)
+				if (collection.getPatient().getUser() != null){
 					collection.getPatient().setColorCode(collection.getPatient().getUser().getColorCode());
+					collection.getPatient().setMobileNumber(collection.getPatient().getUser().getMobileNumber());
+				}
+					
 				collection.getPatient().setId(collection.getPatient().getUserId());
 				collection.getPatient().setImageUrl(getFinalImageURL(collection.getPatient().getImageUrl()));
 				collection.getPatient().setThumbnailUrl(getFinalImageURL(collection.getPatient().getThumbnailUrl()));
@@ -2039,7 +2048,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 			DateTime start = DPDoctorUtils.getStartTime(date);
-			DateTime end = DPDoctorUtils.getStartTime(date);
+			DateTime end = DPDoctorUtils.getEndTime(date);
 			PatientQueueCollection patientQueueCollection = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(appointmentId))
@@ -2178,8 +2187,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						PatientQueueCollection.class, PatientQueue.class).getMappedResults();
 				if (response != null && !response.isEmpty())
 					for (PatientQueue collection : response) {
-						if (collection.getPatient().getUser() != null)
+						if (collection.getPatient().getUser() != null){
+							collection.getPatient().setMobileNumber(collection.getPatient().getUser().getMobileNumber());
 							collection.getPatient().setColorCode(collection.getPatient().getUser().getColorCode());
+						}
 						collection.getPatient().setId(collection.getPatient().getUserId());
 						collection.getPatient().setImageUrl(getFinalImageURL(collection.getPatient().getImageUrl()));
 						collection.getPatient()
@@ -2263,6 +2274,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patient.setId(patient.getUserId());
 			if (patient.getUser() != null)
 				patient.setColorCode(patient.getUser().getColorCode());
+			patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
+			patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
 			appointment.setPatient(patient);
 			if (appointmentLookupResponse.getDoctor() != null) {
 				appointment.setDoctorName(appointmentLookupResponse.getDoctor().getTitle() + " "

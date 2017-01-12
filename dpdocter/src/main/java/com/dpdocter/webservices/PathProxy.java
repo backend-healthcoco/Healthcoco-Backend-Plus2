@@ -972,7 +972,12 @@ public interface PathProxy {
 		public static final String DELETE_RECEIPT = "/receipt/{receiptId}/delete";
 
 		public static final String ADD_INVOICE_AND_PAY = "/invoice/addAndPay";
+		
+		public static final String GET_BALANCE_AMOUNT = "/balanceAmount/{locationId}/{hospitalId}/{patientId}";
 
+		public static final String GET_LEDGER = "/ledger/{locationId}/{hospitalId}/{patientId}";
+		
+		public static final String CREATE_LEDGER = "/ledger";
 	}
 
 }

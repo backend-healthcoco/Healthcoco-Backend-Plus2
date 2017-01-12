@@ -233,7 +233,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", "$P{PH}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", "$P{FH}", fieldWidth, false, 0);
 		
-		if((boolean) parameters.get("showPLH")){
+		if(parameters.get("showPLH") != null && (boolean) parameters.get("showPLH")){
 			band = new JRDesignBand();
 			band.setHeight(20);
 			jrDesignTextField = new JRDesignTextField();
