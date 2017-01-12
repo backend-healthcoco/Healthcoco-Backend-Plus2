@@ -24,6 +24,7 @@ import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
+import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.services.BillingService;
 
 import common.util.web.DPDoctorUtils;
@@ -211,6 +212,53 @@ public class BillingApi {
 		
 		Response<DoctorPatientInvoiceAndReceiptResponse> response = new Response<DoctorPatientInvoiceAndReceiptResponse>();
 		response.setData(doctorPatientInvoice);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_BALANCE_AMOUNT)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_BALANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_BALANCE_AMOUNT)
+	public Response<Double> getBalanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Double availableAdvanceAmount = billingService.getBalanceAmount(doctorId, locationId, hospitalId, patientId);
+		
+		Response<Double> response = new Response<Double>();
+		response.setData(availableAdvanceAmount);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_LEDGER)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_LEDGER, notes = PathProxy.BillingUrls.GET_LEDGER)
+	public Response<DoctorPatientLedgerResponse> getLedger(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId, 
+			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
+			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DoctorPatientLedgerResponse doctorPatientLedgers = billingService.getLedger(doctorId, locationId, hospitalId, patientId, from, to, page, size, updatedTime);
+		
+		Response<DoctorPatientLedgerResponse> response = new Response<DoctorPatientLedgerResponse>();
+		response.setData(doctorPatientLedgers);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.CREATE_LEDGER)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.CREATE_LEDGER, notes = PathProxy.BillingUrls.CREATE_LEDGER)
+	public Response<Boolean> addLedger() {
+		
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(billingService.addLedger());
 		return response;
 	}
 	
