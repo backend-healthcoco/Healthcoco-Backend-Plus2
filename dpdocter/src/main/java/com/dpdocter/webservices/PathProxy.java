@@ -937,8 +937,6 @@ public interface PathProxy {
 
 		public static final String GET_BLOGS = "/getBlogs";
 
-		public static final String GET_COUNT = "/getCount";
-
 		public static final String GET__MOST_LIKES_OR_VIEWED_BLOGS = "/getMostLIkesOrViewedBlogs";
 
 		public static final String GET_BLOG_BY_ID = "/getBlog/{blogId}";

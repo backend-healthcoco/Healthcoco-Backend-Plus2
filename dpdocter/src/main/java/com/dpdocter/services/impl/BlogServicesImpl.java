@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -24,6 +27,7 @@ import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.FavouriteBlogsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.BlogCategoryType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -32,10 +36,14 @@ import com.dpdocter.repository.BlogRepository;
 import com.dpdocter.repository.FevouriteBlogsRepository;
 import com.dpdocter.repository.GridFsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
+import com.dpdocter.webservices.PathProxy;
 import com.mongodb.gridfs.GridFSDBFile;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
+import io.swagger.annotations.ApiOperation;
 
 @Transactional
 @Service
@@ -65,11 +73,13 @@ public class BlogServicesImpl implements BlogService {
 	private FevouriteBlogsRepository fevouriteBlogsRepository;
 
 	@Override
-	public List<Blog> getBlogs(int size, int page, String category, String userId, String title) {
-		List<Blog> response = null;
+	public BlogResponse getBlogs(int size, int page, String category, String userId, String title) {
+		BlogResponse response = new BlogResponse();
+
+		List<Blog> listblog = null;
 
 		try {
-			response = new ArrayList<Blog>();
+			listblog = new ArrayList<Blog>();
 			Criteria criteria = new Criteria().and("discarded").is(false);
 			Aggregation aggregation = null;
 
@@ -90,7 +100,7 @@ public class BlogServicesImpl implements BlogService {
 			AggregationResults<BlogCollection> results = mongoTemplate.aggregate(aggregation, BlogCollection.class,
 					BlogCollection.class);
 			blogCollections = results.getMappedResults();
-			response = new ArrayList<Blog>();
+			listblog = new ArrayList<Blog>();
 			for (BlogCollection blogCollection : blogCollections) {
 				Blog blog = new Blog();
 				BeanUtil.map(blogCollection, blog);
@@ -102,8 +112,12 @@ public class BlogServicesImpl implements BlogService {
 					if (blogLikesCollection != null)
 						blog.setIsliked(!blogLikesCollection.getDiscarded());
 				}
-				response.add(blog);
+				listblog.add(blog);
+
 			}
+			response.setBlogs(listblog);
+			if (listblog != null && !listblog.isEmpty())
+				response.setTotalsize(listblog.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -174,20 +188,6 @@ public class BlogServicesImpl implements BlogService {
 
 		}
 		return response;
-	}
-
-	@Override
-	public long countBlogs(String category, String title) {
-		long count = 0;
-		Criteria criteria = new Criteria().and("discarded").is(false);
-		if (!DPDoctorUtils.anyStringEmpty(title))
-			criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
-		if (!DPDoctorUtils.anyStringEmpty(category))
-			criteria = criteria.and("category").is(category);
-		Query query = new Query();
-		query.addCriteria(criteria);
-		count = mongoTemplate.count(query, BlogCollection.class);
-		return count;
 	}
 
 	private String getBlogArticle(String id) {
@@ -378,6 +378,12 @@ public class BlogServicesImpl implements BlogService {
 		}
 
 		return response;
+
+	}
+
+	public BlogCategoryType[] getBlogCategory() {
+
+		return BlogCategoryType.values();
 
 	}
 

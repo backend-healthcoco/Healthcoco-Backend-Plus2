@@ -31,6 +31,8 @@ import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -591,4 +593,29 @@ public class DPDoctorUtils {
 
 	}
 
+	public static DateTime getStartTime(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		return new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+	}
+
+	public static DateTime getEndTime(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+
+		return new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+	}
 }
