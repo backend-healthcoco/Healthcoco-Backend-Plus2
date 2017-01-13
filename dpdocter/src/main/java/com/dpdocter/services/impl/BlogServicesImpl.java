@@ -26,6 +26,7 @@ import com.dpdocter.beans.Blog;
 import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.FavouriteBlogsCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.BlogCategoryType;
 import com.dpdocter.exceptions.BusinessException;
@@ -81,9 +82,9 @@ public class BlogServicesImpl implements BlogService {
 		try {
 			listblog = new ArrayList<Blog>();
 			Criteria criteria = new Criteria().and("discarded").is(false);
-			Aggregation aggregation = null;
+			Aggregation aggregation;
 
-			List<BlogCollection> blogCollections = null;
+			List<BlogCollection> blogCollections;
 
 			if (!DPDoctorUtils.anyStringEmpty(title))
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
@@ -116,8 +117,8 @@ public class BlogServicesImpl implements BlogService {
 
 			}
 			response.setBlogs(listblog);
-			if (listblog != null && !listblog.isEmpty())
-				response.setTotalsize(listblog.size());
+
+			response.setTotalsize((int) mongoTemplate.count(new Query(criteria), BlogCollection.class));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
