@@ -172,9 +172,10 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     				.terms("keys")
     				.field("drugName")
     				.size(50)
-    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
+    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)
+    						.addSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))))
     		.withIndices("drugs_in").withTypes("drugs")
-    		.withQuery(searchQuery.getQuery())
+    		.withQuery(searchQuery.getQuery()).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))
     		.build();
 		
 			SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {
@@ -229,7 +230,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    				.size(50)
 	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
 	    		.withIndices("drugs_in").withTypes("drugs")
-	    		.withQuery(searchQuery.getQuery())
+	    		.withQuery(searchQuery.getQuery()).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))
 	    		.build();
 							
 				SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {
@@ -281,7 +282,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     				.field("drugName")
     				.size(50)
     				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
-    		.withIndices("drugs_in").withTypes("drugs")
+    		.withIndices("drugs_in").withTypes("drugs").withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))
     		.withQuery(searchQuery.getQuery())
     		.build();
 		
@@ -328,7 +329,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
     				.size(50)
     				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
     		.withIndices("drugs_in").withTypes("drugs")
-    		.withQuery(searchQuery.getQuery())
+    		.withQuery(searchQuery.getQuery()).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))
     		.build();
 		
 //			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
@@ -378,7 +379,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	    				.size(50)
 	    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1).addSort("rankingCount", SortOrder.DESC)))
 	    		.withIndices("drugs_in").withTypes("drugs")
-	    		.withQuery(searchQuery.getQuery())
+	    		.withQuery(searchQuery.getQuery()).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))
 	    		.build();
 							
 				SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {

@@ -731,12 +731,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 							if (request.getGroups() != null && !request.getGroups().isEmpty()) {
 								groupIds.add(patientGroupCollection.getGroupId().toString());
 								if (!request.getGroups().contains(patientGroupCollection.getGroupId().toString())) {
-									patientGroupCollection.setDiscarded(true);
-									patientGroupRepository.save(patientGroupCollection);
+									patientGroupRepository.delete(patientGroupCollection);
 								}
 							} else {
-								patientGroupCollection.setDiscarded(true);
-								patientGroupRepository.save(patientGroupCollection);
+								patientGroupRepository.delete(patientGroupCollection);
 							}
 						}
 					}
@@ -1005,6 +1003,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+					Aggregation.match(new Criteria("patientGroupCollections.discarded").is(false)),
 					Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))));
@@ -2702,25 +2701,33 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId)){
 				criteria.and("locationId").is(new ObjectId(locationId));
-				patientCriteria.and("patientCard.locationId").is(new ObjectId(locationId));
+				patientCriteria.and("patientCard.locationId").is(null);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId)){
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
-				patientCriteria.and("patientCard.hospitalId").is(new ObjectId(hospitalId));
+				patientCriteria.and("patientCard.hospitalId").is(null);
 			}
 			if(!DPDoctorUtils.anyStringEmpty(type))
 				criteria.and("type").is(type);
 			
 			if(size > 0)response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"), Aggregation.unwind("patientCard"),
-					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), 
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(patientCriteria),projectList,
 							Aggregation.skip((page) * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), 
 					FeedbackCollection.class, Feedback.class).getMappedResults();
 			else response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"), Aggregation.unwind("patientCard"),
-					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("patient_cl", "userId", "userId", "patientCard"), 
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$patientCard").append("preserveNullAndEmptyArrays", true))),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), 
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.match(patientCriteria),projectList,
 							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), 
 					FeedbackCollection.class, Feedback.class).getMappedResults();

@@ -138,11 +138,15 @@ public class ESCityServiceImpl  implements ESCityService{
 				localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("locality", searchTerm))).withPageable(new PageRequest(0, localityLandmarkSize)).build(), ESLandmarkLocalityDocument.class);
 			}
 			if(citySize > 0){
-				cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+				cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))
+						.must(QueryBuilders.matchPhrasePrefixQuery("isActivated", true))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
 			}
 		} else {
 			if(localityLandmarkSize > 0)landmarks = IteratorUtils.toList(esLocalityLandmarkRepository.findAll(new PageRequest(0, localityLandmarkSize)).iterator());
-			if(citySize > 0)cities = IteratorUtils.toList(esCityRepository.findAll(new PageRequest(0, citySize)).iterator());
+			if(citySize > 0){
+				cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(new BoolQueryBuilder()
+						.must(QueryBuilders.matchPhrasePrefixQuery("isActivated", true))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+			}
 		}
 	    } else {
 	    	BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
@@ -154,14 +158,21 @@ public class ESCityServiceImpl  implements ESCityService{
 			}
 			if(citySize > 0){
 				boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
-			    cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+			    cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder
+			    		.must(QueryBuilders.matchPhrasePrefixQuery("city", searchTerm))
+			    		.must(QueryBuilders.matchPhrasePrefixQuery("isActivated", true))).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
 			}
 		} else {
 			if(localityLandmarkSize > 0){
 			    landmarks = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.mustNot(QueryBuilders.existsQuery("locality"))).withPageable(new PageRequest(0, citySize)).build(), ESLandmarkLocalityDocument.class);
+			    boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
 			    localities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder.mustNot(QueryBuilders.existsQuery("landmark"))).withPageable(new PageRequest(0, citySize)).build(), ESLandmarkLocalityDocument.class);
 			}
-		    if(citySize > 0)cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESCityDocument.class);
+		    if(citySize > 0){
+		    	boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchPhrasePrefixQuery("isActivated", true))
+		    			.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
+		    	cities = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, citySize)).build(), ESCityDocument.class);
+		    }
 		}
 	    }
 	    if (landmarks != null && !landmarks.isEmpty()) {
