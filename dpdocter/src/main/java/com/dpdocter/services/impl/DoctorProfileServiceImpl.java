@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorExperience;
@@ -36,8 +35,6 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
-import com.dpdocter.collections.AppointmentCollection;
-import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
@@ -1169,8 +1166,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					PatientCollection.class, PatientCard.class);
 			response.setPatientCards(aggregationResults.getMappedResults());
-			if (aggregationResults.getMappedResults() != null && !aggregationResults.getMappedResults().isEmpty())
-				response.setTotalSize(aggregationResults.getMappedResults().size());
+
+			response.setTotalSize((int) mongoTemplate.count(new Query(criteria), PatientCollection.class));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error getting Patient ");
