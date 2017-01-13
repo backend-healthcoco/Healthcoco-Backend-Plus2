@@ -362,8 +362,7 @@ public class ContactsServiceImpl implements ContactsService {
 							patientCollection.setUpdatedTime(new Date());
 							patientCollection = patientRepository.save(patientCollection);
 						}
-						patientGroup.setDiscarded(discarded);
-						patientGroupRepository.save(patientGroup);
+						patientGroupRepository.delete(patientGroup);
 					}
 				}
 				response = new Group();
@@ -673,12 +672,10 @@ public class ContactsServiceImpl implements ContactsService {
 					if (request.getGroupIds() != null && !request.getGroupIds().isEmpty()) {
 						groupIds.add(patientGroupCollection.getGroupId().toString());
 						if (!request.getGroupIds().contains(patientGroupCollection.getGroupId().toString())) {
-							patientGroupCollection.setDiscarded(true);
-							patientGroupRepository.save(patientGroupCollection);
+							patientGroupRepository.delete(patientGroupCollection);
 						}
 					} else {
-						patientGroupCollection.setDiscarded(true);
-						patientGroupRepository.save(patientGroupCollection);
+						patientGroupRepository.delete(patientGroupCollection);
 					}
 				}
 			}
