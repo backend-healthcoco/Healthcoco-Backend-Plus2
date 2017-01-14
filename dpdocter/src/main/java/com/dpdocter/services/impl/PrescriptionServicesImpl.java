@@ -1086,7 +1086,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 //						prescriptionItemDetails.add(prescriptionItemDetail);
 //					}
 //				}
-				response.setItems(prescriptionItemDetails);
+				response.setItems(itemDetails);
 			}
 			if (prescriptionTests != null && !prescriptionTests.isEmpty()) {
 				List<TestAndRecordDataResponse> tests = new ArrayList<TestAndRecordDataResponse>();
