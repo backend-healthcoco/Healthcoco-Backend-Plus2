@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -22,6 +23,6 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 	AppointmentCollection findByAppointmentId(String appointmentId);
 
 	@Query("{'fromDate': {'$gte': ?0}, 'toDate': {'$lte': ?1}, 'state': {'$eq' : 'CONFIRM'}}")
-	List<AppointmentCollection> findByAppointment(DateTime start, DateTime end);
+	List<AppointmentCollection> findByAppointment(Date start, Date end, Sort sort);
 
 }

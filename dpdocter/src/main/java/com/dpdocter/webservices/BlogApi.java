@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Blog;
-import com.dpdocter.enums.BlogCategoryType;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
 

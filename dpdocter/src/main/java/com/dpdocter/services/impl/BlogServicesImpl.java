@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -26,7 +23,6 @@ import com.dpdocter.beans.Blog;
 import com.dpdocter.collections.BlogCollection;
 import com.dpdocter.collections.BlogLikesCollection;
 import com.dpdocter.collections.FavouriteBlogsCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.BlogCategoryType;
 import com.dpdocter.exceptions.BusinessException;
@@ -43,8 +39,6 @@ import com.dpdocter.webservices.PathProxy;
 import com.mongodb.gridfs.GridFSDBFile;
 
 import common.util.web.DPDoctorUtils;
-import common.util.web.Response;
-import io.swagger.annotations.ApiOperation;
 
 @Transactional
 @Service
@@ -80,13 +74,12 @@ public class BlogServicesImpl implements BlogService {
 		List<Blog> listblog = null;
 
 		try {
-			listblog = new ArrayList<Blog>();
+			
 			Criteria criteria = new Criteria().and("discarded").is(false);
 			Aggregation aggregation;
-
 			List<BlogCollection> blogCollections;
 
-			if (!DPDoctorUtils.anyStringEmpty(title))
+			if (!DPDoctorUtils.anyStringEmpty(title)){
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
 			if (!DPDoctorUtils.anyStringEmpty(category))
 				criteria = criteria.and("category").is(category);

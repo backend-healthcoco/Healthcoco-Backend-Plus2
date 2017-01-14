@@ -63,5 +63,4 @@ public interface AppointmentService {
 
 	Appointment getAppointmentById(ObjectId appointmentId);
 
-	public void getAppointment();
 }

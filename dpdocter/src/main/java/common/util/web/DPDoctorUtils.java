@@ -604,6 +604,30 @@ public class DPDoctorUtils {
 
 	}
 
+	public static Date getFormTime(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+		localCalendar.set(currentYear, currentMonth, currentDay, 0, 0, 0);
+		return localCalendar.getTime();
+
+	}
+
+	public static Date getToTime(Date date) {
+
+		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+		localCalendar.setTime(date);
+		int currentDay = localCalendar.get(Calendar.DATE);
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentYear = localCalendar.get(Calendar.YEAR);
+		localCalendar.set(currentYear, currentMonth, currentDay, 23, 59, 59);
+		return localCalendar.getTime();
+
+	}
+
 	public static DateTime getEndTime(Date date) {
 
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));

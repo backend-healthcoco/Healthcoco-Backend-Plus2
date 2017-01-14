@@ -765,23 +765,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 						response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 					}
-					if (appointmentCollection.getState().getState()
-							.equalsIgnoreCase(AppointmentState.CONFIRM.getState())) {
-						updateQueue(appointmentCollection.getAppointmentId(),
-								appointmentCollection.getDoctorId().toString(),
-								appointmentCollection.getLocationId().toString(),
-								appointmentCollection.getHospitalId().toString(),
-								appointmentCollection.getPatientId().toString(), appointmentCollection.getFromDate(),
-								appointmentCollection.getTime().getFromTime(), null, false);
-					} else if (appointmentCollection.getState().getState()
-							.equalsIgnoreCase(AppointmentState.CANCEL.getState())) {
-						updateQueue(appointmentCollection.getAppointmentId(),
-								appointmentCollection.getDoctorId().toString(),
-								appointmentCollection.getLocationId().toString(),
-								appointmentCollection.getHospitalId().toString(),
-								appointmentCollection.getPatientId().toString(), appointmentCollection.getFromDate(),
-								null, 0, false);
-					}
+
 				} else {
 					logger.error(timeSlotIsBooked);
 					throw new BusinessException(ServiceError.InvalidInput, timeSlotIsBooked);
@@ -1010,15 +994,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
-					if (appointmentCollection.getState().getState()
-							.equalsIgnoreCase(AppointmentState.CONFIRM.getState())) {
-						updateQueue(appointmentCollection.getAppointmentId(),
-								appointmentCollection.getDoctorId().toString(),
-								appointmentCollection.getLocationId().toString(),
-								appointmentCollection.getHospitalId().toString(),
-								appointmentCollection.getPatientId().toString(), appointmentCollection.getFromDate(),
-								appointmentCollection.getTime().getFromTime(), null, false);
-					}
 				} else {
 					logger.error(timeSlotIsBooked);
 					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
@@ -1299,7 +1274,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				criteria.and("fromDate").gte(fromTime);
-			} 
+			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
 				int currentDay = localCalendar.get(Calendar.DATE);
@@ -1418,28 +1393,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
-
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			DateTime dateTime;
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
-				localCalendar.setTime(new Date(Long.parseLong(from)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				criteria.and("fromDate").gte(fromTime);
+				dateTime = DPDoctorUtils.getStartTime(new Date(Long.parseLong(from)));
+				criteria.and("time.fromDate").gte(dateTime);
 			} else if (!DPDoctorUtils.anyStringEmpty(to)) {
-				localCalendar.setTime(new Date(Long.parseLong(to)));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-				criteria.and("toDate").lte(toTime);
+				dateTime = DPDoctorUtils.getEndTime(new Date(Long.parseLong(to)));
+				criteria.and("toDate").lte(dateTime);
 			}
 
 			if (size > 0) {
@@ -2022,11 +1982,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.sort(new Sort(Direction.DESC, "sequenceNo"))),
 					PatientQueueCollection.class, PatientQueue.class).getMappedResults();
 			for (PatientQueue collection : response) {
-				if (collection.getPatient().getUser() != null){
+				if (collection.getPatient().getUser() != null) {
 					collection.getPatient().setColorCode(collection.getPatient().getUser().getColorCode());
 					collection.getPatient().setMobileNumber(collection.getPatient().getUser().getMobileNumber());
 				}
-					
+
 				collection.getPatient().setId(collection.getPatient().getUserId());
 				collection.getPatient().setImageUrl(getFinalImageURL(collection.getPatient().getImageUrl()));
 				collection.getPatient().setThumbnailUrl(getFinalImageURL(collection.getPatient().getThumbnailUrl()));
@@ -2192,8 +2152,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						PatientQueueCollection.class, PatientQueue.class).getMappedResults();
 				if (response != null && !response.isEmpty())
 					for (PatientQueue collection : response) {
-						if (collection.getPatient().getUser() != null){
-							collection.getPatient().setMobileNumber(collection.getPatient().getUser().getMobileNumber());
+						if (collection.getPatient().getUser() != null) {
+							collection.getPatient()
+									.setMobileNumber(collection.getPatient().getUser().getMobileNumber());
 							collection.getPatient().setColorCode(collection.getPatient().getUser().getColorCode());
 						}
 						collection.getPatient().setId(collection.getPatient().getUserId());
@@ -2318,23 +2279,63 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return appointment;
 	}
 
-	@SuppressWarnings("deprecation")
-	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
-	@Override
+	@Scheduled(cron = "0 13 12 * * ?", zone = "IST")
 	@Transactional
-	public void getAppointment() {
+	public void updateQueue() {
 
-		System.out.println(DPDoctorUtils.getStartTime(new Date()));
-		List<AppointmentCollection> appointmentList = appointmentRepository
-				.findByAppointment(DPDoctorUtils.getStartTime(new Date()), DPDoctorUtils.getEndTime(new Date()));
+		List<AppointmentCollection> appointmentList = appointmentRepository.findByAppointment(
+				DPDoctorUtils.getFormTime(new Date()), DPDoctorUtils.getToTime(new Date()),
+				new Sort(Sort.Direction.ASC, "time.fromTime"));
 		if (appointmentList != null) {
-			for (AppointmentCollection appointmentCollection : appointmentList) {
-				updateQueue(appointmentCollection.getAppointmentId().toString(),
-						appointmentCollection.getDoctorId().toString(),
-						appointmentCollection.getLocationId().toString(),
-						appointmentCollection.getHospitalId().toString(),
-						appointmentCollection.getPatientId().toString(), new Date(),
-						appointmentCollection.getTime().getFromTime(), null, false);
+
+			while (!appointmentList.isEmpty()) {
+
+				List<PatientQueueCollection> sortedList = new ArrayList<PatientQueueCollection>();
+				PatientQueueCollection patientQueueCollectionPrev = null;
+				PatientQueueCollection patientQueueCollection = null;
+				AppointmentCollection appointmentCollection = null;
+				int indexi = 0;
+				while (indexi < appointmentList.size()) {
+					appointmentCollection = appointmentList.get(indexi);
+					if (sortedList.isEmpty()) {
+
+						patientQueueCollectionPrev = new PatientQueueCollection();
+						patientQueueCollectionPrev.setAppointmentId(appointmentCollection.getAppointmentId());
+						patientQueueCollectionPrev.setDoctorId(appointmentCollection.getDoctorId());
+						patientQueueCollectionPrev.setLocationId(appointmentCollection.getLocationId());
+						patientQueueCollectionPrev.setHospitalId(appointmentCollection.getHospitalId());
+						patientQueueCollectionPrev.setPatientId(appointmentCollection.getPatientId());
+						patientQueueCollectionPrev.setDate(new Date());
+						patientQueueCollectionPrev.setStartTime(appointmentCollection.getTime().getFromTime());
+						patientQueueCollectionPrev.setDiscarded(false);
+						sortedList.add(patientQueueCollectionPrev);
+						appointmentList.remove(appointmentCollection);
+
+					} else if (appointmentCollection.getDoctorId().equals(patientQueueCollectionPrev.getDoctorId())
+							&& appointmentCollection.getLocationId()
+									.equals(patientQueueCollectionPrev.getLocationId())) {
+						patientQueueCollection = new PatientQueueCollection();
+						patientQueueCollection.setAppointmentId(appointmentCollection.getAppointmentId());
+						patientQueueCollection.setDoctorId(appointmentCollection.getDoctorId());
+						patientQueueCollection.setLocationId(appointmentCollection.getLocationId());
+						patientQueueCollection.setHospitalId(appointmentCollection.getHospitalId());
+						patientQueueCollection.setPatientId(appointmentCollection.getPatientId());
+						patientQueueCollection.setDate(new Date());
+						patientQueueCollection.setStartTime(appointmentCollection.getTime().getFromTime());
+						patientQueueCollection.setDiscarded(false);
+						sortedList.add(patientQueueCollection);
+						appointmentList.remove(appointmentCollection);
+
+					} else
+						indexi++;
+				}
+
+				for (indexi = 0; indexi < sortedList.size(); indexi++) {
+					sortedList.get(indexi).setSequenceNo(indexi + 1);
+
+				}
+
+				patientQueueRepository.save(sortedList);
 			}
 		}
 	}
