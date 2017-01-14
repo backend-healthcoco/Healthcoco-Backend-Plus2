@@ -35,7 +35,6 @@ import com.dpdocter.repository.GridFsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
-import com.dpdocter.webservices.PathProxy;
 import com.mongodb.gridfs.GridFSDBFile;
 
 import common.util.web.DPDoctorUtils;
@@ -81,8 +80,10 @@ public class BlogServicesImpl implements BlogService {
 
 			if (!DPDoctorUtils.anyStringEmpty(title)){
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
-			if (!DPDoctorUtils.anyStringEmpty(category))
+			}
+			if (!DPDoctorUtils.anyStringEmpty(category)){
 				criteria = criteria.and("category").is(category);
+			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
 						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
