@@ -515,16 +515,22 @@ public class AppointmentServiceImpl implements AppointmentService {
 			AppointmentLookupResponse appointmentLookupResponse = mongoTemplate.aggregate(Aggregation.newAggregation(
 					Aggregation.match(new Criteria("appointmentId").is(request.getAppointmentId())),
 					Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-					Aggregation.lookup("user_cl", "patientId", "_id", "patient"), Aggregation.unwind("patient")),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location")),
 					AppointmentCollection.class, AppointmentLookupResponse.class).getUniqueMappedResult();
 			if (appointmentLookupResponse != null) {
 				AppointmentCollection appointmentCollection = new AppointmentCollection();
 				BeanUtil.map(appointmentLookupResponse, appointmentCollection);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-						new ObjectId(appointmentLookupResponse.getPatientId()),
-						new ObjectId(appointmentLookupResponse.getLocationId()),
-						new ObjectId(appointmentLookupResponse.getHospitalId()));
+				PatientCard patientCard = null;
+				List<PatientCard> patientCards = mongoTemplate
+						.aggregate(Aggregation.newAggregation(
+								Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
+										.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId")
+										.is(new ObjectId(request.getHospitalId()))),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+								PatientCollection.class, PatientCard.class)
+						.getMappedResults();
+				if (patientCards != null && !patientCards.isEmpty())
+					patientCard = patientCards.get(0);
 
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository
 						.findByDoctorIdLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()),
@@ -550,7 +556,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								appointmentCollection.setCancelledBy(appointmentLookupResponse.getDoctor().getTitle()
 										+ " " + appointmentLookupResponse.getDoctor().getFirstName());
 							else
-								appointmentCollection.setCancelledBy(patientCollection.getLocalPatientName());
+								appointmentCollection.setCancelledBy(patientCard.getLocalPatientName());
 						}
 						AppointmentBookedSlotCollection bookedSlotCollection = appointmentBookedSlotRepository
 								.findByAppointmentId(request.getAppointmentId());
@@ -608,8 +614,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 					Date _24HourDt = _24HourSDF.parse(_24HourTime);
 
-					String patientName = patientCollection.getLocalPatientName() != null
-							? patientCollection.getLocalPatientName().split(" ")[0] : "",
+					String patientName = patientCard.getLocalPatientName() != null
+							? patientCard.getLocalPatientName().split(" ")[0] : "",
 							appointmentId = appointmentCollection.getAppointmentId(),
 							dateTime = _12HourSDF.format(_24HourDt) + ", "
 									+ sdf.format(appointmentCollection.getFromDate()),
@@ -637,9 +643,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 											appointmentCollection.getId().toString());
 							}
 							if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
-									&& patientCollection.getEmailAddress() != null)
+									&& patientCard.getEmailAddress() != null)
 								sendEmail(doctorName, patientName, dateTime, clinicName,
-										"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", patientCollection.getEmailAddress());
+										"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", patientCard.getEmailAddress());
 							if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 								if (appointmentCollection.getState().getState()
 										.equals(AppointmentState.CANCEL.getState()))
@@ -663,10 +669,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 										appointmentLookupResponse.getPatient().getMobileNumber(), patientName,
 										appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
 										appointmentCollection.getId().toString());
-								if (DPDoctorUtils.anyStringEmpty(patientCollection.getEmailAddress()))
+								if (DPDoctorUtils.anyStringEmpty(patientCard.getEmailAddress()))
 									sendEmail(doctorName, patientName, dateTime, clinicName,
 											"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT",
-											patientCollection.getEmailAddress());
+											patientCard.getEmailAddress());
 								sendEmail(doctorName, patientName, dateTime, clinicName,
 										"CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT",
 										appointmentLookupResponse.getDoctor().getEmailAddress());
@@ -697,7 +703,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									&& !DPDoctorUtils.allStringsEmpty(
 											appointmentLookupResponse.getPatient().getEmailAddress())) {
 								sendEmail(doctorName, patientName, dateTime, clinicName,
-										"CONFIRMED_APPOINTMENT_TO_PATIENT", patientCollection.getEmailAddress());
+										"CONFIRMED_APPOINTMENT_TO_PATIENT", patientCard.getEmailAddress());
 							}
 							if (request.getNotifyPatientBySms() != null && request.getNotifyPatientBySms()) {
 								if (request.getState().getState().equals(AppointmentState.CONFIRM.getState()))
@@ -719,15 +725,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 					response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
-					PatientCard patientCard = new PatientCard();
-					BeanUtil.map(appointmentLookupResponse.getPatient(), patientCard);
-					BeanUtil.map(patientCollection, patientCard);
-					patientCard.setUserId(appointmentLookupResponse.getPatient().getId());
-					patientCard.setId(appointmentLookupResponse.getPatient().getId());
-					patientCard.setColorCode(appointmentLookupResponse.getPatient().getColorCode());
+					BeanUtil.map(patientCard.getUser(), patientCard);
+					patientCard.setUserId(patientCard.getUserId());
+					patientCard.setId(patientCard.getUserId());
+					patientCard.setColorCode(patientCard.getUser().getColorCode());
 					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 					response.setPatient(patientCard);
+					
 					response.setDoctorName(doctorName);
 					if (appointmentLookupResponse.getLocation() != null) {
 						response.setLocationName(appointmentLookupResponse.getLocation().getLocationName());
