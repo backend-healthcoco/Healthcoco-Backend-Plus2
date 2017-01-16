@@ -51,7 +51,7 @@ public class DrugCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-//    @Indexed(unique = true)
+   // @Indexed(unique = true)
     @Field
     private String drugCode;
 

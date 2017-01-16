@@ -109,25 +109,25 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-core</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jmx</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jms</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-ip</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -169,29 +169,29 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>4.2.6.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>4.2.6.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>4.2.6.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<!-- Various Application Context utilities, including EhCache, JavaMail, 
 			Quartz, and Freemarker integration Define this if you need any of these integrations -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
-			<version>4.2.6.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>4.2.6.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<!-- Jersey + Spring -->
 		<dependency>
@@ -233,25 +233,25 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-core</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jmx</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jms</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-ip</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>4.3.5.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -823,6 +823,39 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-aop -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>4.3.5.RELEASE</version>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.10</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.10</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjtools -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>1.8.10</version>
+		</dependency>
+
+
+
+
 		<!-- For android GCM push notification services -->
 		<dependency>
 			<groupId>com.ganyo</groupId>
@@ -913,24 +946,24 @@
 			<version>2.0.2.RELEASE</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.twilio.sdk/twilio-java-sdk -->
-	<dependency>
-	    <groupId>com.twilio.sdk</groupId>
-	    <artifactId>twilio-java-sdk</artifactId>
-	    <version>5.10.1</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
-	<dependency>
-	    <groupId>net.sf.jasperreports</groupId>
-	    <artifactId>jasperreports-fonts</artifactId>
-	    <version>4.0.0</version>
-	</dependency>
-	<dependency>
-    <groupId>net.sf.jasperreports</groupId>
-    <artifactId>jasperreports-htmlcomponent</artifactId>
-    <version>5.0.1</version>
-    <scope>system</scope>
-		<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
-</dependency>
+		<dependency>
+			<groupId>com.twilio.sdk</groupId>
+			<artifactId>twilio-java-sdk</artifactId>
+			<version>5.10.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports-fonts -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-fonts</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-htmlcomponent</artifactId>
+			<version>5.0.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/src/main/resources/jasperreports-htmlcomponent-5.0.1.jar</systemPath>
+		</dependency>
 	</dependencies>
 	<build>
 		<testResources>
@@ -947,29 +980,29 @@
 
 
 		<plugins>
-<!-- 		<plugin> -->
-<!--     <groupId>org.apache.maven.plugins</groupId> -->
-<!--     <artifactId>maven-install-plugin</artifactId> -->
-<!--     <version>2.3.1</version> -->
-<!--         <executions> -->
-<!--             <execution> -->
-<!--                 <id>install-external</id> -->
-<!--                 <phase>clean</phase> -->
-<!--                 <configuration> -->
-<!--                     <file>${basedir}/WEB-INF/lib/jasperreports-htmlcomponent-5.0.1.jar</file> -->
-<!--                     <repositoryLayout>default</repositoryLayout> -->
-<!--                     <groupId>net.sf.jasperreports</groupId> -->
-<!--     				<artifactId>jasperreports-htmlcomponent</artifactId> -->
-<!--                     <version>5.0.1</version> -->
-<!--                     <packaging>jar</packaging> -->
-<!--                     <generatePom>true</generatePom> -->
-<!--                 </configuration> -->
-<!--                 <goals> -->
-<!--                     <goal>install-file</goal> -->
-<!--                 </goals> -->
-<!--             </execution> -->
-<!--         </executions> -->
-<!--     </plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-install-plugin</artifactId> -->
+			<!-- <version>2.3.1</version> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <id>install-external</id> -->
+			<!-- <phase>clean</phase> -->
+			<!-- <configuration> -->
+			<!-- <file>${basedir}/WEB-INF/lib/jasperreports-htmlcomponent-5.0.1.jar</file> -->
+			<!-- <repositoryLayout>default</repositoryLayout> -->
+			<!-- <groupId>net.sf.jasperreports</groupId> -->
+			<!-- <artifactId>jasperreports-htmlcomponent</artifactId> -->
+			<!-- <version>5.0.1</version> -->
+			<!-- <packaging>jar</packaging> -->
+			<!-- <generatePom>true</generatePom> -->
+			<!-- </configuration> -->
+			<!-- <goals> -->
+			<!-- <goal>install-file</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -999,10 +1032,10 @@
 			<id>jaspersoft-third-party</id>
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
-<!--     <repository> -->
-<!--         <id>project.local</id> -->
-<!--         <name>project</name> -->
-<!--         <url>file:${project.basedir}/repo</url> -->
-<!--     </repository> -->
+		<!-- <repository> -->
+		<!-- <id>project.local</id> -->
+		<!-- <name>project</name> -->
+		<!-- <url>file:${project.basedir}/repo</url> -->
+		<!-- </repository> -->
 	</repositories>
 </project>

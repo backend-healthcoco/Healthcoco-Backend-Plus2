@@ -1,6 +1,9 @@
 package com.dpdocter.services;
 
+import java.util.Collection;
 import java.util.List;
+
+import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
@@ -36,5 +39,9 @@ public interface ContactsService {
 
     DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page,
 	    int size);
+
+	DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId, String locationId,
+			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName)
+			throws Exception;
 
 }

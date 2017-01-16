@@ -103,6 +103,7 @@ import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.ClinicalNotesService;
+import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
@@ -134,7 +135,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private HistoryRepository historyRepository;
 
 	@Autowired
-	private ContactsServiceImpl contactsService;
+	private ContactsService contactsService;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;

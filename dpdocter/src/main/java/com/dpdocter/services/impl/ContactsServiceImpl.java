@@ -173,6 +173,8 @@ public class ContactsServiceImpl implements ContactsService {
 
 	}
 
+	@Override
+	@Transactional
 	public DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId,
 			String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded,
 			Boolean sortByFirstName) throws Exception {

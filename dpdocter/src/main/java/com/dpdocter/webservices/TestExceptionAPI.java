@@ -51,9 +51,10 @@ public class TestExceptionAPI {
 	@GET
 	@Path("/mail")
 	public Response<Boolean> testMail() throws MessagingException {
-		Boolean status = mailService.sendExceptionMail("Testing Business Exception mail");
+		/*Boolean status = mailService.sendExceptionMail("Testing Business Exception mail");
 		Response<Boolean> response = new Response<>();
 		response.setData(status);
-		return response;
+		return response;*/
+		throw new MessagingException("testing advice");
 	}
 }
