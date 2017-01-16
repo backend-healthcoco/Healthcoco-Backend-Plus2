@@ -655,7 +655,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 											"CANCEL_APPOINTMENT_TO_PATIENT_BY_DOCTOR", request.getDoctorId(),
 											request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-											appointmentLookupResponse.getPatient().getMobileNumber(), patientName,
+											patientCard.getUser().getMobileNumber(), patientName,
 											appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
 											appointmentCollection.getId().toString());
 							}
@@ -669,7 +669,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 								sendMsg(SMSFormatType.CANCEL_APPOINTMENT.getType(),
 										"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", request.getDoctorId(),
 										request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-										appointmentLookupResponse.getPatient().getMobileNumber(), patientName,
+										patientCard.getUser().getMobileNumber(), patientName,
 										appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
 										appointmentCollection.getId().toString());
 								if (DPDoctorUtils.anyStringEmpty(patientCard.getEmailAddress()))
@@ -703,7 +703,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							}
 							if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 									&& !DPDoctorUtils.allStringsEmpty(
-											appointmentLookupResponse.getPatient().getEmailAddress())) {
+											patientCard.getEmailAddress())) {
 								sendEmail(doctorName, patientName, dateTime, clinicName,
 										"CONFIRMED_APPOINTMENT_TO_PATIENT", patientCard.getEmailAddress());
 							}
@@ -712,14 +712,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 									sendMsg(SMSFormatType.CONFIRMED_APPOINTMENT.getType(),
 											"CONFIRMED_APPOINTMENT_TO_PATIENT", request.getDoctorId(),
 											request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-											appointmentLookupResponse.getPatient().getMobileNumber(), patientName,
+											patientCard.getUser().getMobileNumber(), patientName,
 											appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
 											appointmentCollection.getId().toString());
 								else
 									sendMsg(SMSFormatType.APPOINTMENT_SCHEDULE.getType(),
 											"RESCHEDULE_APPOINTMENT_TO_PATIENT", request.getDoctorId(),
 											request.getLocationId(), request.getHospitalId(), request.getPatientId(),
-											appointmentLookupResponse.getPatient().getMobileNumber(), patientName,
+											patientCard.getUser().getMobileNumber(), patientName,
 											appointmentId, dateTime, doctorName, clinicName, clinicContactNum,
 											appointmentCollection.getId().toString());
 							}
