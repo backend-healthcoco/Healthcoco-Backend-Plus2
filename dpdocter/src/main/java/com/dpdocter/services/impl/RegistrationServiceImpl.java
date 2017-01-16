@@ -1003,7 +1003,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-					Aggregation.match(new Criteria("patientGroupCollections.discarded").is(false)),
+					Aggregation.match(
+							new Criteria().orOperator(new Criteria("patientGroupCollections.discarded").is(false),
+									new Criteria("patientGroupCollections").size(0))),
 					Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))));
@@ -2469,6 +2471,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							|| feedbackCollection.getType().getType().equals(FeedbackType.REPORT.getType())
 							|| feedbackCollection.getType().getType().equals(FeedbackType.DOCTOR.getType())
 							|| feedbackCollection.getType().getType().equals(FeedbackType.LAB.getType()))) {
+
 				
 				if (feedbackCollection.getType().getType().equals(FeedbackType.PRESCRIPTION.getType())
 						&& request.getResourceId() != null) {
