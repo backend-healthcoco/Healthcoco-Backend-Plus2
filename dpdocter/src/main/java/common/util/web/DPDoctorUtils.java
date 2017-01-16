@@ -609,7 +609,7 @@ public class DPDoctorUtils {
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
-		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentMonth = localCalendar.get(Calendar.MONTH) ;
 		int currentYear = localCalendar.get(Calendar.YEAR);
 		localCalendar.set(currentYear, currentMonth, currentDay, 0, 0, 0);
 		return localCalendar.getTime();
@@ -621,7 +621,7 @@ public class DPDoctorUtils {
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
-		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentMonth = localCalendar.get(Calendar.MONTH);
 		int currentYear = localCalendar.get(Calendar.YEAR);
 		localCalendar.set(currentYear, currentMonth, currentDay, 23, 59, 59);
 		return localCalendar.getTime();
@@ -633,7 +633,7 @@ public class DPDoctorUtils {
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
-		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+		int currentMonth = localCalendar.get(Calendar.MONTH)+1;
 		int currentYear = localCalendar.get(Calendar.YEAR);
 
 		return new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,

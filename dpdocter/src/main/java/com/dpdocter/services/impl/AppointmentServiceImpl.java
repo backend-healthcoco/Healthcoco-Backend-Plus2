@@ -671,8 +671,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 										appointmentCollection.getId().toString());
 								if (DPDoctorUtils.anyStringEmpty(patientCard.getEmailAddress()))
 									sendEmail(doctorName, patientName, dateTime, clinicName,
-											"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT",
-											patientCard.getEmailAddress());
+											"CANCEL_APPOINTMENT_TO_PATIENT_BY_PATIENT", patientCard.getEmailAddress());
 								sendEmail(doctorName, patientName, dateTime, clinicName,
 										"CANCEL_APPOINTMENT_TO_DOCTOR_BY_PATIENT",
 										appointmentLookupResponse.getDoctor().getEmailAddress());
@@ -732,7 +731,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					patientCard.setImageUrl(getFinalImageURL(patientCard.getImageUrl()));
 					patientCard.setThumbnailUrl(getFinalImageURL(patientCard.getThumbnailUrl()));
 					response.setPatient(patientCard);
-					
+
 					response.setDoctorName(doctorName);
 					if (appointmentLookupResponse.getLocation() != null) {
 						response.setLocationName(appointmentLookupResponse.getLocation().getLocationName());
@@ -2279,7 +2278,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return appointment;
 	}
 
-	@Scheduled(cron = "0 13 12 * * ?", zone = "IST")
+	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Transactional
 	public void updateQueue() {
 
@@ -2287,12 +2286,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				DPDoctorUtils.getFormTime(new Date()), DPDoctorUtils.getToTime(new Date()),
 				new Sort(Sort.Direction.ASC, "time.fromTime"));
 		if (appointmentList != null) {
-
 			while (!appointmentList.isEmpty()) {
 
 				List<PatientQueueCollection> sortedList = new ArrayList<PatientQueueCollection>();
-				PatientQueueCollection patientQueueCollectionPrev = null;
+
 				PatientQueueCollection patientQueueCollection = null;
+				PatientQueueCollection patientQueueCollectionPrev = null;
 				AppointmentCollection appointmentCollection = null;
 				int indexi = 0;
 				while (indexi < appointmentList.size()) {
@@ -2308,6 +2307,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						patientQueueCollectionPrev.setDate(new Date());
 						patientQueueCollectionPrev.setStartTime(appointmentCollection.getTime().getFromTime());
 						patientQueueCollectionPrev.setDiscarded(false);
+						patientQueueCollectionPrev.setSequenceNo(1);
 						sortedList.add(patientQueueCollectionPrev);
 						appointmentList.remove(appointmentCollection);
 
@@ -2321,18 +2321,15 @@ public class AppointmentServiceImpl implements AppointmentService {
 						patientQueueCollection.setHospitalId(appointmentCollection.getHospitalId());
 						patientQueueCollection.setPatientId(appointmentCollection.getPatientId());
 						patientQueueCollection.setDate(new Date());
+						patientQueueCollection.setSequenceNo(patientQueueCollectionPrev.getSequenceNo() + 1);
 						patientQueueCollection.setStartTime(appointmentCollection.getTime().getFromTime());
 						patientQueueCollection.setDiscarded(false);
 						sortedList.add(patientQueueCollection);
 						appointmentList.remove(appointmentCollection);
+						patientQueueCollectionPrev = patientQueueCollection;
 
 					} else
 						indexi++;
-				}
-
-				for (indexi = 0; indexi < sortedList.size(); indexi++) {
-					sortedList.get(indexi).setSequenceNo(indexi + 1);
-
 				}
 
 				patientQueueRepository.save(sortedList);
