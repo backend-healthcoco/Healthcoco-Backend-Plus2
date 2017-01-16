@@ -1002,8 +1002,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 						.is(userObjectId);
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$user").append("preserveNullAndEmptyArrays", true))),
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-					Aggregation.match(new Criteria("patientGroupCollections.discarded").is(false)),
 					Aggregation.lookup("referrences_cl", "referredBy", "_id", "reference"),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
 							new BasicDBObject("path", "$reference").append("preserveNullAndEmptyArrays", true))));
@@ -1067,9 +1068,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCard.getUser().getId().toString()));
 				registeredPatientDetails.setPatient(patient);
 				registeredPatientDetails.setAddress(patientCard.getAddress());
-				@SuppressWarnings("unchecked")
-				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
-						new BeanToPropertyValueTransformer("groupId"));
+//				@SuppressWarnings("unchecked")
+				Collection<ObjectId> groupIds = new ArrayList<>();
+//				CollectionUtils.collect(patientCard.getPatientGroupCollections(),
+//						new BeanToPropertyValueTransformer("groupId"));
+				for(PatientGroupCollection groupCollection : patientCard.getPatientGroupCollections()){
+					if(!groupCollection.getDiscarded())groupIds.add(groupCollection.getGroupId());
+				}
 				if (groupIds != null && !groupIds.isEmpty()) {
 					groups = mongoTemplate
 							.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds))),
