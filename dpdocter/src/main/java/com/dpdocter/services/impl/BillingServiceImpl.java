@@ -19,7 +19,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.dpdocter.DoctorPatientReceiptRequest;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
@@ -43,6 +42,7 @@ import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
+import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.response.InvoiceItemResponse;

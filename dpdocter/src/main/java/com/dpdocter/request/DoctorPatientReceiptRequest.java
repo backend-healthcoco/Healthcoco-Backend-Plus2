@@ -1,4 +1,4 @@
-package com.dpdocter;
+package com.dpdocter.request;
 
 import java.util.Date;
 import java.util.List;

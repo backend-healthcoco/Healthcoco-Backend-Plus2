@@ -2,11 +2,11 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.DoctorPatientReceiptRequest;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
+import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 
