@@ -23,6 +23,6 @@ public interface AppointmentRepository extends MongoRepository<AppointmentCollec
 	AppointmentCollection findByAppointmentId(String appointmentId);
 
 	@Query("{'fromDate': {'$gte': ?0}, 'toDate': {'$lte': ?1}, 'state': {'$eq' : 'CONFIRM'}}")
-	List<AppointmentCollection> findByAppointment(Date start, Date end, Sort sort);
+	List<AppointmentCollection> findConfirmAppointments(DateTime start, DateTime end, Sort sort);
 
 }
