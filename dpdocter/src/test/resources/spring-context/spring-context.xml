@@ -37,9 +37,7 @@
 	
 	<aop:aspectj-autoproxy />
     
-    <bean id="loggingAspect" 
-        class="com.dpdocter.aop.AccountLoggingAspect">
-    </bean>
+   
 	
 
 </beans>
