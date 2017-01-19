@@ -1,4 +1,4 @@
-package com.dpdocter.webservices;
+package com.dpdocter.request;
 
 import java.util.List;
 

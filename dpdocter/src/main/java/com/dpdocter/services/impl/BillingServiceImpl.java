@@ -42,11 +42,11 @@ import com.dpdocter.repository.DoctorPatientLedgerRepository;
 import com.dpdocter.repository.DoctorPatientReceiptRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.response.InvoiceItemResponse;
 import com.dpdocter.services.BillingService;
-import com.dpdocter.webservices.DoctorPatientInvoiceAndReceiptRequest;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
