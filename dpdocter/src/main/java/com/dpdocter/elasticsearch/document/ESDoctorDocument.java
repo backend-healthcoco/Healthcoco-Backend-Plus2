@@ -105,7 +105,10 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	@Field(type = FieldType.Long)
 	private long rankingCount = 0;
-	
+
+	@Field(type = FieldType.Integer)
+	private Integer noOfRecommenations = 0;
+
 	public String getId() {
 		return id;
 	}
@@ -346,6 +349,15 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	public void setRankingCount(long rankingCount) {
 		this.rankingCount = rankingCount;
+
+	}
+
+	public Integer getNoOfRecommenations() {
+		return noOfRecommenations;
+	}
+
+	public void setNoOfRecommenations(Integer noOfRecommenations) {
+		this.noOfRecommenations = noOfRecommenations;
 	}
 
 	@Override

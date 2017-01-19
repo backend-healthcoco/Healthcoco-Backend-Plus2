@@ -91,9 +91,6 @@ public class DoctorLocation {
 	@Field(type = FieldType.Integer)
 	private Integer noOfReviews = 0;
 
-	@Field(type = FieldType.Integer)
-	private Integer noOfRecommenations = 0;
-
 	@Field(type = FieldType.String)
 	private String locationUId;
 
@@ -112,11 +109,11 @@ public class DoctorLocation {
 	@Field(type = FieldType.Integer)
 	private int noOfClinicRecommendations = 0;
 
-//	@Field(type = FieldType.String)
-//	private String invoiceInitial = "INV";
-//
-//	@Field(type = FieldType.String)
-//	private String receiptInitial = "RC";
+	// @Field(type = FieldType.String)
+	// private String invoiceInitial = "INV";
+	//
+	// @Field(type = FieldType.String)
+	// private String receiptInitial = "RC";
 
 	public String getLocationId() {
 		return locationId;
@@ -326,14 +323,6 @@ public class DoctorLocation {
 		this.noOfReviews = noOfReviews;
 	}
 
-	public Integer getNoOfRecommenations() {
-		return noOfRecommenations;
-	}
-
-	public void setNoOfRecommenations(Integer noOfRecommenations) {
-		this.noOfRecommenations = noOfRecommenations;
-	}
-
 	public String getLocationUId() {
 		return locationUId;
 	}
@@ -401,10 +390,10 @@ public class DoctorLocation {
 				+ ", specialization=" + specialization + ", isClinic=" + isClinic + ", isLab=" + isLab
 				+ ", isOnlineReportsAvailable=" + isOnlineReportsAvailable + ", isNABLAccredited=" + isNABLAccredited
 				+ ", isHomeServiceAvailable=" + isHomeServiceAvailable + ", images=" + images + ", logoUrl=" + logoUrl
-				+ ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations + ", locationUId="
-				+ locationUId + ", clinicWorkingSchedules=" + clinicWorkingSchedules + ", isLocationListed="
-				+ isLocationListed + ", clinicAddress=" + clinicAddress + ", clinicRankingCount=" + clinicRankingCount
-				+ ", noOfClinicRecommendations=" + noOfClinicRecommendations + "]";
+				+ ", noOfReviews=" + noOfReviews + ", locationUId=" + locationUId + ", clinicWorkingSchedules="
+				+ clinicWorkingSchedules + ", isLocationListed=" + isLocationListed + ", clinicAddress=" + clinicAddress
+				+ ", clinicRankingCount=" + clinicRankingCount + ", noOfClinicRecommendations="
+				+ noOfClinicRecommendations + "]";
 	}
 
 }
