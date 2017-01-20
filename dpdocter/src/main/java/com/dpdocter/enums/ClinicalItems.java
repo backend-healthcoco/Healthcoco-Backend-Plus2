@@ -10,7 +10,7 @@ public enum ClinicalItems {
 											"HISTORY_OF_PRESENT_COMPLAINT"), MENSTRUAL_HISTORY(
 													"MENSTRUAL_HISTORY"), OBSTETRIC_HISTORY(
 															"OBSTETRIC_HISTORY"), INDICATION_OF_USG(
-																	"INDICATION_OF_USG"), PA("PA"), PV("PV"), PS("PS");
+																	"INDICATION_OF_USG"), PA("PA"), PV("PV"), PS("PS"),ECG("ECG"),XRAY("XRAY"),ECHO("ECHO"),HOLTER("HOLTER");
 
 	private String type;
 

@@ -89,6 +89,18 @@ public class ClinicalNotesCollection extends GenericCollection {
 	
 	@Field
 	private String ps;
+	
+	@Field
+	private String ecgDetails;
+	
+	@Field
+	private String xRayDetails;
+	
+	@Field
+	private String echo;
+	
+	@Field
+	private String holter;
 
 	@Field
 	private List<String> comments;

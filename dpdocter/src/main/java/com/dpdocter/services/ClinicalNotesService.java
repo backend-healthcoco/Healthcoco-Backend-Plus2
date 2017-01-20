@@ -8,7 +8,10 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
@@ -22,6 +25,7 @@ import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.MailResponse;
@@ -125,6 +129,22 @@ public interface ClinicalNotesService {
 	PS addEditPS(PS ps);
 	
 	PS deletePS(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	ECGDetails addEditECGDetails(ECGDetails ecgDetails);
+
+	XRayDetails addEditXRayDetails(XRayDetails xRayDetails);
+
+	Echo addEditEcho(Echo echo);
+
+	Holter addEditHolter(Holter holter);
+
+	XRayDetails deleteXRayDetails(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	ECGDetails deleteECGDetails(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	Echo deleteEcho(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	Holter deleteHolter(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 	
 
 }

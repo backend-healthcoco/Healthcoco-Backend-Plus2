@@ -37,7 +37,10 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MailAttachment;
@@ -52,14 +55,18 @@ import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.ECGDetailsCollection;
+import com.dpdocter.collections.EchoCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HistoryCollection;
+import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -78,6 +85,7 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
@@ -104,8 +112,11 @@ import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.ECGDetailsRepository;
+import com.dpdocter.repository.EchoRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -125,6 +136,7 @@ import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.SystemExamRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.XRayDetailsRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.ClinicalNotesAddRequest;
 import com.dpdocter.request.ClinicalNotesEditRequest;
@@ -144,6 +156,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
+import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 
 @Service
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
@@ -257,6 +270,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
+	
+	@Autowired
+	private XRayDetailsRepository xRayDetailsRepository;
+	
+	@Autowired
+	private ECGDetailsRepository ecgDetailsRepository;
+	
+	@Autowired
+	private EchoRepository echoRepository;
+	
+	@Autowired
+	private HolterRepository holterRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -2450,6 +2475,75 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				break;
 			case BOTH:
 				response = getCustomGlobalPS(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case ECG: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalECGDetails(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomECGDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalECGDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case XRAY: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalXRayDetails(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomXRayDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalXRayDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case ECHO: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalEcho(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomEcho(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalEcho(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case HOLTER: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalHolter(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomHolter(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalHolter(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			default:
 				break;
@@ -4797,6 +4891,146 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return ps;
 	}
+	
+	@Override
+	@Transactional
+	public ECGDetails addEditECGDetails(ECGDetails ecgDetails) {
+		try {
+			ECGDetailsCollection ecgDetailsCollection = new ECGDetailsCollection();
+			BeanUtil.map(ecgDetails, ecgDetailsCollection);
+			if (DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getId())) {
+				ecgDetailsCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(ecgDetailsCollection.getDoctorId());
+					if (userCollection != null) {
+						ecgDetailsCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					ecgDetailsCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				ECGDetailsCollection oldECGDetailsCollection = ecgDetailsRepository.findOne(ecgDetailsCollection.getId());
+				ecgDetailsCollection.setCreatedBy(oldECGDetailsCollection.getCreatedBy());
+				ecgDetailsCollection.setCreatedTime(oldECGDetailsCollection.getCreatedTime());
+				ecgDetailsCollection.setDiscarded(oldECGDetailsCollection.getDiscarded());
+			}
+			ecgDetailsCollection = ecgDetailsRepository.save(ecgDetailsCollection);
+
+			BeanUtil.map(ecgDetailsCollection, ecgDetails);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return ecgDetails;
+	}
+	
+	@Override
+	@Transactional
+	public XRayDetails addEditXRayDetails(XRayDetails xRayDetails) {
+		try {
+			XRayDetailsCollection xRayDetailsCollection = new XRayDetailsCollection();
+			BeanUtil.map(xRayDetails, xRayDetailsCollection);
+			if (DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getId())) {
+				xRayDetailsCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(xRayDetailsCollection.getDoctorId());
+					if (userCollection != null) {
+						xRayDetailsCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					xRayDetailsCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				XRayDetailsCollection oldXRayDetailsCollection = xRayDetailsRepository.findOne(xRayDetailsCollection.getId());
+				xRayDetailsCollection.setCreatedBy(oldXRayDetailsCollection.getCreatedBy());
+				xRayDetailsCollection.setCreatedTime(oldXRayDetailsCollection.getCreatedTime());
+				xRayDetailsCollection.setDiscarded(oldXRayDetailsCollection.getDiscarded());
+			}
+			xRayDetailsCollection = xRayDetailsRepository.save(xRayDetailsCollection);
+
+			BeanUtil.map(xRayDetailsCollection, xRayDetails);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return xRayDetails;
+	}
+	
+	@Override
+	@Transactional
+	public Echo addEditEcho(Echo echo) {
+		try {
+			EchoCollection echoCollection = new EchoCollection();
+			BeanUtil.map(echo, echoCollection);
+			if (DPDoctorUtils.anyStringEmpty(echoCollection.getId())) {
+				echoCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(echoCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(echoCollection.getDoctorId());
+					if (userCollection != null) {
+						echoCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					echoCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				EchoCollection oldEchoCollection = echoRepository.findOne(echoCollection.getId());
+				echoCollection.setCreatedBy(oldEchoCollection.getCreatedBy());
+				echoCollection.setCreatedTime(oldEchoCollection.getCreatedTime());
+				echoCollection.setDiscarded(oldEchoCollection.getDiscarded());
+			}
+			echoCollection = echoRepository.save(echoCollection);
+
+			BeanUtil.map(echoCollection, echo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return echo;
+	}
+	
+	@Override
+	@Transactional
+	public Holter addEditHolter(Holter holter) {
+		try {
+			HolterCollection holterCollection = new HolterCollection();
+			BeanUtil.map(holter, holterCollection);
+			if (DPDoctorUtils.anyStringEmpty(holterCollection.getId())) {
+				holterCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(holterCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(holterCollection.getDoctorId());
+					if (userCollection != null) {
+						holterCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					holterCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				HolterCollection oldHolterCollection = holterRepository.findOne(holterCollection.getId());
+				holterCollection.setCreatedBy(oldHolterCollection.getCreatedBy());
+				holterCollection.setCreatedTime(oldHolterCollection.getCreatedTime());
+				holterCollection.setDiscarded(oldHolterCollection.getDiscarded());
+			}
+			holterCollection = holterRepository.save(holterCollection);
+
+			BeanUtil.map(holterCollection, holter);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return holter;
+	}
 
 	@SuppressWarnings("unchecked")
 	private List<PA> getCustomGlobalPA(int page, int size, String doctorId, String locationId, String hospitalId,
@@ -4920,6 +5154,174 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
+	
+	@Override
+	public XRayDetails deleteXRayDetails(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		XRayDetails response = null;
+		try {
+			XRayDetailsCollection xRayDetailsCollection = xRayDetailsRepository.findOne(new ObjectId(id));
+			if (xRayDetailsCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(xRayDetailsCollection.getDoctorId(), xRayDetailsCollection.getHospitalId(),
+						xRayDetailsCollection.getLocationId())) {
+					if (xRayDetailsCollection.getDoctorId().toString().equals(doctorId)
+							&& xRayDetailsCollection.getHospitalId().toString().equals(hospitalId)
+							&& xRayDetailsCollection.getLocationId().toString().equals(locationId)) {
+
+						xRayDetailsCollection.setDiscarded(discarded);
+						xRayDetailsCollection.setUpdatedTime(new Date());
+						xRayDetailsRepository.save(xRayDetailsCollection);
+						response = new XRayDetails();
+						BeanUtil.map(xRayDetailsCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					xRayDetailsCollection.setDiscarded(discarded);
+					xRayDetailsCollection.setUpdatedTime(new Date());
+					xRayDetailsRepository.save(xRayDetailsCollection);
+					response = new XRayDetails();
+					BeanUtil.map(xRayDetailsCollection, response);
+				}
+			} else {
+				logger.warn("X ray details not found!");
+				throw new BusinessException(ServiceError.NoRecord, "X-RAY details not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public Echo deleteEcho(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		Echo response = null;
+		try {
+			EchoCollection echoCollection = echoRepository.findOne(new ObjectId(id));
+			if (echoCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(echoCollection.getDoctorId(), echoCollection.getHospitalId(),
+						echoCollection.getLocationId())) {
+					if (echoCollection.getDoctorId().toString().equals(doctorId)
+							&& echoCollection.getHospitalId().toString().equals(hospitalId)
+							&& echoCollection.getLocationId().toString().equals(locationId)) {
+
+						echoCollection.setDiscarded(discarded);
+						echoCollection.setUpdatedTime(new Date());
+						echoRepository.save(echoCollection);
+						response = new Echo();
+						BeanUtil.map(echoCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					echoCollection.setDiscarded(discarded);
+					echoCollection.setUpdatedTime(new Date());
+					echoRepository.save(echoCollection);
+					response = new Echo();
+					BeanUtil.map(echoCollection, response);
+				}
+			} else {
+				logger.warn("Echo not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Echo not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public ECGDetails deleteECGDetails(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		ECGDetails response = null;
+		try {
+			ECGDetailsCollection ecgDetailsCollection = ecgDetailsRepository.findOne(new ObjectId(id));
+			if (ecgDetailsCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(ecgDetailsCollection.getDoctorId(), ecgDetailsCollection.getHospitalId(),
+						ecgDetailsCollection.getLocationId())) {
+					if (ecgDetailsCollection.getDoctorId().toString().equals(doctorId)
+							&& ecgDetailsCollection.getHospitalId().toString().equals(hospitalId)
+							&& ecgDetailsCollection.getLocationId().toString().equals(locationId)) {
+
+						ecgDetailsCollection.setDiscarded(discarded);
+						ecgDetailsCollection.setUpdatedTime(new Date());
+						ecgDetailsRepository.save(ecgDetailsCollection);
+						response = new ECGDetails();
+						BeanUtil.map(ecgDetailsCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					ecgDetailsCollection.setDiscarded(discarded);
+					ecgDetailsCollection.setUpdatedTime(new Date());
+					ecgDetailsRepository.save(ecgDetailsCollection);
+					response = new ECGDetails();
+					BeanUtil.map(ecgDetailsCollection, response);
+				}
+			} else {
+				logger.warn("eCG details not found!");
+				throw new BusinessException(ServiceError.NoRecord, "ECG details not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public Holter deleteHolter(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		Holter response = null;
+		try {
+			HolterCollection holterCollection = holterRepository.findOne(new ObjectId(id));
+			if (holterCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(holterCollection.getDoctorId(), holterCollection.getHospitalId(),
+						holterCollection.getLocationId())) {
+					if (holterCollection.getDoctorId().toString().equals(doctorId)
+							&& holterCollection.getHospitalId().toString().equals(hospitalId)
+							&& holterCollection.getLocationId().toString().equals(locationId)) {
+
+						holterCollection.setDiscarded(discarded);
+						holterCollection.setUpdatedTime(new Date());
+						holterRepository.save(holterCollection);
+						response = new Holter();
+						BeanUtil.map(holterCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					holterCollection.setDiscarded(discarded);
+					holterCollection.setUpdatedTime(new Date());
+					holterRepository.save(holterCollection);
+					response = new Holter();
+					BeanUtil.map(holterCollection, response);
+				}
+			} else {
+				logger.warn("Holter not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Holter not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
 
 	@SuppressWarnings("unchecked")
 	private List<PS> getGlobalPS(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
@@ -5001,5 +5403,332 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	private List<ECGDetails> getGlobalECGDetails(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<ECGDetails> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<ECGDetails> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), ECGDetailsCollection.class, ECGDetails.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting ECG Details");
+		}
+		return response;
+	}
+
+	private List<ECGDetails> getCustomECGDetails(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<ECGDetails> response = null;
+		try {
+			AggregationResults<ECGDetails> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), ECGDetailsCollection.class,
+					ECGDetails.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting ECG Details");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ECGDetails> getCustomGlobalECGDetails(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<ECGDetails> response = new ArrayList<ECGDetails>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<ECGDetails> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, specialities, null),
+							ECGDetailsCollection.class, ECGDetails.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting ECG details");
+		}
+		return response;
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<XRayDetails> getGlobalXRayDetails(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<XRayDetails> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<XRayDetails> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), XRayDetailsCollection.class, XRayDetails.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting XRay Details");
+		}
+		return response;
+	}
+
+	private List<XRayDetails> getCustomXRayDetails(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<XRayDetails> response = null;
+		try {
+			AggregationResults<XRayDetails> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), XRayDetailsCollection.class,
+					XRayDetails.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting XRay Details");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<XRayDetails> getCustomGlobalXRayDetails(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<XRayDetails> response = new ArrayList<XRayDetails>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<XRayDetails> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, specialities, null),
+							XRayDetailsCollection.class, XRayDetails.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting XRay Details");
+		}
+		return response;
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<Echo> getGlobalEcho(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<Echo> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<Echo> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), EchoCollection.class, Echo.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Echo");
+		}
+		return response;
+	}
+
+	private List<Echo> getCustomEcho(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Echo> response = null;
+		try {
+			AggregationResults<Echo> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), EchoCollection.class,
+					Echo.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Echo");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Echo> getCustomGlobalEcho(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Echo> response = new ArrayList<Echo>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<Echo> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, specialities, null),
+							EchoCollection.class, Echo.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Echo");
+		}
+		return response;
+
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<Holter> getGlobalHolter(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<Holter> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<Holter> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page, size,
+					updatedTime, discarded, null, null, specialities, null), HolterCollection.class, Holter.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Holter");
+		}
+		return response;
+	}
+
+	private List<Holter> getCustomHolter(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Holter> response = null;
+		try {
+			AggregationResults<Holter> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null), HolterCollection.class,
+					Holter.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Holter");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Holter> getCustomGlobalHolter(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Holter> response = new ArrayList<Holter>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<Holter> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, specialities, null),
+							HolterCollection.class, Holter.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Holter");
+		}
+		return response;
+
+	}
+	
+	
 
 }

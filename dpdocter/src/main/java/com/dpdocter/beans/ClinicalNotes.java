@@ -49,6 +49,14 @@ public class ClinicalNotes extends GenericCollection {
 	private String pa;
 	
 	private String ps;
+	
+	private String ecgDetails;
+	
+	private String xRayDetails;
+	
+	private String echo;
+	
+	private String holter;
 
 	private String doctorId;
 
@@ -320,6 +328,38 @@ public class ClinicalNotes extends GenericCollection {
 		this.ps = ps;
 	}
 
+	public String getEcgDetails() {
+		return ecgDetails;
+	}
+
+	public void setEcgDetails(String ecgDetails) {
+		this.ecgDetails = ecgDetails;
+	}
+
+	public String getxRayDetails() {
+		return xRayDetails;
+	}
+
+	public void setxRayDetails(String xRayDetails) {
+		this.xRayDetails = xRayDetails;
+	}
+
+	public String getEcho() {
+		return echo;
+	}
+
+	public void setEcho(String echo) {
+		this.echo = echo;
+	}
+
+	public String getHolter() {
+		return holter;
+	}
+
+	public void setHolter(String holter) {
+		this.holter = holter;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
@@ -328,9 +368,10 @@ public class ClinicalNotes extends GenericCollection {
 				+ generalExam + ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint="
 				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
 				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
-				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId="
-				+ visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns + ", appointmentId="
-				+ appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
+				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
 }

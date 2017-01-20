@@ -58,6 +58,14 @@ public class ClinicalNotesAddRequest {
 	private String pa;
 
 	private String ps;
+	
+	private String ecgDetails;
+	
+	private String xRayDetails;
+	
+	private String echo;
+	
+	private String holter;
 
 	private String doctorId;
 
@@ -429,14 +437,48 @@ public class ClinicalNotesAddRequest {
 		this.ps = ps;
 	}
 
+	public String getEcgDetails() {
+		return ecgDetails;
+	}
+
+	public void setEcgDetails(String ecgDetails) {
+		this.ecgDetails = ecgDetails;
+	}
+
+	public String getxRayDetails() {
+		return xRayDetails;
+	}
+
+	public void setxRayDetails(String xRayDetails) {
+		this.xRayDetails = xRayDetails;
+	}
+
+	public String getEcho() {
+		return echo;
+	}
+
+	public void setEcho(String echo) {
+		this.echo = echo;
+	}
+
+	public String getHolter() {
+		return holter;
+	}
+
+	public void setHolter(String holter) {
+		this.holter = holter;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", diagnoses=" + diagnoses
-				+ ", diagrams=" + diagrams + ", note=" + note + ", observation=" + observation + ", investigation="
-				+ investigation + ", diagnosis=" + diagnosis + ", provisionalDiagnosis=" + provisionalDiagnosis
+				+ ", observation=" + observation + ", investigation=" + investigation + ", diagnosis=" + diagnosis
+				+ ", note=" + note + ", diagrams=" + diagrams + ", provisionalDiagnosis=" + provisionalDiagnosis
 				+ ", generalExam=" + generalExam + ", systemExam=" + systemExam + ", complaint=" + complaint
 				+ ", presentComplaint=" + presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory
-				+ ", menstrualHistory=" + menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", doctorId="
+				+ ", menstrualHistory=" + menstrualHistory + ", obstetricHistory=" + obstetricHistory
+				+ ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails="
+				+ ecgDetails + ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter=" + holter + ", doctorId="
 				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy
 				+ ", visitId=" + visitId + ", vitalSigns=" + vitalSigns + ", appointmentRequest=" + appointmentRequest
 				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", notes=" + notes
