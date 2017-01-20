@@ -704,6 +704,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 									&& !DPDoctorUtils.allStringsEmpty(
 											patientCard.getEmailAddress())) {
+								
 								sendEmail(doctorName, patientName, dateTime, clinicName,
 										"CONFIRMED_APPOINTMENT_TO_PATIENT", patientCard.getEmailAddress());
 							}
