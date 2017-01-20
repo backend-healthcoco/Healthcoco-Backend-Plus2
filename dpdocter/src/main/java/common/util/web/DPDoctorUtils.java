@@ -293,7 +293,6 @@ public class DPDoctorUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-
 	public static SearchQuery createCustomGlobalQuery(Resource resource, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String sortBy,
 			String searchTerm, Collection<String> specialities, String category, String disease,
