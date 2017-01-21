@@ -10,7 +10,11 @@ public class PointcutDefinition {
 	public void apiLayer() {
 	}
 
-	@Pointcut("within(com.dpdocter..*)")
+	
+	@Pointcut("within(com.dpdocter..*) && !@annotation(com.dpdocter.aop.NoLogging) ")
+	public void serviceExceptionLayer() {
+	}
+	@Pointcut("within(com.dpdocter..*) ")
 	public void serviceLayer() {
 	}
 

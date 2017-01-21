@@ -46,7 +46,7 @@ public class DpDocterLoggingAspect {
          
 	}
 
-	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceLayer()", throwing = "e")
+	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceExceptionLayer()", throwing = "e")
 	public void logAfterThrowingAllMethods(JoinPoint pjp ,Exception e) throws Throwable {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -58,7 +58,7 @@ public class DpDocterLoggingAspect {
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 	}
 
-	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceLayer()", throwing = "e")
+	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceExceptionLayer()", throwing = "e")
 	public void logAfterThrowingAllMethods(JoinPoint pjp ,DuplicateKeyException e) throws Throwable {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -71,7 +71,7 @@ public class DpDocterLoggingAspect {
 	}
 
 	
-	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceLayer()", throwing = "e")
+	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceExceptionLayer()", throwing = "e")
 	public void logAfterThrowingAllMethods(JoinPoint pjp ,BusinessException e) throws Throwable {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");

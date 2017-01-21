@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.aop.NoLogging;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Hospital;
@@ -88,6 +89,7 @@ public class LoginServiceImpl implements LoginService {
 	 */
 	@Override
 	@Transactional
+	@NoLogging
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
 		LoginResponse response = null;
 		try {
@@ -283,6 +285,7 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	@Transactional
+	@NoLogging
 	public List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
