@@ -210,6 +210,14 @@ public interface PathProxy {
 		public static final String ADD_PV = "/pv/add";
 
 		public static final String ADD_PS = "/ps/add";
+		
+		public static final String ADD_X_RAY_DETAILS = "/xRayDetails/add";
+		
+		public static final String ADD_ECG_DETAILS = "/ecgDetails/add";
+		
+		public static final String ADD_ECHO = "/echo/add";
+		
+		public static final String ADD_HOLTER = "/holter/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
@@ -252,6 +260,14 @@ public interface PathProxy {
 		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PS = "/ps/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_X_RAY_DETAILS = "/xRayDetails/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_ECG_DETAILS = "/ecgDetails/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_ECHO = "/echo/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		
+		public static final String DELETE_HOLTER = "/holter/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
 
@@ -680,6 +696,14 @@ public interface PathProxy {
 		public static final String SEARCH_PV = "pv/{range}";
 
 		public static final String SEARCH_PS = "ps/{range}";
+		
+		public static final String SEARCH_X_RAY_DETAILS = "xRayDetails/{range}";
+		
+		public static final String SEARCH_ECG_DETAILS = "ecgDetails/{range}";
+		
+		public static final String SEARCH_ECHO = "echo/{range}";
+		
+		public static final String SEARCH_HOLTER = "holter/{range}";
 
 	}
 

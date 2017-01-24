@@ -1,17 +1,17 @@
 package com.dpdocter.enums;
 
-public enum GynacPermissionsEnum {
+public enum CardioPermissionEnum {
 
-	BIRTH_HISTORY("BIRTH_HISTORY"), PA("PA"), PV("PV"),PS("PS");
-
+	ECG("ECG"),XRAY("XRAY"),ECHO("ECHO"),HOLTER("HOLTER");
+	
 	private String permissions;
 
-	private GynacPermissionsEnum(String permissions) {
+	private CardioPermissionEnum(String permissions) {
 		this.permissions = permissions;
 	}
 
 	public String getPermissions() {
 		return permissions;
 	}
-
+	
 }

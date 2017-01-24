@@ -24,8 +24,11 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
@@ -39,10 +42,14 @@ import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
@@ -56,6 +63,7 @@ import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
+import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.Resource;
@@ -852,6 +860,90 @@ public class ClinicalNotesApi {
 		response.setData(ps);
 		return response;
 	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS, notes = PathProxy.ClinicalNotesUrls.ADD_X_RAY_DETAILS)
+	public Response<XRayDetails> addEditXRayDetails(XRayDetails request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getxRayDetails())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		XRayDetails xRayDetails = clinicalNotesService.addEditXRayDetails(request);
+
+		transactionalManagementService.addResource(new ObjectId(xRayDetails.getId()), Resource.XRAY, false);
+		ESXRayDetailsDocument esxRayDetails = new ESXRayDetailsDocument();
+		BeanUtil.map(esxRayDetails, esxRayDetails);
+		esClinicalNotesService.addXRayDetails(esxRayDetails);
+		Response<XRayDetails> response = new Response<XRayDetails>();
+		response.setData(xRayDetails);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS, notes = PathProxy.ClinicalNotesUrls.ADD_ECG_DETAILS)
+	public Response<ECGDetails> addEditECGDetails(ECGDetails request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getEcgDetails())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		ECGDetails ecgDetails = clinicalNotesService.addEditECGDetails(request);
+
+		transactionalManagementService.addResource(new ObjectId(ecgDetails.getId()), Resource.ECG, false);
+		ESECGDetailsDocument esecgDetails = new ESECGDetailsDocument();
+		BeanUtil.map(ecgDetails, esecgDetails);
+		esClinicalNotesService.addECGDetails(esecgDetails);
+		Response<ECGDetails> response = new Response<ECGDetails>();
+		response.setData(ecgDetails);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ECHO)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ECHO, notes = PathProxy.ClinicalNotesUrls.ADD_ECHO)
+	public Response<Echo> addEditEcho(Echo request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getEcho())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Echo echo = clinicalNotesService.addEditEcho(request);
+
+		transactionalManagementService.addResource(new ObjectId(echo.getId()), Resource.ECHO, false);
+		ESEchoDocument esEcho = new ESEchoDocument();
+		BeanUtil.map(echo, esEcho);
+		esClinicalNotesService.addEcho(esEcho);
+		Response<Echo> response = new Response<Echo>();
+		response.setData(echo);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_HOLTER)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_HOLTER, notes = PathProxy.ClinicalNotesUrls.ADD_HOLTER)
+	public Response<Holter> addEditHolter(Holter request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getHolter())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Holter holter = clinicalNotesService.addEditHolter(request);
+
+		transactionalManagementService.addResource(new ObjectId(holter.getId()), Resource.HOLTER, false);
+		ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);
+		Response<Holter> response = new Response<Holter>();
+		response.setData(holter);
+		return response;
+	}
 
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PROVISIONAL_DIAGNOSIS)
 	@DELETE
@@ -1110,6 +1202,126 @@ public class ClinicalNotesApi {
 		}
 		Response<PS> response = new Response<PS>();
 		response.setData(ps);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY, notes = PathProxy.ClinicalNotesUrls.DELETE_OBSTETRIC_HISTORY)
+	public Response<ObstetricHistory> deleteObstetricHistory(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		ObstetricHistory obstetricHistory = clinicalNotesService.deleteObstetricHistory(id, doctorId, locationId, hospitalId, discarded);
+
+		if (obstetricHistory != null) {
+			transactionalManagementService.addResource(new ObjectId(obstetricHistory.getId()), Resource.OBSTETRIC_HISTORY, false);
+			ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
+			BeanUtil.map(obstetricHistory, esObstetricHistory);
+			esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
+		}
+		Response<ObstetricHistory> response = new Response<ObstetricHistory>();
+		response.setData(obstetricHistory);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS, notes = PathProxy.ClinicalNotesUrls.DELETE_X_RAY_DETAILS)
+	public Response<XRayDetails> deleteXRayDetails(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		XRayDetails xRayDetails = clinicalNotesService.deleteXRayDetails(id, doctorId, locationId, hospitalId, discarded);
+
+		if (xRayDetails != null) {
+			transactionalManagementService.addResource(new ObjectId(xRayDetails.getId()), Resource.XRAY, false);
+			ESXRayDetailsDocument esxRayDetails = new ESXRayDetailsDocument();
+			BeanUtil.map(xRayDetails, esxRayDetails);
+			esClinicalNotesService.addXRayDetails(esxRayDetails);
+		}
+		Response<XRayDetails> response = new Response<XRayDetails>();
+		response.setData(xRayDetails);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS, notes = PathProxy.ClinicalNotesUrls.DELETE_ECG_DETAILS)
+	public Response<ECGDetails> deleteECGDetails(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		ECGDetails ecgDetails = clinicalNotesService.deleteECGDetails(id, doctorId, locationId, hospitalId, discarded);
+
+		if (ecgDetails != null) {
+			transactionalManagementService.addResource(new ObjectId(ecgDetails.getId()), Resource.XRAY, false);
+			ESECGDetailsDocument esecgDetails = new ESECGDetailsDocument();
+			BeanUtil.map(ecgDetails, esecgDetails);
+			esClinicalNotesService.addECGDetails(esecgDetails);
+		}
+		Response<ECGDetails> response = new Response<ECGDetails>();
+		response.setData(ecgDetails);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ECHO)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ECHO, notes = PathProxy.ClinicalNotesUrls.DELETE_ECHO)
+	public Response<Echo> deleteEcho(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Echo echo = clinicalNotesService.deleteEcho(id, doctorId, locationId, hospitalId, discarded);
+
+		if (echo != null) {
+			transactionalManagementService.addResource(new ObjectId(echo.getId()), Resource.ECHO, false);
+			ESEchoDocument esEcho = new ESEchoDocument();
+			BeanUtil.map(echo, esEcho);
+			esClinicalNotesService.addEcho(esEcho);
+		}
+		Response<Echo> response = new Response<Echo>();
+		response.setData(echo);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_HOLTER)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_HOLTER, notes = PathProxy.ClinicalNotesUrls.DELETE_HOLTER)
+	public Response<Holter> deleteHolter(@PathParam(value = "id") String id, @PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		Holter holter = clinicalNotesService.deleteHolter(id, doctorId, locationId, hospitalId, discarded);
+
+		if (holter != null) {
+			transactionalManagementService.addResource(new ObjectId(holter.getId()), Resource.HOLTER, false);
+			ESHolterDocument esHolter = new ESHolterDocument();
+			BeanUtil.map(holter, esHolter);
+			esClinicalNotesService.addHolter(esHolter);
+		}
+		Response<Holter> response = new Response<Holter>();
+		response.setData(holter);
 		return response;
 	}
 

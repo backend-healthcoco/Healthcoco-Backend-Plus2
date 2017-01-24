@@ -19,7 +19,7 @@ public enum Resource {
 																															"INDICATION_OF_USG"), PA(
 																																	"PA"), PV(
 																																			"PV"), PS(
-																																					"PS");
+																																					"PS"),ECG("ECG"),XRAY("XRAY"),ECHO("ECHO"),HOLTER("HOLTER");
 
 	private String type;
 

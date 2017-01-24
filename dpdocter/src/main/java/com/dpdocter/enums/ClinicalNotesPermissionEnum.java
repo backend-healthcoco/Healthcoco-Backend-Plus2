@@ -10,7 +10,7 @@ public enum ClinicalNotesPermissionEnum {
 											"HISTORY_OF_PRESENT_COMPLAINT"), MENSTRUAL_HISTORY(
 													"MENSTRUAL_HISTORY"), OBSTETRIC_HISTORY(
 															"OBSTETRIC_HISTORY"), INDICATION_OF_USG(
-																	"INDICATION_OF_USG"), P_A("P_A"), P_S("P_S"), P_V("P_V");
+																	"INDICATION_OF_USG")/*, P_A("P_A"), P_S("P_S"), P_V("P_V")*/;
 
 	private String permissions;
 

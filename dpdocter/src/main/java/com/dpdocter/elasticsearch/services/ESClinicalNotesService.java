@@ -5,7 +5,10 @@ import java.util.List;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
+import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
@@ -19,6 +22,7 @@ import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
+import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 
 public interface ESClinicalNotesService {
 
@@ -109,5 +113,25 @@ public interface ESClinicalNotesService {
 	boolean addPV(ESPVDocument request);
 
 	boolean addPS(ESPSDocument request);
+
+	boolean addXRayDetails(ESXRayDetailsDocument request);
+
+	boolean addECGDetails(ESECGDetailsDocument request);
+
+	boolean addEcho(ESEchoDocument request);
+
+	boolean addHolter(ESHolterDocument request);
+
+	List<ESXRayDetailsDocument> searchXRayDetails(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESECGDetailsDocument> searchECGDetails(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESEchoDocument> searchEcho(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESHolterDocument> searchHolter(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }
