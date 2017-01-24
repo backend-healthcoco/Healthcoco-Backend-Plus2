@@ -56,504 +56,642 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class ESAppointmentServiceImpl implements ESAppointmentService {
-    @Autowired
-    private ElasticsearchTemplate elasticsearchTemplate;
+	@Autowired
+	private ElasticsearchTemplate elasticsearchTemplate;
 
-    @Autowired
-    private ESCityRepository esCityRepository;
+	@Autowired
+	private ESCityRepository esCityRepository;
 
-    @Autowired
-    private ESDoctorRepository esDoctorRepository;
+	@Autowired
+	private ESDoctorRepository esDoctorRepository;
 
-    @Autowired
-    private ESLocationRepository esLocationRepository;
+	@Autowired
+	private ESLocationRepository esLocationRepository;
 
-    @Autowired
-    private ESSpecialityRepository esSpecialityRepository;
+	@Autowired
+	private ESSpecialityRepository esSpecialityRepository;
 
-    @Autowired
-    private ESComplaintsRepository esComplaintsRepository;
+	@Autowired
+	private ESComplaintsRepository esComplaintsRepository;
 
-    @Autowired
-    private ESDiagnosticTestRepository esDiagnosticTestRepository;
+	@Autowired
+	private ESDiagnosticTestRepository esDiagnosticTestRepository;
 
-    @Autowired
-    private ESTreatmentServiceRepository esTreatmentServiceRepository;
+	@Autowired
+	private ESTreatmentServiceRepository esTreatmentServiceRepository;
 
-    @Value(value = "${image.path}")
-    private String imagePath;
+	@Value(value = "${image.path}")
+	private String imagePath;
 
-    @Override
-    public List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm) {
-	List<AppointmentSearchResponse> response = null;
-	try {
-		
-		response = new ArrayList<AppointmentSearchResponse>();
-	    
-		response = searchSpeciality(response, searchTerm); 
-	    response = searchSymptons(response, searchTerm);
-	    response = searchTests(response, searchTerm);		
-	    response = searchTreatmentService(response, searchTerm);
-        response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
-	    response = searchLocations(response, city, location, latitude, longitude, searchTerm);
-	
-	} catch (Exception e) {
-	    e.printStackTrace();
+	@Override
+	public List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude,
+			String searchTerm) {
+		List<AppointmentSearchResponse> response = null;
+		try {
+
+			response = new ArrayList<AppointmentSearchResponse>();
+
+			response = searchSpeciality(response, searchTerm);
+			response = searchSymptons(response, searchTerm);
+			response = searchTests(response, searchTerm);
+			response = searchTreatmentService(response, searchTerm);
+			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
+			response = searchLocations(response, city, location, latitude, longitude, searchTerm);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
 	}
-	return response;
-    }
 
-    private List<AppointmentSearchResponse> searchLocations(List<AppointmentSearchResponse> response, String city,
+	private List<AppointmentSearchResponse> searchLocations(List<AppointmentSearchResponse> response, String city,
 			String location, String latitude, String longitude, String searchTerm) {
-	    if(response.size() < 50){
-	    	List<ESLocationDocument> esLocationDocuments = null;
-		    if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			if (DPDoctorUtils.allStringsEmpty(city, location)) {
-			    if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
-				esLocationDocuments = esLocationRepository.findByLocationName(searchTerm);
-			    else {
-				if (latitude != null && longitude != null){
-					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"))
-							.must(QueryBuilders.matchPhrasePrefixQuery("locationName", searchTerm)).must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
-					esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(), ESLocationDocument.class);
+		if (response.size() < 50) {
+			List<ESLocationDocument> esLocationDocuments = null;
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				if (DPDoctorUtils.allStringsEmpty(city, location)) {
+					if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
+						esLocationDocuments = esLocationRepository.findByLocationName(searchTerm);
+					else {
+						if (latitude != null && longitude != null) {
+							BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+											.lon(Double.parseDouble(longitude)).distance("30km"))
+									.must(QueryBuilders.matchPhrasePrefixQuery("locationName", searchTerm))
+									.must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
+							esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+									.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC))
+									.build(), ESLocationDocument.class);
+						}
+					}
+				} else {
+					if (city != null && location != null)
+						esLocationDocuments = esLocationRepository.findByCityLocationName(city, location, searchTerm,
+								true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+					else if (city != null)
+						esLocationDocuments = esLocationRepository.findByCityLocationName(city, searchTerm, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+					else if (location != null)
+						esLocationDocuments = esLocationRepository.findByLocationLocationName(location, searchTerm,
+								true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
 				}
-			    }
 			} else {
-			    if (city != null && location != null)
-				    esLocationDocuments = esLocationRepository.findByCityLocationName(city, location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
-			    else if (city != null)
-			    	esLocationDocuments = esLocationRepository.findByCityLocationName(city, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
-			    else if (location != null)
-			    	esLocationDocuments = esLocationRepository.findByLocationLocationName(location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+				if (DPDoctorUtils.allStringsEmpty(city, location)) {
+					if (latitude != null && longitude != null) {
+						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+										.lon(Double.parseDouble(longitude)).distance("30km"))
+								.must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
+						esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+								.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(),
+								ESLocationDocument.class);
+					} else {
+					}
+					if (city != null && location != null)
+						esLocationDocuments = esLocationRepository.findLocationByCityLocation(city, location, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+					else if (city != null)
+						esLocationDocuments = esLocationRepository.findLocationByCity(city, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+					else if (location != null)
+						esLocationDocuments = esLocationRepository.findLocationByLocation(location, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
+				}
 			}
-		    } else {
-			if (DPDoctorUtils.allStringsEmpty(city, location)) {
-			    if (latitude != null && longitude != null){
-			    	BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km")).must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
-					esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(), ESLocationDocument.class);	
-			    } else {
-			    }
-			    if (city != null && location != null)
-			    	esLocationDocuments = esLocationRepository.findLocationByCityLocation(city, location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
-			    else if (city != null)
-			    	esLocationDocuments = esLocationRepository.findLocationByCity(city, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
-			    else if (location != null)
-			    	esLocationDocuments = esLocationRepository.findLocationByLocation(location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "clinicRankingCount"));
-			}
-		    }	    
 
-		    if (esLocationDocuments != null)
+			if (esLocationDocuments != null)
 				for (ESLocationDocument locationDocument : esLocationDocuments) {
-				    if (locationDocument.getIsClinic()) {
-				    	if(response.size() >= 50)break;
-					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-					appointmentSearchResponse.setId(locationDocument.getLocationId());
-					appointmentSearchResponse.setResponse(locationDocument.getLocationName());
-					appointmentSearchResponse.setResponseType(AppointmentResponseType.CLINIC);
-					response.add(appointmentSearchResponse);
-				    }
+					if (locationDocument.getIsClinic()) {
+						if (response.size() >= 50)
+							break;
+						AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+						appointmentSearchResponse.setId(locationDocument.getLocationId());
+						appointmentSearchResponse.setResponse(locationDocument.getLocationName());
+						appointmentSearchResponse.setResponseType(AppointmentResponseType.CLINIC);
+						response.add(appointmentSearchResponse);
+					}
 				}
 
-			    if (esLocationDocuments != null)
+			if (esLocationDocuments != null)
 				for (ESLocationDocument locationDocument : esLocationDocuments) {
-					if(response.size() >= 50)break;
-				    if (locationDocument.getIsLab()) {
-					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-					appointmentSearchResponse.setId(locationDocument.getLocationId());
-					appointmentSearchResponse.setResponse(locationDocument.getLocationName());
-					appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
-					response.add(appointmentSearchResponse);
-				    }
+					if (response.size() >= 50)
+						break;
+					if (locationDocument.getIsLab()) {
+						AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+						appointmentSearchResponse.setId(locationDocument.getLocationId());
+						appointmentSearchResponse.setResponse(locationDocument.getLocationName());
+						appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
+						response.add(appointmentSearchResponse);
+					}
 				}
-	    }
-	 	return response;
+		}
+		return response;
 	}
 
 	private List<AppointmentSearchResponse> searchDoctors(List<AppointmentSearchResponse> response, String city,
 			String location, String latitude, String longitude, String searchTerm) {
-	    if(response.size() < 50){
-		    List<ESDoctorDocument> esDoctorDocuments = null;
-		    if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-			if (DPDoctorUtils.allStringsEmpty(city, location)) {
-			    if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
-				esDoctorDocuments = esDoctorRepository.findByFirstName(searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
-			    else {
-				if (latitude != null && longitude != null){
-					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"))
-							.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm)).must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
-					esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(), ESDoctorDocument.class);
+		if (response.size() < 50) {
+			List<ESDoctorDocument> esDoctorDocuments = null;
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				if (DPDoctorUtils.allStringsEmpty(city, location)) {
+					if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
+						esDoctorDocuments = esDoctorRepository.findByFirstName(searchTerm, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+					else {
+						if (latitude != null && longitude != null) {
+							BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+											.lon(Double.parseDouble(longitude)).distance("30km"))
+									.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm))
+									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+							esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
+									ESDoctorDocument.class);
+						}
+
+					}
+				} else {
+					if (city != null && location != null)
+						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+					else if (city != null)
+						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+					else if (location != null)
+						esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 				}
-				    
-			    }
 			} else {
-			    if (city != null && location != null)
-				esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
-			    else if (city != null)
-				esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
-			    else if (location != null)
-				esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
-			}
-		    } else {
-			if (DPDoctorUtils.allStringsEmpty(city, location)) {
-			    if (latitude != null && longitude != null){
-			    	BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km")).must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
-			    	esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(), ESDoctorDocument.class);
-			    }
+				if (DPDoctorUtils.allStringsEmpty(city, location)) {
+					if (latitude != null && longitude != null) {
+						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+										.lon(Double.parseDouble(longitude)).distance("30km"))
+								.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+						esDoctorDocuments = elasticsearchTemplate.queryForList(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+										.withPageable(new PageRequest(0, 50 - response.size()))
+										.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
+								ESDoctorDocument.class);
+					}
 
-			} else {
-			    if (city != null && location != null)
-				esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
-			    else if (city != null)
-				esDoctorDocuments = esDoctorRepository.findByCity(city, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
-			    else if (location != null)
-				esDoctorDocuments = esDoctorRepository.findByLocation(location, true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+				} else {
+					if (city != null && location != null)
+						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+					else if (city != null)
+						esDoctorDocuments = esDoctorRepository.findByCity(city, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+					else if (location != null)
+						esDoctorDocuments = esDoctorRepository.findByLocation(location, true,
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+				}
 			}
-		    }
 
-		    if (esDoctorDocuments != null)
+			if (esDoctorDocuments != null)
 				for (ESDoctorDocument doctor : esDoctorDocuments) {
-					if(response.size() >= 50)break;
-				    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-				    appointmentSearchResponse.setId(doctor.getUserId());
-				    ESDoctorDocument object = new ESDoctorDocument();
-				    object.setUserId(doctor.getUserId());
-				    object.setFirstName(doctor.getFirstName());
-				    object.setLocationId(doctor.getLocationId());
-				    object.setHospitalId(doctor.getHospitalId());
-				    appointmentSearchResponse.setResponse(object);
-				    appointmentSearchResponse.setResponseType(AppointmentResponseType.DOCTOR);
-				    response.add(appointmentSearchResponse);
+					if (response.size() >= 50)
+						break;
+					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+					appointmentSearchResponse.setId(doctor.getUserId());
+					ESDoctorDocument object = new ESDoctorDocument();
+					object.setUserId(doctor.getUserId());
+					object.setFirstName(doctor.getFirstName());
+					object.setLocationId(doctor.getLocationId());
+					object.setHospitalId(doctor.getHospitalId());
+					appointmentSearchResponse.setResponse(object);
+					appointmentSearchResponse.setResponseType(AppointmentResponseType.DOCTOR);
+					response.add(appointmentSearchResponse);
 				}
 
-	    }
+		}
 		return response;
 	}
 
 	private List<AppointmentSearchResponse> searchTreatmentService(List<AppointmentSearchResponse> response,
 			String searchTerm) {
-    	if(response.size() < 50){
-	    	List<ESTreatmentServiceDocument> treatmentServiceDocuments = esTreatmentServiceRepository.findByName(searchTerm);
-	    	if (treatmentServiceDocuments != null)
-	    		for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
-	    			if(response.size() >= 50)break;
-	    		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-	    		    appointmentSearchResponse.setId(esTreatmentServiceDocument.getId());
-	    		    appointmentSearchResponse.setResponse(esTreatmentServiceDocument.getName());
-	    		    appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
-	    		    response.add(appointmentSearchResponse);
-	    		}
-	    }
+		if (response.size() < 50) {
+			List<ESTreatmentServiceDocument> treatmentServiceDocuments = esTreatmentServiceRepository
+					.findByName(searchTerm);
+			if (treatmentServiceDocuments != null)
+				for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
+					if (response.size() >= 50)
+						break;
+					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+					appointmentSearchResponse.setId(esTreatmentServiceDocument.getId());
+					appointmentSearchResponse.setResponse(esTreatmentServiceDocument.getName());
+					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
+					response.add(appointmentSearchResponse);
+				}
+		}
 		return response;
 	}
 
 	private List<AppointmentSearchResponse> searchTests(List<AppointmentSearchResponse> response, String searchTerm) {
-    	if(response.size() < 50){
-	    	List<ESDiagnosticTestDocument> diagnosticTestDocuments = esDiagnosticTestRepository.findByTestName(searchTerm);
-	    	if (diagnosticTestDocuments != null)
-	    		for (ESDiagnosticTestDocument diagnosticTest : diagnosticTestDocuments) {
-	    			if(response.size() >= 50)break;
-	    		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-	    		    appointmentSearchResponse.setId(diagnosticTest.getId());
-	    		    appointmentSearchResponse.setResponse(diagnosticTest.getTestName());
-	    		    appointmentSearchResponse.setResponseType(AppointmentResponseType.LABTEST);
-	    		    response.add(appointmentSearchResponse);
-	    		}
-	    }
+		if (response.size() < 50) {
+			List<ESDiagnosticTestDocument> diagnosticTestDocuments = esDiagnosticTestRepository
+					.findByTestName(searchTerm);
+			if (diagnosticTestDocuments != null)
+				for (ESDiagnosticTestDocument diagnosticTest : diagnosticTestDocuments) {
+					if (response.size() >= 50)
+						break;
+					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+					appointmentSearchResponse.setId(diagnosticTest.getId());
+					appointmentSearchResponse.setResponse(diagnosticTest.getTestName());
+					appointmentSearchResponse.setResponseType(AppointmentResponseType.LABTEST);
+					response.add(appointmentSearchResponse);
+				}
+		}
 		return response;
 	}
 
-	private List<AppointmentSearchResponse> searchSymptons(List<AppointmentSearchResponse> response, String searchTerm) {
-    	if(response.size() < 50){
-	    	List<ESComplaintsDocument> complaintsDocuments = esComplaintsRepository.findByComplaint(searchTerm);
-	    	if (complaintsDocuments != null)
-	    		for (ESComplaintsDocument esComplaintsDocument : complaintsDocuments) {
-	    			if(response.size() >= 50)break;
-	    		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-	    		    appointmentSearchResponse.setId(esComplaintsDocument.getId());
-	    		    appointmentSearchResponse.setResponse(esComplaintsDocument);
-	    		    appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
-	    		    response.add(appointmentSearchResponse);
-	    		}
-	    }
-    	return response;
+	private List<AppointmentSearchResponse> searchSymptons(List<AppointmentSearchResponse> response,
+			String searchTerm) {
+		if (response.size() < 50) {
+			List<ESComplaintsDocument> complaintsDocuments = esComplaintsRepository.findByComplaint(searchTerm);
+			if (complaintsDocuments != null)
+				for (ESComplaintsDocument esComplaintsDocument : complaintsDocuments) {
+					if (response.size() >= 50)
+						break;
+					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+					appointmentSearchResponse.setId(esComplaintsDocument.getId());
+					appointmentSearchResponse.setResponse(esComplaintsDocument);
+					appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
+					response.add(appointmentSearchResponse);
+				}
+		}
+		return response;
 	}
 
-	private List<AppointmentSearchResponse> searchSpeciality(List<AppointmentSearchResponse> response, String searchTerm) {
-    	List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(searchTerm);
-	    if (esSpecialityDocuments != null)
-		for (ESSpecialityDocument speciality : esSpecialityDocuments) {
-			if(response.size() >= 50)break;
-		    AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-		    appointmentSearchResponse.setId(speciality.getId());
-		    appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
-		    appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
-		    response.add(appointmentSearchResponse);
-		}
-	    return response;
+	private List<AppointmentSearchResponse> searchSpeciality(List<AppointmentSearchResponse> response,
+			String searchTerm) {
+		List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(searchTerm);
+		if (esSpecialityDocuments != null)
+			for (ESSpecialityDocument speciality : esSpecialityDocuments) {
+				if (response.size() >= 50)
+					break;
+				AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+				appointmentSearchResponse.setId(speciality.getId());
+				appointmentSearchResponse.setResponse(speciality.getSuperSpeciality());
+				appointmentSearchResponse.setResponseType(AppointmentResponseType.SPECIALITY);
+				response.add(appointmentSearchResponse);
+			}
+		return response;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-    public List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality, String symptom, 
-    		Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience, int maxExperience, String service) {
-	List<ESDoctorDocument> esDoctorDocuments = null;
-	List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
-	try {
-	    BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("isDoctorListed", true));
-	    if(DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)){
-	    	ESCityDocument esCityDocument = esCityRepository.findByName(city);
-	    	if(esCityDocument != null){
-	    		latitude = esCityDocument.getLatitude()+"";
-	    		longitude = esCityDocument.getLongitude()+"";
-	    	}
-	    }
-	    if (!DPDoctorUtils.anyStringEmpty(service)) {
-			List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository.findByName(service);
-			if (esTreatmentServiceDocuments != null) {
-				Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments, new BeanToPropertyValueTransformer("id"));
-				int count = (int) elasticsearchTemplate.count(new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)), ESTreatmentServiceCostDocument.class);
-			    if(count > 0)esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds)).withPageable(new PageRequest(0, count)).build(), ESTreatmentServiceCostDocument.class); 
+	public List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude,
+			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
+			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
+			int maxExperience, String service) {
+		List<ESDoctorDocument> esDoctorDocuments = null;
+		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
+		try {
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchQuery("isDoctorListed", true))
+					.must(QueryBuilders.matchQuery("isCLinic", true));
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
 			}
-		    if(esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()){return null;}		
-		    Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("locationId")));
-	        Set<String> doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments, new BeanToPropertyValueTransformer("doctorId")));
-	        
-	        locationIds.remove(null);doctorIds.remove(null);
-	        if((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())){return null;}
-	        boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
-		 }
-	    
-	    if (!DPDoctorUtils.anyStringEmpty(symptom)) {
-			List<ESComplaintsDocument> esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom);
-		    if(esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()){return null;}		
-		    Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("locationId")));
-	        Set<String> doctorIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId")));
-	        
-	        locationIds.remove(null);doctorIds.remove(null);
-	        if((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())){return null;}
-	    	boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds)).must(QueryBuilders.termsQuery("locationId", locationIds));
-		 }
-	    
-	    if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-			List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
-			if (esSpecialityDocuments != null) {
-			    Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments, new BeanToPropertyValueTransformer("id"));
-			    if (specialityIds == null) specialityIds = CollectionUtils.EMPTY_COLLECTION;
-			    	boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIds));
-//				}
+			if (!DPDoctorUtils.anyStringEmpty(service)) {
+				List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
+						.findByName(service);
+				if (esTreatmentServiceDocuments != null) {
+					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
+							new BeanToPropertyValueTransformer("id"));
+					int count = (int) elasticsearchTemplate.count(
+							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
+							ESTreatmentServiceCostDocument.class);
+					if (count > 0)
+						esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(
+								new NativeSearchQueryBuilder()
+										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
+										.withPageable(new PageRequest(0, count)).build(),
+								ESTreatmentServiceCostDocument.class);
+				}
+				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
+					return null;
+				}
+				Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
+						new BeanToPropertyValueTransformer("locationId")));
+				Set<String> doctorIds = new HashSet<>(CollectionUtils.collect(esTreatmentServiceCostDocuments,
+						new BeanToPropertyValueTransformer("doctorId")));
+
+				locationIds.remove(null);
+				doctorIds.remove(null);
+				if ((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
+					return null;
+				}
+				boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
+						.must(QueryBuilders.termsQuery("locationId", locationIds));
 			}
-		}
-	    
-	    if (!DPDoctorUtils.anyStringEmpty(location)) {
-	    	boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
-		   }
-	    if(booking != null && booking){
-	    	boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(), DoctorFacility.IBS.getType().toLowerCase()));
-	    }
-	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
 
-	    if (minFee != 0 && maxFee != 0)
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))));
-	    else if (minFee != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))));
-	    else if (maxFee != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").to(maxFee))));
+			if (!DPDoctorUtils.anyStringEmpty(symptom)) {
+				List<ESComplaintsDocument> esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom);
+				if (esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()) {
+					return null;
+				}
+				Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
+						new BeanToPropertyValueTransformer("locationId")));
+				Set<String> doctorIds = new HashSet<>(
+						CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId")));
 
-	    if (minExperience != 0 && maxExperience != 0) 
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience).to(maxExperience))));
-	    else if (minExperience != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))));
-	    else if(maxExperience != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").to(maxExperience))));
-
-	    if (!DPDoctorUtils.anyStringEmpty(gender)) {
-	    	boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
-	    }
-
-	    if(minTime != 0 && maxTime != 0) 
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime)).must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
-	    else if(minTime != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))))));
-	    else if(maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
-
-	    if (days != null && !days.isEmpty()) {
-	    	for(int i = 0; i < days.size();i++)days.set(i, days.get(i).toLowerCase());
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", "monday"))));
-		}
-
-	    if(latitude != null && longitude != null)boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
-	    
-	    SearchQuery searchQuery = null;
-	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
-	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
-		esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
-	    
-	    if (esDoctorDocuments != null) {
-		for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
-		    if (doctorDocument.getSpecialities() != null) {
-			List<String> specialities = new ArrayList<>();
-			for (String specialityId : doctorDocument.getSpecialities()) {
-			    ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
-			    if (specialityCollection != null)
-				specialities.add(specialityCollection.getSuperSpeciality());
+				locationIds.remove(null);
+				doctorIds.remove(null);
+				if ((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
+					return null;
+				}
+				boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
+						.must(QueryBuilders.termsQuery("locationId", locationIds));
 			}
-			doctorDocument.setSpecialities(specialities);
-		    }
-		    if (doctorDocument.getImageUrl() != null)
-			doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
-		    if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
-			List<String> images = new ArrayList<String>();
-			for (String clinicImage : doctorDocument.getImages()) {
-			    images.add(clinicImage);
+
+			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+						.findByQueryAnnotation(speciality);
+				if (esSpecialityDocuments != null) {
+					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+							new BeanToPropertyValueTransformer("id"));
+					if (specialityIds == null)
+						specialityIds = CollectionUtils.EMPTY_COLLECTION;
+					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIds));
+					// }
+				}
 			}
-			doctorDocument.setImages(images);
-		    }
-		    if (doctorDocument.getLogoUrl() != null)
-			doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
 
-		    if (latitude != null && longitude != null && doctorDocument.getLatitude() != null && doctorDocument.getLongitude() != null) {
-			doctorDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
-				doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
-		    }
-		    doctorDocument.getDob();
-		    String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
-					? doctorDocument.getStreetAddress() + ", " : "")
-					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
-							? doctorDocument.getLandmarkDetails() + ", " : "")
-					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
-							? doctorDocument.getLocality() + ", " : "")
-					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity())
-							? doctorDocument.getCity() + ", " : "")
-					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
-							? doctorDocument.getState() + ", " : "")
-					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
-							? doctorDocument.getCountry() + ", " : "")
-					+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
-							? doctorDocument.getPostalCode() : "");
-
-			if (address.charAt(address.length() - 2) == ',') {
-				address = address.substring(0, address.length() - 2);
+			if (!DPDoctorUtils.anyStringEmpty(location)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
 			}
-			doctorDocument.setClinicAddress(address);
+			if (booking != null && booking) {
+				boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
+						DoctorFacility.IBS.getType().toLowerCase()));
+			}
+			if (calling != null && calling)
+				boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
 
-		  }
-	    }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error While Getting Doctor Details From ES : " + e.getMessage());
-	}
-	return esDoctorDocuments;
-    }
+			if (minFee != 0 && maxFee != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))));
+			else if (minFee != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))));
+			else if (maxFee != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").to(maxFee))));
 
-    @Override
-    public List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling,
-    		int minTime, int maxTime, List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl) {
-	List<LabResponse> response = null;
-	List<ESLabTestDocument> esLabTestDocuments = null;
-	try {
-	    if(DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)){
-	    	ESCityDocument esCityDocument = esCityRepository.findByName(city);
-	    	if(esCityDocument != null){
-	    		latitude = esCityDocument.getLatitude()+"";
-	    		longitude = esCityDocument.getLongitude()+"";
-	    	}
-	    }    	    
-        
-	    if (!DPDoctorUtils.anyStringEmpty(test)) {
-		List<ESDiagnosticTestDocument> diagnosticTests = esDiagnosticTestRepository.findByTestName(test);
-		if (diagnosticTests != null) {
-			@SuppressWarnings("unchecked")
-		    Collection<String> testIds = CollectionUtils.collect(diagnosticTests, new BeanToPropertyValueTransformer("id"));
-			int count = (int) elasticsearchTemplate.count(new CriteriaQuery(new Criteria("testId").in(testIds)), ESLabTestDocument.class);
-		    if(count > 0)esLabTestDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("testId", testIds)).withPageable(new PageRequest(0, count)).build(), ESLabTestDocument.class); 
-		}
-	    }
-	    if(esLabTestDocuments == null || esLabTestDocuments.isEmpty()){return null;}
-	    List<ESLocationDocument> esLocationDocuments = null;
-		
-        @SuppressWarnings("unchecked")
-    	Collection<String> locationIds = CollectionUtils.collect(esLabTestDocuments, new BeanToPropertyValueTransformer("locationId"));
-    	
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.matchQuery("isLocationListed", true))
-        		.must(QueryBuilders.termsQuery("locationId", locationIds))
-        		.must(QueryBuilders.termQuery("isLab", true));
-        if(booking != null && booking)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.BOOK.getType()));
-	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.CALL.getType()));
+			if (minExperience != 0 && maxExperience != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(
+						QueryBuilders.rangeQuery("experience.experience").from(minExperience).to(maxExperience))));
+			else if (minExperience != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
+						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))));
+			else if (maxExperience != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
+						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").to(maxExperience))));
 
-        if(onlineReports != null)boolQueryBuilder.must(QueryBuilders.termQuery("isOnlineReportsAvailable", onlineReports));
-	    if(homeService != null)boolQueryBuilder.must(QueryBuilders.termQuery("isHomeServiceAvailable", homeService));
-        if(nabl != null)boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
+			if (!DPDoctorUtils.anyStringEmpty(gender)) {
+				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
+			}
 
-	    if(minTime != 0 && maxTime != 0) 
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime)).must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
-	    else if(minTime != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime))))));
-	    else if(maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
+			if (minTime != 0 && maxTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
+			else if (minTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))))));
+			else if (maxTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
 
-	    if (days != null && !days.isEmpty()) {
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay",days))));
-		}
+			if (days != null && !days.isEmpty()) {
+				for (int i = 0; i < days.size(); i++)
+					days.set(i, days.get(i).toLowerCase());
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", "monday"))));
+			}
 
-        boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude)).lon(Double.parseDouble(longitude)).distance("30km"));
-	            
-        SearchQuery searchQuery = null;
-	    if (size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
-	    else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
-		esLocationDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLocationDocument.class);
-	    
-	    if (esLocationDocuments != null && !esLocationDocuments.isEmpty()) {
-			for (ESLocationDocument document : esLocationDocuments) {
-				LabResponse labResponse = new LabResponse();
-				BeanUtil.map(document, labResponse);
-				List<String> images = new ArrayList<String>();
-				if(document.getImages() != null)
-					for (String clinicImage : document.getImages()) {
-							    images.add(getFinalImageURL(clinicImage));
+			if (latitude != null && longitude != null)
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+						.lon(Double.parseDouble(longitude)).distance("30km"));
+
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
+
+			if (esDoctorDocuments != null) {
+				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+					if (doctorDocument.getSpecialities() != null) {
+						List<String> specialities = new ArrayList<>();
+						for (String specialityId : doctorDocument.getSpecialities()) {
+							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+							if (specialityCollection != null)
+								specialities.add(specialityCollection.getSuperSpeciality());
+						}
+						doctorDocument.setSpecialities(specialities);
 					}
+					if (doctorDocument.getImageUrl() != null)
+						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
+					if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
+						List<String> images = new ArrayList<String>();
+						for (String clinicImage : doctorDocument.getImages()) {
+							images.add(clinicImage);
+						}
+						doctorDocument.setImages(images);
+					}
+					if (doctorDocument.getLogoUrl() != null)
+						doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
+
+					if (latitude != null && longitude != null && doctorDocument.getLatitude() != null
+							&& doctorDocument.getLongitude() != null) {
+						doctorDocument.setDistance(
+								DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
+										doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
+					}
+					doctorDocument.getDob();
+					String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
+							? doctorDocument.getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLandmarkDetails())
+									? doctorDocument.getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getLocality())
+									? doctorDocument.getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCity()) ? doctorDocument.getCity() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getState())
+									? doctorDocument.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getCountry())
+									? doctorDocument.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(doctorDocument.getPostalCode())
+									? doctorDocument.getPostalCode() : "");
+
+					if (address.charAt(address.length() - 2) == ',') {
+						address = address.substring(0, address.length() - 2);
+					}
+					doctorDocument.setClinicAddress(address);
+
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor Details From ES : " + e.getMessage());
+		}
+		return esDoctorDocuments;
+	}
+
+	@Override
+	public List<LabResponse> getLabs(int page, int size, String city, String location, String latitude,
+			String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime,
+			List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl) {
+		List<LabResponse> response = null;
+		List<ESLabTestDocument> esLabTestDocuments = null;
+		try {
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(test)) {
+				List<ESDiagnosticTestDocument> diagnosticTests = esDiagnosticTestRepository.findByTestName(test);
+				if (diagnosticTests != null) {
+					@SuppressWarnings("unchecked")
+					Collection<String> testIds = CollectionUtils.collect(diagnosticTests,
+							new BeanToPropertyValueTransformer("id"));
+					int count = (int) elasticsearchTemplate.count(new CriteriaQuery(new Criteria("testId").in(testIds)),
+							ESLabTestDocument.class);
+					if (count > 0)
+						esLabTestDocuments = elasticsearchTemplate.queryForList(
+								new NativeSearchQueryBuilder().withQuery(QueryBuilders.termsQuery("testId", testIds))
+										.withPageable(new PageRequest(0, count)).build(),
+								ESLabTestDocument.class);
+				}
+			}
+			if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
+				return null;
+			}
+			List<ESLocationDocument> esLocationDocuments = null;
+
+			@SuppressWarnings("unchecked")
+			Collection<String> locationIds = CollectionUtils.collect(esLabTestDocuments,
+					new BeanToPropertyValueTransformer("locationId"));
+
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchQuery("isLocationListed", true))
+					.must(QueryBuilders.termsQuery("locationId", locationIds))
+					.must(QueryBuilders.termQuery("isLab", true));
+			if (booking != null && booking)
+				boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.BOOK.getType()));
+			if (calling != null && calling)
+				boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.CALL.getType()));
+
+			if (onlineReports != null)
+				boolQueryBuilder.must(QueryBuilders.termQuery("isOnlineReportsAvailable", onlineReports));
+			if (homeService != null)
+				boolQueryBuilder.must(QueryBuilders.termQuery("isHomeServiceAvailable", homeService));
+			if (nabl != null)
+				boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
+
+			if (minTime != 0 && maxTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours",
+								boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime))
+										.must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
+			else if (minTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours",
+								boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime))))));
+			else if (maxTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours",
+								boolQuery().must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
+
+			if (days != null && !days.isEmpty()) {
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
+			}
+
+			boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+					.lon(Double.parseDouble(longitude)).distance("30km"));
+
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
+			esLocationDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLocationDocument.class);
+
+			if (esLocationDocuments != null && !esLocationDocuments.isEmpty()) {
+				for (ESLocationDocument document : esLocationDocuments) {
+					LabResponse labResponse = new LabResponse();
+					BeanUtil.map(document, labResponse);
+					List<String> images = new ArrayList<String>();
+					if (document.getImages() != null)
+						for (String clinicImage : document.getImages()) {
+							images.add(getFinalImageURL(clinicImage));
+						}
 					labResponse.setImages(images);
-					if (document.getLogoUrl() != null)labResponse.setLogoUrl(getFinalImageURL(document.getLogoUrl()));
-				    if (latitude != null && longitude != null && document.getLatitude() != null && document.getLongitude() != null) {
-							labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
-								document.getLatitude(), document.getLongitude(), "K"));
-				    }
-				    String address = (!DPDoctorUtils.anyStringEmpty(document.getStreetAddress())
+					if (document.getLogoUrl() != null)
+						labResponse.setLogoUrl(getFinalImageURL(document.getLogoUrl()));
+					if (latitude != null && longitude != null && document.getLatitude() != null
+							&& document.getLongitude() != null) {
+						labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude),
+								Double.parseDouble(longitude), document.getLatitude(), document.getLongitude(), "K"));
+					}
+					String address = (!DPDoctorUtils.anyStringEmpty(document.getStreetAddress())
 							? document.getStreetAddress() + ", " : "")
 							+ (!DPDoctorUtils.anyStringEmpty(document.getLandmarkDetails())
 									? document.getLandmarkDetails() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(document.getLocality())
-									? document.getLocality() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(document.getCity())
-									? document.getCity() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(document.getState())
-									? document.getState() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(document.getCountry())
-									? document.getCountry() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(document.getPostalCode())
-									? document.getPostalCode() : "");
+							+ (!DPDoctorUtils.anyStringEmpty(document.getLocality()) ? document.getLocality() + ", "
+									: "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getCity()) ? document.getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getState()) ? document.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getCountry()) ? document.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(document.getPostalCode()) ? document.getPostalCode() : "");
 
 					if (address.charAt(address.length() - 2) == ',') {
 						address = address.substring(0, address.length() - 2);
 					}
 					labResponse.setClinicAddress(address);
-					if (response == null)response = new ArrayList<LabResponse>();
+					if (response == null)
+						response = new ArrayList<LabResponse>();
 					response.add(labResponse);
-			}	
-	   }
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new BusinessException(ServiceError.Unknown, "Error While Getting Labs From ES : " + e.getMessage());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error While Getting Labs From ES : " + e.getMessage());
+		}
+		return response;
+
 	}
-	return response;
 
-    }
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
 
-    private String getFinalImageURL(String imageURL) {
-	if (imageURL != null) {
-	    return imagePath + imageURL;
-	} else
-	    return null;
-
-    }
+	}
 }
