@@ -611,22 +611,22 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
 
 			if (minTime != 0 && maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours",
-								boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime))
-										.must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
+								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))
+										.must(termQuery("clinicWorkingSchedules.workingHours.toTime", maxTime))))));
 			else if (minTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours",
-								boolQuery().must(termQuery("workingSchedules.workingHours.fromTime", minTime))))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
+								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))))));
 			else if (maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours",
-								boolQuery().must(termQuery("workingSchedules.workingHours.toTime", maxTime))))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
+								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.toTime", maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
 			}
 
 			boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
