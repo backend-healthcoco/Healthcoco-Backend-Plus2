@@ -706,7 +706,8 @@ public class RegistrationApi {
 			@PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "page") int page,
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-			@QueryParam(value = "role") String role, @DefaultValue("false") @QueryParam(value ="active") Boolean active) {
+			@QueryParam(value = "role") String role,
+			@DefaultValue("false") @QueryParam(value = "active") Boolean active) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -807,10 +808,7 @@ public class RegistrationApi {
 			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "type") String type) {
-		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
-			logger.warn(invalidInput);
-			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		}
+
 		List<Feedback> feedbacks = registrationService.getFeedback(page, size, doctorId, locationId, hospitalId,
 				updatedTime, type);
 		Response<Feedback> response = new Response<Feedback>();
@@ -864,15 +862,17 @@ public class RegistrationApi {
 		return response;
 	}
 
-//	@Path(value = PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
-//	@GET
-//	public Response<Boolean> updatePIDOnClinicLevel() {
-//
-//		Boolean changePatientNumberResponse = registrationService.updatePIDOnClinicLevel();
-//		Response<Boolean> response = new Response<Boolean>();
-//		response.setData(changePatientNumberResponse);
-//		return response;
-//	}
+	// @Path(value =
+	// PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
+	// @GET
+	// public Response<Boolean> updatePIDOnClinicLevel() {
+	//
+	// Boolean changePatientNumberResponse =
+	// registrationService.updatePIDOnClinicLevel();
+	// Response<Boolean> response = new Response<Boolean>();
+	// response.setData(changePatientNumberResponse);
+	// return response;
+	// }
 
 	@Path(value = PathProxy.RegistrationUrls.UPDATE_DOCTOR_CLINIC_PROFILE)
 	@GET
