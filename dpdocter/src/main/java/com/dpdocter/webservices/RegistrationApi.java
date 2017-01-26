@@ -763,6 +763,9 @@ public class RegistrationApi {
 		if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId()))
 			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()),
 					new ObjectId(feedback.getLocationId()));
+		else{
+			transnationalService.checkLocation(new ObjectId(feedback.getLocationId()));
+		}
 		Response<Feedback> response = new Response<Feedback>();
 		response.setData(feedback);
 		return response;
