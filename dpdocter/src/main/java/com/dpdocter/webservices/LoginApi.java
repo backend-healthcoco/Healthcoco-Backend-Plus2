@@ -48,7 +48,6 @@ public class LoginApi {
     @Path(value = PathProxy.LoginUrls.LOGIN_USER)
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_USER, notes = PathProxy.LoginUrls.LOGIN_USER)
-    //@NoLogging
     public Response<LoginResponse> login(LoginRequest request, @DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp) {
 	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getUsername()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");
@@ -79,7 +78,6 @@ public class LoginApi {
     @Path(value = PathProxy.LoginUrls.LOGIN_PATIENT)
     @POST
     @ApiOperation(value = PathProxy.LoginUrls.LOGIN_PATIENT, notes = PathProxy.LoginUrls.LOGIN_PATIENT)
-    //@NoLogging
     public Response<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 	if (request == null|| DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) || request.getPassword() == null || request.getPassword().length == 0) {
 	    logger.warn("Invalid Input");

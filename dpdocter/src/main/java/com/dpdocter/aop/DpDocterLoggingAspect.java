@@ -31,7 +31,7 @@ public class DpDocterLoggingAspect {
 	private Logger LOGGER = Logger.getLogger(DpDocterLoggingAspect.class);
 
 	
-	@Around(value = "com.dpdocter.aop.PointcutDefinition.serviceLayer()) ")
+	@Around(value = "com.dpdocter.aop.PointcutDefinition.serviceLayer() ")
 	public Object beforeUpdateAccountDescription(ProceedingJoinPoint pjp ) throws Throwable {
 		
 		LOGGER.warn("Logging access to " + pjp.getTarget().getClass().getSimpleName() + ". "
@@ -46,8 +46,8 @@ public class DpDocterLoggingAspect {
          
 	}
 
-	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceExceptionLayer()", throwing = "e")
-	public void logAfterThrowingAllMethods(JoinPoint pjp ,Exception e) throws Throwable {
+	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
+	public Exception logAfterThrowingAllMethods(JoinPoint pjp ,Exception e) throws Throwable {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
@@ -56,10 +56,11 @@ public class DpDocterLoggingAspect {
 		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
+		return e;
 	}
 
-	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceExceptionLayer()", throwing = "e")
-	public void logAfterThrowingAllMethods(JoinPoint pjp ,DuplicateKeyException e) throws Throwable {
+	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
+	public Exception logAfterThrowingAllMethods(JoinPoint pjp ,DuplicateKeyException e) throws Throwable {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
@@ -68,11 +69,12 @@ public class DpDocterLoggingAspect {
 		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
+		return e;
 	}
 
 	
-	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.serviceExceptionLayer()", throwing = "e")
-	public void logAfterThrowingAllMethods(JoinPoint pjp ,BusinessException e) throws Throwable {
+	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
+	public Exception logAfterThrowingAllMethods(JoinPoint pjp ,BusinessException e) throws Throwable {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
 		sdf.setTimeZone(timeZone);
@@ -80,6 +82,7 @@ public class DpDocterLoggingAspect {
 		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
+		return e;
 	}
 
 }
