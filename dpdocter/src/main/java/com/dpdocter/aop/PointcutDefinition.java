@@ -14,7 +14,7 @@ public class PointcutDefinition {
 	@Pointcut("within(com.dpdocter.services..*) ")
 	public void serviceExceptionLayer() {
 	}
-	@Pointcut("within(com.dpdocter..*) ")
+	@Pointcut("within(com.dpdocter.services..*) ")
 	public void serviceLayer() {
 	}
 

@@ -47,7 +47,7 @@ public class DpDocterLoggingAspect {
 	}
 
 	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
-	public Exception logAfterThrowingAllMethods(JoinPoint pjp ,Exception e) throws Throwable {
+	public Response<Exception> logAfterThrowingAllMethods(JoinPoint pjp ,Exception e) throws Throwable {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
@@ -56,11 +56,13 @@ public class DpDocterLoggingAspect {
 		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
-		return e;
+		Response<Exception> response = new Response<Exception>();
+		response.setData(e);
+		return response;
 	}
 
 	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
-	public Exception logAfterThrowingAllMethods(JoinPoint pjp ,DuplicateKeyException e) throws Throwable {
+	public Response<Exception> logAfterThrowingAllMethods(JoinPoint pjp ,DuplicateKeyException e) throws Throwable {
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
@@ -69,12 +71,14 @@ public class DpDocterLoggingAspect {
 		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
-		return e;
+		Response<Exception> response = new Response<Exception>();
+		response.setData(e);
+		return response;
 	}
 
 	
 	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
-	public Exception logAfterThrowingAllMethods(JoinPoint pjp ,BusinessException e) throws Throwable {
+	public Response<Exception> logAfterThrowingAllMethods(JoinPoint pjp ,BusinessException e) throws Throwable {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
 		sdf.setTimeZone(timeZone);
@@ -82,7 +86,9 @@ public class DpDocterLoggingAspect {
 		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
-		return e;
+		Response<Exception> response = new Response<Exception>();
+		response.setData(e);
+		return response;
 	}
 
 }

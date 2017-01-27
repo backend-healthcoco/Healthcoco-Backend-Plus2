@@ -2,7 +2,8 @@ package com.dpdocter.enums;
 
 public enum GynacPermissionsEnum {
 
-	BIRTH_HISTORY("BIRTH_HISTORY"), PA("PA"), PV("PV"),PS("PS");
+	BIRTH_HISTORY("BIRTH_HISTORY"), PA("PA"), PV("PV"),PS("PS"),INDICATION_OF_USG(
+			"INDICATION_OF_USG");
 
 	private String permissions;
 

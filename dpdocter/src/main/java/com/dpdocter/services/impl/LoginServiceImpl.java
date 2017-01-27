@@ -89,7 +89,6 @@ public class LoginServiceImpl implements LoginService {
 	 */
 	@Override
 	@Transactional
-	@NoLogging
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
 		LoginResponse response = null;
 		try {
@@ -285,7 +284,6 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	@Transactional
-	@NoLogging
 	public List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {

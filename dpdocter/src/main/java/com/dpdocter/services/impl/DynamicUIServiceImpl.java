@@ -62,6 +62,8 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			UIPermissions tempPermissions = null;
 			String speciality = null;
 			if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
+				
+				System.out.println("No speciality available");
 				tempPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
 			} else {
 				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
@@ -129,13 +131,15 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	}
 
 	private UIPermissions getAllPermissionBySpeciality(String speciality) {
+		
+		System.out.println("Speciality :: " +speciality);
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
 		ArrayList<String> patientVisitPermission = null;
 		ArrayList<String> prescriptionPermission = null;
 		ArrayList<String> profilePermission = null;
 		ArrayList<String> tabPermission = null;
-		switch (speciality) {
+		switch (speciality.toUpperCase()) {
 		case "OPHTHALMOLOGIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
@@ -164,12 +168,13 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		case "GYNAECOLOGIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
+			clinicalNotesPermission.add(GynacPermissionsEnum.PA.getPermissions());
+			clinicalNotesPermission.add(GynacPermissionsEnum.PV.getPermissions());
+			clinicalNotesPermission.add(GynacPermissionsEnum.PS.getPermissions());
+			clinicalNotesPermission.add(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 			profilePermission.add(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
-			profilePermission.add(GynacPermissionsEnum.PA.getPermissions());
-			profilePermission.add(GynacPermissionsEnum.PV.getPermissions());
-			profilePermission.add(GynacPermissionsEnum.PS.getPermissions());
 			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
