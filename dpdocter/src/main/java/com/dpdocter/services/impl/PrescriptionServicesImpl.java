@@ -346,28 +346,41 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 			}
+
 			drugCollection.setRankingCount(1);
+
 			drugCollection = drugRepository.save(drugCollection);
-//			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-//					drugCollection.getId(), drugCollection.getDoctorId(), drugCollection.getLocationId(),
-//					drugCollection.getHospitalId());
-//			if (doctorDrugCollection == null) {
-//				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(), drugCollection.getDoctorId(),
-//						drugCollection.getLocationId(), drugCollection.getHospitalId(), 1, false,
-//						drugCollection.getDuration(), drugCollection.getDosage(), drugCollection.getDosageTime(),
-//						drugCollection.getDirection(), drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-//				doctorDrugCollection.setCreatedTime(new Date());
-//			}
-//			doctorDrugCollection.setUpdatedTime(new Date());
-//			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-//			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-//			if (doctorDrugCollection != null) {
-//				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-//				BeanUtil.map(drugCollection, esDoctorDrugDocument);
-//				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-//				esDoctorDrugDocument.setId(drugCollection.getId().toString());
-//				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-//			}
+			// DoctorDrugCollection doctorDrugCollection =
+			// doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
+			// drugCollection.getId(), drugCollection.getDoctorId(),
+			// drugCollection.getLocationId(),
+			// drugCollection.getHospitalId());
+			// if (doctorDrugCollection == null) {
+			// doctorDrugCollection = new
+			// DoctorDrugCollection(drugCollection.getId(),
+			// drugCollection.getDoctorId(),
+			// drugCollection.getLocationId(), drugCollection.getHospitalId(),
+			// 1, false,
+			// drugCollection.getDuration(), drugCollection.getDosage(),
+			// drugCollection.getDosageTime(),
+			// drugCollection.getDirection(), drugCollection.getGenericNames(),
+			// drugCollection.getCreatedBy());
+			// doctorDrugCollection.setCreatedTime(new Date());
+			// }
+			// doctorDrugCollection.setUpdatedTime(new Date());
+			// doctorDrugCollection =
+			// doctorDrugRepository.save(doctorDrugCollection);
+			// transnationalService.addResource(doctorDrugCollection.getId(),
+			// Resource.DOCTORDRUG, false);
+			// if (doctorDrugCollection != null) {
+			// ESDoctorDrugDocument esDoctorDrugDocument = new
+			// ESDoctorDrugDocument();
+			// BeanUtil.map(drugCollection, esDoctorDrugDocument);
+			// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+			// esDoctorDrugDocument.setId(drugCollection.getId().toString());
+			// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
+			// doctorDrugCollection.getId());
+			// }
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -422,32 +435,42 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
 			}
-//			DoctorDrugCollection doctorDrugCollection = doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-//					drugCollection.getId(), new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-//					new ObjectId(request.getHospitalId()));
-//			if (doctorDrugCollection == null) {
-//				doctorDrugCollection = new DoctorDrugCollection(drugCollection.getId(),
-//						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
-//						new ObjectId(request.getHospitalId()), 1, false, drugCollection.getDuration(),
-//						drugCollection.getDosage(), drugCollection.getDosageTime(), drugCollection.getDirection(),
-//						drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-//				doctorDrugCollection.setCreatedTime(new Date());
-//			} else {
-//				doctorDrugCollection.setDirection(request.getDirection());
-//				doctorDrugCollection.setDosage(request.getDosage());
-//				doctorDrugCollection.setDosageTime(request.getDosageTime());
-//				doctorDrugCollection.setDuration(request.getDuration());
-//			}
-//			doctorDrugCollection.setUpdatedTime(new Date());
-//			doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-//			transnationalService.addResource(doctorDrugCollection.getId(), Resource.DOCTORDRUG, false);
-//			if (doctorDrugCollection != null) {
-//				ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-//				BeanUtil.map(drugCollection, esDoctorDrugDocument);
-//				BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-//				esDoctorDrugDocument.setId(drugCollection.getId().toString());
-//				esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-//			}
+			// DoctorDrugCollection doctorDrugCollection =
+			// doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
+			// drugCollection.getId(), new ObjectId(request.getDoctorId()), new
+			// ObjectId(request.getLocationId()),
+			// new ObjectId(request.getHospitalId()));
+			// if (doctorDrugCollection == null) {
+			// doctorDrugCollection = new
+			// DoctorDrugCollection(drugCollection.getId(),
+			// new ObjectId(request.getDoctorId()), new
+			// ObjectId(request.getLocationId()),
+			// new ObjectId(request.getHospitalId()), 1, false,
+			// drugCollection.getDuration(),
+			// drugCollection.getDosage(), drugCollection.getDosageTime(),
+			// drugCollection.getDirection(),
+			// drugCollection.getGenericNames(), drugCollection.getCreatedBy());
+			// doctorDrugCollection.setCreatedTime(new Date());
+			// } else {
+			// doctorDrugCollection.setDirection(request.getDirection());
+			// doctorDrugCollection.setDosage(request.getDosage());
+			// doctorDrugCollection.setDosageTime(request.getDosageTime());
+			// doctorDrugCollection.setDuration(request.getDuration());
+			// }
+			// doctorDrugCollection.setUpdatedTime(new Date());
+			// doctorDrugCollection =
+			// doctorDrugRepository.save(doctorDrugCollection);
+			// transnationalService.addResource(doctorDrugCollection.getId(),
+			// Resource.DOCTORDRUG, false);
+			// if (doctorDrugCollection != null) {
+			// ESDoctorDrugDocument esDoctorDrugDocument = new
+			// ESDoctorDrugDocument();
+			// BeanUtil.map(drugCollection, esDoctorDrugDocument);
+			// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+			// esDoctorDrugDocument.setId(drugCollection.getId().toString());
+			// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
+			// doctorDrugCollection.getId());
+			// }
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -483,21 +506,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						response = new Drug();
 						BeanUtil.map(drugCollection, response);
 
-//						DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
-//								.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
-//										new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
-//						if (doctorDrugCollection != null) {
-//							doctorDrugCollection.setDiscarded(discarded);
-//							doctorDrugCollection.setUpdatedTime(new Date());
-//							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-//							if (doctorDrugCollection != null) {
-//								ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-//								BeanUtil.map(drugCollection, esDoctorDrugDocument);
-//								BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-//								esDoctorDrugDocument.setId(drugCollection.getId().toString());
-//								esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-//							}
-//						}
+						// DoctorDrugCollection doctorDrugCollection =
+						// doctorDrugRepository
+						// .findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
+						// new ObjectId(doctorId), new ObjectId(locationId), new
+						// ObjectId(hospitalId));
+						// if (doctorDrugCollection != null) {
+						// doctorDrugCollection.setDiscarded(discarded);
+						// doctorDrugCollection.setUpdatedTime(new Date());
+						// doctorDrugCollection =
+						// doctorDrugRepository.save(doctorDrugCollection);
+						// if (doctorDrugCollection != null) {
+						// ESDoctorDrugDocument esDoctorDrugDocument = new
+						// ESDoctorDrugDocument();
+						// BeanUtil.map(drugCollection, esDoctorDrugDocument);
+						// BeanUtil.map(doctorDrugCollection,
+						// esDoctorDrugDocument);
+						// esDoctorDrugDocument.setId(drugCollection.getId().toString());
+						// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
+						// doctorDrugCollection.getId());
+						// }
+						// }
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.NotAuthorized,
@@ -832,14 +861,21 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						} else {
 							item.setDuration(null);
 						}
-						if (items == null){
+						if (items == null) {
 							items = new ArrayList<PrescriptionItem>();
-							itemDetails= new ArrayList<PrescriptionItemDetail>();
+							itemDetails = new ArrayList<PrescriptionItemDetail>();
 						}
 						BeanUtil.map(item, prescriptionItemDetail);
 						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
 						Drug drug = new Drug();
-						if (drugCollection != null)BeanUtil.map(drugCollection, drug);
+
+						if (drugCollection != null) {
+							BeanUtil.map(drugCollection, drug);
+							DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
+							BeanUtil.map(drugCollection, drugAddEditRequest);
+							addFavouriteDrug(drugAddEditRequest);
+						}
+
 						prescriptionItemDetail.setDrug(drug);
 						items.add(item);
 						itemDetails.add(prescriptionItemDetail);
@@ -1020,13 +1056,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						} else {
 							item.setDuration(null);
 						}
-						if (itemDetails == null){
-							itemDetails= new ArrayList<PrescriptionItemDetail>();
+						if (itemDetails == null) {
+							itemDetails = new ArrayList<PrescriptionItemDetail>();
 						}
 						BeanUtil.map(item, prescriptionItemDetail);
 						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
 						Drug drug = new Drug();
-						if (drugCollection != null)BeanUtil.map(drugCollection, drug);
+						if (drugCollection != null)
+							BeanUtil.map(drugCollection, drug);
 						prescriptionItemDetail.setDrug(drug);
 						itemDetails.add(prescriptionItemDetail);
 					}
@@ -1072,20 +1109,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (prescription != null) {
 				response = new PrescriptionAddEditResponseDetails();
 				BeanUtil.map(prescription, response);
-//				List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-//				if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
-//					for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
-//						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-//						BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-//						DrugCollection drugCollection = drugRepository
-//								.findOne(new ObjectId(prescriptionItem.getDrugId()));
-//						Drug drug = new Drug();
-//						if (drugCollection != null)
-//							BeanUtil.map(drugCollection, drug);
-//						prescriptionItemDetail.setDrug(drug);
-//						prescriptionItemDetails.add(prescriptionItemDetail);
-//					}
-//				}
+				// List<PrescriptionItemDetail> prescriptionItemDetails = new
+				// ArrayList<PrescriptionItemDetail>();
+				// if (prescription.getItems() != null &&
+				// !prescription.getItems().isEmpty()) {
+				// for (PrescriptionAddItem prescriptionItem :
+				// prescription.getItems()) {
+				// PrescriptionItemDetail prescriptionItemDetail = new
+				// PrescriptionItemDetail();
+				// BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+				// DrugCollection drugCollection = drugRepository
+				// .findOne(new ObjectId(prescriptionItem.getDrugId()));
+				// Drug drug = new Drug();
+				// if (drugCollection != null)
+				// BeanUtil.map(drugCollection, drug);
+				// prescriptionItemDetail.setDrug(drug);
+				// prescriptionItemDetails.add(prescriptionItemDetail);
+				// }
+				// }
 				response.setItems(itemDetails);
 			}
 			if (prescriptionTests != null && !prescriptionTests.isEmpty()) {
@@ -1274,11 +1315,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
+								.append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true))),
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
 						projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("name", new BasicDBObject("$first", "$name"))
@@ -1310,11 +1353,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
+								.append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true))),
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
 						projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("name", new BasicDBObject("$first", "$name"))
@@ -1342,8 +1387,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					"prescription_cl", Prescription.class);
 			prescriptions = aggregationResults.getMappedResults();
 
-			if(prescriptions != null && !prescriptions.isEmpty()){
-				for(Prescription prescription : prescriptions){
+			if (prescriptions != null && !prescriptions.isEmpty()) {
+				for (Prescription prescription : prescriptions) {
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : prescription.getTests()) {
@@ -1354,7 +1399,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 								}
-								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, (!DPDoctorUtils.anyStringEmpty(data.getRecordId())?data.getRecordId().toString():null)));
+								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+										(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
+												? data.getRecordId().toString() : null)));
 							}
 						}
 						prescription.setTests(null);
@@ -1428,8 +1475,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			AggregationResults<Prescription> aggregationResults = mongoTemplate.aggregate(aggregation,
 					"prescription_cl", Prescription.class);
 			prescriptions = aggregationResults.getMappedResults();
-			if(prescriptions != null && !prescriptions.isEmpty()){
-				for(Prescription prescription : prescriptions){
+			if (prescriptions != null && !prescriptions.isEmpty()) {
+				for (Prescription prescription : prescriptions) {
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : prescription.getTests()) {
@@ -1440,7 +1487,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 								}
-								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, (!DPDoctorUtils.anyStringEmpty(data.getRecordId())?data.getRecordId().toString():null)));
+								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+										(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
+												? data.getRecordId().toString() : null)));
 							}
 						}
 						prescription.setTests(null);
@@ -1448,7 +1497,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 			}
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Prescription");
@@ -1622,23 +1671,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			prescription.setDiagnosticTests(null);
 			BeanUtil.map(prescription, response);
 			response.setDiagnosticTests(prescriptionTest);
-//			List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
-//			if (prescription.getItems() != null) {
-//				for (PrescriptionAddItem prescriptionItem : prescription.getItems()) {
-//					PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-//					BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-//					if (prescriptionItem.getDrugId() != null) {
-//						DrugCollection drugCollection = drugRepository
-//								.findOne(new ObjectId(prescriptionItem.getDrugId()));
-//						Drug drug = new Drug();
-//						if (drugCollection != null)
-//							BeanUtil.map(drugCollection, drug);
-//						prescriptionItemDetail.setDrug(drug);
-//						prescriptionItemDetails.add(prescriptionItemDetail);
-//					}
-//				}
-//			}
-//			response.setItems(prescriptionItemDetails);
+			// List<PrescriptionItemDetail> prescriptionItemDetails = new
+			// ArrayList<PrescriptionItemDetail>();
+			// if (prescription.getItems() != null) {
+			// for (PrescriptionAddItem prescriptionItem :
+			// prescription.getItems()) {
+			// PrescriptionItemDetail prescriptionItemDetail = new
+			// PrescriptionItemDetail();
+			// BeanUtil.map(prescriptionItem, prescriptionItemDetail);
+			// if (prescriptionItem.getDrugId() != null) {
+			// DrugCollection drugCollection = drugRepository
+			// .findOne(new ObjectId(prescriptionItem.getDrugId()));
+			// Drug drug = new Drug();
+			// if (drugCollection != null)
+			// BeanUtil.map(drugCollection, drug);
+			// prescriptionItemDetail.setDrug(drug);
+			// prescriptionItemDetails.add(prescriptionItemDetail);
+			// }
+			// }
+			// }
+			// response.setItems(prescriptionItemDetails);
 		}
 		return response;
 	}
@@ -1978,8 +2030,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
-					Fields.field("updatedTime", "$updatedTime"), 
-					Fields.field("items.drug", "$drug"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
 					Fields.field("items.duration", "$items.duration"), Fields.field("items.dosage", "$items.dosage"),
 					Fields.field("items.dosageTime", "$items.dosageTime"),
 					Fields.field("items.direction", "$items.direction"),
@@ -1992,11 +2043,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind",
-							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
+							.append("preserveNullAndEmptyArrays", true))),
 					new CustomAggregationOperation(
 							new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true))),
+									new BasicDBObject("path", "$visit")
+											.append("preserveNullAndEmptyArrays",
+													true))),
 					projectList,
 					new CustomAggregationOperation(new BasicDBObject("$group",
 							new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
@@ -2034,7 +2087,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							if (diagnosticTestCollection != null) {
 								BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 							}
-							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, (!DPDoctorUtils.anyStringEmpty(data.getRecordId())?data.getRecordId().toString():null)));
+							diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+									(!DPDoctorUtils.anyStringEmpty(data.getRecordId()) ? data.getRecordId().toString()
+											: null)));
 						}
 					}
 					prescription.setTests(null);
@@ -3061,11 +3116,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
+								.append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true))),
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
 						projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("name", new BasicDBObject("$first", "$name"))
@@ -3097,11 +3154,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
+								.append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
-										new BasicDBObject("path", "$visit").append("preserveNullAndEmptyArrays", true))),
+										new BasicDBObject("path", "$visit")
+												.append("preserveNullAndEmptyArrays",
+														true))),
 						projectList,
 						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
 								.append("name", new BasicDBObject("$first", "$name"))
@@ -3129,8 +3188,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					"prescription_cl", Prescription.class);
 			prescriptions = aggregationResults.getMappedResults();
 
-			if(prescriptions != null && !prescriptions.isEmpty()){
-				for(Prescription prescription : prescriptions){
+			if (prescriptions != null && !prescriptions.isEmpty()) {
+				for (Prescription prescription : prescriptions) {
 					if (prescription.getTests() != null && !prescription.getTests().isEmpty()) {
 						List<TestAndRecordDataResponse> diagnosticTests = new ArrayList<TestAndRecordDataResponse>();
 						for (TestAndRecordData data : prescription.getTests()) {
@@ -3141,7 +3200,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								if (diagnosticTestCollection != null) {
 									BeanUtil.map(diagnosticTestCollection, diagnosticTest);
 								}
-								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest, (!DPDoctorUtils.anyStringEmpty(data.getRecordId())?data.getRecordId().toString():null)));
+								diagnosticTests.add(new TestAndRecordDataResponse(diagnosticTest,
+										(!DPDoctorUtils.anyStringEmpty(data.getRecordId())
+												? data.getRecordId().toString() : null)));
 							}
 						}
 						prescription.setTests(null);
@@ -3582,9 +3643,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			ObjectId drugObjectId = new ObjectId(drugId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
 			DrugCollection drugCollection = drugRepository.findByIdAndDoctorId(drugObjectId, doctorObjectId);
-			if(drugCollection == null){
+			if (drugCollection == null) {
 				drugCollection = drugRepository.findOne(drugObjectId);
-				if(drugCollection == null){
+				if (drugCollection == null) {
 					logger.error("Invalid drug Id");
 					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 				}
@@ -3593,16 +3654,16 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection.setDoctorId(doctorObjectId);
 				drugCollection.setRankingCount(1);
 				drugCollection.setId(null);
-			}else{
+			} else {
 				drugCollection.setLocationId(locationObjectId);
 				drugCollection.setHospitalId(hospitalObjectId);
-				drugCollection.setRankingCount(drugCollection.getRankingCount()+1);
+				drugCollection.setRankingCount(drugCollection.getRankingCount() + 1);
 				drugCollection.setUpdatedTime(new Date());
 			}
 			drugCollection = drugRepository.save(drugCollection);
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While making Drug Favourite");
@@ -3803,11 +3864,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 				drugCollection = drugRepository.save(drugCollection);
 			} else {
-				
-				drugCollection = drugRepository.findByIdAndDoctorId(new ObjectId(request.getId()), new ObjectId(request.getDoctorId()));
-				if(drugCollection == null){
+
+				drugCollection = drugRepository.findByIdAndDoctorId(new ObjectId(request.getId()),
+						new ObjectId(request.getDoctorId()));
+				if (drugCollection == null) {
 					drugCollection = drugRepository.findOne(new ObjectId(request.getId()));
-					if(drugCollection == null){
+					if (drugCollection == null) {
 						logger.error("Invalid drug Id");
 						throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 					}
@@ -3816,10 +3878,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					drugCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 					drugCollection.setRankingCount(1);
 					drugCollection.setId(null);
-				}else{
+				} else {
 					drugCollection.setLocationId(new ObjectId(request.getLocationId()));
 					drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-					drugCollection.setRankingCount(drugCollection.getRankingCount()+1);
+					drugCollection.setRankingCount(drugCollection.getRankingCount() + 1);
 					drugCollection.setUpdatedTime(new Date());
 				}
 				drugCollection.setUpdatedTime(new Date());
@@ -3827,21 +3889,21 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection.setDosage(request.getDosage());
 				drugCollection.setDosageTime(request.getDosageTime());
 				drugCollection.setDirection(request.getDirection());
-				
+
 				if (drugCollection.getDrugType() != null) {
-						if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
-							drugCollection.setDrugType(null);
-						else {
-							DrugTypeCollection drugTypeCollection = drugTypeRepository
-									.findOne(new ObjectId(drugCollection.getDrugType().getId()));
-							if (drugTypeCollection != null) {
-								DrugType drugType = new DrugType();
-								BeanUtil.map(drugTypeCollection, drugType);
-								drugCollection.setDrugType(drugType);
-							}
+					if (DPDoctorUtils.anyStringEmpty(drugCollection.getDrugType().getId()))
+						drugCollection.setDrugType(null);
+					else {
+						DrugTypeCollection drugTypeCollection = drugTypeRepository
+								.findOne(new ObjectId(drugCollection.getDrugType().getId()));
+						if (drugTypeCollection != null) {
+							DrugType drugType = new DrugType();
+							BeanUtil.map(drugTypeCollection, drugType);
+							drugCollection.setDrugType(drugType);
 						}
 					}
-					drugCollection = drugRepository.save(drugCollection);
+				}
+				drugCollection = drugRepository.save(drugCollection);
 			}
 
 			transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
@@ -4181,17 +4243,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Override
 	public Boolean addFavouritesToDrug() {
 		Boolean response = false;
-		try{
+		try {
 			List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository.findAll();
-			for(DoctorDrugCollection doctorDrugCollection : doctorDrugCollections){
-				DrugCollection drugCollection = drugRepository.find(doctorDrugCollection.getDrugId(), 
-						doctorDrugCollection.getDoctorId(), doctorDrugCollection.getLocationId(), doctorDrugCollection.getHospitalId());
-				if(drugCollection != null){
+			for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
+				DrugCollection drugCollection = drugRepository.find(doctorDrugCollection.getDrugId(),
+						doctorDrugCollection.getDoctorId(), doctorDrugCollection.getLocationId(),
+						doctorDrugCollection.getHospitalId());
+				if (drugCollection != null) {
 					drugCollection.setRankingCount(doctorDrugCollection.getRankingCount());
-				}
-				else{
+				} else {
 					DrugCollection globalDrugCollection = drugRepository.findOne(doctorDrugCollection.getDrugId());
-					if(globalDrugCollection != null){
+					if (globalDrugCollection != null) {
 						drugCollection = new DrugCollection();
 						BeanUtil.map(globalDrugCollection, drugCollection);
 						BeanUtil.map(doctorDrugCollection, drugCollection);
@@ -4201,7 +4263,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (drugCollection != null) {
 					drugCollection = drugRepository.save(drugCollection);
 					transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-					
+
 					ESDrugDocument esDrugDocument = new ESDrugDocument();
 					BeanUtil.map(drugCollection, esDrugDocument);
 					if (drugCollection.getDrugType() != null) {
@@ -4212,8 +4274,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 			response = true;
-		}catch(Exception e){
-			throw new BusinessException(ServiceError.Unknown, ""+e);
+		} catch (Exception e) {
+			throw new BusinessException(ServiceError.Unknown, "" + e);
 		}
 		return response;
 	}
