@@ -136,7 +136,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		ArrayList<String> prescriptionPermission = null;
 		ArrayList<String> profilePermission = null;
 		ArrayList<String> tabPermission = null;
-		switch (speciality.toUpperCase()) {
+		switch (speciality.toUpperCase().trim()) {
 		case "OPHTHALMOLOGIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
@@ -166,7 +166,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setTabPermissions(tabPermission);
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			break;
-		case "GYNAECOLOGIST":
+		case "GYNECOLOGIST/OBSTETRICIAN":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			clinicalNotesPermission.add(GynacPermissionsEnum.PA.getPermissions());

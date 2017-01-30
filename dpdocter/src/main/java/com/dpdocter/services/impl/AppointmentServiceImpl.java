@@ -920,6 +920,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 									userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName,
 									clinicName, clinicContactNum, appointmentCollection.getId().toString());
 						}
+						else
+						{
+							String text = "Your appointment " + appointmentId + " with " + doctorName
+									+ (clinicName != "" ? ", " + clinicName : "")
+									+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime;
+							pushNotificationServices.notifyUser(request.getDoctorId(), text, ComponentType.APPOINTMENT.getType(), appointmentCollection.getId().toString());
+						}
 						if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 								&& patientCard.getEmailAddress() != null)
 							sendEmail(doctorName, patientName, dateTime, clinicName, "CONFIRMED_APPOINTMENT_TO_PATIENT",
