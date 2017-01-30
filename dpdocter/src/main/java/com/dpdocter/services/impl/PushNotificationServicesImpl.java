@@ -46,6 +46,7 @@ import com.notnoop.apns.APNS;
 import com.notnoop.apns.ApnsService;
 
 import common.util.web.DPDoctorUtils;
+import common.util.web.FCMSender;
 
 @Service
 public class PushNotificationServicesImpl implements PushNotificationServices{
@@ -192,9 +193,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			
 			
 			if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-				sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+				//sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+				sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 			}else{
-				sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+				//sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
 			}
 			Notification notification = new Notification();
 //			notification.setTitle("Healthcoco");
@@ -241,9 +244,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Sender sender = null;
 			
 			if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-				sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+				//sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+				sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 			}else{
-				sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+				//sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
+				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
 			}
 			
 			Notification notification = new Notification();

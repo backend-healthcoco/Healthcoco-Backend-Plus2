@@ -63,7 +63,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			String speciality = null;
 			if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
 				
-				System.out.println("No speciality available");
 				tempPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
 			} else {
 				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
@@ -132,7 +131,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	private UIPermissions getAllPermissionBySpeciality(String speciality) {
 		
-		System.out.println("Speciality :: " +speciality);
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
 		ArrayList<String> patientVisitPermission = null;
