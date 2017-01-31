@@ -873,6 +873,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							BeanUtil.map(drugCollection, drug);
 							DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
 							BeanUtil.map(drugCollection, drugAddEditRequest);
+							drugAddEditRequest.setDoctorId(userCollection.getId().toString());
+							drugAddEditRequest.setHospitalId(request.getHospitalId());
+							drugAddEditRequest.setLocationId(request.getLocationId());
 							addFavouriteDrug(drugAddEditRequest);
 						}
 
@@ -3714,7 +3717,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 			BeanUtil.map(adviceCollection, response);
 		} catch (Exception e) {
-
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Drug");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Advice");
