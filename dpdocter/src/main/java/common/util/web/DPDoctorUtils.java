@@ -200,7 +200,10 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.NOTES) || resource.equals(Resource.PROVISIONAL_DIAGNOSIS)
 				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMATIC_EXAMINATION)
 				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
-				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)) {
+				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
+				|| resource.equals(Resource.INDICATION_OF_USG) || resource.equals(Resource.PV)
+				|| resource.equals(Resource.ECG) || resource.equals(Resource.XRAY) || resource.equals(Resource.ECHO)
+				|| resource.equals(Resource.HOLTER)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
@@ -608,7 +611,7 @@ public class DPDoctorUtils {
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
-		int currentMonth = localCalendar.get(Calendar.MONTH) ;
+		int currentMonth = localCalendar.get(Calendar.MONTH);
 		int currentYear = localCalendar.get(Calendar.YEAR);
 		localCalendar.set(currentYear, currentMonth, currentDay, 0, 0, 0);
 		return localCalendar.getTime();
@@ -632,7 +635,7 @@ public class DPDoctorUtils {
 		Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 		localCalendar.setTime(date);
 		int currentDay = localCalendar.get(Calendar.DATE);
-		int currentMonth = localCalendar.get(Calendar.MONTH)+1;
+		int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 		int currentYear = localCalendar.get(Calendar.YEAR);
 
 		return new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
