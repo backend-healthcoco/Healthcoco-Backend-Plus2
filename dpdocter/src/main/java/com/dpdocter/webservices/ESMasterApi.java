@@ -27,6 +27,7 @@ import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.DiseaseListResponse;
+import com.dpdocter.services.AdminServices;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -44,6 +45,9 @@ public class ESMasterApi {
 	
     @Autowired
     ESMasterService esMasterService;
+
+    @Autowired
+    AdminServices adminServices;
 
     @Path(value = PathProxy.SolrMasterUrls.SEARCH_REFERENCE)
     @GET
@@ -97,9 +101,9 @@ public class ESMasterApi {
     @GET
     public Response<Boolean> add() {
 
-    	Boolean searchResonse = esMasterService.add();
+    adminServices.importDrug();
 	Response<Boolean> response = new Response<Boolean>();
-	response.setData(searchResonse);
+	response.setData(true);
 	return response;
     }
     

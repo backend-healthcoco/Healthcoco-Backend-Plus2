@@ -3990,11 +3990,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			for (int k = 0; k < request.size(); k++) {
 				Collection<String> codes = CollectionUtils.collect(request.get(k).getGenericNames(),
 						new BeanToPropertyValueTransformer("code"));
-				for (String word : codes) {
-					word = word.toLowerCase();
+				if(codes != null && !codes.isEmpty()){
+					for (String word : codes) {
+						word = word.toLowerCase();
+					}
+					genericCodes.addAll(codes);
 				}
-				genericCodes.addAll(codes);
 			}
+			if(genericCodes == null || genericCodes.isEmpty())return null;
 			Cache.getAll(genericCodes);
 
 			for (int drugCount = 0; drugCount < request.size() - 1; drugCount++) {

@@ -6,14 +6,16 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "generic_code_wiht_reaction_cl")
+import com.dpdocter.beans.Code;
+
+@Document(collection = "generic_code_with_reaction_cl")
 public class GenericCodeWithReactionCollection extends GenericCollection {
 
 	@Id
 	private String id;
 	
 	@Field
-	private List<String> codes;
+	private List<Code> codes;
 	
 	@Field
 	private String reactionType;
@@ -25,11 +27,6 @@ public class GenericCodeWithReactionCollection extends GenericCollection {
 		super();
 	}
 
-	public GenericCodeWithReactionCollection(List<String> codes) {
-		super();
-		this.codes = codes;
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -38,11 +35,11 @@ public class GenericCodeWithReactionCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<String> getCodes() {
+	public List<Code> getCodes() {
 		return codes;
 	}
 
-	public void setCodes(List<String> codes) {
+	public void setCodes(List<Code> codes) {
 		this.codes = codes;
 	}
 
