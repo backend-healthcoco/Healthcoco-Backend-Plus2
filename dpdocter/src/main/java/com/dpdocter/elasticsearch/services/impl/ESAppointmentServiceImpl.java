@@ -353,7 +353,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
-					.must(QueryBuilders.matchQuery("isClinic", true)).must(QueryBuilders.matchQuery("isActivate", true));
+					.must(QueryBuilders.matchQuery("isClinic", true))
+					.must(QueryBuilders.matchQuery("isActivate", true));
+
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
@@ -425,56 +427,79 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					// }
 				}
 			}
-	    
-	    if (!DPDoctorUtils.anyStringEmpty(location)) {
-	    	boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
-		   }
-//	    if(booking != null && booking){
-//	    	boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(), DoctorFacility.IBS.getType().toLowerCase()));
-//	    }
-//	    if(calling != null && calling)boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
 
-	    if(booking != null && calling != null){
-	    	if(booking && calling);
-	    	else if(booking && !calling){
-	    		boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(), DoctorFacility.IBS.getType().toLowerCase()))
-	    		.mustNot(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
-	    	}
-	    	else if(!booking && calling){
-	    		boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()))
-	    		.mustNot(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(), DoctorFacility.IBS.getType().toLowerCase()));
-	    	}
-	    }
-	    
-	    if (minFee != 0 && maxFee != 0)
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))));
-	    else if (minFee != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))));
-	    else if (maxFee != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee", boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").to(maxFee))));
+			if (!DPDoctorUtils.anyStringEmpty(location)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
+			}
+			// if(booking != null && booking){
+			// boolQueryBuilder.must(QueryBuilders.termsQuery("facility",
+			// DoctorFacility.BOOK.getType().toLowerCase(),
+			// DoctorFacility.IBS.getType().toLowerCase()));
+			// }
+			// if(calling != null &&
+			// calling)boolQueryBuilder.must(QueryBuilders.matchQuery("facility",
+			// DoctorFacility.CALL.getType()));
 
-	    if (minExperience != 0 && maxExperience != 0) 
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience).to(maxExperience))));
-	    else if (minExperience != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))));
-	    else if(maxExperience != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(QueryBuilders.rangeQuery("experience.experience").to(maxExperience))));
+			if (booking != null && calling != null) {
+				if (booking && calling)
+					;
+				else if (booking && !calling) {
+					boolQueryBuilder
+							.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
+									DoctorFacility.IBS.getType().toLowerCase()))
+							.mustNot(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
+				} else if (!booking && calling) {
+					boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()))
+							.mustNot(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
+									DoctorFacility.IBS.getType().toLowerCase()));
+				}
+			}
 
-	    if (!DPDoctorUtils.anyStringEmpty(gender)) {
-	    	boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
-	    }
+			if (minFee != 0 && maxFee != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))));
+			else if (minFee != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))));
+			else if (maxFee != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").to(maxFee))));
 
-	    if(minTime != 0 && maxTime != 0) 
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime)).must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
-	    else if(minTime != 0)
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))))));
-	    else if(maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
+			if (minExperience != 0 && maxExperience != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(
+						QueryBuilders.rangeQuery("experience.experience").from(minExperience).to(maxExperience))));
+			else if (minExperience != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
+						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))));
+			else if (maxExperience != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
+						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").to(maxExperience))));
 
-	    if (days != null && !days.isEmpty()) {
-	    	for(int i = 0; i < days.size();i++)days.set(i, days.get(i).toLowerCase());
-	    	boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", "monday"))));
-		}
+			if (!DPDoctorUtils.anyStringEmpty(gender)) {
+				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
+			}
+
+			if (minTime != 0 && maxTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
+			else if (minTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))))));
+			else if (maxTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
+
+			if (days != null && !days.isEmpty()) {
+				for (int i = 0; i < days.size(); i++) {
+					days.set(i, days.get(i).toLowerCase());
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
+							.must(QueryBuilders.matchQuery("workingSchedules.workingDay", days.get(i).toLowerCase()))));
+				}
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(location)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
@@ -526,10 +551,11 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
-				for (int i = 0; i < days.size(); i++)
+				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", "monday"))));
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
+							.must(QueryBuilders.termsQuery("workingSchedules.workingDay", days.get(i).toLowerCase()))));
+				}
 			}
 
 			if (latitude != null && longitude != null)

@@ -110,7 +110,7 @@ public class DoctorLocation {
 	private int noOfClinicRecommendations = 0;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isActivate = true;
+	private Boolean isActivate = false;
 
 	// @Field(type = FieldType.String)
 	// private String invoiceInitial = "INV";
