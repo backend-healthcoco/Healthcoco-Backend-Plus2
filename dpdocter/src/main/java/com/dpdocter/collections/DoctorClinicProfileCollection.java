@@ -71,6 +71,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isSendBirthdaySMS = true;
+	
+	@Field 
+	private Boolean isAutoSMS = false;
 
 	public ObjectId getId() {
 		return id;
@@ -216,14 +219,31 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.isSendBirthdaySMS = isSendBirthdaySMS;
 	}
 
+	public ObjectId getUserLocationId() {
+		return userLocationId;
+	}
+
+	public void setUserLocationId(ObjectId userLocationId) {
+		this.userLocationId = userLocationId;
+	}
+
+	public Boolean getIsAutoSMS() {
+		return isAutoSMS;
+	}
+
+	public void setIsAutoSMS(Boolean isAutoSMS) {
+		this.isAutoSMS = isAutoSMS;
+	}
+
 	@Override
 	public String toString() {
-		return "DoctorClinicProfileCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", isActivate=" + isActivate + ", isVerified=" + isVerified + ", discarded=" + discarded
-				+ ", appointmentBookingNumber=" + appointmentBookingNumber + ", consultationFee=" + consultationFee
-				+ ", revisitConsultationFee=" + revisitConsultationFee + ", appointmentSlot=" + appointmentSlot
-				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
-				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
-				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS + "]";
+		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", isActivate=" + isActivate + ", isVerified=" + isVerified
+				+ ", discarded=" + discarded + ", appointmentBookingNumber=" + appointmentBookingNumber
+				+ ", consultationFee=" + consultationFee + ", revisitConsultationFee=" + revisitConsultationFee
+				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility="
+				+ facility + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations
+				+ ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
+				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + "]";
 	}
 }

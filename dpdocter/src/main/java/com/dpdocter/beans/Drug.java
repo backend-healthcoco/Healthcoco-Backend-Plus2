@@ -37,6 +37,8 @@ public class Drug extends GenericCollection{
     private long rankingCount = 0;
 
     private List<GenericCode> genericNames;
+    
+    private String drugCode;
 
 	public String getId() {
 		return id;
@@ -158,12 +160,20 @@ public class Drug extends GenericCollection{
 		this.genericNames = genericNames;
 	}
 
+	public String getDrugCode() {
+		return drugCode;
+	}
+
+	public void setDrugCode(String drugCode) {
+		this.drugCode = drugCode;
+	}
+
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
-				+ ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId="
-				+ hospitalId + ", locationId=" + locationId + ", duration=" + duration + ", dosage=" + dosage
-				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
-				+ ", rankingCount=" + rankingCount + ", genericNames=" + genericNames + "]";
+				+ ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId="
+				+ locationId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime
+				+ ", direction=" + direction + ", categories=" + categories + ", rankingCount=" + rankingCount
+				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + "]";
 	}
 }

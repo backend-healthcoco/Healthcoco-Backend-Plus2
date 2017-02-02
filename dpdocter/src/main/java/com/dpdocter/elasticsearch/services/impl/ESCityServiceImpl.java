@@ -48,7 +48,8 @@ public class ESCityServiceImpl  implements ESCityService{
     public boolean addCities(ESCityDocument esCityDocument) {
 	boolean response = false;
 	try {
-		if(esCityDocument.getLatitude()!= null && esCityDocument.getLongitude() != null)esCityDocument.setGeoPoint(new GeoPoint(esCityDocument.getLatitude(), esCityDocument.getLongitude()));
+		if(esCityDocument.getLatitude()!= null && esCityDocument.getLongitude() != null)
+		esCityDocument.setGeoPoint(new GeoPoint(esCityDocument.getLatitude(), esCityDocument.getLongitude()));
 		esCityRepository.save(esCityDocument);
 	    transnationalService.addResource(new ObjectId(esCityDocument.getId()), Resource.CITY, true);
 	    response = true;

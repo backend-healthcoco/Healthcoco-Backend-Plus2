@@ -26,14 +26,6 @@ public class XRayDetails extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getxRayDetails() {
-		return xRayDetails;
-	}
-
-	public void setxRayDetails(String xRayDetails) {
-		this.xRayDetails = xRayDetails;
-	}
-
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -72,6 +64,14 @@ public class XRayDetails extends GenericCollection {
 
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
+	}
+
+	public String getxRayDetails() {
+		return xRayDetails;
+	}
+
+	public void setxRayDetails(String xRayDetails) {
+		this.xRayDetails = xRayDetails;
 	}
 
 	@Override

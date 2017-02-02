@@ -3,6 +3,18 @@ package com.dpdocter.request;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.Complaint;
+import com.dpdocter.beans.Diagnoses;
+import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.Investigation;
+import com.dpdocter.beans.MenstrualHistory;
+import com.dpdocter.beans.Notes;
+import com.dpdocter.beans.Observation;
+import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.PresentComplaint;
+import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProvisionalDiagnosis;
+import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
@@ -46,9 +58,9 @@ public class ClinicalNotesAddRequest {
 
 	private String ps;
 
-	private String ecgDetail;
+	private String ecgDetails;
 
-	private String xRayDetail;
+	private String xRayDetails;
 
 	private String echo;
 
@@ -74,46 +86,30 @@ public class ClinicalNotesAddRequest {
 
 	private Date fromDate;
 
-	private String diagnoses;
+	private List<Diagnoses> diagnoses;
 
-	private String notes;
+	private List<Notes> notes;
 
-	private String complaints;
+	private List<Complaint> complaints;
 
-	private String observations;
+	private List<Observation> observations;
 
-	private String investigations;
+	private List<Investigation> investigations;
 
-	private String provisionalDiagnoses;
+	private List<ProvisionalDiagnosis> provisionalDiagnoses;
 
-	private String presentComplaints;
+	private List<PresentComplaint> presentComplaints;
 
-	private String presentComplaintHistories;
+	private List<PresentComplaintHistory> presentComplaintHistories;
 
-	private String generalExams;
+	private List<GeneralExam> generalExams;
 
-	private String systemExams;
+	private List<SystemExam> systemExams;
 
-	private String menstrualHistories;
+	private List<MenstrualHistory> menstrualHistories;
 
-	private String obstetricHistories;
-
-	private String indicationOfUSGs;
-
-	private String pvs;
-
-	private String pas;
-
-	private String pss;
-
-	private String ecgDetails;
-
-	private String xRayDetails;
-
-	private String echoes;
-
-	private String holters;
-
+	private List<ObstetricHistory> obstetricHistories;
+	
 	private String globalDiagnoses;
 
 	private String globalNotes;
@@ -401,151 +397,7 @@ public class ClinicalNotesAddRequest {
 	public void setHolter(String holter) {
 		this.holter = holter;
 	}
-
-	public String getEcgDetail() {
-		return ecgDetail;
-	}
-
-	public void setEcgDetail(String ecgDetail) {
-		this.ecgDetail = ecgDetail;
-	}
-
-	public String getxRayDetail() {
-		return xRayDetail;
-	}
-
-	public void setxRayDetail(String xRayDetail) {
-		this.xRayDetail = xRayDetail;
-	}
-
-	public String getDiagnoses() {
-		return diagnoses;
-	}
-
-	public void setDiagnoses(String diagnoses) {
-		this.diagnoses = diagnoses;
-	}
-
-	public String getNotes() {
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
-
-	public String getComplaints() {
-		return complaints;
-	}
-
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
-	}
-
-	public String getObservations() {
-		return observations;
-	}
-
-	public void setObservations(String observations) {
-		this.observations = observations;
-	}
-
-	public String getInvestigations() {
-		return investigations;
-	}
-
-	public void setInvestigations(String investigations) {
-		this.investigations = investigations;
-	}
-
-	public String getProvisionalDiagnoses() {
-		return provisionalDiagnoses;
-	}
-
-	public void setProvisionalDiagnoses(String provisionalDiagnoses) {
-		this.provisionalDiagnoses = provisionalDiagnoses;
-	}
-
-	public String getPresentComplaints() {
-		return presentComplaints;
-	}
-
-	public void setPresentComplaints(String presentComplaints) {
-		this.presentComplaints = presentComplaints;
-	}
-
-	public String getPresentComplaintHistories() {
-		return presentComplaintHistories;
-	}
-
-	public void setPresentComplaintHistories(String presentComplaintHistories) {
-		this.presentComplaintHistories = presentComplaintHistories;
-	}
-
-	public String getGeneralExams() {
-		return generalExams;
-	}
-
-	public void setGeneralExams(String generalExams) {
-		this.generalExams = generalExams;
-	}
-
-	public String getSystemExams() {
-		return systemExams;
-	}
-
-	public void setSystemExams(String systemExams) {
-		this.systemExams = systemExams;
-	}
-
-	public String getMenstrualHistories() {
-		return menstrualHistories;
-	}
-
-	public void setMenstrualHistories(String menstrualHistories) {
-		this.menstrualHistories = menstrualHistories;
-	}
-
-	public String getObstetricHistories() {
-		return obstetricHistories;
-	}
-
-	public void setObstetricHistories(String obstetricHistories) {
-		this.obstetricHistories = obstetricHistories;
-	}
-
-	public String getIndicationOfUSGs() {
-		return indicationOfUSGs;
-	}
-
-	public void setIndicationOfUSGs(String indicationOfUSGs) {
-		this.indicationOfUSGs = indicationOfUSGs;
-	}
-
-	public String getPvs() {
-		return pvs;
-	}
-
-	public void setPvs(String pvs) {
-		this.pvs = pvs;
-	}
-
-	public String getPas() {
-		return pas;
-	}
-
-	public void setPas(String pas) {
-		this.pas = pas;
-	}
-
-	public String getPss() {
-		return pss;
-	}
-
-	public void setPss(String pss) {
-		this.pss = pss;
-	}
-
+	
 	public String getEcgDetails() {
 		return ecgDetails;
 	}
@@ -562,20 +414,100 @@ public class ClinicalNotesAddRequest {
 		this.xRayDetails = xRayDetails;
 	}
 
-	public String getEchoes() {
-		return echoes;
+	public List<Diagnoses> getDiagnoses() {
+		return diagnoses;
 	}
 
-	public void setEchoes(String echoes) {
-		this.echoes = echoes;
+	public void setDiagnoses(List<Diagnoses> diagnoses) {
+		this.diagnoses = diagnoses;
 	}
 
-	public String getHolters() {
-		return holters;
+	public List<Notes> getNotes() {
+		return notes;
 	}
 
-	public void setHolters(String holters) {
-		this.holters = holters;
+	public void setNotes(List<Notes> notes) {
+		this.notes = notes;
+	}
+
+	public List<Complaint> getComplaints() {
+		return complaints;
+	}
+
+	public void setComplaints(List<Complaint> complaints) {
+		this.complaints = complaints;
+	}
+
+	public List<Observation> getObservations() {
+		return observations;
+	}
+
+	public void setObservations(List<Observation> observations) {
+		this.observations = observations;
+	}
+
+	public List<Investigation> getInvestigations() {
+		return investigations;
+	}
+
+	public void setInvestigations(List<Investigation> investigations) {
+		this.investigations = investigations;
+	}
+
+	public List<ProvisionalDiagnosis> getProvisionalDiagnoses() {
+		return provisionalDiagnoses;
+	}
+
+	public void setProvisionalDiagnoses(List<ProvisionalDiagnosis> provisionalDiagnoses) {
+		this.provisionalDiagnoses = provisionalDiagnoses;
+	}
+
+	public List<PresentComplaint> getPresentComplaints() {
+		return presentComplaints;
+	}
+
+	public void setPresentComplaints(List<PresentComplaint> presentComplaints) {
+		this.presentComplaints = presentComplaints;
+	}
+
+	public List<PresentComplaintHistory> getPresentComplaintHistories() {
+		return presentComplaintHistories;
+	}
+
+	public void setPresentComplaintHistories(List<PresentComplaintHistory> presentComplaintHistories) {
+		this.presentComplaintHistories = presentComplaintHistories;
+	}
+
+	public List<GeneralExam> getGeneralExams() {
+		return generalExams;
+	}
+
+	public void setGeneralExams(List<GeneralExam> generalExams) {
+		this.generalExams = generalExams;
+	}
+
+	public List<SystemExam> getSystemExams() {
+		return systemExams;
+	}
+
+	public void setSystemExams(List<SystemExam> systemExams) {
+		this.systemExams = systemExams;
+	}
+
+	public List<MenstrualHistory> getMenstrualHistories() {
+		return menstrualHistories;
+	}
+
+	public void setMenstrualHistories(List<MenstrualHistory> menstrualHistories) {
+		this.menstrualHistories = menstrualHistories;
+	}
+
+	public List<ObstetricHistory> getObstetricHistories() {
+		return obstetricHistories;
+	}
+
+	public void setObstetricHistories(List<ObstetricHistory> obstetricHistories) {
+		this.obstetricHistories = obstetricHistories;
 	}
 
 	public String getGlobalDiagnoses() {
@@ -746,8 +678,8 @@ public class ClinicalNotesAddRequest {
 				+ ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint=" + presentComplaint
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
-				+ ", pa=" + pa + ", ps=" + ps + ", ecgDetail=" + ecgDetail + ", xRayDetail=" + xRayDetail + ", echo="
-				+ echo + ", holter=" + holter + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails
+				+ ", echo=" + echo + ", holter=" + holter + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + ", visitId=" + visitId + ", vitalSigns="
 				+ vitalSigns + ", appointmentRequest=" + appointmentRequest + ", appointmentId=" + appointmentId
 				+ ", time=" + time + ", fromDate=" + fromDate + ", diagnoses=" + diagnoses + ", notes=" + notes
@@ -755,9 +687,7 @@ public class ClinicalNotesAddRequest {
 				+ ", provisionalDiagnoses=" + provisionalDiagnoses + ", presentComplaints=" + presentComplaints
 				+ ", presentComplaintHistories=" + presentComplaintHistories + ", generalExams=" + generalExams
 				+ ", systemExams=" + systemExams + ", menstrualHistories=" + menstrualHistories
-				+ ", obstetricHistories=" + obstetricHistories + ", indicationOfUSGs=" + indicationOfUSGs + ", pvs="
-				+ pvs + ", pas=" + pas + ", pss=" + pss + ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails
-				+ ", echoes=" + echoes + ", holters=" + holters + ", globalDiagnoses=" + globalDiagnoses
+				+ ", obstetricHistories=" + obstetricHistories + ", globalDiagnoses=" + globalDiagnoses
 				+ ", globalNotes=" + globalNotes + ", globalComplaints=" + globalComplaints + ", globalObservations="
 				+ globalObservations + ", globalInvestigations=" + globalInvestigations
 				+ ", globalProvisionalDiagnoses=" + globalProvisionalDiagnoses + ", globalPresentComplaints="

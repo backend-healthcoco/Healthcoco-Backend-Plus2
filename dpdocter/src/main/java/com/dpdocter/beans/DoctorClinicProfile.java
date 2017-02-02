@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DoctorFacility;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorClinicProfile {
 	private String id;
@@ -36,7 +37,7 @@ public class DoctorClinicProfile {
 	private ConsultationFee consultationFee;
 
 	private ConsultationFee revisitConsultationFee;
-	
+
 	private AppointmentSlot appointmentSlot;
 
 	private List<WorkingSchedule> workingSchedules;
@@ -80,11 +81,13 @@ public class DoctorClinicProfile {
 	private Boolean isDoctorListed = true;
 
 	private long rankingCount = 0;
-	
+
 	private Boolean isSendBirthdaySMS = true;
-	
+
 	private Boolean isDoctorRecommended = false;
-	
+
+	private Boolean isAutoSMS = false;
+
 	public String getId() {
 		return id;
 	}
@@ -348,7 +351,7 @@ public class DoctorClinicProfile {
 	public void setIsDoctorListed(Boolean isDoctorListed) {
 		this.isDoctorListed = isDoctorListed;
 	}
-	
+
 	public ConsultationFee getRevisitConsultationFee() {
 		return revisitConsultationFee;
 	}
@@ -397,6 +400,14 @@ public class DoctorClinicProfile {
 		this.isDoctorRecommended = isDoctorRecommended;
 	}
 
+	public Boolean getIsAutoSMS() {
+		return isAutoSMS;
+	}
+
+	public void setIsAutoSMS(Boolean isAutoSMS) {
+		this.isAutoSMS = isAutoSMS;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -413,6 +424,6 @@ public class DoctorClinicProfile {
 				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", feedbacks="
 				+ feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", isDoctorRecommended=" + isDoctorRecommended + "]";
+				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isAutoSMS=" + isAutoSMS + "]";
 	}
 }

@@ -463,16 +463,16 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (minTime != 0 && maxTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
 			else if (minTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").from(minTime))))));
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))))));
 			else if (maxTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").to(maxTime))))));
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++)
