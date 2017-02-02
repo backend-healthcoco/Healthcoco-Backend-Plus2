@@ -431,7 +431,7 @@ public class DoctorProfileApi {
 		}
 
 		DoctorGeneralInfo addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
-		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
 
 		Response<DoctorGeneralInfo> response = new Response<DoctorGeneralInfo>();
 		response.setData(addEditGeneralInfoResponse);
