@@ -85,7 +85,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 	ElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
-	TransportClient tranransportClient;
+	TransportClient transportClient;
 
 	@Override
 	public boolean addDrug(ESDrugDocument request) {
@@ -184,7 +184,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
-			SearchResponse searchResponse = tranransportClient.prepareSearch("drugs_in").setTypes("drugs")
+			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
 					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
 					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
 			response = new ArrayList<DrugDocument>();
@@ -230,7 +230,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, null, searchTerm, category, null, "drugName");
 				}
-				SearchResponse searchResponse = tranransportClient.prepareSearch("drugs_in").setTypes("drugs")
+				SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
 						.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0)
 						.setSize(50).addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
 				response = new ArrayList<DrugDocument>();
@@ -288,7 +288,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			// response = elasticsearchTemplate.queryForList(searchQuery,
 			// ESDrugDocument.class);
 
-			SearchResponse searchResponse = tranransportClient.prepareSearch("drugs_in").setTypes("drugs")
+			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
 					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
 					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
 			response = new ArrayList<ESDrugDocument>();
@@ -350,7 +350,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			 * objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
 			 * response.add(esDoctorDocument); }
 			 */
-			SearchResponse searchResponse = tranransportClient.prepareSearch("drugs_in").setTypes("drugs")
+			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
 					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
 					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
 			response = new ArrayList<ESDrugDocument>();
@@ -387,7 +387,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, null, searchTerm, category, null, "drugName");
 				}
-				SearchResponse searchResponse = tranransportClient.prepareSearch("drugs_in").setTypes("drugs")
+				SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
 						.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0)
 						.setSize(50).addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
 				response = new ArrayList<ESDrugDocument>();

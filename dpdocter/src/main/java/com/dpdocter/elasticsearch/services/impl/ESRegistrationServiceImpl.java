@@ -98,8 +98,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	}
 
 	@Override
-	public ESPatientResponseDetails searchPatient(String locationId, String hospitalId,
-			String searchTerm, int page, int size) {
+	public ESPatientResponseDetails searchPatient(String locationId, String hospitalId, String searchTerm, int page,
+			int size) {
 
 		List<ESPatientDocument> patients = new ArrayList<ESPatientDocument>();
 		List<ESPatientResponse> patientsResponse = null;
@@ -207,7 +207,8 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		String locationId = request.getLocationId();
 		String hospitalId = request.getHospitalId();
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.termQuery("locationId", locationId))
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+				.must(QueryBuilders.termQuery("locationId", locationId))
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId));
 
 		if (request.getSearchParameters() != null && !request.getSearchParameters().isEmpty()) {
@@ -305,23 +306,24 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 	@Override
 	public void editLocation(DoctorLocation doctorLocation) {
 		try {
+			Boolean isActivate;
 			GeoPoint geoPoint = null;
 			if (doctorLocation.getLatitude() != null && doctorLocation.getLongitude() != null)
 				geoPoint = new GeoPoint(doctorLocation.getLatitude(), doctorLocation.getLongitude());
-			
 			ESLocationDocument esLocationDocument = new ESLocationDocument();
 			BeanUtil.map(doctorLocation, esLocationDocument);
 			esLocationDocument.setGeoPoint(geoPoint);
 			esLocationDocument.setId(doctorLocation.getLocationId());
-			
 			esLocationRepository.save(esLocationDocument);
 			List<ESDoctorDocument> doctorDocuments = esDoctorRepository
 					.findByLocationId(doctorLocation.getLocationId());
 			for (ESDoctorDocument doctorDocument : doctorDocuments) {
 				String id = doctorDocument.getId();
+				isActivate = doctorDocument.getIsActivate();
 				BeanUtil.map(doctorLocation, doctorDocument);
 				doctorDocument.setGeoPoint(geoPoint);
 				doctorDocument.setId(id);
+				doctorDocument.setIsActivate(isActivate);
 				esDoctorRepository.save(doctorDocument);
 				transnationalService.addResource(new ObjectId(doctorLocation.getLocationId()), Resource.LOCATION, true);
 			}
