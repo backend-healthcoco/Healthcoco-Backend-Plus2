@@ -353,7 +353,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
-					.must(QueryBuilders.matchQuery("isClinic", true));
+					.must(QueryBuilders.matchQuery("isClinic", true)).must(QueryBuilders.matchQuery("isActivate", true))
+					.must(QueryBuilders.matchQuery("i", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
@@ -464,15 +465,16 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
 								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
+								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+										.lte(maxTime))))));
 			else if (minTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
 								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))))));
 			else if (maxTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++)
@@ -616,9 +618,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))
 										.must(termQuery("clinicWorkingSchedules.workingHours.toTime", maxTime))))));
 			else if (minTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
-						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
-								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules", boolQuery().must(nestedQuery(
+						"clinicWorkingSchedules.workingHours",
+						boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))))));
 			else if (maxTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
 						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
