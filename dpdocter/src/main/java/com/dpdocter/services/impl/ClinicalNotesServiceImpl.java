@@ -348,7 +348,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * }
 			 */
 			// complaintIds = new ArrayList<ObjectId>();
-			if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
+			if (request.getComplaint() != null && !request.getComplaint().isEmpty() && request.getGlobalComplaints() != null && !request.getGlobalComplaints().isEmpty()) {
 				Set<String> customComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalComplaints())));
 				if (customComplaints != null)
@@ -374,7 +374,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// observationIds = new ArrayList<ObjectId>();
-			if (request.getObservations() != null && !request.getObservations().isEmpty()) {
+			if (request.getObservation() != null && !request.getObservation().isEmpty() && request.getGlobalObservations() != null && !request.getGlobalObservations().isEmpty()) {
 				Set<String> customObservations = compareGlobalElements(new HashSet<>(splitCSV(request.getObservation())),
 						new HashSet<>(splitCSV(request.getGlobalObservations())));
 				if (customObservations != null)
@@ -406,7 +406,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// investigationIds = new ArrayList<ObjectId>();
-			if (request.getInvestigations() != null && !request.getInvestigations().isEmpty()) {
+			if (request.getInvestigation() != null && !request.getInvestigation().isEmpty() && request.getGlobalInvestigations() != null && !request.getGlobalInvestigations().isEmpty()) {
 				
 				Set<String> customInvestigations = compareGlobalElements(new HashSet<>(splitCSV(request.getInvestigation())),
 						new HashSet<>(splitCSV(request.getGlobalInvestigations())));
@@ -433,7 +433,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// noteIds = new ArrayList<ObjectId>();
-			if (request.getNotes() != null && !request.getNotes().isEmpty()) {
+			if (request.getNote() != null && !request.getNote().isEmpty() && request.getGlobalNotes() != null && !request.getGlobalNotes().isEmpty()) {
 				
 				Set<String> customNotes = compareGlobalElements(new HashSet<>(splitCSV(request.getNote())),
 						new HashSet<>(splitCSV(request.getGlobalNotes())));
@@ -456,7 +456,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getProvisionalDiagnoses() != null && !request.getProvisionalDiagnoses().isEmpty()) {
+			if (request.getProvisionalDiagnosis() != null && !request.getProvisionalDiagnosis().isEmpty() && request.getGlobalProvisionalDiagnoses() != null && !request.getGlobalProvisionalDiagnoses().isEmpty()) {
 				Set<String> customProvisionalDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getProvisionalDiagnosis())),
 						new HashSet<>(splitCSV(request.getGlobalProvisionalDiagnoses())));
 					for(String customProvisionalDiagnosis : customProvisionalDiagnoses) {
@@ -480,7 +480,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPresentComplaints() != null && !request.getPresentComplaints().isEmpty()) {
+			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty() && request.getGlobalPresentComplaints() != null && !request.getGlobalPresentComplaints().isEmpty()) {
 				Set<String> customPresentComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalPresentComplaints())));
 					for (String customPresentComplaint : customPresentComplaints){
@@ -502,7 +502,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPresentComplaintHistories() != null && !request.getPresentComplaintHistories().isEmpty()) {
+			if (request.getPresentComplaintHistory() != null && !request.getPresentComplaintHistory().isEmpty() && request.getGlobalPresentComplaintHistories() != null && !request.getGlobalPresentComplaintHistories().isEmpty()) {
 				Set<String> customPresentComplaintHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaintHistory())),
 						new HashSet<>(splitCSV(request.getGlobalPresentComplaintHistories())));
 				for (String customPresentComplaintHistory : customPresentComplaintHistories) {
@@ -525,7 +525,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getGeneralExams() != null && !request.getGeneralExams().isEmpty()) {
+			if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty() && request.getGlobalGeneralExams() != null && !request.getGlobalGeneralExams().isEmpty()) {
 				Set<String> customGeneralExams = compareGlobalElements(new HashSet<>(splitCSV(request.getGeneralExam())),
 						new HashSet<>(splitCSV(request.getGlobalGeneralExams())));
 				for(String customGeneralExam : customGeneralExams){
@@ -548,7 +548,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getSystemExams() != null && !request.getSystemExams().isEmpty()) {
+			if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() && request.getGlobalSystemExams() != null && !request.getGlobalSystemExams().isEmpty()) {
 				Set<String> customSystemExams = compareGlobalElements(new HashSet<>(splitCSV(request.getSystemExam())),
 						new HashSet<>(splitCSV(request.getGlobalSystemExams())));
 				for (String customSystemExam : customSystemExams) {
@@ -570,7 +570,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getMenstrualHistories() != null && !request.getMenstrualHistories().isEmpty()) {
+			if (request.getMenstrualHistory() != null && !request.getMenstrualHistory().isEmpty() && request.getGlobalMenstrualHistories() != null && !request.getGlobalMenstrualHistories().isEmpty()) {
 				Set<String> customMenstrualHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getMenstrualHistory())),
 						new HashSet<>(splitCSV(request.getGlobalMenstrualHistories())));
 				for (String customMenstrualHistory : customMenstrualHistories) {
@@ -593,7 +593,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getObstetricHistories() != null && !request.getObstetricHistories().isEmpty()) {
+			if (request.getObstetricHistory() != null && !request.getObstetricHistory().isEmpty() && request.getGlobalObstetricHistories() != null && !request.getGlobalObstetricHistories().isEmpty()) {
 				Set<String> customObstetricHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getObstetricHistory())),
 						new HashSet<>(splitCSV(request.getGlobalObstetricHistories())));
 						for (String customObstetricHistory : customObstetricHistories) {
@@ -618,7 +618,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			//diagnosisIds = new ArrayList<ObjectId>();
-			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
+			if (request.getDiagnosis() != null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() != null && !request.getGlobalDiagnoses().isEmpty()) {
 				Set<String> customDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getDiagnosis())),
 						new HashSet<>(splitCSV(request.getGlobalDiagnoses())));
 						for (String customDiagnosis : customDiagnoses) {
@@ -642,7 +642,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty()) {
+			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty() && request.getGlobalIndicationOfUSGs() != null && !request.getGlobalIndicationOfUSGs().isEmpty()) {
 				Set<String> customIndicationOfUSGs = compareGlobalElements(new HashSet<>(splitCSV(request.getIndicationOfUSG())),
 						new HashSet<>(splitCSV(request.getGlobalIndicationOfUSGs())));
 						for (String customIndicationOfUSG : customIndicationOfUSGs) {
@@ -666,7 +666,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPa() != null && !request.getPa().isEmpty()) {
+			if (request.getPa() != null && !request.getPa().isEmpty() && request.getGlobalPAs() != null && !request.getGlobalPAs().isEmpty()) {
 				Set<String> customPAs = compareGlobalElements(new HashSet<>(splitCSV(request.getPa())),
 						new HashSet<>(splitCSV(request.getGlobalPAs())));
 						for (String customPA : customPAs) {
@@ -690,7 +690,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPv() != null && !request.getPv().isEmpty()) {
+			if (request.getPv() != null && !request.getPv().isEmpty() && request.getGlobalPVs() != null && !request.getGlobalPVs().isEmpty()) {
 				Set<String> customPVs = compareGlobalElements(new HashSet<>(splitCSV(request.getPv())),
 						new HashSet<>(splitCSV(request.getGlobalPVs())));
 						for (String customPV : customPVs) {
@@ -714,7 +714,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPs() != null && !request.getPs().isEmpty()) {
+			if (request.getPs() != null && !request.getPs().isEmpty() && request.getGlobalPSs() != null && !request.getGlobalPSs().isEmpty()) {
 				Set<String> customPSs = compareGlobalElements(new HashSet<>(splitCSV(request.getPs())),
 						new HashSet<>(splitCSV(request.getGlobalPSs())));
 						for (String customPS : customPSs) {
@@ -738,7 +738,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty()) {
+			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty() && request.getGlobalXRayDetails() != null && !request.getGlobalXRayDetails().isEmpty()) {
 				Set<String> customXrayDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getxRayDetails())),
 						new HashSet<>(splitCSV(request.getGlobalXRayDetails())));
 						for (String customXrayDetail : customXrayDetails) {
@@ -762,7 +762,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty()) {
+			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() && request.getGlobalEcgDetails() != null && !request.getGlobalEcgDetails().isEmpty()) {
 				Set<String> customECGDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getEcgDetails())),
 						new HashSet<>(splitCSV(request.getGlobalEcgDetails())));
 						for (String customECGDetail : customECGDetails) {
@@ -788,7 +788,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			
 			
 			
-			if (request.getEcho() != null && !request.getEcho().isEmpty()) {
+			if (request.getEcho() != null && !request.getEcho().isEmpty() && request.getGlobalEchoes() != null && !request.getGlobalEchoes().isEmpty()) {
 				Set<String> customEchoes = compareGlobalElements(new HashSet<>(splitCSV(request.getEcho())),
 						new HashSet<>(splitCSV(request.getGlobalEchoes())));
 						for (String customEcho : customEchoes) {
@@ -812,7 +812,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getHolter() != null && !request.getHolter().isEmpty()) {
+			if (request.getHolter() != null && !request.getHolter().isEmpty() && request.getGlobalHolters() != null && !request.getGlobalHolters().isEmpty()) {
 				Set<String> customHolters = compareGlobalElements(new HashSet<>(splitCSV(request.getHolter())),
 						new HashSet<>(splitCSV(request.getGlobalHolters())));
 						for (String customHolter : customHolters) {
@@ -5976,9 +5976,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	
 	private List<String> splitCSV(String value)
 	{
-		List<String> list = new ArrayList<String>(Arrays.asList(value.split(",")));
-		return list;
-
+		if(value != null && !value.isEmpty())
+		{
+			List<String> list = new ArrayList<String>(Arrays.asList(value.split(",")));
+			return list;
+		}
+		else
+			return null;
 	}
 	
 	
