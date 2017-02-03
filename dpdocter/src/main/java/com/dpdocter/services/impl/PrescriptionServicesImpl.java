@@ -3645,13 +3645,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		try {
 			ObjectId drugObjectId = new ObjectId(drugId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-			DrugCollection drugCollection = drugRepository.findByIdAndDoctorId(drugObjectId, doctorObjectId);
+			DrugCollection originalDrug = drugRepository.findOne(drugObjectId);
+			if (originalDrug == null) {
+				logger.error("Invalid drug Id");
+				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
+			}
+			DrugCollection drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(), doctorObjectId);
 			if (drugCollection == null) {
-				drugCollection = drugRepository.findOne(drugObjectId);
-				if (drugCollection == null) {
-					logger.error("Invalid drug Id");
-					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
-				}
+				drugCollection = originalDrug;
+				
 				drugCollection.setLocationId(locationObjectId);
 				drugCollection.setHospitalId(hospitalObjectId);
 				drugCollection.setDoctorId(doctorObjectId);
@@ -3867,14 +3869,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				drugCollection = drugRepository.save(drugCollection);
 			} else {
 
-				drugCollection = drugRepository.findByIdAndDoctorId(new ObjectId(request.getId()),
+				DrugCollection originalDrug = drugRepository.findOne(new ObjectId(request.getId()));
+				
+				if (originalDrug == null) {
+					logger.error("Invalid drug Id");
+					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
+				}
+				drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(),
 						new ObjectId(request.getDoctorId()));
 				if (drugCollection == null) {
-					drugCollection = drugRepository.findOne(new ObjectId(request.getId()));
-					if (drugCollection == null) {
-						logger.error("Invalid drug Id");
-						throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
-					}
+					drugCollection = originalDrug;
+					
 					drugCollection.setLocationId(new ObjectId(request.getLocationId()));
 					drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					drugCollection.setDoctorId(new ObjectId(request.getDoctorId()));
@@ -3988,13 +3993,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			List<String> genericCodes = new ArrayList<String>();
 
 			for (int k = 0; k < request.size(); k++) {
-				Collection<String> codes = CollectionUtils.collect(request.get(k).getGenericNames(),
-						new BeanToPropertyValueTransformer("code"));
-				if(codes != null && !codes.isEmpty()){
-					for (String word : codes) {
-						word = word.toLowerCase();
+				if(request.get(k).getGenericNames() != null && !request.get(k).getGenericNames().isEmpty()){
+					Collection<String> codes = CollectionUtils.collect(request.get(k).getGenericNames(),
+							new BeanToPropertyValueTransformer("code"));
+					if(codes != null && !codes.isEmpty()){
+						for (String word : codes) {
+							word = word.toLowerCase();
+						}
+						genericCodes.addAll(codes);
 					}
-					genericCodes.addAll(codes);
 				}
 			}
 			if(genericCodes == null || genericCodes.isEmpty())return null;
