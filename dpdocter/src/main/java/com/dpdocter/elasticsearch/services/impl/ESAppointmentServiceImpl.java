@@ -429,9 +429,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(location)) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
-			}
 			// if(booking != null && booking){
 			// boolQueryBuilder.must(QueryBuilders.termsQuery("facility",
 			// DoctorFacility.BOOK.getType().toLowerCase(),
@@ -656,6 +653,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.toTime", maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
+				for (int i = 0; i < days.size(); i++) {
+					days.add(i, days.get(i).toLowerCase());
+				}
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
 			}
