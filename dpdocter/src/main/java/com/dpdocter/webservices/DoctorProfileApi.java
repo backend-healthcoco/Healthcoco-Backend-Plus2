@@ -371,7 +371,7 @@ public class DoctorProfileApi {
 		}
 		DoctorVisitingTimeAddEditRequest addEditVisitingTimeResponse = doctorProfileService
 				.addEditVisitingTime(request);
-		transnationalService.addResource(new ObjectId(request.getDoctorId()), Resource.DOCTOR, false);
+		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
 		Response<DoctorVisitingTimeAddEditRequest> response = new Response<DoctorVisitingTimeAddEditRequest>();
 		response.setData(addEditVisitingTimeResponse);
 		return response;
