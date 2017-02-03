@@ -62,7 +62,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			UIPermissions tempPermissions = null;
 			String speciality = null;
 			if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
-				
+
 				tempPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
 			} else {
 				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
@@ -73,22 +73,23 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 					}
 
 					tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
-				}
-			}
-			if (tempPermissions != null) {
-				patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
-				clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
-				prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
-				profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
-				tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
-			}
-			uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
-			uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
-			uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
-			uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
-			uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
-		}
 
+					if (tempPermissions != null) {
+						patientVisitPermissionsSet.addAll(tempPermissions.getPatientVisitPermissions());
+						clinicalNotesPermissionsSet.addAll(tempPermissions.getClinicalNotesPermissions());
+						prescriptionPermissionsSet.addAll(tempPermissions.getPrescriptionPermissions());
+						profilePermissionsSet.addAll(tempPermissions.getProfilePermissions());
+						tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
+					}
+				}
+					uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
+					uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
+					uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
+					uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
+					uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
+				
+			}
+		}
 		return uiPermissions;
 	}
 
