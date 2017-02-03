@@ -357,8 +357,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						complaint.setComplaint(customComplaint);
 
 						ComplaintCollection complaintCollection = new ComplaintCollection();
-						BeanUtil.map(complaint, complaintCollection);
+					
 						BeanUtil.map(request, complaintCollection);
+						BeanUtil.map(complaint, complaintCollection);
 						complaintCollection.setCreatedBy(createdBy);
 						complaintCollection.setCreatedTime(createdTime);
 						complaintCollection.setId(null);
@@ -389,8 +390,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						observation.setObservation(customObservation);
 
 						ObservationCollection observationCollection = new ObservationCollection();
-						BeanUtil.map(observation, observationCollection);
 						BeanUtil.map(request, observationCollection);
+						BeanUtil.map(observation, observationCollection);
 						observationCollection.setCreatedBy(createdBy);
 						observationCollection.setCreatedTime(createdTime);
 						observationCollection.setId(null);
@@ -414,8 +415,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					Investigation investigation =  new Investigation();
 					investigation.setInvestigation(customInvestigation);
 					InvestigationCollection investigationCollection = new InvestigationCollection();
-					BeanUtil.map(investigation, investigationCollection);
 					BeanUtil.map(request, investigationCollection);
+					BeanUtil.map(investigation, investigationCollection);
 					investigationCollection.setCreatedBy(createdBy);
 					investigationCollection.setCreatedTime(createdTime);
 					investigationCollection.setId(null);
@@ -441,8 +442,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Notes note =  new Notes();
 						note.setNote(customNote);
 						NotesCollection notesCollection = new NotesCollection();
-						BeanUtil.map(note, notesCollection);
 						BeanUtil.map(request, notesCollection);
+						BeanUtil.map(note, notesCollection);
 						notesCollection.setCreatedBy(createdBy);
 						notesCollection.setCreatedTime(createdTime);
 						notesCollection.setId(null);
@@ -463,8 +464,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ProvisionalDiagnosis provisionalDiagnosis = new ProvisionalDiagnosis();
 						provisionalDiagnosis.setProvisionalDiagnosis(customProvisionalDiagnosis);
 						ProvisionalDiagnosisCollection provisionalDiagnosisCollection = new ProvisionalDiagnosisCollection();
-						BeanUtil.map(provisionalDiagnosis, provisionalDiagnosisCollection);
 						BeanUtil.map(request, provisionalDiagnosisCollection);
+						BeanUtil.map(provisionalDiagnosis, provisionalDiagnosisCollection);
 						provisionalDiagnosisCollection.setCreatedBy(createdBy);
 						provisionalDiagnosisCollection.setCreatedTime(createdTime);
 						provisionalDiagnosisCollection.setId(null);
@@ -487,8 +488,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PresentComplaint presentComplaint = new PresentComplaint();
 						presentComplaint.setPresentComplaint(customPresentComplaint);
 						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();
-						BeanUtil.map(presentComplaint, presentComplaintCollection);
 						BeanUtil.map(request, presentComplaintCollection);
+						BeanUtil.map(presentComplaint, presentComplaintCollection);
 						presentComplaintCollection.setCreatedBy(createdBy);
 						presentComplaintCollection.setCreatedTime(createdTime);
 						presentComplaintCollection.setId(null);
@@ -509,8 +510,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					PresentComplaintHistory presentComplaintHistory = new PresentComplaintHistory();
 					presentComplaintHistory.setPresentComplaintHistory(customPresentComplaintHistory);
 					PresentComplaintHistoryCollection presentComplaintHistoryCollection = new PresentComplaintHistoryCollection();
-					BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
 					BeanUtil.map(request, presentComplaintHistoryCollection);
+					BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
 					presentComplaintHistoryCollection.setCreatedBy(createdBy);
 					presentComplaintHistoryCollection.setCreatedTime(createdTime);
 					presentComplaintHistoryCollection.setId(null);
@@ -532,8 +533,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						GeneralExam generalExam =  new GeneralExam();
 						generalExam.setGeneralExam(customGeneralExam);
 						GeneralExamCollection generalExamCollection = new GeneralExamCollection();
-						BeanUtil.map(generalExam, generalExamCollection);
 						BeanUtil.map(request, generalExamCollection);
+						BeanUtil.map(generalExam, generalExamCollection);
 						generalExamCollection.setCreatedBy(createdBy);
 						generalExamCollection.setCreatedTime(createdTime);
 						generalExamCollection.setId(null);
@@ -555,8 +556,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						SystemExam systemExam = new SystemExam();
 						systemExam.setSystemExam(customSystemExam);
 						SystemExamCollection systemExamCollection = new SystemExamCollection();
-						BeanUtil.map(systemExam, systemExamCollection);
 						BeanUtil.map(request, systemExamCollection);
+						BeanUtil.map(systemExam, systemExamCollection);
 						systemExamCollection.setCreatedBy(createdBy);
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
@@ -577,8 +578,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					MenstrualHistory menstrualHistory = new MenstrualHistory();
 					menstrualHistory.setMenstrualHistory(customMenstrualHistory);
 						MenstrualHistoryCollection menstrualHistoryCollection = new MenstrualHistoryCollection();
-						BeanUtil.map(menstrualHistory, menstrualHistoryCollection);
 						BeanUtil.map(request, menstrualHistoryCollection);
+						BeanUtil.map(menstrualHistory, menstrualHistoryCollection);
 						menstrualHistoryCollection.setCreatedBy(createdBy);
 						menstrualHistoryCollection.setCreatedTime(createdTime);
 						menstrualHistoryCollection.setId(null);
@@ -601,8 +602,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ObstetricHistory obstetricHistory = new ObstetricHistory();
 						obstetricHistory.setObstetricHistory(customObstetricHistory);
 						ObstetricHistoryCollection obstetricHistoryCollection = new ObstetricHistoryCollection();
-						BeanUtil.map(obstetricHistory, obstetricHistoryCollection);
 						BeanUtil.map(request, obstetricHistoryCollection);
+						BeanUtil.map(obstetricHistory, obstetricHistoryCollection);
 						obstetricHistoryCollection.setCreatedBy(createdBy);
 						obstetricHistoryCollection.setCreatedTime(createdTime);
 						obstetricHistoryCollection.setId(null);
@@ -626,8 +627,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Diagnoses diagnosis = new Diagnoses();
 						diagnosis.setDiagnosis(customDiagnosis);
 						DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
-						BeanUtil.map(diagnosis, diagnosisCollection);
 						BeanUtil.map(request, diagnosisCollection);
+						BeanUtil.map(diagnosis, diagnosisCollection);
 						diagnosisCollection.setCreatedBy(createdBy);
 						diagnosisCollection.setCreatedTime(createdTime);
 						diagnosisCollection.setId(null);
@@ -650,8 +651,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						IndicationOfUSG indicationOfUSG = new IndicationOfUSG();
 						indicationOfUSG.setIndicationOfUSG(customIndicationOfUSG);
 						IndicationOfUSGCollection indicationOfUSGCollection = new IndicationOfUSGCollection();
-						BeanUtil.map(indicationOfUSG, indicationOfUSGCollection);
 						BeanUtil.map(request, indicationOfUSGCollection);
+						BeanUtil.map(indicationOfUSG, indicationOfUSGCollection);
 						indicationOfUSGCollection.setCreatedBy(createdBy);
 						indicationOfUSGCollection.setCreatedTime(createdTime);
 						indicationOfUSGCollection.setId(null);
@@ -674,8 +675,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PA pa = new PA();
 						pa.setPa(customPA);
 						PACollection paCollection = new PACollection();
-						BeanUtil.map(pa, paCollection);
 						BeanUtil.map(request, paCollection);
+						BeanUtil.map(pa, paCollection);
 						paCollection.setCreatedBy(createdBy);
 						paCollection.setCreatedTime(createdTime);
 						paCollection.setId(null);
@@ -698,8 +699,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PV pv = new PV();
 						pv.setPv(customPV);
 						PVCollection pvCollection = new PVCollection();
-						BeanUtil.map(pv, pvCollection);
 						BeanUtil.map(request, pvCollection);
+						BeanUtil.map(pv, pvCollection);
 						pvCollection.setCreatedBy(createdBy);
 						pvCollection.setCreatedTime(createdTime);
 						pvCollection.setId(null);
@@ -722,8 +723,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PS ps = new PS();
 						ps.setPs(customPS);;
 						PSCollection psCollection = new PSCollection();
-						BeanUtil.map(ps, psCollection);
 						BeanUtil.map(request, psCollection);
+						BeanUtil.map(ps, psCollection);
 						psCollection.setCreatedBy(createdBy);
 						psCollection.setCreatedTime(createdTime);
 						psCollection.setId(null);
@@ -746,8 +747,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						XRayDetails xRayDetails = new XRayDetails();
 						xRayDetails.setxRayDetails(customXrayDetail);
 						XRayDetailsCollection xRayDetailsCollection = new XRayDetailsCollection();
-						BeanUtil.map(xRayDetails, xRayDetailsCollection);
 						BeanUtil.map(request, xRayDetailsCollection);
+						BeanUtil.map(xRayDetails, xRayDetailsCollection);
 						xRayDetailsCollection.setCreatedBy(createdBy);
 						xRayDetailsCollection.setCreatedTime(createdTime);
 						xRayDetailsCollection.setId(null);
@@ -770,8 +771,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ECGDetails ecgDetails = new ECGDetails();
 						ecgDetails.setEcgDetails(customECGDetail);;
 						ECGDetailsCollection ecgDetailsCollection = new ECGDetailsCollection();
-						BeanUtil.map(ecgDetails, ecgDetailsCollection);
 						BeanUtil.map(request, ecgDetailsCollection);
+						BeanUtil.map(ecgDetails, ecgDetailsCollection);
 						ecgDetailsCollection.setCreatedBy(createdBy);
 						ecgDetailsCollection.setCreatedTime(createdTime);
 						ecgDetailsCollection.setId(null);
@@ -796,8 +797,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Echo echo = new Echo();
 						echo.setEcho(customEcho);
 						EchoCollection echoCollection = new EchoCollection();
-						BeanUtil.map(echo, echoCollection);
 						BeanUtil.map(request, echoCollection);
+						BeanUtil.map(echo, echoCollection);
 						echoCollection.setCreatedBy(createdBy);
 						echoCollection.setCreatedTime(createdTime);
 						echoCollection.setId(null);
@@ -820,8 +821,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Holter holter = new Holter();
 						holter.setHolter(customHolter);
 						HolterCollection holterCollection = new HolterCollection();
-						BeanUtil.map(holter, holterCollection);
 						BeanUtil.map(request, holterCollection);
+						BeanUtil.map(holter, holterCollection);
 						holterCollection.setCreatedBy(createdBy);
 						holterCollection.setCreatedTime(createdTime);
 						holterCollection.setId(null);
@@ -1400,8 +1401,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PresentComplaint presentComplaint = new PresentComplaint();
 						presentComplaint.setPresentComplaint(customPresentComplaint);
 						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();
-						BeanUtil.map(presentComplaint, presentComplaintCollection);
 						BeanUtil.map(request, presentComplaintCollection);
+						BeanUtil.map(presentComplaint, presentComplaintCollection);
 						presentComplaintCollection.setCreatedBy(createdBy);
 						presentComplaintCollection.setCreatedTime(createdTime);
 						presentComplaintCollection.setId(null);
