@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.lucene.queryparser.xml.builders.RangeQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -487,13 +488,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
 			}
 
-			if (minTime != 0 && maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery()
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))
-								.must(QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
-										.lte(maxTime))))));
-			else if (minTime != 0)
+			if (minTime != 0 && maxTime != 0) {
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery(
+						"workingSchedules.workingHours",
+						boolQuery().must(QueryBuilders.orQuery(
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime),
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime)))))));
+			} else if (minTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
 								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))))));
@@ -503,7 +504,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
-
+				for (int i = 0; i < days.size(); i++) {
+					days.set(i, days.get(i).toLowerCase());
+				}
 				boolQueryBuilder.must(nestedQuery("workingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 
@@ -583,6 +586,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return esDoctorDocuments;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public List<LabResponse> getLabs(int page, int size, String city, String location, String latitude,
 			String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime,
@@ -639,22 +643,27 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
 
 			if (minTime != 0 && maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
-						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
-								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))
-										.must(termQuery("clinicWorkingSchedules.workingHours.toTime", maxTime))))));
-			else if (minTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules", boolQuery().must(nestedQuery(
 						"clinicWorkingSchedules.workingHours",
-						boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.fromTime", minTime))))));
+						boolQuery().must(QueryBuilders.orQuery(
+								QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime").gte(minTime),
+								QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+										.lte(maxTime)))))));
+
+			else if (minTime != 0)
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery()
+								.must(nestedQuery("clinicWorkingSchedules.workingHours", boolQuery().must(QueryBuilders
+										.rangeQuery("clinicWorkingSchedules.workingHours.fromTime").gte(minTime))))));
 			else if (maxTime != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
-						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
-								boolQuery().must(termQuery("clinicWorkingSchedules.workingHours.toTime", maxTime))))));
+						boolQuery()
+								.must(nestedQuery("clinicWorkingSchedules.workingHours", boolQuery().must(QueryBuilders
+										.rangeQuery("clinicWorkingSchedules.workingHours.toTime").gte(maxTime))))));
 
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++) {
-					days.add(i, days.get(i).toLowerCase());
+					days.set(i, days.get(i).toLowerCase());
 				}
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
