@@ -488,20 +488,20 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
 			}
 
-			if (minTime != 0 && maxTime != 0) {
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery(
-						"workingSchedules.workingHours",
-						boolQuery().must(QueryBuilders.orQuery(
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime),
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime)))))));
-			} else if (minTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(minTime))))));
-			else if (maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(maxTime))))));
+			if (minTime != 0 || maxTime != 0) {
+				if (maxTime == 0)
+					maxTime = 1439;
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
+						.must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+								QueryBuilders.andQuery(
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(maxTime),
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+												.lte(maxTime)),
+								QueryBuilders.andQuery(
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(minTime),
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+												.lte(minTime))))))));
+			}
 
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++) {
@@ -642,24 +642,24 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (nabl != null)
 				boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
 
-			if (minTime != 0 && maxTime != 0)
+			if (minTime != 0 || maxTime != 0) {
+				if (maxTime == 0)
+					maxTime = 1439;
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules", boolQuery().must(nestedQuery(
 						"clinicWorkingSchedules.workingHours",
-						boolQuery().must(QueryBuilders.orQuery(
-								QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime").gte(minTime),
-								QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
-										.lte(maxTime)))))));
-
-			else if (minTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
-						boolQuery()
-								.must(nestedQuery("clinicWorkingSchedules.workingHours", boolQuery().must(QueryBuilders
-										.rangeQuery("clinicWorkingSchedules.workingHours.fromTime").gte(minTime))))));
-			else if (maxTime != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
-						boolQuery()
-								.must(nestedQuery("clinicWorkingSchedules.workingHours", boolQuery().must(QueryBuilders
-										.rangeQuery("clinicWorkingSchedules.workingHours.toTime").gte(maxTime))))));
+						boolQuery().must(QueryBuilders
+								.orQuery(
+										QueryBuilders.andQuery(
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+														.gte(maxTime),
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
+														.lte(maxTime)),
+										QueryBuilders.andQuery(
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+														.gte(minTime),
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
+														.lte(minTime))))))));
+			}
 
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++) {
