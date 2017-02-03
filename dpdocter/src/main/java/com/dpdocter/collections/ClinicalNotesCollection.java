@@ -415,6 +415,38 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.ps = ps;
 	}
 
+	public String getEcgDetails() {
+		return ecgDetails;
+	}
+
+	public void setEcgDetails(String ecgDetails) {
+		this.ecgDetails = ecgDetails;
+	}
+
+	public String getxRayDetails() {
+		return xRayDetails;
+	}
+
+	public void setxRayDetails(String xRayDetails) {
+		this.xRayDetails = xRayDetails;
+	}
+
+	public String getEcho() {
+		return echo;
+	}
+
+	public void setEcho(String echo) {
+		this.echo = echo;
+	}
+
+	public String getHolter() {
+		return holter;
+	}
+
+	public void setHolter(String holter) {
+		this.holter = holter;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes

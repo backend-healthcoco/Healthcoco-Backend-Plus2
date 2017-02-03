@@ -1007,7 +1007,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository
 					.findOne(clinicalNotesCollection.getId());
 			String createdBy = oldClinicalNotesCollection.getCreatedBy();
-			if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
+			/*if (request.getComplaints() != null && !request.getComplaints().isEmpty()) {
 				for (Complaint complaint : request.getComplaints()) {
 					if (DPDoctorUtils.anyStringEmpty(complaint.getId())) {
 						ComplaintCollection complaintCollection = new ComplaintCollection();
@@ -1259,7 +1259,496 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					}
 				}
 			}
+*/
+			
+			if (request.getComplaint() != null && !request.getComplaint().isEmpty() && request.getGlobalComplaints() != null && !request.getGlobalComplaints().isEmpty()) {
+				Set<String> customComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())),
+						new HashSet<>(splitCSV(request.getGlobalComplaints())));
+				if (customComplaints != null)
+					for (String customComplaint : customComplaints) {
+						Complaint complaint = new Complaint();
+						complaint.setComplaint(customComplaint);
 
+						ComplaintCollection complaintCollection = new ComplaintCollection();
+						BeanUtil.map(complaint, complaintCollection);
+						BeanUtil.map(request, complaintCollection);
+						complaintCollection.setCreatedBy(createdBy);
+						complaintCollection.setCreatedTime(createdTime);
+						complaintCollection.setId(null);
+						complaintCollection = complaintRepository.save(complaintCollection);
+
+						transactionalManagementService.addResource(complaintCollection.getId(), Resource.COMPLAINT,
+								false);
+						ESComplaintsDocument esComplaints = new ESComplaintsDocument();
+						BeanUtil.map(complaintCollection, esComplaints);
+						esClinicalNotesService.addComplaints(esComplaints);
+
+					}
+			}
+
+			// observationIds = new ArrayList<ObjectId>();
+			if (request.getObservation() != null && !request.getObservation().isEmpty() && request.getGlobalObservations() != null && !request.getGlobalObservations().isEmpty()) {
+				Set<String> customObservations = compareGlobalElements(new HashSet<>(splitCSV(request.getObservation())),
+						new HashSet<>(splitCSV(request.getGlobalObservations())));
+				if (customObservations != null)
+					for (String customObservation : customObservations) {
+						Observation observation = new Observation();
+						/*
+						 * observation.setDoctorId(request.getDoctorId());
+						 * observation.setLocationId(request.getLocationId());
+						 * observation.setHospitalId(request.getHospitalId());
+						 * observation.setDoctorId(request.getDoctorId());
+						 */
+						observation.setObservation(customObservation);
+
+						ObservationCollection observationCollection = new ObservationCollection();
+						BeanUtil.map(observation, observationCollection);
+						BeanUtil.map(request, observationCollection);
+						observationCollection.setCreatedBy(createdBy);
+						observationCollection.setCreatedTime(createdTime);
+						observationCollection.setId(null);
+						observationCollection = observationRepository.save(observationCollection);
+
+						transactionalManagementService.addResource(observationCollection.getId(), Resource.OBSERVATION,
+								false);
+						ESObservationsDocument esObservations = new ESObservationsDocument();
+						BeanUtil.map(observationCollection, esObservations);
+						esClinicalNotesService.addObservations(esObservations);
+
+					}
+			}
+
+			// investigationIds = new ArrayList<ObjectId>();
+			if (request.getInvestigation() != null && !request.getInvestigation().isEmpty() && request.getGlobalInvestigations() != null && !request.getGlobalInvestigations().isEmpty()) {
+				
+				Set<String> customInvestigations = compareGlobalElements(new HashSet<>(splitCSV(request.getInvestigation())),
+						new HashSet<>(splitCSV(request.getGlobalInvestigations())));
+				for (String customInvestigation : customInvestigations) {
+					Investigation investigation =  new Investigation();
+					investigation.setInvestigation(customInvestigation);
+					InvestigationCollection investigationCollection = new InvestigationCollection();
+					BeanUtil.map(investigation, investigationCollection);
+					BeanUtil.map(request, investigationCollection);
+					investigationCollection.setCreatedBy(createdBy);
+					investigationCollection.setCreatedTime(createdTime);
+					investigationCollection.setId(null);
+					investigationCollection = investigationRepository.save(investigationCollection);
+
+					transactionalManagementService.addResource(investigationCollection.getId(), Resource.INVESTIGATION,
+							false);
+					ESInvestigationsDocument esInvestigations = new ESInvestigationsDocument();
+					BeanUtil.map(investigationCollection, esInvestigations);
+					esClinicalNotesService.addInvestigations(esInvestigations);
+
+					// investigationIds.add(investigationCollection.getId());
+				}
+				
+			}
+
+			// noteIds = new ArrayList<ObjectId>();
+			if (request.getNote() != null && !request.getNote().isEmpty() && request.getGlobalNotes() != null && !request.getGlobalNotes().isEmpty()) {
+				
+				Set<String> customNotes = compareGlobalElements(new HashSet<>(splitCSV(request.getNote())),
+						new HashSet<>(splitCSV(request.getGlobalNotes())));
+				for(String customNote : customNotes){
+						Notes note =  new Notes();
+						note.setNote(customNote);
+						NotesCollection notesCollection = new NotesCollection();
+						BeanUtil.map(note, notesCollection);
+						BeanUtil.map(request, notesCollection);
+						notesCollection.setCreatedBy(createdBy);
+						notesCollection.setCreatedTime(createdTime);
+						notesCollection.setId(null);
+						notesCollection = notesRepository.save(notesCollection);
+						transactionalManagementService.addResource(notesCollection.getId(), Resource.NOTES, false);
+						ESNotesDocument esNotes = new ESNotesDocument();
+						BeanUtil.map(notesCollection, esNotes);
+						esClinicalNotesService.addNotes(esNotes);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getProvisionalDiagnosis() != null && !request.getProvisionalDiagnosis().isEmpty() && request.getGlobalProvisionalDiagnoses() != null && !request.getGlobalProvisionalDiagnoses().isEmpty()) {
+				Set<String> customProvisionalDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getProvisionalDiagnosis())),
+						new HashSet<>(splitCSV(request.getGlobalProvisionalDiagnoses())));
+					for(String customProvisionalDiagnosis : customProvisionalDiagnoses) {
+						ProvisionalDiagnosis provisionalDiagnosis = new ProvisionalDiagnosis();
+						provisionalDiagnosis.setProvisionalDiagnosis(customProvisionalDiagnosis);
+						ProvisionalDiagnosisCollection provisionalDiagnosisCollection = new ProvisionalDiagnosisCollection();
+						BeanUtil.map(provisionalDiagnosis, provisionalDiagnosisCollection);
+						BeanUtil.map(request, provisionalDiagnosisCollection);
+						provisionalDiagnosisCollection.setCreatedBy(createdBy);
+						provisionalDiagnosisCollection.setCreatedTime(createdTime);
+						provisionalDiagnosisCollection.setId(null);
+						provisionalDiagnosisCollection = provisionalDiagnosisRepository
+								.save(provisionalDiagnosisCollection);
+						transactionalManagementService.addResource(provisionalDiagnosisCollection.getId(),
+								Resource.PROVISIONAL_DIAGNOSIS, false);
+						ESProvisionalDiagnosisDocument esProvisionalDiagnosis = new ESProvisionalDiagnosisDocument();
+						BeanUtil.map(provisionalDiagnosisCollection, esProvisionalDiagnosis);
+						esClinicalNotesService.addProvisionalDiagnosis(esProvisionalDiagnosis);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+
+			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty() && request.getGlobalPresentComplaints() != null && !request.getGlobalPresentComplaints().isEmpty()) {
+				Set<String> customPresentComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaint())),
+						new HashSet<>(splitCSV(request.getGlobalPresentComplaints())));
+					for (String customPresentComplaint : customPresentComplaints){
+						PresentComplaint presentComplaint = new PresentComplaint();
+						presentComplaint.setPresentComplaint(customPresentComplaint);
+						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();
+						BeanUtil.map(presentComplaint, presentComplaintCollection);
+						BeanUtil.map(request, presentComplaintCollection);
+						presentComplaintCollection.setCreatedBy(createdBy);
+						presentComplaintCollection.setCreatedTime(createdTime);
+						presentComplaintCollection.setId(null);
+						presentComplaintCollection = presentComplaintRepository.save(presentComplaintCollection);
+						transactionalManagementService.addResource(presentComplaintCollection.getId(),
+								Resource.PRESENT_COMPLAINT, false);
+						ESPresentComplaintDocument esPresentComplaint = new ESPresentComplaintDocument();
+						BeanUtil.map(presentComplaintCollection, esPresentComplaint);
+						esClinicalNotesService.addPresentComplaint(esPresentComplaint);
+					
+				}
+			}
+
+			if (request.getPresentComplaintHistory() != null && !request.getPresentComplaintHistory().isEmpty() && request.getGlobalPresentComplaintHistories() != null && !request.getGlobalPresentComplaintHistories().isEmpty()) {
+				Set<String> customPresentComplaintHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaintHistory())),
+						new HashSet<>(splitCSV(request.getGlobalPresentComplaintHistories())));
+				for (String customPresentComplaintHistory : customPresentComplaintHistories) {
+					PresentComplaintHistory presentComplaintHistory = new PresentComplaintHistory();
+					presentComplaintHistory.setPresentComplaintHistory(customPresentComplaintHistory);
+					PresentComplaintHistoryCollection presentComplaintHistoryCollection = new PresentComplaintHistoryCollection();
+					BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
+					BeanUtil.map(request, presentComplaintHistoryCollection);
+					presentComplaintHistoryCollection.setCreatedBy(createdBy);
+					presentComplaintHistoryCollection.setCreatedTime(createdTime);
+					presentComplaintHistoryCollection.setId(null);
+					presentComplaintHistoryCollection = presentComplaintHistoryRepository
+							.save(presentComplaintHistoryCollection);
+					transactionalManagementService.addResource(presentComplaintHistoryCollection.getId(),
+							Resource.HISTORY_OF_PRESENT_COMPLAINT, false);
+					ESPresentComplaintHistoryDocument esPresentComplaintHistory = new ESPresentComplaintHistoryDocument();
+					BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistory);
+					esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistory);
+
+				}
+			}
+
+			if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty() && request.getGlobalGeneralExams() != null && !request.getGlobalGeneralExams().isEmpty()) {
+				Set<String> customGeneralExams = compareGlobalElements(new HashSet<>(splitCSV(request.getGeneralExam())),
+						new HashSet<>(splitCSV(request.getGlobalGeneralExams())));
+				for(String customGeneralExam : customGeneralExams){
+						GeneralExam generalExam =  new GeneralExam();
+						generalExam.setGeneralExam(customGeneralExam);
+						GeneralExamCollection generalExamCollection = new GeneralExamCollection();
+						BeanUtil.map(generalExam, generalExamCollection);
+						BeanUtil.map(request, generalExamCollection);
+						generalExamCollection.setCreatedBy(createdBy);
+						generalExamCollection.setCreatedTime(createdTime);
+						generalExamCollection.setId(null);
+						generalExamCollection = generalExamRepository.save(generalExamCollection);
+						transactionalManagementService.addResource(generalExamCollection.getId(),
+								Resource.GENERAL_EXAMINATION, false);
+						ESGeneralExamDocument esGeneralExam = new ESGeneralExamDocument();
+						BeanUtil.map(generalExamCollection, esGeneralExam);
+						esClinicalNotesService.addGeneralExam(esGeneralExam);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+
+			if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() && request.getGlobalSystemExams() != null && !request.getGlobalSystemExams().isEmpty()) {
+				Set<String> customSystemExams = compareGlobalElements(new HashSet<>(splitCSV(request.getSystemExam())),
+						new HashSet<>(splitCSV(request.getGlobalSystemExams())));
+				for (String customSystemExam : customSystemExams) {
+						SystemExam systemExam = new SystemExam();
+						systemExam.setSystemExam(customSystemExam);
+						SystemExamCollection systemExamCollection = new SystemExamCollection();
+						BeanUtil.map(systemExam, systemExamCollection);
+						BeanUtil.map(request, systemExamCollection);
+						systemExamCollection.setCreatedBy(createdBy);
+						systemExamCollection.setCreatedTime(createdTime);
+						systemExamCollection.setId(null);
+						systemExamCollection = systemExamRepository.save(systemExamCollection);
+						transactionalManagementService.addResource(systemExamCollection.getId(),
+								Resource.SYSTEMATIC_EXAMINATION, false);
+						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
+						BeanUtil.map(systemExamCollection, esSystemExam);
+						esClinicalNotesService.addSystemExam(esSystemExam);
+					
+				}
+			}
+
+			if (request.getMenstrualHistory() != null && !request.getMenstrualHistory().isEmpty() && request.getGlobalMenstrualHistories() != null && !request.getGlobalMenstrualHistories().isEmpty()) {
+				Set<String> customMenstrualHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getMenstrualHistory())),
+						new HashSet<>(splitCSV(request.getGlobalMenstrualHistories())));
+				for (String customMenstrualHistory : customMenstrualHistories) {
+					MenstrualHistory menstrualHistory = new MenstrualHistory();
+					menstrualHistory.setMenstrualHistory(customMenstrualHistory);
+						MenstrualHistoryCollection menstrualHistoryCollection = new MenstrualHistoryCollection();
+						BeanUtil.map(menstrualHistory, menstrualHistoryCollection);
+						BeanUtil.map(request, menstrualHistoryCollection);
+						menstrualHistoryCollection.setCreatedBy(createdBy);
+						menstrualHistoryCollection.setCreatedTime(createdTime);
+						menstrualHistoryCollection.setId(null);
+						menstrualHistoryCollection = menstrualHistoryRepository.save(menstrualHistoryCollection);
+						transactionalManagementService.addResource(menstrualHistoryCollection.getId(),
+								Resource.MENSTRUAL_HISTORY, false);
+						ESMenstrualHistoryDocument esMenstrualHistory = new ESMenstrualHistoryDocument();
+						BeanUtil.map(menstrualHistoryCollection, esMenstrualHistory);
+						esClinicalNotesService.addMenstrualHistory(esMenstrualHistory);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+
+			if (request.getObstetricHistory() != null && !request.getObstetricHistory().isEmpty() && request.getGlobalObstetricHistories() != null && !request.getGlobalObstetricHistories().isEmpty()) {
+				Set<String> customObstetricHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getObstetricHistory())),
+						new HashSet<>(splitCSV(request.getGlobalObstetricHistories())));
+						for (String customObstetricHistory : customObstetricHistories) {
+							
+						ObstetricHistory obstetricHistory = new ObstetricHistory();
+						obstetricHistory.setObstetricHistory(customObstetricHistory);
+						ObstetricHistoryCollection obstetricHistoryCollection = new ObstetricHistoryCollection();
+						BeanUtil.map(obstetricHistory, obstetricHistoryCollection);
+						BeanUtil.map(request, obstetricHistoryCollection);
+						obstetricHistoryCollection.setCreatedBy(createdBy);
+						obstetricHistoryCollection.setCreatedTime(createdTime);
+						obstetricHistoryCollection.setId(null);
+						obstetricHistoryCollection = obstetricHistoryRepository.save(obstetricHistoryCollection);
+						transactionalManagementService.addResource(obstetricHistoryCollection.getId(),
+								Resource.OBSTETRIC_HISTORY, false);
+						ESObstetricHistoryDocument esObstetricHistory = new ESObstetricHistoryDocument();
+						BeanUtil.map(obstetricHistoryCollection, esObstetricHistory);
+						esClinicalNotesService.addObstetricsHistory(esObstetricHistory);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+
+			//diagnosisIds = new ArrayList<ObjectId>();
+			if (request.getDiagnosis() != null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() != null && !request.getGlobalDiagnoses().isEmpty()) {
+				Set<String> customDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getDiagnosis())),
+						new HashSet<>(splitCSV(request.getGlobalDiagnoses())));
+						for (String customDiagnosis : customDiagnoses) {
+							
+						Diagnoses diagnosis = new Diagnoses();
+						diagnosis.setDiagnosis(customDiagnosis);
+						DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
+						BeanUtil.map(diagnosis, diagnosisCollection);
+						BeanUtil.map(request, diagnosisCollection);
+						diagnosisCollection.setCreatedBy(createdBy);
+						diagnosisCollection.setCreatedTime(createdTime);
+						diagnosisCollection.setId(null);
+						diagnosisCollection = diagnosisRepository.save(diagnosisCollection);
+						transactionalManagementService.addResource(diagnosisCollection.getId(),
+								Resource.DIAGNOSIS, false);
+						ESDiagnosesDocument esDiagnoses = new ESDiagnosesDocument();
+						BeanUtil.map(diagnosisCollection, esDiagnoses);
+						esClinicalNotesService.addDiagnoses(esDiagnoses);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty() && request.getGlobalIndicationOfUSGs() != null && !request.getGlobalIndicationOfUSGs().isEmpty()) {
+				Set<String> customIndicationOfUSGs = compareGlobalElements(new HashSet<>(splitCSV(request.getIndicationOfUSG())),
+						new HashSet<>(splitCSV(request.getGlobalIndicationOfUSGs())));
+						for (String customIndicationOfUSG : customIndicationOfUSGs) {
+							
+						IndicationOfUSG indicationOfUSG = new IndicationOfUSG();
+						indicationOfUSG.setIndicationOfUSG(customIndicationOfUSG);
+						IndicationOfUSGCollection indicationOfUSGCollection = new IndicationOfUSGCollection();
+						BeanUtil.map(indicationOfUSG, indicationOfUSGCollection);
+						BeanUtil.map(request, indicationOfUSGCollection);
+						indicationOfUSGCollection.setCreatedBy(createdBy);
+						indicationOfUSGCollection.setCreatedTime(createdTime);
+						indicationOfUSGCollection.setId(null);
+						indicationOfUSGCollection = indicationOfUSGRepository.save(indicationOfUSGCollection);
+						transactionalManagementService.addResource(indicationOfUSGCollection.getId(),
+								Resource.INDICATION_OF_USG, false);
+						ESIndicationOfUSGDocument esIndicationOfUSG = new ESIndicationOfUSGDocument();
+						BeanUtil.map(indicationOfUSGCollection, esIndicationOfUSG);
+						esClinicalNotesService.addIndicationOfUSG(esIndicationOfUSG);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getPa() != null && !request.getPa().isEmpty() && request.getGlobalPAs() != null && !request.getGlobalPAs().isEmpty()) {
+				Set<String> customPAs = compareGlobalElements(new HashSet<>(splitCSV(request.getPa())),
+						new HashSet<>(splitCSV(request.getGlobalPAs())));
+						for (String customPA : customPAs) {
+							
+						PA pa = new PA();
+						pa.setPa(customPA);
+						PACollection paCollection = new PACollection();
+						BeanUtil.map(pa, paCollection);
+						BeanUtil.map(request, paCollection);
+						paCollection.setCreatedBy(createdBy);
+						paCollection.setCreatedTime(createdTime);
+						paCollection.setId(null);
+						paCollection = paRepository.save(paCollection);
+						transactionalManagementService.addResource(paCollection.getId(),
+								Resource.PA, false);
+						ESPADocument espa = new ESPADocument();
+						BeanUtil.map(paCollection, espa);
+						esClinicalNotesService.addPA(espa);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getPv() != null && !request.getPv().isEmpty() && request.getGlobalPVs() != null && !request.getGlobalPVs().isEmpty()) {
+				Set<String> customPVs = compareGlobalElements(new HashSet<>(splitCSV(request.getPv())),
+						new HashSet<>(splitCSV(request.getGlobalPVs())));
+						for (String customPV : customPVs) {
+							
+						PV pv = new PV();
+						pv.setPv(customPV);
+						PVCollection pvCollection = new PVCollection();
+						BeanUtil.map(pv, pvCollection);
+						BeanUtil.map(request, pvCollection);
+						pvCollection.setCreatedBy(createdBy);
+						pvCollection.setCreatedTime(createdTime);
+						pvCollection.setId(null);
+						pvCollection = pvRepository.save(pvCollection);
+						transactionalManagementService.addResource(pvCollection.getId(),
+								Resource.PV, false);
+						ESPVDocument espv = new ESPVDocument();
+						BeanUtil.map(pvCollection, espv);
+						esClinicalNotesService.addPV(espv);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getPs() != null && !request.getPs().isEmpty() && request.getGlobalPSs() != null && !request.getGlobalPSs().isEmpty()) {
+				Set<String> customPSs = compareGlobalElements(new HashSet<>(splitCSV(request.getPs())),
+						new HashSet<>(splitCSV(request.getGlobalPSs())));
+						for (String customPS : customPSs) {
+							
+						PS ps = new PS();
+						ps.setPs(customPS);;
+						PSCollection psCollection = new PSCollection();
+						BeanUtil.map(ps, psCollection);
+						BeanUtil.map(request, psCollection);
+						psCollection.setCreatedBy(createdBy);
+						psCollection.setCreatedTime(createdTime);
+						psCollection.setId(null);
+						psCollection = psRepository.save(psCollection);
+						transactionalManagementService.addResource(psCollection.getId(),
+								Resource.PS, false);
+						ESPSDocument esps = new ESPSDocument();
+						BeanUtil.map(psCollection, esps);
+						esClinicalNotesService.addPS(esps);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty() && request.getGlobalXRayDetails() != null && !request.getGlobalXRayDetails().isEmpty()) {
+				Set<String> customXrayDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getxRayDetails())),
+						new HashSet<>(splitCSV(request.getGlobalXRayDetails())));
+						for (String customXrayDetail : customXrayDetails) {
+							
+						XRayDetails xRayDetails = new XRayDetails();
+						xRayDetails.setxRayDetails(customXrayDetail);
+						XRayDetailsCollection xRayDetailsCollection = new XRayDetailsCollection();
+						BeanUtil.map(xRayDetails, xRayDetailsCollection);
+						BeanUtil.map(request, xRayDetailsCollection);
+						xRayDetailsCollection.setCreatedBy(createdBy);
+						xRayDetailsCollection.setCreatedTime(createdTime);
+						xRayDetailsCollection.setId(null);
+						xRayDetailsCollection = xRayDetailsRepository.save(xRayDetailsCollection);
+						transactionalManagementService.addResource(xRayDetailsCollection.getId(),
+								Resource.XRAY, false);
+						ESXRayDetailsDocument esxRayDetails = new ESXRayDetailsDocument();
+						BeanUtil.map(xRayDetailsCollection, esxRayDetails);
+						esClinicalNotesService.addXRayDetails(esxRayDetails);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() && request.getGlobalEcgDetails() != null && !request.getGlobalEcgDetails().isEmpty()) {
+				Set<String> customECGDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getEcgDetails())),
+						new HashSet<>(splitCSV(request.getGlobalEcgDetails())));
+						for (String customECGDetail : customECGDetails) {
+							
+						ECGDetails ecgDetails = new ECGDetails();
+						ecgDetails.setEcgDetails(customECGDetail);;
+						ECGDetailsCollection ecgDetailsCollection = new ECGDetailsCollection();
+						BeanUtil.map(ecgDetails, ecgDetailsCollection);
+						BeanUtil.map(request, ecgDetailsCollection);
+						ecgDetailsCollection.setCreatedBy(createdBy);
+						ecgDetailsCollection.setCreatedTime(createdTime);
+						ecgDetailsCollection.setId(null);
+						ecgDetailsCollection = ecgDetailsRepository.save(ecgDetailsCollection);
+						transactionalManagementService.addResource(ecgDetailsCollection.getId(),
+								Resource.ECG, false);
+						ESECGDetailsDocument esecgDetails = new ESECGDetailsDocument();
+						BeanUtil.map(ecgDetailsCollection, esecgDetails);
+						esClinicalNotesService.addECGDetails(esecgDetails);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			
+			
+			if (request.getEcho() != null && !request.getEcho().isEmpty() && request.getGlobalEchoes() != null && !request.getGlobalEchoes().isEmpty()) {
+				Set<String> customEchoes = compareGlobalElements(new HashSet<>(splitCSV(request.getEcho())),
+						new HashSet<>(splitCSV(request.getGlobalEchoes())));
+						for (String customEcho : customEchoes) {
+							
+						Echo echo = new Echo();
+						echo.setEcho(customEcho);
+						EchoCollection echoCollection = new EchoCollection();
+						BeanUtil.map(echo, echoCollection);
+						BeanUtil.map(request, echoCollection);
+						echoCollection.setCreatedBy(createdBy);
+						echoCollection.setCreatedTime(createdTime);
+						echoCollection.setId(null);
+						echoCollection = echoRepository.save(echoCollection);
+						transactionalManagementService.addResource(echoCollection.getId(),
+								Resource.ECHO, false);
+						ESEchoDocument esEcho = new ESEchoDocument();
+						BeanUtil.map(echoCollection, esEcho);
+						esClinicalNotesService.addEcho(esEcho);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
+			if (request.getHolter() != null && !request.getHolter().isEmpty() && request.getGlobalHolters() != null && !request.getGlobalHolters().isEmpty()) {
+				Set<String> customHolters = compareGlobalElements(new HashSet<>(splitCSV(request.getHolter())),
+						new HashSet<>(splitCSV(request.getGlobalHolters())));
+						for (String customHolter : customHolters) {
+							
+						Holter holter = new Holter();
+						holter.setHolter(customHolter);
+						HolterCollection holterCollection = new HolterCollection();
+						BeanUtil.map(holter, holterCollection);
+						BeanUtil.map(request, holterCollection);
+						holterCollection.setCreatedBy(createdBy);
+						holterCollection.setCreatedTime(createdTime);
+						holterCollection.setId(null);
+						holterCollection = holterRepository.save(holterCollection);
+						transactionalManagementService.addResource(holterCollection.getId(),
+								Resource.HOLTER, false);
+						ESHolterDocument esHolter = new ESHolterDocument();
+						BeanUtil.map(holterCollection, esHolter);
+						esClinicalNotesService.addHolter(esHolter);
+						// noteIds.add(notesCollection.getId());
+					
+				}
+			}
+			
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (Diagnoses diagnosis : request.getDiagnoses()) {
