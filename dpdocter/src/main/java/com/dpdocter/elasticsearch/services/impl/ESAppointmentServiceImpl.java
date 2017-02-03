@@ -487,22 +487,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(gender)) {
 				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
 			}
-
-			if (minTime != 0 || maxTime != 0) {
-				if (maxTime == 0)
-					maxTime = 1439;
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
-						.must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
-								QueryBuilders.andQuery(
-										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(maxTime),
-										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-												.lte(maxTime)),
-								QueryBuilders.andQuery(
-										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(minTime),
-										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-												.lte(minTime))))))));
-			}
-
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
@@ -510,6 +494,17 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(nestedQuery("workingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 
+			}
+
+			if (minTime != 0 || maxTime != 0) {
+				if (maxTime == 0) {
+					maxTime = 1439;
+				}
+				boolQueryBuilder.mustNot(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery(
+						"workingSchedules.workingHours",
+						boolQuery().must(QueryBuilders.orQuery(
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(minTime),
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(maxTime)))))));
 			}
 
 			if (latitude != null && longitude != null)
@@ -642,31 +637,24 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (nabl != null)
 				boolQueryBuilder.must(QueryBuilders.termQuery("isNABLAccredited", nabl));
 
-			if (minTime != 0 || maxTime != 0) {
-				if (maxTime == 0)
-					maxTime = 1439;
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules", boolQuery().must(nestedQuery(
-						"clinicWorkingSchedules.workingHours",
-						boolQuery().must(QueryBuilders
-								.orQuery(
-										QueryBuilders.andQuery(
-												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
-														.gte(maxTime),
-												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
-														.lte(maxTime)),
-										QueryBuilders.andQuery(
-												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
-														.gte(minTime),
-												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
-														.lte(minTime))))))));
-			}
-
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
 				}
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
+			}
+
+			if (minTime != 0 || maxTime != 0) {
+				if (maxTime == 0)
+					maxTime = 1439;
+				boolQueryBuilder.mustNot(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
+								boolQuery().must(QueryBuilders.orQuery(
+										QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+												.lte(minTime),
+										QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
+												.gte(maxTime)))))));
 			}
 
 			boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
