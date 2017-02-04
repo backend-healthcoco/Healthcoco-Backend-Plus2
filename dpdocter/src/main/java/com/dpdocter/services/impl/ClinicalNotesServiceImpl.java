@@ -348,7 +348,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * }
 			 */
 			// complaintIds = new ArrayList<ObjectId>();
-			if (request.getComplaint() != null && !request.getComplaint().isEmpty() && request.getGlobalComplaints() != null && !request.getGlobalComplaints().isEmpty()) {
+			if (request.getComplaint() != null && !request.getComplaint().isEmpty() && request.getGlobalComplaints() != null) {
 				Set<String> customComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalComplaints())));
 				if (customComplaints != null)
@@ -357,9 +357,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						complaint.setComplaint(customComplaint);
 
 						ComplaintCollection complaintCollection = new ComplaintCollection();
-					
-						BeanUtil.map(request, complaintCollection);
+						
 						BeanUtil.map(complaint, complaintCollection);
+						complaintCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						complaintCollection.setLocationId(new ObjectId(request.getLocationId()));
+						complaintCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						complaintCollection.setCreatedBy(createdBy);
 						complaintCollection.setCreatedTime(createdTime);
 						complaintCollection.setId(null);
@@ -375,7 +377,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// observationIds = new ArrayList<ObjectId>();
-			if (request.getObservation() != null && !request.getObservation().isEmpty() && request.getGlobalObservations() != null && !request.getGlobalObservations().isEmpty()) {
+			if (request.getObservation() != null && !request.getObservation().isEmpty() && request.getGlobalObservations() != null) {
 				Set<String> customObservations = compareGlobalElements(new HashSet<>(splitCSV(request.getObservation())),
 						new HashSet<>(splitCSV(request.getGlobalObservations())));
 				if (customObservations != null)
@@ -390,8 +392,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						observation.setObservation(customObservation);
 
 						ObservationCollection observationCollection = new ObservationCollection();
-						BeanUtil.map(request, observationCollection);
 						BeanUtil.map(observation, observationCollection);
+						observationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						observationCollection.setLocationId(new ObjectId(request.getLocationId()));
+						observationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						observationCollection.setCreatedBy(createdBy);
 						observationCollection.setCreatedTime(createdTime);
 						observationCollection.setId(null);
@@ -407,7 +411,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// investigationIds = new ArrayList<ObjectId>();
-			if (request.getInvestigation() != null && !request.getInvestigation().isEmpty() && request.getGlobalInvestigations() != null && !request.getGlobalInvestigations().isEmpty()) {
+			if (request.getInvestigation() != null && !request.getInvestigation().isEmpty() && request.getGlobalInvestigations() != null) {
 				
 				Set<String> customInvestigations = compareGlobalElements(new HashSet<>(splitCSV(request.getInvestigation())),
 						new HashSet<>(splitCSV(request.getGlobalInvestigations())));
@@ -415,8 +419,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					Investigation investigation =  new Investigation();
 					investigation.setInvestigation(customInvestigation);
 					InvestigationCollection investigationCollection = new InvestigationCollection();
-					BeanUtil.map(request, investigationCollection);
 					BeanUtil.map(investigation, investigationCollection);
+					investigationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					investigationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					investigationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					investigationCollection.setCreatedBy(createdBy);
 					investigationCollection.setCreatedTime(createdTime);
 					investigationCollection.setId(null);
@@ -434,7 +440,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// noteIds = new ArrayList<ObjectId>();
-			if (request.getNote() != null && !request.getNote().isEmpty() && request.getGlobalNotes() != null && !request.getGlobalNotes().isEmpty()) {
+			if (request.getNote() != null && !request.getNote().isEmpty() && request.getGlobalNotes() != null) {
 				
 				Set<String> customNotes = compareGlobalElements(new HashSet<>(splitCSV(request.getNote())),
 						new HashSet<>(splitCSV(request.getGlobalNotes())));
@@ -442,8 +448,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Notes note =  new Notes();
 						note.setNote(customNote);
 						NotesCollection notesCollection = new NotesCollection();
-						BeanUtil.map(request, notesCollection);
 						BeanUtil.map(note, notesCollection);
+						notesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						notesCollection.setLocationId(new ObjectId(request.getLocationId()));
+						notesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						notesCollection.setCreatedBy(createdBy);
 						notesCollection.setCreatedTime(createdTime);
 						notesCollection.setId(null);
@@ -457,15 +465,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getProvisionalDiagnosis() != null && !request.getProvisionalDiagnosis().isEmpty() && request.getGlobalProvisionalDiagnoses() != null && !request.getGlobalProvisionalDiagnoses().isEmpty()) {
+			if (request.getProvisionalDiagnosis() != null && !request.getProvisionalDiagnosis().isEmpty() && request.getGlobalProvisionalDiagnoses() != null) {
 				Set<String> customProvisionalDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getProvisionalDiagnosis())),
 						new HashSet<>(splitCSV(request.getGlobalProvisionalDiagnoses())));
 					for(String customProvisionalDiagnosis : customProvisionalDiagnoses) {
 						ProvisionalDiagnosis provisionalDiagnosis = new ProvisionalDiagnosis();
 						provisionalDiagnosis.setProvisionalDiagnosis(customProvisionalDiagnosis);
 						ProvisionalDiagnosisCollection provisionalDiagnosisCollection = new ProvisionalDiagnosisCollection();
-						BeanUtil.map(request, provisionalDiagnosisCollection);
 						BeanUtil.map(provisionalDiagnosis, provisionalDiagnosisCollection);
+						provisionalDiagnosisCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						provisionalDiagnosisCollection.setLocationId(new ObjectId(request.getLocationId()));
+						provisionalDiagnosisCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						provisionalDiagnosisCollection.setCreatedBy(createdBy);
 						provisionalDiagnosisCollection.setCreatedTime(createdTime);
 						provisionalDiagnosisCollection.setId(null);
@@ -481,15 +491,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty() && request.getGlobalPresentComplaints() != null && !request.getGlobalPresentComplaints().isEmpty()) {
+			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty() && request.getGlobalPresentComplaints() != null) {
 				Set<String> customPresentComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalPresentComplaints())));
 					for (String customPresentComplaint : customPresentComplaints){
 						PresentComplaint presentComplaint = new PresentComplaint();
 						presentComplaint.setPresentComplaint(customPresentComplaint);
 						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();
-						BeanUtil.map(request, presentComplaintCollection);
 						BeanUtil.map(presentComplaint, presentComplaintCollection);
+						presentComplaintCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						presentComplaintCollection.setLocationId(new ObjectId(request.getLocationId()));
+						presentComplaintCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						presentComplaintCollection.setCreatedBy(createdBy);
 						presentComplaintCollection.setCreatedTime(createdTime);
 						presentComplaintCollection.setId(null);
@@ -503,15 +515,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPresentComplaintHistory() != null && !request.getPresentComplaintHistory().isEmpty() && request.getGlobalPresentComplaintHistories() != null && !request.getGlobalPresentComplaintHistories().isEmpty()) {
+			if (request.getPresentComplaintHistory() != null && !request.getPresentComplaintHistory().isEmpty() && request.getGlobalPresentComplaintHistories() != null) {
 				Set<String> customPresentComplaintHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaintHistory())),
 						new HashSet<>(splitCSV(request.getGlobalPresentComplaintHistories())));
 				for (String customPresentComplaintHistory : customPresentComplaintHistories) {
 					PresentComplaintHistory presentComplaintHistory = new PresentComplaintHistory();
 					presentComplaintHistory.setPresentComplaintHistory(customPresentComplaintHistory);
 					PresentComplaintHistoryCollection presentComplaintHistoryCollection = new PresentComplaintHistoryCollection();
-					BeanUtil.map(request, presentComplaintHistoryCollection);
 					BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
+					presentComplaintHistoryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentComplaintHistoryCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentComplaintHistoryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					presentComplaintHistoryCollection.setCreatedBy(createdBy);
 					presentComplaintHistoryCollection.setCreatedTime(createdTime);
 					presentComplaintHistoryCollection.setId(null);
@@ -526,15 +540,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty() && request.getGlobalGeneralExams() != null && !request.getGlobalGeneralExams().isEmpty()) {
+			if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty() && request.getGlobalGeneralExams() != null) {
 				Set<String> customGeneralExams = compareGlobalElements(new HashSet<>(splitCSV(request.getGeneralExam())),
 						new HashSet<>(splitCSV(request.getGlobalGeneralExams())));
 				for(String customGeneralExam : customGeneralExams){
 						GeneralExam generalExam =  new GeneralExam();
 						generalExam.setGeneralExam(customGeneralExam);
 						GeneralExamCollection generalExamCollection = new GeneralExamCollection();
-						BeanUtil.map(request, generalExamCollection);
 						BeanUtil.map(generalExam, generalExamCollection);
+						generalExamCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						generalExamCollection.setLocationId(new ObjectId(request.getLocationId()));
+						generalExamCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						generalExamCollection.setCreatedBy(createdBy);
 						generalExamCollection.setCreatedTime(createdTime);
 						generalExamCollection.setId(null);
@@ -549,15 +565,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() && request.getGlobalSystemExams() != null && !request.getGlobalSystemExams().isEmpty()) {
+			if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() && request.getGlobalSystemExams() != null) {
 				Set<String> customSystemExams = compareGlobalElements(new HashSet<>(splitCSV(request.getSystemExam())),
 						new HashSet<>(splitCSV(request.getGlobalSystemExams())));
 				for (String customSystemExam : customSystemExams) {
 						SystemExam systemExam = new SystemExam();
 						systemExam.setSystemExam(customSystemExam);
 						SystemExamCollection systemExamCollection = new SystemExamCollection();
-						BeanUtil.map(request, systemExamCollection);
 						BeanUtil.map(systemExam, systemExamCollection);
+						systemExamCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						systemExamCollection.setLocationId(new ObjectId(request.getLocationId()));
+						systemExamCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						systemExamCollection.setCreatedBy(createdBy);
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
@@ -571,15 +589,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getMenstrualHistory() != null && !request.getMenstrualHistory().isEmpty() && request.getGlobalMenstrualHistories() != null && !request.getGlobalMenstrualHistories().isEmpty()) {
+			if (request.getMenstrualHistory() != null && !request.getMenstrualHistory().isEmpty() && request.getGlobalMenstrualHistories() != null) {
 				Set<String> customMenstrualHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getMenstrualHistory())),
 						new HashSet<>(splitCSV(request.getGlobalMenstrualHistories())));
 				for (String customMenstrualHistory : customMenstrualHistories) {
 					MenstrualHistory menstrualHistory = new MenstrualHistory();
 					menstrualHistory.setMenstrualHistory(customMenstrualHistory);
 						MenstrualHistoryCollection menstrualHistoryCollection = new MenstrualHistoryCollection();
-						BeanUtil.map(request, menstrualHistoryCollection);
 						BeanUtil.map(menstrualHistory, menstrualHistoryCollection);
+						menstrualHistoryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						menstrualHistoryCollection.setLocationId(new ObjectId(request.getLocationId()));
+						menstrualHistoryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						menstrualHistoryCollection.setCreatedBy(createdBy);
 						menstrualHistoryCollection.setCreatedTime(createdTime);
 						menstrualHistoryCollection.setId(null);
@@ -594,7 +614,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getObstetricHistory() != null && !request.getObstetricHistory().isEmpty() && request.getGlobalObstetricHistories() != null && !request.getGlobalObstetricHistories().isEmpty()) {
+			if (request.getObstetricHistory() != null && !request.getObstetricHistory().isEmpty() && request.getGlobalObstetricHistories() != null) {
 				Set<String> customObstetricHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getObstetricHistory())),
 						new HashSet<>(splitCSV(request.getGlobalObstetricHistories())));
 						for (String customObstetricHistory : customObstetricHistories) {
@@ -602,8 +622,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ObstetricHistory obstetricHistory = new ObstetricHistory();
 						obstetricHistory.setObstetricHistory(customObstetricHistory);
 						ObstetricHistoryCollection obstetricHistoryCollection = new ObstetricHistoryCollection();
-						BeanUtil.map(request, obstetricHistoryCollection);
 						BeanUtil.map(obstetricHistory, obstetricHistoryCollection);
+						obstetricHistoryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						obstetricHistoryCollection.setLocationId(new ObjectId(request.getLocationId()));
+						obstetricHistoryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						obstetricHistoryCollection.setCreatedBy(createdBy);
 						obstetricHistoryCollection.setCreatedTime(createdTime);
 						obstetricHistoryCollection.setId(null);
@@ -619,7 +641,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			//diagnosisIds = new ArrayList<ObjectId>();
-			if (request.getDiagnosis() != null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() != null && !request.getGlobalDiagnoses().isEmpty()) {
+			if (request.getDiagnosis() != null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() != null) {
 				Set<String> customDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getDiagnosis())),
 						new HashSet<>(splitCSV(request.getGlobalDiagnoses())));
 						for (String customDiagnosis : customDiagnoses) {
@@ -627,8 +649,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Diagnoses diagnosis = new Diagnoses();
 						diagnosis.setDiagnosis(customDiagnosis);
 						DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
-						BeanUtil.map(request, diagnosisCollection);
 						BeanUtil.map(diagnosis, diagnosisCollection);
+						diagnosisCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						diagnosisCollection.setLocationId(new ObjectId(request.getLocationId()));
+						diagnosisCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						diagnosisCollection.setCreatedBy(createdBy);
 						diagnosisCollection.setCreatedTime(createdTime);
 						diagnosisCollection.setId(null);
@@ -643,7 +667,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty() && request.getGlobalIndicationOfUSGs() != null && !request.getGlobalIndicationOfUSGs().isEmpty()) {
+			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty() && request.getGlobalIndicationOfUSGs() != null) {
 				Set<String> customIndicationOfUSGs = compareGlobalElements(new HashSet<>(splitCSV(request.getIndicationOfUSG())),
 						new HashSet<>(splitCSV(request.getGlobalIndicationOfUSGs())));
 						for (String customIndicationOfUSG : customIndicationOfUSGs) {
@@ -651,8 +675,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						IndicationOfUSG indicationOfUSG = new IndicationOfUSG();
 						indicationOfUSG.setIndicationOfUSG(customIndicationOfUSG);
 						IndicationOfUSGCollection indicationOfUSGCollection = new IndicationOfUSGCollection();
-						BeanUtil.map(request, indicationOfUSGCollection);
 						BeanUtil.map(indicationOfUSG, indicationOfUSGCollection);
+						indicationOfUSGCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						indicationOfUSGCollection.setLocationId(new ObjectId(request.getLocationId()));
+						indicationOfUSGCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						indicationOfUSGCollection.setCreatedBy(createdBy);
 						indicationOfUSGCollection.setCreatedTime(createdTime);
 						indicationOfUSGCollection.setId(null);
@@ -667,7 +693,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPa() != null && !request.getPa().isEmpty() && request.getGlobalPAs() != null && !request.getGlobalPAs().isEmpty()) {
+			if (request.getPa() != null && !request.getPa().isEmpty() && request.getGlobalPAs() != null) {
 				Set<String> customPAs = compareGlobalElements(new HashSet<>(splitCSV(request.getPa())),
 						new HashSet<>(splitCSV(request.getGlobalPAs())));
 						for (String customPA : customPAs) {
@@ -675,8 +701,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PA pa = new PA();
 						pa.setPa(customPA);
 						PACollection paCollection = new PACollection();
-						BeanUtil.map(request, paCollection);
 						BeanUtil.map(pa, paCollection);
+						paCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						paCollection.setLocationId(new ObjectId(request.getLocationId()));
+						paCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						paCollection.setCreatedBy(createdBy);
 						paCollection.setCreatedTime(createdTime);
 						paCollection.setId(null);
@@ -691,7 +719,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPv() != null && !request.getPv().isEmpty() && request.getGlobalPVs() != null && !request.getGlobalPVs().isEmpty()) {
+			if (request.getPv() != null && !request.getPv().isEmpty() && request.getGlobalPVs() != null) {
 				Set<String> customPVs = compareGlobalElements(new HashSet<>(splitCSV(request.getPv())),
 						new HashSet<>(splitCSV(request.getGlobalPVs())));
 						for (String customPV : customPVs) {
@@ -699,8 +727,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PV pv = new PV();
 						pv.setPv(customPV);
 						PVCollection pvCollection = new PVCollection();
-						BeanUtil.map(request, pvCollection);
 						BeanUtil.map(pv, pvCollection);
+						pvCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						pvCollection.setLocationId(new ObjectId(request.getLocationId()));
+						pvCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						pvCollection.setCreatedBy(createdBy);
 						pvCollection.setCreatedTime(createdTime);
 						pvCollection.setId(null);
@@ -715,7 +745,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPs() != null && !request.getPs().isEmpty() && request.getGlobalPSs() != null && !request.getGlobalPSs().isEmpty()) {
+			if (request.getPs() != null && !request.getPs().isEmpty() && request.getGlobalPSs() != null) {
 				Set<String> customPSs = compareGlobalElements(new HashSet<>(splitCSV(request.getPs())),
 						new HashSet<>(splitCSV(request.getGlobalPSs())));
 						for (String customPS : customPSs) {
@@ -723,8 +753,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						PS ps = new PS();
 						ps.setPs(customPS);;
 						PSCollection psCollection = new PSCollection();
-						BeanUtil.map(request, psCollection);
 						BeanUtil.map(ps, psCollection);
+						psCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						psCollection.setLocationId(new ObjectId(request.getLocationId()));
+						psCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						psCollection.setCreatedBy(createdBy);
 						psCollection.setCreatedTime(createdTime);
 						psCollection.setId(null);
@@ -739,7 +771,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty() && request.getGlobalXRayDetails() != null && !request.getGlobalXRayDetails().isEmpty()) {
+			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty() && request.getGlobalXRayDetails() != null) {
 				Set<String> customXrayDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getxRayDetails())),
 						new HashSet<>(splitCSV(request.getGlobalXRayDetails())));
 						for (String customXrayDetail : customXrayDetails) {
@@ -747,8 +779,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						XRayDetails xRayDetails = new XRayDetails();
 						xRayDetails.setxRayDetails(customXrayDetail);
 						XRayDetailsCollection xRayDetailsCollection = new XRayDetailsCollection();
-						BeanUtil.map(request, xRayDetailsCollection);
 						BeanUtil.map(xRayDetails, xRayDetailsCollection);
+						xRayDetailsCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						xRayDetailsCollection.setLocationId(new ObjectId(request.getLocationId()));
+						xRayDetailsCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						xRayDetailsCollection.setCreatedBy(createdBy);
 						xRayDetailsCollection.setCreatedTime(createdTime);
 						xRayDetailsCollection.setId(null);
@@ -763,7 +797,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() && request.getGlobalEcgDetails() != null && !request.getGlobalEcgDetails().isEmpty()) {
+			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() && request.getGlobalEcgDetails() != null) {
 				Set<String> customECGDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getEcgDetails())),
 						new HashSet<>(splitCSV(request.getGlobalEcgDetails())));
 						for (String customECGDetail : customECGDetails) {
@@ -771,8 +805,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ECGDetails ecgDetails = new ECGDetails();
 						ecgDetails.setEcgDetails(customECGDetail);;
 						ECGDetailsCollection ecgDetailsCollection = new ECGDetailsCollection();
-						BeanUtil.map(request, ecgDetailsCollection);
 						BeanUtil.map(ecgDetails, ecgDetailsCollection);
+						ecgDetailsCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						ecgDetailsCollection.setLocationId(new ObjectId(request.getLocationId()));
+						ecgDetailsCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						ecgDetailsCollection.setCreatedBy(createdBy);
 						ecgDetailsCollection.setCreatedTime(createdTime);
 						ecgDetailsCollection.setId(null);
@@ -789,7 +825,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			
 			
 			
-			if (request.getEcho() != null && !request.getEcho().isEmpty() && request.getGlobalEchoes() != null && !request.getGlobalEchoes().isEmpty()) {
+			if (request.getEcho() != null && !request.getEcho().isEmpty() && request.getGlobalEchoes() != null) {
 				Set<String> customEchoes = compareGlobalElements(new HashSet<>(splitCSV(request.getEcho())),
 						new HashSet<>(splitCSV(request.getGlobalEchoes())));
 						for (String customEcho : customEchoes) {
@@ -797,8 +833,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Echo echo = new Echo();
 						echo.setEcho(customEcho);
 						EchoCollection echoCollection = new EchoCollection();
-						BeanUtil.map(request, echoCollection);
 						BeanUtil.map(echo, echoCollection);
+						echoCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						echoCollection.setLocationId(new ObjectId(request.getLocationId()));
+						echoCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						echoCollection.setCreatedBy(createdBy);
 						echoCollection.setCreatedTime(createdTime);
 						echoCollection.setId(null);
@@ -813,7 +851,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getHolter() != null && !request.getHolter().isEmpty() && request.getGlobalHolters() != null && !request.getGlobalHolters().isEmpty()) {
+			if (request.getHolter() != null && !request.getHolter().isEmpty() && request.getGlobalHolters() != null) {
 				Set<String> customHolters = compareGlobalElements(new HashSet<>(splitCSV(request.getHolter())),
 						new HashSet<>(splitCSV(request.getGlobalHolters())));
 						for (String customHolter : customHolters) {
@@ -821,8 +859,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						Holter holter = new Holter();
 						holter.setHolter(customHolter);
 						HolterCollection holterCollection = new HolterCollection();
-						BeanUtil.map(request, holterCollection);
 						BeanUtil.map(holter, holterCollection);
+						holterCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						holterCollection.setLocationId(new ObjectId(request.getLocationId()));
+						holterCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						holterCollection.setCreatedBy(createdBy);
 						holterCollection.setCreatedTime(createdTime);
 						holterCollection.setId(null);
@@ -1261,8 +1301,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 */
-			
-			if (request.getComplaint() != null && !request.getComplaint().isEmpty() && request.getGlobalComplaints() != null && !request.getGlobalComplaints().isEmpty()) {
+			if (request.getComplaint() != null && !request.getComplaint().isEmpty() && request.getGlobalComplaints() != null) {
 				Set<String> customComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalComplaints())));
 				if (customComplaints != null)
@@ -1271,8 +1310,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						complaint.setComplaint(customComplaint);
 
 						ComplaintCollection complaintCollection = new ComplaintCollection();
+						
 						BeanUtil.map(complaint, complaintCollection);
-						BeanUtil.map(request, complaintCollection);
+						complaintCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						complaintCollection.setLocationId(new ObjectId(request.getLocationId()));
+						complaintCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						complaintCollection.setCreatedBy(createdBy);
 						complaintCollection.setCreatedTime(createdTime);
 						complaintCollection.setId(null);
@@ -1288,7 +1330,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// observationIds = new ArrayList<ObjectId>();
-			if (request.getObservation() != null && !request.getObservation().isEmpty() && request.getGlobalObservations() != null && !request.getGlobalObservations().isEmpty()) {
+			if (request.getObservation() != null && !request.getObservation().isEmpty() && request.getGlobalObservations() != null) {
 				Set<String> customObservations = compareGlobalElements(new HashSet<>(splitCSV(request.getObservation())),
 						new HashSet<>(splitCSV(request.getGlobalObservations())));
 				if (customObservations != null)
@@ -1304,7 +1346,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 						ObservationCollection observationCollection = new ObservationCollection();
 						BeanUtil.map(observation, observationCollection);
-						BeanUtil.map(request, observationCollection);
+						observationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						observationCollection.setLocationId(new ObjectId(request.getLocationId()));
+						observationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						observationCollection.setCreatedBy(createdBy);
 						observationCollection.setCreatedTime(createdTime);
 						observationCollection.setId(null);
@@ -1320,7 +1364,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// investigationIds = new ArrayList<ObjectId>();
-			if (request.getInvestigation() != null && !request.getInvestigation().isEmpty() && request.getGlobalInvestigations() != null && !request.getGlobalInvestigations().isEmpty()) {
+			if (request.getInvestigation() != null && !request.getInvestigation().isEmpty() && request.getGlobalInvestigations() != null) {
 				
 				Set<String> customInvestigations = compareGlobalElements(new HashSet<>(splitCSV(request.getInvestigation())),
 						new HashSet<>(splitCSV(request.getGlobalInvestigations())));
@@ -1329,7 +1373,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					investigation.setInvestigation(customInvestigation);
 					InvestigationCollection investigationCollection = new InvestigationCollection();
 					BeanUtil.map(investigation, investigationCollection);
-					BeanUtil.map(request, investigationCollection);
+					investigationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					investigationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					investigationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					investigationCollection.setCreatedBy(createdBy);
 					investigationCollection.setCreatedTime(createdTime);
 					investigationCollection.setId(null);
@@ -1347,7 +1393,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			// noteIds = new ArrayList<ObjectId>();
-			if (request.getNote() != null && !request.getNote().isEmpty() && request.getGlobalNotes() != null && !request.getGlobalNotes().isEmpty()) {
+			if (request.getNote() != null && !request.getNote().isEmpty() && request.getGlobalNotes() != null) {
 				
 				Set<String> customNotes = compareGlobalElements(new HashSet<>(splitCSV(request.getNote())),
 						new HashSet<>(splitCSV(request.getGlobalNotes())));
@@ -1356,7 +1402,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						note.setNote(customNote);
 						NotesCollection notesCollection = new NotesCollection();
 						BeanUtil.map(note, notesCollection);
-						BeanUtil.map(request, notesCollection);
+						notesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						notesCollection.setLocationId(new ObjectId(request.getLocationId()));
+						notesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						notesCollection.setCreatedBy(createdBy);
 						notesCollection.setCreatedTime(createdTime);
 						notesCollection.setId(null);
@@ -1370,7 +1418,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getProvisionalDiagnosis() != null && !request.getProvisionalDiagnosis().isEmpty() && request.getGlobalProvisionalDiagnoses() != null && !request.getGlobalProvisionalDiagnoses().isEmpty()) {
+			if (request.getProvisionalDiagnosis() != null && !request.getProvisionalDiagnosis().isEmpty() && request.getGlobalProvisionalDiagnoses() != null) {
 				Set<String> customProvisionalDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getProvisionalDiagnosis())),
 						new HashSet<>(splitCSV(request.getGlobalProvisionalDiagnoses())));
 					for(String customProvisionalDiagnosis : customProvisionalDiagnoses) {
@@ -1378,7 +1426,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						provisionalDiagnosis.setProvisionalDiagnosis(customProvisionalDiagnosis);
 						ProvisionalDiagnosisCollection provisionalDiagnosisCollection = new ProvisionalDiagnosisCollection();
 						BeanUtil.map(provisionalDiagnosis, provisionalDiagnosisCollection);
-						BeanUtil.map(request, provisionalDiagnosisCollection);
+						provisionalDiagnosisCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						provisionalDiagnosisCollection.setLocationId(new ObjectId(request.getLocationId()));
+						provisionalDiagnosisCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						provisionalDiagnosisCollection.setCreatedBy(createdBy);
 						provisionalDiagnosisCollection.setCreatedTime(createdTime);
 						provisionalDiagnosisCollection.setId(null);
@@ -1394,15 +1444,17 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty() && request.getGlobalPresentComplaints() != null && !request.getGlobalPresentComplaints().isEmpty()) {
+			if (request.getPresentComplaint() != null && !request.getPresentComplaint().isEmpty() && request.getGlobalPresentComplaints() != null) {
 				Set<String> customPresentComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalPresentComplaints())));
 					for (String customPresentComplaint : customPresentComplaints){
 						PresentComplaint presentComplaint = new PresentComplaint();
 						presentComplaint.setPresentComplaint(customPresentComplaint);
 						PresentComplaintCollection presentComplaintCollection = new PresentComplaintCollection();
-						BeanUtil.map(request, presentComplaintCollection);
 						BeanUtil.map(presentComplaint, presentComplaintCollection);
+						presentComplaintCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						presentComplaintCollection.setLocationId(new ObjectId(request.getLocationId()));
+						presentComplaintCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						presentComplaintCollection.setCreatedBy(createdBy);
 						presentComplaintCollection.setCreatedTime(createdTime);
 						presentComplaintCollection.setId(null);
@@ -1416,7 +1468,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPresentComplaintHistory() != null && !request.getPresentComplaintHistory().isEmpty() && request.getGlobalPresentComplaintHistories() != null && !request.getGlobalPresentComplaintHistories().isEmpty()) {
+			if (request.getPresentComplaintHistory() != null && !request.getPresentComplaintHistory().isEmpty() && request.getGlobalPresentComplaintHistories() != null) {
 				Set<String> customPresentComplaintHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getPresentComplaintHistory())),
 						new HashSet<>(splitCSV(request.getGlobalPresentComplaintHistories())));
 				for (String customPresentComplaintHistory : customPresentComplaintHistories) {
@@ -1424,7 +1476,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentComplaintHistory.setPresentComplaintHistory(customPresentComplaintHistory);
 					PresentComplaintHistoryCollection presentComplaintHistoryCollection = new PresentComplaintHistoryCollection();
 					BeanUtil.map(presentComplaintHistory, presentComplaintHistoryCollection);
-					BeanUtil.map(request, presentComplaintHistoryCollection);
+					presentComplaintHistoryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentComplaintHistoryCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentComplaintHistoryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					presentComplaintHistoryCollection.setCreatedBy(createdBy);
 					presentComplaintHistoryCollection.setCreatedTime(createdTime);
 					presentComplaintHistoryCollection.setId(null);
@@ -1439,7 +1493,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty() && request.getGlobalGeneralExams() != null && !request.getGlobalGeneralExams().isEmpty()) {
+			if (request.getGeneralExam() != null && !request.getGeneralExam().isEmpty() && request.getGlobalGeneralExams() != null) {
 				Set<String> customGeneralExams = compareGlobalElements(new HashSet<>(splitCSV(request.getGeneralExam())),
 						new HashSet<>(splitCSV(request.getGlobalGeneralExams())));
 				for(String customGeneralExam : customGeneralExams){
@@ -1447,7 +1501,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						generalExam.setGeneralExam(customGeneralExam);
 						GeneralExamCollection generalExamCollection = new GeneralExamCollection();
 						BeanUtil.map(generalExam, generalExamCollection);
-						BeanUtil.map(request, generalExamCollection);
+						generalExamCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						generalExamCollection.setLocationId(new ObjectId(request.getLocationId()));
+						generalExamCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						generalExamCollection.setCreatedBy(createdBy);
 						generalExamCollection.setCreatedTime(createdTime);
 						generalExamCollection.setId(null);
@@ -1462,7 +1518,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() && request.getGlobalSystemExams() != null && !request.getGlobalSystemExams().isEmpty()) {
+			if (request.getSystemExam() != null && !request.getSystemExam().isEmpty() && request.getGlobalSystemExams() != null) {
 				Set<String> customSystemExams = compareGlobalElements(new HashSet<>(splitCSV(request.getSystemExam())),
 						new HashSet<>(splitCSV(request.getGlobalSystemExams())));
 				for (String customSystemExam : customSystemExams) {
@@ -1470,7 +1526,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExam.setSystemExam(customSystemExam);
 						SystemExamCollection systemExamCollection = new SystemExamCollection();
 						BeanUtil.map(systemExam, systemExamCollection);
-						BeanUtil.map(request, systemExamCollection);
+						systemExamCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						systemExamCollection.setLocationId(new ObjectId(request.getLocationId()));
+						systemExamCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						systemExamCollection.setCreatedBy(createdBy);
 						systemExamCollection.setCreatedTime(createdTime);
 						systemExamCollection.setId(null);
@@ -1484,7 +1542,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getMenstrualHistory() != null && !request.getMenstrualHistory().isEmpty() && request.getGlobalMenstrualHistories() != null && !request.getGlobalMenstrualHistories().isEmpty()) {
+			if (request.getMenstrualHistory() != null && !request.getMenstrualHistory().isEmpty() && request.getGlobalMenstrualHistories() != null) {
 				Set<String> customMenstrualHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getMenstrualHistory())),
 						new HashSet<>(splitCSV(request.getGlobalMenstrualHistories())));
 				for (String customMenstrualHistory : customMenstrualHistories) {
@@ -1492,7 +1550,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					menstrualHistory.setMenstrualHistory(customMenstrualHistory);
 						MenstrualHistoryCollection menstrualHistoryCollection = new MenstrualHistoryCollection();
 						BeanUtil.map(menstrualHistory, menstrualHistoryCollection);
-						BeanUtil.map(request, menstrualHistoryCollection);
+						menstrualHistoryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						menstrualHistoryCollection.setLocationId(new ObjectId(request.getLocationId()));
+						menstrualHistoryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						menstrualHistoryCollection.setCreatedBy(createdBy);
 						menstrualHistoryCollection.setCreatedTime(createdTime);
 						menstrualHistoryCollection.setId(null);
@@ -1507,7 +1567,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getObstetricHistory() != null && !request.getObstetricHistory().isEmpty() && request.getGlobalObstetricHistories() != null && !request.getGlobalObstetricHistories().isEmpty()) {
+			if (request.getObstetricHistory() != null && !request.getObstetricHistory().isEmpty() && request.getGlobalObstetricHistories() != null) {
 				Set<String> customObstetricHistories = compareGlobalElements(new HashSet<>(splitCSV(request.getObstetricHistory())),
 						new HashSet<>(splitCSV(request.getGlobalObstetricHistories())));
 						for (String customObstetricHistory : customObstetricHistories) {
@@ -1516,7 +1576,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						obstetricHistory.setObstetricHistory(customObstetricHistory);
 						ObstetricHistoryCollection obstetricHistoryCollection = new ObstetricHistoryCollection();
 						BeanUtil.map(obstetricHistory, obstetricHistoryCollection);
-						BeanUtil.map(request, obstetricHistoryCollection);
+						obstetricHistoryCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						obstetricHistoryCollection.setLocationId(new ObjectId(request.getLocationId()));
+						obstetricHistoryCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						obstetricHistoryCollection.setCreatedBy(createdBy);
 						obstetricHistoryCollection.setCreatedTime(createdTime);
 						obstetricHistoryCollection.setId(null);
@@ -1532,7 +1594,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			//diagnosisIds = new ArrayList<ObjectId>();
-			if (request.getDiagnosis() != null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() != null && !request.getGlobalDiagnoses().isEmpty()) {
+			if (request.getDiagnosis() != null && !request.getDiagnosis().isEmpty() && request.getGlobalDiagnoses() != null) {
 				Set<String> customDiagnoses = compareGlobalElements(new HashSet<>(splitCSV(request.getDiagnosis())),
 						new HashSet<>(splitCSV(request.getGlobalDiagnoses())));
 						for (String customDiagnosis : customDiagnoses) {
@@ -1541,7 +1603,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						diagnosis.setDiagnosis(customDiagnosis);
 						DiagnosisCollection diagnosisCollection = new DiagnosisCollection();
 						BeanUtil.map(diagnosis, diagnosisCollection);
-						BeanUtil.map(request, diagnosisCollection);
+						diagnosisCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						diagnosisCollection.setLocationId(new ObjectId(request.getLocationId()));
+						diagnosisCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						diagnosisCollection.setCreatedBy(createdBy);
 						diagnosisCollection.setCreatedTime(createdTime);
 						diagnosisCollection.setId(null);
@@ -1556,7 +1620,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty() && request.getGlobalIndicationOfUSGs() != null && !request.getGlobalIndicationOfUSGs().isEmpty()) {
+			if (request.getIndicationOfUSG() != null && !request.getIndicationOfUSG().isEmpty() && request.getGlobalIndicationOfUSGs() != null) {
 				Set<String> customIndicationOfUSGs = compareGlobalElements(new HashSet<>(splitCSV(request.getIndicationOfUSG())),
 						new HashSet<>(splitCSV(request.getGlobalIndicationOfUSGs())));
 						for (String customIndicationOfUSG : customIndicationOfUSGs) {
@@ -1565,7 +1629,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						indicationOfUSG.setIndicationOfUSG(customIndicationOfUSG);
 						IndicationOfUSGCollection indicationOfUSGCollection = new IndicationOfUSGCollection();
 						BeanUtil.map(indicationOfUSG, indicationOfUSGCollection);
-						BeanUtil.map(request, indicationOfUSGCollection);
+						indicationOfUSGCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						indicationOfUSGCollection.setLocationId(new ObjectId(request.getLocationId()));
+						indicationOfUSGCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						indicationOfUSGCollection.setCreatedBy(createdBy);
 						indicationOfUSGCollection.setCreatedTime(createdTime);
 						indicationOfUSGCollection.setId(null);
@@ -1580,7 +1646,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPa() != null && !request.getPa().isEmpty() && request.getGlobalPAs() != null && !request.getGlobalPAs().isEmpty()) {
+			if (request.getPa() != null && !request.getPa().isEmpty() && request.getGlobalPAs() != null) {
 				Set<String> customPAs = compareGlobalElements(new HashSet<>(splitCSV(request.getPa())),
 						new HashSet<>(splitCSV(request.getGlobalPAs())));
 						for (String customPA : customPAs) {
@@ -1589,7 +1655,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						pa.setPa(customPA);
 						PACollection paCollection = new PACollection();
 						BeanUtil.map(pa, paCollection);
-						BeanUtil.map(request, paCollection);
+						paCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						paCollection.setLocationId(new ObjectId(request.getLocationId()));
+						paCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						paCollection.setCreatedBy(createdBy);
 						paCollection.setCreatedTime(createdTime);
 						paCollection.setId(null);
@@ -1604,7 +1672,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPv() != null && !request.getPv().isEmpty() && request.getGlobalPVs() != null && !request.getGlobalPVs().isEmpty()) {
+			if (request.getPv() != null && !request.getPv().isEmpty() && request.getGlobalPVs() != null) {
 				Set<String> customPVs = compareGlobalElements(new HashSet<>(splitCSV(request.getPv())),
 						new HashSet<>(splitCSV(request.getGlobalPVs())));
 						for (String customPV : customPVs) {
@@ -1613,7 +1681,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						pv.setPv(customPV);
 						PVCollection pvCollection = new PVCollection();
 						BeanUtil.map(pv, pvCollection);
-						BeanUtil.map(request, pvCollection);
+						pvCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						pvCollection.setLocationId(new ObjectId(request.getLocationId()));
+						pvCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						pvCollection.setCreatedBy(createdBy);
 						pvCollection.setCreatedTime(createdTime);
 						pvCollection.setId(null);
@@ -1628,7 +1698,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getPs() != null && !request.getPs().isEmpty() && request.getGlobalPSs() != null && !request.getGlobalPSs().isEmpty()) {
+			if (request.getPs() != null && !request.getPs().isEmpty() && request.getGlobalPSs() != null) {
 				Set<String> customPSs = compareGlobalElements(new HashSet<>(splitCSV(request.getPs())),
 						new HashSet<>(splitCSV(request.getGlobalPSs())));
 						for (String customPS : customPSs) {
@@ -1637,7 +1707,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ps.setPs(customPS);;
 						PSCollection psCollection = new PSCollection();
 						BeanUtil.map(ps, psCollection);
-						BeanUtil.map(request, psCollection);
+						psCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						psCollection.setLocationId(new ObjectId(request.getLocationId()));
+						psCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						psCollection.setCreatedBy(createdBy);
 						psCollection.setCreatedTime(createdTime);
 						psCollection.setId(null);
@@ -1652,7 +1724,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty() && request.getGlobalXRayDetails() != null && !request.getGlobalXRayDetails().isEmpty()) {
+			if (request.getxRayDetails() != null && !request.getxRayDetails().isEmpty() && request.getGlobalXRayDetails() != null) {
 				Set<String> customXrayDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getxRayDetails())),
 						new HashSet<>(splitCSV(request.getGlobalXRayDetails())));
 						for (String customXrayDetail : customXrayDetails) {
@@ -1661,7 +1733,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						xRayDetails.setxRayDetails(customXrayDetail);
 						XRayDetailsCollection xRayDetailsCollection = new XRayDetailsCollection();
 						BeanUtil.map(xRayDetails, xRayDetailsCollection);
-						BeanUtil.map(request, xRayDetailsCollection);
+						xRayDetailsCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						xRayDetailsCollection.setLocationId(new ObjectId(request.getLocationId()));
+						xRayDetailsCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						xRayDetailsCollection.setCreatedBy(createdBy);
 						xRayDetailsCollection.setCreatedTime(createdTime);
 						xRayDetailsCollection.setId(null);
@@ -1676,7 +1750,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() && request.getGlobalEcgDetails() != null && !request.getGlobalEcgDetails().isEmpty()) {
+			if (request.getEcgDetails() != null && !request.getEcgDetails().isEmpty() && request.getGlobalEcgDetails() != null) {
 				Set<String> customECGDetails = compareGlobalElements(new HashSet<>(splitCSV(request.getEcgDetails())),
 						new HashSet<>(splitCSV(request.getGlobalEcgDetails())));
 						for (String customECGDetail : customECGDetails) {
@@ -1685,7 +1759,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						ecgDetails.setEcgDetails(customECGDetail);;
 						ECGDetailsCollection ecgDetailsCollection = new ECGDetailsCollection();
 						BeanUtil.map(ecgDetails, ecgDetailsCollection);
-						BeanUtil.map(request, ecgDetailsCollection);
+						ecgDetailsCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						ecgDetailsCollection.setLocationId(new ObjectId(request.getLocationId()));
+						ecgDetailsCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						ecgDetailsCollection.setCreatedBy(createdBy);
 						ecgDetailsCollection.setCreatedTime(createdTime);
 						ecgDetailsCollection.setId(null);
@@ -1702,7 +1778,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			
 			
 			
-			if (request.getEcho() != null && !request.getEcho().isEmpty() && request.getGlobalEchoes() != null && !request.getGlobalEchoes().isEmpty()) {
+			if (request.getEcho() != null && !request.getEcho().isEmpty() && request.getGlobalEchoes() != null) {
 				Set<String> customEchoes = compareGlobalElements(new HashSet<>(splitCSV(request.getEcho())),
 						new HashSet<>(splitCSV(request.getGlobalEchoes())));
 						for (String customEcho : customEchoes) {
@@ -1711,7 +1787,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						echo.setEcho(customEcho);
 						EchoCollection echoCollection = new EchoCollection();
 						BeanUtil.map(echo, echoCollection);
-						BeanUtil.map(request, echoCollection);
+						echoCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						echoCollection.setLocationId(new ObjectId(request.getLocationId()));
+						echoCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						echoCollection.setCreatedBy(createdBy);
 						echoCollection.setCreatedTime(createdTime);
 						echoCollection.setId(null);
@@ -1726,7 +1804,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 			
-			if (request.getHolter() != null && !request.getHolter().isEmpty() && request.getGlobalHolters() != null && !request.getGlobalHolters().isEmpty()) {
+			if (request.getHolter() != null && !request.getHolter().isEmpty() && request.getGlobalHolters() != null) {
 				Set<String> customHolters = compareGlobalElements(new HashSet<>(splitCSV(request.getHolter())),
 						new HashSet<>(splitCSV(request.getGlobalHolters())));
 						for (String customHolter : customHolters) {
@@ -1735,7 +1813,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						holter.setHolter(customHolter);
 						HolterCollection holterCollection = new HolterCollection();
 						BeanUtil.map(holter, holterCollection);
-						BeanUtil.map(request, holterCollection);
+						holterCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+						holterCollection.setLocationId(new ObjectId(request.getLocationId()));
+						holterCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 						holterCollection.setCreatedBy(createdBy);
 						holterCollection.setCreatedTime(createdTime);
 						holterCollection.setId(null);
@@ -6468,7 +6548,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	{
 		if(value != null && !value.isEmpty())
 		{
-			List<String> list = new ArrayList<String>(Arrays.asList(value.split(",")));
+			List<String> list = new ArrayList<String>(Arrays.asList(value.trim().split("\\s*,\\s*")));
 			return list;
 		}
 		else
