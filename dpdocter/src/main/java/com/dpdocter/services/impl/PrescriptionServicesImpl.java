@@ -4008,17 +4008,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			Cache.getAll(genericCodes);
 
 			for (int drugCount = 0; drugCount < request.size() - 1; drugCount++) {
+				if(request.get(drugCount).getGenericNames() != null && !request.get(drugCount).getGenericNames().isEmpty())
 				for (int j = drugCount + 1; j < request.size(); j++) {
 
-					Boolean reaction = checkReactionBetweenDrugGenericCodes(request.get(drugCount).getGenericNames(),
-							request.get(j).getGenericNames());
-					if (reaction) {
-						if (response == null)
-							response = new ArrayList<DrugInteractionResposne>();
-						DrugInteractionResposne interactionResposne = new DrugInteractionResposne(
-								request.get(drugCount).getDrugName() + "  reacts with  " + request.get(j).getDrugName(),
-								"");
-						response.add(interactionResposne);
+					if(request.get(j).getGenericNames() != null && !request.get(j).getGenericNames().isEmpty()){
+						Boolean reaction = checkReactionBetweenDrugGenericCodes(request.get(drugCount).getGenericNames(),
+								request.get(j).getGenericNames());
+						if (reaction) {
+							if (response == null)
+								response = new ArrayList<DrugInteractionResposne>();
+							DrugInteractionResposne interactionResposne = new DrugInteractionResposne(
+									request.get(drugCount).getDrugName() + "  reacts with  " + request.get(j).getDrugName(),
+									"");
+							response.add(interactionResposne);
+						}
 					}
 				}
 			}
