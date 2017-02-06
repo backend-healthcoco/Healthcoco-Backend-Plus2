@@ -457,12 +457,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(location)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
 			}
-			if (booking != null && booking) {
-				boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
-						DoctorFacility.IBS.getType().toLowerCase()));
-			}
-			if (calling != null && calling)
-				boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
+//			if (booking != null && booking) {
+//				boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
+//						DoctorFacility.IBS.getType().toLowerCase()));
+//			}
+//			if (calling != null && calling)
+//				boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
 
 			if (minFee != 0 && maxFee != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",

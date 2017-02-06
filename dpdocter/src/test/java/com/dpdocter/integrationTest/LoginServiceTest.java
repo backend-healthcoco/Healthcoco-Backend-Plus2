@@ -79,7 +79,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 
 	}
 
-	//(alwaysRun = true)
+//	@AfterTest(alwaysRun = true)
 	public void afterEach() throws Exception {
 		if (this.mongod != null) {
 			this.mongod.stop();

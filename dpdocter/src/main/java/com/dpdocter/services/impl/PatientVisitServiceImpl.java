@@ -716,6 +716,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				visitedFors.add(PRESCRIPTION);
 				visitedFors.add(REPORTS);
 				visitedFors.add(VisitedFor.TREATMENT);
+			}else if (visitFor.equalsIgnoreCase("WEB")) {
+				visitedFors.add(CLINICAL_NOTES);
+				visitedFors.add(PRESCRIPTION);
+				visitedFors.add(VisitedFor.TREATMENT);
 			} else {
 				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
 			}
@@ -968,7 +972,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						treatments = treatments + ", " + treatmentServicesCollection.getName();
 				}
 			}
-			parameters.put("treatments", treatments);
+			if(!DPDoctorUtils.anyStringEmpty(treatments))parameters.put("treatments", treatments);
 		}
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
