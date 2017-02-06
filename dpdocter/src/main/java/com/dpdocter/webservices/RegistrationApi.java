@@ -760,12 +760,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		Feedback feedback = registrationService.addFeedback(request);
-//		if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId()))
-//			transnationalService.checkDoctor(new ObjectId(request.getDoctorId()),
-//					new ObjectId(feedback.getLocationId()));
-//		else if (!DPDoctorUtils.anyStringEmpty(request.getLocationId())){
-//			transnationalService.checkLocation(new ObjectId(feedback.getLocationId()));
-//		}
+
 		Response<Feedback> response = new Response<Feedback>();
 		response.setData(feedback);
 		return response;

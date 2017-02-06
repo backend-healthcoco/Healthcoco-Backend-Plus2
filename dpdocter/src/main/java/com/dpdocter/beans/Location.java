@@ -76,22 +76,24 @@ public class Location {
 	private Boolean isLocationListed = true;
 
 	private long clinicRankingCount = 0;
-    
-    private LocationType locationType = LocationType.CLINIC;
-    
+
+	private LocationType locationType = LocationType.CLINIC;
+
 	private String patientInitial = "P";
 
 	private int patientCounter = 0;
 
 	private int noOfClinicRecommendations = 0;
 
-	private Boolean isClinicRecommended=false;
-	
+	private Boolean isClinicRecommended = false;
+
 	private Hospital hospital;
 
 	private String invoiceInitial = "INV";
 
 	private String receiptInitial = "RC";
+
+	private Integer noOfClinicReview = 0;
 
 	public String getId() {
 		return id;
@@ -419,6 +421,14 @@ public class Location {
 
 	public void setReceiptInitial(String receiptInitial) {
 		this.receiptInitial = receiptInitial;
+	}
+
+	public Integer getNoOfClinicReview() {
+		return noOfClinicReview;
+	}
+
+	public void setNoOfClinicReview(Integer noOfClinicReview) {
+		this.noOfClinicReview = noOfClinicReview;
 	}
 
 	@Override

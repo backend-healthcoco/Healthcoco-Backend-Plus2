@@ -128,6 +128,17 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private String receiptInitial = "RC";
 
+	@Field
+	private Integer noOfClinicReview = 0;
+
+	public Integer getNoOfClinicReview() {
+		return noOfClinicReview;
+	}
+
+	public void setNoOfClinicReview(Integer noOfClinicReview) {
+		this.noOfClinicReview = noOfClinicReview;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

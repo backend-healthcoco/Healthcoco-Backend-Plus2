@@ -63,8 +63,18 @@ public class LabResponse {
     private String clinicAddress;
     
 	private int noOfClinicRecommendations = 0;
+	
+	private Integer noOfClinicReview = 0;
 
-    public String getLocationId() {
+    public Integer getNoOfClinicReview() {
+		return noOfClinicReview;
+	}
+
+	public void setNoOfClinicReview(Integer noOfClinicReview) {
+		this.noOfClinicReview = noOfClinicReview;
+	}
+
+	public String getLocationId() {
 	return locationId;
     }
     

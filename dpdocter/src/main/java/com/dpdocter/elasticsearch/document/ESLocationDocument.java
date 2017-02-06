@@ -121,6 +121,9 @@ public class ESLocationDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isActivate = false;
 
+	@Field(type = FieldType.Integer)
+	private Integer noOfClinicReview = 0;
+
 	// @Field(type = FieldType.String)
 	// private String invoiceInitial = "INV";
 	//
@@ -129,6 +132,14 @@ public class ESLocationDocument {
 
 	public Boolean getIsActivate() {
 		return isActivate;
+	}
+
+	public Integer getNoOfClinicReview() {
+		return noOfClinicReview;
+	}
+
+	public void setNoOfClinicReview(Integer noOfClinicReview) {
+		this.noOfClinicReview = noOfClinicReview;
 	}
 
 	public void setIsActivate(Boolean isActivate) {

@@ -111,12 +111,23 @@ public class DoctorLocation {
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isActivate = false;
+	
+	@Field(type = FieldType.Integer)
+	private Integer noOfClinicReview = 0;
 
 	// @Field(type = FieldType.String)
 	// private String invoiceInitial = "INV";
 	//
 	// @Field(type = FieldType.String)
 	// private String receiptInitial = "RC";
+
+	public Integer getNoOfClinicReview() {
+		return noOfClinicReview;
+	}
+
+	public void setNoOfClinicReview(Integer noOfClinicReview) {
+		this.noOfClinicReview = noOfClinicReview;
+	}
 
 	public Boolean getIsActivate() {
 		return isActivate;
