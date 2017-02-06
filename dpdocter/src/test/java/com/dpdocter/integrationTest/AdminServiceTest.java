@@ -31,7 +31,7 @@ public class AdminServiceTest extends AbstractTestNGSpringContextTests {
 	@Autowired
 	private ContactUsRepository contactUsRepository;
 
-	@Test
+	///@Test
 	public void test() {
 
 		List<ContactUsCollection> list = contactUsRepository.findAll();

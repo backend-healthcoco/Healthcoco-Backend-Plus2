@@ -50,7 +50,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 
 	@SuppressWarnings("deprecation")
 
-	@BeforeTest(alwaysRun = true)
+//	@BeforeTest(alwaysRun = true)
 	public void beforeEach() throws Exception {
 		MongoDBRuntime runtime = MongoDBRuntime.getDefaultInstance();
 		mongodExe = runtime.prepare(new MongodConfig(Version.V2_1_1, 51567, Network.localhostIsIPv6()));
@@ -72,14 +72,14 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 
 	}
 
-	@Test
+	//@Test
 	public void testuser() {
 		UserCollection userCollection = userRepository.findOne(new ObjectId("5794af08e4b01f1d73f9b7c0"));
 		System.out.println(userCollection.getFirstName());
 
 	}
 
-	@AfterTest(alwaysRun = true)
+	//(alwaysRun = true)
 	public void afterEach() throws Exception {
 		if (this.mongod != null) {
 			this.mongod.stop();
