@@ -198,7 +198,7 @@ public class DPDoctorUtils {
 		if (resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION)
 				|| resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS)
 				|| resource.equals(Resource.NOTES) || resource.equals(Resource.PROVISIONAL_DIAGNOSIS)
-				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMATIC_EXAMINATION)
+				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMIC_EXAMINATION)
 				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
 				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
 				|| resource.equals(Resource.INDICATION_OF_USG) || resource.equals(Resource.PV)
@@ -338,7 +338,7 @@ public class DPDoctorUtils {
 		if (resource.equals(Resource.COMPLAINT) || resource.equals(Resource.OBSERVATION)
 				|| resource.equals(Resource.INVESTIGATION) || resource.equals(Resource.DIAGNOSIS)
 				|| resource.equals(Resource.NOTES) || resource.equals(Resource.PROVISIONAL_DIAGNOSIS)
-				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMATIC_EXAMINATION)
+				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMIC_EXAMINATION)
 				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
 				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)) {
 			if (specialities != null && !specialities.isEmpty()) {

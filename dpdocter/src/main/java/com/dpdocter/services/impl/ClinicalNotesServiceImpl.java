@@ -581,7 +581,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
 						transactionalManagementService.addResource(systemExamCollection.getId(),
-								Resource.SYSTEMATIC_EXAMINATION, false);
+								Resource.SYSTEMIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
@@ -1534,7 +1534,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 						systemExamCollection.setId(null);
 						systemExamCollection = systemExamRepository.save(systemExamCollection);
 						transactionalManagementService.addResource(systemExamCollection.getId(),
-								Resource.SYSTEMATIC_EXAMINATION, false);
+								Resource.SYSTEMIC_EXAMINATION, false);
 						ESSystemExamDocument esSystemExam = new ESSystemExamDocument();
 						BeanUtil.map(systemExamCollection, esSystemExam);
 						esClinicalNotesService.addSystemExam(esSystemExam);
@@ -3158,7 +3158,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			break;
 		}
 
-		case SYSTEMATIC_EXAMINATION: {
+		case SYSTEMIC_EXAMINATION: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
 			case GLOBAL:
@@ -6546,13 +6546,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	
 	private List<String> splitCSV(String value)
 	{
-		if(value != null && !value.isEmpty())
-		{
-			List<String> list = new ArrayList<String>(Arrays.asList(value.trim().split("\\s*,\\s*")));
-			return list;
-		}
-		else
-			return null;
+		List<String> list = new ArrayList<String>(Arrays.asList(value.trim().split("\\s*,\\s*")));
+		return list;
+		
 	}
 	
 	

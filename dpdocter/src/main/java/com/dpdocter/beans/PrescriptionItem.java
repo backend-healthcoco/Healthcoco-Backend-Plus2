@@ -1,12 +1,9 @@
 package com.dpdocter.beans;
 
-import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
-
-import com.dpdocter.request.AppointmentRequest;
 
 public class PrescriptionItem {
 	private ObjectId drugId;

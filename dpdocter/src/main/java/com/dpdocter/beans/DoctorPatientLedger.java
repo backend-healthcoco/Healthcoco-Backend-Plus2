@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import org.bson.types.ObjectId;
-
 public class DoctorPatientLedger {
 
 	private String id;
