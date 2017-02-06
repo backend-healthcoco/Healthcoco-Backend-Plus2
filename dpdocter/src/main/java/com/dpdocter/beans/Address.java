@@ -8,27 +8,26 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Address {
 
-    private String country;
+	private String country = "India";
 
-    private String city;
+	private String city;
 
-    private String state;
+	private String state;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String locality;
+	private String locality;
 
-    private Double latitude;
+	private Double latitude;
 
-    private Double longitude;
+	private Double longitude;
 
-    private String streetAddress;
-    
-    public Address() {
+	private String streetAddress;
+
+	public Address() {
 		super();
 	}
 
-    
 	public Address(String country, String city, String state, String postalCode, String locality, Double latitude,
 			Double longitude, String streetAddress) {
 		super();
@@ -42,62 +41,61 @@ public class Address {
 		this.streetAddress = streetAddress;
 	}
 
-
 	public String getCountry() {
-	return country;
-    }
+		return country;
+	}
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getCity() {
-	return city;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public String getState() {
-	return state;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setState(String state) {
-	this.state = state;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public String getPostalCode() {
-	return postalCode;
-    }
+	public String getPostalCode() {
+		return postalCode;
+	}
 
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public String getLocality() {
+		return locality;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
 
 	public String getStreetAddress() {
 		return streetAddress;
