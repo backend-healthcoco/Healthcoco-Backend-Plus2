@@ -2006,8 +2006,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 									.append("sequenceNo", new BasicDBObject("$first", "$sequenceNo"))
 									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
 									.append("date", new BasicDBObject("$first", "$date")))),
-					// Aggregation.match(new
-					// Criteria("$patient.locationId").is(locationObjectId).and("$patient.hospitalId").is(hospitalObjectId)),
 					Aggregation.sort(new Sort(Direction.DESC, "sequenceNo"))), PatientQueueCollection.class,
 					PatientQueue.class).getMappedResults();
 			for (PatientQueue collection : response) {
