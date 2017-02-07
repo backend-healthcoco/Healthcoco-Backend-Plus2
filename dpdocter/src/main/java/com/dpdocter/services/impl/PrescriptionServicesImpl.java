@@ -4152,7 +4152,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	public Boolean addGenericsWithReaction() {
-		String csvFile = "/home/healthcoco-neha/genericCodesWithReaction.csv";
+		String csvFile = "/home/ubuntu/genericCodesWithReaction.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";

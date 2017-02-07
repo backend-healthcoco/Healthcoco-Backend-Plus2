@@ -940,7 +940,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			for (ObjectId clinicalNotesId : patientVisitLookupResponse.getClinicalNotesId()) {
 				if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 					ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
-							clinicalNotesId.toString(), contentLineStyle, parameters);
+							clinicalNotesId.toString(), contentLineStyle, parameters, showUSG);
 					clinicalNotes.add(clinicalJasperDetails);
 				}
 			}
@@ -1317,7 +1317,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
-			Map<String, Object> parameters) {
+			Map<String, Object> parameters, Boolean showUSG) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		try {
@@ -1414,6 +1414,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails
 							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
 
+					if(showUSG)clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
+					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
+					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
+					clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
+					clinicalNotesJasperDetails.setEcgDetails(clinicalNotesCollection.getEcgDetails());
+					clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
+					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
+					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
+					
 					List<DBObject> diagramIds = new ArrayList<DBObject>();
 					if (clinicalNotesCollection.getDiagrams() != null)
 						for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {

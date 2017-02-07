@@ -36,6 +36,22 @@ public class ClinicalNotesJasperDetails {
 	
 	private String obstetricHistory;
 
+	private String indicationOfUSG;
+	
+	private String pv;
+	
+	private String pa;
+	
+	private String ps;
+	
+	private String ecgDetails;
+	
+	private String xRayDetails;
+	
+	private String echo;
+	
+	private String holter;
+
     public String getComplaints() {
 	return complaints;
     }
@@ -148,6 +164,70 @@ public class ClinicalNotesJasperDetails {
 		this.obstetricHistory = obstetricHistory;
 	}
 
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+
+	public String getPv() {
+		return pv;
+	}
+
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+
+	public String getPa() {
+		return pa;
+	}
+
+	public void setPa(String pa) {
+		this.pa = pa;
+	}
+
+	public String getPs() {
+		return ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
+	}
+
+	public String getEcgDetails() {
+		return ecgDetails;
+	}
+
+	public void setEcgDetails(String ecgDetails) {
+		this.ecgDetails = ecgDetails;
+	}
+
+	public String getxRayDetails() {
+		return xRayDetails;
+	}
+
+	public void setxRayDetails(String xRayDetails) {
+		this.xRayDetails = xRayDetails;
+	}
+
+	public String getEcho() {
+		return echo;
+	}
+
+	public void setEcho(String echo) {
+		this.echo = echo;
+	}
+
+	public String getHolter() {
+		return holter;
+	}
+
+	public void setHolter(String holter) {
+		this.holter = holter;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
@@ -155,7 +235,8 @@ public class ClinicalNotesJasperDetails {
 				+ diagrams + ", vitalSigns=" + vitalSigns + ", presentComplaint=" + presentComplaint
 				+ ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam=" + generalExam + ", systemExam="
 				+ systemExam + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
-				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + "]";
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
+				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
+				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + "]";
 	}
-
 }

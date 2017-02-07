@@ -168,7 +168,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 import common.util.web.DPDoctorUtils;
-import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 
 @Service
 public class ClinicalNotesServiceImpl implements ClinicalNotesService {
@@ -4138,6 +4137,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("menstrualHistory", clinicalNotesCollection.getMenstrualHistory());
 		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
 		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
+
+		if(showUSG)parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
+		parameters.put("pv", clinicalNotesCollection.getPv());
+		parameters.put("pa", clinicalNotesCollection.getPs());
+		parameters.put("ps", clinicalNotesCollection.getProvisionalDiagnosis());
+		parameters.put("ecgDetails", clinicalNotesCollection.getEcgDetails());
+		parameters.put("xRayDetails", clinicalNotesCollection.getxRayDetails());
+		parameters.put("echo", clinicalNotesCollection.getEcho());
+		parameters.put("holter", clinicalNotesCollection.getHolter());
 
 		List<DBObject> diagramIds = new ArrayList<DBObject>();
 		if (clinicalNotesCollection.getDiagrams() != null)
