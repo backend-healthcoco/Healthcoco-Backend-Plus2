@@ -919,13 +919,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 									request.getLocationId(), request.getHospitalId(), request.getDoctorId(),
 									userCollection.getMobileNumber(), patientName, appointmentId, dateTime, doctorName,
 									clinicName, clinicContactNum, appointmentCollection.getId().toString());
-						}
-						else
-						{
+						} else {
 							String text = "Your appointment " + appointmentId + " with " + doctorName
 									+ (clinicName != "" ? ", " + clinicName : "")
-									+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime;
-							pushNotificationServices.notifyUser(request.getDoctorId(), text, ComponentType.APPOINTMENT.getType(), appointmentCollection.getId().toString());
+									+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ "
+									+ dateTime;
+							pushNotificationServices.notifyUser(request.getDoctorId(), text,
+									ComponentType.APPOINTMENT.getType(), appointmentCollection.getId().toString());
 						}
 						if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 								&& patientCard.getEmailAddress() != null)
@@ -1984,38 +1984,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			response = mongoTemplate
-					.aggregate(
-							Aggregation
-									.newAggregation(
-											Aggregation
-													.match(new Criteria("doctorId").is(doctorObjectId).and("locationId")
-															.is(locationObjectId).and("hospitalId").is(hospitalObjectId)
-															.and("date").gt(start).lte(end).and("discarded").is(false)),
-											Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-											Aggregation.unwind("patient"),
-											Aggregation.lookup("user_cl", "patientId", "_id", "patient.user"),
-											Aggregation
-													.unwind("patient.user"),
-											new CustomAggregationOperation(new BasicDBObject("$group",
-													new BasicDBObject("_id", "$_id")
-															.append("doctorId",
-																	new BasicDBObject("$first", "$doctorId"))
-															.append("locationId",
-																	new BasicDBObject("$first", "$locationId"))
-															.append("hospitalId",
-																	new BasicDBObject("$first", "$hospitalId"))
-															.append("patient", new BasicDBObject("$first", "$patient"))
-															.append("sequenceNo",
-																	new BasicDBObject("$first", "$sequenceNo"))
-															.append("appointmentId",
-																	new BasicDBObject("$first", "$appointmentId"))
-															.append("date", new BasicDBObject("$first", "$date")))),
-											// Aggregation.match(new
-											// Criteria("$patient.locationId").is(locationObjectId).and("$patient.hospitalId").is(hospitalObjectId)),
-											Aggregation.sort(new Sort(Direction.DESC, "sequenceNo"))),
-							PatientQueueCollection.class, PatientQueue.class)
-					.getMappedResults();
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("doctorId").is(doctorObjectId).and("locationId").is(locationObjectId)
+							.and("hospitalId").is(hospitalObjectId).and("date").gt(start).lte(end).and("discarded")
+							.is(false)),
+					Aggregation.lookup("patient_cl", "patientId", "userId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("user_cl", "patientId", "_id", "patient.user"),
+					Aggregation.unwind("patient.user"),
+
+					Aggregation
+							.match(new Criteria("patient.doctorId").is(doctorObjectId).and("patient.locationId")
+									.is(locationObjectId).and(
+											"patient.hospitalId")
+									.is(hospitalObjectId)),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", "$_id")
+									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("locationId", new BasicDBObject("$first", "$locationId"))
+									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+									.append("patient", new BasicDBObject("$first", "$patient"))
+									.append("sequenceNo", new BasicDBObject("$first", "$sequenceNo"))
+									.append("appointmentId", new BasicDBObject("$first", "$appointmentId"))
+									.append("date", new BasicDBObject("$first", "$date")))),
+					// Aggregation.match(new
+					// Criteria("$patient.locationId").is(locationObjectId).and("$patient.hospitalId").is(hospitalObjectId)),
+					Aggregation.sort(new Sort(Direction.DESC, "sequenceNo"))), PatientQueueCollection.class,
+					PatientQueue.class).getMappedResults();
 			for (PatientQueue collection : response) {
 				if (collection.getPatient().getUser() != null) {
 					collection.getPatient().setColorCode(collection.getPatient().getUser().getColorCode());
