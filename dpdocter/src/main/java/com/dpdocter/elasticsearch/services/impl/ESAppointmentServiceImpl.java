@@ -2,7 +2,6 @@ package com.dpdocter.elasticsearch.services.impl;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,9 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.lucene.queryparser.xml.builders.RangeQueryBuilder;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.OrQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -434,7 +431,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			// boolQueryBuilder.must(QueryBuilders.termsQuery("facility",
 			// DoctorFacility.BOOK.getType().toLowerCase(),
 			// DoctorFacility.IBS.getType().toLowerCase()));
-			// }
+			// }--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			// if(calling != null &&
 			// calling)boolQueryBuilder.must(QueryBuilders.matchQuery("facility",
 			// DoctorFacility.CALL.getType()));
@@ -457,12 +454,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(location)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
 			}
-//			if (booking != null && booking) {
-//				boolQueryBuilder.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
-//						DoctorFacility.IBS.getType().toLowerCase()));
-//			}
-//			if (calling != null && calling)
-//				boolQueryBuilder.must(QueryBuilders.matchQuery("facility", DoctorFacility.CALL.getType()));
+			// if (booking != null && booking) {
+			// boolQueryBuilder.must(QueryBuilders.termsQuery("facility",
+			// DoctorFacility.BOOK.getType().toLowerCase(),
+			// DoctorFacility.IBS.getType().toLowerCase()));
+			// }
+			// if (calling != null && calling)
+			// boolQueryBuilder.must(QueryBuilders.matchQuery("facility",
+			// DoctorFacility.CALL.getType()));
 
 			if (minFee != 0 && maxFee != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
@@ -491,56 +490,75 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
 				}
-				
+
 				if (minTime != 0 || maxTime != 0) {
 					if (maxTime == 0)
 						maxTime = 1439;
-					boolQueryBuilder.must(nestedQuery("workingSchedules",
-							boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))))
-					.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
-							.must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
-									QueryBuilders.andQuery(
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(maxTime),
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-													.lte(maxTime)),
-									QueryBuilders.andQuery(
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(minTime),
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-													.lte(minTime))))))));
-				}else{
+					boolQueryBuilder
+							.must(nestedQuery("workingSchedules",
+									boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))))
+							.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(
+									nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+											QueryBuilders.andQuery(
+													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+															.gte(maxTime),
+													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+															.lte(maxTime)),
+											QueryBuilders.andQuery(
+													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
+															.gte(minTime),
+													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+															.lte(minTime))))))));
+				} else {
 					boolQueryBuilder.must(nestedQuery("workingSchedules",
 							boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
-					
-				}
-				
 
-			}else{
+				}
+
+			} else {
 				if (minTime != 0 || maxTime != 0) {
 					if (maxTime == 0)
 						maxTime = 1439;
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
-							.must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
-									QueryBuilders.andQuery(
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(maxTime),
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-													.lte(maxTime)),
-									QueryBuilders.andQuery(
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gte(minTime),
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-													.lte(minTime))))))));
+
+					boolQueryBuilder
+							.must(QueryBuilders.nestedQuery("workingSchedules",
+									boolQuery().must(nestedQuery("workingSchedules.workingHours",
+											boolQuery().must(QueryBuilders.notQuery(QueryBuilders.orQuery(
+													boolQuery()
+															.must(QueryBuilders.andQuery(
+																	QueryBuilders
+																			.rangeQuery(
+																					"workingSchedules.workingHours.fromTime")
+																			.gt(maxTime),
+																	QueryBuilders
+																			.rangeQuery(
+																					"workingSchedules.workingHours.toTime")
+																			.gt(maxTime))),
+													boolQuery()
+															.must(QueryBuilders.andQuery(
+																	QueryBuilders
+																			.rangeQuery(
+																					"workingSchedules.workingHours.toTime")
+																			.lt(minTime),
+																	QueryBuilders
+																			.rangeQuery(
+																					"workingSchedules.workingHours.fromTime")
+																			.lt(minTime))))))))));
+
 				}
 			}
 
-//			if (minTime != 0 || maxTime != 0) {
-//				if (maxTime == 0) {
-//					maxTime = 1439;
-//				}
-//				boolQueryBuilder.mustNot(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery(
-//						"workingSchedules.workingHours",
-//						boolQuery().must(QueryBuilders.orQuery(
-//								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(minTime),
-//								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(maxTime)))))));
-//			}
+			// if (minTime != 0 || maxTime != 0) {
+			// if (maxTime == 0) {
+			// maxTime = 1439;
+			// }
+			// boolQueryBuilder.mustNot(QueryBuilders.nestedQuery("workingSchedules",
+			// boolQuery().must(nestedQuery(
+			// "workingSchedules.workingHours",
+			// boolQuery().must(QueryBuilders.orQuery(
+			// QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(minTime),
+			// QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(maxTime)))))));
+			// }
 
 			if (latitude != null && longitude != null)
 				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
@@ -608,6 +626,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				}
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
@@ -684,12 +703,18 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (maxTime == 0)
 					maxTime = 1439;
 				boolQueryBuilder.mustNot(QueryBuilders.nestedQuery("clinicWorkingSchedules",
-						boolQuery().must(nestedQuery("clinicWorkingSchedules.workingHours",
-								boolQuery().must(QueryBuilders.orQuery(
-										QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
-												.lte(minTime),
-										QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
-												.gte(maxTime)))))));
+						boolQuery().must(nestedQuery(
+								"clinicWorkingSchedules.workingHours", QueryBuilders.notQuery(QueryBuilders.orQuery(
+										boolQuery().must(QueryBuilders.andQuery(
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
+														.gt(maxTime),
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+														.gt(maxTime))),
+										boolQuery().must(QueryBuilders.andQuery(
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
+														.lt(minTime),
+												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
+														.lt(minTime)))))))));
 			}
 
 			boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
