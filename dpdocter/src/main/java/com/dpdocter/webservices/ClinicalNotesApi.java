@@ -875,7 +875,7 @@ public class ClinicalNotesApi {
 
 		transactionalManagementService.addResource(new ObjectId(xRayDetails.getId()), Resource.XRAY, false);
 		ESXRayDetailsDocument esxRayDetails = new ESXRayDetailsDocument();
-		BeanUtil.map(esxRayDetails, esxRayDetails);
+		BeanUtil.map(xRayDetails, esxRayDetails);
 		esClinicalNotesService.addXRayDetails(esxRayDetails);
 		Response<XRayDetails> response = new Response<XRayDetails>();
 		response.setData(xRayDetails);
