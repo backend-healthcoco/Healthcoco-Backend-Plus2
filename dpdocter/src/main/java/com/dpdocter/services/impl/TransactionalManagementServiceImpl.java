@@ -55,6 +55,7 @@ import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -116,6 +117,7 @@ import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.XRayDetailsRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
 import com.dpdocter.response.AppointmentPatientReminderResponse;
 import com.dpdocter.services.OTPService;
@@ -233,6 +235,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private SMSTrackRepository smsTrackRepository;
+
+	@Autowired
+	private XRayDetailsRepository xRayDetailsRepository;
 
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
@@ -992,11 +997,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	private void checkXray(ObjectId resourceId) {
 		try {
-			TreatmentServicesCostCollection treatmentServicesCostCollection = treatmentServicesCostRepository
-					.findOne(resourceId);
-			if (treatmentServicesCostCollection != null) {
+			XRayDetailsCollection xRayDetailsCollection = xRayDetailsRepository.findOne(resourceId);
+			if (xRayDetailsCollection != null) {
 				ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
-				BeanUtil.map(treatmentServicesCostCollection, esxRayDetailsDocument);
+				BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
 				esClinicalNotesService.addXRayDetails(esxRayDetailsDocument);
 			}
 		} catch (Exception e) {
