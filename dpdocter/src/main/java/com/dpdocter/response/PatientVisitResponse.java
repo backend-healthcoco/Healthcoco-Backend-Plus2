@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
@@ -38,6 +39,8 @@ public class PatientVisitResponse extends GenericCollection {
 	private List<Records> records;
 
 	private String appointmentId;
+	
+	private Appointment appointmentRequest;
 
 	private WorkingHours time;
 
@@ -171,4 +174,14 @@ public class PatientVisitResponse extends GenericCollection {
 				+ ", clinicalNotes=" + clinicalNotes + ", records=" + records + ", appointmentId=" + appointmentId
 				+ ", time=" + time + ", fromDate=" + fromDate + "]";
 	}
+
+	public Appointment getAppointmentRequest() {
+		return appointmentRequest;
+	}
+
+	public void setAppointmentRequest(Appointment appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
+	}
+
+	
 }

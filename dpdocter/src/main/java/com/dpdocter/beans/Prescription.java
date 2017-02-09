@@ -7,6 +7,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.TestAndRecordDataResponse;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Prescription extends GenericCollection {
 	private String id;
@@ -24,7 +25,7 @@ public class Prescription extends GenericCollection {
 	private List<PrescriptionItemDetail> items;
 
 	private List<TestAndRecordData> tests;
-	
+
 	private Boolean inHistory = false;
 
 	private Boolean discarded = false;
@@ -44,6 +45,8 @@ public class Prescription extends GenericCollection {
 	private WorkingHours time;
 
 	private Date fromDate;
+
+	private Appointment appointmentRequest;
 
 	public String getId() {
 		return id;
@@ -197,6 +200,14 @@ public class Prescription extends GenericCollection {
 				+ ", advice=" + advice + ", visitId=" + visitId + ", patientId=" + patientId + ", isFeedbackAvailable="
 				+ isFeedbackAvailable + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate
 				+ "]";
+	}
+
+	public Appointment getAppointmentRequest() {
+		return appointmentRequest;
+	}
+
+	public void setAppointmentRequest(Appointment appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
 	}
 
 }

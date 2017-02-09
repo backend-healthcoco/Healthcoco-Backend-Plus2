@@ -20,9 +20,9 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String note;
 
-    private String observation;
+	private String observation;
 
-    private String investigation;
+	private String investigation;
 
 	private String diagnosis;
 
@@ -41,21 +41,21 @@ public class ClinicalNotes extends GenericCollection {
 	private String menstrualHistory;
 
 	private String obstetricHistory;
-	
+
 	private String indicationOfUSG;
-	
+
 	private String pv;
-	
+
 	private String pa;
-	
+
 	private String ps;
-	
+
 	private String ecgDetails;
-	
+
 	private String xRayDetails;
-	
+
 	private String echo;
-	
+
 	private String holter;
 
 	private String doctorId;
@@ -76,9 +76,19 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String appointmentId;
 
+	private Appointment appointmentRequest;
+
 	private WorkingHours time;
 
 	private Date fromDate;
+
+	public Appointment getAppointmentRequest() {
+		return appointmentRequest;
+	}
+
+	public void setAppointmentRequest(Appointment appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
+	}
 
 	public String getId() {
 		return id;
@@ -303,7 +313,7 @@ public class ClinicalNotes extends GenericCollection {
 	public void setIndicationOfUSG(String indicationOfUSG) {
 		this.indicationOfUSG = indicationOfUSG;
 	}
-	
+
 	public String getPv() {
 		return pv;
 	}

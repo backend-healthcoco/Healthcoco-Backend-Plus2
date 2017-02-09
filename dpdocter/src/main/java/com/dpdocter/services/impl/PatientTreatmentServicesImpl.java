@@ -488,17 +488,21 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Fields.field("treatments.note", "$treatments.note"),
 							Fields.field("treatments.discount", "$treatments.discount"),
 							Fields.field("treatments.finalCost", "$treatments.finalCost"),
-							Fields.field("treatments.quantity", "$treatments.quantity")));
+							Fields.field("treatments.quantity", "$treatments.quantity"),
+							Fields.field("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(
-							new CustomAggregationOperation(
-									new BasicDBObject("$unwind",
-											new BasicDBObject("path", "$treatments").append("includeArrayIndex",
-													"arrayIndex"))),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$treatments").append("includeArrayIndex",
+											"arrayIndex"))),
 							Aggregation.match(new Criteria("_id").is(new ObjectId(treatmentId))),
-							Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId",
-									"_id", "treatmentService"),
+							Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
+									"treatmentService"),
+							Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 							Aggregation.unwind("treatmentService"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+											true))),
 							Aggregation
 									.lookup("patient_visit_cl", "_id", "treatmentId",
 											"patientVisit"),
@@ -509,6 +513,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 											.append("locationId", new BasicDBObject("$first", "$locationId"))
 											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 											.append("visitId", new BasicDBObject("$first", "$visitId"))
 											.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 											.append("totalCost", new BasicDBObject("$first", "$totalCost"))
@@ -560,7 +565,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
-					Fields.field("treatments.quantity", "$treatments.quantity")));
+					Fields.field("treatments.quantity", "$treatments.quantity")
+					));
 
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("_id").in(treatmentId)),
 					new CustomAggregationOperation(new BasicDBObject("$unwind",
@@ -654,13 +660,17 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
-					Fields.field("treatments.quantity", "$treatments.quantity")));
+					Fields.field("treatments.quantity", "$treatments.quantity"),
+					Fields.field("appointmentRequest", "$appointmentRequest")));
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatment"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.unwind("treatment"),
 						Aggregation
 								.lookup("patient_visit_cl", "_id", "treatmentId",
@@ -672,6 +682,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+										.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 										.append("visitId", new BasicDBObject("$first", "$visitId"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("totalCost", new BasicDBObject("$first", "$totalCost"))
@@ -694,6 +705,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatment"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.unwind("treatment"),
 						Aggregation
 								.lookup("patient_visit_cl", "_id", "treatmentId",
@@ -705,6 +719,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+										.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 										.append("visitId", new BasicDBObject("$first", "$visitId"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("totalCost", new BasicDBObject("$first", "$totalCost"))
@@ -786,13 +801,17 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
-					Fields.field("treatments.quantity", "$treatments.quantity")));
+					Fields.field("treatments.quantity", "$treatments.quantity"),
+					Fields.field("appointmentRequest", "$appointmentRequest")));
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatment"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
 						projectList, Aggregation.unwind("treatment"),
 						Aggregation
 								.lookup("patient_visit_cl", "_id", "treatmentId",
@@ -804,6 +823,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+										.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 										.append("visitId", new BasicDBObject("$first", "$visitId"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("totalCost", new BasicDBObject("$first", "$totalCost"))
@@ -826,6 +846,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 								new BasicDBObject("path", "$treatments").append("includeArrayIndex", "arrayIndex"))),
 						Aggregation.lookup("treatment_services_cl", "treatments.treatmentServiceId", "_id",
 								"treatment"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.unwind("treatment"),
 						Aggregation
 								.lookup("patient_visit_cl", "_id", "treatmentId",
@@ -837,6 +860,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 										.append("locationId", new BasicDBObject("$first", "$locationId"))
 										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+										.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 										.append("visitId", new BasicDBObject("$first", "$visitId"))
 										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 										.append("totalCost", new BasicDBObject("$first", "$totalCost"))

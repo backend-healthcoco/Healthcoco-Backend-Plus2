@@ -1298,8 +1298,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
 					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
-					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
-					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("advice", "$advice"), Fields.field("appointmentRequest", "$appointmentRequest"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("patientId", "$patientId"),
 					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
@@ -1317,9 +1318,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
-								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$visit")
@@ -1331,6 +1336,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+								.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
 								.append("items", new BasicDBObject("$push", "$items"))
@@ -1355,9 +1361,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
-								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$visit")
@@ -1370,6 +1380,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
 								.append("items", new BasicDBObject("$push", "$items"))
 								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
@@ -2028,8 +2039,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
 					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
-					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
-					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("appointmentRequest", "$appointmentRequest"), Fields.field("advice", "$advice"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("patientId", "$patientId"),
 					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
@@ -2045,9 +2057,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 									.append("includeArrayIndex", "arrayIndex1"))),
 					Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+					Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 					Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
-							.append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$unwind",
+							new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(
+							new BasicDBObject("$unwind", new BasicDBObject("path", "$appointmentRequest")
+									.append("preserveNullAndEmptyArrays", true))),
+
 					new CustomAggregationOperation(
 							new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$visit")
@@ -2060,6 +2077,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									.append("locationId", new BasicDBObject("$first", "$locationId"))
 									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+									.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 									.append("discarded", new BasicDBObject("$first", "$discarded"))
 									.append("items", new BasicDBObject("$push", "$items"))
 									.append("inHistory", new BasicDBObject("$first", "$inHistory"))
@@ -3098,9 +3116,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
 					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
-					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
-					Fields.field("advice", "$advice"), Fields.field("time", "$time"),
-					Fields.field("fromDate", "$fromDate"), Fields.field("patientId", "$patientId"),
+					Fields.field("discarded", "$discarded"), Fields.field("appointmentRequest", "$appointmentRequest"),
+					Fields.field("inHistory", "$inHistory"), Fields.field("advice", "$advice"),
+					Fields.field("time", "$time"), Fields.field("fromDate", "$fromDate"),
+					Fields.field("patientId", "$patientId"),
 					Fields.field("isFeedbackAvailable", "$isFeedbackAvailable"),
 					Fields.field("appointmentId", "$appointmentId"), Fields.field("visitId", "$visit._id"),
 					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
@@ -3118,9 +3137,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
-								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$visit")
@@ -3133,6 +3155,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
 								.append("items", new BasicDBObject("$push", "$items"))
 								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
@@ -3156,9 +3179,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
 										.append("includeArrayIndex", "arrayIndex1"))),
 						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
+
 						Aggregation.lookup("patient_visit_cl", "_id", "prescriptionId", "visit"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$drug")
-								.append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
 						new CustomAggregationOperation(
 								new BasicDBObject("$unwind",
 										new BasicDBObject("path", "$visit")
@@ -3171,6 +3198,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								.append("locationId", new BasicDBObject("$first", "$locationId"))
 								.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
 								.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+								.append("appointmentRequest", new BasicDBObject("$first", "$appointmentRequest"))
 								.append("discarded", new BasicDBObject("$first", "$discarded"))
 								.append("items", new BasicDBObject("$push", "$items"))
 								.append("inHistory", new BasicDBObject("$first", "$inHistory"))
@@ -3650,10 +3678,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				logger.error("Invalid drug Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
 			}
-			DrugCollection drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(), doctorObjectId);
+			DrugCollection drugCollection = drugRepository.findByCodeAndDoctorId(originalDrug.getDrugCode(),
+					doctorObjectId);
 			if (drugCollection == null) {
 				drugCollection = originalDrug;
-				
+
 				drugCollection.setLocationId(locationObjectId);
 				drugCollection.setHospitalId(hospitalObjectId);
 				drugCollection.setDoctorId(doctorObjectId);
@@ -3870,7 +3899,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			} else {
 
 				DrugCollection originalDrug = drugRepository.findOne(new ObjectId(request.getId()));
-				
+
 				if (originalDrug == null) {
 					logger.error("Invalid drug Id");
 					throw new BusinessException(ServiceError.Unknown, "Invalid drug Id");
@@ -3879,7 +3908,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						new ObjectId(request.getDoctorId()));
 				if (drugCollection == null) {
 					drugCollection = originalDrug;
-					
+
 					drugCollection.setLocationId(new ObjectId(request.getLocationId()));
 					drugCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					drugCollection.setDoctorId(new ObjectId(request.getDoctorId()));
@@ -3993,10 +4022,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			List<String> genericCodes = new ArrayList<String>();
 
 			for (int k = 0; k < request.size(); k++) {
-				if(request.get(k).getGenericNames() != null && !request.get(k).getGenericNames().isEmpty()){
+				if (request.get(k).getGenericNames() != null && !request.get(k).getGenericNames().isEmpty()) {
 					Collection<String> codes = CollectionUtils.collect(request.get(k).getGenericNames(),
 							new BeanToPropertyValueTransformer("code"));
-					if(codes != null && !codes.isEmpty()){
+					if (codes != null && !codes.isEmpty()) {
 						for (String word : codes) {
 							word = word.toLowerCase();
 						}
@@ -4004,26 +4033,29 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					}
 				}
 			}
-			if(genericCodes == null || genericCodes.isEmpty())return null;
+			if (genericCodes == null || genericCodes.isEmpty())
+				return null;
 			Cache.getAll(genericCodes);
 
 			for (int drugCount = 0; drugCount < request.size() - 1; drugCount++) {
-				if(request.get(drugCount).getGenericNames() != null && !request.get(drugCount).getGenericNames().isEmpty())
-				for (int j = drugCount + 1; j < request.size(); j++) {
+				if (request.get(drugCount).getGenericNames() != null
+						&& !request.get(drugCount).getGenericNames().isEmpty())
+					for (int j = drugCount + 1; j < request.size(); j++) {
 
-					if(request.get(j).getGenericNames() != null && !request.get(j).getGenericNames().isEmpty()){
-						Boolean reaction = checkReactionBetweenDrugGenericCodes(request.get(drugCount).getGenericNames(),
-								request.get(j).getGenericNames());
-						if (reaction) {
-							if (response == null)
-								response = new ArrayList<DrugInteractionResposne>();
-							DrugInteractionResposne interactionResposne = new DrugInteractionResposne(
-									request.get(drugCount).getDrugName() + "  reacts with  " + request.get(j).getDrugName(),
-									"");
-							response.add(interactionResposne);
+						if (request.get(j).getGenericNames() != null && !request.get(j).getGenericNames().isEmpty()) {
+							Boolean reaction = checkReactionBetweenDrugGenericCodes(
+									request.get(drugCount).getGenericNames(), request.get(j).getGenericNames());
+							if (reaction) {
+								if (response == null)
+									response = new ArrayList<DrugInteractionResposne>();
+								DrugInteractionResposne interactionResposne = new DrugInteractionResposne(
+										request.get(drugCount).getDrugName() + "  reacts with  "
+												+ request.get(j).getDrugName(),
+										"");
+								response.add(interactionResposne);
+							}
 						}
 					}
-				}
 			}
 
 		} catch (ExecutionException e) {

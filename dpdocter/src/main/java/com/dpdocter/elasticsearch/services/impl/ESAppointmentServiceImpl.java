@@ -490,62 +490,28 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
 				}
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 
 				if (minTime != 0 || maxTime != 0) {
 					if (maxTime == 0)
 						maxTime = 1439;
-					boolQueryBuilder
-							.must(nestedQuery("workingSchedules",
-									boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))))
-							.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(
-									nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+							boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders
+									.orQuery(
 											QueryBuilders.andQuery(
 													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
 															.gte(maxTime),
-													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+													QueryBuilders
+															.rangeQuery("workingSchedules.workingHours.fromTime")
 															.lte(maxTime)),
 											QueryBuilders.andQuery(
 													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
 															.gte(minTime),
 													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
 															.lte(minTime))))))));
-				} else {
-					boolQueryBuilder.must(nestedQuery("workingSchedules",
-							boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
-
 				}
 
-			} else {
-				if (minTime != 0 || maxTime != 0) {
-					if (maxTime == 0)
-						maxTime = 1439;
-
-					boolQueryBuilder
-							.must(QueryBuilders.nestedQuery("workingSchedules",
-									boolQuery().must(nestedQuery("workingSchedules.workingHours",
-											boolQuery().must(QueryBuilders.notQuery(QueryBuilders.orQuery(
-													boolQuery()
-															.must(QueryBuilders.andQuery(
-																	QueryBuilders
-																			.rangeQuery(
-																					"workingSchedules.workingHours.fromTime")
-																			.gt(maxTime),
-																	QueryBuilders
-																			.rangeQuery(
-																					"workingSchedules.workingHours.toTime")
-																			.gt(maxTime))),
-													boolQuery()
-															.must(QueryBuilders.andQuery(
-																	QueryBuilders
-																			.rangeQuery(
-																					"workingSchedules.workingHours.toTime")
-																			.lt(minTime),
-																	QueryBuilders
-																			.rangeQuery(
-																					"workingSchedules.workingHours.fromTime")
-																			.lt(minTime))))))))));
-
-				}
 			}
 
 			// if (minTime != 0 || maxTime != 0) {
@@ -707,14 +673,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								"clinicWorkingSchedules.workingHours", QueryBuilders.notQuery(QueryBuilders.orQuery(
 										boolQuery().must(QueryBuilders.andQuery(
 												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
-														.gt(maxTime),
+														.gte(maxTime),
 												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
-														.gt(maxTime))),
+														.gte(maxTime))),
 										boolQuery().must(QueryBuilders.andQuery(
 												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.toTime")
-														.lt(minTime),
+														.lte(minTime),
 												QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime")
-														.lt(minTime)))))))));
+														.lte(minTime)))))))));
 			}
 
 			boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
