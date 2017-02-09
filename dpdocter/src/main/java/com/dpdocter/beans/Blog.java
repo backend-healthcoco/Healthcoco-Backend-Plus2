@@ -26,9 +26,19 @@ public class Blog extends GenericCollection {
 
 	private String userId;
 
+	private String postBy;
+
 	private Boolean discarded = false;
 
 	private Boolean isFavourite = false;
+
+	public String getPostBy() {
+		return postBy;
+	}
+
+	public void setPostBy(String postBy) {
+		this.postBy = postBy;
+	}
 
 	public Boolean getIsFavourite() {
 		return isFavourite;

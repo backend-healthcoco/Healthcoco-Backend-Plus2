@@ -31,6 +31,7 @@ public class BlogCollection extends GenericCollection {
 	@Field
 	private ObjectId userId;
 
+	@Field
 	private Integer noOfLikes = 0;
 
 	@Field
@@ -38,6 +39,17 @@ public class BlogCollection extends GenericCollection {
 
 	@Field
 	private Boolean discarded = false;
+
+	@Field
+	private String postBy;
+
+	public String getPostBy() {
+		return postBy;
+	}
+
+	public void setPostBy(String postBy) {
+		this.postBy = postBy;
+	}
 
 	public ObjectId getUserId() {
 		return userId;
