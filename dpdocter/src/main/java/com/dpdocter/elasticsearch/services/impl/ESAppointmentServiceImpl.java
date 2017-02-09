@@ -496,20 +496,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (minTime != 0 || maxTime != 0) {
 					if (maxTime == 0)
 						maxTime = 1439;
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-							boolQuery().must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery(
+							"workingSchedules.workingHours",
+							boolQuery().must(QueryBuilders.notQuery(QueryBuilders
 									.orQuery(
-											QueryBuilders.andQuery(
-													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
-															.gte(maxTime),
-													QueryBuilders
-															.rangeQuery("workingSchedules.workingHours.fromTime")
-															.lte(maxTime)),
+											QueryBuilders
+													.andQuery(QueryBuilders
+															.rangeQuery("workingSchedules.workingHours.toTime").gte(
+																	maxTime),
+															QueryBuilders
+																	.rangeQuery(
+																			"workingSchedules.workingHours.fromTime")
+																	.lte(maxTime)),
 											QueryBuilders.andQuery(
 													QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime")
 															.gte(minTime),
 													QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-															.lte(minTime))))))));
+															.lte(minTime)))))))));
 				}
 
 			}
