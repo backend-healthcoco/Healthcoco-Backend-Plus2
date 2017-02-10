@@ -550,9 +550,13 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!patientCards.isEmpty()) {
 				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
 				for (PatientCard patientCard : patientCards) {
-					//UserCollection userCollection = userRepository.findOne(patientCollection.getUserId());
-					/*List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
-							.findByPatientId(patientCollection.getUserId());*/
+					// UserCollection userCollection =
+					// userRepository.findOne(patientCollection.getUserId());
+					/*
+					 * List<PatientGroupCollection> patientGroupCollections =
+					 * patientGroupRepository
+					 * .findByPatientId(patientCollection.getUserId());
+					 */
 
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
@@ -565,14 +569,13 @@ public class ContactsServiceImpl implements ContactsService {
 							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
 						}
 					}
-					//System.out.println(patientCard);
-					
+					// System.out.println(patientCard);
+
 					Patient patient = new Patient();
 					BeanUtil.map(patientCard, patient);
 					patient.setPatientId(patientCard.getUser().getId().toString());
 					ObjectId referredBy = null;
-					if(patientCard.getReferredBy() != null)
-					{
+					if (patientCard.getReferredBy() != null) {
 						referredBy = new ObjectId(patientCard.getReferredBy());
 					}
 
@@ -584,17 +587,18 @@ public class ContactsServiceImpl implements ContactsService {
 						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherDoctors(doctorObjectId,
 								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
 						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherDoctors(
-								doctorObjectId, new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
-						recordsCount = recordsRepository.getRecordsForOtherDoctors(new ObjectId(patientCard.getDoctorId()),
-								new ObjectId(patientCard.getUser().getId()), new ObjectId(patientCard.getHospitalId()),
-								new ObjectId(patientCard.getLocationId()));
+								doctorObjectId, new ObjectId(patientCard.getUser().getId()), hospitalObjectId,
+								locationObjectId);
+						recordsCount = recordsRepository.getRecordsForOtherDoctors(
+								new ObjectId(patientCard.getDoctorId()), new ObjectId(patientCard.getUser().getId()),
+								new ObjectId(patientCard.getHospitalId()), new ObjectId(patientCard.getLocationId()));
 					} else {
 						prescriptionCount = prescriptionRepository.getPrescriptionCountForOtherLocations(
 								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
 						clinicalNotesCount = clinicalNotesRepository.getClinicalNotesCountForOtherLocations(
 								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
-						recordsCount = recordsRepository.getRecordsForOtherLocations(new ObjectId(patientCard.getUser().getId()),
-								hospitalObjectId, locationObjectId);
+						recordsCount = recordsRepository.getRecordsForOtherLocations(
+								new ObjectId(patientCard.getUser().getId()), hospitalObjectId, locationObjectId);
 					}
 
 					if ((prescriptionCount != null && prescriptionCount > 0)
@@ -607,11 +611,10 @@ public class ContactsServiceImpl implements ContactsService {
 					registeredPatientDetail.setAddress(patientCard.getAddress());
 
 					Criteria groupCriteria = new Criteria("id").in(groupIds).and("discarded").is(false);
-					
-					
+
 					if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 						groupCriteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-					} 
+					}
 					if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 						groupCriteria.and("doctorId").is(doctorObjectId);
 					}
@@ -664,8 +667,9 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(request.getLocationId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
 				hospitalObjectId = new ObjectId(request.getHospitalId());
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					patientObjecId, doctorObjectId, locationObjectId, hospitalObjectId);
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientObjecId,
+					locationObjectId, hospitalObjectId);
+			;
 			List<String> groupIds = new ArrayList<String>();
 			List<PatientGroupCollection> patientGroupCollections = patientGroupRepository
 					.findByPatientId(patientObjecId);
