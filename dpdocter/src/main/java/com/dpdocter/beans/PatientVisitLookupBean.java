@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.VisitedFor;
 
-public class PatientVisitLookupBean {
+public class PatientVisitLookupBean extends GenericCollection {
 
 	private ObjectId id;
 

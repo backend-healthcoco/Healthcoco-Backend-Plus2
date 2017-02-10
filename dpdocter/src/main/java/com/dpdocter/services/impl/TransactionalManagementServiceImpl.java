@@ -26,9 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.DoctorDrug;
+import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ComplaintCollection;
@@ -40,6 +43,11 @@ import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorDrugCollection;
 import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.ECGDetailsCollection;
+import com.dpdocter.collections.EchoCollection;
+import com.dpdocter.collections.GeneralExamCollection;
+import com.dpdocter.collections.HolterCollection;
+import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
@@ -47,16 +55,24 @@ import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
+import com.dpdocter.collections.PACollection;
+import com.dpdocter.collections.PSCollection;
+import com.dpdocter.collections.PVCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.PresentComplaintCollection;
+import com.dpdocter.collections.PresentComplaintHistoryCollection;
+import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.TransactionalCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
+import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
@@ -66,14 +82,25 @@ import com.dpdocter.elasticsearch.document.ESDiseasesDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
+import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEchoDocument;
+import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
+import com.dpdocter.elasticsearch.document.ESHolterDocument;
+import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESPADocument;
+import com.dpdocter.elasticsearch.document.ESPSDocument;
+import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
+import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
@@ -92,6 +119,7 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AdviceRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
@@ -102,17 +130,32 @@ import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorDrugRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.ECGDetailsRepository;
+import com.dpdocter.repository.EchoRepository;
+import com.dpdocter.repository.GeneralExamRepository;
+import com.dpdocter.repository.HistoryRepository;
+import com.dpdocter.repository.HolterRepository;
+import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.MenstrualHistoryRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
+import com.dpdocter.repository.ObstetricHistoryRepository;
+import com.dpdocter.repository.PARepository;
+import com.dpdocter.repository.PSRepository;
+import com.dpdocter.repository.PVRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.PresentComplaintHistoryRepository;
+import com.dpdocter.repository.PresentComplaintRepository;
+import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.SMSTrackRepository;
+import com.dpdocter.repository.SystemExamRepository;
 import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
@@ -123,6 +166,7 @@ import com.dpdocter.response.AppointmentPatientReminderResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.sun.jersey.core.impl.provider.entity.XMLJAXBElementProvider.General;
 
 import common.util.web.DPDoctorUtils;
 
@@ -239,6 +283,51 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Autowired
 	private XRayDetailsRepository xRayDetailsRepository;
 
+	@Autowired
+	private HolterRepository holterRepository;
+
+	@Autowired
+	private EchoRepository echoRepository;
+
+	@Autowired
+	private ECGDetailsRepository ecgDetailsRepository;
+
+	@Autowired
+	private PSRepository psRepository;
+
+	@Autowired
+	private PVRepository pvRepository;
+
+	@Autowired
+	private PARepository paRepository;
+
+	@Autowired
+	private IndicationOfUSGRepository indicationOfUSGRepository;
+
+	@Autowired
+	private ObstetricHistoryRepository ObstetricHistoryRepository;
+
+	@Autowired
+	private MenstrualHistoryRepository menstrualHistoryRepository;
+
+	@Autowired
+	private PresentComplaintHistoryRepository presentComplaintHistoryRepository;
+
+	@Autowired
+	private SystemExamRepository systemExamRepository;
+
+	@Autowired
+	private GeneralExamRepository generalExamRepository;
+
+	@Autowired
+	private ProvisionalDiagnosisRepository provisionalDiagnosisRepository;
+
+	@Autowired
+	private PresentComplaintRepository presentComplaintRepository;
+
+	@Autowired
+	private AdviceRepository adviceRepository;
+
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
 
@@ -324,6 +413,48 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case XRAY:
 							checkXray(transactionalCollection.getResourceId());
 							break;
+						case ADVICE:
+							checkAdvice(transactionalCollection.getResourceId());
+							break;
+						case PRESENT_COMPLAINT:
+							checkPresentComplaint(transactionalCollection.getResourceId());
+							break;
+						case GENERAL_EXAMINATION:
+							checkGeneralExam(transactionalCollection.getResourceId());
+							break;
+						case PROVISIONAL_DIAGNOSIS:
+							checkProvisionalDignosis(transactionalCollection.getResourceId());
+							break;
+						case SYSTEMIC_EXAMINATION:
+							checkSystemExam(transactionalCollection.getResourceId());
+							break;
+						case HISTORY_OF_PRESENT_COMPLAINT:
+							checkPresentComplaintHistory(transactionalCollection.getResourceId());
+							break;
+						case PS:
+							checkPS(transactionalCollection.getResourceId());
+							break;
+						case PA:
+							checkPA(transactionalCollection.getResourceId());
+							break;
+						case PV:
+							checkPV(transactionalCollection.getResourceId());
+							break;
+						case ECHO:
+							checkEcho(transactionalCollection.getResourceId());
+							break;
+						case INDICATION_OF_USG:
+							checkIndicationOfUCG(transactionalCollection.getResourceId());
+							break;
+
+						case ECG:
+							checkECG(transactionalCollection.getResourceId());
+							break;
+
+						case HOLTER:
+							checkHolter(transactionalCollection.getResourceId());
+							break;
+
 						default:
 							break;
 						}
@@ -1002,6 +1133,202 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESXRayDetailsDocument esxRayDetailsDocument = new ESXRayDetailsDocument();
 				BeanUtil.map(xRayDetailsCollection, esxRayDetailsDocument);
 				esClinicalNotesService.addXRayDetails(esxRayDetailsDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkHolter(ObjectId resourceId) {
+		try {
+			HolterCollection holterCollection = holterRepository.findOne(resourceId);
+			if (holterCollection != null) {
+				ESHolterDocument esHolterDocument = new ESHolterDocument();
+				BeanUtil.map(holterCollection, esHolterDocument);
+				esClinicalNotesService.addHolter(esHolterDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkEcho(ObjectId resourceId) {
+		try {
+
+			EchoCollection echoCollection = echoRepository.findOne(resourceId);
+			if (echoCollection != null) {
+				ESEchoDocument esEchoDocument = new ESEchoDocument();
+				BeanUtil.map(echoCollection, esEchoDocument);
+				esClinicalNotesService.addEcho(esEchoDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkECG(ObjectId resourceId) {
+		try {
+
+			ECGDetailsCollection ecgDetailsCollection = ecgDetailsRepository.findOne(resourceId);
+			if (ecgDetailsCollection != null) {
+				ESECGDetailsDocument esECGDetailsDocument = new ESECGDetailsDocument();
+				BeanUtil.map(ecgDetailsCollection, esECGDetailsDocument);
+				esClinicalNotesService.addECGDetails(esECGDetailsDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkPS(ObjectId resourceId) {
+		try {
+
+			PSCollection psCollection = psRepository.findOne(resourceId);
+			if (psCollection != null) {
+				ESPSDocument espsDocument = new ESPSDocument();
+				BeanUtil.map(psCollection, espsDocument);
+				esClinicalNotesService.addPS(espsDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkPA(ObjectId resourceId) {
+		try {
+
+			PACollection paCollection = paRepository.findOne(resourceId);
+			if (paCollection != null) {
+				ESPADocument espaDocument = new ESPADocument();
+				BeanUtil.map(paCollection, espaDocument);
+				esClinicalNotesService.addPA(espaDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkPV(ObjectId resourceId) {
+		try {
+
+			PVCollection pvCollection = pvRepository.findOne(resourceId);
+			if (pvCollection != null) {
+				ESPVDocument espvDocument = new ESPVDocument();
+				BeanUtil.map(pvCollection, espvDocument);
+				esClinicalNotesService.addPV(espvDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkIndicationOfUCG(ObjectId resourceId) {
+		try {
+
+			IndicationOfUSGCollection indicationOfUCGCollection = indicationOfUSGRepository.findOne(resourceId);
+			if (indicationOfUCGCollection != null) {
+				ESIndicationOfUSGDocument esIndicationOfUSGDocument = new ESIndicationOfUSGDocument();
+				BeanUtil.map(indicationOfUCGCollection, esIndicationOfUSGDocument);
+				esClinicalNotesService.addIndicationOfUSG(esIndicationOfUSGDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkSystemExam(ObjectId resourceId) {
+		try {
+
+			SystemExamCollection systemExamCollection = systemExamRepository.findOne(resourceId);
+			if (systemExamCollection != null) {
+				ESSystemExamDocument esSystemExamDocument = new ESSystemExamDocument();
+				BeanUtil.map(systemExamCollection, esSystemExamDocument);
+				esClinicalNotesService.addSystemExam(esSystemExamDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkProvisionalDignosis(ObjectId resourceId) {
+		try {
+
+			ProvisionalDiagnosisCollection provitionalDiagnosisCollection = provisionalDiagnosisRepository
+					.findOne(resourceId);
+			if (provitionalDiagnosisCollection != null) {
+				ESPresentComplaintHistoryDocument esPresentComplaintHistoryDocument = new ESPresentComplaintHistoryDocument();
+				BeanUtil.map(provitionalDiagnosisCollection, esPresentComplaintHistoryDocument);
+				esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistoryDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkPresentComplaintHistory(ObjectId resourceId) {
+		try {
+
+			PresentComplaintHistoryCollection presentComplaintHistoryCollection = presentComplaintHistoryRepository
+					.findOne(resourceId);
+			if (presentComplaintHistoryCollection != null) {
+				ESPresentComplaintHistoryDocument esPresentComplaintHistoryDocument = new ESPresentComplaintHistoryDocument();
+				BeanUtil.map(presentComplaintHistoryCollection, esPresentComplaintHistoryDocument);
+				esClinicalNotesService.addPresentComplaintHistory(esPresentComplaintHistoryDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkGeneralExam(ObjectId resourceId) {
+		try {
+
+			GeneralExamCollection generalExamCollection = generalExamRepository.findOne(resourceId);
+			if (generalExamCollection != null) {
+				ESGeneralExamDocument esGeneralExamDocument = new ESGeneralExamDocument();
+				BeanUtil.map(generalExamCollection, esGeneralExamDocument);
+				esClinicalNotesService.addGeneralExam(esGeneralExamDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkPresentComplaint(ObjectId resourceId) {
+		try {
+
+			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findOne(resourceId);
+			if (presentComplaintCollection != null) {
+				ESPresentComplaintDocument esPresentComplaintDocument = new ESPresentComplaintDocument();
+				BeanUtil.map(presentComplaintCollection, esPresentComplaintDocument);
+				esClinicalNotesService.addPresentComplaint(esPresentComplaintDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkAdvice(ObjectId resourceId) {
+		try {
+
+			AdviceCollection adviceCollection = adviceRepository.findOne(resourceId);
+			if (adviceCollection != null) {
+				ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
+				BeanUtil.map(adviceCollection, esAdvicesDocument);
+				esPrescriptionService.addAdvices(esAdvicesDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

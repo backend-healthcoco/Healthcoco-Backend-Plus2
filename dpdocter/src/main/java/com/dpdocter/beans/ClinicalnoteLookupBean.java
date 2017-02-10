@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-public class ClinicalnoteLookupBean {
+import com.dpdocter.collections.GenericCollection;
+
+public class ClinicalnoteLookupBean extends GenericCollection{
 
 	private ObjectId id;
 
