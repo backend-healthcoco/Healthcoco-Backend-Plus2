@@ -395,24 +395,26 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						.must(QueryBuilders.termsQuery("locationId", locationIds));
 			}
 
-			if (!DPDoctorUtils.anyStringEmpty(symptom)) {
-				List<ESComplaintsDocument> esComplaintsDocuments = esComplaintsRepository.findByComplaint(symptom);
-				if (esComplaintsDocuments == null || esComplaintsDocuments.isEmpty()) {
-					return null;
-				}
-				Set<String> locationIds = new HashSet<>(CollectionUtils.collect(esComplaintsDocuments,
-						new BeanToPropertyValueTransformer("locationId")));
-				Set<String> doctorIds = new HashSet<>(
-						CollectionUtils.collect(esComplaintsDocuments, new BeanToPropertyValueTransformer("doctorId")));
-
-				locationIds.remove(null);
-				doctorIds.remove(null);
-				if ((locationIds == null || locationIds.isEmpty()) && (doctorIds == null || doctorIds.isEmpty())) {
-					return null;
-				}
-				boolQueryBuilder.must(QueryBuilders.termsQuery("userId", doctorIds))
-						.must(QueryBuilders.termsQuery("locationId", locationIds));
-			}
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(symptom)) {
+			 * List<ESComplaintsDocument> esComplaintsDocuments =
+			 * esComplaintsRepository.findByComplaint(symptom); if
+			 * (esComplaintsDocuments == null ||
+			 * esComplaintsDocuments.isEmpty()) { return null; } Set<String>
+			 * locationIds = new
+			 * HashSet<>(CollectionUtils.collect(esComplaintsDocuments, new
+			 * BeanToPropertyValueTransformer("locationId"))); Set<String>
+			 * doctorIds = new HashSet<>(
+			 * CollectionUtils.collect(esComplaintsDocuments, new
+			 * BeanToPropertyValueTransformer("doctorId")));
+			 * 
+			 * locationIds.remove(null); doctorIds.remove(null); if
+			 * ((locationIds == null || locationIds.isEmpty()) && (doctorIds ==
+			 * null || doctorIds.isEmpty())) { return null; }
+			 * boolQueryBuilder.must(QueryBuilders.termsQuery("userId",
+			 * doctorIds)) .must(QueryBuilders.termsQuery("locationId",
+			 * locationIds)); }
+			 */
 
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
 				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
@@ -470,8 +472,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
 						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))));
 			else if (maxFee != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
-						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").to(maxFee))));
+				boolQueryBuilder
+						.must(QueryBuilders
+								.orQuery(
+										QueryBuilders.nestedQuery("consultationFee",
+												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
+														.from(0).to(maxFee))),
+										QueryBuilders.notQuery(QueryBuilders.existsQuery("consultationFee"))));
 
 			if (minExperience != 0 && maxExperience != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(
@@ -480,30 +487,34 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
 						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))));
 			else if (maxExperience != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
-						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").to(maxExperience))));
+				boolQueryBuilder
+						.must(QueryBuilders.orQuery(
+								QueryBuilders.nestedQuery("experience",
+										boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(0)
+												.to(maxExperience))),
+								QueryBuilders.notQuery(QueryBuilders.existsQuery("experience"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(gender)) {
 				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
 			}
 			if (days != null && !days.isEmpty()) {
-				for (int i = 0; i < days.size(); i++) {
+				for (int i = 0; i < days.size(); i++)
 					days.set(i, days.get(i).toLowerCase());
-				}
 
-				if (maxTime == 0) {
-					maxTime = 1439;
-				}
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
-						.must(nestedQuery("workingSchedules.workingHours", boolQuery().must((QueryBuilders.orQuery(
-
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
-										.lt(maxTime),
-
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
-										.lt(maxTime))))))
-						.must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 			}
+
+			if (maxTime == 0) {
+				maxTime = 1439;
+			}
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
+					.must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+
+							QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
+
+							QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
+									.lt(maxTime)))))));
 
 			// if (minTime != 0 || maxTime != 0) {
 			// if (maxTime == 0) {
@@ -653,6 +664,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					days.set(i, days.get(i).toLowerCase());
 				}
 
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
+
 				if (maxTime == 0) {
 					maxTime = 1439;
 				}
@@ -663,8 +677,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										.lt(maxTime),
 
 								QueryBuilders.rangeQuery("clinicWorkingSchedules.workingHours.fromTime").gt(minTime)
-										.lt(maxTime))))))
-						.must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
+										.lt(maxTime))))))));
 			}
 
 			boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
