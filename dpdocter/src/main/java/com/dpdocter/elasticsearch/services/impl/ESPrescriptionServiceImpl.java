@@ -3,7 +3,6 @@ package com.dpdocter.elasticsearch.services.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -16,20 +15,15 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
-import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -186,24 +180,32 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			}
 			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
 					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
+					.addAggregation(AggregationBuilders
+		    				.terms("keys")
+		    				.field("drugCode")
+		    				.size(50)
+		    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)
+		    						.addSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))))
 					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
 			response = new ArrayList<DrugDocument>();
-			SearchHit[] results = searchResponse.getHits().getHits();
-			for (SearchHit hit : results) {
-				ObjectMapper objectMapper = new ObjectMapper();
-				ESDrugDocument esDrugDocument = objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
-				String drugTypeStr = esDrugDocument.getDrugType();
+			StringTerms hits = searchResponse.getAggregations().get("keys");
+		    List<Bucket> buckets = hits.getBuckets();
+		    if(buckets != null && !buckets.isEmpty())
+		    for(Bucket bucket : buckets){
+		    	InternalTopHits topHits = bucket.getAggregations().get("hits");
+		    	SearchHit searchHit = topHits.getHits().getHits()[0];
+		    	ObjectMapper objectMapper = new ObjectMapper();
+		    	ESDrugDocument esDrugDocument = objectMapper.convertValue(searchHit.getSource(), ESDrugDocument.class);
+		    	
+		    	String drugTypeStr = esDrugDocument.getDrugType();
 				esDrugDocument.setDrugType(null);
 				DrugDocument drugDocument = new DrugDocument();
 				BeanUtil.map(esDrugDocument, drugDocument);
-				DrugType drugType = new DrugType();
-				drugType.setId(esDrugDocument.getDrugTypeId());
-				drugType.setType(drugTypeStr);
+				DrugType drugType = new DrugType();drugType.setId(esDrugDocument.getDrugTypeId());drugType.setType(drugTypeStr);
 				drugDocument.setDrugType(drugType);
 				response.add(drugDocument);
-
-			}
-
+		    
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
