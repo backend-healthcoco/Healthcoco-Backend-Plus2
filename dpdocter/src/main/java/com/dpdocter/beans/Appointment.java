@@ -17,6 +17,8 @@ public class Appointment extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
+	
+	private String patientId;
 
 	private WorkingHours time;
 
@@ -312,5 +314,13 @@ public class Appointment extends GenericCollection {
 				+ longitude + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms=" + notifyPatientBySms
 				+ ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms=" + notifyDoctorBySms
 				+ ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId + "]";
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 }

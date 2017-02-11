@@ -60,6 +60,12 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 	@Value(value = "${mail.contact.us.welcome.subject}")
 	private String doctorWelcomeSubject;
 
+	@Value(value = "${contact.us.email}")
+	private String mailTo;
+
+	@Value(value = "${mail.signup.request.subject}")
+	private String signupRequestSubject;
+
 	@Override
 	public String submitClinicContactUSInfo(ClinicContactUs clinicContactUs) {
 		String response = null;
@@ -78,6 +84,10 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 						userCollection.getTitle() + " " + userCollection.getFirstName(), null,
 						"doctorWelcomeTemplate.vm", null, null);
 				mailService.sendEmail(clinicContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
+				body = mailBodyGenerator.generateContactEmailBody(
+						userCollection.getTitle() + " " + userCollection.getFirstName(), "Location",
+						userCollection.getMobileNumber(), userCollection.getEmailAddress(), clinicContactUs.getCity());
+				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
 				if (clinicContactUsCollection != null) {
 					response = doctorWelcomeMessage;
 				}

@@ -30,117 +30,139 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class DoctorContactUSServiceImpl implements DoctorContactUsService {
-	
+
 	private static Logger logger = Logger.getLogger(DoctorContactUSServiceImpl.class.getName());
-	
+
 	@Autowired
 	DoctorContactUsRepository doctorContactUsRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
-	
+
 	@Value(value = "${doctor.welcome.message}")
 	private String doctorWelcomeMessage;
 
-    @Autowired
-    private MailService mailService;
+	@Value(value = "${contact.us.email}")
+	private String mailTo;
 
-    @Autowired
-    private MailBodyGenerator mailBodyGenerator;
-    
-    @Value(value = "${mail.contact.us.welcome.subject}")
+	@Autowired
+	private MailService mailService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Value(value = "${mail.contact.us.welcome.subject}")
 	private String doctorWelcomeSubject;
+
+	@Value(value = "${mail.signup.request.subject}")
+	private String signupRequestSubject;
 
 	@Override
 	@Transactional
 	public String submitDoctorContactUSInfo(DoctorContactUs doctorContactUs) {
 		String response = null;
 		DoctorContactUsCollection doctorContactUsCollection = new DoctorContactUsCollection();
-		if(doctorContactUs != null)
-		{
+		if (doctorContactUs != null) {
 			BeanUtil.map(doctorContactUs, doctorContactUsCollection);
 			try {
 				doctorContactUsCollection.setCreatedTime(new Date());
 				doctorContactUsCollection.setUserName(doctorContactUs.getEmailAddress());
 				doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
-				
-				String body = mailBodyGenerator.generateActivationEmailBody(doctorContactUs.getTitle()+" "+doctorContactUs.getFirstName(), null, "doctorWelcomeTemplate.vm", null ,null);
-			    mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
-			    
-				if(doctorContactUsCollection != null)
-				{
+
+				String body = mailBodyGenerator.generateActivationEmailBody(
+						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), null,
+						"doctorWelcomeTemplate.vm", null, null);
+				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
+
+				body = mailBodyGenerator.generateContactEmailBody(
+						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), "Doctor",
+						doctorContactUs.getMobileNumber(), doctorContactUs.getEmailAddress(),
+						doctorContactUs.getCity());
+				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
+
+				if (doctorContactUsCollection != null) {
 					response = doctorWelcomeMessage;
 				}
 			} catch (DuplicateKeyException de) {
-			    logger.error(de);
-			    throw new BusinessException(ServiceError.Unknown, "An account already exists with this email address.Please use another email address to register.");
+				logger.error(de);
+				throw new BusinessException(ServiceError.Unknown,
+						"An account already exists with this email address.Please use another email address to register.");
 			} catch (BusinessException be) {
-			    logger.error(be);
-			    throw be;
+				logger.error(be);
+				throw be;
 			} catch (Exception e) {
-			    e.printStackTrace();
-			    logger.error(e + " Error occured while creating doctor");
-			    throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+				e.printStackTrace();
+				logger.error(e + " Error occured while creating doctor");
+				throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
 			}
-		}
-		return response;
-	}
-	
-	@Override
-	@Transactional
-	public List<DoctorContactUs> getDoctorContactList(int page, int size ,String searchTerm) {
-		List<DoctorContactUs> response = null;
-		//String searchTerm = null;
-		Criteria criteria = null;
-		try{
-			if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria = new Criteria().orOperator(new Criteria("firstName").regex("^"+searchTerm,"i"),(new Criteria("emailAddress").regex("^"+searchTerm,"i")));
-			Aggregation aggregation = null;
-			if(criteria != null)
-			{
-				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-				else aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			}
-			else
-			{
-				if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
-				else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			}
-			
-			AggregationResults<DoctorContactUs> aggregationResults = mongoTemplate.aggregate(aggregation, DoctorContactUsCollection.class, DoctorContactUs.class);
-			response = aggregationResults.getMappedResults();
-		}catch(Exception e){
-			logger.error("Error while getting hospitals "+ e.getMessage());
-			e.printStackTrace();
-		    throw new BusinessException(ServiceError.Unknown,"Error while getting doctor contact List "+ e.getMessage());
 		}
 		return response;
 	}
 
 	@Override
 	@Transactional
-	public DoctorContactUs updateDoctorContactState(String contactId, DoctorContactStateType contactState)
-	{
+	public List<DoctorContactUs> getDoctorContactList(int page, int size, String searchTerm) {
+		List<DoctorContactUs> response = null;
+		// String searchTerm = null;
+		Criteria criteria = null;
+		try {
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = new Criteria().orOperator(new Criteria("firstName").regex("^" + searchTerm, "i"),
+						(new Criteria("emailAddress").regex("^" + searchTerm, "i")));
+			Aggregation aggregation = null;
+			if (criteria != null) {
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			} else {
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation
+							.newAggregation(Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			}
+
+			AggregationResults<DoctorContactUs> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DoctorContactUsCollection.class, DoctorContactUs.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			logger.error("Error while getting hospitals " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting doctor contact List " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public DoctorContactUs updateDoctorContactState(String contactId, DoctorContactStateType contactState) {
 		DoctorContactUs response = null;
-		if(contactId != null && !(contactId.isEmpty()))
-		{
+		if (contactId != null && !(contactId.isEmpty())) {
 			try {
-				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository.findByContactId(contactId);
-				if(doctorContactUsCollection != null)
-				{
+				DoctorContactUsCollection doctorContactUsCollection = doctorContactUsRepository
+						.findByContactId(contactId);
+				if (doctorContactUsCollection != null) {
 					doctorContactUsCollection.setContactState(contactState);
 					doctorContactUsCollection = doctorContactUsRepository.save(doctorContactUsCollection);
-					if(doctorContactUsCollection != null)
-					{
+					if (doctorContactUsCollection != null) {
 						response = new DoctorContactUs();
 						BeanUtil.map(doctorContactUsCollection, response);
 					}
 				}
 			} catch (Exception e) {
-				logger.warn("Error while updating contact state :: "+e);
+				logger.warn("Error while updating contact state :: " + e);
 				e.printStackTrace();
-				throw new BusinessException(ServiceError.Unknown,"Error while updating doctor contact state " + e.getMessage());
+				throw new BusinessException(ServiceError.Unknown,
+						"Error while updating doctor contact state " + e.getMessage());
 			}
-		}	
+		}
 		return response;
 	}
 }
