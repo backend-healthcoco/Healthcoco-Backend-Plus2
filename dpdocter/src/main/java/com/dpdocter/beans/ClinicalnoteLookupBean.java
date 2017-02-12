@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class ClinicalnoteLookupBean extends GenericCollection{
+public class ClinicalnoteLookupBean extends GenericCollection {
 
 	private ObjectId id;
 
@@ -86,18 +86,8 @@ public class ClinicalnoteLookupBean extends GenericCollection{
 	private WorkingHours time;
 
 	private Date fromDate;
-	
-	private Appointment appointment;
-	
-	
 
-	public Appointment getAppointment() {
-		return appointment;
-	}
-
-	public void setAppointment(Appointment appointment) {
-		this.appointment = appointment;
-	}
+	private Appointment appointmentRequest;
 
 	public ObjectId getId() {
 		return id;
@@ -409,6 +399,14 @@ public class ClinicalnoteLookupBean extends GenericCollection{
 
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
+	}
+
+	public Appointment getAppointmentRequest() {
+		return appointmentRequest;
+	}
+
+	public void setAppointmentRequest(Appointment appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
 	}
 
 }

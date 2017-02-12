@@ -44,7 +44,7 @@ public class PatientVisitLookupBean extends GenericCollection {
 
 	private Boolean discarded = false;
 
-	private Appointment appointment;
+	private Appointment appointmentRequest;
 
 	public ObjectId getId() {
 		return id;
@@ -182,13 +182,12 @@ public class PatientVisitLookupBean extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Appointment getAppointment() {
-		return appointment;
+	public Appointment getAppointmentRequest() {
+		return appointmentRequest;
 	}
 
-	public void setAppointment(Appointment appointment) {
-		this.appointment = appointment;
+	public void setAppointmentRequest(Appointment appointmentRequest) {
+		this.appointmentRequest = appointmentRequest;
 	}
-	
 
 }
