@@ -42,7 +42,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 	@Value(value = "${doctor.welcome.message}")
 	private String doctorWelcomeMessage;
 
-	@Value(value = "${contact.us.email}")
+	@Value(value = "${mail.signup.request.to}")
 	private String mailTo;
 
 	@Autowired

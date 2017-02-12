@@ -60,7 +60,7 @@ public class ClinicContactUsServiceImpl implements ClinicContactUsService {
 	@Value(value = "${mail.contact.us.welcome.subject}")
 	private String doctorWelcomeSubject;
 
-	@Value(value = "${contact.us.email}")
+	@Value(value = "${mail.signup.request.to}")
 	private String mailTo;
 
 	@Value(value = "${mail.signup.request.subject}")

@@ -255,7 +255,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Value(value = "${mail.add.existing.doctor.to.clinic.subject}")
 	private String addExistingDoctorToClinicSub;
 
-	@Value(value = "${mail.add.doctor.to.clinic..verify.subject}")
+	@Value(value = "${mail.add.doctor.to.clinic.verify.subject}")
 	private String addDoctorToClinicVerifySub;
 
 	@Value(value = "${mail.add.feedback.subject}")

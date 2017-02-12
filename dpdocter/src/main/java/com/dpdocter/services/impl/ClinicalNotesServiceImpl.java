@@ -24,9 +24,7 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -56,12 +54,12 @@ import com.dpdocter.beans.ObstetricHistory;
 import com.dpdocter.beans.PA;
 import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
-import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.XRayDetails;
+import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -122,6 +120,7 @@ import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AppointmentRepository;
 import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
@@ -296,6 +295,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private HolterRepository holterRepository;
+
+	@Autowired
+	private AppointmentRepository appointmentRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -1064,6 +1066,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			BeanUtil.map(request, clinicalNotesCollection);
 			ClinicalNotesCollection oldClinicalNotesCollection = clinicalNotesRepository
 					.findOne(clinicalNotesCollection.getId());
+
 			String createdBy = oldClinicalNotesCollection.getCreatedBy();
 			/*
 			 * if (request.getComplaints() != null &&
@@ -1881,6 +1884,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagramIds.add(new ObjectId(diagramId));
 				}
 			}
+			if (!DPDoctorUtils.anyStringEmpty(oldClinicalNotesCollection.getAppointmentId())) {
+				AppointmentCollection appointmentCollection = appointmentRepository
+						.findByAppointmentId(oldClinicalNotesCollection.getAppointmentId());
+				appointment = new Appointment();
+				BeanUtil.map(appointmentCollection, appointment);
+
+			}
 
 			clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
@@ -1892,6 +1902,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
+			clinicalNotes.setAppointmentRequest(appointment);
 
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
@@ -2009,14 +2020,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
+								"appointmentRequest"),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$appointmentRequest")
+												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<ClinicalnoteLookupBean> aggregationResults = mongoTemplate.aggregate(aggregation,
@@ -4105,15 +4120,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
 						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
+								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays",
+										true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 
 			} else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId", "appointmentRequest"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$appointmentRequest").append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("appointment_cl", "appointmentId", "appointmentId",
+								"appointmentRequest"),
+						new CustomAggregationOperation(
+								new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$appointmentRequest")
+												.append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<ClinicalnoteLookupBean> aggregationResults = mongoTemplate.aggregate(aggregation,
