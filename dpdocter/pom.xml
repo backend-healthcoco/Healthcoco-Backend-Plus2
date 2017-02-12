@@ -10,6 +10,9 @@
 	<profiles>
 		<profile>
 			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -50,9 +53,6 @@
 		</profile>
 		<profile>
 			<id>qa</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<finalName>dpdocter</finalName>
 				<resources>
@@ -530,10 +530,6 @@
 				</exclusion>
 				<exclusion>
 					<artifactId>aws-java-sdk-glacier</artifactId>
-					<groupId>com.amazonaws</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>aws-java-sdk-sqs</artifactId>
 					<groupId>com.amazonaws</groupId>
 				</exclusion>
 				<exclusion>

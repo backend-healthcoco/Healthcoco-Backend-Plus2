@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.LabResponse;
 
 public interface ESAppointmentService {
@@ -15,5 +16,9 @@ public interface ESAppointmentService {
     List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm);
 
     List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl);
+
+	List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
+			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, int minTime,
+			int maxTime, List<String> days);
 
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 
@@ -68,6 +69,22 @@ public class ESAppointmentApi {
 	return response;
     }
 
+    @Path(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
+    @GET
+    @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
+    public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city,
+	    @QueryParam("location") String location, @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+	    @QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
+	    @QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days) {
+
+		List<ESUserLocaleDocument> pharmacies = solrAppointmentService.getPharmacies(page, size, city, location, latitude, longitude, paymentType,
+			homeService, isTwentyFourSevenOpen, minTime, maxTime, days);
+	
+		Response<ESUserLocaleDocument> response = new Response<ESUserLocaleDocument>();
+		response.setDataList(pharmacies);
+		return response;
+    }
+    
     @Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
     @GET
     @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)

@@ -26,6 +26,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -36,6 +37,7 @@ import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESCityRepository;
 import com.dpdocter.elasticsearch.repository.ESComplaintsRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagnosticTestRepository;
@@ -43,6 +45,7 @@ import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
+import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 import com.dpdocter.enums.AppointmentResponseType;
@@ -66,6 +69,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 	@Autowired
 	private ESLocationRepository esLocationRepository;
+
+	@Autowired
+	private ESUserLocaleRepository esUserLocaleRepository;
 
 	@Autowired
 	private ESSpecialityRepository esSpecialityRepository;
@@ -96,6 +102,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			response = searchTreatmentService(response, searchTerm);
 			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
 			response = searchLocations(response, city, location, latitude, longitude, searchTerm);
+			response = searchPharmacy(response, city, location, latitude, longitude, searchTerm);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -184,6 +191,90 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
 						response.add(appointmentSearchResponse);
 					}
+				}
+		}
+		return response;
+	}
+
+	@SuppressWarnings("deprecation")
+	private List<AppointmentSearchResponse> searchPharmacy(List<AppointmentSearchResponse> response, String city,
+			String location, String latitude, String longitude, String searchTerm) {
+		if (response.size() < 50) {
+			List<ESUserLocaleDocument> esUserLocaleDocuments = null;
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				if (DPDoctorUtils.allStringsEmpty(city, location)) {
+					if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
+						esUserLocaleDocuments = esUserLocaleRepository.findByLocaleName(searchTerm);
+					else {
+						if (latitude != null && longitude != null) {
+							BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+											.lon(Double.parseDouble(longitude)).distance("30km"))
+									.must(QueryBuilders.matchPhrasePrefixQuery("localeName", searchTerm))
+									.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true));
+							esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+									.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC))
+									.build(), ESUserLocaleDocument.class);
+						}
+					}
+				} else {
+					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+							.must(QueryBuilders.matchPhrasePrefixQuery("localeName", searchTerm))
+							.must(QueryBuilders.matchQuery("isLocaleListed", true));
+					if (city != null){
+						boolQueryBuilder.must(QueryBuilders.nestedQuery("address",
+								boolQuery().must(QueryBuilders.matchQuery("address.city",city))));
+					}
+					if (location != null){
+						boolQueryBuilder.must(QueryBuilders.nestedQuery("address",
+								boolQuery().must(QueryBuilders.orQuery(QueryBuilders.matchPhrasePrefixQuery("address.streetAddress", location),
+										QueryBuilders.matchPhrasePrefixQuery("address.locality", location)))));
+					}
+					esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
+							ESUserLocaleDocument.class);
+				}
+			} else {
+				if (DPDoctorUtils.allStringsEmpty(city, location)) {
+					if (latitude != null && longitude != null) {
+						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+										.lon(Double.parseDouble(longitude)).distance("30km"))
+								.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true));
+						esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+								.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
+								ESUserLocaleDocument.class);
+						}
+					} else {
+						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+								.must(QueryBuilders.matchQuery("isLocaleListed", true));
+						if (city != null){
+							boolQueryBuilder.must(QueryBuilders.nestedQuery("address",
+									boolQuery().must(QueryBuilders.matchQuery("address.city",city))));
+						}
+						if (location != null){
+							boolQueryBuilder.must(QueryBuilders.nestedQuery("address",
+									boolQuery().must(QueryBuilders.orQuery(QueryBuilders.matchPhrasePrefixQuery("address.streetAddress", location),
+											QueryBuilders.matchPhrasePrefixQuery("address.locality", location)))));
+						}
+						esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+								.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
+								ESUserLocaleDocument.class);
+					}
+			}
+
+			if (esUserLocaleDocuments != null)
+				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
+					if (response.size() >= 50)break;
+						AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+						appointmentSearchResponse.setId(esUserLocaleDocument.getLocaleId());
+						appointmentSearchResponse.setResponse(esUserLocaleDocument.getLocaleName());
+						appointmentSearchResponse.setResponseType(AppointmentResponseType.PHARMACY);
+						response.add(appointmentSearchResponse);
 				}
 		}
 		return response;
@@ -744,5 +835,116 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		} else
 			return null;
 
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
+			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, int minTime,
+			int maxTime, List<String> days) {
+		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
+		try {
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchQuery("isLocaleListed", true))
+					.must(QueryBuilders.matchQuery("isActivate", true));
+
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
+				}
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(location)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", location));
+			}
+			if (days != null && !days.isEmpty()) {
+				for (int i = 0; i < days.size(); i++)
+					days.set(i, days.get(i).toLowerCase());
+
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
+			}
+
+			if (maxTime == 0) {
+				maxTime = 1439;
+			}
+			boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
+					.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+
+							QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
+
+							QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
+									.lt(maxTime)))))));
+
+
+			if (latitude != null && longitude != null)
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+						.lon(Double.parseDouble(longitude)).distance("30km"));
+
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+			esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
+
+			if (esUserLocaleDocuments != null) {
+				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
+					if (esUserLocaleDocument.getImageUrl() != null)
+						esUserLocaleDocument.setImageUrl(getFinalImageURL(esUserLocaleDocument.getImageUrl()));
+					
+					if (esUserLocaleDocument.getThumbnailUrl() != null)
+						esUserLocaleDocument.setThumbnailUrl(getFinalImageURL(esUserLocaleDocument.getThumbnailUrl()));
+					
+					if (esUserLocaleDocument.getLocaleImages() != null && !esUserLocaleDocument.getLocaleImages().isEmpty()) {
+						for (LocaleImage localeImage : esUserLocaleDocument.getLocaleImages()) {
+							localeImage.setImageUrl(getFinalImageURL(localeImage.getImageUrl()));
+							localeImage.setThumbnailUrl(getFinalImageURL(localeImage.getThumbnailUrl()));
+						}
+					}
+					if (esUserLocaleDocument.getLogoUrl() != null)
+						esUserLocaleDocument.setLogoUrl(getFinalImageURL(esUserLocaleDocument.getLogoUrl()));
+
+					if (latitude != null && longitude != null &&  esUserLocaleDocument.getAddress() != null && 
+							esUserLocaleDocument.getAddress().getLatitude() != null
+							&& esUserLocaleDocument.getAddress().getLongitude() != null) {
+						esUserLocaleDocument.setDistance(
+								DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
+										esUserLocaleDocument.getAddress().getLatitude(), esUserLocaleDocument.getAddress().getLongitude(), "K"));
+					}
+					if(esUserLocaleDocument.getAddress() != null){
+						String address = (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getStreetAddress())
+								? esUserLocaleDocument.getAddress().getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getLocality())
+										? esUserLocaleDocument.getAddress().getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getCity()) ? esUserLocaleDocument.getAddress().getCity() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getState())
+										? esUserLocaleDocument.getAddress().getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getCountry())
+										? esUserLocaleDocument.getAddress().getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(esUserLocaleDocument.getAddress().getPostalCode())
+										? esUserLocaleDocument.getAddress().getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						esUserLocaleDocument.setLocaleAddress(address);
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor Details From ES : " + e.getMessage());
+		}
+		return esUserLocaleDocuments;
 	}
 }

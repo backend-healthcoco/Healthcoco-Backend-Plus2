@@ -858,6 +858,8 @@ public interface PathProxy {
 		public static final String SEARCH = "/search";
 
 		public static final String GET_DOCTORS = "/doctors";
+		
+		public static final String GET_PHARMACIES = "/pharmacies";
 
 		public static final String GET_LABS = "/labs";
 

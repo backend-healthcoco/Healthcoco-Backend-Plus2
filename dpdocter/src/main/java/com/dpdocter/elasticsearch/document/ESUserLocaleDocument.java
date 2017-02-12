@@ -3,6 +3,7 @@ package com.dpdocter.elasticsearch.document;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -13,7 +14,6 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.beans.LocaleWorkingSchedule;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.LocaleType;
 
 @Document(indexName = "userlocale_in", type = "userlocale")
@@ -141,6 +141,9 @@ public class ESUserLocaleDocument {
 	
 	@Field(type = FieldType.Boolean)
 	private Boolean isPasswordVerified = false;
+
+	@Transient
+	private Double distance;
 
 	public String getId() {
 		return id;
@@ -474,6 +477,14 @@ public class ESUserLocaleDocument {
 		this.localeWorkingSchedules = localeWorkingSchedules;
 	}
 
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
 	@Override
 	public String toString() {
 		return "ESUserLocaleDocument [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName="
@@ -484,14 +495,13 @@ public class ESUserLocaleDocument {
 				+ localeName + ", registeredOwnerName=" + registeredOwnerName + ", licenseNumber=" + licenseNumber
 				+ ", localeImages=" + localeImages + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl
 				+ ", contactNumber=" + contactNumber + ", alternateContactNumbers=" + alternateContactNumbers
-				+ ", address=" + address + ", geoPoint=" + geoPoint + ", localeAddress=" + localeAddress
-				+ ", websiteUrl=" + websiteUrl + ", localeEmailAddress=" + localeEmailAddress
-				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", localeUId=" + localeUId + ", openSince="
-				+ openSince + ", isActivate=" + isActivate + ", isLocaleListed=" + isLocaleListed
+				+ ", localeWorkingSchedules=" + localeWorkingSchedules + ", address=" + address + ", geoPoint="
+				+ geoPoint + ", localeAddress=" + localeAddress + ", websiteUrl=" + websiteUrl + ", localeEmailAddress="
+				+ localeEmailAddress + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", localeUId=" + localeUId
+				+ ", openSince=" + openSince + ", isActivate=" + isActivate + ", isLocaleListed=" + isLocaleListed
 				+ ", localeRankingCount=" + localeRankingCount + ", noOfLocaleRecommendation="
 				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
 				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", localeType="
-				+ localeType + ", isPasswordVerified=" + isPasswordVerified + "]";
+				+ localeType + ", isPasswordVerified=" + isPasswordVerified + ", distance=" + distance + "]";
 	}
-	
 }
