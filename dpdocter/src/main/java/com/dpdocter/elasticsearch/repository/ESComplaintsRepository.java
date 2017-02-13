@@ -9,7 +9,7 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 
 public interface ESComplaintsRepository extends ElasticsearchRepository<ESComplaintsDocument, String> {
 
-	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"complaint\": \"?0*\",\"doctorId\":null,\"hospitalId\":null,\"locationId\":null}}]}}")
+	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"complaint\": \"?0*\"}},{\"missing\": {\"field\":\"doctorId\" }},{\"missing\": {\"field\":\"locationId\" }},{\"missing\": {\"field\":\"hospitalId\"}}]}}")
 	List<ESComplaintsDocument> findByComplaint(String searchTerm);
 
 	// @Query("{\"bool\": {\"must\": [{\"match\": {\"complaint\": \"?0\"}}]}}")

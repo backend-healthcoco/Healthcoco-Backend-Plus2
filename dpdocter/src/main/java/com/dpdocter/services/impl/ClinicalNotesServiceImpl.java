@@ -971,6 +971,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (clinicalNotesCollection != null) {
 				clinicalNote = new ClinicalNotes();
 				BeanUtil.map(clinicalNotesCollection, clinicalNote);
+				if (!DPDoctorUtils.anyStringEmpty(clinicalNotesCollection.getAppointmentId())) {
+					AppointmentCollection appointmentCollection = appointmentRepository
+							.findByAppointmentId(clinicalNotesCollection.getAppointmentId());
+					Appointment appointment = new Appointment();
+					BeanUtil.map(appointmentCollection, appointment);
+					clinicalNote.setAppointmentRequest(appointment);
+				}
 
 				// if(clinicalNotesCollection.getComplaints() != null &&
 				// !clinicalNotesCollection.getComplaints().isEmpty())
@@ -1007,14 +1014,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				// NotesCollection.class, Notes.class).getMappedResults(),
 				// clinicalNotesCollection.getNotes()));
 				if (clinicalNotesCollection.getDiagrams() != null && !clinicalNotesCollection.getDiagrams().isEmpty())
-					clinicalNote
-							.setDiagrams(
-									sortDiagrams(
-											mongoTemplate.aggregate(
-													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
-															.in(clinicalNotesCollection.getDiagrams()))),
-													DiagramsCollection.class, Diagram.class).getMappedResults(),
-											clinicalNotesCollection.getDiagrams()));
+					clinicalNote.setDiagrams(sortDiagrams(mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(new Criteria("id").in(clinicalNotesCollection.getDiagrams()))),
+
+							DiagramsCollection.class, Diagram.class).getMappedResults(),
+							clinicalNotesCollection.getDiagrams()));
 
 				if (DPDoctorUtils.anyStringEmpty(visitId)) {
 					PatientVisitCollection patientVisitCollection = patientVisitRepository
@@ -1884,13 +1888,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					diagramIds.add(new ObjectId(diagramId));
 				}
 			}
-			if (!DPDoctorUtils.anyStringEmpty(oldClinicalNotesCollection.getAppointmentId())) {
-				AppointmentCollection appointmentCollection = appointmentRepository
-						.findByAppointmentId(oldClinicalNotesCollection.getAppointmentId());
-				appointment = new Appointment();
-				BeanUtil.map(appointmentCollection, appointment);
-
-			}
 
 			clinicalNotesCollection.setCreatedTime(oldClinicalNotesCollection.getCreatedTime());
 			clinicalNotesCollection.setCreatedBy(oldClinicalNotesCollection.getCreatedBy());
@@ -1902,7 +1899,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 			clinicalNotes = new ClinicalNotes();
 			BeanUtil.map(clinicalNotesCollection, clinicalNotes);
-			clinicalNotes.setAppointmentRequest(appointment);
 
 			// if(complaintIds != null &&
 			// !complaintIds.isEmpty())clinicalNotes.setComplaints(sortComplaints(mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new
