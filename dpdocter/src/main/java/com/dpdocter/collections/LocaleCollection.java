@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.beans.LocaleWorkingSchedule;
-import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.LocaleType;
 
 @Document(collection = "locale_cl")

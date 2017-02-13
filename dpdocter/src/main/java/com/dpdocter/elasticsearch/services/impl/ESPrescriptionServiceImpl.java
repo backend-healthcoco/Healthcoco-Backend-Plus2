@@ -652,9 +652,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC))
 						.withPageable(new PageRequest(page, size)).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+				.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		}
 
 		return searchQuery;
@@ -690,9 +692,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		}
 
 		return searchQuery;
@@ -738,9 +740,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size)).build();
+						.withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		}
 
 		return searchQuery;

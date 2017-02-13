@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Locale;
-import com.dpdocter.beans.Location;
 import com.dpdocter.collections.LocaleCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RecommendationType;
@@ -20,7 +18,6 @@ import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.LocaleService;
-import com.sun.jersey.server.spi.component.ResourceComponentProviderFactoryClass;
 
 @Service
 public class LocaleServiceImpl implements LocaleService {

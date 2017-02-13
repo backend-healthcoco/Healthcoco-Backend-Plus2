@@ -348,6 +348,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
 					appointmentSearchResponse.setId(doctor.getUserId());
 					ESDoctorDocument object = new ESDoctorDocument();
+					object.setTitle(doctor.getTitle());
 					object.setUserId(doctor.getUserId());
 					object.setFirstName(doctor.getFirstName());
 					object.setLocationId(doctor.getLocationId());
@@ -855,9 +856,17 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					longitude = esCityDocument.getLongitude() + "";
 				}
 			}
-
 			if (!DPDoctorUtils.anyStringEmpty(location)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", location));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));
+			}
+			if (homeService != null) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("isHomeDeliveryAvailable", homeService));
+			}
+			if (isTwentyFourSevenOpen != null) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("isTwentyFourSevenOpen", isTwentyFourSevenOpen));
 			}
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++)
