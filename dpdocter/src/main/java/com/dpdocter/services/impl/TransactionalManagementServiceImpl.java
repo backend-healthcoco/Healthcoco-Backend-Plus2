@@ -1041,7 +1041,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						doctorDocument.setLocationId(locationCollection.getId().toString());
 					
 					doctorDocument.setSpecialities(null);
-					doctorDocument.setSpecialities(doctorCollection.getSpecialities());
 					
 					esRegistrationService.addDoctor(doctorDocument);
 				}
