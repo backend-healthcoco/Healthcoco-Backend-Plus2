@@ -20,7 +20,7 @@ import com.dpdocter.enums.LocaleType;
 public class ESUserLocaleDocument {
 
 	@Id
-    private String id;
+    private String id;//This is localeId
 
 	@Field(type = FieldType.String)
     private String title;
@@ -60,6 +60,9 @@ public class ESUserLocaleDocument {
 
 	@Field(type = FieldType.String)
     private String userUId;
+
+	@Field(type = FieldType.String)
+    private String userId;
 
 	@Field(type = FieldType.String)
     private String localeId;
@@ -485,23 +488,32 @@ public class ESUserLocaleDocument {
 		this.distance = distance;
 	}
 
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
 	@Override
 	public String toString() {
 		return "ESUserLocaleDocument [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName="
 				+ userName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", imageUrl="
 				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive + ", isVerified=" + isVerified
 				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
-				+ ", colorCode=" + colorCode + ", userUId=" + userUId + ", localeId=" + localeId + ", localeName="
-				+ localeName + ", registeredOwnerName=" + registeredOwnerName + ", licenseNumber=" + licenseNumber
-				+ ", localeImages=" + localeImages + ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl
-				+ ", contactNumber=" + contactNumber + ", alternateContactNumbers=" + alternateContactNumbers
-				+ ", localeWorkingSchedules=" + localeWorkingSchedules + ", address=" + address + ", geoPoint="
-				+ geoPoint + ", localeAddress=" + localeAddress + ", websiteUrl=" + websiteUrl + ", localeEmailAddress="
-				+ localeEmailAddress + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", localeUId=" + localeUId
-				+ ", openSince=" + openSince + ", isActivate=" + isActivate + ", isLocaleListed=" + isLocaleListed
-				+ ", localeRankingCount=" + localeRankingCount + ", noOfLocaleRecommendation="
-				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
-				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", localeType="
-				+ localeType + ", isPasswordVerified=" + isPasswordVerified + ", distance=" + distance + "]";
+				+ ", colorCode=" + colorCode + ", userUId=" + userUId + ", userId=" + userId + ", localeId=" + localeId
+				+ ", localeName=" + localeName + ", registeredOwnerName=" + registeredOwnerName + ", licenseNumber="
+				+ licenseNumber + ", localeImages=" + localeImages + ", logoUrl=" + logoUrl + ", logoThumbnailUrl="
+				+ logoThumbnailUrl + ", contactNumber=" + contactNumber + ", alternateContactNumbers="
+				+ alternateContactNumbers + ", localeWorkingSchedules=" + localeWorkingSchedules + ", address="
+				+ address + ", geoPoint=" + geoPoint + ", localeAddress=" + localeAddress + ", websiteUrl=" + websiteUrl
+				+ ", localeEmailAddress=" + localeEmailAddress + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen
+				+ ", localeUId=" + localeUId + ", openSince=" + openSince + ", isActivate=" + isActivate
+				+ ", isLocaleListed=" + isLocaleListed + ", localeRankingCount=" + localeRankingCount
+				+ ", noOfLocaleRecommendation=" + noOfLocaleRecommendation + ", isHomeDeliveryAvailable="
+				+ isHomeDeliveryAvailable + ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo="
+				+ paymentInfo + ", localeType=" + localeType + ", isPasswordVerified=" + isPasswordVerified
+				+ ", distance=" + distance + "]";
 	}
 }

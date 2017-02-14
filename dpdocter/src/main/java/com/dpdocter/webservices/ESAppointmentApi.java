@@ -75,7 +75,7 @@ public class ESAppointmentApi {
     public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city,
 	    @QueryParam("location") String location, @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 	    @QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
-	    @QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days) {
+	    @QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime, @QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days) {
 
 		List<ESUserLocaleDocument> pharmacies = solrAppointmentService.getPharmacies(page, size, city, location, latitude, longitude, paymentType,
 			homeService, isTwentyFourSevenOpen, minTime, maxTime, days);

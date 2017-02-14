@@ -321,6 +321,16 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				String id = doctorDocument.getId();
 				isActivate = doctorDocument.getIsActivate();
 				BeanUtil.map(doctorLocation, doctorDocument);
+				
+				doctorDocument.setImages(null);
+				doctorDocument.setImages(doctorLocation.getImages());
+				
+				doctorDocument.setClinicWorkingSchedules(null);
+				doctorDocument.setClinicWorkingSchedules(doctorLocation.getClinicWorkingSchedules());
+				
+				doctorDocument.setAlternateClinicNumbers(null);
+				doctorDocument.setAlternateClinicNumbers(doctorLocation.getAlternateClinicNumbers());
+				
 				doctorDocument.setGeoPoint(geoPoint);
 				doctorDocument.setId(id);
 				doctorDocument.setIsActivate(isActivate);

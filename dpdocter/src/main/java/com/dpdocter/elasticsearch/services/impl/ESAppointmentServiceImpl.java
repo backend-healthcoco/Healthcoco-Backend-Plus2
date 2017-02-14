@@ -841,8 +841,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	@SuppressWarnings("deprecation")
 	@Override
 	public List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
-			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, int minTime,
-			int maxTime, List<String> days) {
+			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
+			long maxTime, List<String> days) {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -877,16 +877,25 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 
 			if (maxTime == 0) {
-				maxTime = 1439;
+				maxTime = 86399999;
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
+						.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+
+								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
+
+								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
+										.lt(maxTime)))))),QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
+
+			}else{
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
+						.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+
+								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
+
+								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
+										.lt(maxTime)))))));
 			}
-			boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
-					.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
-
-							QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime).lt(maxTime),
-
-							QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
-									.lt(maxTime)))))));
-
+			
 
 			if (latitude != null && longitude != null)
 				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))

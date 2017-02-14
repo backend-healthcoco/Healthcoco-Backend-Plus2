@@ -18,7 +18,7 @@ public interface ESAppointmentService {
     List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl);
 
 	List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
-			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, int minTime,
-			int maxTime, List<String> days);
+			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
+			long maxTime, List<String> days);
 
 }

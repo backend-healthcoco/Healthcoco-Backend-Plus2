@@ -952,11 +952,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					doctorLocation.setImages(null);
 					doctorLocation.setImages(images);
 				}
-				doctorLocation.setClinicWorkingSchedules(null);
-				doctorLocation.setClinicWorkingSchedules(locationCollection.getClinicWorkingSchedules());
-				
-				doctorLocation.setAlternateClinicNumbers(null);
-				doctorLocation.setAlternateClinicNumbers(locationCollection.getAlternateClinicNumbers());
 				
 				esRegistrationService.editLocation(doctorLocation);
 			}
