@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +49,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	@Autowired
 	private SMSServices sMSServices;
-	
+
 	@Autowired
 	private MailService mailService;
 
@@ -58,7 +59,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Value(value = "${sms.birthday.wish.to.patient")
 	private String birthdayWishSMStoPatient;
 
-//	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
@@ -80,7 +81,8 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 					new Criteria("patient.discarded").is(false));
 
 			Aggregation aggregation = Aggregation.newAggregation(
-//					Aggregation.lookup("doctor_clinic_profile_cl", "_id", "userLocationId", "doctorClinic"),
+					// Aggregation.lookup("doctor_clinic_profile_cl", "_id",
+					// "userLocationId", "doctorClinic"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 					Aggregation.lookup("patient_cl", "userId", "doctorId", "patient"), Aggregation.unwind("patient"),
 					Aggregation.match(criteria), projectList, Aggregation.sort(Sort.Direction.DESC, "createdTime"));
@@ -126,8 +128,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 		Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Sending Birthday SMS to patients");
-			 try {
-				mailService.sendExceptionMail("Backend Business Exception :: While Sending Birthday SMS to patients", e.getMessage());
+			try {
+				mailService.sendExceptionMail("Backend Business Exception :: While Sending Birthday SMS to patients",
+						e.getMessage());
 			} catch (MessagingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -138,7 +141,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	}
 
-//	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToDoctors() {
 		try {
