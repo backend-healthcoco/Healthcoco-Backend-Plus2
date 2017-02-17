@@ -4209,7 +4209,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
 		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
 
-		if (!isCustomPDF && showUSG)
+		if (!isCustomPDF || showUSG)
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
 		parameters.put("pv", clinicalNotesCollection.getPv());
 		parameters.put("pa", clinicalNotesCollection.getPs());
