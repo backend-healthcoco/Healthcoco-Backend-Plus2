@@ -1,0 +1,231 @@
+package com.dpdocter.webservices;
+
+import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.dpdocter.beans.Locale;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.services.LocaleService;
+
+import common.util.web.DPDoctorUtils;
+import common.util.web.Response;
+import io.swagger.annotations.Api;
+
+@Component
+@Path(PathProxy.LOCALE_BASE_URL)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON )
+@Api(value = PathProxy.LOCALE_BASE_URL, description = "Endpoint for Locale API's")
+public class LocaleApi {
+
+	private static final Logger LOGGER = Logger.getLogger(LocaleApi.class.getName());
+
+	@Autowired
+	LocaleService localeService;
+	
+	/*@Autowired
+	PharmacyService pharmacyService;*/
+	
+	@Autowired
+	 ServletContext context;
+
+	/*@POST
+	@Path(value = PathProxy.LocaleUrls.UPLOAD)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.LocaleUrls.UPLOAD, notes = PathProxy.LocaleUrls.UPLOAD)
+	public Response<LocaleImage> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		LocaleImageAddEditRequest request = data.getValueAs(LocaleImageAddEditRequest.class);
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		return null;
+	}	*/	
+
+	@GET
+	@Path(PathProxy.LocaleUrls.GET_LOCALE_DETAILS)
+	public Response<Locale> getLocaleDetails(@QueryParam("id") String id,
+			@QueryParam("contactNumber") String contactNumber) {
+		Response<Locale> response = null;
+		Locale locale = null;
+		
+			if (DPDoctorUtils.allStringsEmpty(id, contactNumber)) {
+				throw new BusinessException(ServiceError.InvalidInput,
+						"Please provide id or contact number. Both cannot be null");
+			}
+			if (id != null && !id.isEmpty()) {
+				locale = localeService.getLocaleDetails(id);
+				response = new Response<Locale>();
+				response.setData(locale);
+			} else {
+				locale = localeService.getLocaleDetailsByContactDetails(contactNumber);
+				response = new Response<Locale>();
+				response.setData(locale);
+			}
+		return response;
+	}
+
+	/*@POST
+	@Path(PathProxy.LocaleUrls.EDIT_LOCALE_CONTACT_DETAILS )
+	public Response<Locale> updateLocaleContact( AddEditLocaleContactDetailsRequest request) {
+		Response<Locale> response = null;
+		Locale locale = null;
+		try {
+			if ( request ==null || request.getId() == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			locale = localeService.updateLocaleContact(request);
+			response = new Response<Locale>();
+			response.setData(locale);
+
+		} catch (Exception e) {
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+
+	}
+
+	@POST
+	@Path(PathProxy.LocaleUrls.EDIT_LOCALE_ADDRESS_DETAILS)
+	public Response<Locale> updateLocaleAddress( AddEditLocaleAddressDetailsRequest request) {
+		Response<Locale> response = null;
+		Locale locale = null;
+		try {
+			if (request == null|| request.getId() == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			locale = localeService.updateLocaleAddress( request);
+			response = new Response<Locale>();
+			response.setData(locale);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+
+	}
+
+	@POST
+	@Path(PathProxy.LocaleUrls.EDIT_LOCALE_VISIT_DETAILS)
+	public Response<Locale> updateLocaleVisitDetails(AddEditLocaleVisitDetailsRequest request) {
+		Response<Locale> response = null;
+		Locale locale = null;
+		try {
+			if (request == null|| request.getId() == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			locale = localeService.updateLocaleVisitDetails(request);
+			response = new Response<Locale>();
+			response.setData(locale);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+
+	}
+
+	@POST
+	@Path(PathProxy.LocaleUrls.EDIT_LOCALE_OTHER_DETAILS)
+	public Response<Locale> updateLocaleOtherDetails(AddEditLocaleOtherDetailsRequest request) {
+		Response<Locale> response = null;
+		Locale locale = null;
+		try {
+			if (request == null|| request.getId() == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			locale = localeService.updateLocaleOtherDetails(request);
+			response = new Response<Locale>();
+			response.setData(locale);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@POST
+	@Path(PathProxy.LocaleUrls.EDIT_LOCALE_IMAGES)
+	public Response<Locale> updateLocaleImages(@PathParam("id") String localeId, AddEditLocaleImagesRequest request) {
+		Response<Locale> response = null;
+		Locale locale = null;
+		try {
+			if (localeId == null || localeId.isEmpty()) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			locale = localeService.updateLocaleImages(localeId, request);
+			response = new Response<Locale>();
+			response.setData(locale);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@POST
+	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
+	public Response<Boolean> addUserRequestInQueue(UserSearchRequest request) {
+		Response<Boolean> response = null;
+		Boolean status = null;
+		try {
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			status = pharmacyService.addSearchRequest(request);
+			response = new Response<Boolean>();
+			response.setData(status);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+
+	@POST
+	@Path(PathProxy.LocaleUrls.ADD_PHARMACY_RESPONSE)
+	public Response<Boolean> addPharmacyResponseInQueue(PharmacyResponse pharmacyResponse) {
+		Response<Boolean> response = null;
+		Boolean status = null;
+		try {
+			if (pharmacyResponse == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			status = pharmacyService.addResponseInQueue(pharmacyResponse);
+			response = new Response<Boolean>();
+			response.setData(status);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+*/
+}

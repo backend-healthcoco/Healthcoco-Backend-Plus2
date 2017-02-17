@@ -82,12 +82,12 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 						tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
 					}
 				}
-					uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
-					uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
-					uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
-					uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
-					uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
-				
+				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
+				uiPermissions.setClinicalNotesPermissions(new ArrayList<String>(clinicalNotesPermissionsSet));
+				uiPermissions.setPrescriptionPermissions(new ArrayList<String>(prescriptionPermissionsSet));
+				uiPermissions.setProfilePermissions(new ArrayList<String>(profilePermissionsSet));
+				uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
+
 			}
 		}
 		return uiPermissions;
@@ -174,6 +174,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			clinicalNotesPermission.add(GynacPermissionsEnum.PV.getPermissions());
 			clinicalNotesPermission.add(GynacPermissionsEnum.PS.getPermissions());
 			clinicalNotesPermission.add(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
+			clinicalNotesPermission.add(GynacPermissionsEnum.LMP.getPermissions());
+			clinicalNotesPermission.add(GynacPermissionsEnum.EDD.getPermissions());
+			clinicalNotesPermission.add(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
 			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 			profilePermission.add(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
@@ -273,6 +276,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	private String[] prescriptionPermission() {
 		return Arrays.toString(PrescriptionPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
+	}
+
+	private String[] gynaecPermission() {
+		return Arrays.toString(GynacPermissionsEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
 
 	private String[] patientVisitPermission() {
