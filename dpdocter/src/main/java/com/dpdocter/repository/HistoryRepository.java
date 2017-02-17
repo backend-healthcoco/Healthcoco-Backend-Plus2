@@ -22,4 +22,7 @@ public interface HistoryRepository extends MongoRepository<HistoryCollection, Ob
 
     @Query("{'patientId' : ?0}")
     List<HistoryCollection> findHistory(ObjectId patientId);
+
+    @Query("{'patientId' : ?0, 'drugsAndAllergies':{$ne:null}}")
+	List<HistoryCollection> findDrugAllergiesHistory(ObjectId objectId);
 }

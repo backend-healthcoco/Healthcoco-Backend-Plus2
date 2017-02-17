@@ -4016,9 +4016,20 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
+	public List<DrugInteractionResposne> drugInteraction(List<Drug> request, String patientId) {
 		List<DrugInteractionResposne> response = null;
 		try {
+			
+//			if(!DPDoctorUtils.anyStringEmpty(patientId)){
+//				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("patientId").is(new ObjectId(patientId))
+//						.and("drugsAndAllergies").ne(null)));
+//				List<HistoryCollection> historyCollections = mongoTemplate.aggregate(aggregation, HistoryCollection.class, HistoryCollection.class).getMappedResults();
+//				Collection<List<Drug>> drugs = CollectionUtils.collect(historyCollections, new BeanToPropertyValueTransformer("drugsAndAllergies.drugs"));
+////				System.out.println(drugIds);
+//				
+//				Collection<Drug> drugIds = CollectionUtils.collect(drugs, new BeanToPropertyValueTransformer("Drug"));
+//				System.out.println(drugIds);
+//			}
 			List<String> genericCodes = new ArrayList<String>();
 
 			for (int k = 0; k < request.size(); k++) {

@@ -281,6 +281,7 @@ public class DPDoctorUtils {
 		} else {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(0, 50))
 						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
 			} else {
 				if (size > 0)
@@ -357,6 +358,7 @@ public class DPDoctorUtils {
 		SearchQuery searchQuery = null;
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+					.withPageable(new PageRequest(0, 80))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)

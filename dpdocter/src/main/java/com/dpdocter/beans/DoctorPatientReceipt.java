@@ -3,11 +3,12 @@ package com.dpdocter.beans;
 import java.util.Date;
 import java.util.List;
 
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 import com.dpdocter.response.InvoiceIdWithAmountResponse;
 
-public class DoctorPatientReceipt {
+public class DoctorPatientReceipt extends GenericCollection{
 
 	private String id;
 	

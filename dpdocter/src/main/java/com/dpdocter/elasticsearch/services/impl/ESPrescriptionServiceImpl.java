@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -169,43 +170,33 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			Boolean searchByGenericName) {
 		List<DrugDocument> response = null;
 		try {
-			SearchQuery searchQuery = null;
-			if (searchByGenericName) {
-				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
-						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
-						"genericNames.name");
-			} else {
-				searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
-						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
-			}
-			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
-					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
-					.addAggregation(AggregationBuilders
-		    				.terms("keys")
-		    				.field("drugCode")
-		    				.size(50)
-		    				.subAggregation(AggregationBuilders.topHits("hits").setSize(1)
-		    						.addSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC))))
-					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
-			response = new ArrayList<DrugDocument>();
-			StringTerms hits = searchResponse.getAggregations().get("keys");
-		    List<Bucket> buckets = hits.getBuckets();
-		    if(buckets != null && !buckets.isEmpty())
-		    for(Bucket bucket : buckets){
-		    	InternalTopHits topHits = bucket.getAggregations().get("hits");
-		    	SearchHit searchHit = topHits.getHits().getHits()[0];
-		    	ObjectMapper objectMapper = new ObjectMapper();
-		    	ESDrugDocument esDrugDocument = objectMapper.convertValue(searchHit.getSource(), ESDrugDocument.class);
-		    	
+			if (page > 0)
+				return new ArrayList<DrugDocument>();
+			if (doctorId == null)
+				response = new ArrayList<DrugDocument>();
+			else {
+				SearchQuery searchQuery = null;
+				if (searchByGenericName) {
+					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+				} else {
+					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+				}
+				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+				esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
+		
+			response = new ArrayList<DrugDocument>(50);
+			for(ESDrugDocument esDrugDocument : esDrugDocuments){	    	
 		    	String drugTypeStr = esDrugDocument.getDrugType();
 				esDrugDocument.setDrugType(null);
 				DrugDocument drugDocument = new DrugDocument();
 				BeanUtil.map(esDrugDocument, drugDocument);
 				DrugType drugType = new DrugType();drugType.setId(esDrugDocument.getDrugTypeId());drugType.setType(drugTypeStr);
 				drugDocument.setDrugType(drugType);
-				response.add(drugDocument);
-		    
+				response.add(drugDocument);	    
 		    }
+		  }
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -227,19 +218,15 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				SearchQuery searchQuery = null;
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, searchTerm, category, null, "genericNames.name");
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
 				} else {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, searchTerm, category, null, "drugName");
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
-				SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
-						.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0)
-						.setSize(50).addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
+				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+				
 				response = new ArrayList<DrugDocument>();
-				SearchHit[] results = searchResponse.getHits().getHits();
-				for (SearchHit hit : results) {
-					ObjectMapper objectMapper = new ObjectMapper();
-					ESDrugDocument esDrugDocument = objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
+				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
 					esDrugDocument.setDrugType(null);
 					DrugDocument drugDocument = new DrugDocument();
@@ -249,7 +236,6 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					drugType.setType(drugTypeStr);
 					drugDocument.setDrugType(drugType);
 					response.add(drugDocument);
-
 				}
 			}
 		} catch (Exception e) {
@@ -275,32 +261,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
 
-			/*
-			 * searchQuery = new NativeSearchQueryBuilder()
-			 * .addAggregation(AggregationBuilders.terms("keys").field(
-			 * "drugName").size(5).subAggregation(
-			 * AggregationBuilders.topHits("hits").addSort("rankingCount",
-			 * SortOrder.DESC)))
-			 * .withIndices("drugs_in").withTypes("drugs").withQuery(searchQuery
-			 * .getQuery())
-			 * .withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.
-			 * DESC)).build();
-			 */
-
-			// response = elasticsearchTemplate.queryForList(searchQuery,
-			// ESDrugDocument.class);
-
-			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
-					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
-					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
-			response = new ArrayList<ESDrugDocument>();
-			SearchHit[] results = searchResponse.getHits().getHits();
-			System.out.println("Current results: " + results.length);
-			for (SearchHit hit : results) {
-				ObjectMapper objectMapper = new ObjectMapper();
-				ESDrugDocument esDoctorDocument = objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
-				response.add(esDoctorDocument);
-			}
+			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class); 
+			response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -321,48 +283,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				searchQuery = DPDoctorUtils.createGlobalQuery(Resource.DRUG, page, size, updatedTime, discarded, null,
 						searchTerm, null, category, null, "drugName");
 			}
-			/*
-			 * searchQuery = new NativeSearchQueryBuilder()
-			 * .addAggregation(AggregationBuilders.terms("keys").field(
-			 * "drugName").size(5).subAggregation(
-			 * AggregationBuilders.topHits("hits").addSort("rankingCount",
-			 * SortOrder.DESC)))
-			 * .withIndices("drugs_in").withTypes("drugs").withQuery(searchQuery
-			 * .getQuery())
-			 * .withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.
-			 * DESC)).build();
-			 * 
-			 * // response = elasticsearchTemplate.queryForList(searchQuery, //
-			 * ESDrugDocument.class);
-			 * 
-			 * SearchResponse searchResponse =
-			 * elasticsearchTemplate.query(searchQuery, new
-			 * ResultsExtractor<SearchResponse>() {
-			 * 
-			 * @Override public SearchResponse extract(SearchResponse response)
-			 * { return response; } }); response = new
-			 * ArrayList<ESDrugDocument>(); StringTerms hits =
-			 * searchResponse.getAggregations().get("keys"); List<Bucket>
-			 * buckets = hits.getBuckets(); if (buckets != null &&
-			 * !buckets.isEmpty()) for (Bucket bucket : buckets) {
-			 * InternalTopHits topHits = bucket.getAggregations().get("hits");
-			 * SearchHit[] searchHit = topHits.getHits().getHits(); for
-			 * (SearchHit hit : searchHit) { ObjectMapper objectMapper = new
-			 * ObjectMapper(); ESDrugDocument esDoctorDocument =
-			 * objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
-			 * response.add(esDoctorDocument); }
-			 */
-			SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
-					.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0).setSize(50)
-					.addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
-			response = new ArrayList<ESDrugDocument>();
-			SearchHit[] results = searchResponse.getHits().getHits();
-
-			for (SearchHit hit : results) {
-				ObjectMapper objectMapper = new ObjectMapper();
-				ESDrugDocument esDoctorDocument = objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
-				response.add(esDoctorDocument);
-			}
+			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -384,22 +305,12 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				SearchQuery searchQuery = null;
 				if (searchByGenericName) {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, searchTerm, category, null, "genericNames.name");
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
 				} else {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, searchTerm, category, null, "drugName");
+							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
-				SearchResponse searchResponse = transportClient.prepareSearch("drugs_in").setTypes("drugs")
-						.setSearchType(SearchType.QUERY_THEN_FETCH).setQuery(searchQuery.getQuery()).setFrom(0)
-						.setSize(50).addSort("rankingCount", SortOrder.DESC).setExplain(true).execute().actionGet();
-				response = new ArrayList<ESDrugDocument>();
-				SearchHit[] results = searchResponse.getHits().getHits();
-
-				for (SearchHit hit : results) {
-					ObjectMapper objectMapper = new ObjectMapper();
-					ESDrugDocument esDoctorDocument = objectMapper.convertValue(hit.getSource(), ESDrugDocument.class);
-					response.add(esDoctorDocument);
-				}
+				response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

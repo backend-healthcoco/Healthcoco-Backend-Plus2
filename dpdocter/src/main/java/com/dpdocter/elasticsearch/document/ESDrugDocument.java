@@ -268,4 +268,15 @@ public class ESDrugDocument {
 				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
 				+ ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
 	}
+	
+	@Override
+	 public boolean equals(Object obj) {
+	   ESDrugDocument drugDocument = (ESDrugDocument) obj;
+	   return this.drugCode.equalsIgnoreCase(drugDocument.drugCode);
+	 }
+
+	 @Override
+	 public int hashCode() {
+	    return drugCode.hashCode();
+	 }
 }
