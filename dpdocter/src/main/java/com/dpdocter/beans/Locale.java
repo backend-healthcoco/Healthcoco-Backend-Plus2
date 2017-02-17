@@ -16,6 +16,7 @@ public class Locale extends GenericCollection {
 	private String logoUrl;
 	private String logoThumbnailUrl;
 	private String contactNumber;
+	private String callingNumber;
 	private List<String> alternateContactNumbers;
 	private List<LocaleWorkingSchedule> localeWorkingSchedules;
 	private Address address;
@@ -261,12 +262,20 @@ public class Locale extends GenericCollection {
 		this.isLocaleRecommended = isLocaleRecommended;
 	}
 
+	public String getCallingNumber() {
+		return callingNumber;
+	}
+
+	public void setCallingNumber(String callingNumber) {
+		this.callingNumber = callingNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "Locale [id=" + id + ", localeName=" + localeName + ", registeredOwnerName=" + registeredOwnerName
 				+ ", licenseNumber=" + licenseNumber + ", localeImages=" + localeImages + ", logoUrl=" + logoUrl
-				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", contactNumber=" + contactNumber
-				+ ", alternateContactNumbers=" + alternateContactNumbers + ", localeWorkingSchedules="
+				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", contactNumber=" + contactNumber + ", callingNumber="
+				+ callingNumber + ", alternateContactNumbers=" + alternateContactNumbers + ", localeWorkingSchedules="
 				+ localeWorkingSchedules + ", address=" + address + ", localeAddress=" + localeAddress + ", websiteUrl="
 				+ websiteUrl + ", localeEmailAddress=" + localeEmailAddress + ", isTwentyFourSevenOpen="
 				+ isTwentyFourSevenOpen + ", localeUId=" + localeUId + ", openSince=" + openSince + ", userState="

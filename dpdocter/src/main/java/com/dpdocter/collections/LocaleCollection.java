@@ -33,6 +33,8 @@ public class LocaleCollection extends GenericCollection {
 	@Indexed(unique = true)
 	private String contactNumber;
 	@Field
+	private String callingNumber;
+	@Field
 	private List<String> alternateContactNumbers;
 	@Field
 	private List<LocaleWorkingSchedule> localeWorkingSchedules;
@@ -277,19 +279,28 @@ public class LocaleCollection extends GenericCollection {
 		this.isPasswordVerified = isPasswordVerified;
 	}
 
+	public String getCallingNumber() {
+		return callingNumber;
+	}
+
+	public void setCallingNumber(String callingNumber) {
+		this.callingNumber = callingNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "LocaleCollection [id=" + id + ", localeName=" + localeName + ", registeredOwnerName="
 				+ registeredOwnerName + ", licenseNumber=" + licenseNumber + ", localeImages=" + localeImages
 				+ ", logoUrl=" + logoUrl + ", logoThumbnailUrl=" + logoThumbnailUrl + ", contactNumber=" + contactNumber
-				+ ", alternateContactNumbers=" + alternateContactNumbers + ", localeWorkingSchedules="
-				+ localeWorkingSchedules + ", address=" + address + ", localeAddress=" + localeAddress + ", websiteUrl="
-				+ websiteUrl + ", localeEmailAddress=" + localeEmailAddress + ", isTwentyFourSevenOpen="
-				+ isTwentyFourSevenOpen + ", localeUId=" + localeUId + ", openSince=" + openSince + ", isActivate="
-				+ isActivate + ", isLocaleListed=" + isLocaleListed + ", localeRankingCount=" + localeRankingCount
-				+ ", noOfLocaleRecommendation=" + noOfLocaleRecommendation + ", isHomeDeliveryAvailable="
-				+ isHomeDeliveryAvailable + ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo="
-				+ paymentInfo + ", localeType=" + localeType + ", isPasswordVerified=" + isPasswordVerified + "]";
+				+ ", callingNumber=" + callingNumber + ", alternateContactNumbers=" + alternateContactNumbers
+				+ ", localeWorkingSchedules=" + localeWorkingSchedules + ", address=" + address + ", localeAddress="
+				+ localeAddress + ", websiteUrl=" + websiteUrl + ", localeEmailAddress=" + localeEmailAddress
+				+ ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", localeUId=" + localeUId + ", openSince="
+				+ openSince + ", isActivate=" + isActivate + ", isLocaleListed=" + isLocaleListed
+				+ ", localeRankingCount=" + localeRankingCount + ", noOfLocaleRecommendation="
+				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
+				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", localeType="
+				+ localeType + ", isPasswordVerified=" + isPasswordVerified + "]";
 	}
 
 }
