@@ -36,7 +36,4 @@ public interface BillingService {
 	Double getBalanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId, String from, String to, int page, int size, String updatedTime);
-
-	Boolean addLedger();
-
 }

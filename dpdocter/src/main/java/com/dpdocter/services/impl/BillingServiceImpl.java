@@ -315,6 +315,7 @@ public class BillingServiceImpl implements BillingService {
 						Double advanceAmountToBeUsed = request.getUsedAdvanceAmount();
 						for(DoctorPatientReceiptCollection receiptCollection : receiptsOfAdvancePayment){
 							InvoiceIdWithAmount invoiceIdWithAmount = new InvoiceIdWithAmount();
+							invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 							invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
 						if(advanceAmountToBeUsed > 0.0){
 							if(receiptCollection.getRemainingAdvanceAmount()>advanceAmountToBeUsed){
@@ -349,6 +350,7 @@ public class BillingServiceImpl implements BillingService {
 								request.getAmountPaid());
 					}
 					InvoiceIdWithAmount invoiceIdWithAmount = new InvoiceIdWithAmount();
+					invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 					invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
 					doctorPatientReceiptCollection.setInvoiceIdsWithAmount(Arrays.asList(invoiceIdWithAmount));
 					doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
@@ -524,6 +526,7 @@ public class BillingServiceImpl implements BillingService {
 			doctorPatientReceiptCollection.setReceiptType(ReceiptType.INVOICE);
 			
 			InvoiceIdWithAmount invoiceIdWithAmount = new InvoiceIdWithAmount();
+			invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 			invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
 			doctorPatientReceiptCollection.setInvoiceIdsWithAmount(Arrays.asList(invoiceIdWithAmount));
 				
@@ -538,6 +541,7 @@ public class BillingServiceImpl implements BillingService {
 					Double advanceAmountToBeUsed = request.getUsedAdvanceAmount();
 					for(DoctorPatientReceiptCollection receiptCollection : receiptsOfAdvancePayment){
 						invoiceIdWithAmount = new InvoiceIdWithAmount();
+						invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 						invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
 					if(advanceAmountToBeUsed > 0.0){
 						if(receiptCollection.getRemainingAdvanceAmount()>advanceAmountToBeUsed){
@@ -715,48 +719,6 @@ public class BillingServiceImpl implements BillingService {
 		}catch(Exception e){
 			logger.error("Error while getting ledger"+e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting ledger"+e);
-		}
-		return response;
-	}
-
-	@Override
-	public Boolean addLedger() {
-		Boolean response = false;
-		try{
-			List<DoctorPatientInvoiceCollection> doctorPatientInvoiceCollections = doctorPatientInvoiceRepository.findAll(new Sort(Direction.ASC, "createdTime"));
-			for(DoctorPatientInvoiceCollection doctorPatientInvoiceCollection : doctorPatientInvoiceCollections){
-				
-				DoctorPatientLedgerCollection doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
-				doctorPatientLedgerCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
-				doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
-				doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
-				doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-				doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-				doctorPatientLedgerCollection.setCreatedTime(doctorPatientInvoiceCollection.getCreatedTime());
-				doctorPatientLedgerCollection.setUpdatedTime(doctorPatientInvoiceCollection.getUpdatedTime());
-				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
-			}
-			List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository.findAll(new Sort(Direction.ASC, "createdTime"));
-			for(DoctorPatientReceiptCollection doctorPatientReceiptCollection : doPatientReceiptCollections){
-				DoctorPatientLedgerCollection doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
-				doctorPatientLedgerCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
-				doctorPatientLedgerCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
-				doctorPatientLedgerCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
-				doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
-				doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
-				doctorPatientLedgerCollection.setCreatedTime(doctorPatientReceiptCollection.getCreatedTime());
-				doctorPatientLedgerCollection.setUpdatedTime(doctorPatientReceiptCollection.getUpdatedTime());
-				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
-			}
-			List<DoctorPatientLedgerCollection> doctorPatientLedgerCollections = doctorPatientLedgerRepository.findAll(new Sort(Direction.ASC, "createdTime"));
-			Double balanceAmount = 0.0;
-			for(DoctorPatientLedgerCollection ledgerCollection : doctorPatientLedgerCollections){
-				
-			}
-			
-		}catch(Exception e){
-			logger.error("Error while adding ledger"+e);
-			throw new BusinessException(ServiceError.Unknown, "Error while adding ledger"+e);
 		}
 		return response;
 	}

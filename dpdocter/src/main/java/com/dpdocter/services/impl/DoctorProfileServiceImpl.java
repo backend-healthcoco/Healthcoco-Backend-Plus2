@@ -35,8 +35,10 @@ import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Speciality;
 import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.FeedbackCollection;
@@ -49,13 +51,17 @@ import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
+import com.dpdocter.enums.GynacPermissionsEnum;
+import com.dpdocter.enums.OpthoPermissionEnums;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.RoleRepository;
@@ -127,6 +133,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private RecommendationsRepository recommendationsRepository;
+
+	@Autowired
+	DynamicUIRepository dynamicUIRepository;
 
 	@Override
 	@Transactional
@@ -256,6 +265,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		DoctorCollection doctorCollection = null;
 		try {
 			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+			List<ObjectId> oldSpecialities = doctorCollection.getSpecialities();
 			if (doctorCollection != null) {
 				response = new DoctorSpecialityAddEditRequest();
 				if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
@@ -264,8 +274,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("id"));
-					if (specialityIds != null && !specialityIds.isEmpty())
+					if (specialityIds != null && !specialityIds.isEmpty()){
 						doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
+						if (oldSpecialities != null && !oldSpecialities.isEmpty())removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
+					}
 					else
 						doctorCollection.setSpecialities(null);
 				} else {
@@ -274,6 +286,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				doctorRepository.save(doctorCollection);
 				BeanUtil.map(doctorCollection, response);
 				response.setDoctorId(doctorCollection.getUserId().toString());
+				
 			}
 
 		} catch (Exception e) {
@@ -282,6 +295,49 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 		}
 		return response;
+	}
+
+	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds, Collection<ObjectId> oldSpecialities, String doctorId) {
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+		if(dynamicUICollection != null){
+			for(ObjectId objectId : specialityIds){
+				if(oldSpecialities.contains(objectId))oldSpecialities.remove(objectId);
+			}
+			if (oldSpecialities != null && !oldSpecialities.isEmpty()){
+				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository.findAll(oldSpecialities);
+				@SuppressWarnings("unchecked")
+				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections, new BeanToPropertyValueTransformer("speciality"));
+				UIPermissions uiPermissions = dynamicUICollection.getUiPermissions();
+				for(String speciality : specialities){
+					if(speciality.equalsIgnoreCase("OPHTHALMOLOGIST")){
+						if(uiPermissions.getClinicalNotesPermissions() != null)
+							uiPermissions.getClinicalNotesPermissions().remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
+						if(uiPermissions.getPrescriptionPermissions() != null)
+								uiPermissions.getPrescriptionPermissions().remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
+					}
+					if(speciality.equalsIgnoreCase("PEDIATRICIAN")){
+						if(uiPermissions.getProfilePermissions() != null)
+							uiPermissions.getProfilePermissions().remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+					}
+					if(speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")){
+						if(uiPermissions.getClinicalNotesPermissions() != null){
+							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.PA.getPermissions());
+							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.PV.getPermissions());
+							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.PS.getPermissions());
+							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
+							uiPermissions.getProfilePermissions().remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+						}
+					}
+					if(speciality.equalsIgnoreCase("CARDIOLOGIST")){
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECG.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECHO.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.XRAY.getPermissions());
+						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.HOLTER.getPermissions());	
+					}	
+				}
+		dynamicUIRepository.save(dynamicUICollection);
+			}
+		}
 	}
 
 	@Override
@@ -933,6 +989,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					doctorCollection.setExperience(null);
 				}
 				if (request.getSpeciality() != null && !request.getSpeciality().isEmpty()) {
+					List<ObjectId> oldSpecialities = doctorCollection.getSpecialities();
 					List<SpecialityCollection> specialityCollections = specialityRepository
 							.findBySuperSpeciality(request.getSpeciality());
 					if (specialityCollections != null && !specialityCollections.isEmpty()) {
@@ -945,6 +1002,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						if (specialityIds != null && !specialityIds.isEmpty()) {
 							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 							specialitiesresponse.addAll(specialities);
+							if (oldSpecialities != null && !oldSpecialities.isEmpty())removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 						} else {
 							doctorCollection.setSpecialities(null);
 							specialitiesresponse = null;

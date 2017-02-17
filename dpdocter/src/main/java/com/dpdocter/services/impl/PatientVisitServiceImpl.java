@@ -865,7 +865,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = userRepository.findOne(patientVisitLookupResponse.getPatientId());
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false);
+						null, false, false, false, false, false, false, false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -942,7 +942,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	private JasperReportResponse createJasper(PatientVisitLookupResponse patientVisitLookupResponse,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint) throws IOException {
+			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF) throws IOException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>" + (patientVisitLookupResponse.getUniqueEmrId() != null
@@ -976,7 +976,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			for (ObjectId clinicalNotesId : patientVisitLookupResponse.getClinicalNotesId()) {
 				if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 					ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
-							clinicalNotesId.toString(), contentLineStyle, parameters, showUSG);
+							clinicalNotesId.toString(), contentLineStyle, parameters, showUSG, isCustomPDF);
 					clinicalNotes.add(clinicalJasperDetails);
 				}
 			}
@@ -1366,7 +1366,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
-			Map<String, Object> parameters, Boolean showUSG) {
+			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		try {
@@ -1463,7 +1463,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails
 							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
 
-					if (showUSG)
+					if (!isCustomPDF || showUSG)
 						clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
 					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
 					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
@@ -1929,7 +1929,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	public String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA,
-			Boolean showUSG, Boolean isLabPrint) {
+			Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF) {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
@@ -1951,7 +1951,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientVisitLookupResponse.getHospitalId(), patientVisitLookupResponse.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint);
+						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint, isCustomPDF);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)

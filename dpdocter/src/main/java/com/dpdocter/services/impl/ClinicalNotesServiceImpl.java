@@ -4009,7 +4009,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							emailTrackCollection.setPatientId(user.getId());
 						}
 						JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-								null, false, false, false, false, false);
+								null, false, false, false, false, false, false);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
@@ -4152,7 +4152,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	public String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH,
-			Boolean showDA, Boolean showUSG) {
+			Boolean showDA, Boolean showUSG, Boolean isCustomPDF) {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
@@ -4169,7 +4169,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA, showUSG);
+						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4189,7 +4189,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG) throws IOException, ParseException {
+			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
@@ -4209,7 +4209,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
 		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
 
-		if (showUSG)
+		if (!isCustomPDF && showUSG)
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
 		parameters.put("pv", clinicalNotesCollection.getPv());
 		parameters.put("pa", clinicalNotesCollection.getPs());

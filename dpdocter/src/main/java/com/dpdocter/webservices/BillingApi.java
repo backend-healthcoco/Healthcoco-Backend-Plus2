@@ -253,14 +253,4 @@ public class BillingApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BillingUrls.CREATE_LEDGER)
-	@GET
-	@ApiOperation(value = PathProxy.BillingUrls.CREATE_LEDGER, notes = PathProxy.BillingUrls.CREATE_LEDGER)
-	public Response<Boolean> addLedger() {
-		
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(billingService.addLedger());
-		return response;
-	}
-	
 }

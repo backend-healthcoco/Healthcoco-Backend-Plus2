@@ -8,6 +8,8 @@ public class InvoiceIdWithAmount {
 	
     private	Double usedAdvanceAmount = 0.0;
 
+    private String uniqueInvoiceId;
+    
 	public InvoiceIdWithAmount() {
 		super();
 	}
@@ -34,8 +36,17 @@ public class InvoiceIdWithAmount {
 		this.usedAdvanceAmount = usedAdvanceAmount;
 	}
 
+	public String getUniqueInvoiceId() {
+		return uniqueInvoiceId;
+	}
+
+	public void setUniqueInvoiceId(String uniqueInvoiceId) {
+		this.uniqueInvoiceId = uniqueInvoiceId;
+	}
+
 	@Override
 	public String toString() {
-		return "InvoiceIdWithAmount [invoiceId=" + invoiceId + ", usedAdvanceAmount=" + usedAdvanceAmount + "]";
-	}	
+		return "InvoiceIdWithAmount [invoiceId=" + invoiceId + ", usedAdvanceAmount=" + usedAdvanceAmount
+				+ ", uniqueInvoiceId=" + uniqueInvoiceId + "]";
+	}
 }
