@@ -1005,5 +1005,24 @@ public interface PathProxy {
 		
 		public static final String CREATE_LEDGER = "/ledger";
 	}
+	
+	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
+
+	public interface LocaleUrls {
+
+		public static final String UPLOAD = "/upload";
+		
+		public static final String EDIT_LOCALE_CONTACT_DETAILS = "/editContactDetails";
+		public static final String EDIT_LOCALE_ADDRESS_DETAILS = "/editAddressDetails";
+		public static final String EDIT_LOCALE_OTHER_DETAILS = "/editOtherDetails";
+		public static final String EDIT_LOCALE_VISIT_DETAILS = "/editVisitDetails";
+		public static final String EDIT_LOCALE_IMAGES = "/{id}/editImages";
+		
+		public static final String GET_LOCALE_DETAILS = "/get";
+		
+		public static final String ADD_USER_REQUEST = "/addUserRequest";
+		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
+
+	}
 
 }
