@@ -46,11 +46,21 @@ public class BlogApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL, notes = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
+	public Response<Blog> getBlogBySlugURL(@PathParam("slugURL") String slugURL, @QueryParam("userId") String userId) {
+		Blog blogresponse = blogService.getBlog(null, slugURL, userId);
+		Response<Blog> response = new Response<Blog>();
+		response.setData(blogresponse);
+		return response;
+	}
+
 	@Path(value = PathProxy.BlogsUrls.GET_BLOG_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_BY_ID, notes = PathProxy.BlogsUrls.GET_BLOG_BY_ID)
 	public Response<Blog> getBlog(@PathParam("blogId") String blogId, @QueryParam("userId") String userId) {
-		Blog blogresponse = blogService.getBlog(blogId, userId);
+		Blog blogresponse = blogService.getBlog(blogId, null, userId);
 		Response<Blog> response = new Response<Blog>();
 		response.setData(blogresponse);
 		return response;
@@ -78,8 +88,6 @@ public class BlogApi {
 		response.setDataList(blogresponse);
 		return response;
 	}
-
-	
 
 	@Path(value = PathProxy.BlogsUrls.ADD_EDIT_FEVOURITE_BLOGS)
 	@GET

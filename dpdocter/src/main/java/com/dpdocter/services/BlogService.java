@@ -9,7 +9,7 @@ import com.dpdocter.response.BlogResponse;
 public interface BlogService {
 	public BlogResponse getBlogs(int size, int page, String category, String userId, String title);
 
-	public Blog getBlog(String id, String userId);
+	public Blog getBlog(String id, String slugUrl,String userId);
 
 	public Blog updateLikes(String id, String userId);
 

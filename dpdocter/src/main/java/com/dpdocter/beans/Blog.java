@@ -32,6 +32,22 @@ public class Blog extends GenericCollection {
 
 	private Boolean isFavourite = false;
 
+	private String shortDesc;
+
+	private String metaKeyword;
+
+	private String metaDesc;	
+	
+	private String slugURL; 
+
+	public String getSlugURL() {
+		return slugURL;
+	}
+
+	public void setSlugURL(String slugURL) {
+		this.slugURL = slugURL;
+	}
+
 	public String getPostBy() {
 		return postBy;
 	}
@@ -142,6 +158,30 @@ public class Blog extends GenericCollection {
 
 	public void setIsliked(Boolean isliked) {
 		this.isliked = isliked;
+	}
+
+	public String getShortDesc() {
+		return shortDesc;
+	}
+
+	public void setShortDesc(String shortDesc) {
+		this.shortDesc = shortDesc;
+	}
+
+	public String getMetaKeyword() {
+		return metaKeyword;
+	}
+
+	public void setMetaKeyword(String metaKeyword) {
+		this.metaKeyword = metaKeyword;
+	}
+
+	public String getMetaDesc() {
+		return metaDesc;
+	}
+
+	public void setMetaDesc(String metaDesc) {
+		this.metaDesc = metaDesc;
 	}
 
 }

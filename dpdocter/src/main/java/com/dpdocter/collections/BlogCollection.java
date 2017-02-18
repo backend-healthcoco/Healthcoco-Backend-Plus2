@@ -2,6 +2,7 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -42,6 +43,28 @@ public class BlogCollection extends GenericCollection {
 
 	@Field
 	private String postBy;
+
+	@Field
+	private String shortDesc;
+
+	@Field
+	private String metaKeyword;
+
+	@Field
+	private String metaDesc;
+
+	@Field
+	@Indexed(unique = true)
+
+	private String slugURL;
+
+	public String getSlugURL() {
+		return slugURL;
+	}
+
+	public void setSlugURL(String slugURL) {
+		this.slugURL = slugURL;
+	}
 
 	public String getPostBy() {
 		return postBy;
@@ -139,6 +162,30 @@ public class BlogCollection extends GenericCollection {
 
 	public void setNoOfLikes(Integer noOfLikes) {
 		this.noOfLikes = noOfLikes;
+	}
+
+	public String getShortDesc() {
+		return shortDesc;
+	}
+
+	public void setShortDesc(String shortDesc) {
+		this.shortDesc = shortDesc;
+	}
+
+	public String getMetaKeyword() {
+		return metaKeyword;
+	}
+
+	public void setMetaKeyword(String metaKeyword) {
+		this.metaKeyword = metaKeyword;
+	}
+
+	public String getMetaDesc() {
+		return metaDesc;
+	}
+
+	public void setMetaDesc(String metaDesc) {
+		this.metaDesc = metaDesc;
 	}
 
 }

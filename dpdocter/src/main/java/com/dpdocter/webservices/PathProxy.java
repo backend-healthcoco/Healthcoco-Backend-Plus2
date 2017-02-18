@@ -210,13 +210,13 @@ public interface PathProxy {
 		public static final String ADD_PV = "/pv/add";
 
 		public static final String ADD_PS = "/ps/add";
-		
+
 		public static final String ADD_X_RAY_DETAILS = "/xRayDetails/add";
-		
+
 		public static final String ADD_ECG_DETAILS = "/ecgDetails/add";
-		
+
 		public static final String ADD_ECHO = "/echo/add";
-		
+
 		public static final String ADD_HOLTER = "/holter/add";
 
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
@@ -260,13 +260,13 @@ public interface PathProxy {
 		public static final String DELETE_PV = "/pv/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PS = "/ps/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_X_RAY_DETAILS = "/xRayDetails/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_ECG_DETAILS = "/ecgDetails/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_ECHO = "/echo/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		
+
 		public static final String DELETE_HOLTER = "/holter/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
@@ -696,13 +696,13 @@ public interface PathProxy {
 		public static final String SEARCH_PV = "pv/{range}";
 
 		public static final String SEARCH_PS = "ps/{range}";
-		
+
 		public static final String SEARCH_X_RAY_DETAILS = "xRayDetails/{range}";
-		
+
 		public static final String SEARCH_ECG_DETAILS = "ecgDetails/{range}";
-		
+
 		public static final String SEARCH_ECHO = "echo/{range}";
-		
+
 		public static final String SEARCH_HOLTER = "holter/{range}";
 
 	}
@@ -800,6 +800,10 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_PATIENT_TREATMENT = "/download/{treatmentId}";
 
+		public static final String GENERATE_TREATMENT_CODE = "/treatmentCode/add";
+
+		public static final String ADD_FAVOURITES_TO_TREATMENT_SERVICES = "favourites/addToTreatmentService";
+
 	}
 
 	public static final String SOLR_CITY_BASE_URL = BASE_URL + "/solr/city";
@@ -858,7 +862,7 @@ public interface PathProxy {
 		public static final String SEARCH = "/search";
 
 		public static final String GET_DOCTORS = "/doctors";
-		
+
 		public static final String GET_PHARMACIES = "/pharmacies";
 
 		public static final String GET_LABS = "/labs";
@@ -967,6 +971,8 @@ public interface PathProxy {
 
 		public static final String GET_BLOG_BY_ID = "/getBlog/{blogId}";
 
+		public static final String GET_BLOG_BY_SLUG_URL = "/getBlog/{slugURL}";
+
 		public static final String ADD_EDIT_FEVOURITE_BLOGS = "/addTOFovourite/{blogId}/{userId}";
 
 		public static final String GET_FEVOURITE_BLOGS = "/getFovourite";
@@ -998,28 +1004,28 @@ public interface PathProxy {
 		public static final String DELETE_RECEIPT = "/receipt/{receiptId}/delete";
 
 		public static final String ADD_INVOICE_AND_PAY = "/invoice/addAndPay";
-		
+
 		public static final String GET_BALANCE_AMOUNT = "/balanceAmount/{locationId}/{hospitalId}/{patientId}";
 
 		public static final String GET_LEDGER = "/ledger/{locationId}/{hospitalId}/{patientId}";
-		
+
 		public static final String CREATE_LEDGER = "/ledger";
 	}
-	
+
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
 
 	public interface LocaleUrls {
 
 		public static final String UPLOAD = "/upload";
-		
+
 		public static final String EDIT_LOCALE_CONTACT_DETAILS = "/editContactDetails";
 		public static final String EDIT_LOCALE_ADDRESS_DETAILS = "/editAddressDetails";
 		public static final String EDIT_LOCALE_OTHER_DETAILS = "/editOtherDetails";
 		public static final String EDIT_LOCALE_VISIT_DETAILS = "/editVisitDetails";
 		public static final String EDIT_LOCALE_IMAGES = "/{id}/editImages";
-		
+
 		public static final String GET_LOCALE_DETAILS = "/get";
-		
+
 		public static final String ADD_USER_REQUEST = "/addUserRequest";
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
 

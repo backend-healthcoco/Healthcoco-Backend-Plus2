@@ -73,15 +73,15 @@ public class BlogServicesImpl implements BlogService {
 		List<Blog> listblog = null;
 
 		try {
-			
+
 			Criteria criteria = new Criteria().and("discarded").is(false);
 			Aggregation aggregation;
 			List<BlogCollection> blogCollections;
 
-			if (!DPDoctorUtils.anyStringEmpty(title)){
+			if (!DPDoctorUtils.anyStringEmpty(title)) {
 				criteria = criteria.orOperator(new Criteria("title").regex("^" + title, "i"));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(category)){
+			if (!DPDoctorUtils.anyStringEmpty(category)) {
 				criteria = criteria.and("category").is(category);
 			}
 			if (size > 0) {
@@ -199,10 +199,14 @@ public class BlogServicesImpl implements BlogService {
 	}
 
 	@Override
-	public Blog getBlog(String blogId, String userId) {
+	public Blog getBlog(String blogId, String slugUrl, String userId) {
 		Blog response = null;
 		try {
-			BlogCollection blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			BlogCollection blogCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(slugUrl))
+				blogCollection = blogRepository.findBySlugURL(slugUrl);
+			else
+				blogCollection = blogRepository.findOne(new ObjectId(blogId));
 			blogCollection.setViews(blogCollection.getViews() + 1);
 			blogCollection = blogRepository.save(blogCollection);
 			response = new Blog();

@@ -19,6 +19,9 @@ public interface BlogRepository
 	@Query("{'category': ?0,'discarded': false}")
 	List<BlogCollection> findByCatogery(String category, Sort sort);
 
+	@Query("{'slugURL': ?0}")
+	BlogCollection findBySlugURL(String slugURL);
+
 	@Query("{'discarded': false,'category':?0}")
 	List<BlogCollection> findAll(Pageable pageable, String category);
 
