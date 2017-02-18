@@ -971,7 +971,7 @@ public interface PathProxy {
 
 		public static final String GET_BLOG_BY_ID = "/getBlog/{blogId}";
 
-		public static final String GET_BLOG_BY_SLUG_URL = "/getBlog/{slugURL}";
+		public static final String GET_BLOG_BY_SLUG_URL = "/getBlogbySlugUrl/{slugURL}";
 
 		public static final String ADD_EDIT_FEVOURITE_BLOGS = "/addTOFovourite/{blogId}/{userId}";
 
