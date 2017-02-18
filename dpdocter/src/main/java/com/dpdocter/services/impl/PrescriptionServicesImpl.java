@@ -4016,7 +4016,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DrugInteractionResposne> drugInteraction(List<Drug> request, String patientId) {
+	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
 		List<DrugInteractionResposne> response = null;
 		try {
 			

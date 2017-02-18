@@ -962,9 +962,9 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
 	@POST
-	public Response<DrugInteractionResposne> drugInteraction(@PathParam("patientId") String patientId, List<Drug> request) {
+	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request) {//@PathParam("patientId") String patientId, 
 
-		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request, patientId);
+		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request);
 		Response<DrugInteractionResposne> response = new Response<DrugInteractionResposne>();
 		response.setDataList(drugInteractionResposnes);
 		return response;

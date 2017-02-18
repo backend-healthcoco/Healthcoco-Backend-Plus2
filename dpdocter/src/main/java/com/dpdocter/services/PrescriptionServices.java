@@ -148,7 +148,7 @@ public interface PrescriptionServices {
 
 	Boolean addGenericNameInDrugs();
 
-	List<DrugInteractionResposne> drugInteraction(List<Drug> request, String patientId);
+	List<DrugInteractionResposne> drugInteraction(List<Drug> request);
 
 	Boolean addGenericsWithReaction();
 

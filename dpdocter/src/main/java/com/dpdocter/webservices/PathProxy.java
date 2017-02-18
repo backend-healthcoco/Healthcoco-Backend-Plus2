@@ -456,7 +456,7 @@ public interface PathProxy {
 
 		public static final String ADD_GENERIC_NAME_IN_DRUGS = "/addGenericNameInDrugs";
 
-		public static final String DRUGS_INTERACTION = "/drugs/interaction/{patientId}";
+		public static final String DRUGS_INTERACTION = "/drugs/interaction/";
 
 		public static final String ADD_GENERIC_CODES_WITH_REACTION = "/genericCodes/";
 
