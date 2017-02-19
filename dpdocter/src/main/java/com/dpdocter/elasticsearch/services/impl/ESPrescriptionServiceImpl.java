@@ -176,27 +176,32 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				response = new ArrayList<DrugDocument>();
 			else {
 				SearchQuery searchQuery = null;
+
 				if (searchByGenericName) {
-					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "genericNames.name");
+					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
+							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null,
+							"genericNames.name");
 				} else {
-					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
+					searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.DRUG, page, 0, doctorId, locationId,
+							hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 				}
-				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
+				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
+						ESDrugDocument.class);
 				esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
-		
-			response = new ArrayList<DrugDocument>(50);
-			for(ESDrugDocument esDrugDocument : esDrugDocuments){	    	
-		    	String drugTypeStr = esDrugDocument.getDrugType();
-				esDrugDocument.setDrugType(null);
-				DrugDocument drugDocument = new DrugDocument();
-				BeanUtil.map(esDrugDocument, drugDocument);
-				DrugType drugType = new DrugType();drugType.setId(esDrugDocument.getDrugTypeId());drugType.setType(drugTypeStr);
-				drugDocument.setDrugType(drugType);
-				response.add(drugDocument);	    
-		    }
-		  }
+
+				response = new ArrayList<DrugDocument>(50);
+				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
+					String drugTypeStr = esDrugDocument.getDrugType();
+					esDrugDocument.setDrugType(null);
+					DrugDocument drugDocument = new DrugDocument();
+					BeanUtil.map(esDrugDocument, drugDocument);
+					DrugType drugType = new DrugType();
+					drugType.setId(esDrugDocument.getDrugTypeId());
+					drugType.setType(drugTypeStr);
+					drugDocument.setDrugType(drugType);
+					response.add(drugDocument);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
@@ -223,8 +228,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
-				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
-				
+				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
+						ESDrugDocument.class);
+
 				response = new ArrayList<DrugDocument>();
 				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
@@ -261,7 +267,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						hospitalId, updatedTime, discarded, null, searchTerm, null, category, null, "drugName");
 			}
 
-			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class); 
+			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
 			response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -567,7 +573,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						.withPageable(new PageRequest(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-				.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		}
 
 		return searchQuery;
@@ -603,9 +609,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		}
 
 		return searchQuery;
@@ -651,9 +659,11 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		} else {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size)).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		}
 
 		return searchQuery;
