@@ -189,7 +189,7 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 						ESDrugDocument.class);
 				esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
 
-				response = new ArrayList<DrugDocument>(50);
+				response = new ArrayList<DrugDocument>();
 				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
 					esDrugDocument.setDrugType(null);
