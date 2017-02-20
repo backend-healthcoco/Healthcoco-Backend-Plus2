@@ -274,11 +274,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> specialityIds = CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("id"));
-					if (specialityIds != null && !specialityIds.isEmpty()){
+					if (specialityIds != null && !specialityIds.isEmpty()) {
 						doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
-						if (oldSpecialities != null && !oldSpecialities.isEmpty())removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
-					}
-					else
+						if (oldSpecialities != null && !oldSpecialities.isEmpty())
+							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
+					} else
 						doctorCollection.setSpecialities(null);
 				} else {
 					doctorCollection.setSpecialities(null);
@@ -286,7 +286,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				doctorRepository.save(doctorCollection);
 				BeanUtil.map(doctorCollection, response);
 				response.setDoctorId(doctorCollection.getUserId().toString());
-				
+
 			}
 
 		} catch (Exception e) {
@@ -297,45 +297,65 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return response;
 	}
 
-	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds, Collection<ObjectId> oldSpecialities, String doctorId) {
+	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
+			Collection<ObjectId> oldSpecialities, String doctorId) {
 		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
-		if(dynamicUICollection != null){
-			for(ObjectId objectId : specialityIds){
-				if(oldSpecialities.contains(objectId))oldSpecialities.remove(objectId);
+		if (dynamicUICollection != null) {
+			for (ObjectId objectId : specialityIds) {
+				if (oldSpecialities.contains(objectId))
+					oldSpecialities.remove(objectId);
 			}
-			if (oldSpecialities != null && !oldSpecialities.isEmpty()){
-				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository.findAll(oldSpecialities);
+			if (oldSpecialities != null && !oldSpecialities.isEmpty()) {
+				List<SpecialityCollection> oldSpecialityCollections = (List<SpecialityCollection>) specialityRepository
+						.findAll(oldSpecialities);
 				@SuppressWarnings("unchecked")
-				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections, new BeanToPropertyValueTransformer("speciality"));
+				Collection<String> specialities = CollectionUtils.collect(oldSpecialityCollections,
+						new BeanToPropertyValueTransformer("speciality"));
 				UIPermissions uiPermissions = dynamicUICollection.getUiPermissions();
-				for(String speciality : specialities){
-					if(speciality.equalsIgnoreCase("OPHTHALMOLOGIST")){
-						if(uiPermissions.getClinicalNotesPermissions() != null)
-							uiPermissions.getClinicalNotesPermissions().remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
-						if(uiPermissions.getPrescriptionPermissions() != null)
-								uiPermissions.getPrescriptionPermissions().remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
+				for (String speciality : specialities) {
+					if (speciality.equalsIgnoreCase("OPHTHALMOLOGIST")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null)
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_CLINICAL_NOTES.getPermissions());
+						if (uiPermissions.getPrescriptionPermissions() != null)
+							uiPermissions.getPrescriptionPermissions()
+									.remove(OpthoPermissionEnums.OPTHO_RX.getPermissions());
 					}
-					if(speciality.equalsIgnoreCase("PEDIATRICIAN")){
-						if(uiPermissions.getProfilePermissions() != null)
-							uiPermissions.getProfilePermissions().remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+					if (speciality.equalsIgnoreCase("PEDIATRICIAN")) {
+						if (uiPermissions.getProfilePermissions() != null)
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
 					}
-					if(speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")){
-						if(uiPermissions.getClinicalNotesPermissions() != null){
-							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.PA.getPermissions());
-							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.PV.getPermissions());
-							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.PS.getPermissions());
-							uiPermissions.getClinicalNotesPermissions().remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
-							uiPermissions.getProfilePermissions().remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
+					if (speciality.equalsIgnoreCase("GYNECOLOGIST/OBSTETRICIAN")) {
+						if (uiPermissions.getClinicalNotesPermissions() != null) {
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PA.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PV.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.PS.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.INDICATION_OF_USG.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.EDD.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.LMP.getPermissions());
+							uiPermissions.getClinicalNotesPermissions()
+									.remove(GynacPermissionsEnum.USG_GENDER_COUNT.getPermissions());
+
+							uiPermissions.getProfilePermissions()
+									.remove(GynacPermissionsEnum.BIRTH_HISTORY.getPermissions());
 						}
 					}
-					if(speciality.equalsIgnoreCase("CARDIOLOGIST")){
+					if (speciality.equalsIgnoreCase("CARDIOLOGIST")) {
 						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECG.getPermissions());
 						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.ECHO.getPermissions());
 						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.XRAY.getPermissions());
-						uiPermissions.getClinicalNotesPermissions().remove(CardioPermissionEnum.HOLTER.getPermissions());	
-					}	
+						uiPermissions.getClinicalNotesPermissions()
+								.remove(CardioPermissionEnum.HOLTER.getPermissions());
+					}
 				}
-		dynamicUIRepository.save(dynamicUICollection);
+				dynamicUIRepository.save(dynamicUICollection);
 			}
 		}
 	}
@@ -1002,7 +1022,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						if (specialityIds != null && !specialityIds.isEmpty()) {
 							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 							specialitiesresponse.addAll(specialities);
-							if (oldSpecialities != null && !oldSpecialities.isEmpty())removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
+							if (oldSpecialities != null && !oldSpecialities.isEmpty())
+								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 						} else {
 							doctorCollection.setSpecialities(null);
 							specialitiesresponse = null;
