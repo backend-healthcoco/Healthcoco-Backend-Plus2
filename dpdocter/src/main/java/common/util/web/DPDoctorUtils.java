@@ -221,6 +221,7 @@ public class DPDoctorUtils {
 		SearchQuery searchQuery = null;
 		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+					.withPageable(new PageRequest(0, 50))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 		} else if (anyStringEmpty(sortBy)) {
 			if (size > 0)

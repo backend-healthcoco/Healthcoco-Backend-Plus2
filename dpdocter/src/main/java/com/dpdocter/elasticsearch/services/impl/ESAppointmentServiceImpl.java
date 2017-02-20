@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
-import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
@@ -97,7 +96,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			response = new ArrayList<AppointmentSearchResponse>();
 
 			response = searchSpeciality(response, searchTerm);
-			response = searchSymptons(response, searchTerm);
+//			response = searchSymptons(response, searchTerm);
 			response = searchTests(response, searchTerm);
 			response = searchTreatmentService(response, searchTerm);
 			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
@@ -406,23 +405,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
-	private List<AppointmentSearchResponse> searchSymptons(List<AppointmentSearchResponse> response,
-			String searchTerm) {
-		if (response.size() < 50) {
-			List<ESComplaintsDocument> complaintsDocuments = esComplaintsRepository.findByComplaint(searchTerm);
-			if (complaintsDocuments != null)
-				for (ESComplaintsDocument esComplaintsDocument : complaintsDocuments) {
-					if (response.size() >= 50)
-						break;
-					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-					appointmentSearchResponse.setId(esComplaintsDocument.getId());
-					appointmentSearchResponse.setResponse(esComplaintsDocument);
-					appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
-					response.add(appointmentSearchResponse);
-				}
-		}
-		return response;
-	}
+//	private List<AppointmentSearchResponse> searchSymptons(List<AppointmentSearchResponse> response,
+//			String searchTerm) {
+//		if (response.size() < 50) {
+//			List<ESComplaintsDocument> complaintsDocuments = esComplaintsRepository.findByComplaint(searchTerm);
+//			if (complaintsDocuments != null)
+//				for (ESComplaintsDocument esComplaintsDocument : complaintsDocuments) {
+//					if (response.size() >= 50)
+//						break;
+//					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+//					appointmentSearchResponse.setId(esComplaintsDocument.getId());
+//					appointmentSearchResponse.setResponse(esComplaintsDocument);
+//					appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
+//					response.add(appointmentSearchResponse);
+//				}
+//		}
+//		return response;
+//	}
 
 	private List<AppointmentSearchResponse> searchSpeciality(List<AppointmentSearchResponse> response,
 			String searchTerm) {
@@ -524,18 +523,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (specialityIds == null)
 						specialityIds = CollectionUtils.EMPTY_COLLECTION;
 					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIds));
-					// }
 				}
 			}
-
-			// if(booking != null && booking){
-			// boolQueryBuilder.must(QueryBuilders.termsQuery("facility",
-			// DoctorFacility.BOOK.getType().toLowerCase(),
-			// DoctorFacility.IBS.getType().toLowerCase()));
-			// }--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-			// if(calling != null &&
-			// calling)boolQueryBuilder.must(QueryBuilders.matchQuery("facility",
-			// DoctorFacility.CALL.getType()));
 
 			if (booking != null && calling != null) {
 				if (booking && calling)
@@ -555,14 +544,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(location)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("locationName", location));
 			}
-			// if (booking != null && booking) {
-			// boolQueryBuilder.must(QueryBuilders.termsQuery("facility",
-			// DoctorFacility.BOOK.getType().toLowerCase(),
-			// DoctorFacility.IBS.getType().toLowerCase()));
-			// }
-			// if (calling != null && calling)
-			// boolQueryBuilder.must(QueryBuilders.matchQuery("facility",
-			// DoctorFacility.CALL.getType()));
 
 			if (minFee != 0 && maxFee != 0)
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",

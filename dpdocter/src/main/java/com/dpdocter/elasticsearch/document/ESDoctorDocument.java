@@ -98,7 +98,7 @@ public class ESDoctorDocument extends DoctorLocation {
 	private String userUId;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isDoctorListed = true;
+	private Boolean isDoctorListed = false;
 
 	@Field(type = FieldType.String)
 	private String timeZone = "IST";

@@ -14,13 +14,12 @@
       <div style="background-color: #faf8f8; padding:20px;">
 
         <div align="center" style="margin-top: 10px">
-          <img src="${imageURL}/issues_recorded.png" style="margin-top: 5px">
+          <img src="${imageURL}/feedback.png" style="margin-top: 5px">
         </div>
 
         <div>
          <p style="color:#2c3335;font-size:15px;">Hello ${fName},<br><br>
-         Your feedback with reference to ${doctorName} ${clinicName} has been recorded.
-         Your Issue ID is: ${uniqueFeedbackId}<br><br>We are working to solve your issues as soon as we can.
+         Your feedback with reference to ${doctorName} ${clinicName} has been recorded. Thank you for sharing your valuable feedback. We appreciate your opinion and hope that we can help healthcare experts to improve through your feedback
 
           <br><br>Stay Healthy and Happy,<br>Team Healthcoco.
          </p>

@@ -614,19 +614,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 					logger.error("Incorrect User Id");
 					throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 				}
-				userCollection.setFirstName(request.getLocalPatientName());
+//				userCollection.setFirstName(request.getLocalPatientName());
 				userCollection.setIsActive(true);
-				userCollection.setEmailAddress(request.getEmailAddress());
+//				userCollection.setEmailAddress(request.getEmailAddress());
 				userCollection = userRepository.save(userCollection);
 				BeanUtil.map(userCollection, registeredPatientDetails);
 				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId,
 						doctorObjectId, locationObjectId, hospitalObjectId);
 				if (patientCollection != null) {
-					patientCollection.setLocalPatientName(request.getLocalPatientName());
-					patientCollection.setBloodGroup(request.getBloodGroup());
-					patientCollection.setGender(request.getGender());
-					patientCollection.setEmailAddress(request.getEmailAddress());
-					patientCollection.setDob(request.getDob());
+					if(!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName()))patientCollection.setLocalPatientName(request.getLocalPatientName());
+					if(!DPDoctorUtils.anyStringEmpty(request.getBloodGroup()))patientCollection.setBloodGroup(request.getBloodGroup());
+					if(!DPDoctorUtils.anyStringEmpty(request.getGender()))patientCollection.setGender(request.getGender());
+					if(!DPDoctorUtils.anyStringEmpty(request.getEmailAddress()))patientCollection.setEmailAddress(request.getEmailAddress());
+					if(request.getDob() != null)patientCollection.setDob(request.getDob());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
 					throw new BusinessException(ServiceError.InvalidInput,
@@ -2249,6 +2249,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
+			if(active)criteria.and("isActivate").is(active);
 
 			if (size > 0)
 				/*
