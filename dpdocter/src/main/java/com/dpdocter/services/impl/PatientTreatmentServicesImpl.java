@@ -1312,8 +1312,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
 				Date _24HourDt = _24HourSDF.parse(_24HourTime);
-				String dateTime = sdf
-						.format(patientTreatmentCollection.getFromDate() + ", " + _12HourSDF.format(_24HourDt));
+				String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(patientTreatmentCollection.getFromDate());
 				parameters.put("followUpAppointment", "Next Review on " + dateTime);
 			}
 			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
