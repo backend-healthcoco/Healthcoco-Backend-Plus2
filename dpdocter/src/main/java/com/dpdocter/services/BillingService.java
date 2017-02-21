@@ -7,6 +7,7 @@ import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 
@@ -36,4 +37,6 @@ public interface BillingService {
 	Double getBalanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId, String from, String to, int page, int size, String updatedTime);
+
+	AmountResponse getBalanceAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 }

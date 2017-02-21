@@ -43,6 +43,7 @@ import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.response.InvoiceItemResponse;
@@ -719,6 +720,34 @@ public class BillingServiceImpl implements BillingService {
 		}catch(Exception e){
 			logger.error("Error while getting ledger"+e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting ledger"+e);
+		}
+		return response;
+	}
+
+	@Override
+	public AmountResponse getBalanceAndAdvanceAmount(String doctorId, String locationId, String hospitalId,	String patientId) {
+		AmountResponse response = null;
+		try{
+			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId))
+					.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+			
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(new ObjectId(doctorId));
+			List<DoctorPatientLedger> doctorPatientLedgerList = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.skip(0), Aggregation.limit(1),
+					Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
+			
+			
+			DoctorPatientReceipt doctorPatientReceipt = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(criteria), Aggregation.group("patientId").sum("remainingAdvanceAmount").as("remainingAdvanceAmount")),
+					DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getUniqueMappedResult();
+			
+			response = new AmountResponse(); 			
+			if(doctorPatientReceipt != null)response.setAdvanceAmount(doctorPatientReceipt.getRemainingAdvanceAmount());
+			if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty())response.setBalanceAmount(doctorPatientLedgerList.get(0).getBalanceAmount());
+		}catch(Exception e){
+			logger.error("Error while getting balance amount"+e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting advance & balance amount"+e);
 		}
 		return response;
 	}
