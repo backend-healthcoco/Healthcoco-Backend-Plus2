@@ -96,7 +96,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			response = new ArrayList<AppointmentSearchResponse>();
 
 			response = searchSpeciality(response, searchTerm);
-//			response = searchSymptons(response, searchTerm);
+			// response = searchSymptons(response, searchTerm);
 			response = searchTests(response, searchTerm);
 			response = searchTreatmentService(response, searchTerm);
 			response = searchDoctors(response, city, location, latitude, longitude, searchTerm);
@@ -405,23 +405,26 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return response;
 	}
 
-//	private List<AppointmentSearchResponse> searchSymptons(List<AppointmentSearchResponse> response,
-//			String searchTerm) {
-//		if (response.size() < 50) {
-//			List<ESComplaintsDocument> complaintsDocuments = esComplaintsRepository.findByComplaint(searchTerm);
-//			if (complaintsDocuments != null)
-//				for (ESComplaintsDocument esComplaintsDocument : complaintsDocuments) {
-//					if (response.size() >= 50)
-//						break;
-//					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-//					appointmentSearchResponse.setId(esComplaintsDocument.getId());
-//					appointmentSearchResponse.setResponse(esComplaintsDocument);
-//					appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
-//					response.add(appointmentSearchResponse);
-//				}
-//		}
-//		return response;
-//	}
+	// private List<AppointmentSearchResponse>
+	// searchSymptons(List<AppointmentSearchResponse> response,
+	// String searchTerm) {
+	// if (response.size() < 50) {
+	// List<ESComplaintsDocument> complaintsDocuments =
+	// esComplaintsRepository.findByComplaint(searchTerm);
+	// if (complaintsDocuments != null)
+	// for (ESComplaintsDocument esComplaintsDocument : complaintsDocuments) {
+	// if (response.size() >= 50)
+	// break;
+	// AppointmentSearchResponse appointmentSearchResponse = new
+	// AppointmentSearchResponse();
+	// appointmentSearchResponse.setId(esComplaintsDocument.getId());
+	// appointmentSearchResponse.setResponse(esComplaintsDocument);
+	// appointmentSearchResponse.setResponseType(AppointmentResponseType.SYMPTOM);
+	// response.add(appointmentSearchResponse);
+	// }
+	// }
+	// return response;
+	// }
 
 	private List<AppointmentSearchResponse> searchSpeciality(List<AppointmentSearchResponse> response,
 			String searchTerm) {
@@ -581,10 +584,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
 				}
-
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(nestedQuery(
-						"workingSchedules.workingHours", boolQuery().must(QueryBuilders.nestedQuery("workingSchedules",
-								boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))))))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(QueryBuilders.nestedQuery("workingSchedules",
+								boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))))));
 
 			}
 			if (maxTime != 0 || minTime != 0) {
@@ -642,12 +644,15 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
 						List<String> images = new ArrayList<String>();
 						for (String clinicImage : doctorDocument.getImages()) {
-							images.add(clinicImage);
+							images.add(getFinalImageURL(clinicImage));
 						}
 						doctorDocument.setImages(images);
 					}
 					if (doctorDocument.getLogoUrl() != null)
 						doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
+
+					if (doctorDocument.getImageUrl() != null)
+						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getCoverImageUrl()));
 
 					if (latitude != null && longitude != null && doctorDocument.getLatitude() != null
 							&& doctorDocument.getLongitude() != null) {

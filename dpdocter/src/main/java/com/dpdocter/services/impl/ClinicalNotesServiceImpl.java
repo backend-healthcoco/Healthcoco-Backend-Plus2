@@ -4152,7 +4152,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	public String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH,
-			Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) {
+			Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
+			Boolean showNoOfChildren) {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
@@ -4169,7 +4170,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 							clinicalNotesCollection.getHospitalId(), clinicalNotesCollection.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(clinicalNotesCollection, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP, showEDD, showNoOfChildren);
+						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP, showEDD,
+						showNoOfChildren);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -4189,8 +4191,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF,
-			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
+
+
+			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP,
+			Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
+
+
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
@@ -4220,10 +4226,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("echo", clinicalNotesCollection.getEcho());
 		parameters.put("holter", clinicalNotesCollection.getHolter());
 
-		if (!isCustomPDF || showLMP)parameters.put("lmp",new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
-		if (!isCustomPDF || showEDD)parameters.put("edd",new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
-		if (!isCustomPDF || showNoOfChildren){
-			parameters.put("noOfChildren",clinicalNotesCollection.getNoOfMaleChildren()+"|"+clinicalNotesCollection.getNoOfFemaleChildren());
+		if (!isCustomPDF || showLMP)
+			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
+		if (!isCustomPDF || showEDD)
+			parameters.put("edd", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
+		if (!isCustomPDF || showNoOfChildren) {
+			parameters.put("noOfChildren", clinicalNotesCollection.getNoOfMaleChildren() + "|"
+					+ clinicalNotesCollection.getNoOfFemaleChildren());
 		}
 		List<DBObject> diagramIds = new ArrayList<DBObject>();
 		if (clinicalNotesCollection.getDiagrams() != null)
