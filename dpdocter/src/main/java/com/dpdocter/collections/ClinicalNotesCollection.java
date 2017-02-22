@@ -135,6 +135,18 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private Date fromDate;
 
+	@Field
+    private Date lmp;
+	
+	@Field
+	private Date edd;
+	
+	@Field
+	private int noOfFemaleChildren;
+	
+	@Field
+	private int noOfMaleChildren;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -447,6 +459,38 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.holter = holter;
 	}
 
+	public Date getLmp() {
+		return lmp;
+	}
+
+	public void setLmp(Date lmp) {
+		this.lmp = lmp;
+	}
+
+	public Date getEdd() {
+		return edd;
+	}
+
+	public void setEdd(Date edd) {
+		this.edd = edd;
+	}
+
+	public int getNoOfFemaleChildren() {
+		return noOfFemaleChildren;
+	}
+
+	public void setNoOfFemaleChildren(int noOfFemaleChildren) {
+		this.noOfFemaleChildren = noOfFemaleChildren;
+	}
+
+	public int getNoOfMaleChildren() {
+		return noOfMaleChildren;
+	}
+
+	public void setNoOfMaleChildren(int noOfMaleChildren) {
+		this.noOfMaleChildren = noOfMaleChildren;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", notes=" + notes
@@ -457,9 +501,13 @@ public class ClinicalNotesCollection extends GenericCollection {
 				+ systemExam + ", complaint=" + complaint + ", presentComplaint=" + presentComplaint
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
-				+ ", pa=" + pa + ", ps=" + ps + ", comments=" + comments + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", discarded=" + discarded
-				+ ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
-				+ ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails
+				+ ", echo=" + echo + ", holter=" + holter + ", comments=" + comments + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
+				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", vitalSigns=" + vitalSigns
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", lmp=" + lmp
+				+ ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
+				+ noOfMaleChildren + "]";
 	}
+
 }

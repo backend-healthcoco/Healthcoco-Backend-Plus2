@@ -52,6 +52,12 @@ public class ClinicalNotesJasperDetails {
 	
 	private String holter;
 
+    private String lmp;
+	
+	private String edd;
+	
+	private String noOfChildren;
+	
     public String getComplaints() {
 	return complaints;
     }
@@ -228,6 +234,30 @@ public class ClinicalNotesJasperDetails {
 		this.holter = holter;
 	}
 
+	public String getLmp() {
+		return lmp;
+	}
+
+	public void setLmp(String lmp) {
+		this.lmp = lmp;
+	}
+
+	public String getEdd() {
+		return edd;
+	}
+
+	public void setEdd(String edd) {
+		this.edd = edd;
+	}
+
+	public String getNoOfChildren() {
+		return noOfChildren;
+	}
+
+	public void setNoOfChildren(String noOfChildren) {
+		this.noOfChildren = noOfChildren;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesJasperDetails [complaints=" + complaints + ", observations=" + observations
@@ -237,6 +267,7 @@ public class ClinicalNotesJasperDetails {
 				+ systemExam + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
 				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
 				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
-				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + "]";
+				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
+				+ ", noOfChildren=" + noOfChildren + "]";
 	}
 }

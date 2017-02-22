@@ -272,6 +272,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$P{obstetricHistory}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{GeneralExam}", "$P{generalExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$P{systemExam}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$P{noOfChildren}", fieldWidth, false, 0);
+
+		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$P{lmp}", "$P{EDD}", "$P{edd}");
+		
 		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$P{indicationOfUSG}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PA}", "$P{pa}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PS}", "$P{ps}", fieldWidth, false, 0);
@@ -328,6 +332,38 @@ public class JasperReportServiceImpl implements JasperReportService {
         
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
+
+	private void addLMPAndEDD(JasperDesign jasperDesign, int columnWidth, int fieldWidth, int xSpaceForTitle, String lmpKey, String lmpValue, String eddKey, String eddValue) {
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression("!"+lmpValue+".equals( null ) && !"+lmpValue+".isEmpty() && !"+eddValue+".equals( null ) && !"+eddKey+".isEmpty()"));
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression(lmpKey));
+        jrDesignTextField.setX(xSpaceForTitle);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression(lmpValue));
+        jrDesignTextField.setX(xSpaceForTitle+fieldWidth+1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT); 
+        band.addElement(jrDesignTextField);	
+        
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression(eddKey));
+        jrDesignTextField.setX(xSpaceForTitle+fieldWidth+5);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression(lmpValue));
+        jrDesignTextField.setX(xSpaceForTitle+fieldWidth+5+fieldWidth);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT); 
+        band.addElement(jrDesignTextField);	
+        
+        
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+       }
 
 	private void createPrescription(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) throws JRException {
 		
@@ -506,6 +542,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$F{obstetricHistory}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{GeneralExam}", "$F{generalExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$F{systemExam}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$F{noOfChildren}", fieldWidth, false, 0);
+		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$F{lmp}", "$P{EDD}", "$F{edd}");
 		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$F{indicationOfUSG}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PA}", "$F{pa}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PS}", "$F{ps}", fieldWidth, false, 0);

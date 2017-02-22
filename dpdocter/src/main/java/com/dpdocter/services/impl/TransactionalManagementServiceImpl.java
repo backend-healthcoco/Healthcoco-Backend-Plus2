@@ -4,7 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -26,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.beans.DoctorDrug;
-import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -133,7 +134,6 @@ import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
 import com.dpdocter.repository.EchoRepository;
 import com.dpdocter.repository.GeneralExamRepository;
-import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.InvestigationRepository;
@@ -163,10 +163,10 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.XRayDetailsRepository;
 import com.dpdocter.response.AppointmentDoctorReminderResponse;
 import com.dpdocter.response.AppointmentPatientReminderResponse;
+import com.dpdocter.response.DoctorAppointmentSMSResponse;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.sun.jersey.core.impl.provider.entity.XMLJAXBElementProvider.General;
 
 import common.util.web.DPDoctorUtils;
 
@@ -469,12 +469,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
+//	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
+//	@Scheduled(fixedDelay = 1800)
 	@Override
 	@Transactional
 	public void sendReminderToDoctor() {
 		try {
-			if (sendSMS) {
+//			if (sendSMS) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 				localCalendar.setTime(new Date());
@@ -494,60 +495,68 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				Aggregation aggregation = Aggregation.newAggregation(
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
 								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
-								.lte(toTime)),
-						Aggregation.group("doctorId").count().as("total"),
-						Aggregation.project("total").and("doctorId").previousOperation());
+								.lte(toTime)), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+						Aggregation.unwind("patient"));
 				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
 
 				List<AppointmentDoctorReminderResponse> appointmentDoctorReminderResponses = aggregationResults
 						.getMappedResults();
-
+				Map<String, DoctorAppointmentSMSResponse> doctorAppointmentSMSResponseMap = new HashMap<String, DoctorAppointmentSMSResponse>();
+				
+				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+				
 				if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
 					for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
-						UserCollection userCollection = userRepository
-								.findOne(new ObjectId(appointmentDoctorReminderResponse.getDoctorId()));
-						if (appointmentDoctorReminderResponse.getTotal() > 0) {
-							if (userCollection != null) {
-								SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-								smsTrackDetail.setDoctorId(userCollection.getId());
-								smsTrackDetail.setType("APPOINTMENT");
-								SMSDetail smsDetail = new SMSDetail();
-								smsDetail.setUserId(userCollection.getId());
-								SMS sms = new SMS();
-								smsDetail.setUserName(userCollection.getFirstName());
-								sms.setSmsText("Healthcoco! You have " + appointmentDoctorReminderResponse.getTotal()
-										+ " appointments scheduled today. Have a Healthy and Happy day!!");
+						String _24HourTime = String.format("%02d:%02d", appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
+								appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
 
-								SMSAddress smsAddress = new SMSAddress();
-								smsAddress.setRecipient(userCollection.getMobileNumber());
-								sms.setSmsAddress(smsAddress);
-
-								smsDetail.setSms(sms);
-								smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-								List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-								smsDetails.add(smsDetail);
-								smsTrackDetail.setSmsDetails(smsDetails);
-								sMSServices.sendSMS(smsTrackDetail, true);
-
-								// String body =
-								// mailBodyGenerator.generateAppointmentEmailBody(userCollection.getTitle()+"
-								// "+ userCollection.getFirstName(), null,
-								// dateTime, null,
-								// "appointmentDetailsTemplate.vm");
-								// mailService.sendEmail(userCollection.getEmailAddress(),
-								// appointmentDetailsSub, body, null);
-							}
-						} else {
-							// String body =
-							// mailBodyGenerator.generateAppointmentEmailBody(userCollection.getTitle()+"
-							// "+ userCollection.getFirstName(), null, dateTime,
-							// null, "noAppointmentDetailsTemplate.vm");
-							// mailService.sendEmail(userCollection.getEmailAddress(),
-							// appointmentDetailsSub, body, null);
-						}
+						Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						System.out.println(appointmentDoctorReminderResponse.getTime().getFromTime());
+						System.out.println(_24HourDt);
+						if(doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId()) != null){
+							DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId());
+							response.setMessage(response.getMessage()+", "+appointmentDoctorReminderResponse.getPatient().getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
+							response.setNoOfAppointments(response.getNoOfAppointments()+1);
+							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId(), response);
+						}else{
+							DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
+							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
+							response.setMessage(appointmentDoctorReminderResponse.getPatient().getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
+							response.setNoOfAppointments(1);
+							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId(), response);
+						}					
 					}
-			}
+				
+				for(Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()){
+					DoctorAppointmentSMSResponse response = entry.getValue();
+					UserCollection userCollection = response.getDoctor();
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						smsTrackDetail.setDoctorId(userCollection.getId());
+						smsTrackDetail.setType("APPOINTMENT");
+						SMSDetail smsDetail = new SMSDetail();
+						smsDetail.setUserId(userCollection.getId());
+						SMS sms = new SMS();
+						smsDetail.setUserName(userCollection.getFirstName());
+						sms.setSmsText("Healthcoco! You have " + response.getNoOfAppointments()
+								+ " appointments scheduled today. "+response.getMessage()+". Have a Healthy and Happy day!!");
+
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(userCollection.getMobileNumber());
+						sms.setSmsAddress(smsAddress);
+
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+//						sMSServices.sendSMS(smsTrackDetail, true);
+						System.out.println(sms.getSmsText());
+
+					}
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -1036,7 +1045,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					}
 					if (locationCollection != null)
 						doctorDocument.setLocationId(locationCollection.getId().toString());
-
+		
 					esRegistrationService.addDoctor(doctorDocument);
 				}
 			}

@@ -604,11 +604,14 @@ public class ClinicalNotesApi {
 			@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH,
 			@DefaultValue("false") @QueryParam("showFH") Boolean showFH,
 			@DefaultValue("false") @QueryParam("showDA") Boolean showDA,
-			@DefaultValue("false") @QueryParam("showUSG") Boolean showUSG, @DefaultValue("false") @QueryParam("isCustomPDF") Boolean isCustomPDF) {
+			@DefaultValue("false") @QueryParam("showUSG") Boolean showUSG, @DefaultValue("false") @QueryParam("isCustomPDF") Boolean isCustomPDF,
+			@DefaultValue("false") @QueryParam("showLMP") Boolean showLMP, @DefaultValue("false") @QueryParam("showEDD") Boolean showEDD,
+    		@DefaultValue("false") @QueryParam("showNoOfChildren") Boolean showNoOfChildren) {
 
 		Response<String> response = new Response<String>();
 		response.setData(
-				clinicalNotesService.getClinicalNotesFile(clinicalNotesId, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF));
+				clinicalNotesService.getClinicalNotesFile(clinicalNotesId, showPH, showPLH, showFH, showDA, showUSG, isCustomPDF, showLMP,
+		    			showEDD, showNoOfChildren));
 		return response;
 	}
 

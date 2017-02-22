@@ -865,7 +865,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				UserCollection user = userRepository.findOne(patientVisitLookupResponse.getPatientId());
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						null, false, false, false, false, false, false, false);
+						null, false, false, false, false, false, false, false, false, false, false);
 				if (jasperReportResponse != null) {
 					if (user != null) {
 						emailTrackCollection.setPatientName(patient.getLocalPatientName());
@@ -942,7 +942,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	private JasperReportResponse createJasper(PatientVisitLookupResponse patientVisitLookupResponse,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
-			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF) throws IOException {
+			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF,
+			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) throws IOException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>" + (patientVisitLookupResponse.getUniqueEmrId() != null
@@ -976,7 +977,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			for (ObjectId clinicalNotesId : patientVisitLookupResponse.getClinicalNotesId()) {
 				if (!DPDoctorUtils.anyStringEmpty(clinicalNotesId)) {
 					ClinicalNotesJasperDetails clinicalJasperDetails = getClinicalNotesJasperDetails(
-							clinicalNotesId.toString(), contentLineStyle, parameters, showUSG, isCustomPDF);
+							clinicalNotesId.toString(), contentLineStyle, parameters, showUSG, isCustomPDF, showLMP, showEDD, showNoOfChildren);
 					clinicalNotes.add(clinicalJasperDetails);
 				}
 			}
@@ -1371,7 +1372,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private ClinicalNotesJasperDetails getClinicalNotesJasperDetails(String clinicalNotesId, String contentLineStyle,
-			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF) {
+			Map<String, Object> parameters, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
 		try {
@@ -1468,8 +1469,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails
 							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
 
-					if (!isCustomPDF || showUSG)
-						clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
+					if (!isCustomPDF || showUSG)clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
 					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
 					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
 					clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
@@ -1477,7 +1477,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
 					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
 					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
-
+					
+					if (!isCustomPDF || showLMP)clinicalNotesJasperDetails.setLmp(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
+					if (!isCustomPDF || showEDD)clinicalNotesJasperDetails.setEdd(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
+					if (!isCustomPDF || showNoOfChildren){
+						clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren()+"|"+clinicalNotesCollection.getNoOfFemaleChildren());
+					}
+					
 					List<DBObject> diagramIds = new ArrayList<DBObject>();
 					if (clinicalNotesCollection.getDiagrams() != null)
 						for (ObjectId diagramId : clinicalNotesCollection.getDiagrams()) {
@@ -1934,7 +1940,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	public String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA,
-			Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF) {
+			Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) {
 		String response = null;
 		HistoryCollection historyCollection = null;
 		try {
@@ -1956,7 +1962,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							patientVisitLookupResponse.getHospitalId(), patientVisitLookupResponse.getPatientId());
 				}
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
-						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint, isCustomPDF);
+						historyCollection, showPH, showPLH, showFH, showDA, showUSG, isLabPrint, isCustomPDF, showLMP, showEDD, showNoOfChildren);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)

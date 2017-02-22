@@ -150,6 +150,14 @@ public class ClinicalNotesAddRequest {
 
 	private String globalHolters;
 
+	private Date lmp;
+	
+	private Date edd;
+	
+	private int noOfFemaleChildren;
+	
+	private int noOfMaleChildren;
+	
 	public String getId() {
 		return id;
 	}
@@ -670,6 +678,38 @@ public class ClinicalNotesAddRequest {
 		this.globalHolters = globalHolters;
 	}
 
+	public Date getLmp() {
+		return lmp;
+	}
+
+	public void setLmp(Date lmp) {
+		this.lmp = lmp;
+	}
+
+	public Date getEdd() {
+		return edd;
+	}
+
+	public void setEdd(Date edd) {
+		this.edd = edd;
+	}
+
+	public int getNoOfFemaleChildren() {
+		return noOfFemaleChildren;
+	}
+
+	public void setNoOfFemaleChildren(int noOfFemaleChildren) {
+		this.noOfFemaleChildren = noOfFemaleChildren;
+	}
+
+	public int getNoOfMaleChildren() {
+		return noOfMaleChildren;
+	}
+
+	public void setNoOfMaleChildren(int noOfMaleChildren) {
+		this.noOfMaleChildren = noOfMaleChildren;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation
@@ -697,6 +737,8 @@ public class ClinicalNotesAddRequest {
 				+ globalObstetricHistories + ", globalIndicationOfUSGs=" + globalIndicationOfUSGs + ", globalPVs="
 				+ globalPVs + ", globalPAs=" + globalPAs + ", globalPSs=" + globalPSs + ", globalEcgDetails="
 				+ globalEcgDetails + ", globalXRayDetails=" + globalXRayDetails + ", globalEchoes=" + globalEchoes
-				+ ", globalHolters=" + globalHolters + "]";
+				+ ", globalHolters=" + globalHolters + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
+				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
+
 }

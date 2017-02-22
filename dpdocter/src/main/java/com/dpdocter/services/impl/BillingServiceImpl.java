@@ -237,7 +237,9 @@ public class BillingServiceImpl implements BillingService {
 			  case NONSETTLE:criteria.and("balanceAmount").gt(0.0);break;
 			  case BOTH:break;	  
 			}
-			responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+			responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+					Aggregation.limit(size)), DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
 			
 		}catch(BusinessException be){
 			logger.error(be);
@@ -411,7 +413,9 @@ public class BillingServiceImpl implements BillingService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
+			responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+					Aggregation.limit(size)), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 		}catch(BusinessException be){
 			logger.error(be);
 			throw be;
@@ -652,8 +656,8 @@ public class BillingServiceImpl implements BillingService {
 			
 			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(new ObjectId(doctorId));
 			List<DoctorPatientLedger> doctorPatientLedgerList = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.skip(0), Aggregation.limit(1),
-					Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
+					Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+					Aggregation.skip(0), Aggregation.limit(1)), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
 			
 			if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty()){
 				response = doctorPatientLedgerList.get(0).getBalanceAmount();
@@ -734,8 +738,8 @@ public class BillingServiceImpl implements BillingService {
 			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(new ObjectId(doctorId));
 			List<DoctorPatientLedger> doctorPatientLedgerList = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.skip(0), Aggregation.limit(1),
-					Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
+							Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
+					Aggregation.skip(0), Aggregation.limit(1)), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
 			
 			
 			DoctorPatientReceipt doctorPatientReceipt = mongoTemplate.aggregate(Aggregation.newAggregation(

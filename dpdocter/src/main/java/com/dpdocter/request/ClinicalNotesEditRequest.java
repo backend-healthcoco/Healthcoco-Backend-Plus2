@@ -149,6 +149,14 @@ public class ClinicalNotesEditRequest {
 
 	private String globalHolters;
 
+	private Date lmp;
+	
+	private Date edd;
+	
+	private int noOfFemaleChildren;
+	
+	private int noOfMaleChildren;
+	
 	public String getId() {
 		return id;
 	}

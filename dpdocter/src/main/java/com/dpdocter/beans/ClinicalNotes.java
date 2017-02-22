@@ -82,6 +82,14 @@ public class ClinicalNotes extends GenericCollection {
 
 	private Date fromDate;
 
+    private Date lmp;
+	
+	private Date edd;
+	
+	private int noOfFemaleChildren;
+	
+	private int noOfMaleChildren;
+	
 	public Appointment getAppointmentRequest() {
 		return appointmentRequest;
 	}
@@ -370,6 +378,38 @@ public class ClinicalNotes extends GenericCollection {
 		this.holter = holter;
 	}
 
+	public Date getLmp() {
+		return lmp;
+	}
+
+	public void setLmp(Date lmp) {
+		this.lmp = lmp;
+	}
+
+	public Date getEdd() {
+		return edd;
+	}
+
+	public void setEdd(Date edd) {
+		this.edd = edd;
+	}
+
+	public int getNoOfFemaleChildren() {
+		return noOfFemaleChildren;
+	}
+
+	public void setNoOfFemaleChildren(int noOfFemaleChildren) {
+		this.noOfFemaleChildren = noOfFemaleChildren;
+	}
+
+	public int getNoOfMaleChildren() {
+		return noOfMaleChildren;
+	}
+
+	public void setNoOfMaleChildren(int noOfMaleChildren) {
+		this.noOfMaleChildren = noOfMaleChildren;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
@@ -382,6 +422,8 @@ public class ClinicalNotes extends GenericCollection {
 				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
 				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns
-				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + "]";
+				+ ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest + ", time=" + time
+				+ ", fromDate=" + fromDate + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
+				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
 }
