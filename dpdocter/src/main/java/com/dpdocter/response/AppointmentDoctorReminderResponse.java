@@ -1,12 +1,19 @@
 package com.dpdocter.response;
 
+import java.util.Date;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 
 public class AppointmentDoctorReminderResponse {
 
-	private String doctorId;
+	private String id;
+	
+	private ObjectId doctorId;
 	
 	private int total;
 
@@ -16,14 +23,20 @@ public class AppointmentDoctorReminderResponse {
 	
 	private UserCollection doctor;
 	
-	private PatientCollection patient;
+	private String appointmentId;
 	
-	public String getDoctorId() {
-		return doctorId;
+	private Date fromDate;
+	
+    private ObjectId locationId;
+
+    private ObjectId hospitalId;
+
+	public String getId() {
+		return id;
 	}
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public int getTotal() {
@@ -58,17 +71,51 @@ public class AppointmentDoctorReminderResponse {
 		this.doctor = doctor;
 	}
 
-	public PatientCollection getPatient() {
-		return patient;
+	public String getAppointmentId() {
+		return appointmentId;
 	}
 
-	public void setPatient(PatientCollection patient) {
-		this.patient = patient;
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	@Override
 	public String toString() {
-		return "AppointmentDoctorReminderResponse [doctorId=" + doctorId + ", total=" + total + ", patientId="
-				+ patientId + ", time=" + time + ", doctor=" + doctor + ", patient=" + patient + "]";
+		return "AppointmentDoctorReminderResponse [id=" + id + ", doctorId=" + doctorId + ", total=" + total
+				+ ", patientId=" + patientId + ", time=" + time + ", doctor=" + doctor + ", appointmentId=" + appointmentId + ", fromDate=" + fromDate + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + "]";
 	}
+
 }

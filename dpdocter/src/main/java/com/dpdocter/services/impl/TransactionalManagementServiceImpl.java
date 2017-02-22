@@ -17,6 +17,8 @@ import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -469,26 +471,21 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	}
 
 	// Appointment Reminder to Doctor, if appointment > 0
-//	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
-//	@Scheduled(fixedDelay = 1800)
+	@Scheduled(cron = "${appointment.reminder.to.doctor.cron.time}", zone = "IST")
 	@Override
 	@Transactional
 	public void sendReminderToDoctor() {
 		try {
-//			if (sendSMS) {
+			if (sendSMS) {
 				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-
-				localCalendar.setTime(new Date());
-				int currentDayFromTime = localCalendar.get(Calendar.DATE);
-				int currentMonthFromTime = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYearFromTime = localCalendar.get(Calendar.YEAR);
-				DateTime fromTime = new DateTime(currentYearFromTime, currentMonthFromTime, currentDayFromTime, 0, 0, 0,
-						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 				localCalendar.setTime(new Date());
 				int currentDay = localCalendar.get(Calendar.DATE);
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
 				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
@@ -496,8 +493,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
 								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
 								.lte(toTime)), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
-						Aggregation.unwind("patient"));
+						Aggregation.unwind("doctor"), Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
 				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
 
@@ -510,23 +506,25 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				
 				if (appointmentDoctorReminderResponses != null && !appointmentDoctorReminderResponses.isEmpty())
 					for (AppointmentDoctorReminderResponse appointmentDoctorReminderResponse : appointmentDoctorReminderResponses) {
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(appointmentDoctorReminderResponse.getPatientId()), 
+								appointmentDoctorReminderResponse.getLocationId(), appointmentDoctorReminderResponse.getHospitalId());
+						
 						String _24HourTime = String.format("%02d:%02d", appointmentDoctorReminderResponse.getTime().getFromTime() / 60,
 								appointmentDoctorReminderResponse.getTime().getFromTime() % 60);
 
 						Date _24HourDt = _24HourSDF.parse(_24HourTime);
-						System.out.println(appointmentDoctorReminderResponse.getTime().getFromTime());
-						System.out.println(_24HourDt);
-						if(doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId()) != null){
-							DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId());
-							response.setMessage(response.getMessage()+", "+appointmentDoctorReminderResponse.getPatient().getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
+						
+						if(doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString()) != null){
+							DoctorAppointmentSMSResponse response = doctorAppointmentSMSResponseMap.get(appointmentDoctorReminderResponse.getDoctorId().toString());
+							response.setMessage(response.getMessage()+", "+patientCollection.getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
 							response.setNoOfAppointments(response.getNoOfAppointments()+1);
-							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId(), response);
+							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 						}else{
 							DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
-							response.setMessage(appointmentDoctorReminderResponse.getPatient().getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
+							response.setMessage(patientCollection.getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
 							response.setNoOfAppointments(1);
-							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId(), response);
+							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 						}					
 					}
 				
@@ -552,11 +550,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
-//						sMSServices.sendSMS(smsTrackDetail, true);
-						System.out.println(sms.getSmsText());
-
+						sMSServices.sendSMS(smsTrackDetail, true);
 					}
-//			}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

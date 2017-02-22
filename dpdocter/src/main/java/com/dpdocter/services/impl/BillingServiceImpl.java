@@ -237,9 +237,15 @@ public class BillingServiceImpl implements BillingService {
 			  case NONSETTLE:criteria.and("balanceAmount").gt(0.0);break;
 			  case BOTH:break;	  
 			}
-			responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-					Aggregation.limit(size)), DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+			if(size > 0){
+				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size)), DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+			}else{
+				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))), DoctorPatientInvoiceCollection.class, DoctorPatientInvoice.class).getMappedResults();
+			}
+				
 			
 		}catch(BusinessException be){
 			logger.error(be);
@@ -413,9 +419,14 @@ public class BillingServiceImpl implements BillingService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!discarded)criteria.and("discarded").is(discarded);
 			
-			responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-					Aggregation.limit(size)), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
+			if(size > 0){
+				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size)), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
+			}else{
+				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
+			}
 		}catch(BusinessException be){
 			logger.error(be);
 			throw be;
