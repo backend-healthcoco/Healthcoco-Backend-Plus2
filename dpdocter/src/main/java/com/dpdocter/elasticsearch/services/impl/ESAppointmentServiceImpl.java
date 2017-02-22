@@ -584,9 +584,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
 				}
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(QueryBuilders.nestedQuery("workingSchedules",
-								boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))))));
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",						
+								boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 
 			}
 			if (maxTime != 0 || minTime != 0) {
@@ -651,8 +650,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (doctorDocument.getLogoUrl() != null)
 						doctorDocument.setLogoUrl(getFinalImageURL(doctorDocument.getLogoUrl()));
 
-					if (doctorDocument.getImageUrl() != null)
-						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getCoverImageUrl()));
+					if (doctorDocument.getCoverImageUrl() != null)
+						doctorDocument.setCoverImageUrl(getFinalImageURL(doctorDocument.getCoverImageUrl()));
 
 					if (latitude != null && longitude != null && doctorDocument.getLatitude() != null
 							&& doctorDocument.getLongitude() != null) {
