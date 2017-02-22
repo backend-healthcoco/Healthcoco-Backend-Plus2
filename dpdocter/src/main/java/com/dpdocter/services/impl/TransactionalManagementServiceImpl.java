@@ -952,7 +952,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					doctorLocation.setImages(null);
 					doctorLocation.setImages(images);
 				}
-				
+
 				esRegistrationService.editLocation(doctorLocation);
 			}
 		} catch (Exception e) {
@@ -998,23 +998,24 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							}
 							doctorDocument.setImages(null);
 							doctorDocument.setImages(images);
-							
+
 							esLocationDocument.setImages(null);
 							esLocationDocument.setImages(images);
-							
+
 							doctorDocument.setClinicWorkingSchedules(null);
 							doctorDocument.setClinicWorkingSchedules(locationCollection.getClinicWorkingSchedules());
-							
+
 							doctorDocument.setAlternateClinicNumbers(null);
 							doctorDocument.setAlternateClinicNumbers(locationCollection.getAlternateClinicNumbers());
-							
+
 							esLocationDocument.setClinicWorkingSchedules(null);
-							esLocationDocument.setClinicWorkingSchedules(locationCollection.getClinicWorkingSchedules());
-							
+							esLocationDocument
+									.setClinicWorkingSchedules(locationCollection.getClinicWorkingSchedules());
+
 							esLocationDocument.setAlternateClinicNumbers(null);
-							esLocationDocument.setAlternateClinicNumbers(locationCollection.getAlternateClinicNumbers());
-							
-							
+							esLocationDocument
+									.setAlternateClinicNumbers(locationCollection.getAlternateClinicNumbers());
+
 						}
 						esLocationDocument.setGeoPoint(geoPoint);
 						esLocationDocument.setId(locationCollection.getId().toString());
@@ -1025,18 +1026,17 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						BeanUtil.map(userCollection, doctorDocument);
 					if (doctorCollection != null)
 						BeanUtil.map(doctorCollection, doctorDocument);
-					if (doctorClinicProfileCollection != null){
+					if (doctorClinicProfileCollection != null) {
 						BeanUtil.map(doctorClinicProfileCollection, doctorDocument);
 						doctorDocument.setAppointmentBookingNumber(null);
-						doctorDocument.setAppointmentBookingNumber(doctorClinicProfileCollection.getAppointmentBookingNumber());
+						doctorDocument.setAppointmentBookingNumber(
+								doctorClinicProfileCollection.getAppointmentBookingNumber());
 						doctorDocument.setWorkingSchedules(null);
 						doctorDocument.setWorkingSchedules(doctorClinicProfileCollection.getWorkingSchedules());
 					}
 					if (locationCollection != null)
 						doctorDocument.setLocationId(locationCollection.getId().toString());
-					
-					doctorDocument.setSpecialities(null);
-					
+
 					esRegistrationService.addDoctor(doctorDocument);
 				}
 			}
