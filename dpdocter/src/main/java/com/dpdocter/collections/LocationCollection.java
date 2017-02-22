@@ -105,7 +105,7 @@ public class LocationCollection extends GenericCollection {
 	private Boolean isActivate = false;
 
 	@Field
-	private Boolean isLocationListed = true;
+	private Boolean isLocationListed = false;
 
 	@Field
 	private String patientInitial = "P";

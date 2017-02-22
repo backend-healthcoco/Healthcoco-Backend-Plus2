@@ -98,7 +98,7 @@ public class DoctorLocation {
 	private List<WorkingSchedule> clinicWorkingSchedules;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isLocationListed = true;
+	private Boolean isLocationListed = false;
 
 	@Transient
 	private String clinicAddress;

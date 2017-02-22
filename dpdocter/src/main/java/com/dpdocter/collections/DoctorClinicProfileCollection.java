@@ -64,7 +64,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private String timeZone = "IST";
 
 	@Field
-	private Boolean isDoctorListed = true;
+	private Boolean isDoctorListed = false;
 
 	@Field
 	private long rankingCount = 0;

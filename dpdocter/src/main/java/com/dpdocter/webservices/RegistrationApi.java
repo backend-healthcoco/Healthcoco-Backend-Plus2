@@ -143,16 +143,21 @@ public class RegistrationApi {
 	@PUT
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
 	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId(), request.getLocalPatientName())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		} else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+		} else if(!DPDoctorUtils.allStringsEmpty(request.getHospitalId(), request.getDoctorId(), request.getLocationId())){
+			if(DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())){
+				logger.warn(invalidInput);
+				throw new BusinessException(ServiceError.InvalidInput, invalidInput);
+			}else if (request.getLocalPatientName().length() < 2) {
+				logger.warn(firstNameValidaton);
+				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
+			}			
+		}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
-		} else if (request.getLocalPatientName().length() < 2) {
-			logger.warn(firstNameValidaton);
-			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-		}
+		} 
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);

@@ -1009,6 +1009,8 @@ public interface PathProxy {
 
 		public static final String GET_LEDGER = "/ledger/{locationId}/{hospitalId}/{patientId}";
 
+		public static final String GET_BALANCE_AND_ADVANCE_AMOUNT = "/amount/{locationId}/{hospitalId}/{patientId}";
+		
 		public static final String CREATE_LEDGER = "/ledger";
 	}
 

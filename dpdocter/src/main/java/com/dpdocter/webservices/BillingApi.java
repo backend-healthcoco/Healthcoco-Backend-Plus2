@@ -24,6 +24,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
+import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.services.BillingService;
@@ -250,6 +251,23 @@ public class BillingApi {
 		
 		Response<DoctorPatientLedgerResponse> response = new Response<DoctorPatientLedgerResponse>();
 		response.setData(doctorPatientLedgers);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.GET_BALANCE_AND_ADVANCE_AMOUNT)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_BALANCE_AND_ADVANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_BALANCE_AND_ADVANCE_AMOUNT)
+	public Response<AmountResponse> getBalanceAndAdvanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		AmountResponse availableAdvanceAmount = billingService.getBalanceAndAdvanceAmount(doctorId, locationId, hospitalId, patientId);
+		
+		Response<AmountResponse> response = new Response<AmountResponse>();
+		response.setData(availableAdvanceAmount);
 		return response;
 	}
 
