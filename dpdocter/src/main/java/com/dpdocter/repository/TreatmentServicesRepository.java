@@ -9,6 +9,10 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.TreatmentServicesCollection;
 
 public interface TreatmentServicesRepository extends MongoRepository<TreatmentServicesCollection, ObjectId> {
-    @Query("{'specialityIds' : {$in : ?0}}")
-    public List<TreatmentServicesCollection> findAll(List<ObjectId> specialityIds);
+	@Query("{'specialityIds' : {$in : ?0}}")
+	public List<TreatmentServicesCollection> findAll(List<ObjectId> specialityIds);
+
+	@Query("{'treatmentCode' : ?0,'doctorId':?1}")
+	public TreatmentServicesCollection findbyTreatmentCodeAndDoctorId(String treatmentCode, ObjectId doctorId);
+
 }

@@ -340,15 +340,38 @@ public class PatientTreamentAPI {
 	@Path(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
 	@GET
 	@ApiOperation(value = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT, notes = PathProxy.PatientTreatmentURLs.DOWNLOAD_PATIENT_TREATMENT)
-	public Response<String> downloadPatientTreatment(@PathParam("treatmentId") String treatmentId, @DefaultValue("false") @QueryParam("showPH") Boolean showPH,
-    		@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH, @DefaultValue("false") @QueryParam("showFH") Boolean showFH, 
-    		@DefaultValue("false") @QueryParam("showDA") Boolean showDA) {
+	public Response<String> downloadPatientTreatment(@PathParam("treatmentId") String treatmentId,
+			@DefaultValue("false") @QueryParam("showPH") Boolean showPH,
+			@DefaultValue("false") @QueryParam("showPLH") Boolean showPLH,
+			@DefaultValue("false") @QueryParam("showFH") Boolean showFH,
+			@DefaultValue("false") @QueryParam("showDA") Boolean showDA) {
 		if (DPDoctorUtils.anyStringEmpty(treatmentId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<String> response = new Response<String>();
-		response.setData(patientTreatmentServices.downloadPatientTreatment(treatmentId, showPH, showPLH, showFH, showDA));
+		response.setData(
+				patientTreatmentServices.downloadPatientTreatment(treatmentId, showPH, showPLH, showFH, showDA));
+		return response;
+	}
+
+	@Path(value = PathProxy.PatientTreatmentURLs.GENERATE_TREATMENT_CODE)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GENERATE_TREATMENT_CODE, notes = PathProxy.PatientTreatmentURLs.GENERATE_TREATMENT_CODE)
+	public Response<Integer> genrateTreatmentCode() {
+
+		Response<Integer> response = new Response<Integer>();
+		response.setData(patientTreatmentServices.genrateTreatmentCode());
+		return response;
+	}
+
+	@Path(value = PathProxy.PatientTreatmentURLs.ADD_FAVOURITES_TO_TREATMENT_SERVICES)
+	@POST
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_FAVOURITES_TO_TREATMENT_SERVICES, notes = PathProxy.PatientTreatmentURLs.ADD_FAVOURITES_TO_TREATMENT_SERVICES)
+	public Response<TreatmentService> addFevourateToTreatmentService(TreatmentService request) {
+
+		Response<TreatmentService> response = new Response<TreatmentService>();
+		response.setData(patientTreatmentServices.addFavouritesToService(request));
 		return response;
 	}
 }

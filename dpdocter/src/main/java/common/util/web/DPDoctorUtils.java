@@ -357,7 +357,8 @@ public class DPDoctorUtils {
 			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("categories", category));
 		}
 		SearchQuery searchQuery = null;
-		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())) {
+		if (resource.getType().equalsIgnoreCase(Resource.DRUG.getType())
+				|| resource.getType().equalsIgnoreCase(Resource.TREATMENTSERVICE.getType())) {
 			searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 					.withPageable(new PageRequest(0, 80))
 					.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();

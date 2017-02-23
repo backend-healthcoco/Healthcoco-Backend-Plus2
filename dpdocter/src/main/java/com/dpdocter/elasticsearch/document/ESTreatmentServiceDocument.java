@@ -11,28 +11,61 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class ESTreatmentServiceDocument {
 
 	@Id
-    private String id;
+	private String id;
 
 	@Field(type = FieldType.String)
-    private String name;
+	private String name;
 
 	@Field(type = FieldType.String)
-    private String speciality;
+	private String speciality;
 
 	@Field(type = FieldType.String)
-    private String locationId;
+	private String locationId;
 
 	@Field(type = FieldType.String)
-    private String hospitalId;
+	private String hospitalId;
 
 	@Field(type = FieldType.String)
-    private String doctorId;
+	private String doctorId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
+
+	@Field(type = FieldType.Double)
+	private double cost = 0.0;
+
+	@Field(type = FieldType.String)
+	private String treatmentCode;
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	public String getTreatmentCode() {
+		return treatmentCode;
+	}
+
+	public void setTreatmentCode(String treatmentCode) {
+		this.treatmentCode = treatmentCode;
+	}
+
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
+	@Field(type = FieldType.Long)
+	private long rankingCount = 0;
 
 	public String getId() {
 		return id;

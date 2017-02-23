@@ -54,4 +54,8 @@ public interface PatientTreatmentServices {
 
 	int getTreatmentsCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
+
+	public Integer genrateTreatmentCode();
+
+	public TreatmentService addFavouritesToService(TreatmentService request);
 }

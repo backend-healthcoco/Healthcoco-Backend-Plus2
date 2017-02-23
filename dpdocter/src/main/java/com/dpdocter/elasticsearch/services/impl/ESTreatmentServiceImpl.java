@@ -45,30 +45,31 @@ import common.util.web.DPDoctorUtils;
 public class ESTreatmentServiceImpl implements ESTreatmentService {
 
 	private static Logger logger = Logger.getLogger(ESTreatmentServiceImpl.class.getName());
-	
+
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
-	
+
 	@Autowired
 	private ESTreatmentServiceCostRepository esTreatmentServiceCostRepository;
-	
-    @Autowired
-    private TransactionalManagementService transactionalManagementService;
 
-    @Autowired
-    private ESDoctorRepository esDoctorRepository;
+	@Autowired
+	private TransactionalManagementService transactionalManagementService;
 
-    @Autowired
-    private ElasticsearchTemplate elasticsearchTemplate;
+	@Autowired
+	private ESDoctorRepository esDoctorRepository;
+
+	@Autowired
+	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Override
 	public void addEditService(ESTreatmentServiceDocument esTreatmentServiceDocument) {
 		try {
 			esTreatmentServiceRepository.save(esTreatmentServiceDocument);
-			transactionalManagementService.addResource(new ObjectId(esTreatmentServiceDocument.getId()), Resource.TREATMENTSERVICE, true);
+			transactionalManagementService.addResource(new ObjectId(esTreatmentServiceDocument.getId()),
+					Resource.TREATMENTSERVICE, true);
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Saving Treatment Service in ES");
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Treatment Service in ES");
 		}
 	}
 
@@ -76,15 +77,17 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 	public void addEditServiceCost(ESTreatmentServiceCostDocument esTreatmentServiceDocument) {
 		try {
 			esTreatmentServiceCostRepository.save(esTreatmentServiceDocument);
-			transactionalManagementService.addResource(new ObjectId(esTreatmentServiceDocument.getId()), Resource.TREATMENTSERVICECOST, true);
+			transactionalManagementService.addResource(new ObjectId(esTreatmentServiceDocument.getId()),
+					Resource.TREATMENTSERVICECOST, true);
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Saving Treatment Service Cost in ES");
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Treatment Service Cost in ES");
 		}
 	}
 
 	@Override
-	public List<?> search(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public List<?> search(String type, String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<?> response = new ArrayList<Object>();
 
 		switch (PatientTreatmentService.valueOf(type.toUpperCase())) {
@@ -92,198 +95,279 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 		case SERVICE: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
-			case GLOBAL: response = getGlobalTreatmentServices(page, size, doctorId, updatedTime, discarded, searchTerm); break;
-			case CUSTOM: response = getCustomTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm); break;
-			case BOTH: response = getCustomGlobalTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm); break;
+			case GLOBAL:
+				response = getGlobalTreatmentServices(page, size, doctorId, updatedTime, discarded, searchTerm);
+				break;
+			case CUSTOM:
+				response = getCustomTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded, searchTerm);
+				break;
+			case BOTH:
+				response = getCustomGlobalTreatmentServices(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded, searchTerm);
+				break;
 			default:
 				break;
 			}
 			break;
 		}
 		case SERVICECOST: {
-			response = getCustomTreatmentServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm); break;
+			response = getCustomTreatmentServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, searchTerm);
+			break;
 		}
 		default:
 			break;
-	}
+		}
 		return response;
-}
+	}
 
 	@SuppressWarnings("unchecked")
-	private List<?> getGlobalTreatmentServices(int page, int size, String doctorId, String updatedTime,	Boolean discarded, String searchTerm) {
+	private List<?> getGlobalTreatmentServices(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		List<ESTreatmentServiceDocument> response = null;
 		try {
-		    List<ESDoctorDocument> doctorCollections = null;
-		    Collection<String> specialities = Collections.EMPTY_LIST;
-		    
-		    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-		    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
-		    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-			 		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
-			 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
-				 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
-				 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-				 		
-				 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-				 		if(count > 0){
-				 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-					 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-					 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-					 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-					 			specialities.add("ALL");
-					 		}
-				 		}
-			 		}
-			 	}
-		    }
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
 
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size, updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+						if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+							boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, 0, updatedTime,
+					discarded, null, searchTerm, specialities, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 		}
 		return response;
 	}
 
-	private List<?> getCustomTreatmentServices(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private List<?> getCustomTreatmentServices(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESTreatmentServiceDocument> response = null;
 		try {
-		    	SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, null, null, "name");
-				response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
-		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
-		}
-		return response;
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<?> getCustomGlobalTreatmentServices(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
-		List<ESTreatmentServiceDocument> response = null;
-		try {
-		    List<ESDoctorDocument> doctorCollections = null;
-		    Collection<String> specialities = Collections.EMPTY_LIST;
-		    
-		    if(!DPDoctorUtils.anyStringEmpty(doctorId)){
-		    	doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
-		    	if(doctorCollections != null && !doctorCollections.isEmpty()){
-			 		List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
-			 		if(specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)){
-				 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery("_id", specialitiesId));
-				 		if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
-				 		
-				 		int count = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), ESSpecialityDocument.class);
-				 		if(count > 0){
-				 			SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(0, count)).build();
-					 		List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate.queryForList(searchQuery, ESSpecialityDocument.class);
-					 		if(resultsSpeciality != null && !resultsSpeciality.isEmpty()){
-					 			specialities = CollectionUtils.collect(resultsSpeciality, new BeanToPropertyValueTransformer("speciality"));
-					 			specialities.add("ALL");specialities.add(null);
-					 		}
-				 		}
-			 		}
-			 	}
-		    }
-
-			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
+			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+					updatedTime, discarded, "rankingCount", searchTerm, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e);
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
 		}
 		return response;
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<?> getCustomTreatmentServicesCost(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private List<?> getCustomGlobalTreatmentServices(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESTreatmentServiceDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+						if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+							boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+								specialities.add(null);
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.TREATMENTSERVICE, page, 0,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
+					null, "name");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<?> getCustomTreatmentServicesCost(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<TreatmentServiceCost> response = null;
 		try {
-		    	Collection<String> serviceIds = null;
-				if(!DPDoctorUtils.anyStringEmpty(searchTerm)){
-					SearchQuery searchQuery = createCustomGlobalQuery(0, 0, doctorId, locationId, hospitalId, updatedTime, discarded, "name", searchTerm, null, true, ESTreatmentServiceDocument.class, null);
-			    	List<ESTreatmentServiceDocument> treatmentServiceDocuments = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
-					serviceIds = CollectionUtils.collect(treatmentServiceDocuments, new BeanToPropertyValueTransformer("id"));
-				    if(serviceIds == null || serviceIds.isEmpty())return response;
+			Collection<String> serviceIds = null;
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				SearchQuery searchQuery = createCustomGlobalQuery(0, 0, doctorId, locationId, hospitalId, updatedTime,
+						discarded, "name", searchTerm, null, true, ESTreatmentServiceDocument.class, null);
+				List<ESTreatmentServiceDocument> treatmentServiceDocuments = elasticsearchTemplate
+						.queryForList(searchQuery, ESTreatmentServiceDocument.class);
+				serviceIds = CollectionUtils.collect(treatmentServiceDocuments,
+						new BeanToPropertyValueTransformer("id"));
+				if (serviceIds == null || serviceIds.isEmpty())
+					return response;
+			}
+			SearchQuery searchQuery = createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, null, null, serviceIds, false, null, null);
+			List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = elasticsearchTemplate
+					.queryForList(searchQuery, ESTreatmentServiceCostDocument.class);
+			if (esTreatmentServiceCostDocuments != null && !esTreatmentServiceCostDocuments.isEmpty()) {
+				response = new ArrayList<TreatmentServiceCost>();
+				for (ESTreatmentServiceCostDocument esTreatmentServiceCostDocument : esTreatmentServiceCostDocuments) {
+					ESTreatmentServiceDocument esTreatmentServiceDocument = esTreatmentServiceRepository
+							.findOne(esTreatmentServiceCostDocument.getTreatmentServiceId());
+					TreatmentService treatmentService = new TreatmentService();
+					if (esTreatmentServiceDocument != null)
+						BeanUtil.map(esTreatmentServiceDocument, treatmentService);
+
+					TreatmentServiceCost treatmentServiceCost = new TreatmentServiceCost();
+					BeanUtil.map(esTreatmentServiceCostDocument, treatmentServiceCost);
+					treatmentServiceCost.setTreatmentService(treatmentService);
+					response.add(treatmentServiceCost);
 				}
-				SearchQuery searchQuery = createCustomQuery(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, serviceIds, false, null, null);
-			    List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceCostDocument.class);
-			    if(esTreatmentServiceCostDocuments != null && !esTreatmentServiceCostDocuments.isEmpty()){
-			    	response = new ArrayList<TreatmentServiceCost>();
-			    	for(ESTreatmentServiceCostDocument esTreatmentServiceCostDocument : esTreatmentServiceCostDocuments){
-			    		ESTreatmentServiceDocument esTreatmentServiceDocument = esTreatmentServiceRepository.findOne(esTreatmentServiceCostDocument.getTreatmentServiceId());
-			    		TreatmentService treatmentService = new TreatmentService();
-			    		if(esTreatmentServiceDocument != null)BeanUtil.map(esTreatmentServiceDocument, treatmentService);
-			    		
-			    		TreatmentServiceCost treatmentServiceCost = new TreatmentServiceCost();
-			    		BeanUtil.map(esTreatmentServiceCostDocument, treatmentServiceCost);
-			    		treatmentServiceCost.setTreatmentService(treatmentService);
-			    		response.add(treatmentServiceCost);
-			    	}
-			    }
+			}
 		} catch (Exception e) {
-		    e.printStackTrace();
-		    logger.error(e + " Error Occurred While Getting LabTests");
-		    throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Treatment Services with cost");
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting LabTests");
+			throw new BusinessException(ServiceError.Unknown,
+					"Error Occurred While Getting Treatment Services with cost");
 		}
 		return response;
 	}
-	
+
 	@SuppressWarnings({ "deprecation", "unchecked" })
-	public SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, Collection<String> serviceIds, Boolean calculateCount, Class classForCount, String sortBy){
+	public SearchQuery createCustomGlobalQuery(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm,
+			Collection<String> serviceIds, Boolean calculateCount, Class classForCount, String sortBy) {
 
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
-    	
-		if(!DPDoctorUtils.anyStringEmpty(doctorId))
-			boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")) , QueryBuilders.termQuery("doctorId", doctorId)));
-		
-		if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
-    		boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")) , QueryBuilders.termQuery("locationId", locationId)))
-    		.must(QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")) , QueryBuilders.termQuery("hospitalId", hospitalId)));
-    	}
-    	
-	    if(!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
-	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)));
 
-	    if(serviceIds != null && !serviceIds.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("treatmentServiceId", serviceIds));
-	    
-	    if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
-        SearchQuery searchQuery = null;
-        if(!DPDoctorUtils.anyStringEmpty(sortBy)){
-        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
-            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
-        }
-        else{
-        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
-        }
-        return searchQuery;
+		if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			boolQueryBuilder.must(
+					QueryBuilders.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("doctorId")),
+							QueryBuilders.termQuery("doctorId", doctorId)));
+
+		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+			boolQueryBuilder
+					.must(QueryBuilders.orQuery(
+							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
+							QueryBuilders.termQuery("locationId", locationId)))
+					.must(QueryBuilders.orQuery(
+							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
+							QueryBuilders.termQuery("hospitalId", hospitalId)));
+		}
+
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
+		if (!discarded)
+			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+
+		if (serviceIds != null && !serviceIds.isEmpty())
+			boolQueryBuilder.must(QueryBuilders.termsQuery("treatmentServiceId", serviceIds));
+
+		if (calculateCount)
+			size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+					classForCount);
+		SearchQuery searchQuery = null;
+		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+		} else {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+		}
+		return searchQuery;
 	}
 
 	@SuppressWarnings("unchecked")
-	public SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm, Collection<String> serviceIds,  Boolean calculateCount, Class classForCount, String sortBy){
-		
-		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder().must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
-				.must(QueryBuilders.termQuery("doctorId", doctorId)).must(QueryBuilders.termQuery("locationId", locationId)).must(QueryBuilders.termQuery("hospitalId", hospitalId));
-		
- 	    if (!DPDoctorUtils.anyStringEmpty(searchTerm))boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
- 	    if(!discarded)boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
- 	    if(serviceIds != null && !serviceIds.isEmpty())boolQueryBuilder.must(QueryBuilders.termsQuery("treatmentServiceId", serviceIds));
- 	    if(calculateCount)size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(), classForCount);
-        SearchQuery searchQuery = null;
-        if(!DPDoctorUtils.anyStringEmpty(sortBy)){
-        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
-            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
-        }
-        else{
-        	if(size > 0)searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
-            else searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
-        }
-          
-        return searchQuery;
+	public SearchQuery createCustomQuery(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTermFieldName, String searchTerm,
+			Collection<String> serviceIds, Boolean calculateCount, Class classForCount, String sortBy) {
+
+		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+				.must(QueryBuilders.rangeQuery("updatedTime").from(Long.parseLong(updatedTime)))
+				.must(QueryBuilders.termQuery("doctorId", doctorId))
+				.must(QueryBuilders.termQuery("locationId", locationId))
+				.must(QueryBuilders.termQuery("hospitalId", hospitalId));
+
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+			boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery(searchTermFieldName, searchTerm));
+		if (!discarded)
+			boolQueryBuilder.must(QueryBuilders.termQuery("discarded", discarded));
+		if (serviceIds != null && !serviceIds.isEmpty())
+			boolQueryBuilder.must(QueryBuilders.termsQuery("treatmentServiceId", serviceIds));
+		if (calculateCount)
+			size = (int) elasticsearchTemplate.count(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+					classForCount);
+		SearchQuery searchQuery = null;
+		if (!DPDoctorUtils.anyStringEmpty(sortBy)) {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size, Direction.ASC, sortBy)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.ASC)).build();
+		} else {
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size, Direction.DESC, "updatedTime")).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
+		}
+
+		return searchQuery;
 	}
 
 }

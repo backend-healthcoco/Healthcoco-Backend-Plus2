@@ -3,21 +3,28 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class TreatmentService extends GenericCollection{
-    private String id;
+public class TreatmentService extends GenericCollection {
+	private String id;
 
-    private String name;
+	private String name;
 
-    private String speciality;
+	private String speciality;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
+
+	private double cost = 0.0;
+
+	private String treatmentCode;
+
+	private long rankingCount = 0;
 
 	public String getId() {
 		return id;
@@ -81,4 +88,29 @@ public class TreatmentService extends GenericCollection{
 				+ locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", discarded=" + discarded
 				+ "]";
 	}
+
+	public double getCost() {
+		return cost;
+	}
+
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	public String getTreatmentCode() {
+		return treatmentCode;
+	}
+
+	public void setTreatmentCode(String treatmentCode) {
+		this.treatmentCode = treatmentCode;
+	}
+
+	public long getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
 }

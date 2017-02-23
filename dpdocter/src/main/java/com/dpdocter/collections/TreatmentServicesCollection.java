@@ -2,31 +2,43 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "treatment_services_cl")
+@CompoundIndexes({ @CompoundIndex(def = "{'doctorId' : 1, 'treatmentCode': 1}") })
 public class TreatmentServicesCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String name;
+	@Field
+	private String name;
 
-    @Field
-    private String speciality;
+	@Field
+	private String speciality;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private ObjectId doctorId;
+	@Field
+	private ObjectId doctorId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
+
+	@Field
+	private long rankingCount = 0;
+
+	@Field
+	private double cost = 0.0;
+
+	@Field
+	private String treatmentCode;
 
 	public ObjectId getId() {
 		return id;
@@ -91,8 +103,28 @@ public class TreatmentServicesCollection extends GenericCollection {
 				+ ", discarded=" + discarded + "]";
 	}
 
+	public long getRankingCount() {
+		return rankingCount;
+	}
 
+	public void setRankingCount(long rankingCount) {
+		this.rankingCount = rankingCount;
+	}
 
+	public double getCost() {
+		return cost;
+	}
 
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+
+	public String getTreatmentCode() {
+		return treatmentCode;
+	}
+
+	public void setTreatmentCode(String treatmentCode) {
+		this.treatmentCode = treatmentCode;
+	}
 
 }
