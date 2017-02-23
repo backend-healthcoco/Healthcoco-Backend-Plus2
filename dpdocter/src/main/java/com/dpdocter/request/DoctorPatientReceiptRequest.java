@@ -28,11 +28,10 @@ public class DoctorPatientReceiptRequest {
 	
 	private Double amountPaid;
 	
-	private Double usedAdvanceAmount;
+	private Double usedAdvanceAmount = 0.0;
 	
 	private Date receivedDate;
 
-	
 	public String getId() {
 		return id;
 	}

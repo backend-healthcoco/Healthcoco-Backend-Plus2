@@ -302,6 +302,7 @@ public class BillingServiceImpl implements BillingService {
 	@Override
 	public DoctorPatientReceipt addEditReceipt(DoctorPatientReceiptRequest request) {
 		DoctorPatientReceipt response = null;
+		DoctorPatientInvoice invoice = null;
 		try{
 			DoctorPatientReceiptCollection doctorPatientReceiptCollection = new DoctorPatientReceiptCollection();
 			if(DPDoctorUtils.anyStringEmpty(request.getId())){
@@ -378,16 +379,16 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
 								request.getAmountPaid());
 					}
-					InvoiceIdWithAmount invoiceIdWithAmount = new InvoiceIdWithAmount();
-					invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
-					invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
-					doctorPatientReceiptCollection.setInvoiceIdsWithAmount(Arrays.asList(invoiceIdWithAmount));
+					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
+					doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
 					doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 					
 					if(receiptIds == null)receiptIds = new ArrayList<ObjectId>();
 					receiptIds.add(doctorPatientReceiptCollection.getId());
 					doctorPatientInvoiceCollection.setReceiptIds(receiptIds);
 					doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+					invoice = new DoctorPatientInvoice();
+					BeanUtil.map(doctorPatientInvoiceCollection, invoice);
 				}else{
 					throw new BusinessException(ServiceError.InvalidInput, "Invoice Id cannot be null");
 				}
@@ -395,7 +396,7 @@ public class BillingServiceImpl implements BillingService {
 			if(doctorPatientReceiptCollection != null){
 				response = new DoctorPatientReceipt();
 				BeanUtil.map(doctorPatientReceiptCollection, response);
-				
+				response.setInvoice(invoice);
 				DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(doctorPatientReceiptCollection.getId());
 				Double balanceAmount = getBalanceAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
 				if(doctorPatientLedgerCollection == null){
@@ -441,10 +442,16 @@ public class BillingServiceImpl implements BillingService {
 			
 			if(size > 0){
 				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$invoice").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size)), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 			}else{
 				responses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("doctor_patient_invoice_cl", "invoiceId", "_id", "invoice"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$invoice").append("preserveNullAndEmptyArrays", true))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime"))), DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getMappedResults();
 			}
 		}catch(BusinessException be){
