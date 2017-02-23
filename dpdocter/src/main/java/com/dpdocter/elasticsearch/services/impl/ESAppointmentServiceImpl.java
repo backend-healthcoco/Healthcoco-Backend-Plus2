@@ -592,13 +592,19 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++)
 					days.set(i, days.get(i).toLowerCase());
-
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 			}
+			if (maxTime != 0 || minTime != 0) {
+				if (maxTime == 0) {
+					maxTime = 1439;
+				}
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
 
-			if (maxTime == 0) {
-				maxTime = 1439;
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").from(minTime).lt(maxTime),
+
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime))))));
 			}
 			boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
 					.must(nestedQuery("workingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(

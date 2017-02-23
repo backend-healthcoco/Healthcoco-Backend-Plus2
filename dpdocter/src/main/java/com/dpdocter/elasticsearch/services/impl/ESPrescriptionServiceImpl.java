@@ -9,16 +9,9 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +43,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.services.TransactionalManagementService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import common.util.web.DPDoctorUtils;
 
@@ -183,20 +175,24 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 					searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
 							updatedTime, discarded, "rankingCount", searchTerm, category, null, "drugName");
 				}
-				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
-				esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
-		
-			response = new ArrayList<DrugDocument>(50);
-			for(ESDrugDocument esDrugDocument : esDrugDocuments){	    	
-		    	String drugTypeStr = esDrugDocument.getDrugType();
-				esDrugDocument.setDrugType(null);
-				DrugDocument drugDocument = new DrugDocument();
-				BeanUtil.map(esDrugDocument, drugDocument);
-				DrugType drugType = new DrugType();drugType.setId(esDrugDocument.getDrugTypeId());drugType.setType(drugTypeStr);
-				drugDocument.setDrugType(drugType);
-				response.add(drugDocument);	    
-		    }
-		  }
+		List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
+						ESDrugDocument.class);
+				if (esDrugDocuments != null && !esDrugDocuments.isEmpty()) {
+					esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
+				}
+				response = new ArrayList<DrugDocument>();
+				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
+					String drugTypeStr = esDrugDocument.getDrugType();
+					esDrugDocument.setDrugType(null);
+					DrugDocument drugDocument = new DrugDocument();
+					BeanUtil.map(esDrugDocument, drugDocument);
+					DrugType drugType = new DrugType();
+					drugType.setId(esDrugDocument.getDrugTypeId());
+					drugType.setType(drugTypeStr);
+					drugDocument.setDrugType(drugType);
+					response.add(drugDocument);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
