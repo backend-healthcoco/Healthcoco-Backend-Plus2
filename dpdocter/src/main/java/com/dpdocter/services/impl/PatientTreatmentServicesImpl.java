@@ -1324,7 +1324,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
 				Date _24HourDt = _24HourSDF.parse(_24HourTime);
-				String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(patientTreatmentCollection.getFromDate());
+				String dateTime = _12HourSDF.format(_24HourDt) + ", "
+						+ sdf.format(patientTreatmentCollection.getFromDate());
 				parameters.put("followUpAppointment", "Next Review on " + dateTime);
 			}
 			PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
@@ -1401,7 +1402,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		try {
 			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findAll();
 			for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
-				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId());
+				UUID treatmentCode = UUID.randomUUID();
+				treatmentServicesCollection.setTreatmentCode("TR-" + treatmentCode);
 			}
 			treatmentServicesRepository.save(treatmentServicesCollections);
 			count = treatmentServicesCollections.size();
