@@ -269,7 +269,8 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 			}
 
 			response = elasticsearchTemplate.queryForList(searchQuery, ESDrugDocument.class);
-			response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
+			if (response != null && !response.isEmpty())
+				response = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(response));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Getting Drugs");
