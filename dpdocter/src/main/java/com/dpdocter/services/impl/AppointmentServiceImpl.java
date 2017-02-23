@@ -382,7 +382,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Clinic getClinic(String locationId, String role) {
+	public Clinic getClinic(String locationId, String role, Boolean active) {
 		Clinic response = new Clinic();
 		Location location = null;
 		List<Doctor> doctors = new ArrayList<Doctor>();
@@ -445,19 +445,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 					}
 				}
 
+				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
+				
+				if(active)criteria2.and("isActivate").is(true);
+				
+				Criteria criteriaForActive = new Criteria();
+				if(active)criteriaForActive.and("user.isActive").is(true);
 				Aggregation aggregation = null;
 				if (userIds != null && !userIds.isEmpty()) {
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("locationId").is(new ObjectId(location.getId()))
-									.and("doctorId").in(userIds)),
+							Aggregation.match(criteria2.and("doctorId").in(userIds)),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.match(criteriaForActive),
 							Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-							Aggregation.unwind("doctor"),
-							Aggregation.match(new Criteria("id").in("$doctor.specialities")));
+							Aggregation.unwind("doctor"));
 				} else {
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("locationId").is(new ObjectId(location.getId()))),
+							Aggregation.match(criteria2),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.match(criteriaForActive),
 							Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 							Aggregation.unwind("doctor"));
 				}

@@ -219,6 +219,26 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
+	public DoctorPatientInvoice getInvoice(String invoiceId) {
+		DoctorPatientInvoice response = null;
+		try{
+			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(invoiceId));
+			if(doctorPatientInvoiceCollection != null){
+				response = new DoctorPatientInvoice();
+				BeanUtil.map(doctorPatientInvoiceCollection, response);
+			}
+			
+		}catch(BusinessException be){
+			logger.error(be);
+			throw be;
+		}catch(Exception e){
+			logger.error("Error while getting invoice"+e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting invoice"+e);
+		}
+		return response;
+	}
+	
+	@Override
 	public List<DoctorPatientInvoice> getInvoices(String type, int page, int size, String doctorId, String locationId,
 			String hospitalId, String patientId, String updatedTime, Boolean discarded) {
 		List<DoctorPatientInvoice> responses = null;

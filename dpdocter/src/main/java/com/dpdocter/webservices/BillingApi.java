@@ -115,6 +115,22 @@ public class BillingApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.BillingUrls.GET_INVOICE)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.GET_INVOICE, notes = PathProxy.BillingUrls.GET_INVOICE)
+	public Response<DoctorPatientInvoice> getInvoices(@PathParam("invoiceId") String invoiceId) {
+		if (DPDoctorUtils.anyStringEmpty(invoiceId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		DoctorPatientInvoice doctorPatientInvoice = billingService.getInvoice(invoiceId);
+		
+		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
+		response.setData(doctorPatientInvoice);
+		return response;
+	}
+
 	@Path(value = PathProxy.BillingUrls.GET_AVAILABLE_ADVANCE_AMOUNT)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_AVAILABLE_ADVANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_AVAILABLE_ADVANCE_AMOUNT)

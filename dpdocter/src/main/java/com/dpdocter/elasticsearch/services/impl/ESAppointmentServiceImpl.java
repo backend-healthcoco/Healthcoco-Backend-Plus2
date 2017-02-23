@@ -301,7 +301,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 											.lon(Double.parseDouble(longitude)).distance("30km"))
 									.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm))
-									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true))
+									.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true))
+									.must(QueryBuilders.matchPhrasePrefixQuery("isActivate", true));
 							esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
 									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
@@ -311,13 +313,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					}
 				} else {
 					if (city != null && location != null)
-						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true,
+						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (city != null)
-						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true,
+						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (location != null)
-						esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true,
+						esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 				}
 			} else {
@@ -326,7 +328,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 										.lon(Double.parseDouble(longitude)).distance("30km"))
-								.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+								.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true))
+								.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true))
+								.must(QueryBuilders.matchPhrasePrefixQuery("isActivate", true));
 						esDoctorDocuments = elasticsearchTemplate.queryForList(
 								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 										.withPageable(new PageRequest(0, 50 - response.size()))
@@ -336,13 +340,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				} else {
 					if (city != null && location != null)
-						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true,
+						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (city != null)
-						esDoctorDocuments = esDoctorRepository.findByCity(city, true,
+						esDoctorDocuments = esDoctorRepository.findByCity(city, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (location != null)
-						esDoctorDocuments = esDoctorRepository.findByLocation(location, true,
+						esDoctorDocuments = esDoctorRepository.findByLocation(location, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 				}
 			}
@@ -454,8 +458,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true))
-					.must(QueryBuilders.matchQuery("isActivate", true));
-
+					.must(QueryBuilders.matchQuery("isActivate", true))
+			        .must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {

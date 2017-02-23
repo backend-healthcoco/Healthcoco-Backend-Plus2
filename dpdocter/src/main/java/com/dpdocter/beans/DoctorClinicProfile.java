@@ -88,6 +88,8 @@ public class DoctorClinicProfile {
 
 	private Boolean isAutoSMS = false;
 
+	private Boolean isActivate = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -408,6 +410,14 @@ public class DoctorClinicProfile {
 		this.isAutoSMS = isAutoSMS;
 	}
 
+	public Boolean getIsActivate() {
+		return isActivate;
+	}
+
+	public void setIsActivate(Boolean isActivate) {
+		this.isActivate = isActivate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -424,6 +434,7 @@ public class DoctorClinicProfile {
 				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", feedbacks="
 				+ feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isAutoSMS=" + isAutoSMS + "]";
+				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isAutoSMS=" + isAutoSMS + ", isActivate="
+				+ isActivate + "]";
 	}
 }

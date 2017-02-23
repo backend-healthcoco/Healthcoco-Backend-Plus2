@@ -39,4 +39,6 @@ public interface BillingService {
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId, String from, String to, int page, int size, String updatedTime);
 
 	AmountResponse getBalanceAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
+
+	DoctorPatientInvoice getInvoice(String invoiceId);
 }

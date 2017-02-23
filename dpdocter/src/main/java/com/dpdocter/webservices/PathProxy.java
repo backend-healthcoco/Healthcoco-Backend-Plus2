@@ -985,6 +985,8 @@ public interface PathProxy {
 
 	public interface BillingUrls {
 
+		public static final String GET_INVOICE = "/invoice/{invoiceId}/view";
+		
 		public static final String GET_INVOICE_RECEIPT_INITIALS = "/initials/{locationId}";
 
 		public static final String UPDATE_INVOICE_RECEIPT_INITIALS = "/updateInitials";

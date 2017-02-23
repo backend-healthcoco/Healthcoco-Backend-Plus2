@@ -28,7 +28,7 @@ public interface AppointmentService {
 
 	LandmarkLocality addLandmaklLocality(LandmarkLocality locality);
 
-	Clinic getClinic(String locationId, String role);
+	Clinic getClinic(String locationId, String role, Boolean active);
 
 	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);

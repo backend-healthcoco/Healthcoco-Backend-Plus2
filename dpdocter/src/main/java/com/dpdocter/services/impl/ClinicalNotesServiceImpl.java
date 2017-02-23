@@ -4226,9 +4226,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("echo", clinicalNotesCollection.getEcho());
 		parameters.put("holter", clinicalNotesCollection.getHolter());
 
-		if (!isCustomPDF || showLMP)
+		if (clinicalNotesCollection.getLmp()!= null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
-		if (!isCustomPDF || showEDD)
+		if (clinicalNotesCollection.getEdd()!= null && (!isCustomPDF || showEDD))
 			parameters.put("edd", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
 		if (!isCustomPDF || showNoOfChildren) {
 			parameters.put("noOfChildren", clinicalNotesCollection.getNoOfMaleChildren() + "|"

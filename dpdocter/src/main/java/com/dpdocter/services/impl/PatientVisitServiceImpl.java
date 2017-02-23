@@ -1478,8 +1478,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
 					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
 					
-					if (!isCustomPDF || showLMP)clinicalNotesJasperDetails.setLmp(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
-					if (!isCustomPDF || showEDD)clinicalNotesJasperDetails.setEdd(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
+					if (clinicalNotesCollection.getLmp()!= null && (!isCustomPDF || showLMP))clinicalNotesJasperDetails.setLmp(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
+					if (clinicalNotesCollection.getEdd()!= null && (!isCustomPDF || showEDD))clinicalNotesJasperDetails.setEdd(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
 					if (!isCustomPDF || showNoOfChildren){
 						clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren()+"|"+clinicalNotesCollection.getNoOfFemaleChildren());
 					}

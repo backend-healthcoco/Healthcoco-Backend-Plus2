@@ -39,6 +39,8 @@ public class Doctor {
 
 	private UserState userState = UserState.USERSTATECOMPLETE;
 	
+	private Boolean isActive = false;
+
 	public String getId() {
 		return id;
 	}
@@ -151,13 +153,21 @@ public class Doctor {
 		this.userState = userState;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
 	@Override
 	public String toString() {
 		return "Doctor [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", countryCode="
 				+ countryCode + ", mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress + ", imageUrl="
 				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", coverImageUrl="
 				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities="
-				+ specialities + ", doctorClinicProfile=" + doctorClinicProfile + ", userState=" + userState + "]";
+				+ specialities + ", doctorClinicProfile=" + doctorClinicProfile + ", userState=" + userState
+				+ ", isActive=" + isActive + "]";
 	}
-
 }
