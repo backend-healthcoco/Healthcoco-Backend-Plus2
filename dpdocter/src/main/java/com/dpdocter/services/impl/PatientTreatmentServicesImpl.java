@@ -1401,9 +1401,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		Integer count = 0;
 		try {
 			List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findAll();
+			int i = 0;
 			for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
-				UUID treatmentCode = UUID.randomUUID();
-				treatmentServicesCollection.setTreatmentCode("TR-" + treatmentCode);
+				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId() + i);
+				i++;
 			}
 			treatmentServicesRepository.save(treatmentServicesCollections);
 			count = treatmentServicesCollections.size();
