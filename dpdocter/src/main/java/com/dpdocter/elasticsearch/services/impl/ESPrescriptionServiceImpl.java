@@ -187,8 +187,9 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 				}
 				List<ESDrugDocument> esDrugDocuments = elasticsearchTemplate.queryForList(searchQuery,
 						ESDrugDocument.class);
-				esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
-
+				if (esDrugDocuments != null && !esDrugDocuments.isEmpty()) {
+					esDrugDocuments = new ArrayList<ESDrugDocument>(new LinkedHashSet<ESDrugDocument>(esDrugDocuments));
+				}
 				response = new ArrayList<DrugDocument>();
 				for (ESDrugDocument esDrugDocument : esDrugDocuments) {
 					String drugTypeStr = esDrugDocument.getDrugType();
