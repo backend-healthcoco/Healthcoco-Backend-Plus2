@@ -59,6 +59,7 @@ import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DeliveryReportsLookupResponse;
 import com.dpdocter.response.IPDReportLookupResponse;
+import com.dpdocter.response.IPDReportsResponse;
 import com.dpdocter.response.OPDReportsLookupResponse;
 import com.dpdocter.response.OTReportsLookupResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
@@ -235,6 +236,8 @@ public class ReportsServiceImpl implements ReportsService {
 	@Transactional
 	public List<IPDReports> getIPDReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
+		IPDReportsResponse ipdReportsResponse = new IPDReportsResponse();
+		Integer count = 0;
 		List<IPDReports> response = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
 		try {
@@ -327,7 +330,10 @@ public class ReportsServiceImpl implements ReportsService {
 					}
 					response.add(ipdReports);
 				}
+				count = ipdReportsRepository.getReportsCount(new ObjectId(patientId), new ObjectId(doctorId), new ObjectId(locationId));
 			}
+			ipdReportsResponse.setIpdReports(response);
+			ipdReportsResponse.setCount(count);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());

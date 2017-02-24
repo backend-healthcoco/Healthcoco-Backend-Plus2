@@ -1034,5 +1034,14 @@ public interface PathProxy {
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
 
 	}
+	
+	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
+	
+	public interface DischargeSummaryUrls
+	{
+		
+		
+		
+	}
 
 }
