@@ -27,6 +27,7 @@ import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
+import com.dpdocter.response.DoctorPatientReceiptAddEditResponse;
 import com.dpdocter.services.BillingService;
 
 import common.util.web.DPDoctorUtils;
@@ -167,15 +168,15 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT, notes = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
-	public Response<DoctorPatientReceipt> addEditReceipt(DoctorPatientReceiptRequest request) {
+	public Response<DoctorPatientReceiptAddEditResponse> addEditReceipt(DoctorPatientReceiptRequest request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		DoctorPatientReceipt doctorPatientReceipt = billingService.addEditReceipt(request);
+		DoctorPatientReceiptAddEditResponse doctorPatientReceipt = billingService.addEditReceipt(request);
 		
-		Response<DoctorPatientReceipt> response = new Response<DoctorPatientReceipt>();
+		Response<DoctorPatientReceiptAddEditResponse> response = new Response<DoctorPatientReceiptAddEditResponse>();
 		response.setData(doctorPatientReceipt);
 		return response;
 	}

@@ -32,8 +32,6 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private String uniqueInvoiceId;
 	
-	private DoctorPatientInvoice invoice;
-	
 	private Double amountPaid;
 	
 	private Double remainingAdvanceAmount;
@@ -172,21 +170,13 @@ public class DoctorPatientReceipt extends GenericCollection{
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
-	public DoctorPatientInvoice getInvoice() {
-		return invoice;
-	}
-
-	public void setInvoice(DoctorPatientInvoice invoice) {
-		this.invoice = invoice;
-	}
-
 	@Override
 	public String toString() {
 		return "DoctorPatientReceipt [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
 				+ receiptType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", invoiceIdsWithAmount="
 				+ invoiceIdsWithAmount + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", invoice=" + invoice + ", amountPaid=" + amountPaid + ", remainingAdvanceAmount="
+			    + ", amountPaid=" + amountPaid + ", remainingAdvanceAmount="
 				+ remainingAdvanceAmount + ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate
 				+ ", discarded=" + discarded + "]";
 	}
