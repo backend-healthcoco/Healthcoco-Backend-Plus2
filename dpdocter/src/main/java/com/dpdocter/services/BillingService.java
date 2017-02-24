@@ -10,6 +10,7 @@ import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
+import com.dpdocter.response.DoctorPatientReceiptAddEditResponse;
 
 public interface BillingService {
 
@@ -21,7 +22,7 @@ public interface BillingService {
 
 	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
 
-	DoctorPatientReceipt addEditReceipt(DoctorPatientReceiptRequest request);
+	DoctorPatientReceiptAddEditResponse addEditReceipt(DoctorPatientReceiptRequest request);
 
 	List<DoctorPatientReceipt> getReceipts(int page, int size, String doctorId, String locationId, String hospitalId,
 			String patientId, String updatedTime, Boolean discarded);

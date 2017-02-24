@@ -26,15 +26,19 @@ import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.ProfessionalMembership;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Speciality;
+import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
+import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DiseaseListResponse;
@@ -60,6 +64,12 @@ public class ESMasterApi {
 
     @Autowired
     AdminServices adminServices;
+
+	@Autowired
+	private CityRepository cityRepository;
+
+	@Autowired
+	private ESCityService esCityService;
 
     @Autowired
     private LocaleRepository localeRepository;
@@ -125,41 +135,17 @@ public class ESMasterApi {
     @GET
     public Response<Boolean> add() {
 
-    List<LocaleCollection> localeCollections = localeRepository.findAll();
-    for(LocaleCollection localeCollection : localeCollections){
-    	if(localeCollection.getAddress() != null){
-			Address address = localeCollection.getAddress();
-			List<GeocodedLocation> geocodedLocations = locationServices
-					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
-							? address.getStreetAddress() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
-									? address.getLocality() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
-									? address.getCity() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getState())
-									? address.getState() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
-									? address.getCountry() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
-									? address.getPostalCode() : ""));
-
-			if (geocodedLocations != null && !geocodedLocations.isEmpty())
-				BeanUtil.map(geocodedLocations.get(0), localeCollection.getAddress());	
-		}
-					
-		localeCollection = localeRepository.save(localeCollection);
-
-    	UserCollection userCollection = userRepository.findByUserName(UniqueIdInitial.PHARMACY.getInitial()+localeCollection.getContactNumber());
-    	ESUserLocaleDocument esUserLocaleDocument = new ESUserLocaleDocument();
-		BeanUtil.map(userCollection, esUserLocaleDocument);
-		BeanUtil.map(localeCollection, esUserLocaleDocument);
-		esUserLocaleDocument.setUserId(userCollection.getId().toString());
-		esUserLocaleDocument.setLocaleId(localeCollection.getId().toString());
-		if (localeCollection.getAddress() !=null && localeCollection.getAddress().getLatitude() != null && localeCollection.getAddress().getLongitude() != null)
-			esUserLocaleDocument.setGeoPoint(new GeoPoint(localeCollection.getAddress().getLatitude(), localeCollection.getAddress().getLongitude()));
-		esUserLocaleRepository.save(esUserLocaleDocument);
-    }
-	Response<Boolean> response = new Response<Boolean>();
+    	List<CityCollection> cityCollections = cityRepository.findAll();
+    	for(CityCollection cityCollection : cityCollections){
+    		ESCityDocument esCityDocument = new ESCityDocument();
+    		BeanUtil.map(cityCollection, esCityDocument);
+    		esCityDocument.setGeoPoint(new GeoPoint(cityCollection.getLatitude(), cityCollection.getLongitude()));
+    		esCityService.addCities(esCityDocument);
+    	}
+    	
+		
+    	adminServices.importDrug();
+    Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
     }
