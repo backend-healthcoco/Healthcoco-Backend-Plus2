@@ -79,6 +79,9 @@ public class UserCollection extends GenericCollection {
 
 	@Field
 	private String userUId;
+	
+	@Field
+	private Integer regularCheckUpMonths;
 
 	public ObjectId getId() {
 		return id;
@@ -259,14 +262,31 @@ public class UserCollection extends GenericCollection {
 		this.userUId = userUId;
 	}
 
+	/*public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}*/
+
+	public Integer getRegularCheckUpMonths() {
+		return regularCheckUpMonths;
+	}
+
+	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
+		this.regularCheckUpMonths = regularCheckUpMonths;
+	}
+	
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
 				+ ", middleName=" + middleName + ", userName=" + userName + ", password=" + Arrays.toString(password)
-				+ ", salt=" + Arrays.toString(salt) + ", emailAddress=" + emailAddress + ", mobileNumber="
-				+ mobileNumber + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", isActive=" + isActive
-				+ ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
-				+ coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", lastSession="
-				+ lastSession + ", signedUp=" + signedUp + ", userUId=" + userUId + "]";
+				+ ", salt=" + Arrays.toString(salt) + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
+				+ ", isActive=" + isActive + ", isVerified=" + isVerified + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", colorCode=" + colorCode + ", userState="
+				+ userState + ", lastSession=" + lastSession + ", signedUp=" + signedUp + ", userUId=" + userUId
+				+ ", regularCheckUpMonths=" + regularCheckUpMonths + "]";
 	}
 }

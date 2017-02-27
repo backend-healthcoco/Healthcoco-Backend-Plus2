@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.services.LocaleService;
+import com.dpdocter.services.PharmacyService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -33,8 +36,8 @@ public class LocaleApi {
 	@Autowired
 	LocaleService localeService;
 	
-	/*@Autowired
-	PharmacyService pharmacyService;*/
+	@Autowired
+	PharmacyService pharmacyService;
 	
 	@Autowired
 	 ServletContext context;
@@ -183,7 +186,7 @@ public class LocaleApi {
 			e.printStackTrace();
 		}
 		return response;
-	}
+	}*/
 	
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
@@ -206,7 +209,7 @@ public class LocaleApi {
 		return response;
 	}
 	
-
+/*
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_PHARMACY_RESPONSE)
 	public Response<Boolean> addPharmacyResponseInQueue(PharmacyResponse pharmacyResponse) {
@@ -226,6 +229,6 @@ public class LocaleApi {
 			e.printStackTrace();
 		}
 		return response;
-	}
-*/
+	}*/
+
 }

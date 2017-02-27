@@ -31,6 +31,7 @@ import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.request.RegularCheckUpAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 
 public interface DoctorProfileService {
@@ -95,6 +96,8 @@ public interface DoctorProfileService {
 
 	public DoctorContactsResponse getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
 			long from, long to);
+
+	RegularCheckUpAddEditRequest addRegularCheckupMonths(RegularCheckUpAddEditRequest request);
 
 	
 

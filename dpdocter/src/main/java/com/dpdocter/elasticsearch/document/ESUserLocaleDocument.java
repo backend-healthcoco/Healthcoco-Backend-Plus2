@@ -20,130 +20,133 @@ import com.dpdocter.enums.LocaleType;
 public class ESUserLocaleDocument {
 
 	@Id
-    private String id;//This is localeId
+	private String id;// This is localeId
 
 	@Field(type = FieldType.String)
-    private String title;
+	private String title;
 
 	@Field(type = FieldType.String)
-    private String firstName;
+	private String firstName;
 
 	@Field(type = FieldType.String)
-    private String userName;
-    
-	@Field(type = FieldType.String)
-    private String emailAddress;
+	private String userName;
 
 	@Field(type = FieldType.String)
-    private String mobileNumber;
+	private String emailAddress;
 
 	@Field(type = FieldType.String)
-    private String imageUrl;
+	private String mobileNumber;
 
 	@Field(type = FieldType.String)
-    private String thumbnailUrl;
+	private String imageUrl;
 
 	@Field(type = FieldType.String)
-    private Boolean isActive = false;
+	private String thumbnailUrl;
 
 	@Field(type = FieldType.String)
-    private Boolean isVerified = false;
+	private Boolean isActive = false;
 
 	@Field(type = FieldType.String)
-    private String coverImageUrl;
+	private Boolean isVerified = false;
 
 	@Field(type = FieldType.String)
-    private String coverThumbnailImageUrl;
+	private String coverImageUrl;
 
 	@Field(type = FieldType.String)
-    private String colorCode;
+	private String coverThumbnailImageUrl;
 
 	@Field(type = FieldType.String)
-    private String userUId;
+	private String colorCode;
 
 	@Field(type = FieldType.String)
-    private String userId;
+	private String userUId;
 
 	@Field(type = FieldType.String)
-    private String localeId;
-    
+	private String userId;
+
+	@Field(type = FieldType.String)
+	private String localeId;
+
 	@Field(type = FieldType.String)
 	private String localeName;
-	
+
 	@Field(type = FieldType.String)
 	private String registeredOwnerName;
-	
+
 	@Field(type = FieldType.String)
 	private String licenseNumber;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<LocaleImage> localeImages;
-	
+
 	@Field(type = FieldType.String)
 	private String logoUrl;
-	
+
 	@Field(type = FieldType.String)
 	private String logoThumbnailUrl;
-	
+
 	@Field(type = FieldType.String)
 	private String contactNumber;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> alternateContactNumbers;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<LocaleWorkingSchedule> localeWorkingSchedules;
-	
+
 	@Field(type = FieldType.Nested)
 	private Address address;
-	
+
 	@GeoPointField
 	private GeoPoint geoPoint;
 
 	@Field(type = FieldType.String)
 	private String localeAddress;
-	
+
 	@Field(type = FieldType.String)
 	private String websiteUrl;
-	
+
 	@Field(type = FieldType.String)
 	private String localeEmailAddress;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isTwentyFourSevenOpen;
-	
+
 	@Field(type = FieldType.String)
 	private String localeUId;
-	
+
 	@Field(type = FieldType.Integer)
 	private Integer openSince;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isActivate = false;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isLocaleListed = true;
-	
+
 	@Field(type = FieldType.Long)
 	private long localeRankingCount = 0;
-	
+
 	@Field(type = FieldType.Long)
 	private long noOfLocaleRecommendation = 0;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isHomeDeliveryAvailable = false;
-	
+
 	@Field(type = FieldType.Integer)
 	private int homeDeliveryRadius;
-	
+
 	@Field(type = FieldType.String)
 	private String paymentInfo;
-	
+
 	@Field(type = FieldType.String)
 	private String localeType = LocaleType.PHARMACY.getType();
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isPasswordVerified = false;
+
+	@Field(type = FieldType.Boolean)
+	private Boolean isOpen;
 
 	@Transient
 	private Double distance;
@@ -496,6 +499,14 @@ public class ESUserLocaleDocument {
 		this.userId = userId;
 	}
 
+	public Boolean getIsOpen() {
+		return isOpen;
+	}
+
+	public void setIsOpen(Boolean isOpen) {
+		this.isOpen = isOpen;
+	}
+
 	@Override
 	public String toString() {
 		return "ESUserLocaleDocument [id=" + id + ", title=" + title + ", firstName=" + firstName + ", userName="
@@ -514,6 +525,6 @@ public class ESUserLocaleDocument {
 				+ ", noOfLocaleRecommendation=" + noOfLocaleRecommendation + ", isHomeDeliveryAvailable="
 				+ isHomeDeliveryAvailable + ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo="
 				+ paymentInfo + ", localeType=" + localeType + ", isPasswordVerified=" + isPasswordVerified
-				+ ", distance=" + distance + "]";
+				+ ", isOpen=" + isOpen + ", distance=" + distance + "]";
 	}
 }
