@@ -313,8 +313,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					}
 				} else {
 					if (city != null && location != null)
-						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true,
+								true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (city != null)
 						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
@@ -457,9 +457,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
-					.must(QueryBuilders.matchQuery("isClinic", true))
-					.must(QueryBuilders.matchQuery("isActivate", true))
-			        .must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
+					.must(QueryBuilders.matchQuery("isClinic", true)).must(QueryBuilders.matchQuery("isActivate", true))
+					.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
@@ -588,20 +587,35 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				for (int i = 0; i < days.size(); i++) {
 					days.set(i, days.get(i).toLowerCase());
 				}
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 
-			}
-			if (maxTime != 0 || minTime != 0) {
-				if (maxTime == 0) {
-					maxTime = 1439;
+				if (maxTime != 0 || minTime != 0) {
+					if (maxTime == 0) {
+						maxTime = 1439;
+					}
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(QueryBuilders.andQuery(
+							nestedQuery("workingSchedules.workingHours", QueryBuilders.andQuery(QueryBuilders.orQuery(
+
+									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+											.lt(maxTime),
+
+									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
+											.lt(maxTime)))),
+									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
 				}
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-						boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+			} else {
+				if (maxTime != 0 || minTime != 0) {
+					if (maxTime == 0) {
+						maxTime = 1439;
+					}
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+							boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
 
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").from(minTime).lt(maxTime),
+									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+											.lt(maxTime),
 
-								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime).lt(maxTime))))));
+									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
+											.lt(maxTime))))));
+				}
 			}
 			// if (minTime != 0 || maxTime != 0) {
 			// if (maxTime == 0) {
