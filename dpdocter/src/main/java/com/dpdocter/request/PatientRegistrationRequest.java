@@ -65,6 +65,8 @@ public class PatientRegistrationRequest {
 	private String hospitalId;
 
 	private String doctorId;
+	
+	private Integer regularCheckUpMonths;
 
 	public String getUserId() {
 		return userId;
@@ -292,16 +294,16 @@ public class PatientRegistrationRequest {
 
 	@Override
 	public String toString() {
-		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", mobileNumber="
-				+ mobileNumber + ", gender=" + gender + ", dob=" + dob + ", age=" + age + ", image=" + image
-				+ ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup=" + bloodGroup
-				+ ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile + ", adhaarId="
-				+ adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId
-				+ ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
-				+ ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
+		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
+				+ localPatientName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", age="
+				+ age + ", image=" + image + ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup="
+				+ bloodGroup + ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile
+				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
+				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
+				+ notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
 				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
 				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ "]";
+				+ ", regularCheckUpMonths=" + regularCheckUpMonths + "]";
 	}
 
 	public String getLocalPatientName() {
@@ -310,6 +312,14 @@ public class PatientRegistrationRequest {
 
 	public void setLocalPatientName(String localPatientName) {
 		this.localPatientName = localPatientName;
+	}
+
+	public Integer getRegularCheckUpMonths() {
+		return regularCheckUpMonths;
+	}
+
+	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
+		this.regularCheckUpMonths = regularCheckUpMonths;
 	}
 
 }

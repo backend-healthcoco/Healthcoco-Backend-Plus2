@@ -33,6 +33,7 @@ import com.dpdocter.repository.PushNotificationRepository;
 import com.dpdocter.repository.UserDeviceRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.BroadcastNotificationRequest;
+import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.PushNotificationServices;
@@ -577,6 +578,70 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 //		return response;
 
 	}
+	
+	@Override
+	public void notifyUser(String id, UserSearchRequest userSearchRequest, RoleEnum role, String message) {
+		List<UserDeviceCollection> userDeviceCollections = null;
+
+		try{
+			/*if(role.equals(RoleEnum.PHARMIST))
+			{
+				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
+			}*/
+			if(role.equals(RoleEnum.PATIENT))
+			{
+				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
+			}
+			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
+				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
+					if(userDeviceCollection.getDeviceType() != null){
+						if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType())){
+							userSearchRequest.setLatitude(null);
+							userSearchRequest.setLocation(null);
+							userSearchRequest.setLongitude(null);
+							userSearchRequest.setUserId(null);
+							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), userSearchRequest, RoleEnum.PHARMIST,
+									message);
+						}
+							
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		    logger.error(e + " Error while pushing notification: " + e.getCause().getMessage());
+		}
+	}
+	
+	private void pushNotificationOnAndroidDevices(String deviceId, String pushToken,
+			UserSearchRequest userSearchRequest, RoleEnum role, String message) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Sender sender = null;
+
+		/*	if (role.getRole().equalsIgnoreCase(RoleEnum.PHARMIST.getRole())) {
+				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
+			} else {*/
+				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
+			//}
+
+			String jsonOutput = mapper.writeValueAsString(userSearchRequest);
+			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
+
+			Result result = sender.send(messageObj, pushToken, 1);
+			List<String> deviceIds = new ArrayList<String>();
+			deviceIds.add(deviceId);
+			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
+					message, DeviceType.ANDROID, null, PushNotificationType.INDIVIDUAL);
+			pushNotificationRepository.save(pushNotificationCollection);
+			logger.info("Message Result: " + result.toString());
+		} catch (JsonProcessingException jpe) {
+			jpe.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {

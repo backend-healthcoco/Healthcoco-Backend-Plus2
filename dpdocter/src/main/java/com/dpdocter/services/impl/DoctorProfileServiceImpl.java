@@ -86,6 +86,7 @@ import com.dpdocter.request.DoctorProfilePictureAddEditRequest;
 import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
+import com.dpdocter.request.RegularCheckUpAddEditRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.response.ImageURLResponse;
@@ -1250,6 +1251,26 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			e.printStackTrace();
 			logger.error(e + " Error getting Patient ");
 			throw new BusinessException(ServiceError.Unknown, "Error getting Patient");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public RegularCheckUpAddEditRequest addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
+		UserCollection userCollection = null;
+		RegularCheckUpAddEditRequest response = null;
+		try {
+			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			BeanUtil.map(request, userCollection);
+			userRepository.save(userCollection);
+			response = new RegularCheckUpAddEditRequest();
+			BeanUtil.map(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 		}
 		return response;
 	}

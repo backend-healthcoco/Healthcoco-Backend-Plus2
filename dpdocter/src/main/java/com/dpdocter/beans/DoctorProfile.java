@@ -57,6 +57,8 @@ public class DoctorProfile {
 
 	private List<DoctorClinicProfile> clinicProfile;
 
+	private Integer regularCheckUpMonths;
+
 	public String getId() {
 		return id;
 	}
@@ -260,14 +262,15 @@ public class DoctorProfile {
 	@Override
 	public String toString() {
 		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title
-				+ ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
-				+ ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", dob=" + dob
-				+ ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl="
-				+ coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
-				+ otherEmailAddresses + ", experience=" + experience + ", education=" + education + ", specialities="
-				+ specialities + ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
-				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
-				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile + "]";
+				+ ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
+				+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
+				+ education + ", specialities=" + specialities + ", achievements=" + achievements
+				+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails
+				+ ", experienceDetails=" + experienceDetails + ", professionalMemberships=" + professionalMemberships
+				+ ", clinicProfile=" + clinicProfile + ", regularCheckUpMonths=" + regularCheckUpMonths + "]";
 	}
 
 	public String getCountryCode() {
@@ -276,6 +279,14 @@ public class DoctorProfile {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}
+
+	public Integer getRegularCheckUpMonths() {
+		return regularCheckUpMonths;
+	}
+
+	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
+		this.regularCheckUpMonths = regularCheckUpMonths;
 	}
 
 }
