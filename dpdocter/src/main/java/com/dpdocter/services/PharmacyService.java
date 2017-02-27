@@ -8,7 +8,7 @@ public interface PharmacyService {
 
 	Boolean addSearchRequest(UserSearchRequest request);
 
-	Boolean addResponseInQueue(PharmacyResponse request);
+	/*Boolean addResponseInQueue(PharmacyResponse request);*/
 
 	Boolean orderDrugs(OrderDrugsRequest request);
 

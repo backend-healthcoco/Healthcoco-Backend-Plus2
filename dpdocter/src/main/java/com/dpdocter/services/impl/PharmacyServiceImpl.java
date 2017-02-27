@@ -140,10 +140,10 @@ public class PharmacyServiceImpl implements PharmacyService {
 		sqs.sendMessage(new SendMessageRequest(searchPharmacyRequestQueueURL, messageBody));
 	}
 
-	@Scheduled(fixedDelay = 9000)
+	/*@Scheduled(fixedDelay = 9000)
 	@Transactional
-	public void retrieveUserReuqest() {
-		/*
+	private void retrieveUserReuqest() {
+		
 		 * TODO : get data from queue, generate uniqueResponseId. if pharmacyId
 		 * is present then retrieve particular pharmacy and send notification to
 		 * pharmacy with prescription request & uniqueRequestId and add in
@@ -152,24 +152,24 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 * presciption request & uniqueRequestId and then add in collection
 		 * After sending request to pharmacy remove that particular request from
 		 * queue
-		 */
+		 
 		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonSQS sqs = new AmazonSQSClient(credentials);
 		try {
 			sqs.setRegion(Region.getRegion(Regions.US_WEST_2));
 			String searchPharmacyRequestQueueURL = "";
 
-	/*		AmazonSQS client = new AmazonSQSClient();
+			AmazonSQS client = new AmazonSQSClient();
 			GetQueueUrlRequest request = new GetQueueUrlRequest().withQueueName(
 			        "MyQueue").withQueueOwnerAWSAccountId("12345678910");
-			GetQueueUrlResult response = client.getQueueUrl(request);*/
+			GetQueueUrlResult response = client.getQueueUrl(request);
 			
-			/*GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest(searchPharmacyRequestQueue);
+			GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest(searchPharmacyRequestQueue);
 			
 			System.out.println(getQueueUrlRequest);
 			if (getQueueUrlRequest != null) {
 				searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-			}*/
+			}
 			//if (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
 				CreateQueueRequest createQueueRequest = new CreateQueueRequest(searchPharmacyRequestQueue);
 				searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
@@ -191,7 +191,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 					System.out.println("    Value: " + entry.getValue());
 				}
 
-				/*UserSearchRequest userSearchRequest = Jackson.fromJsonString(message.getBody(),
+				UserSearchRequest userSearchRequest = Jackson.fromJsonString(message.getBody(),
 						UserSearchRequest.class);
 				if (DPDoctorUtils.anyStringEmpty(userSearchRequest.getLocaleId())) {
 					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -221,7 +221,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 							+ DPDoctorUtils.generateRandomId();
 					searchRequestToPharmacy.setUniqueResponseId(uniqueResponseId);
 					searchRequestToPharmacyRepository.save(searchRequestToPharmacy);
-				}*/
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -233,14 +233,14 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Override
 	@Transactional
 	public Boolean addResponseInQueue(PharmacyResponse request) {
-		/*
+		
 		 * TODO : Whenever pharmacy response is received check replyType if
 		 * replyType = NO, update it in collection else if replyType = YES add
 		 * in response queue, update reply in collection & send notification to
 		 * patient data to be send in notification is : uniqueRequestId,
 		 * pharmacyId, uniqueResponseId(other details if required) After sending
 		 * request to patient remove that particular request from queue
-		 */
+		 
 		Boolean response = false;
 		String uniqueResponseId = null;
 		try {
@@ -256,14 +256,14 @@ public class PharmacyServiceImpl implements PharmacyService {
 		}
 
 		return response;
-	}
+	}*/
 
 	@Override
 	public Boolean orderDrugs(OrderDrugsRequest request) {
-		/*
-		 * TODO : when patient is request for order than send notification to
-		 * pharmacy. Pharmacy Id we will get in request
-		 */
+		
+		 //* TODO : when patient is request for order than send notification to
+		 //* pharmacy. Pharmacy Id we will get in request
+		 
 		try {
 			pushNotificationServices.notifyUser(request.getLocaleId(), null, RoleEnum.PHARMIST, "Keep my order ready");
 		} catch (Exception e) {
@@ -274,7 +274,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		return null;
 	}
 
-	private void addPharmacyResponseInCollection(PharmacyResponse request, String uniqueResponseId) {
+	/*private void addPharmacyResponseInCollection(PharmacyResponse request, String uniqueResponseId) {
 		SearchRequestToPharmacyCollection searchRequestToPharmacyCollection = searchRequestToPharmacyRepository
 				.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
 						new ObjectId(request.getUserId()));
@@ -297,11 +297,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 		GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest().withQueueName(pharmacyResponseQueue);
 		
-		/*if(response != null && response.getQueueUrl() != null && !response.getQueueUrl().isEmpty())
+		if(response != null && response.getQueueUrl() != null && !response.getQueueUrl().isEmpty())
 		{
 			searchPharmacyRequestQueueURL = response.getQueueUrl();
 			//searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-		}*/
+		}
 		GetQueueUrlResult response = sqs.getQueueUrl(getQueueUrlRequest);
 		System.out.println(response);
 		if(response != null && response.getQueueUrl() != null && !response.getQueueUrl().isEmpty())
@@ -318,20 +318,20 @@ public class PharmacyServiceImpl implements PharmacyService {
 		String messageBody = Jackson.toJsonString(request) ;
 		//sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
 		sqs.sendMessage(new SendMessageRequest(searchPharmacyRequestQueueURL, messageBody));
-		/*SendMessageRequest sendMessageRequest = new SendMessageRequest();
+		SendMessageRequest sendMessageRequest = new SendMessageRequest();
 		MessageAttributeValue messageAttributeValue = new MessageAttributeValue();
 		messageAttributeValue.setStringValue(uniqueResponseId);
 		messageAttributeValue.setDataType("String");
 		sendMessageRequest.addMessageAttributesEntry("uniqueResponseId", messageAttributeValue);
 		sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
-		sqs.sendMessage(sendMessageRequest);*/
+		sqs.sendMessage(sendMessageRequest);
 		return uniqueResponseId;
 	}
 
 	@Scheduled(fixedDelay = 900000)
 	@Transactional
 	public void retrievePharmacyResponse() {
-		/*
+		
 		 * TODO : get data from queue, generate uniqueResponseId. if pharmacyId
 		 * is present then retrieve particular pharmacy and send notification to
 		 * pharmacy with prescription request & uniqueRequestId and add in
@@ -340,7 +340,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 * presciption request & uniqueRequestId and then add in collection
 		 * After sending request to pharmacy remove that particular request from
 		 * queue
-		 */
+		 
 		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonSQS sqs = new AmazonSQSClient(credentials);
 		try {
@@ -391,7 +391,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
 		}
 	}
-
+*/
 	/*
 	 * AWSCredentials credentials = new
 	 * BasicAWSCredentials("AKIAIHOF7FWQ2ZPMKKHQ",
