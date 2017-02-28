@@ -12,18 +12,18 @@ public class BirthdaySMSDetailsForPatients {
 
 	private ObjectId hospitalId;
 
-	private ObjectId patientId;
+	private PatientCard patient;
 
 	private String localPatientName;
 
 	private String locationName;
 
-	public ObjectId getPatientId() {
-		return patientId;
+	public PatientCard getPatient() {
+		return patient;
 	}
 
-	public void setPatientId(ObjectId patientId) {
-		this.patientId = patientId;
+	public void setPatient(PatientCard patient) {
+		this.patient = patient;
 	}
 
 	public ObjectId getDoctorId() {

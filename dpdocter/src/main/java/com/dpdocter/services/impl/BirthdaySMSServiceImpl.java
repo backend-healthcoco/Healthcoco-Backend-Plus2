@@ -8,6 +8,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -59,7 +60,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Value(value = "${sms.birthday.wish.to.patient")
 	private String birthdayWishSMStoPatient;
 
-	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 35 12 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToPatients() {
 		try {
@@ -73,18 +74,19 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 					Fields.field("doctorId", "$patient.doctorId"), Fields.field("locationId", "$locationId"),
 					Fields.field("hospitalId", "$location.hospitalId"),
 					Fields.field("locationName", "$location.locationName"), Fields.field("createdTime", "$createdTime"),
-					Fields.field("patientId", "$patient.userId"),
+					Fields.field("patient", "$patient"),
 					Fields.field("localPatientName", "$patient.localPatientName")));
 			Criteria criteria = new Criteria("discarded").is(false).andOperator(
-					new Criteria("doctorClinic.isSendBirthdaySMS").is(true), new Criteria("isActivate").is(true),
+					new Criteria("isSendBirthdaySMS").is(true), new Criteria("isActivate").is(true),
 					new Criteria("patient.dob.days").is(day), new Criteria("patient.dob.months").is(month),
-					new Criteria("patient.discarded").is(false));
+					new Criteria("patient.discarded").is(false), new Criteria("doctorId").ne(null),
+					new Criteria("locationId").ne(null));
 
 			Aggregation aggregation = Aggregation.newAggregation(
 					// Aggregation.lookup("doctor_clinic_profile_cl", "_id",
 					// "userLocationId", "doctorClinic"),
 					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-					Aggregation.lookup("patient_cl", "userId", "doctorId", "patient"), Aggregation.unwind("patient"),
+					Aggregation.lookup("patient_cl", "doctorId", "doctorId", "patient"), Aggregation.unwind("patient"),
 					Aggregation.match(criteria), projectList, Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			AggregationResults<BirthdaySMSDetailsForPatients> results = mongoTemplate.aggregate(aggregation,
 					DoctorClinicProfileCollection.class, BirthdaySMSDetailsForPatients.class);
@@ -93,34 +95,38 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 			if (birthdaySMSDetailsForPatientsList.size() > 0)
 				for (BirthdaySMSDetailsForPatients birthdaySMSDetailsForPatient : birthdaySMSDetailsForPatientsList) {
+					if (birthdaySMSDetailsForPatient.getLocationId().toString()
+							.equals(birthdaySMSDetailsForPatient.getPatient().getLocationId())) {
 
-					UserCollection userCollection = userRepository.findOne(birthdaySMSDetailsForPatient.getPatientId());
-					String message = birthdayWishSMStoPatient;
-					SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-					smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
-					smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
-					smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
-					smsTrackDetail.setType("BIRTHDAY WISH TO PATIENT");
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(userCollection.getId());
-					SMS sms = new SMS();
-					smsDetail.setUserName(birthdaySMSDetailsForPatient.getLocalPatientName());
-					message = message.replace("{patientName}", birthdaySMSDetailsForPatient.getLocalPatientName());
-					message = message.replace("{clinicName}", birthdaySMSDetailsForPatient.getLocationName());
+						UserCollection userCollection = userRepository
+								.findOne(new ObjectId(birthdaySMSDetailsForPatient.getPatient().getUserId()));
+						String message = birthdayWishSMStoPatient;
+						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+						smsTrackDetail.setDoctorId(birthdaySMSDetailsForPatient.getDoctorId());
+						smsTrackDetail.setLocationId(birthdaySMSDetailsForPatient.getLocationId());
+						smsTrackDetail.setHospitalId(birthdaySMSDetailsForPatient.getHospitalId());
+						smsTrackDetail.setType("BIRTHDAY WISH TO PATIENT");
+						SMSDetail smsDetail = new SMSDetail();
+						smsDetail.setUserId(userCollection.getId());
+						SMS sms = new SMS();
+						smsDetail.setUserName(birthdaySMSDetailsForPatient.getLocalPatientName());
+						message = message.replace("{patientName}", birthdaySMSDetailsForPatient.getLocalPatientName());
+						message = message.replace("{clinicName}", birthdaySMSDetailsForPatient.getLocationName());
 
-					sms.setSmsText(message);
+						sms.setSmsText(message);
 
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(userCollection.getMobileNumber());
-					sms.setSmsAddress(smsAddress);
+						SMSAddress smsAddress = new SMSAddress();
+						smsAddress.setRecipient(userCollection.getMobileNumber());
+						sms.setSmsAddress(smsAddress);
 
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					sMSServices.sendSMS(smsTrackDetail, true);
+						smsDetail.setSms(sms);
+						smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+						List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+						smsDetails.add(smsDetail);
+						smsTrackDetail.setSmsDetails(smsDetails);
+						sMSServices.sendSMS(smsTrackDetail, true);
 
+					}
 				}
 
 		} catch (
@@ -141,14 +147,13 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 
 	}
 
-	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
+	@Scheduled(cron = "0 30 12 * * ?", zone = "IST")
 	@Override
 	public void sendBirthdaySMSToDoctors() {
 		try {
 			Date date = new Date(); // your date
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(date);
-
 			int month = cal.get(Calendar.MONTH) + 1;
 			int day = cal.get(Calendar.DAY_OF_MONTH);
 			Criteria criteria = new Criteria("userLocation.discarded").is(false).andOperator(
