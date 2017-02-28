@@ -4219,8 +4219,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		if (!isCustomPDF || showUSG)
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
 		parameters.put("pv", clinicalNotesCollection.getPv());
-		parameters.put("pa", clinicalNotesCollection.getPs());
-		parameters.put("ps", clinicalNotesCollection.getProvisionalDiagnosis());
+		parameters.put("pa", clinicalNotesCollection.getPa());
+		parameters.put("ps", clinicalNotesCollection.getPs());
 		parameters.put("ecgDetails", clinicalNotesCollection.getEcgDetails());
 		parameters.put("xRayDetails", clinicalNotesCollection.getxRayDetails());
 		parameters.put("echo", clinicalNotesCollection.getEcho());
@@ -4230,7 +4230,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 		if (clinicalNotesCollection.getEdd()!= null && (!isCustomPDF || showEDD))
 			parameters.put("edd", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
-		if (!isCustomPDF || showNoOfChildren) {
+		if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0 || clinicalNotesCollection.getNoOfFemaleChildren()>0)) {
 			parameters.put("noOfChildren", clinicalNotesCollection.getNoOfMaleChildren() + "|"
 					+ clinicalNotesCollection.getNoOfFemaleChildren());
 		}

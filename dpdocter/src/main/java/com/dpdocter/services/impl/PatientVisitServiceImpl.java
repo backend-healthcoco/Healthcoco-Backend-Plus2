@@ -43,6 +43,7 @@ import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.PatientVisit;
 import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.Prescription;
@@ -1480,7 +1481,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					
 					if (clinicalNotesCollection.getLmp()!= null && (!isCustomPDF || showLMP))clinicalNotesJasperDetails.setLmp(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
 					if (clinicalNotesCollection.getEdd()!= null && (!isCustomPDF || showEDD))clinicalNotesJasperDetails.setEdd(new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
-					if (!isCustomPDF || showNoOfChildren){
+					if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0 || clinicalNotesCollection.getNoOfFemaleChildren()>0)){
 						clinicalNotesJasperDetails.setNoOfChildren(clinicalNotesCollection.getNoOfMaleChildren()+"|"+clinicalNotesCollection.getNoOfFemaleChildren());
 					}
 					
