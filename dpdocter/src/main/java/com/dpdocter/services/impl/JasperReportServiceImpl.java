@@ -264,6 +264,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(10);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{indicationOfUSG}.equals( null ) && !$P{indicationOfUSG}.isEmpty()"));
+		
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{USGTITLE}"));
+        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth);
+        jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+        band.addElement(jrDesignTextField);
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+        
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$P{vitalSigns}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$P{presentComplaint}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0);
@@ -533,6 +545,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(10);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		
+		band = new JRDesignBand();
+		band.setHeight(20);
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty()"));
+		
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{USGTITLE}"));
+        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth);
+        jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+        band.addElement(jrDesignTextField);
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
         //add clinical notes items
 		addItems(jasperDesign, columnWidth, "$P{VitalSigns}", "$F{vitalSigns}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaints}", "$F{presentComplaint}", fieldWidth, false, 0);
