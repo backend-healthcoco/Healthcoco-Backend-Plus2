@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.collections.UserCollection;
 
 public interface MailBodyGenerator {
@@ -40,4 +41,6 @@ public interface MailBodyGenerator {
 
 	public String generateContactEmailBody(String fName, String type, String mobileNumber, String emailAddress,
 			String city);
+
+	String generateContactEmailBody(DoctorContactUs contactUs, String type);
 }

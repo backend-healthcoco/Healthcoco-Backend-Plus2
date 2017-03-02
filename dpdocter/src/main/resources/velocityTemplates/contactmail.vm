@@ -3,9 +3,16 @@
 	Hello Healthcoco Team,
 	<br>
 	<br> ${type} has contact you. Following are the details :
-	<br> name: ${fname}
-	<br> city :${city}
-	<br> mobile number :${mobileNumber}
-	<br> emailAddress:${emailAddress}
+	<br> Name : ${fName}
+	<br> City : ${city}
+	<br> Mobile number : ${mobileNumber}
+	<br> Email Address : ${emailAddress}
+	<br> Specialities :
+	<ul>
+ 		#foreach( $speciality in $specialities )
+    		<li>$speciality</li>
+ 		#end
+	</ul>
+	<br> Device Type : ${deviceType}
 </body>
 </html>

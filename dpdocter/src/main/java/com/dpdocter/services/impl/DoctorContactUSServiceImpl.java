@@ -74,10 +74,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 						"doctorWelcomeTemplate.vm", null, null);
 				mailService.sendEmail(doctorContactUs.getEmailAddress(), doctorWelcomeSubject, body, null);
 
-				body = mailBodyGenerator.generateContactEmailBody(
-						doctorContactUs.getTitle() + " " + doctorContactUs.getFirstName(), "Doctor",
-						doctorContactUs.getMobileNumber(), doctorContactUs.getEmailAddress(),
-						doctorContactUs.getCity());
+				body = mailBodyGenerator.generateContactEmailBody(doctorContactUs, "Doctor");
 				mailService.sendEmail(mailTo, signupRequestSubject, body, null);
 
 				if (doctorContactUsCollection != null) {
