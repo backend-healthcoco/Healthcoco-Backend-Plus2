@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
+import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.services.MailBodyGenerator;
 
@@ -102,6 +103,23 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		model.put("type", type);
 		model.put("mobileNumber", mobileNumber);
 		model.put("emailAddress", emailAddress);
+		
+
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "contactmail.vm", "UTF-8", model);
+		return text;
+	}
+	
+	@Override
+	@Transactional
+	public String generateContactEmailBody(DoctorContactUs contactUs , String type) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("fName", contactUs.getTitle() + " " + contactUs.getFirstName());
+		model.put("city", contactUs.getCity());
+		model.put("type", type);
+		model.put("mobileNumber", contactUs.getMobileNumber());
+		model.put("emailAddress", contactUs.getEmailAddress());
+		model.put("deviceType", contactUs.getDeviceType());
+		model.put("specialities", contactUs.getSpecialities());
 
 		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "contactmail.vm", "UTF-8", model);
 		return text;
