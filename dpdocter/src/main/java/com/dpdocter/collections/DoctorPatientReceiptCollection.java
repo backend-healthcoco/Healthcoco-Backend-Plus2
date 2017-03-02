@@ -64,6 +64,9 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private Double usedAdvanceAmount = 0.0;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -188,6 +191,14 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 		return uniqueInvoiceId;
 	}
 
+	public Double getUsedAdvanceAmount() {
+		return usedAdvanceAmount;
+	}
+
+	public void setUsedAdvanceAmount(Double usedAdvanceAmount) {
+		this.usedAdvanceAmount = usedAdvanceAmount;
+	}
+
 	public void setUniqueInvoiceId(String uniqueInvoiceId) {
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
@@ -200,6 +211,7 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 				+ invoiceIdsWithAmount + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
 				+ ", amountPaid=" + amountPaid + ", remainingAdvanceAmount=" + remainingAdvanceAmount
 				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
-				+ "]";
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + "]";
 	}
+
 }

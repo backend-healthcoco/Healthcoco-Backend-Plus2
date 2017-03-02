@@ -1007,11 +1007,11 @@ public interface PathProxy {
 
 		public static final String ADD_INVOICE_AND_PAY = "/invoice/addAndPay";
 
-		public static final String GET_BALANCE_AMOUNT = "/balanceAmount/{locationId}/{hospitalId}/{patientId}";
+		public static final String GET_TOTAL_DUE_AMOUNT = "/dueAmount/{locationId}/{hospitalId}/{patientId}";
 
 		public static final String GET_LEDGER = "/ledger/{locationId}/{hospitalId}/{patientId}";
 
-		public static final String GET_BALANCE_AND_ADVANCE_AMOUNT = "/amount/{locationId}/{hospitalId}/{patientId}";
+		public static final String GET_TOTAL_DUE_AND_ADVANCE_AMOUNT = "/amount/{locationId}/{hospitalId}/{patientId}";
 		
 		public static final String CREATE_LEDGER = "/ledger";
 	}

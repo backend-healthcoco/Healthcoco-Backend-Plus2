@@ -234,17 +234,17 @@ public class BillingApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BillingUrls.GET_BALANCE_AMOUNT)
+	@Path(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AMOUNT)
 	@GET
-	@ApiOperation(value = PathProxy.BillingUrls.GET_BALANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_BALANCE_AMOUNT)
-	public Response<Double> getBalanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	@ApiOperation(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AMOUNT, notes = PathProxy.BillingUrls.GET_TOTAL_DUE_AMOUNT)
+	public Response<Double> getTotalDueAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Double availableAdvanceAmount = billingService.getBalanceAmount(doctorId, locationId, hospitalId, patientId);
+		Double availableAdvanceAmount = billingService.getTotalDueAmount(doctorId, locationId, hospitalId, patientId);
 		
 		Response<Double> response = new Response<Double>();
 		response.setData(availableAdvanceAmount);
@@ -271,20 +271,20 @@ public class BillingApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.BillingUrls.GET_BALANCE_AND_ADVANCE_AMOUNT)
+	@Path(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AND_ADVANCE_AMOUNT)
 	@GET
-	@ApiOperation(value = PathProxy.BillingUrls.GET_BALANCE_AND_ADVANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_BALANCE_AND_ADVANCE_AMOUNT)
-	public Response<AmountResponse> getBalanceAndAdvanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+	@ApiOperation(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AND_ADVANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_TOTAL_DUE_AND_ADVANCE_AMOUNT)
+	public Response<AmountResponse> getTotalDueAndAdvanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
 			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		AmountResponse availableAdvanceAmount = billingService.getBalanceAndAdvanceAmount(doctorId, locationId, hospitalId, patientId);
+		AmountResponse amountResponse = billingService.getTotalDueAndAdvanceAmount(doctorId, locationId, hospitalId, patientId);
 		
 		Response<AmountResponse> response = new Response<AmountResponse>();
-		response.setData(availableAdvanceAmount);
+		response.setData(amountResponse);
 		return response;
 	}
 

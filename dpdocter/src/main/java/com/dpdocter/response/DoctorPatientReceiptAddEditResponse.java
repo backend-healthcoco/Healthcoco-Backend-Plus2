@@ -11,7 +11,7 @@ public class DoctorPatientReceiptAddEditResponse {
 	
 	private Double totalRemainingAdvanceAmount;
 	
-	private Double totalBalanceAmount;
+	private Double totalDueAmount;
 
 	public DoctorPatientReceipt getDoctorPatientReceipt() {
 		return doctorPatientReceipt;
@@ -37,18 +37,19 @@ public class DoctorPatientReceiptAddEditResponse {
 		this.totalRemainingAdvanceAmount = totalRemainingAdvanceAmount;
 	}
 
-	public Double getTotalBalanceAmount() {
-		return totalBalanceAmount;
+	public Double getTotalDueAmount() {
+		return totalDueAmount;
 	}
 
-	public void setTotalBalanceAmount(Double totalBalanceAmount) {
-		this.totalBalanceAmount = totalBalanceAmount;
+	public void setTotalDueAmount(Double totalDueAmount) {
+		this.totalDueAmount = totalDueAmount;
 	}
 
 	@Override
 	public String toString() {
 		return "DoctorPatientReceiptAddEditResponse [doctorPatientReceipt=" + doctorPatientReceipt + ", invoice="
-				+ invoice + ", totalRemainingAdvanceAmount=" + totalRemainingAdvanceAmount + ", totalBalanceAmount="
-				+ totalBalanceAmount + "]";
+				+ invoice + ", totalRemainingAdvanceAmount=" + totalRemainingAdvanceAmount + ", totalDueAmount="
+				+ totalDueAmount + "]";
 	}
+
 }

@@ -42,6 +42,8 @@ public class DoctorPatientReceipt extends GenericCollection{
 
 	private Boolean discarded = false;
 
+	private Double usedAdvanceAmount = 0.0;
+	
 	public String getId() {
 		return id;
 	}
@@ -169,15 +171,24 @@ public class DoctorPatientReceipt extends GenericCollection{
 	public void setUniqueInvoiceId(String uniqueInvoiceId) {
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
+	public Double getUsedAdvanceAmount() {
+		return usedAdvanceAmount;
+	}
+
+	public void setUsedAdvanceAmount(Double usedAdvanceAmount) {
+		this.usedAdvanceAmount = usedAdvanceAmount;
+	}
 
 	@Override
 	public String toString() {
-		return "DoctorPatientReceipt [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
+		return "DoctorPatientReceiptCollection [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
 				+ receiptType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", invoiceIdsWithAmount="
 				+ invoiceIdsWithAmount + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
-			    + ", amountPaid=" + amountPaid + ", remainingAdvanceAmount="
-				+ remainingAdvanceAmount + ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate
-				+ ", discarded=" + discarded + "]";
+				+ ", amountPaid=" + amountPaid + ", remainingAdvanceAmount=" + remainingAdvanceAmount
+				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + "]";
 	}
+
+
 }
