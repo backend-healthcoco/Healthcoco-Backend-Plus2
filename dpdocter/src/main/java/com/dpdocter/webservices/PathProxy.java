@@ -1032,6 +1032,11 @@ public interface PathProxy {
 
 		public static final String ADD_USER_REQUEST = "/addUserRequest";
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
+		
+		public static final String GET_PATIENT_ORDER_HISTORY = "/getPatientOrderHistory/{userId}";
+		public static final String GET_PHARMCIES_FOR_ORDER = "/getPharmaciesForOrder";
+		public static final String GET_PHARMCIES_COUNT_FOR_ORDER = "/getPharmaciesCountForOrder";
+		public static final String UPLOAD_RX_IMAGE = "/uploadRXImage";
 
 	}
 

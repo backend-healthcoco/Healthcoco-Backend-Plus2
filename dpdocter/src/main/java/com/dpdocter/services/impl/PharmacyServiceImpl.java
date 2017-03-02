@@ -9,7 +9,12 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +33,8 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
+import com.dpdocter.beans.Locale;
+import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 import com.dpdocter.enums.ReplyType;
@@ -42,6 +49,8 @@ import com.dpdocter.repository.SearchRequestToPharmacyRepository;
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.PharmacyResponse;
+import com.dpdocter.response.SearchRequestFromUserResponse;
+import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
 
@@ -78,6 +87,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private SearchRequestToPharmacyRepository searchRequestToPharmacyRepository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	@Override
 	@Transactional
@@ -433,5 +445,98 @@ public class PharmacyServiceImpl implements PharmacyService {
 	 * 
 	 * Delete Queue sqs.deleteQueue(new DeleteQueueRequest(myQueueUrl));
 	 */
+	
+	@Override
+	@Transactional
+	public List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId,int page, int size)
+	{
+		List<SearchRequestFromUserResponse> response = null;
+		// String searchTerm = null;
+		Criteria criteria = new Criteria();
+		try {
+			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = new Criteria().orOperator(new Criteria("localeName").regex("^" + searchTerm, "i"),
+						(new Criteria("contactNumber").regex("^" + searchTerm, "i")));*/
+			/*if (!DPDoctorUtils.anyStringEmpty(contactState))
+				criteria = criteria.and("contactStateType").is(LocaleContactStateType.valueOf(contactState));*/
+			criteria.and("userId").is(new ObjectId(userId));
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			logger.error("Error while getting locales " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting locale List " + e.getMessage());
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType,int page, int size)
+	{
+		List<SearchRequestToPharmacyResponse> response = null;
+		// String searchTerm = null;
+		Criteria criteria = new Criteria();
+		try {
+			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+				criteria = new Criteria().orOperator(new Criteria("localeName").regex("^" + searchTerm, "i"),
+						(new Criteria("contactNumber").regex("^" + searchTerm, "i")));*/
+			/*if (!DPDoctorUtils.anyStringEmpty(contactState))
+				criteria = criteria.and("contactStateType").is(LocaleContactStateType.valueOf(contactState));*/
+			criteria.and("userId").is(new ObjectId(userId));
+			criteria.and("uniqueRequestId").is(uniqueRequestId);
+			
+			if (!DPDoctorUtils.anyStringEmpty(replyType))
+				criteria = criteria.and("replyType").is(replyType);
+			Aggregation aggregation = null;
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
+						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			AggregationResults<SearchRequestToPharmacyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					SearchRequestToPharmacyCollection.class, SearchRequestToPharmacyResponse.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			logger.error("Error while getting locales " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting locale List " + e.getMessage());
+		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId,String replyType)
+	{
+		Integer response = 0;
+		// String searchTerm = null;
+		try {
+			response = searchRequestToPharmacyRepository.getCountByUniqueRequestId(uniqueRequestId, replyType);
+		} catch (Exception e) {
+			logger.error("Error while getting locales " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting locale List " + e.getMessage());
+		}
+		return response;
+	}
+	
 
 }

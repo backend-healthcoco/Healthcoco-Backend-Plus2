@@ -1,52 +1,42 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.request.PrescriptionRequest;
 
-@Document(collection = "search_request_from_user_cl")
-public class SearchRequestFromUserCollection extends GenericCollection {
+public class SearchRequestFromUserResponse {
 
-	@Id
-	private ObjectId id;
+	private String id;
 
-	@Field
-	private ObjectId userId;
+	private String userId;
 
-	@Field
 	private String uniqueRequestId;
 
-	@Field
 	private PrescriptionRequest prescriptionRequest;
 
-	@Field
-	private ObjectId localeId;
+	private String pharmacyId;
 
-	@Field
 	private String location;
 
-	@Field
 	private Double latitude;
 
-	@Field
 	private Double longitude;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public ObjectId getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(ObjectId userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -66,12 +56,12 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 		this.prescriptionRequest = prescriptionRequest;
 	}
 
-	public ObjectId getLocaleId() {
-		return localeId;
+	public String getPharmacyId() {
+		return pharmacyId;
 	}
 
-	public void setLocaleId(ObjectId localeId) {
-		this.localeId = localeId;
+	public void setPharmacyId(String pharmacyId) {
+		this.pharmacyId = pharmacyId;
 	}
 
 	public String getLocation() {
@@ -100,8 +90,9 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "SearchRequestFromUserCollection [id=" + id + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId
-				+ ", location=" + location + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+		return "SearchRequestFromUserResponse [id=" + id + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
+				+ ", prescriptionRequest=" + prescriptionRequest + ", pharmacyId=" + pharmacyId + ", location="
+				+ location + ", latitude=" + latitude + ", longitude=" + longitude + "]";
 	}
+
 }

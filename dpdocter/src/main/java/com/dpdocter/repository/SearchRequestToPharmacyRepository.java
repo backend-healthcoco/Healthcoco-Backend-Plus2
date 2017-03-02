@@ -14,4 +14,7 @@ public interface SearchRequestToPharmacyRepository extends MongoRepository<Searc
 	@Query(value = "{'uniqueRequestId' : ?0 ,'replyType' : ?1}" , count = true)
 	public Integer getCountByUniqueRequestId(String uniqueRequestId , String replyType);
 	
+	@Query(value = "{'userId' : ?0 ,'replyType' : ?1}" , count = true)
+	public Integer getCountByUserIdAndReplyType(ObjectId userId , String replyType);
+	
 }
