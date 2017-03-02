@@ -35,11 +35,11 @@ public interface BillingService {
 
 	InvoiceAndReceiptInitials getInitials(String locationId);
 
-	Double getBalanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
+	Double getTotalDueAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId, String from, String to, int page, int size, String updatedTime);
 
-	AmountResponse getBalanceAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
+	AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientInvoice getInvoice(String invoiceId);
 }

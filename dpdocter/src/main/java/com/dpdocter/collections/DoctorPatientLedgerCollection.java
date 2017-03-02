@@ -30,7 +30,7 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 	private ObjectId invoiceId;   
 	
 	@Field
-	private Double balanceAmount;
+	private Double dueAmount;
 
 	@Field
 	private Double creditAmount;
@@ -86,12 +86,12 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 		this.invoiceId = invoiceId;
 	}
 
-	public Double getBalanceAmount() {
-		return balanceAmount;
+	public Double getDueAmount() {
+		return dueAmount;
 	}
 
-	public void setBalanceAmount(Double balanceAmount) {
-		this.balanceAmount = balanceAmount;
+	public void setDueAmount(Double dueAmount) {
+		this.dueAmount = dueAmount;
 	}
 
 	public Double getCreditAmount() {
@@ -113,8 +113,7 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 	@Override
 	public String toString() {
 		return "DoctorPatientLedgerCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId
-				+ ", balanceAmount=" + balanceAmount + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount
-				+ "]";
+				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId + ", dueAmount="
+				+ dueAmount + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + "]";
 	}
 }

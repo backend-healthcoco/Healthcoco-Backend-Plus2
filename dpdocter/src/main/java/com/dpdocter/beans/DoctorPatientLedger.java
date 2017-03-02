@@ -14,7 +14,7 @@ public class DoctorPatientLedger {
 	
 	private String invoiceId;   
 	
-	private Double balanceAmount;
+	private Double dueAmount;
 
 	private Double creditAmount;
 	
@@ -72,12 +72,12 @@ public class DoctorPatientLedger {
 		this.invoiceId = invoiceId;
 	}
 
-	public Double getBalanceAmount() {
-		return balanceAmount;
+	public Double getDueAmount() {
+		return dueAmount;
 	}
 
-	public void setBalanceAmount(Double balanceAmount) {
-		this.balanceAmount = balanceAmount;
+	public void setDueAmount(Double dueAmount) {
+		this.dueAmount = dueAmount;
 	}
 
 	public Double getCreditAmount() {
@@ -115,9 +115,9 @@ public class DoctorPatientLedger {
 	@Override
 	public String toString() {
 		return "DoctorPatientLedger [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId
-				+ ", balanceAmount=" + balanceAmount + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount
-				+ ", invoice=" + invoice + ", receipt=" + receipt + "]";
+				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId + ", dueAmount="
+				+ dueAmount + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", invoice=" + invoice
+				+ ", receipt=" + receipt + "]";
 	}
 }
 

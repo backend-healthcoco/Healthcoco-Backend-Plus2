@@ -191,19 +191,19 @@ public class BillingServiceImpl implements BillingService {
 				BeanUtil.map(doctorPatientInvoiceCollection, response);
 				
 				DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
-				Double balanceAmount = getBalanceAmount(null, doctorPatientInvoiceCollection.getLocationId().toString(), doctorPatientInvoiceCollection.getHospitalId().toString(), doctorPatientInvoiceCollection.getPatientId().toString());
+				Double balanceAmount = getTotalDueAmount(null, doctorPatientInvoiceCollection.getLocationId().toString(), doctorPatientInvoiceCollection.getHospitalId().toString(), doctorPatientInvoiceCollection.getPatientId().toString());
 				if(doctorPatientLedgerCollection == null){
 					doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
 					doctorPatientLedgerCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
 					doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
 					doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-					doctorPatientLedgerCollection.setBalanceAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
+					doctorPatientLedgerCollection.setDueAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}else{
-					doctorPatientLedgerCollection.setBalanceAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
+					doctorPatientLedgerCollection.setDueAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
@@ -375,10 +375,17 @@ public class BillingServiceImpl implements BillingService {
 						}
 						}
 						doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
+						doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
+								request.getAmountPaid()-request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 								request.getAmountPaid()-request.getUsedAdvanceAmount());
 					}else{
-						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
+						doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
+								request.getAmountPaid());
+						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 								request.getAmountPaid());
 					}
 					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
@@ -403,20 +410,20 @@ public class BillingServiceImpl implements BillingService {
 				response.setInvoice(invoice);
 				response.setDoctorPatientReceipt(receipt);
 				DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(doctorPatientReceiptCollection.getId());
-				Double balanceAmount = getBalanceAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
+				Double balanceAmount = getTotalDueAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
 				if(doctorPatientLedgerCollection == null){
 					doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
 					doctorPatientLedgerCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
 					doctorPatientLedgerCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
-					doctorPatientLedgerCollection.setBalanceAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
+					doctorPatientLedgerCollection.setDueAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}else{
 					doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
-					doctorPatientLedgerCollection.setBalanceAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
+					doctorPatientLedgerCollection.setDueAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
@@ -436,7 +443,7 @@ public class BillingServiceImpl implements BillingService {
 						DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getUniqueMappedResult();
 				
 				if(doctorPatientReceipt != null)response.setTotalRemainingAdvanceAmount(doctorPatientReceipt.getRemainingAdvanceAmount());
-				if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty())response.setTotalBalanceAmount(doctorPatientLedgerList.get(0).getBalanceAmount());
+				if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty())response.setTotalDueAmount(doctorPatientLedgerList.get(0).getDueAmount());
 			}
 		}catch(BusinessException be){
 			logger.error(be);
@@ -634,14 +641,17 @@ public class BillingServiceImpl implements BillingService {
 					}
 					}
 					doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
+					doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 							request.getAmountPaid()-request.getUsedAdvanceAmount());
-					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
+					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 							request.getAmountPaid()-request.getUsedAdvanceAmount());
 				}else{
-					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
+					doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+					doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 							request.getAmountPaid());
-					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getGrandTotal()-
+					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 							request.getAmountPaid());
 				}
 			doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
@@ -659,7 +669,7 @@ public class BillingServiceImpl implements BillingService {
 				BeanUtil.map(doctorPatientReceiptCollection, doctorPatientReceipt);
 				response.setDoctorPatientReceipt(doctorPatientReceipt);
 				DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
-				Double balanceAmount = getBalanceAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
+				Double balanceAmount = getTotalDueAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
 				
 				if(doctorPatientLedgerCollection == null){
 					doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
@@ -667,32 +677,32 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
 					doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-					doctorPatientLedgerCollection.setBalanceAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
+					doctorPatientLedgerCollection.setDueAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}else{
-					doctorPatientLedgerCollection.setBalanceAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
+					doctorPatientLedgerCollection.setDueAmount(balanceAmount+doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
 				
 				DoctorPatientLedgerCollection doctorPatientLedgerReceiptCollection = doctorPatientLedgerRepository.findByReceiptId(doctorPatientReceiptCollection.getId());
-				balanceAmount = getBalanceAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
+				balanceAmount = getTotalDueAmount(null, doctorPatientReceiptCollection.getLocationId().toString(), doctorPatientReceiptCollection.getHospitalId().toString(), doctorPatientReceiptCollection.getPatientId().toString());
 				if(doctorPatientLedgerReceiptCollection == null){
 					doctorPatientLedgerReceiptCollection = new DoctorPatientLedgerCollection();
 					doctorPatientLedgerReceiptCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
 					doctorPatientLedgerReceiptCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientLedgerReceiptCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					doctorPatientLedgerReceiptCollection.setReceiptId(doctorPatientReceiptCollection.getId());
-					doctorPatientLedgerReceiptCollection.setBalanceAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
+					doctorPatientLedgerReceiptCollection.setDueAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerReceiptCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerReceiptCollection.setCreatedTime(new Date());
 					doctorPatientLedgerReceiptCollection.setUpdatedTime(new Date());
 				}else{
 					doctorPatientLedgerReceiptCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
-					doctorPatientLedgerReceiptCollection.setBalanceAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
+					doctorPatientLedgerReceiptCollection.setDueAmount(balanceAmount-doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerReceiptCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerReceiptCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerReceiptCollection);
@@ -708,7 +718,7 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public Double getBalanceAmount(String doctorId, String locationId, String hospitalId, String patientId) {
+	public Double getTotalDueAmount(String doctorId, String locationId, String hospitalId, String patientId) {
 		Double response = 0.0;
 		try{
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId))
@@ -720,7 +730,7 @@ public class BillingServiceImpl implements BillingService {
 					Aggregation.skip(0), Aggregation.limit(1)), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
 			
 			if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty()){
-				response = doctorPatientLedgerList.get(0).getBalanceAmount();
+				response = doctorPatientLedgerList.get(0).getDueAmount();
 			}
 		}catch(Exception e){
 			logger.error("Error while getting balance amount"+e);
@@ -772,13 +782,13 @@ public class BillingServiceImpl implements BillingService {
 			if(doctorPatientLedgers !=  null && !doctorPatientLedgers.isEmpty()){
 				response = new DoctorPatientLedgerResponse();
 				response.setDoctorPatientLedgers(doctorPatientLedgers);
-				if(size>0 && page == 0)response.setTotalBalanceAmount(doctorPatientLedgers.get(0).getBalanceAmount());
+				if(size>0 && page == 0)response.setTotalDueAmount(doctorPatientLedgers.get(0).getDueAmount());
 				else{
 					List<DoctorPatientLedger> doctorPatientLedgerList = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.skip(0), Aggregation.limit(1),
 							Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DoctorPatientLedgerCollection.class, DoctorPatientLedger.class).getMappedResults();
 					
-					response.setTotalBalanceAmount(doctorPatientLedgerList.get(0).getBalanceAmount());
+					response.setTotalDueAmount(doctorPatientLedgerList.get(0).getDueAmount());
 				}
 			}
 		}catch(Exception e){
@@ -789,13 +799,12 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public AmountResponse getBalanceAndAdvanceAmount(String doctorId, String locationId, String hospitalId,	String patientId) {
+	public AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId,	String patientId) {
 		AmountResponse response = null;
 		try{
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId))
 					.and("locationId").is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
-			
-			
+					
 			List<DoctorPatientLedger> doctorPatientLedgerList = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.sort(new Sort(Direction.DESC, "createdTime")),
@@ -807,8 +816,8 @@ public class BillingServiceImpl implements BillingService {
 					DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class).getUniqueMappedResult();
 			
 			response = new AmountResponse(); 			
-			if(doctorPatientReceipt != null)response.setAdvanceAmount(doctorPatientReceipt.getRemainingAdvanceAmount());
-			if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty())response.setBalanceAmount(doctorPatientLedgerList.get(0).getBalanceAmount());
+			if(doctorPatientReceipt != null)response.setTotalRemainingAdvanceAmount(doctorPatientReceipt.getRemainingAdvanceAmount());
+			if(doctorPatientLedgerList != null && !doctorPatientLedgerList.isEmpty())response.setTotalDueAmount(doctorPatientLedgerList.get(0).getDueAmount());
 		}catch(Exception e){
 			logger.error("Error while getting balance amount"+e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting advance & balance amount"+e);
