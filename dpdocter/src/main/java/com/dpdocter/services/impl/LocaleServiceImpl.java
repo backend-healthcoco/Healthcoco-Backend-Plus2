@@ -1,11 +1,16 @@
 package com.dpdocter.services.impl;
 
+import java.io.File;
+import java.util.Date;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.RecommendationsCollection;
@@ -17,7 +22,11 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocaleService;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 @Service
 public class LocaleServiceImpl implements LocaleService {
@@ -30,6 +39,9 @@ public class LocaleServiceImpl implements LocaleService {
 	
 	@Autowired
 	RecommendationsRepository recommendationsRepository;
+	
+	@Autowired
+	FileManager fileManager;
 
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
 	
@@ -63,7 +75,7 @@ public class LocaleServiceImpl implements LocaleService {
 	
 	@Override
 	public Locale addEditRecommedation(String localeId, String patientId,RecommendationType type) {
-		Locale response;
+		Locale response = null;
 
 		try {
 
@@ -75,7 +87,7 @@ public class LocaleServiceImpl implements LocaleService {
 
 			UserCollection userCollection = userRepository.findOne(patientObjectId);
 
-			if (userCollection != null & localeCollection != null) {
+			if (userCollection != null && localeCollection != null) {
 				recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
 						localeObjectId, patientObjectId);
 				
@@ -124,6 +136,34 @@ public class LocaleServiceImpl implements LocaleService {
 		}
 
 		return response;
+	}
+	
+	@Override
+	@Transactional
+	public ImageURLResponse  addRXImageMultipart(FormDataBodyPart file) {
+		try {
+			//Boolean response =false;
+			//LocaleImageCollection  localeImageCollection = null;
+			ImageURLResponse imageURLResponse = null;
+			Date createdTime = new Date();
+			if (file != null) {
+				String path = "localeRX";
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("."+fileExtension, "");
+				//FileDetails fileDetails = new FileDetails();
+				String recordPath = path + File.separator + fileName
+						+ createdTime.getTime() + "."+fileExtension;
+				//String recordLabel = fileName;
+				imageURLResponse =  new ImageURLResponse();
+				fileManager.saveImage(file, recordPath, true);
+			}
+			return imageURLResponse;
+		} catch (Exception e) {
+			e.printStackTrace();
+			//logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 	}
 
 }

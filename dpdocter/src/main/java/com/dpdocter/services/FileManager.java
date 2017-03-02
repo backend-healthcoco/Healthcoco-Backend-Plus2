@@ -11,4 +11,6 @@ public interface FileManager {
 
     Double saveRecord(FormDataBodyPart file, String recordPath, Double allowedSize, Boolean checkSize);
 
+	ImageURLResponse saveImage(FormDataBodyPart file, String recordPath, Boolean createThumbnail);
+
 }
