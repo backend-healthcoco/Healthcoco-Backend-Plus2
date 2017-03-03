@@ -876,6 +876,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							drugAddEditRequest.setDoctorId(userCollection.getId().toString());
 							drugAddEditRequest.setHospitalId(request.getHospitalId());
 							drugAddEditRequest.setLocationId(request.getLocationId());
+							drugAddEditRequest.setDirection(item.getDirection());
+							drugAddEditRequest.setDuration(item.getDuration());
+							drugAddEditRequest.setDosage(item.getDosage());
+							drugAddEditRequest.setDosageTime(item.getDosageTime());
 							addFavouriteDrug(drugAddEditRequest);
 						}
 
