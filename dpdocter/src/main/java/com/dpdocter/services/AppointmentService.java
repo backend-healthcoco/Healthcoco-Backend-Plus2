@@ -36,7 +36,7 @@ public interface AppointmentService {
 	List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
-	Lab getLab(String locationId, String patientId);
+	Lab getLab(String locationId, String patientId, Boolean active);
 
 	List<City> getCountries();
 

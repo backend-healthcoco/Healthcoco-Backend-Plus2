@@ -1489,7 +1489,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public Lab getLab(String locationId, String patientId) {
+	public Lab getLab(String locationId, String patientId, Boolean active) {
 		Lab response = new Lab();
 		Location location = new Location();
 
@@ -1525,10 +1525,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				response.setLocation(location);
 				response.setHospital(location.getHospital());
+				
+				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
+				
+				if(active)criteria2.and("isActivate").is(true);
+				
+				Criteria criteriaForActive = new Criteria();
+				if(active)criteriaForActive.and("user.isActive").is(true);
+				
 				List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
 						.aggregate(Aggregation.newAggregation(
-								Aggregation.match(new Criteria("locationId").is(new ObjectId(locationId))),
+								Aggregation.match(criteria2),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.match(criteriaForActive),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
 								Aggregation.unwind("doctor")),
 
