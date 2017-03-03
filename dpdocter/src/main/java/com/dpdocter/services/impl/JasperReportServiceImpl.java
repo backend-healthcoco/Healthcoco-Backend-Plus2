@@ -174,9 +174,10 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         if(componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType()) && parameters.get("clinicalNotes") != null)((JRDesignSection) jasperDesign.getDetailSection()).addBand(createDiagramsSubreport(parameters, dsr, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
     
-        if((componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType()) && parameters.get("treatments") != null) || (componentType.getType().equalsIgnoreCase(ComponentType.TREATMENT.getType())))
-        	((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters, contentFontSize, columnWidth, pageWidth, pageHeight, "$P{treatments}"));
-        
+        if(componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType()) && parameters.get("treatments") != null)
+        	((JRDesignSection) jasperDesign.getDetailSection()).addBand(createTreatmentServicesSubreport(parameters, contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle));
+        else if(componentType.getType().equalsIgnoreCase(ComponentType.TREATMENT.getType()))createTreatmentServices(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight, normalStyle);
+
         if(parameters.get("followUpAppointment") != null){
         	band = new JRDesignBand();
         	band.setHeight(21);
@@ -272,6 +273,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         jrDesignTextField.setExpression(new JRDesignExpression("$P{USGTITLE}"));
         jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth);
         jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+        jrDesignTextField.setFontSize(new Float(contentFontSize+1));
         jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
         band.addElement(jrDesignTextField);
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
@@ -288,7 +290,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$P{lmp}", "$P{EDD}", "$P{edd}");
 		
-		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$P{indicationOfUSG}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$P{indicationOfUSG}", fieldWidth, true, 0);
 		addItems(jasperDesign, columnWidth, "$P{PA}", "$P{pa}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PS}", "$P{ps}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PV}", "$P{pv}", fieldWidth, false, 0);
@@ -548,12 +550,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{indicationOfUSG}.equals( null ) && !$F{indicationOfUSG}.isEmpty()"));
-		
+
 		jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression("$P{USGTITLE}"));
         jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(columnWidth);
         jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
         jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+        jrDesignTextField.setFontSize(new Float(contentFontSize+1));
         band.addElement(jrDesignTextField);
         ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
@@ -568,7 +571,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$F{systemExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$F{noOfChildren}", fieldWidth, false, 0);
 		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$F{lmp}", "$P{EDD}", "$F{edd}");
-		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$F{indicationOfUSG}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$F{indicationOfUSG}", fieldWidth, true, 0);
 		addItems(jasperDesign, columnWidth, "$P{PA}", "$F{pa}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PS}", "$F{ps}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PV}", "$F{pv}", fieldWidth, false, 0);
@@ -905,7 +908,6 @@ public class JasperReportServiceImpl implements JasperReportService {
         band.setHeight(13);
         jrDesignLine = new JRDesignLine();
         jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
-//        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
         band.addElement(jrDesignLine);        
         
         jrDesignTextField = new JRDesignTextField();
@@ -948,7 +950,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setPrintWhenExpression(new JRDesignExpression("!"+value+".equals( null ) && !"+value+".isEmpty()"));
 		jrDesignTextField = new JRDesignTextField();
         jrDesignTextField.setExpression(new JRDesignExpression(key));
-        jrDesignTextField.setX(xSpaceForTitle);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setX(xSpaceForTitle);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);
+        jrDesignTextField.setWidth(fieldWidth);
         jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
         band.addElement(jrDesignTextField);
         
@@ -990,136 +993,355 @@ public class JasperReportServiceImpl implements JasperReportService {
  		return band;
 	}
 
-	private JRBand addTreatmentServices(Map<String, Object> parameters, Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, String itemsValue) throws JRException {
-//		JasperDesign jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jrxml"); 
-//		jasperDesign.setName("Treatment");
-//        jasperDesign.setPageWidth(pageWidth); jasperDesign.setPageHeight(pageHeight);jasperDesign.setColumnWidth(columnWidth);jasperDesign.setColumnSpacing(0);jasperDesign.setBottomMargin(0);jasperDesign.setLeftMargin(0);jasperDesign.setRightMargin(0);jasperDesign.setTopMargin(0);
-//     
-//        JRDesignStyle normalStyle = new JRDesignStyle();
-//        normalStyle.setName("Noto Sans");normalStyle.setDefault(true);normalStyle.setFontName("Noto Sans");normalStyle.setFontSize(new Float(contentFontSize)); normalStyle.setPdfFontName("Helvetica");normalStyle.setPdfEncoding("Cp1252"); normalStyle.setPdfEmbedded(false);jasperDesign.addStyle(normalStyle);
-//   
-//        JRDesignBand band = new JRDesignBand();
-//		band.setHeight(26);
-//		
-//        Boolean showTreatmentQuantity = (Boolean) parameters.get("showTreatmentQuantity");
-//        
-//        int serviceWidth = 0, quantityWidth=0; 
+	private void createTreatmentServices(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) throws JRException {
+		
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+        JRDesignBand band = new JRDesignBand();
+		band.setHeight(21);
+		
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
+        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(220);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+        band.addElement(jrDesignTextField);
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);      
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters, contentFontSize, columnWidth, pageWidth, pageHeight, "$P{services}", normalStyle));
+    
+        band = new JRDesignBand();
+        band.setHeight(18);
+        int fieldWidth = columnWidth/6;
+        band.setPrintWhenExpression(new JRDesignExpression("!$P{grandTotal}.equals(null) && !$P{grandTotal}.isEmpty()"));
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{TotalCost}"));
+        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{totalCost}"));
+        jrDesignTextField.setX(fieldWidth+1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);	
+        
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{TotalDiscount}"));
+        jrDesignTextField.setX(2*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{totalDiscount}"));
+        jrDesignTextField.setX(3*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);	
+        
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{GrandTotal}"));
+        jrDesignTextField.setX(4*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{grandTotal}"));
+        jrDesignTextField.setX(5*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);	
+             
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+        
+        band = new JRDesignBand();
+        band.setHeight(1);
+        jrDesignLine = new JRDesignLine();
+        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+        band.addElement(jrDesignLine);
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+	}
+
+	private JRBand createTreatmentServicesSubreport(Map<String, Object> parameters, Integer contentFontSize, int columnWidth, int pageWidth, int pageHeight, JRDesignStyle normalStyle) throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jrxml"); 
+		jasperDesign.setName("Treatment");
+        jasperDesign.setPageWidth(pageWidth); jasperDesign.setPageHeight(pageHeight);jasperDesign.setColumnWidth(columnWidth);jasperDesign.setColumnSpacing(0);jasperDesign.setBottomMargin(0);jasperDesign.setLeftMargin(0);jasperDesign.setRightMargin(0);jasperDesign.setTopMargin(0);
+     
+        
+        band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+        JRDesignBand band = new JRDesignBand();
+		band.setHeight(21);
+		
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
+        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(220);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+        band.addElement(jrDesignTextField);
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);      
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters, contentFontSize, columnWidth, pageWidth, pageHeight, "$F{services}", normalStyle));
+    
+        band = new JRDesignBand();
+        band.setHeight(18);
+        int fieldWidth = columnWidth/6;
+        band.setPrintWhenExpression(new JRDesignExpression("!$F{grandTotal}.equals(null) && !$F{grandTotal}.isEmpty()"));
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{TotalCost}"));
+        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$F{totalCost}"));
+        jrDesignTextField.setX(fieldWidth+1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);	
+        
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{TotalDiscount}"));
+        jrDesignTextField.setX(2*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$F{totalDiscount}"));
+        jrDesignTextField.setX(3*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);	
+        
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$P{GrandTotal}"));
+        jrDesignTextField.setX(4*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);
+        
+		jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setExpression(new JRDesignExpression("$F{grandTotal}"));
+        jrDesignTextField.setX(5*(fieldWidth+1));jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(fieldWidth);
+        jrDesignTextField.setStretchWithOverflow(true);jrDesignTextField.setStretchType(StretchTypeEnum.ELEMENT_GROUP_HEIGHT);
+        band.addElement(jrDesignTextField);	
+             
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+        
+        band = new JRDesignBand();
+        band.setHeight(1);
+        jrDesignLine = new JRDesignLine();
+        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+        band.addElement(jrDesignLine);
+        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+        
+        JasperCompileManager.compileReportToFile(jasperDesign, JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper");
+  	
+		JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign); 
+        jSubreport.setUsingCache(false); 
+        jSubreport.setRemoveLineWhenBlank(true); 
+        jSubreport.setPrintRepeatedValues(false);
+        jSubreport.setWidth(columnWidth);
+        jSubreport.setHeight(0);
+        jSubreport.setX(0);jSubreport.setY(0);
+
+        jSubreport.setDataSourceExpression(new JRDesignExpression("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{treatments})"));
+        jSubreport.setExpression(new JRDesignExpression("\""+JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper\""));
+
+        JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();  
+        designSubreportParameter.setName("REPORT_CONNECTION");designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+        
+        band = new JRDesignBand();
+        band.setHeight(0);
+        band.addElement(jSubreport);
+
+        return band;
+	}
+
+	private JRBand addTreatmentServices(Map<String, Object> parameters, Integer contentFontSize, int columnWidth,
+			int pageWidth, int pageHeight, String servicesValue, JRDesignStyle normalStyle) throws JRException {
+		JasperDesign jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services-subreport.jrxml"); 
+		jasperDesign.setName("TREAMENT Items");
+        jasperDesign.setPageWidth(pageWidth); jasperDesign.setPageHeight(pageHeight);jasperDesign.setColumnWidth(columnWidth);jasperDesign.setColumnSpacing(0);jasperDesign.setBottomMargin(0);jasperDesign.setLeftMargin(0);jasperDesign.setRightMargin(0);jasperDesign.setTopMargin(0);
+     
+        jasperDesign.addStyle(normalStyle);
+   
+        Boolean showTreatmentQuantity = (Boolean) parameters.get("showTreatmentQuantity");
+        
+        int serviceWidth = (30*(columnWidth-39))/100, quantityWidth = (15*(columnWidth-39))/100 , otherFieldsWidth = (10*(columnWidth-39))/100, xSpace = 0; 
 //        if(showTreatmentQuantity){
 //        	serviceWidth = (50*(columnWidth-31))/100; quantityWidth = (50*(columnWidth-31))/100;
 //        }else{
 //        	serviceWidth = columnWidth;
 //        }
-//        
-//        JRDesignLine jrDesignLine = new JRDesignLine();
-//        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-//        band.addElement(jrDesignLine);
-//        
-//        JRDesignTextField jrDesignTextField = new JRDesignTextField();
-//        jrDesignTextField.setExpression(new JRDesignExpression("$P{SNo}"));
-//        jrDesignTextField.setX(0);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(39);
-//        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-//        band.addElement(jrDesignTextField);
-//        
-//        jrDesignTextField = new JRDesignTextField();
-//        jrDesignTextField.setExpression(new JRDesignExpression("$P{Service}"));
-//        jrDesignTextField.setX(39);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(serviceWidth);
-//        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-//        band.addElement(jrDesignTextField);
-//        
-//        if(showTreatmentQuantity){
-//        	jrDesignTextField = new JRDesignTextField();
-//            jrDesignTextField.setExpression(new JRDesignExpression("$P{Quantity}"));
-//            jrDesignTextField.setX(39+serviceWidth);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(quantityWidth);
-//            jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-//            band.addElement(jrDesignTextField);
-//        }
-//        jrDesignLine = new JRDesignLine();
-//        jrDesignLine.setX(0); jrDesignLine.setY(22); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-//        band.addElement(jrDesignLine);
-//        
-//		jasperDesign.setColumnHeader(band);
-//        
-//		band = new JRDesignBand();
-//		band.setSplitType(SplitTypeEnum.STRETCH);
-//		band.setHeight(22);
-//		
-//		jrDesignTextField = new JRDesignTextField();
-//        jrDesignTextField.setExpression(new JRDesignExpression("$F{no}"));
-//        jrDesignTextField.setX(0);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(39);
-//        jrDesignTextField.setStretchWithOverflow(true);
-//        band.addElement(jrDesignTextField);
-//        
-//		jrDesignTextField = new JRDesignTextField();
-//        jrDesignTextField.setExpression(new JRDesignExpression("$F{treatmentServiceName}"));
-//        jrDesignTextField.setX(39);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(serviceWidth);
-//        jrDesignTextField.setStretchWithOverflow(true);
-//        band.addElement(jrDesignTextField);
-//        
-//        if(showTreatmentQuantity){
-//        	jrDesignTextField = new JRDesignTextField();
-//            jrDesignTextField.setExpression(new JRDesignExpression("$F{quantity}"));
-//            jrDesignTextField.setX(39+serviceWidth);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(quantityWidth);
-//            jrDesignTextField.setStretchWithOverflow(true);
-//            band.addElement(jrDesignTextField);
-//        }
-//        
-//        ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-//        
-//        band = new JRDesignBand();
-//        band.setHeight(1);
-//        jrDesignLine = new JRDesignLine();
-//        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
-//        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-//        band.addElement(jrDesignLine);        
-//        jasperDesign.setColumnFooter(band);
-//        
-//		JasperCompileManager.compileReportToFile(jasperDesign, JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper");
-//  	
-//	    JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign); 
-//        jSubreport.setUsingCache(false); 
-//        jSubreport.setRemoveLineWhenBlank(true); 
-//        jSubreport.setPrintRepeatedValues(false);
-//        jSubreport.setWidth(columnWidth);
-//        jSubreport.setHeight(60);
-//        jSubreport.setX(0);jSubreport.setY(21);
-//
-//        JRDesignExpression expression = new JRDesignExpression();
-//        expression.setText("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource("+itemsValue+")");
-//        jSubreport.setDataSourceExpression(expression);
-//       
-//        expression = new JRDesignExpression();
-//        expression.setText("\""+JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services.jasper\"");
-//        jSubreport.setExpression(expression);
-//
-//        JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();  
-//        designSubreportParameter.setName("REPORT_CONNECTION");designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
-//        
-//        band = new JRDesignBand();
-//        band.setHeight(81);
-//        
-//        jrDesignTextField = new JRDesignTextField();
-//        jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
-//        jrDesignTextField.setX(1);jrDesignTextField.setY(0);jrDesignTextField.setHeight(20);jrDesignTextField.setWidth(220);
-//        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-//        band.addElement(jrDesignTextField);
-//        
-//        band.addElement(jSubreport);
         
-		  band = new JRDesignBand();
-	      band.setHeight(22);
-	      
-	      jrDesignTextField = new JRDesignTextField();
-	      jrDesignTextField.setExpression(new JRDesignExpression("$P{TREATMENT}"));
-	      jrDesignTextField.setX(1);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(80);
-	      jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
-	      band.addElement(jrDesignTextField);
+        band = new JRDesignBand();
+		band.setHeight(26);
+		
+		jrDesignLine = new JRDesignLine();
+        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
+        jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+        band.addElement(jrDesignLine);
+		
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{SNo}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(39);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    
+	    xSpace = 39;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{Service}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(serviceWidth);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace+serviceWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{Note}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace+otherFieldsWidth;
+	    
+	    if(showTreatmentQuantity){
+	    	jrDesignTextField = new JRDesignTextField();
+	        jrDesignTextField.setExpression(new JRDesignExpression("$P{Quantity}"));
+	        jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(quantityWidth);
+	        jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	        band.addElement(jrDesignTextField);
+	        xSpace = xSpace+quantityWidth;
+	    }
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{Cost}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace+otherFieldsWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{Discount}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace + otherFieldsWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(quantityWidth);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace + quantityWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$P{Total}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(4);jrDesignTextField.setHeight(15);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setBold(true);jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    
+	    
+	    jrDesignLine = new JRDesignLine();
+	    jrDesignLine.setX(0); jrDesignLine.setY(22); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
+	    band.addElement(jrDesignLine);
+	    
+		jasperDesign.setColumnHeader(band);
+	    
+		band = new JRDesignBand();
+		band.setSplitType(SplitTypeEnum.STRETCH);
+		band.setHeight(22);
+		
+		jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{no}"));
+	    jrDesignTextField.setX(0);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(39);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = 39;
+	    
+		jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{treatmentServiceName}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(serviceWidth);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace+serviceWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{note}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace+otherFieldsWidth;
+	    
+	    if(showTreatmentQuantity){
+	    	jrDesignTextField = new JRDesignTextField();
+	        jrDesignTextField.setExpression(new JRDesignExpression("$F{quantity}"));
+	        jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(quantityWidth);
+	        jrDesignTextField.setStretchWithOverflow(true);
+	        band.addElement(jrDesignTextField);
+	        xSpace = xSpace+quantityWidth;
+	    }
+	    	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{cost}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace+otherFieldsWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace + otherFieldsWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{status}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(quantityWidth);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    xSpace = xSpace + quantityWidth;
+	    
+	    jrDesignTextField = new JRDesignTextField();
+	    jrDesignTextField.setExpression(new JRDesignExpression("$F{finalCost}"));
+	    jrDesignTextField.setX(xSpace);jrDesignTextField.setY(0);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(otherFieldsWidth);
+	    jrDesignTextField.setStretchWithOverflow(true);
+	    band.addElement(jrDesignTextField);
+	    
+	    ((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+	    
+	    band = new JRDesignBand();
+        band.setHeight(10);
+        jrDesignLine = new JRDesignLine();
+        jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
+        band.addElement(jrDesignLine);        
         
-	      jrDesignTextField = new JRDesignTextField();
-	      jrDesignTextField.setExpression(new JRDesignExpression("$P{treatments}"));
-	      jrDesignTextField.setX(82);jrDesignTextField.setY(3);jrDesignTextField.setHeight(18);jrDesignTextField.setWidth(columnWidth-81);
-	      jrDesignTextField.setStretchWithOverflow(true);
-	      band.addElement(jrDesignTextField);
-	      return band;
-	}
+        jrDesignTextField = new JRDesignTextField();
+        jrDesignTextField.setX(0);jrDesignTextField.setY(0);jrDesignTextField.setHeight(12);jrDesignTextField.setWidth(columnWidth);
+        jrDesignTextField.setStretchWithOverflow(true);
+        jrDesignTextField.setBlankWhenNull(true);
+//        band.addElement(jrDesignTextField);
+        
+        jasperDesign.setColumnFooter(band);
+                
+		JasperCompileManager.compileReportToFile(jasperDesign, JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services-subreport.jasper");
+  	
+	    JRDesignSubreport jSubreport = new JRDesignSubreport(jasperDesign); 
+        jSubreport.setUsingCache(false); 
+        jSubreport.setRemoveLineWhenBlank(true); 
+        jSubreport.setPrintRepeatedValues(false);
+        jSubreport.setWidth(columnWidth);
+        jSubreport.setHeight(0);
+        jSubreport.setX(0);jSubreport.setY(0);
 
+        jSubreport.setDataSourceExpression(new JRDesignExpression("new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource("+servicesValue+")"));
+       
+        jSubreport.setExpression(new JRDesignExpression("\""+JASPER_TEMPLATES_RESOURCE+"new/mongo-treatment-services-subreport.jasper\""));
+
+        JRDesignSubreportParameter designSubreportParameter = new JRDesignSubreportParameter();  
+        designSubreportParameter.setName("REPORT_CONNECTION");designSubreportParameter.setExpression(new JRDesignExpression("$P{REPORT_CONNECTION}"));
+        
+        band = new JRDesignBand();
+        band.setHeight(0);
+        band.addElement(jSubreport);
+        
+        return band;
+	}    
 }

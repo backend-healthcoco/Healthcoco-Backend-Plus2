@@ -4,7 +4,7 @@ import com.dpdocter.enums.UnitType;
 
 public class Discount {
 	private double value;
-	private UnitType unit;
+	private UnitType unit = UnitType.INR;
 	
 	public UnitType getUnit() {
 		return unit;

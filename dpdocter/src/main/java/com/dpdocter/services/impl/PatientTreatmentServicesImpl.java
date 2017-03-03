@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,17 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
+import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorDrugCollection;
-import com.dpdocter.collections.DrugCollection;
-import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -51,7 +46,6 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.ComponentType;
@@ -70,12 +64,10 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.SpecialityRepository;
-import com.dpdocter.repository.TransnationalRepositiory;
 import com.dpdocter.repository.TreatmentServicesCostRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppointmentRequest;
-import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.request.PatientTreatmentAddEditRequest;
 import com.dpdocter.request.TreatmentRequest;
 import com.dpdocter.response.JasperReportResponse;
@@ -1280,36 +1272,38 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Boolean showPLH, Boolean showFH, Boolean showDA) throws IOException, ParseException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-		if (patientTreatmentCollection.getTreatments() != null
-				&& !patientTreatmentCollection.getTreatments().isEmpty()) {
-			// Boolean showTreatmentQuantity = false;
-			// List<PatientTreatmentJasperDetails> treatmentResponses = new
-			// ArrayList<PatientTreatmentJasperDetails>();
-			// int no = 0;
-			String treatments = "";
-			for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-				// PatientTreatmentJasperDetails treatmentResponse = new
-				// PatientTreatmentJasperDetails();
-				TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-						.findOne(treatment.getTreatmentServiceId());
-				// treatmentResponse.setNo(++no);
-				//// treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
-				// treatmentResponse.setTreatmentServiceName(treatmentServicesCollection.getName());
-				// if(treatment.getQuantity() != null){
-				// showTreatmentQuantity = true;
-				// String quantity = treatment.getQuantity().getValue()+" ";
-				// if(treatment.getQuantity().getType() != null)quantity=
-				// quantity+treatment.getQuantity().getType().getDuration();
-				// treatmentResponse.setQuantity(quantity);
-				// }
-				// treatmentResponses.add(treatmentResponse);
-				if (DPDoctorUtils.anyStringEmpty(treatments))
-					treatments = treatmentServicesCollection.getName();
-				else
-					treatments = treatments + ", " + treatmentServicesCollection.getName();
+		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
+		if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()) {
+			Boolean showTreatmentQuantity = false;
+			 int no = 0;
+			 patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
+			 for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+				 PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
+				 TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+				 patientTreatments.setNo(++no);
+				 patientTreatments.setStatus((treatment.getStatus() != null) ? treatment.getStatus().getTreamentStatus() : "--");
+				 patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
+				 
+				 if(treatment.getQuantity() != null){
+					 showTreatmentQuantity = true;
+					 String quantity = treatment.getQuantity().getValue()+" ";
+					 if(treatment.getQuantity().getType() != null)quantity=
+					 quantity+treatment.getQuantity().getType().getDuration();
+					 patientTreatments.setQuantity(quantity);
+				 }
+				 patientTreatments.setNote(treatment.getNote() != null ? treatment.getNote() : "--");
+				 patientTreatments.setCost(treatment.getCost()+"");
+				 patientTreatments.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()+" "+treatment.getDiscount().getUnit().getUnit() : "");
+				 patientTreatments.setFinalCost(treatment.getFinalCost()+"");
+				 patientTreatmentJasperDetails.add(patientTreatments);
 			}
-			// parameters.put("showTreatmentQuantity", showTreatmentQuantity);
-			parameters.put("treatments", treatments);
+			parameters.put("showTreatmentQuantity", showTreatmentQuantity);
+			parameters.put("services", patientTreatmentJasperDetails);
+			if(patientTreatmentCollection.getTotalDiscount() != null && patientTreatmentCollection.getTotalDiscount().getValue() > 0.0){
+				parameters.put("totalDiscount", (patientTreatmentCollection.getTotalDiscount() != null) ? patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit() : "");
+			 }
+			 if(patientTreatmentCollection.getTotalCost() > 0)parameters.put("totalCost", patientTreatmentCollection.getTotalCost()+"");
+			 if(patientTreatmentCollection.getGrandTotal() > 0)parameters.put("grandTotal", patientTreatmentCollection.getGrandTotal()+"");
 			parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
 			if (parameters.get("followUpAppointment") == null
 					&& !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId())

@@ -983,42 +983,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 			}
 		}
-
-		// List<PatientTreatmentJasperDetails> patientTreatments = null;
-		// if (patientVisitCollection.getTreatmentId() != null) {
-		// patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
-		// for (ObjectId treatmentId : patientVisitCollection.getTreatmentId())
-		// {
-		// if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
-		// patientTreatments =
-		// getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
-		//// patientTreatments.add(patientTreatmentJasperDetails);
-		// }
-		// }
-		// }
-		if (patientVisitLookupResponse.getTreatmentId() != null
-				&& !patientVisitLookupResponse.getTreatmentId().isEmpty()) {
-			List<PatientTreatmentCollection> patientTreatmentCollections = patientTreamentRepository
-					.findByIds(patientVisitLookupResponse.getTreatmentId());
-			String treatments = "";
-			for (PatientTreatmentCollection patientTreatmentCollection : patientTreatmentCollections) {
-				for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-					TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository
-							.findOne(treatment.getTreatmentServiceId());
-					if (DPDoctorUtils.anyStringEmpty(treatments))
-						treatments = treatmentServicesCollection.getName();
-					else
-						treatments = treatments + ", " + treatmentServicesCollection.getName();
-				}
+	 
+		 List<DBObject> patientTreatments = null;
+			if (patientVisitLookupResponse.getTreatmentId() != null) {
+				patientTreatments = new ArrayList<DBObject>();
+				for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
+					if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
+						DBObject patientTreatmentServices  = getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
+						if(patientTreatmentServices != null)patientTreatments.add(patientTreatmentServices);break;
+					}
+				}	
 			}
-			if (!DPDoctorUtils.anyStringEmpty(treatments))
-				parameters.put("treatments", treatments);
-		}
+		 		 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		parameters.put("prescriptions", prescriptions);
 		parameters.put("clinicalNotes", clinicalNotes);
+		parameters.put("treatments", patientTreatments);
 		parameters.put("visitId", patientVisitLookupResponse.getId().toString());
 
 		if (historyCollection != null) {
@@ -1059,74 +1041,78 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		return response;
 	}
 
-	// private List<PatientTreatmentJasperDetails>
-	// getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object>
-	// parameters) {
-	// PatientTreatmentCollection patientTreatmentCollection = null;
-	// List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
-	// try {
-	// patientTreatmentCollection = patientTreamentRepository.findOne(new
-	// ObjectId(treatmentId));
-	// if (patientTreatmentCollection != null) {
-	// if (patientTreatmentCollection.getDoctorId() != null &&
-	// patientTreatmentCollection.getHospitalId() != null
-	// && patientTreatmentCollection.getLocationId() != null) {
-	// if (patientTreatmentCollection.getTreatments() != null &&
-	// !patientTreatmentCollection.getTreatments().isEmpty()){
-	// Boolean showTreatmentQuantity = false;
-	// int no = 0;
-	// patientTreatmentJasperDetails = new
-	// ArrayList<PatientTreatmentJasperDetails>();
-	// for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
-	// PatientTreatmentJasperDetails patientTreatments = new
-	// PatientTreatmentJasperDetails();
-	// TreatmentServicesCollection treatmentServicesCollection =
-	// treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
-	// patientTreatments.setNo(++no);
-	//// treatmentResponse.setStatus(treatment.getStatus().getTreamentStatus());
-	// patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
-	// if(treatment.getQuantity() != null){
-	// showTreatmentQuantity = true;
-	// String quantity = treatment.getQuantity().getValue()+" ";
-	// if(treatment.getQuantity().getType() != null)quantity=
-	// quantity+treatment.getQuantity().getType().getDuration();
-	// patientTreatments.setQuantity(quantity);
-	// }
-	// patientTreatmentJasperDetails.add(patientTreatments);
-	// }
-	// parameters.put("showTreatmentQuantity", showTreatmentQuantity);
-	// if(parameters.get("followUpAppointment") == null &&
-	// !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId())
-	// && patientTreatmentCollection.getTime() != null){
-	// SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-	// String _24HourTime = String.format("%02d:%02d",
-	// patientTreatmentCollection.getTime().getFromTime() / 60,
-	// patientTreatmentCollection.getTime().getFromTime() % 60);
-	// SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-	// SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-	// sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-	// _24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-	// _12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-	//
-	// Date _24HourDt = _24HourSDF.parse(_24HourTime);
-	// String dateTime = _12HourSDF.format(_24HourDt) + ", "+
-	// sdf.format(patientTreatmentCollection.getFromDate());
-	// parameters.put("followUpAppointment", "Next Review on "+dateTime);
-	// }
-	// }
-	// }
-	// } else {
-	// logger.warn("Patient Treatment not found. Please check Id.");
-	// throw new BusinessException(ServiceError.NotFound,
-	// "Patient Treatment not found. Please check Id.");
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// logger.error(e);
-	// throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	// }
-	// return patientTreatmentJasperDetails;
-	// }
+	 private DBObject getPatientTreatmentJasperDetails(String treatmentId, Map<String, Object> parameters) {
+		 DBObject response = new BasicDBObject();
+		 PatientTreatmentCollection patientTreatmentCollection = null;
+		 List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
+		 try {
+		 patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
+		 if (patientTreatmentCollection != null) {
+			 if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null	 && patientTreatmentCollection.getLocationId() != null) {
+				 if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
+					 Boolean showTreatmentQuantity = false;
+					 int no = 0;
+					 patientTreatmentJasperDetails = new
+					 ArrayList<PatientTreatmentJasperDetails>();
+					 for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
+						 PatientTreatmentJasperDetails patientTreatments = new
+						 PatientTreatmentJasperDetails();
+						 TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
+						 patientTreatments.setNo(++no);
+						 patientTreatments.setStatus((treatment.getStatus() != null) ? treatment.getStatus().getTreamentStatus() : "--");
+						 patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
+						 
+						 if(treatment.getQuantity() != null){
+							 showTreatmentQuantity = true;
+							 String quantity = treatment.getQuantity().getValue()+" ";
+							 if(treatment.getQuantity().getType() != null)quantity=
+							 quantity+treatment.getQuantity().getType().getDuration();
+							 patientTreatments.setQuantity(quantity);
+						 }
+						 patientTreatments.setNote(treatment.getNote() != null ? treatment.getNote() : "--");
+						 patientTreatments.setCost(treatment.getCost()+"");
+						 patientTreatments.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()+" "+treatment.getDiscount().getUnit().getUnit() : "");
+						 patientTreatments.setFinalCost(treatment.getFinalCost()+"");
+						 patientTreatmentJasperDetails.add(patientTreatments);
+					 }
+					 parameters.put("showTreatmentQuantity", showTreatmentQuantity);
+					 if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
+						 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+						 String _24HourTime = String.format("%02d:%02d",
+						 patientTreatmentCollection.getTime().getFromTime() / 60,
+						 patientTreatmentCollection.getTime().getFromTime() % 60);
+						 SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+						 SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+						 sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						 _24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						 _12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+						
+						 Date _24HourDt = _24HourSDF.parse(_24HourTime);
+						 String dateTime = _12HourSDF.format(_24HourDt) + ", "+
+						 sdf.format(patientTreatmentCollection.getFromDate());
+						 parameters.put("followUpAppointment", "Next Review on "+dateTime);
+					 }
+					 if (patientTreatmentJasperDetails != null && !patientTreatmentJasperDetails.isEmpty()){
+						 response.put("services", patientTreatmentJasperDetails);
+						 if(patientTreatmentCollection.getTotalDiscount() != null && patientTreatmentCollection.getTotalDiscount().getValue() > 0.0){
+							 response.put("totalDiscount", (patientTreatmentCollection.getTotalDiscount() != null) ? patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit() : "");
+						 }
+						 if(patientTreatmentCollection.getTotalCost() > 0)response.put("totalCost", patientTreatmentCollection.getTotalCost()+"");
+						 if(patientTreatmentCollection.getGrandTotal() > 0)response.put("grandTotal", patientTreatmentCollection.getGrandTotal()+"");
+					 }
+				 }
+			 }
+		 } else {
+			 logger.warn("Patient Treatment not found. Please check Id.");
+			 throw new BusinessException(ServiceError.NotFound,"Patient Treatment not found. Please check Id.");
+		 }
+		 } catch (Exception e) {
+			 e.printStackTrace();
+			 logger.error(e);
+			 throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		 }
+		 return response;
+	 }
 
 	@Override
 	public void includeHistoryInPdf(HistoryCollection historyCollection, Boolean showPH, Boolean showPLH,

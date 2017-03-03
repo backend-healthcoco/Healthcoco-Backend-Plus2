@@ -6,9 +6,17 @@ public class PatientTreatmentJasperDetails {
 
 	private String treatmentServiceName;
 
+	private String note;
+	
+	private String quantity;
+	
+	private String cost;
+	
+	private String discount;
+	
 	private String status;
 
-	private String quantity;
+	private String finalCost;
 
 	public int getNo() {
 		return no;
@@ -26,12 +34,12 @@ public class PatientTreatmentJasperDetails {
 		this.treatmentServiceName = treatmentServiceName;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getNote() {
+		return note;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	public String getQuantity() {
@@ -42,10 +50,42 @@ public class PatientTreatmentJasperDetails {
 		this.quantity = quantity;
 	}
 
-	@Override
-	public String toString() {
-		return "PatientTreatmentJasperDetails [no=" + no + ", treatmentServiceName=" + treatmentServiceName
-				+ ", status=" + status + ", quantity=" + quantity + "]";
+	public String getCost() {
+		return cost;
 	}
 
+	public void setCost(String cost) {
+		this.cost = cost;
+	}
+
+	public String getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(String discount) {
+		this.discount = discount;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getFinalCost() {
+		return finalCost;
+	}
+
+	public void setFinalCost(String finalCost) {
+		this.finalCost = finalCost;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientTreatmentJasperDetails [no=" + no + ", treatmentServiceName=" + treatmentServiceName + ", note="
+				+ note + ", quantity=" + quantity + ", cost=" + cost + ", discount=" + discount + ", status=" + status
+				+ ", finalCost=" + finalCost + "]";
+	}
 }
