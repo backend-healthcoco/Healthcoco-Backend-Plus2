@@ -109,6 +109,7 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	@Transactional
 	public String generateContactEmailBody(DoctorContactUs contactUs , String type) {

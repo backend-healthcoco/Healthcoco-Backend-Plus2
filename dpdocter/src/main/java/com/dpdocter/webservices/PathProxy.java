@@ -1037,6 +1037,7 @@ public interface PathProxy {
 		public static final String GET_PHARMCIES_FOR_ORDER = "/getPharmaciesForOrder";
 		public static final String GET_PHARMCIES_COUNT_FOR_ORDER = "/getPharmaciesCountForOrder";
 		public static final String UPLOAD_RX_IMAGE = "/uploadRXImage";
+		public static final String ADD_EDIT_RECOMMENDATION = "/addEditRecommendation";
 
 	}
 
