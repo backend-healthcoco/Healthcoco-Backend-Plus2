@@ -175,10 +175,22 @@ public class LocaleApi {
 
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
-	public Response<Boolean> addUserRequestInQueue(UserSearchRequest request) {
+	public Response<Boolean> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
 		Response<Boolean> response = null;
-		Boolean status = null;
+		Boolean status = false;
 		try {
+			
+			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+			UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
+			
+			ImageURLResponse imageURLResponse = null;
+			if (file != null) {
+				imageURLResponse = localeService.addRXImageMultipart(file);
+				if (request != null){
+					request.getRequest().setPrescriptionURL(imageURLResponse.getImageUrl());
+				}
+			}
+			
 			if (request == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
@@ -221,10 +233,8 @@ public class LocaleApi {
 
 		list = pharmacyService.getPatientOrderHistoryList(userId, page, size);
 
-		if (list != null && !list.isEmpty()) {
-			response = new Response<SearchRequestFromUserResponse>();
-			response.setDataList(list);
-		}
+		response = new Response<SearchRequestFromUserResponse>();
+		response.setDataList(list);
 		return response;
 
 	}
@@ -241,10 +251,8 @@ public class LocaleApi {
 
 		list = pharmacyService.getPharmacyListbyOrderHistory(userId, uniqueRequestId, replyType, page, size);
 
-		if (list != null && !list.isEmpty()) {
-			response = new Response<SearchRequestToPharmacyResponse>();
-			response.setDataList(list);
-		}
+		response = new Response<SearchRequestToPharmacyResponse>();
+		response.setDataList(list);
 		return response;
 
 	}
@@ -261,10 +269,8 @@ public class LocaleApi {
 
 		count = pharmacyService.getPharmacyListCountbyOrderHistory(uniqueRequestId, replyType);
 
-		if (count != null) {
-			response = new Response<Integer>();
-			response.setData(count);
-		}
+		response = new Response<Integer>();
+		response.setData(count);
 		return response;
 
 	}
@@ -283,14 +289,14 @@ public class LocaleApi {
 		}
 		
 		imageURLResponse = localeService.addRXImageMultipart(file);
-		if (imageURLResponse != null) {
-			response = new Response<ImageURLResponse>();
-			response.setData(imageURLResponse);
-		}
-
+		response = new Response<ImageURLResponse>();
+		response.setData(imageURLResponse);
 		return response;
 	}		
 
+	@GET
+	@Path(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
+	@ApiOperation(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION, notes = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
 	public Response<Locale> addEditRecommedation(String localeId, String patientId,RecommendationType type){
 		Locale locale = null;
 		Response<Locale> response =  null;
@@ -299,12 +305,9 @@ public class LocaleApi {
 		}
 		
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
-		if(locale != null)
-		{
-			response = new Response<>();
-			response.setData(locale);
-		}
-		return null;
+		response = new Response<>();
+		response.setData(locale);
+		return response;
 	}
 	
 	
