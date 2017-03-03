@@ -175,6 +175,7 @@ public class LocaleApi {
 
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	public Response<Boolean> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
 		Response<Boolean> response = null;
 		Boolean status = false;
