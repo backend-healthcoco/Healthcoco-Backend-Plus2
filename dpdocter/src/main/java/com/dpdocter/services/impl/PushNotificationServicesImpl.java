@@ -162,11 +162,16 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	@Override
 	@Transactional
-	public void notifyUser(String userId, String message, String componentType, String componentTypeId) {
-//		Boolean response = false;
+	public void notifyUser(String userId, String message, String componentType, String componentTypeId, List<UserDeviceCollection> userDevices) {
+		List<UserDeviceCollection> userDeviceCollections = null;
 		try{
-			ObjectId userObjectId = new ObjectId(userId);
-			List<UserDeviceCollection> userDeviceCollections = userDeviceRepository.findByUserId(userObjectId);
+			if(!DPDoctorUtils.anyStringEmpty(userId)){
+				ObjectId userObjectId = new ObjectId(userId);	
+				userDeviceCollections = userDeviceRepository.findByUserId(userObjectId);
+			}else{
+				userDeviceCollections = userDevices;
+			}
+			
 			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
 					if(userDeviceCollection.getDeviceType() != null){
@@ -219,6 +224,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 					notification.setDi(componentTypeId);notification.setNotificationType(componentType);
 				}else if(componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())){
 					notification.setAi(componentTypeId);notification.setNotificationType(componentType);
+				}else if(componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())){
+					notification.setCi(componentTypeId);notification.setNotificationType(componentType);
 				}
 			}
 					String jsonOutput = mapper.writeValueAsString(notification);
@@ -356,6 +363,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())){
 					customValues.put("AI", componentTypeId);customValues.put("T", "A");
+				}
+				else if(componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())){
+					customValues.put("T", "C");
 				}
 			}
 					String payload = APNS.newPayload()

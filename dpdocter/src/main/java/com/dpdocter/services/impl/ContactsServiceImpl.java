@@ -569,8 +569,7 @@ public class ContactsServiceImpl implements ContactsService {
 							registeredPatientDetail.setUserId(patientCard.getUser().getId().toString());
 						}
 					}
-					// System.out.println(patientCard);
-
+					
 					Patient patient = new Patient();
 					BeanUtil.map(patientCard, patient);
 					patient.setPatientId(patientCard.getUser().getId().toString());

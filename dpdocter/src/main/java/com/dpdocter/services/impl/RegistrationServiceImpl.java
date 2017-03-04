@@ -503,7 +503,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			pushNotificationServices.notifyUser(patientCollection.getUserId().toString(),
 					"Welcome to " + locationCollection.getLocationName()
 							+ ", let us know about your visit. We will be happy to serve you again.",
-					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString());
+					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString(), null);
 			if (userCollection.getMobileNumber() != null) {
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());

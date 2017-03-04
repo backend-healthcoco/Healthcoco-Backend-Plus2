@@ -277,7 +277,6 @@ public class ESDrugDocument {
 
 	 @Override
 	 public int hashCode() {
-		 System.out.println(drugCode+id);
-	    return this.drugCode.hashCode();
+		 return this.drugCode.hashCode();
 	 }
 }

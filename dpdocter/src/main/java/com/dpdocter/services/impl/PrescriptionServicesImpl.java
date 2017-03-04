@@ -966,7 +966,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			response.setVisitId(request.getVisitId());
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
-					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
 			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
 				sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
@@ -1156,7 +1156,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " has changed - Tap to view it!",
-					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Editing Prescription");
@@ -1239,7 +1239,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 										+ prescriptionCollection.getCreatedBy()
 										+ ", for further details please contact "
 										+ locationCollection.getLocationName(),
-								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString());
+								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 						throw new BusinessException(ServiceError.NotAuthorized,
@@ -1295,7 +1295,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);
 			} else {
-				pushNotificationServices.notifyUser(patientId, "Global records", null, null);
+				pushNotificationServices.notifyUser(patientId, "Global records", null, null, null);
 			}
 
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),

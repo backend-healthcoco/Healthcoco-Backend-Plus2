@@ -136,7 +136,7 @@ public class OTPServiceImpl implements OTPService {
 		    		patientCard.getLocalPatientName(), doctorName);
 		    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpBeforeVerification, body, null);
 		}
-		pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null);
+		pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" has requested to view your medical history, share OTP that was sent to your registered mobile number to provide access", null, null, null);
 	    } else {
 		logger.error("Invalid doctorId or patientId");
 		throw new BusinessException(ServiceError.InvalidInput, "Invalid doctorId or patientId");
@@ -186,7 +186,7 @@ public class OTPServiceImpl implements OTPService {
 				    		patientCard.getLocalPatientName(), doctorName);
 				    mailService.sendEmail(patientCard.getEmailAddress(), recordsShareOtpAfterVerification + " " + userCollection.getTitle() + " "+ userCollection.getFirstName(), body, null);
 				}
-				pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null);
+				pushNotificationServices.notifyUser(patientCard.getId().toString(), userCollection.getTitle()+" "+userCollection.getFirstName()+" can now access your medical history, Tap to know more about Healthcoco share.", null, null, null);
 			    } else {
 				logger.error("OTP is expired");
 				throw new BusinessException(ServiceError.NotFound, "OTP is expired");

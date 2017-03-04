@@ -425,7 +425,6 @@ public class SMSServicesImpl implements SMSServices {
 				out.writeObject(userNumber);
 				out.close();
 				fileOut.close();
-				System.out.println(userNumber.mobileNumber);
 			}
 		} catch (BusinessException | IOException | ClassNotFoundException e) {
 			logger.error(e);

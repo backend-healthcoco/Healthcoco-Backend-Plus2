@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -116,6 +117,7 @@ import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.OTPState;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
@@ -167,8 +169,10 @@ import com.dpdocter.response.AppointmentDoctorReminderResponse;
 import com.dpdocter.response.AppointmentPatientReminderResponse;
 import com.dpdocter.response.DoctorAppointmentSMSResponse;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -329,6 +333,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private AdviceRepository adviceRepository;
+
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
 
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
@@ -493,7 +500,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						Aggregation.match(new Criteria("state").is(AppointmentState.CONFIRM.getState()).and("type")
 								.is(AppointmentType.APPOINTMENT.getType()).and("fromDate").gte(fromTime).and("toDate")
 								.lte(toTime)), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"), Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
+						Aggregation.unwind("doctor"),Aggregation.lookup("user_device_cl", "doctorId", "userIds", "userDevices"),
+						Aggregation.sort(new Sort(Direction.ASC, "time.fromTime")));
 				AggregationResults<AppointmentDoctorReminderResponse> aggregationResults = mongoTemplate
 						.aggregate(aggregation, AppointmentCollection.class, AppointmentDoctorReminderResponse.class);
 
@@ -524,6 +532,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
 							response.setMessage(patientCollection.getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
 							response.setNoOfAppointments(1);
+							response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
 							doctorAppointmentSMSResponseMap.put(appointmentDoctorReminderResponse.getDoctorId().toString(), response);
 						}					
 					}
@@ -531,6 +540,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				for(Entry<String, DoctorAppointmentSMSResponse> entry : doctorAppointmentSMSResponseMap.entrySet()){
 					DoctorAppointmentSMSResponse response = entry.getValue();
 					UserCollection userCollection = response.getDoctor();
+					String message = "Healthcoco! You have " + response.getNoOfAppointments()
+					+ " appointments scheduled today.\n"+response.getMessage()+".\nHave a Healthy and Happy day!!";
 						SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 						smsTrackDetail.setDoctorId(userCollection.getId());
 						smsTrackDetail.setType("APPOINTMENT");
@@ -538,8 +549,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						smsDetail.setUserId(userCollection.getId());
 						SMS sms = new SMS();
 						smsDetail.setUserName(userCollection.getFirstName());
-						sms.setSmsText("Healthcoco! You have " + response.getNoOfAppointments()
-								+ " appointments scheduled today. "+response.getMessage()+". Have a Healthy and Happy day!!");
+						sms.setSmsText(message);
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(userCollection.getMobileNumber());
@@ -551,6 +561,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						smsDetails.add(smsDetail);
 						smsTrackDetail.setSmsDetails(smsDetails);
 						sMSServices.sendSMS(smsTrackDetail, true);
+						if(response.getUserDevices() != null && !response.getUserDevices().isEmpty()){
+							pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(), null, response.getUserDevices());
+						}
 					}
 			}
 		} catch (Exception e) {

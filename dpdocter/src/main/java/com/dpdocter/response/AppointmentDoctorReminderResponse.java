@@ -1,13 +1,13 @@
 package com.dpdocter.response;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.WorkingHours;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserDeviceCollection;
 
 public class AppointmentDoctorReminderResponse {
 
@@ -31,6 +31,8 @@ public class AppointmentDoctorReminderResponse {
 
     private ObjectId hospitalId;
 
+    private List<UserDeviceCollection> userDevices ;
+    
 	public String getId() {
 		return id;
 	}
@@ -111,11 +113,19 @@ public class AppointmentDoctorReminderResponse {
 		this.hospitalId = hospitalId;
 	}
 
+	public List<UserDeviceCollection> getUserDevices() {
+		return userDevices;
+	}
+
+	public void setUserDevices(List<UserDeviceCollection> userDevices) {
+		this.userDevices = userDevices;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentDoctorReminderResponse [id=" + id + ", doctorId=" + doctorId + ", total=" + total
-				+ ", patientId=" + patientId + ", time=" + time + ", doctor=" + doctor + ", appointmentId=" + appointmentId + ", fromDate=" + fromDate + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + "]";
+				+ ", patientId=" + patientId + ", time=" + time + ", doctor=" + doctor + ", appointmentId="
+				+ appointmentId + ", fromDate=" + fromDate + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", userDevices=" + userDevices + "]";
 	}
-
 }

@@ -1,6 +1,9 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserDeviceCollection;
 
 public class DoctorAppointmentSMSResponse {
 
@@ -10,6 +13,8 @@ public class DoctorAppointmentSMSResponse {
 	
 	private String message;
 
+	private List<UserDeviceCollection> userDevices ;
+	
 	public int getNoOfAppointments() {
 		return noOfAppointments;
 	}
@@ -34,9 +39,18 @@ public class DoctorAppointmentSMSResponse {
 		this.message = message;
 	}
 
+	public List<UserDeviceCollection> getUserDevices() {
+		return userDevices;
+	}
+
+	public void setUserDevices(List<UserDeviceCollection> userDevices) {
+		this.userDevices = userDevices;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorAppointmentSMSResponse [noOfAppointments=" + noOfAppointments + ", doctor=" + doctor
-				+ ", message=" + message + "]";
+				+ ", message=" + message + ", userDevices=" + userDevices + "]";
 	}
+
 }

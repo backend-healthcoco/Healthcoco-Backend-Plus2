@@ -283,7 +283,7 @@ public class RecordsServiceImpl implements RecordsService {
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -299,7 +299,7 @@ public class RecordsServiceImpl implements RecordsService {
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -312,7 +312,7 @@ public class RecordsServiceImpl implements RecordsService {
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
@@ -685,7 +685,7 @@ public class RecordsServiceImpl implements RecordsService {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Report:" + recordsCollection.getUniqueEmrId() + " has been removed by "
 								+ recordsCollection.getCreatedBy(),
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 			response = new Records();
 			BeanUtil.map(recordsCollection, response);
 
@@ -1305,7 +1305,7 @@ public class RecordsServiceImpl implements RecordsService {
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -1318,7 +1318,7 @@ public class RecordsServiceImpl implements RecordsService {
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -1331,7 +1331,7 @@ public class RecordsServiceImpl implements RecordsService {
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
@@ -1400,7 +1400,7 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getHospitalId(), recordsCollection.getPatientId());
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString());
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 			} else if (recordsState.equalsIgnoreCase(RecordsState.DECLINED_BY_DOCTOR.toString())) {
 				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(

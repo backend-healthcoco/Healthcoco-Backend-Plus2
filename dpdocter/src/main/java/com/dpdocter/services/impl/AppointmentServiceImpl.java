@@ -931,7 +931,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 									+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ "
 									+ dateTime;
 							pushNotificationServices.notifyUser(request.getDoctorId(), text,
-									ComponentType.APPOINTMENT.getType(), appointmentCollection.getId().toString());
+									ComponentType.APPOINTMENT.getType(), appointmentCollection.getId().toString(), null);
 						}
 						if (request.getNotifyPatientByEmail() != null && request.getNotifyPatientByEmail()
 								&& patientCard.getEmailAddress() != null)
@@ -1151,7 +1151,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been confirmed @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1159,7 +1159,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Healthcoco! Your appointment with " + patientName + " has been scheduled @ " + dateTime
 					+ (clinicName != "" ? " at " + clinicName : "") + ".";
 			smsDetail.setUserName(doctorName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1167,7 +1167,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Healthcoco! You have an appointment request from " + patientName + " for " + dateTime + " at "
 					+ clinicName + ".";
 			smsDetail.setUserName(doctorName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1177,7 +1177,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ " has been sent for confirmation. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1185,7 +1185,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your appointment" + " with " + patientName + " for " + dateTime + " at " + clinicName
 					+ " has been cancelled as per your request.";
 			smsDetail.setUserName(doctorName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1195,7 +1195,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "")
 					+ ". Request you to book again. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1203,7 +1203,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Healthcoco! Your appointment" + " with " + patientName + " @ " + dateTime + " at " + clinicName
 					+ ", has been cancelled by patient.";
 			smsDetail.setUserName(doctorName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1211,7 +1211,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your appointment " + appointmentId + " for " + dateTime + " with " + doctorName
 					+ " has been cancelled as per your request. Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1221,7 +1221,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + ". Download Healthcoco App- "
 					+ patientAppBitLink;
 			smsDetail.setUserName(patientName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1231,7 +1231,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					+ (clinicContactNum != "" ? ", " + clinicContactNum : "") + " has been rescheduled @ " + dateTime
 					+ ". Download Healthcoco App- " + patientAppBitLink;
 			smsDetail.setUserName(patientName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 
@@ -1239,7 +1239,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			text = "Your appointment with " + patientName + " has been rescheduled to " + dateTime + " at " + clinicName
 					+ ".";
 			smsDetail.setUserName(doctorName);
-			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id);
+			pushNotificationServices.notifyUser(userId, text, ComponentType.APPOINTMENT.getType(), id, null);
 		}
 			break;
 

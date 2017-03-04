@@ -71,7 +71,7 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		if (request.getId() == null && userCollection != null)issueTrackCollection.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "") + userCollection.getFirstName());
 //		String body = mailBodyGenerator.generateIssueTrackEmailBody(userCollection.getUserName(), userCollection.getFirstName(), userCollection.getMiddleName(), userCollection.getLastName());
 //		mailService.sendEmail(userCollection.getEmailAddress(), addIssueSubject, body, null);
-		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null);
+		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been recorded, we will keep you updated on the progress of the issue", null, null, null);
 	    }
 	    issueTrackCollection = issueTrackRepository.save(issueTrackCollection);
 	    
@@ -179,9 +179,9 @@ public class IssueTrackServiceImpl implements IssueTrackService {
 		    UserCollection userCollection = userRepository.findOne(issueTrackCollection.getDoctorId());
 		    if(userCollection != null){
 		    	if(status.equalsIgnoreCase(IssueStatus.INPROGRESS.getStatus()))
-			    	pushNotificationServices.notifyUser(userCollection.getId().toString(), "We have started working on the issue "+issueTrackCollection.getIssueCode()+", we will keep you upadated on the progress of the issue", null, null);
+			    	pushNotificationServices.notifyUser(userCollection.getId().toString(), "We have started working on the issue "+issueTrackCollection.getIssueCode()+", we will keep you upadated on the progress of the issue", null, null, null);
 		    	else if(status.equalsIgnoreCase(IssueStatus.COMPLETED.getStatus()))
-		    		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been resolved, please let us know if you are not satisfied; we will be happy to look at it again", null, null);
+		    		pushNotificationServices.notifyUser(userCollection.getId().toString(), "Your issue "+issueTrackCollection.getIssueCode()+" has been resolved, please let us know if you are not satisfied; we will be happy to look at it again", null, null, null);
 		    
 		    }
 		    issueTrackRepository.save(issueTrackCollection);
