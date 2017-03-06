@@ -47,6 +47,7 @@ import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
+import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.PatientTreatmentService;
@@ -149,6 +150,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Value(value = "${image.path}")
 	private String imagePath;
+
+	@Autowired
+	private ESTreatmentServiceRepository esTreatmentServiceRepository;
 
 	@Override
 	@Transactional
@@ -1410,6 +1414,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			for (TreatmentServicesCollection treatmentServicesCollection : treatmentServicesCollections) {
 				treatmentServicesCollection.setTreatmentCode("TR" + DPDoctorUtils.generateRandomId() + i);
 				i++;
+				ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+				BeanUtil.map(treatmentServicesCollection, esTreatmentServiceDocument);
+				esTreatmentServiceRepository.save(esTreatmentServiceDocument);
 			}
 			treatmentServicesRepository.save(treatmentServicesCollections);
 			count = treatmentServicesCollections.size();

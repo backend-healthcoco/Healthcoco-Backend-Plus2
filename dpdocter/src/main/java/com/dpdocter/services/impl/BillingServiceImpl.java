@@ -374,19 +374,17 @@ public class BillingServiceImpl implements BillingService {
 							doctorPatientReceiptRepository.save(receiptCollection);
 						}
 						}
-						doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-						doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+						doctorPatientInvoiceCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount()+request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 								request.getAmountPaid()-request.getUsedAdvanceAmount());
-						doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
-								request.getAmountPaid()-request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					}else{
-						doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-						doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-						doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
-								request.getAmountPaid());
+						doctorPatientInvoiceCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount()+request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
-								request.getAmountPaid());
+								request.getAmountPaid()-request.getUsedAdvanceAmount());
+						doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					}
 					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 					doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
@@ -640,19 +638,17 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientReceiptRepository.save(receiptCollection);
 					}
 					}
-					doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-					doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
+					doctorPatientInvoiceCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount()+request.getUsedAdvanceAmount());
+					doctorPatientReceiptCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
 							request.getAmountPaid()-request.getUsedAdvanceAmount());
-					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
-							request.getAmountPaid()-request.getUsedAdvanceAmount());
+					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 				}else{
-					doctorPatientInvoiceCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-					doctorPatientReceiptCollection.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
-					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
-							request.getAmountPaid());
+					doctorPatientInvoiceCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount()+request.getUsedAdvanceAmount());
+					doctorPatientReceiptCollection.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()-
-							request.getAmountPaid());
+							request.getAmountPaid()-request.getUsedAdvanceAmount());
+					doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 				}
 			doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 			
