@@ -3519,87 +3519,87 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
-		int no = 0;
-		Boolean showIntructions = false, showDirection = false;
-		if (!isLabPrint && prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
-			for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
-				if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
-					DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
-					if (drug != null) {
-						String drugType = drug.getDrugType() != null
-								? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "") : "";
-						String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-						drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName;
-						String durationValue = prescriptionItem.getDuration() != null
-								? (prescriptionItem.getDuration().getValue() != null
-										? prescriptionItem.getDuration().getValue() : "")
-								: "";
-						String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration()
-								.getDurationUnit() != null
-										? (!DPDoctorUtils
-												.anyStringEmpty(
-														prescriptionItem.getDuration().getDurationUnit().getUnit())
-																? prescriptionItem.getDuration().getDurationUnit()
-																		.getUnit()
-																: "")
-										: "")
-								: "";
+		if(!isLabPrint){
+			int no = 0;
+			Boolean showIntructions = false, showDirection = false;
+			if (prescriptionCollection.getItems() != null && !prescriptionCollection.getItems().isEmpty())
+				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
+						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+						if (drug != null) {
+							String drugType = drug.getDrugType() != null
+									? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "") : "";
+							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName;
+							String durationValue = prescriptionItem.getDuration() != null
+									? (prescriptionItem.getDuration().getValue() != null
+											? prescriptionItem.getDuration().getValue() : "")
+									: "";
+							String durationUnit = prescriptionItem.getDuration() != null ? (prescriptionItem.getDuration()
+									.getDurationUnit() != null
+											? (!DPDoctorUtils
+													.anyStringEmpty(
+															prescriptionItem.getDuration().getDurationUnit().getUnit())
+																	? prescriptionItem.getDuration().getDurationUnit()
+																			.getUnit()
+																	: "")
+											: "")
+									: "";
 
-						String directions = "";
-						if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
-							showDirection = true;
-							if (prescriptionItem.getDirection().get(0).getDirection() != null) {
-								if (directions == "")
-									directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
-								else
-									directions = directions + ","
-											+ (prescriptionItem.getDirection().get(0).getDirection());
+							String directions = "";
+							if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
+								showDirection = true;
+								if (prescriptionItem.getDirection().get(0).getDirection() != null) {
+									if (directions == "")
+										directions = directions + (prescriptionItem.getDirection().get(0).getDirection());
+									else
+										directions = directions + ","
+												+ (prescriptionItem.getDirection().get(0).getDirection());
+								}
 							}
+							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+								showIntructions = true;
+							}
+							String duration = "";
+							if (durationValue == "" && durationValue == "")
+								duration = "--";
+							else
+								duration = durationValue + " " + durationUnit;
+							no = no + 1;
+							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
+									drugName,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+											? prescriptionItem.getDosage() : "--",
+									duration, directions.isEmpty() ? "--" : directions,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+											? prescriptionItem.getInstructions() : "--");
+							prescriptionItems.add(prescriptionJasperDetails);
 						}
-						if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
-							showIntructions = true;
-						}
-						String duration = "";
-						if (durationValue == "" && durationValue == "")
-							duration = "--";
-						else
-							duration = durationValue + " " + durationUnit;
-						no = no + 1;
-						PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
-								drugName,
-								!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
-										? prescriptionItem.getDosage() : "--",
-								duration, directions.isEmpty() ? "--" : directions,
-								!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-										? prescriptionItem.getInstructions() : "--");
-						prescriptionItems.add(prescriptionJasperDetails);
 					}
 				}
+			if (parameters.get("followUpAppointment") == null
+					&& !DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAppointmentId())
+					&& prescriptionCollection.getTime() != null) {
+				SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+				String _24HourTime = String.format("%02d:%02d", prescriptionCollection.getTime().getFromTime() / 60,
+						prescriptionCollection.getTime().getFromTime() % 60);
+				SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+				SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+				sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+				_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+				_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+
+				Date _24HourDt = _24HourSDF.parse(_24HourTime);
+				String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(prescriptionCollection.getFromDate());
+				parameters.put("followUpAppointment", "Next Review on " + dateTime);
 			}
-		if (parameters.get("followUpAppointment") == null
-				&& !DPDoctorUtils.anyStringEmpty(prescriptionCollection.getAppointmentId())
-				&& prescriptionCollection.getTime() != null) {
-			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-			String _24HourTime = String.format("%02d:%02d", prescriptionCollection.getTime().getFromTime() / 60,
-					prescriptionCollection.getTime().getFromTime() % 60);
-			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
-			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
-			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
-
-			Date _24HourDt = _24HourSDF.parse(_24HourTime);
-			String dateTime = _12HourSDF.format(_24HourDt) + ", " + sdf.format(prescriptionCollection.getFromDate());
-			parameters.put("followUpAppointment", "Next Review on " + dateTime);
+			parameters.put("prescriptionItems", prescriptionItems);
+			parameters.put("showIntructions", showIntructions);
+			parameters.put("showDirection", showDirection);
+			parameters.put("advice", prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
 		}
-		parameters.put("prescriptionItems", prescriptionItems);
-		parameters.put("showIntructions", showIntructions);
-		parameters.put("showDirection", showDirection);
-
 		parameters.put("prescriptionId", prescriptionCollection.getId().toString());
-		parameters.put("advice",
-				prescriptionCollection.getAdvice() != null ? prescriptionCollection.getAdvice() : null);
-		String labTest = "";
+				String labTest = "";
 		if (prescriptionCollection.getDiagnosticTests() != null
 				&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
 			for (TestAndRecordData tests : prescriptionCollection.getDiagnosticTests()) {

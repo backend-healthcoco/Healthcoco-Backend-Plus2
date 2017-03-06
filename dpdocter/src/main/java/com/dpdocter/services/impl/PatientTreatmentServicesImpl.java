@@ -1281,7 +1281,13 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				 PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
 				 TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(treatment.getTreatmentServiceId());
 				 patientTreatments.setNo(++no);
-				 patientTreatments.setStatus((treatment.getStatus() != null) ? treatment.getStatus().getTreamentStatus() : "--");
+				 if(treatment.getStatus() != null){
+					 String status = treatment.getStatus().getTreamentStatus().replaceAll("_", " ");
+					 status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
+					 patientTreatments.setStatus(status);
+				 }else{
+					 patientTreatments.setStatus("--");
+				 }
 				 patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
 				 
 				 if(treatment.getQuantity() != null){
@@ -1291,7 +1297,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					 quantity+treatment.getQuantity().getType().getDuration();
 					 patientTreatments.setQuantity(quantity);
 				 }
-				 patientTreatments.setNote(treatment.getNote() != null ? treatment.getNote() : "--");
+				 patientTreatments.setNote(treatment.getNote() != null ? "<b>Note :</b> "+treatment.getNote() : "");
 				 patientTreatments.setCost(treatment.getCost()+"");
 				 patientTreatments.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()+" "+treatment.getDiscount().getUnit().getUnit() : "");
 				 patientTreatments.setFinalCost(treatment.getFinalCost()+"");
@@ -1299,11 +1305,16 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			}
 			parameters.put("showTreatmentQuantity", showTreatmentQuantity);
 			parameters.put("services", patientTreatmentJasperDetails);
+			
+			String total="";
+			if(patientTreatmentCollection.getTotalCost() > 0)total = "<b>Total Cost:</b> "+patientTreatmentCollection.getTotalCost()+"₹   ";
+			
 			if(patientTreatmentCollection.getTotalDiscount() != null && patientTreatmentCollection.getTotalDiscount().getValue() > 0.0){
-				parameters.put("totalDiscount", (patientTreatmentCollection.getTotalDiscount() != null) ? patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit() : "");
+				total = total+ "<b>Total Discount:</b> "+patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit()+"   ";
 			 }
-			 if(patientTreatmentCollection.getTotalCost() > 0)parameters.put("totalCost", patientTreatmentCollection.getTotalCost()+"");
-			 if(patientTreatmentCollection.getGrandTotal() > 0)parameters.put("grandTotal", patientTreatmentCollection.getGrandTotal()+"");
+			 
+			if(patientTreatmentCollection.getGrandTotal() > 0)total = total+ "<b>Grand Total:</b> "+ patientTreatmentCollection.getGrandTotal()+"₹";
+			parameters.put("grandTotal", total);
 			parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
 			if (parameters.get("followUpAppointment") == null
 					&& !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId())
