@@ -592,14 +592,20 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (maxTime == 0) {
 						maxTime = 1439;
 					}
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(QueryBuilders.andQuery(
-							nestedQuery("workingSchedules.workingHours", QueryBuilders.andQuery(QueryBuilders.orQuery(
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(
+							QueryBuilders.andQuery(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
 
 									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
 											.lt(maxTime),
 
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
-											.lt(maxTime)))),
+									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+											.gt(minTime).lt(
+													maxTime),
+									QueryBuilders.andQuery(
+											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
+													.lt(1439),
+											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
+													.lt(minTime)))),
 									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
 				}
 			} else {
@@ -613,8 +619,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
 											.lt(maxTime),
 
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(minTime)
-											.lt(maxTime))))));
+									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+											.gt(minTime).lt(
+													maxTime),
+									QueryBuilders.andQuery(
+											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
+													.lt(1439),
+											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
+													.lt(minTime)))))));
 				}
 			}
 			// if (minTime != 0 || maxTime != 0) {

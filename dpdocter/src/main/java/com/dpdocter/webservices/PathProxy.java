@@ -274,7 +274,8 @@ public interface PathProxy {
 		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
 
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
-	}
+					
+}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
@@ -907,6 +908,8 @@ public interface PathProxy {
 
 		public static final String Add_SUBCRIPTION_DETAIL = "/addSubscriptionDetails";
 
+		public static final String SEND_BIRTHDAY_WISH = "/sendwish";
+
 	}
 
 	public static final String PUSH_NOTIFICATION_BASE_URL = BASE_URL + "/notification";
@@ -986,7 +989,7 @@ public interface PathProxy {
 	public interface BillingUrls {
 
 		public static final String GET_INVOICE = "/invoice/{invoiceId}/view";
-		
+
 		public static final String GET_INVOICE_RECEIPT_INITIALS = "/initials/{locationId}";
 
 		public static final String UPDATE_INVOICE_RECEIPT_INITIALS = "/updateInitials";
@@ -1012,8 +1015,10 @@ public interface PathProxy {
 		public static final String GET_LEDGER = "/ledger/{locationId}/{hospitalId}/{patientId}";
 
 		public static final String GET_TOTAL_DUE_AND_ADVANCE_AMOUNT = "/amount/{locationId}/{hospitalId}/{patientId}";
-		
+
 		public static final String CREATE_LEDGER = "/ledger";
+
+		public static final String DOWNLOAD_INVOICE = "/downloadInvoice/{invoiceId}";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1032,7 +1037,7 @@ public interface PathProxy {
 
 		public static final String ADD_USER_REQUEST = "/addUserRequest";
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
-		
+
 		public static final String GET_PATIENT_ORDER_HISTORY = "/getPatientOrderHistory/{userId}";
 		public static final String GET_PHARMCIES_FOR_ORDER = "/getPharmaciesForOrder";
 		public static final String GET_PHARMCIES_COUNT_FOR_ORDER = "/getPharmaciesCountForOrder";

@@ -21,6 +21,7 @@ import com.dpdocter.beans.SubscriptionDetail;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.services.AdminServices;
+import com.dpdocter.services.BirthdaySMSServices;
 import com.dpdocter.services.SubscriptionService;
 
 import common.util.web.DPDoctorUtils;
@@ -36,6 +37,9 @@ import io.swagger.annotations.ApiOperation;
 public class AdminAPI {
 
 	private static Logger logger = Logger.getLogger(AdminAPI.class.getName());
+
+	@Autowired
+	private BirthdaySMSServices birthdaySMSServices;
 
 	@Autowired
 	private SubscriptionService subscriptionService;
@@ -109,6 +113,16 @@ public class AdminAPI {
 		List<SubscriptionDetail> reponseSubscriptionDetail = subscriptionService.addsubscriptionData();
 		Response<Object> response = new Response<Object>();
 		response.setDataList(reponseSubscriptionDetail);
+		return response;
+	}
+
+	@Path(value = PathProxy.AdminUrls.SEND_BIRTHDAY_WISH)
+	@GET
+	@ApiOperation(value = PathProxy.AdminUrls.SEND_BIRTHDAY_WISH, notes = PathProxy.AdminUrls.SEND_BIRTHDAY_WISH)
+	public Response<Boolean> sendBirthdayWish() {
+		birthdaySMSServices.sendBirthdaySMSToPatients();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
 		return response;
 	}
 
