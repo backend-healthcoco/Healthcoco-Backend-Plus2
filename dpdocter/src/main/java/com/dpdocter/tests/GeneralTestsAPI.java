@@ -50,7 +50,7 @@ public class GeneralTestsAPI {
     @GET
     public Response<Boolean> reminder() {
     	    
-   	pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1",null);
+    	pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1", null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);
 	return response;
