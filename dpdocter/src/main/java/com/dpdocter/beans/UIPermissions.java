@@ -13,6 +13,7 @@ public class UIPermissions {
 	private List<String> clinicalNotesPermissions = new ArrayList<String>();
 	private List<String> prescriptionPermissions = new ArrayList<String>();
 	private List<String> profilePermissions = new ArrayList<String>();
+	private List<String> vitalSignPermissions = new ArrayList<String>();
 
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -54,11 +55,19 @@ public class UIPermissions {
 		this.profilePermissions = profilePermissions;
 	}
 
+	public List<String> getVitalSignPermissions() {
+		return vitalSignPermissions;
+	}
+
+	public void setVitalSignPermissions(List<String> vitalSignPermissions) {
+		this.vitalSignPermissions = vitalSignPermissions;
+	}
+
 	@Override
 	public String toString() {
 		return "UIPermissions [tabPermissions=" + tabPermissions + ", patientVisitPermissions="
 				+ patientVisitPermissions + ", clinicalNotesPermissions=" + clinicalNotesPermissions
 				+ ", prescriptionPermissions=" + prescriptionPermissions + ", profilePermissions=" + profilePermissions
-				+ "]";
+				+ ", vitalSignPermissions=" + vitalSignPermissions + "]";
 	}
 }
