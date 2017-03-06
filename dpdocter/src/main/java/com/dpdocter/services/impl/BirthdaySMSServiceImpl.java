@@ -54,10 +54,10 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 	@Autowired
 	private MailService mailService;
 
-	@Value(value = "${sms.birthday.wish.to.doctor")
+	@Value(value = "${sms.birthday.wish.to.doctor}")
 	private String birthdayWishSMStoDoctor;
 
-	@Value(value = "${sms.birthday.wish.to.patient")
+	@Value(value = "${sms.birthday.wish.to.patient}")
 	private String birthdayWishSMStoPatient;
 
 	@Scheduled(cron = "0 0 9 * * ?", zone = "IST")
