@@ -85,7 +85,7 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 			Aggregation aggregation = Aggregation.newAggregation(
 					// Aggregation.lookup("doctor_clinic_profile_cl", "_id",
 					// "userLocationId", "doctorClinic"),
-					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"),Aggregation.unwind("location"),
 					Aggregation.lookup("patient_cl", "doctorId", "doctorId", "patient"), Aggregation.unwind("patient"),
 					Aggregation.match(criteria), projectList, Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			AggregationResults<BirthdaySMSDetailsForPatients> results = mongoTemplate.aggregate(aggregation,
