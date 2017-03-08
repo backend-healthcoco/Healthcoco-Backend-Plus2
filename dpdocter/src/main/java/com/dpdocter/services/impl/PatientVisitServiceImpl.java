@@ -1126,7 +1126,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								total = total+ "<b>Total Discount:</b> "+patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit()+"   ";
 						 }
 						if(patientTreatmentCollection.getGrandTotal() > 0)total = total+ "<b>Grand Total:</b> "+ patientTreatmentCollection.getGrandTotal()+"₹";
-						parameters.put("grandTotal", total);
+						response.put("grandTotal", total);
 					 }
 				 }
 			 }

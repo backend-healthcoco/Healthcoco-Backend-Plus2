@@ -110,10 +110,9 @@ public class BirthdaySMSServiceImpl implements BirthdaySMSServices {
 						smsDetail.setUserId(userCollection.getId());
 						SMS sms = new SMS();
 						smsDetail.setUserName(birthdaySMSDetailsForPatient.getLocalPatientName());
-						message = message.replace("{patientName}", birthdaySMSDetailsForPatient.getLocalPatientName());
-						message = message.replace("{clinicName}", birthdaySMSDetailsForPatient.getLocationName());
-
-						sms.setSmsText(message);
+						
+						sms.setSmsText(message.replace("{patientName}", birthdaySMSDetailsForPatient.getLocalPatientName())
+								.replace("{clinicName}", birthdaySMSDetailsForPatient.getLocationName()));
 
 						SMSAddress smsAddress = new SMSAddress();
 						smsAddress.setRecipient(userCollection.getMobileNumber());

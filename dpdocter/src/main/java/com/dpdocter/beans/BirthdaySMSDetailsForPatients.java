@@ -18,12 +18,12 @@ public class BirthdaySMSDetailsForPatients {
 
 	private String locationName;
 
-	public PatientCard getPatient() {
-		return patient;
+	public ObjectId getId() {
+		return id;
 	}
 
-	public void setPatient(PatientCard patient) {
-		this.patient = patient;
+	public void setId(ObjectId id) {
+		this.id = id;
 	}
 
 	public ObjectId getDoctorId() {
@@ -50,20 +50,12 @@ public class BirthdaySMSDetailsForPatients {
 		this.hospitalId = hospitalId;
 	}
 
-	public String getLocationName() {
-		return locationName;
+	public PatientCard getPatient() {
+		return patient;
 	}
 
-	public void setLocationName(String locationName) {
-		this.locationName = locationName;
-	}
-
-	public ObjectId getId() {
-		return id;
-	}
-
-	public void setId(ObjectId id) {
-		this.id = id;
+	public void setPatient(PatientCard patient) {
+		this.patient = patient;
 	}
 
 	public String getLocalPatientName() {
@@ -72,6 +64,21 @@ public class BirthdaySMSDetailsForPatients {
 
 	public void setLocalPatientName(String localPatientName) {
 		this.localPatientName = localPatientName;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	@Override
+	public String toString() {
+		return "BirthdaySMSDetailsForPatients [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patient=" + patient + ", localPatientName=" + localPatientName
+				+ ", locationName=" + locationName + "]";
 	}
 
 }

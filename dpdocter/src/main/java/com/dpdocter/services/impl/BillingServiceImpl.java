@@ -149,6 +149,9 @@ public class BillingServiceImpl implements BillingService {
 			}
 			else{
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
+				if(doctorPatientInvoiceCollection.getReceiptIds() != null && !doctorPatientInvoiceCollection.getReceiptIds().isEmpty()){
+					throw new BusinessException(ServiceError.Unknown, "Invoice cannot be edited as receipt is already added.");
+				}
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
