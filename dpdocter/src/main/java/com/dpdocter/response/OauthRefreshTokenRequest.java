@@ -1,36 +1,13 @@
-package com.dpdocter.request;
+package com.dpdocter.response;
 
-public class LoginRequest {
+public class OauthRefreshTokenRequest {
 	private String clientId;
-	
+
 	private String grantType;
-	
+
 	private String clientSecret;
 	
-	private String username;
-
-	private char[] password;
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public char[] getPassword() {
-		return password;
-	}
-
-	public void setPassword(char[] password) {
-		this.password = password;
-	}
-
-	@Override
-	public String toString() {
-		return "LoginRequest [username=" + username + ", password=" + password + "]";
-	}
+	private String refreshToken;
 
 	public String getClientId() {
 		return clientId;
@@ -55,4 +32,14 @@ public class LoginRequest {
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
 	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public void setRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+
 }

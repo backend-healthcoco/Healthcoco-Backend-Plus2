@@ -1,11 +1,5 @@
 package com.dpdocter.integrationTest;
 
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
-import java.io.UnsupportedEncodingException;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,17 +8,12 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.testng.AssertJUnit;
-import org.testng.annotations.Test;
 
-import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.repository.UserRepository;
-import com.dpdocter.request.LoginRequest;
 import com.dpdocter.services.LoginService;
 import com.mongodb.Mongo;
 
-import common.util.web.DPDoctorUtils;
 import de.flapdoodle.embedmongo.MongoDBRuntime;
 import de.flapdoodle.embedmongo.MongodExecutable;
 import de.flapdoodle.embedmongo.MongodProcess;
@@ -59,18 +48,7 @@ public class LoginServiceTest extends AbstractTestNGSpringContextTests {
 	}
 
 //	@Test
-	public void testLogin() throws UnsupportedEncodingException {
-		LoginRequest request = new LoginRequest();
-		request.setUsername("manishmethani6@gmail.com");
-		String password = "admin";
-		request.setPassword(DPDoctorUtils.getSHA3SecurePassword(password.toCharArray()));
-
-		LoginResponse loginResponse = loginService.login(request, false);
-
-		System.out.println();
-		AssertJUnit.assertEquals(loginResponse.getUser().getUserName(), request.getUsername());
-
-	}
+	
 
 	//@Test
 	public void testuser() {

@@ -11,14 +11,13 @@
 
 <security:http auto-config="true" use-expressions="true">
     <security:intercept-url pattern="/api/**" access="hasRole('ROLE_USER')" />
-    <security:intercept-url pattern="/api/v1/records/download/**" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     <security:http-basic />
 </security:http>
 
 <security:authentication-manager>
      <security:authentication-provider>
          <security:user-service>
-              <security:user name="healthcoco@16" password="1GWLF9ORMK9B8QFV" authorities="ROLE_USER" />
+              <security:user name="healthcocoadmin@16" password="XK66SVEM5EA5VXY9" authorities="ROLE_USER" />
          </security:user-service>
      </security:authentication-provider>
 </security:authentication-manager>

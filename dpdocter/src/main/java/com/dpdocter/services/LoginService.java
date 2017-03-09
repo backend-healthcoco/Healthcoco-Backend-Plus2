@@ -1,16 +1,19 @@
 package com.dpdocter.services;
 
-import java.util.List;
-
-import com.dpdocter.beans.LoginResponse;
-import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
+import com.dpdocter.response.LoginResponse;
+import com.dpdocter.response.OAuth2TokenResponse;
+import com.dpdocter.response.OauthRefreshTokenRequest;
+import com.dpdocter.response.PatientLoginResponse;
 
 public interface LoginService {
-    LoginResponse login(LoginRequest request, Boolean isMobileApp);
 
-    List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request);
+	LoginResponse login(LoginRequest request, Boolean isMobileApp);
+
+	PatientLoginResponse loginPatient(LoginPatientRequest request);
+
+	String refreshToken(OauthRefreshTokenRequest request);
 
 	Boolean adminLogin(String mobileNumber);
 }

@@ -1,7 +1,10 @@
 package com.dpdocter.services.impl;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +21,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.aop.NoLogging;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LocationAndAccessControl;
-import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
@@ -45,12 +46,15 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.LoginResponse;
+import com.dpdocter.response.OAuth2TokenResponse;
+import com.dpdocter.response.OauthRefreshTokenRequest;
+import com.dpdocter.response.PatientLoginResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.LoginService;
 import com.dpdocter.services.OTPService;
-
-import common.util.web.DPDoctorUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -78,6 +82,9 @@ public class LoginServiceImpl implements LoginService {
 	@Value(value = "${Login.loginPatient}")
 	private String loginPatient;
 
+	@Value(value = "${Login.server.url}")
+	private String serverIp;
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -87,11 +94,64 @@ public class LoginServiceImpl implements LoginService {
 	/**
 	 * This method is used for login purpose.
 	 */
+
+	private String getLoginResponse(LoginRequest loginRequest) {
+
+		StringBuffer response = new StringBuffer();
+		try {
+			String password = new String(loginRequest.getPassword());
+			String url = serverIp + "/dpdoctor/oauth/token?grant_type=" + loginRequest.getGrantType() + "&client_id="
+					+ loginRequest.getGrantType() + "+&client_secret=" + loginRequest.getClientSecret() + "&username="
+					+ loginRequest.getUsername() + "&password=" + new String(loginRequest.getPassword());
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return "Failed";
+		}
+
+		return response.toString();
+
+	}
+
 	@Override
 	@Transactional
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
 		LoginResponse response = null;
 		try {
+			String tokenResponse = getLoginResponse(request);
+			OAuth2TokenResponse oauth2TokenResponse = new OAuth2TokenResponse();
+			if (tokenResponse.equalsIgnoreCase("Failed")) {
+				logger.warn(login);
+				throw new BusinessException(ServiceError.InvalidInput, login);
+
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			oauth2TokenResponse = mapper.readValue(tokenResponse, OAuth2TokenResponse.class);
+
 			Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
 			Query query = new Query();
 			query.addCriteria(criteria);
@@ -103,23 +163,6 @@ public class LoginServiceImpl implements LoginService {
 			if (userCollection == null) {
 				logger.warn(login);
 				throw new BusinessException(ServiceError.InvalidInput, login);
-			} else {
-				char[] salt = userCollection.getSalt();
-				if (salt != null && salt.length > 0) {
-					char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-					for (int i = 0; i < request.getPassword().length; i++)
-						passwordWithSalt[i] = request.getPassword()[i];
-					for (int i = 0; i < salt.length; i++)
-						passwordWithSalt[i + request.getPassword().length] = salt[i];
-					if (!Arrays.equals(userCollection.getPassword(),
-							DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
-						logger.warn(login);
-						throw new BusinessException(ServiceError.InvalidInput, login);
-					}
-				} else {
-					logger.warn(login);
-					throw new BusinessException(ServiceError.InvalidInput, login);
-				}
 			}
 			User user = new User();
 			BeanUtil.map(userCollection, user);
@@ -132,7 +175,9 @@ public class LoginServiceImpl implements LoginService {
 			}
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId())),
-							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"), Aggregation.unwind("roleCollection")), UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
+							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
+							Aggregation.unwind("roleCollection")),
+					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 
 			for (UserRoleLookupResponse userRoleLookupResponse : userRoleLookupResponses) {
 				RoleCollection roleCollection = userRoleLookupResponse.getRoleCollection();
@@ -157,12 +202,18 @@ public class LoginServiceImpl implements LoginService {
 
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					
-					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)),
-									Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-									Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id", "hospital"), Aggregation.unwind("hospital")), 
-							DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+
+					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(
+											Aggregation.match(new Criteria("doctorId").is(userCollection.getId())
+													.and("isActivate").is(true)),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id", "hospital"),
+									Aggregation.unwind("hospital")), DoctorClinicProfileCollection.class,
+									DoctorClinicProfileLookupResponse.class)
+							.getMappedResults();
 					if (doctorClinicProfileLookupResponses != null) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
 						Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
@@ -181,29 +232,32 @@ public class LoginServiceImpl implements LoginService {
 
 							Boolean isStaff = false;
 							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {
-								if((otherRoleCollection.getRoleCollection().getHospitalId() == null && 
-										otherRoleCollection.getRoleCollection().getLocationId() == null) ||
-										(otherRoleCollection.getRoleCollection().getHospitalId().toString().equalsIgnoreCase(hospitalCollection.getId().toString()) &&
-										otherRoleCollection.getRoleCollection().getLocationId().toString().equalsIgnoreCase(locationCollection.getId().toString()))){
+								if ((otherRoleCollection.getRoleCollection().getHospitalId() == null
+										&& otherRoleCollection.getRoleCollection().getLocationId() == null)
+										|| (otherRoleCollection.getRoleCollection().getHospitalId().toString()
+												.equalsIgnoreCase(hospitalCollection.getId().toString())
+												&& otherRoleCollection.getRoleCollection().getLocationId().toString()
+														.equalsIgnoreCase(locationCollection.getId().toString()))) {
 									if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
-											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+											&& !(otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-															|| otherRoleCollection.getRoleCollection().getRole()
+													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 										logger.warn("You are staff member so please login from website.");
 										throw new BusinessException(ServiceError.NotAuthorized,
 												"You are staff member so please login from website.");
-									} else if (isMobileApp
-											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-													|| otherRoleCollection.getRoleCollection().getRole()
-															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-													|| otherRoleCollection.getRoleCollection().getRole()
-															.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-															|| otherRoleCollection.getRoleCollection().getRole()
-															.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+									} else if (isMobileApp && !(otherRoleCollection.getRoleCollection().getRole()
+											.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 										isStaff = true;
 									}
 
@@ -240,6 +294,7 @@ public class LoginServiceImpl implements LoginService {
 							}
 						}
 						response = new LoginResponse();
+						response.setTokens(oauth2TokenResponse);
 						user.setEmailAddress(user.getUserName());
 						response.setUser(user);
 						response.setHospitals(hospitals);
@@ -284,83 +339,53 @@ public class LoginServiceImpl implements LoginService {
 
 	@Override
 	@Transactional
-	public List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
-		List<RegisteredPatientDetails> response = null;
+	public PatientLoginResponse loginPatient(LoginPatientRequest request) {
+		PatientLoginResponse response = null;
+		List<RegisteredPatientDetails> detail = null;
+
 		try {
+			LoginRequest loginRequest = new LoginRequest();
+			BeanUtil.map(request, loginRequest);
+			loginRequest.setUsername(request.getMobileNumber());
+			String tokenResponse = getLoginResponse(loginRequest);
+			OAuth2TokenResponse oauth2TokenResponse = new OAuth2TokenResponse();
+			if (tokenResponse.equalsIgnoreCase("Failed")) {
+				logger.warn(login);
+				throw new BusinessException(ServiceError.InvalidInput, login);
+			}
+			ObjectMapper mapper = new ObjectMapper();
+			oauth2TokenResponse = mapper.readValue(tokenResponse, OAuth2TokenResponse.class);
 			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber());
 			Query query = new Query();
 			query.addCriteria(criteria);
 			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
 
 			for (UserCollection userCollection : userCollections) {
-				if (userCollection.getEmailAddress() != null) {
-					if (!userCollection.getEmailAddress().equalsIgnoreCase(userCollection.getUserName())) {
-						RegisteredPatientDetails user = new RegisteredPatientDetails();
-						char[] salt = userCollection.getSalt();
-						char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-						for (int i = 0; i < request.getPassword().length; i++)
-							passwordWithSalt[i] = request.getPassword()[i];
-						for (int i = 0; i < salt.length; i++)
-							passwordWithSalt[i + request.getPassword().length] = salt[i];
-						if (!Arrays.equals(userCollection.getPassword(),
-								DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
-							logger.warn(loginPatient);
-							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
-						}
-						PatientCollection patientCollection = patientRepository
-								.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-						if (patientCollection != null) {
-							Patient patient = new Patient();
-							BeanUtil.map(patientCollection, patient);
-							BeanUtil.map(patientCollection, user);
-							patient.setPatientId(patientCollection.getUserId().toString());
-							user.setPatient(patient);
-						}
-						BeanUtil.map(userCollection, user);
-						user.setUserId(userCollection.getId().toString());
-						if (response == null)
-							response = new ArrayList<RegisteredPatientDetails>();
-						response.add(user);
-					}
-				} else {
-					RegisteredPatientDetails user = new RegisteredPatientDetails();
-					char[] salt = userCollection.getSalt();
-					if (salt != null && salt.length > 0) {
-						char[] passwordWithSalt = new char[request.getPassword().length + salt.length];
-						for (int i = 0; i < request.getPassword().length; i++)
-							passwordWithSalt[i] = request.getPassword()[i];
-						for (int i = 0; i < salt.length; i++)
-							passwordWithSalt[i + request.getPassword().length] = salt[i];
-						if (!Arrays.equals(userCollection.getPassword(),
-								DPDoctorUtils.getSHA3SecurePassword(passwordWithSalt))) {
-							logger.warn(loginPatient);
-							throw new BusinessException(ServiceError.InvalidInput, loginPatient);
-						}
-					} else {
-						logger.warn(loginPatient);
-						throw new BusinessException(ServiceError.InvalidInput, loginPatient);
-					}
 
-					PatientCollection patientCollection = patientRepository
-							.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
-					if (patientCollection != null) {
-						Patient patient = new Patient();
-						BeanUtil.map(patientCollection, patient);
-						BeanUtil.map(patientCollection, user);
-						patient.setPatientId(patientCollection.getUserId().toString());
-						user.setPatient(patient);
-					}
-					BeanUtil.map(userCollection, user);
-					user.setUserId(userCollection.getId().toString());
-					if (response == null)
-						response = new ArrayList<RegisteredPatientDetails>();
-					response.add(user);
+				RegisteredPatientDetails user = new RegisteredPatientDetails();
+
+				PatientCollection patientCollection = patientRepository
+						.findByUserIdDoctorIdLocationIdAndHospitalId(userCollection.getId(), null, null, null);
+				if (patientCollection != null) {
+					Patient patient = new Patient();
+					BeanUtil.map(patientCollection, patient);
+					BeanUtil.map(patientCollection, user);
+					patient.setPatientId(patientCollection.getUserId().toString());
+					user.setPatient(patient);
 				}
+				BeanUtil.map(userCollection, user);
+				user.setUserId(userCollection.getId().toString());
+				if (detail == null)
+					detail = new ArrayList<RegisteredPatientDetails>();
+				detail.add(user);
 			}
-			if (response == null) {
+			if (detail == null) {
 				logger.warn(loginPatient);
 				throw new BusinessException(ServiceError.InvalidInput, loginPatient);
 			}
+			response = new PatientLoginResponse();
+			response.setDetail(detail);
+			response.setTokens(oauth2TokenResponse);
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
@@ -436,5 +461,48 @@ public class LoginServiceImpl implements LoginService {
 			throw new BusinessException(ServiceError.Unknown, "Error occured while login");
 		}
 		return response;
+	}
+
+	@Override
+	public String refreshToken(OauthRefreshTokenRequest request) {
+
+		StringBuffer response = new StringBuffer();
+		try {
+
+			String url = serverIp + "/dpdocter/oauth/token?grant_type=" + request.getGrantType() + "&client_id="
+					+ request.getGrantType() + "+&client_secret=" + request.getClientSecret() + "&refresh_token=="
+					+ request.getRefreshToken();
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is POST
+			con.setRequestMethod("POST");
+
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return "Failed";
+		}
+
+		return response.toString();
+
 	}
 }

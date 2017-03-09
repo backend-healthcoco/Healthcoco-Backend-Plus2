@@ -2,28 +2,58 @@ package com.dpdocter.request;
 
 public class LoginPatientRequest {
 
-    private String mobileNumber;
+	private String clientId;
 
-    private char[] password;
+	private String grantType;
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	private String clientSecret;
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	private String mobileNumber;
 
-    public char[] getPassword() {
-	return password;
-    }
+	private char[] password;
 
-    public void setPassword(char[] password) {
-	this.password = password;
-    }
+	public String getClientId() {
+		return clientId;
+	}
 
-    @Override
-    public String toString() {
-	return "LoginPatientRequest [mobileNumber=" + mobileNumber + ", password=" + password + "]";
-    }
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+
+	public String getGrantType() {
+		return grantType;
+	}
+
+	public void setGrantType(String grantType) {
+		this.grantType = grantType;
+	}
+
+	public String getClientSecret() {
+		return clientSecret;
+	}
+
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public char[] getPassword() {
+		return password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	@Override
+	public String toString() {
+		return "LoginPatientRequest [mobileNumber=" + mobileNumber + ", password=" + password + "]";
+	}
 }

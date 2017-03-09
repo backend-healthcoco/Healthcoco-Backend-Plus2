@@ -1,36 +1,10 @@
 package com.dpdocter.request;
-
-public class LoginRequest {
+public class OAuth2LoginRequest {
 	private String clientId;
-	
 	private String grantType;
-	
 	private String clientSecret;
-	
-	private String username;
-
-	private char[] password;
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public char[] getPassword() {
-		return password;
-	}
-
-	public void setPassword(char[] password) {
-		this.password = password;
-	}
-
-	@Override
-	public String toString() {
-		return "LoginRequest [username=" + username + ", password=" + password + "]";
-	}
+	private String userName;
+	private String password;
 
 	public String getClientId() {
 		return clientId;
@@ -55,4 +29,21 @@ public class LoginRequest {
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
 	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 }

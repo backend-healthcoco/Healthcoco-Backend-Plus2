@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.UserState;
+import com.mongodb.DBObject;
 
 @Document(collection = "user_cl")
 public class UserCollection extends GenericCollection {
@@ -79,7 +80,7 @@ public class UserCollection extends GenericCollection {
 
 	@Field
 	private String userUId;
-	
+
 	@Field
 	private Integer regularCheckUpMonths;
 
@@ -262,13 +263,12 @@ public class UserCollection extends GenericCollection {
 		this.userUId = userUId;
 	}
 
-	/*public String getCountryCode() {
-		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}*/
+	/*
+	 * public String getCountryCode() { return countryCode; }
+	 * 
+	 * public void setCountryCode(String countryCode) { this.countryCode =
+	 * countryCode; }
+	 */
 
 	public Integer getRegularCheckUpMonths() {
 		return regularCheckUpMonths;
@@ -277,7 +277,23 @@ public class UserCollection extends GenericCollection {
 	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
 		this.regularCheckUpMonths = regularCheckUpMonths;
 	}
-	
+
+	public UserCollection(DBObject dbObject) {
+		this.title = (String) dbObject.get("title");
+		this.firstName = (String) dbObject.get("firstName");
+		this.lastName = (String) dbObject.get("lastName");
+		this.middleName = (String) dbObject.get("middleName");
+		this.userName = (String) dbObject.get("userName");
+		this.password = (char[]) dbObject.get("password");
+		this.emailAddress = (String) dbObject.get("emailAddress");
+		this.isActive = (Boolean) dbObject.get("emailAddress");
+		this.userUId = (String) dbObject.get("userUID");
+	}
+
+	public UserCollection() {
+		super();
+	}
+
 	@Override
 	public String toString() {
 		return "UserCollection [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName

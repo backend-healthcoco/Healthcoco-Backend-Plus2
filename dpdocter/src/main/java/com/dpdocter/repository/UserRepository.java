@@ -18,6 +18,9 @@ import com.dpdocter.collections.UserCollection;
 public interface UserRepository extends MongoRepository<UserCollection, ObjectId> {
     @Query("{'userName': ?0}")
     public UserCollection findByUserName(String userName);
+    
+    @Query("{'userName': {$regex : '^?0', $options : 'i'}}")
+    public UserCollection findByUsername(String userName);
 
     @Query("{'emailAddress' : {$regex : '^?0$', $options : 'i'}}")
     public List<UserCollection> findByEmailAddressIgnoreCase(String emailAddress);
