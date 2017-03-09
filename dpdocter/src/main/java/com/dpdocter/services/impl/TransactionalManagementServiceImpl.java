@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -172,7 +171,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -530,6 +528,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						}else{
 							DoctorAppointmentSMSResponse response = new DoctorAppointmentSMSResponse();
 							response.setDoctor(appointmentDoctorReminderResponse.getDoctor());
+							response.setLocationId(appointmentDoctorReminderResponse.getLocationId().toString());
+							response.setHospitalId(appointmentDoctorReminderResponse.getHospitalId().toString());
 							response.setMessage(patientCollection.getLocalPatientName()+"("+_12HourSDF.format(_24HourDt)+")");
 							response.setNoOfAppointments(1);
 							response.setUserDevices(appointmentDoctorReminderResponse.getUserDevices());
@@ -562,7 +562,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						smsTrackDetail.setSmsDetails(smsDetails);
 						sMSServices.sendSMS(smsTrackDetail, true);
 						if(response.getUserDevices() != null && !response.getUserDevices().isEmpty()){
-							pushNotificationServices.notifyUser(null, message, ComponentType.CALENDAR_REMINDER.getType(), null, response.getUserDevices());
+							pushNotificationServices.notifyUser(userCollection.getId().toString(), response.getLocationId(), response.getHospitalId(), message, ComponentType.CALENDAR_REMINDER.getType(), null, response.getUserDevices(), null, null, null);
 						}
 					}
 			}

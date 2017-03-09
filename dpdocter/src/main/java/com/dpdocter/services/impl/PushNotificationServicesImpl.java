@@ -14,6 +14,11 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +29,6 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserDeviceCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DeviceType;
-import com.dpdocter.enums.PushNotificationType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -102,6 +106,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 	@Autowired
     private UserRepository userRepository;
 
+	@Autowired
+    private MongoTemplate mongoTemplate;
+		
 	@Value(value = "${image.path}")
     private String imagePath;
 
@@ -162,34 +169,41 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 
 	@Override
 	@Transactional
-	public void notifyUser(String userId, String message, String componentType, String componentTypeId, List<UserDeviceCollection> userDevices) {
-		List<UserDeviceCollection> userDeviceCollections = null;
+	public void notifyUser(String receiverId, String receiverLocationId, String receiverHospitalId, String message, String componentType, String componentTypeId, List<UserDeviceCollection> userDevices, String senderId,
+			 String senderLocationId, String senderHospitalId) {
+		List<UserDeviceCollection> userDeviceCollections = userDevices;
 		try{
-			if(!DPDoctorUtils.anyStringEmpty(userId)){
-				ObjectId userObjectId = new ObjectId(userId);	
+			if(userDeviceCollections == null || userDeviceCollections.isEmpty()){
+				ObjectId userObjectId = new ObjectId(receiverId);	
 				userDeviceCollections = userDeviceRepository.findByUserId(userObjectId);
-			}else{
-				userDeviceCollections = userDevices;
 			}
-			
 			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
 					if(userDeviceCollection.getDeviceType() != null){
 						if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.ANDROID.getType()))
-							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getRole().getRole(), userId);
+							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getRole().getRole(), receiverId);
 						else if(userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IOS.getType()) || userDeviceCollection.getDeviceType().getType().equalsIgnoreCase(DeviceType.IPAD.getType())){
-							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getDeviceType().getType(), userDeviceCollection.getRole().getRole(), userId);
+							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(), userDeviceCollection.getPushToken(), message, componentType, componentTypeId, userDeviceCollection.getDeviceType().getType(), userDeviceCollection.getRole().getRole(), receiverId);
 							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount()+1);
 							userDeviceRepository.save(userDeviceCollection);
 						}	
 					}
 				}
+				
+			PushNotificationCollection notificationCollection = new PushNotificationCollection(null, 
+						                                        !DPDoctorUtils.anyStringEmpty(senderId) ? new ObjectId(senderId) : null, 
+						                                        !DPDoctorUtils.anyStringEmpty(senderLocationId) ? new ObjectId(senderLocationId) : null, 
+						                                        !DPDoctorUtils.anyStringEmpty(senderHospitalId) ? new ObjectId(senderHospitalId) : null, 
+						                                        !DPDoctorUtils.anyStringEmpty(receiverId) ? new ObjectId(receiverId) : null, 
+						                                        !DPDoctorUtils.anyStringEmpty(receiverLocationId) ? new ObjectId(receiverLocationId) : null, 
+						                                        !DPDoctorUtils.anyStringEmpty(receiverHospitalId) ? new ObjectId(receiverHospitalId) : null, null, null, message, componentType, componentTypeId);
+			notificationCollection.setCreatedTime(new Date());notificationCollection.setUpdatedTime(new Date());
+			pushNotificationRepository.save(notificationCollection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		    logger.error(e + " Error while pushing notification: " + e.getCause().getMessage());
 		}
-//		return response;
 	}
 	
 	public void pushNotificationOnAndroidDevices(String deviceId, String pushToken, String message, String componentType, String componentTypeId, String role, String userId) {
@@ -199,46 +213,23 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			
 			
 			if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-				//sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 			}else{
-				//sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
 			}
 			Notification notification = new Notification();
 //			notification.setTitle("Healthcoco");
 			notification.setText(message);
-			if(!DPDoctorUtils.anyStringEmpty(componentType)){
-				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
-					notification.setXi(componentTypeId);notification.setNotificationType(componentType);
-					notification.setPi(userId);
-				}
-				else if(componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())){
-					notification.setRi(componentTypeId);notification.setNotificationType(componentType);
-					notification.setPi(userId);
-				}
-				else if(componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())){
-					notification.setPi(componentTypeId);notification.setNotificationType(componentType);
-				}
-				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
-					notification.setDi(componentTypeId);notification.setNotificationType(componentType);
-				}else if(componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())){
-					notification.setAi(componentTypeId);notification.setNotificationType(componentType);
-				}else if(componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())){
-					notification.setCi(componentTypeId);notification.setNotificationType(componentType);
-				}
-			}
-					String jsonOutput = mapper.writeValueAsString(notification);
-					Message messageObj = new Message.Builder()
+			notification.setTypeId(componentTypeId);notification.setType(componentType);
+			notification.setReceiverId(userId);
+			
+			String jsonOutput = mapper.writeValueAsString(notification);
+			Message messageObj = new Message.Builder()
 							.delayWhileIdle(true)
 							.addData("message", jsonOutput).build();
 
-					Result result = sender.send(messageObj, pushToken, 1);
-					List<String> deviceIds= new ArrayList<String>();
-					deviceIds.add(deviceId);
-					PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds, message, DeviceType.ANDROID, null, PushNotificationType.INDIVIDUAL);
-					pushNotificationRepository.save(pushNotificationCollection);
-					logger.info("Message Result: " + result.toString());
+			Result result = sender.send(messageObj, pushToken, 1);
+			logger.info("Message Result: " + result.toString());
 		} catch (JsonProcessingException jpe) {
 			jpe.printStackTrace();
 		} catch (IOException e) {
@@ -252,25 +243,20 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Sender sender = null;
 			
 			if(role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())){
-				//sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 			}else{
-				//sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
 			}
 			
 			Notification notification = new Notification();
-//			notification.setTitle("Healthcoco");
 			notification.setText(message);
 			
-			if(!DPDoctorUtils.anyStringEmpty(imageURL))notification.setImg(imageURL);
+			if(!DPDoctorUtils.anyStringEmpty(imageURL))notification.setImageURL(imageURL);
 			
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 
 			MulticastResult result = sender.send(messageObj, pushTokens, 1);
-			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds, message, DeviceType.ANDROID, imageURL, PushNotificationType.BROADCAST);
-			pushNotificationRepository.save(pushNotificationCollection);
 			logger.info("Message Result: " + result.toString());
 		} catch (JsonProcessingException jpe) {
 			jpe.printStackTrace();
@@ -348,21 +334,21 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			Map<String, Object> customValues = new HashMap<String, Object>();
 			if(!DPDoctorUtils.anyStringEmpty(componentType)){
 				if(componentType.equalsIgnoreCase(ComponentType.PRESCRIPTIONS.getType())){
-					customValues.put("XI", componentTypeId);customValues.put("T", "X");
+					customValues.put("I", componentTypeId);customValues.put("T", "X");
 					customValues.put("PI", userId);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.REPORTS.getType())){
-					customValues.put("RI", componentTypeId);customValues.put("T", "R");
+					customValues.put("I", componentTypeId);customValues.put("T", "R");
 					customValues.put("PI", userId);
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.PATIENT.getType())){
-					customValues.put("PI", componentTypeId);customValues.put("T", "P");
+					customValues.put("I", componentTypeId);customValues.put("T", "P");
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.DOCTOR.getType())){
-					customValues.put("DI", componentTypeId);customValues.put("T", "D");
+					customValues.put("I", componentTypeId);customValues.put("T", "D");
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.APPOINTMENT.getType())){
-					customValues.put("AI", componentTypeId);customValues.put("T", "A");
+					customValues.put("I", componentTypeId);customValues.put("T", "A");
 				}
 				else if(componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())){
 					customValues.put("T", "C");
@@ -373,11 +359,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 							.sound("default")
 							.customFields(customValues).build();
 					service.push(pushToken, payload);
-					List<String> deviceIds= new ArrayList<String>();
-					deviceIds.add(deviceId);
-					PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds, message, DeviceType.valueOf(deviceType.toUpperCase()), null, PushNotificationType.INDIVIDUAL);
-					pushNotificationRepository.save(pushNotificationCollection);
-        } catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -456,9 +438,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 							.customFields(customValues).build();
 			service.push(pushToken, payload);
 			
-			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds, message, DeviceType.valueOf(deviceType.toUpperCase()), null, PushNotificationType.BROADCAST);
-			pushNotificationRepository.save(pushNotificationCollection);
-        } catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -568,13 +548,11 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-//		return response;
 	}
 
 	@Override
 	@Transactional
 	public void readNotification(String deviceId, Integer count) {
-//		Boolean response = false;
 		try{
 			UserDeviceCollection userDeviceCollection = userDeviceRepository.findByDeviceId(deviceId);
 			if(userDeviceCollection != null){
@@ -585,22 +563,16 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-//		return response;
-
 	}
 	
 	@Override
-	public void notifyUser(String id, UserSearchRequest userSearchRequest, RoleEnum role, String message) {
+	public void notifyUser(String receiverId, UserSearchRequest userSearchRequest, RoleEnum role, String message) {
 		List<UserDeviceCollection> userDeviceCollections = null;
 
 		try{
-			/*if(role.equals(RoleEnum.PHARMIST))
-			{
-				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
-			}*/
 			if(role.equals(RoleEnum.PATIENT))
 			{
-				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
+				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(receiverId));
 			}
 			if(userDeviceCollections != null && !userDeviceCollections.isEmpty()){
 				for(UserDeviceCollection userDeviceCollection : userDeviceCollections){
@@ -616,6 +588,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 							
 					}
 				}
+				PushNotificationCollection notificationCollection = new PushNotificationCollection(null, 
+                        null, null, null, 
+                        !DPDoctorUtils.anyStringEmpty(receiverId) ? new ObjectId(receiverId) : null, null, null, null, null, 
+                        		message, "PHARMACY", null);
+				notificationCollection.setCreatedTime(new Date());notificationCollection.setUpdatedTime(new Date());
+				pushNotificationRepository.save(notificationCollection);	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -627,23 +605,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 			UserSearchRequest userSearchRequest, RoleEnum role, String message) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			Sender sender = null;
-
-		/*	if (role.getRole().equalsIgnoreCase(RoleEnum.PHARMIST.getRole())) {
-				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
-			} else {*/
-				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
-			//}
-
+			Sender sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
+			
 			String jsonOutput = mapper.writeValueAsString(userSearchRequest);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 
 			Result result = sender.send(messageObj, pushToken, 1);
-			List<String> deviceIds = new ArrayList<String>();
-			deviceIds.add(deviceId);
-			PushNotificationCollection pushNotificationCollection = new PushNotificationCollection(null, deviceIds,
-					message, DeviceType.ANDROID, null, PushNotificationType.INDIVIDUAL);
-			pushNotificationRepository.save(pushNotificationCollection);
 			logger.info("Message Result: " + result.toString());
 		} catch (JsonProcessingException jpe) {
 			jpe.printStackTrace();
@@ -659,4 +626,35 @@ public class PushNotificationServicesImpl implements PushNotificationServices{
 		} else
 		    return null;
 	    }
+
+	@Override
+	public List<Notification> getNotifications(int page, int size, String userId, String locationId, String hospitalId,	String updatedTime) {
+		List<Notification> response = null;
+		try {
+			
+			long createdTimeStamp = Long.parseLong(updatedTime);
+
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp)).and("receiverId").is(new ObjectId(userId));
+			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)){
+				criteria.and("receiverLocationId").is(new ObjectId(locationId)).and("receiverHospitalId").is(new ObjectId(hospitalId));
+			}
+			
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+			AggregationResults<Notification> results = mongoTemplate.aggregate(aggregation, PushNotificationCollection.class, Notification.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Drugs");
+		}
+		return response;
+	}
 }

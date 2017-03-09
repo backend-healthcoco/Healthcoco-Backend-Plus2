@@ -282,8 +282,11 @@ public class RecordsServiceImpl implements RecordsService {
 						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
-						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), 
+								prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(),
+								subject,
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null, recordsCollection.getDoctorId().toString(),
+								recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -298,8 +301,11 @@ public class RecordsServiceImpl implements RecordsService {
 						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
-						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), 
+								prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(),
+								subject,
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null, recordsCollection.getDoctorId().toString(),
+								recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -311,8 +317,11 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null,
+						recordsCollection.getDoctorId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
@@ -683,9 +692,12 @@ public class RecordsServiceImpl implements RecordsService {
 
 			if (discarded)
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString(),
 						"Report:" + recordsCollection.getUniqueEmrId() + " has been removed by "
 								+ recordsCollection.getCreatedBy(),
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null,
+						recordsCollection.getDoctorId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 			response = new Records();
 			BeanUtil.map(recordsCollection, response);
 
@@ -1304,8 +1316,11 @@ public class RecordsServiceImpl implements RecordsService {
 						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
-						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), 
+								prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(),
+								subject,
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null, recordsCollection.getDoctorId().toString(),
+								recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -1317,8 +1332,11 @@ public class RecordsServiceImpl implements RecordsService {
 						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
-						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
-								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(),
+								prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(),
+								subject,
+								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null, recordsCollection.getDoctorId().toString(),
+								recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
 								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
@@ -1330,8 +1348,10 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null, recordsCollection.getDoctorId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
@@ -1399,8 +1419,11 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId(), recordsCollection.getPatientId());
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
-						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
+						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null,
+						recordsCollection.getDoctorId().toString(),
+						recordsCollection.getLocationId().toString(), recordsCollection.getHospitalId().toString());
 			} else if (recordsState.equalsIgnoreCase(RecordsState.DECLINED_BY_DOCTOR.toString())) {
 				UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
 				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(

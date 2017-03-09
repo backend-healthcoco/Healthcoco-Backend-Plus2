@@ -965,8 +965,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			response.setItems(itemDetails);
 			response.setVisitId(request.getVisitId());
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
+					prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(), 
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
-					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null, prescriptionCollection.getDoctorId().toString(),
+					prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString());
 			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
 				sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
@@ -1155,8 +1157,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
+					prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " has changed - Tap to view it!",
-					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null, prescriptionCollection.getDoctorId().toString(),
+					prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Editing Prescription");
@@ -1235,11 +1239,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						}
 
 						pushNotificationServices.notifyUser(patientId,
+								prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString(),
 								"Please discontinue " + prescriptionCollection.getUniqueEmrId() + " prescribed by "
 										+ prescriptionCollection.getCreatedBy()
 										+ ", for further details please contact "
 										+ locationCollection.getLocationName(),
-								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
+								ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null,prescriptionCollection.getDoctorId().toString(), 
+								prescriptionCollection.getLocationId().toString(), prescriptionCollection.getHospitalId().toString());
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
 						throw new BusinessException(ServiceError.NotAuthorized,
@@ -1295,7 +1301,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);
 			} else {
-				pushNotificationServices.notifyUser(patientId, "Global records", null, null, null);
+				pushNotificationServices.notifyUser(patientId, locationId, hospitalId, "Global records", null, null, null, doctorId,
+						locationId, hospitalId);
 			}
 
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),

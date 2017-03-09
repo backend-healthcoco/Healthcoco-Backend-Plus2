@@ -921,6 +921,8 @@ public interface PathProxy {
 		public static final String BROADCAST_NOTIFICATION = "/broadcast";
 
 		public static final String READ_NOTIFICATION = "/read/{deviceId}";
+		
+		public static final String GET_NOTIFICATIONS = "/{userId}";
 	}
 
 	public static final String VERSION_CONTROL_BASE_URL = BASE_URL + "/version";

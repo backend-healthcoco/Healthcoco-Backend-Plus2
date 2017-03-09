@@ -501,9 +501,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 			registeredPatientDetails.setGroups(groups);
 			pushNotificationServices.notifyUser(patientCollection.getUserId().toString(),
+					!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()) ? patientCollection.getLocationId().toString() : null,
+					!DPDoctorUtils.anyStringEmpty(patientCollection.getHospitalId()) ? patientCollection.getHospitalId().toString() : null,
 					"Welcome to " + locationCollection.getLocationName()
 							+ ", let us know about your visit. We will be happy to serve you again.",
-					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString(), null);
+					ComponentType.PATIENT.getType(), patientCollection.getUserId().toString(), null, null, null, null);
 			if (userCollection.getMobileNumber() != null) {
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(patientCollection.getDoctorId());

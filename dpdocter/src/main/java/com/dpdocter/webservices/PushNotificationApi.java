@@ -1,7 +1,10 @@
 package com.dpdocter.webservices;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -13,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Notification;
 import com.dpdocter.beans.UserDevice;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -76,6 +80,22 @@ public class PushNotificationApi {
 		pushNotificationServices.readNotification(deviceId, count);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PushNotificationUrls.GET_NOTIFICATIONS)
+	@GET
+	@ApiOperation(value = PathProxy.PushNotificationUrls.GET_NOTIFICATIONS, notes = PathProxy.PushNotificationUrls.GET_NOTIFICATIONS)
+	public Response<Notification> getNotifications(@PathParam(value = "userId") String userId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime){
+		if(DPDoctorUtils.anyStringEmpty(userId)){
+			    logger.warn("Invalid Input");
+			    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<Notification> notifications = pushNotificationServices.getNotifications(page, size, userId, locationId, hospitalId, updatedTime);
+		Response<Notification> response = new Response<Notification>();
+		response.setDataList(notifications);
 		return response;
 	}
 }
