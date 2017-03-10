@@ -115,7 +115,7 @@ public class LoginApi {
 	public Response<OAuth2TokenResponse> refreshToken(OauthRefreshTokenRequest request)
 			throws JsonParseException, JsonMappingException, IOException {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getClientId(), request.getGrantType(),
-				request.getClientSecret(), request.getRefreshToken())) {
+				request.getClientSecret(), request.getRefresh_token())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}

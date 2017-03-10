@@ -45,7 +45,7 @@ public interface PathProxy {
 
 		public static final String LOGIN_PATIENT = "/patient";
 		
-		public static final String REFRESH_TOKEN = "/refresh";
+		public static final String REFRESH_TOKEN = "/refreshToken";
 	}
 
 	public static final String CONTACTS_BASE_URL = BASE_URL + "/contacts";

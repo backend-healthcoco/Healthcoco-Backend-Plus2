@@ -102,8 +102,10 @@ public class OAuth2RepositoryTokenStore implements TokenStore {
 
 	@Override
 	public OAuth2AccessToken getAccessToken(OAuth2Authentication authentication) {
+		System.out.println(authenticationKeyGenerator.extractKey(authentication));
 		OAuth2AuthenticationAccessTokenCollection token = oAuth2AccessTokenRepository
 				.findByAuthenticationId(authenticationKeyGenerator.extractKey(authentication));
+		System.out.println(authenticationKeyGenerator.extractKey(authentication));
 		return token == null ? null : token.getoAuth2AccessToken();
 	}
 

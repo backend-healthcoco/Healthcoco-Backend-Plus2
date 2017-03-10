@@ -51,7 +51,6 @@ public class OAuth2AuthenticationReadConverter implements Converter<DBObject, OA
 			// RoleCollection(principalDBObject);
 			User user = new User();
 			user.setUserName(userCollection.getUserName());
-			user.setRole("ADMIN");
 			return user;
 		} else {
 			return principal;

@@ -100,8 +100,8 @@ public class LoginServiceImpl implements LoginService {
 		StringBuffer response = new StringBuffer();
 		try {
 			String password = new String(loginRequest.getPassword());
-			String url = serverIp + "/dpdoctor/oauth/token?grant_type=" + loginRequest.getGrantType() + "&client_id="
-					+ loginRequest.getGrantType() + "+&client_secret=" + loginRequest.getClientSecret() + "&username="
+			String url = serverIp + "/dpdocter/oauth/token?grant_type=" + loginRequest.getGrantType() + "&client_id="
+					+ loginRequest.getClientId() + "&client_secret=" + loginRequest.getClientSecret() + "&username="
 					+ loginRequest.getUsername() + "&password=" + new String(loginRequest.getPassword());
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -470,8 +470,8 @@ public class LoginServiceImpl implements LoginService {
 		try {
 
 			String url = serverIp + "/dpdocter/oauth/token?grant_type=" + request.getGrantType() + "&client_id="
-					+ request.getGrantType() + "+&client_secret=" + request.getClientSecret() + "&refresh_token=="
-					+ request.getRefreshToken();
+					+ request.getClientId() + "&client_secret=" + request.getClientSecret() + "&refresh_token="
+					+ request.getRefresh_token();
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 

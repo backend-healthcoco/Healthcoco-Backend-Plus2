@@ -22,9 +22,12 @@ public class SaltServiceImpl implements OAuth2SaltService {
 	public String getSalt(UserDetails user) {
 		String salt = null;
 		try {
-			UserCollection userCollection = userRepository.findAdminByMobileNumber(user.getUsername(), "ADMIN");
+			UserCollection userCollection = userRepository.findByUserName(user.getUsername());
+			if (userCollection == null) {
+				userCollection = userRepository.findByUsername(user.getUsername());
+			}
 			if (userCollection.getSalt() != null)
-				salt = String.valueOf(userCollection.getSalt());
+				salt=String.valueOf(userCollection.getSalt());
 
 		} catch (Exception e) {
 			System.out.println("error");

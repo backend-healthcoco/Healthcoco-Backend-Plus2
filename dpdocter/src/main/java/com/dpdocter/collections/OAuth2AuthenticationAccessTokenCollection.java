@@ -10,12 +10,12 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 @Document(collection = "oauth_access_token_cl")
-public class OAuth2AuthenticationAccessTokenCollection extends GenericCollection implements Serializable {
+public class OAuth2AuthenticationAccessTokenCollection extends GenericCollection {
 
 	/**
 	 * @Harry
 	 **/
-	private static final long serialVersionUID = 1L;
+
 	@Id
 	private ObjectId id;
 	@Field

@@ -8,6 +8,8 @@ public class OAuth2TokenResponse {
 	private Integer expires_in;
 
 	private String scope;
+	
+	private String refresh_token;
 
 	public String getAccess_token() {
 		return access_token;
@@ -39,6 +41,14 @@ public class OAuth2TokenResponse {
 
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+
+	public String getRefresh_token() {
+		return refresh_token;
+	}
+
+	public void setRefresh_token(String refresh_token) {
+		this.refresh_token = refresh_token;
 	}
 
 }

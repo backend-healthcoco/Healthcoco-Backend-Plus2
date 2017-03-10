@@ -5,8 +5,7 @@
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/data/mongo
     http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd">
-	<mongo:mongo id="mongo" host="${db.host}" port="${db.port}"
-		write-concern="SAFE">
+	<mongo:mongo id="mongo" host="${db.host}" port="${db.port}">
 		<mongo:options connect-timeout="${db.connectTimeout}"
 			connections-per-host="${db.connectionPerHost}"
 			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" />
@@ -18,12 +17,19 @@
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 
 	</bean>
-	<mongo:mapping-converter id="mappingConverter" />
 
+	<bean id="readConverter"
+		class="com.dpdocter.tokenstore.OAuth2AuthenticationReadConverter" />
 
+	<mongo:mapping-converter id="mappingConverter">
+		<mongo:custom-converters>
+			<mongo:converter ref="readConverter" />
+		</mongo:custom-converters>
+	</mongo:mapping-converter>
 
 	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
-		<constructor-arg ref="mongoDbFactory" />
-		<constructor-arg ref="mappingConverter" />
-	</bean>
+    <constructor-arg ref="mongoDbFactory" />
+    <constructor-arg ref="mappingConverter" />
+</bean>
+
 </beans>
