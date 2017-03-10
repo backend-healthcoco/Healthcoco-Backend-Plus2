@@ -1,12 +1,9 @@
 package com.dpdocter.response;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.request.PrescriptionRequest;
 
-public class SearchRequestFromUserResponse {
+public class SearchRequestFromUserResponse extends GenericCollection {
 
 	private String id;
 
@@ -23,6 +20,9 @@ public class SearchRequestFromUserResponse {
 	private Double latitude;
 
 	private Double longitude;
+
+	private Integer countForNo;
+	private Integer countForYes;
 
 	public String getId() {
 		return id;
@@ -86,6 +86,22 @@ public class SearchRequestFromUserResponse {
 
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public Integer getCountForNo() {
+		return countForNo;
+	}
+
+	public void setCountForNo(Integer countForNo) {
+		this.countForNo = countForNo;
+	}
+
+	public Integer getCountForYes() {
+		return countForYes;
+	}
+
+	public void setCountForYes(Integer countForYes) {
+		this.countForYes = countForYes;
 	}
 
 	@Override

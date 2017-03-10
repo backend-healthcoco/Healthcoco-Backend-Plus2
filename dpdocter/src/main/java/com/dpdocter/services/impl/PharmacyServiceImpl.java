@@ -28,6 +28,7 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
+import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -461,6 +462,14 @@ public class PharmacyServiceImpl implements PharmacyService {
 			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
 			response = aggregationResults.getMappedResults();
+			for(SearchRequestFromUserResponse searchRequestFromUserResponse : response)
+			{
+				int countForYes = getPharmacyListCountbyOrderHistory(searchRequestFromUserResponse.getUniqueRequestId(), ReplyType.YES.toString());
+				int countForNo = getPharmacyListCountbyOrderHistory(searchRequestFromUserResponse.getUniqueRequestId(), ReplyType.NO.toString());
+				searchRequestFromUserResponse.setCountForYes(countForYes);
+				searchRequestFromUserResponse.setCountForNo(countForNo);
+			}
+			
 		} catch (Exception e) {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();

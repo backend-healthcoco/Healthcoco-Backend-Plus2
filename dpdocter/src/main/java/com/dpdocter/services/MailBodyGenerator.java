@@ -43,4 +43,6 @@ public interface MailBodyGenerator {
 			String city);
 
 	String generateContactEmailBody(DoctorContactUs contactUs, String type);
+
+	String generatePrescriptionListMail(String collectionBody, String requestBody);
 }

@@ -55,6 +55,9 @@ public class MailServiceImpl implements MailService {
     @Value(value = "${mail.exception.to}")
     private String TO;
     
+    @Value(value = "${mail.exception.to.ios}")
+    private String TO_IOS;
+    
     @Value(value = "${mail.excetion.subject}")
     private String SUBJECT;
     
@@ -194,6 +197,13 @@ public class MailServiceImpl implements MailService {
 		{
 			status = sendEmail(TO,subject, body, null);
 		}
+		return status;
+	}
+	
+	@Override
+	public Boolean sendMailToIOSteam(String subject, String body) throws MessagingException {
+		Boolean status = false;
+		status = sendEmail(TO_IOS,subject, body, null);
 		return status;
 	}
 }

@@ -3,19 +3,19 @@ package com.dpdocter.request;
 public class UserSearchRequest {
 
 	private String userId;
-	
+
 	private String location;
-	
+
 	private Double latitude;
-	
+
 	private Double longitude;
-	
-	private PrescriptionRequest request;
-	
+
+	private PrescriptionRequest prescriptionRequest;
+
 	private String localeId;
 
 	private String uniqueRequestId;
-	
+
 	public String getUserId() {
 		return userId;
 	}
@@ -48,12 +48,12 @@ public class UserSearchRequest {
 		this.longitude = longitude;
 	}
 
-	public PrescriptionRequest getRequest() {
-		return request;
+	public PrescriptionRequest getPrescriptionRequest() {
+		return prescriptionRequest;
 	}
 
-	public void setRequest(PrescriptionRequest request) {
-		this.request = request;
+	public void setPrescriptionRequest(PrescriptionRequest prescriptionRequest) {
+		this.prescriptionRequest = prescriptionRequest;
 	}
 
 	public String getLocaleId() {
@@ -75,7 +75,7 @@ public class UserSearchRequest {
 	@Override
 	public String toString() {
 		return "UserSearchRequest [userId=" + userId + ", location=" + location + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", request=" + request + ", localeId=" + localeId
+				+ ", longitude=" + longitude + ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId
 				+ ", uniqueRequestId=" + uniqueRequestId + "]";
-	}	
+	}
 }

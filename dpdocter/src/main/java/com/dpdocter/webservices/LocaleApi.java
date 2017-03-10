@@ -188,7 +188,7 @@ public class LocaleApi {
 			if (file != null) {
 				imageURLResponse = localeService.addRXImageMultipart(file);
 				if (request != null){
-					request.getRequest().setPrescriptionURL(imageURLResponse.getImageUrl());
+					request.getPrescriptionRequest().setPrescriptionURL(imageURLResponse.getImageUrl());
 				}
 			}
 			

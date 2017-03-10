@@ -49,7 +49,6 @@ public class GeneralTestsAPI {
     @Path(value = "push")
     @GET
     public Response<Boolean> reminder() {
-    	    
     	pushNotificationServices.notifyUser("570ca16fe4b07c04418b3568", "Hello", "Healthcoco", "1", null);
 	Response<Boolean> response = new Response<Boolean>();
 	response.setData(true);

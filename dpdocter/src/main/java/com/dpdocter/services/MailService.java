@@ -14,4 +14,6 @@ public interface MailService {
     Boolean sendExceptionMail(String body) throws MessagingException;
     
     Boolean sendExceptionMail(String subject,String body) throws MessagingException;
+
+	Boolean sendMailToIOSteam(String subject, String body) throws MessagingException;
 }

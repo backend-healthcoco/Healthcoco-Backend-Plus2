@@ -117,6 +117,7 @@ import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -482,6 +483,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (visitId != null) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
+				/*if(patientVisitCollection.getPrescriptionId() != null && patientVisitCollection.getPrescriptionId().size() >1)
+				{
+					ObjectMapper objectMapper = new ObjectMapper();
+					String collectionBody = objectMapper.writeValueAsString(patientVisitCollection);
+					String mailRequestBody = objectMapper.writeValueAsString(request);
+					mailService.sendMailToIOSteam("Multiple prescription for visit in database", mailBodyGenerator.generatePrescriptionListMail(collectionBody, mailRequestBody));
+				}*/
 			} else {
 				patientVisitCollection = new PatientVisitCollection();
 				patientVisitCollection.setDoctorId(new ObjectId(request.getDoctorId()));
