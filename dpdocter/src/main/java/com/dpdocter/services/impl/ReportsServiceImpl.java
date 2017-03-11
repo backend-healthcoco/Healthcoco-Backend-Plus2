@@ -58,9 +58,13 @@ import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.DeliveryReportsLookupResponse;
+import com.dpdocter.response.DeliveryReportsResponse;
 import com.dpdocter.response.IPDReportLookupResponse;
+import com.dpdocter.response.IPDReportsResponse;
 import com.dpdocter.response.OPDReportsLookupResponse;
+import com.dpdocter.response.OPDReportsResponse;
 import com.dpdocter.response.OTReportsLookupResponse;
+import com.dpdocter.response.OTReportsResponse;
 import com.dpdocter.response.TestAndRecordDataResponse;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.ReportsService;
@@ -233,9 +237,10 @@ public class ReportsServiceImpl implements ReportsService {
 
 	@Override
 	@Transactional
-	public List<IPDReports> getIPDReportsList(String locationId, String doctorId, String patientId, String from,
+	public IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
 		List<IPDReports> response = null;
+		IPDReportsResponse ipdReportsResponse = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
 		try {
 
@@ -328,19 +333,25 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(ipdReports);
 				}
 			}
+			int count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId),
+					new ObjectId(patientId));
+			ipdReportsResponse = new IPDReportsResponse();
+			ipdReportsResponse.setIpdReports(response);
+			ipdReportsResponse.setCount(count);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return response;
+		return ipdReportsResponse;
 	}
 
 	@Override
 	@Transactional
-	public List<OPDReports> getOPDReportsList(String locationId, String doctorId, String patientId, String from,
+	public OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub
 		List<OPDReports> response = null;
+		OPDReportsResponse opdReportsResponse = null;
 		List<OPDReportsLookupResponse> opdReportsLookupResponses = null;
 		try {
 
@@ -379,42 +390,39 @@ public class ReportsServiceImpl implements ReportsService {
 			}
 
 			if (size > 0)
-				opdReportsLookupResponses = mongoTemplate
-						.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteria),
-										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-										Aggregation.unwind("doctor"),
-										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-										Aggregation.unwind("location"),
-										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
-										Aggregation.unwind("hospital"),
-										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescriptionCollection"),
-										Aggregation.unwind("prescriptionCollection"), Aggregation.skip(page * size),
-										Aggregation.limit(size),
-										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-								OPDReportsCollection.class, OPDReportsLookupResponse.class)
-						.getMappedResults();
+				opdReportsLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"),
+								Aggregation.lookup("prescription_cl", "prescriptionId", "_id",
+										"prescriptionCollection"),
+								Aggregation.unwind("prescriptionCollection"), Aggregation.skip(page * size),
+								Aggregation.limit(size), Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
 			else
-				opdReportsLookupResponses = mongoTemplate
-						.aggregate(
-								Aggregation.newAggregation(Aggregation.match(criteria),
-										Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-										Aggregation.unwind("doctor"),
-										Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-										Aggregation.unwind("location"),
-										Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
-										Aggregation.unwind("hospital"),
-										Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescriptionCollection"),
-										Aggregation.unwind("prescriptionCollection"),
-										Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-								OPDReportsCollection.class, OPDReportsLookupResponse.class)
-						.getMappedResults();
+				opdReportsLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+								Aggregation.unwind("doctor"),
+								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("hospital_cl", "hospitalId", "_id", "hospital"),
+								Aggregation.unwind("hospital"),
+								Aggregation.lookup("prescription_cl", "prescriptionId", "_id",
+										"prescriptionCollection"),
+								Aggregation.unwind("prescriptionCollection"),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						OPDReportsCollection.class, OPDReportsLookupResponse.class).getMappedResults();
 
 			if (opdReportsLookupResponses != null) {
 				response = new ArrayList<OPDReports>();
 				for (OPDReportsLookupResponse collection : opdReportsLookupResponses) {
 					OPDReports opdReports = new OPDReports();
-					
+
 					BeanUtil.map(collection, opdReports);
 					if (collection.getDoctorId() != null) {
 						UserCollection doctor = collection.getDoctor();
@@ -448,18 +456,17 @@ public class ReportsServiceImpl implements ReportsService {
 						Prescription prescription = new Prescription();
 						List<TestAndRecordData> tests = collection.getPrescriptionCollection().getDiagnosticTests();
 						collection.getPrescriptionCollection().setDiagnosticTests(null);
-						
+
 						List<PrescriptionItem> items = collection.getPrescriptionCollection().getItems();
 						collection.getPrescriptionCollection().setItems(null);
-						
+
 						BeanUtil.map(collection.getPrescriptionCollection(), prescription);
 						if (items != null && !items.isEmpty()) {
 							List<PrescriptionItemDetail> prescriptionItemDetails = new ArrayList<PrescriptionItemDetail>();
 							for (PrescriptionItem prescriptionItem : items) {
 								PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 								BeanUtil.map(prescriptionItem, prescriptionItemDetail);
-								DrugCollection drugCollection = drugRepository
-										.findOne(prescriptionItem.getDrugId());
+								DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
 								if (drugCollection != null) {
 									Drug drug = new Drug();
 									BeanUtil.map(drugCollection, drug);
@@ -502,19 +509,25 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(opdReports);
 				}
 			}
+			int count = opdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId),
+					new ObjectId(patientId));
+			opdReportsResponse = new OPDReportsResponse();
+			opdReportsResponse.setOpdReports(response);
+			opdReportsResponse.setCount(count);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return response;
+		return opdReportsResponse;
 	}
 
 	@Override
 	@Transactional
-	public List<OTReports> getOTReportsList(String locationId, String doctorId, String patientId, String from,
+	public OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub
 		List<OTReports> response = null;
+		OTReportsResponse otReportsResponse = null;
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
 		try {
 
@@ -624,19 +637,25 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(otReports);
 				}
 			}
+			int count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId),
+					new ObjectId(patientId));
+			otReportsResponse = new OTReportsResponse();
+			otReportsResponse.setOtReports(response);
+			otReportsResponse.setCount(count);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return response;
+		return otReportsResponse;
 	}
 
 	@Override
 	@Transactional
-	public List<DeliveryReports> getDeliveryReportsList(String locationId, String doctorId, String patientId,
+	public DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId,
 			String from, String to, int page, int size, String updatedTime) {
 		// TODO Auto-generated method stub
 		List<DeliveryReports> response = null;
+		DeliveryReportsResponse deliveryReportsResponse = null;
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
 		try {
 
@@ -733,11 +752,16 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(deliveryReports);
 				}
 			}
+			int count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId),
+					new ObjectId(doctorId), new ObjectId(patientId));
+			deliveryReportsResponse = new DeliveryReportsResponse();
+			deliveryReportsResponse.setDeliveryReports(response);
+			deliveryReportsResponse.setCount(count);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return response;
+		return deliveryReportsResponse;
 	}
 
 	@Override

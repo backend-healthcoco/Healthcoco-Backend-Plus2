@@ -6,6 +6,10 @@ import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.IPDReports;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
+import com.dpdocter.response.DeliveryReportsResponse;
+import com.dpdocter.response.IPDReportsResponse;
+import com.dpdocter.response.OPDReportsResponse;
+import com.dpdocter.response.OTReportsResponse;
 
 public interface ReportsService {
 
@@ -17,16 +21,16 @@ public interface ReportsService {
 
 	public DeliveryReports submitDeliveryReport(DeliveryReports deliveryReports);
 
-	List<IPDReports> getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
+	IPDReportsResponse getIPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
 			int page, int size, String updatedTime);
 
-	List<OPDReports> getOPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
+	OPDReportsResponse getOPDReportsList(String locationId, String doctorId, String patientId, String from, String to,
 			int page, int size, String updatedTime);
 
-	List<OTReports> getOTReportsList(String locationId, String doctorId, String patientId, String from, String to,
+	OTReportsResponse getOTReportsList(String locationId, String doctorId, String patientId, String from, String to,
 			int page, int size, String updatedTime);
 
-	List<DeliveryReports> getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
+	DeliveryReportsResponse getDeliveryReportsList(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
 	public Boolean addPrescriptionOPDReports();

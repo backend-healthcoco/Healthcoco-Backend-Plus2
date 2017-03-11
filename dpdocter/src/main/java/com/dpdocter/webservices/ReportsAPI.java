@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -20,6 +18,10 @@ import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.OTReports;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.DeliveryReportsResponse;
+import com.dpdocter.response.IPDReportsResponse;
+import com.dpdocter.response.OPDReportsResponse;
+import com.dpdocter.response.OTReportsResponse;
 import com.dpdocter.services.ReportsService;
 
 import common.util.web.Response;
@@ -41,47 +43,49 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.GET_IPD_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_IPD_REPORTS, notes = PathProxy.ReportsUrls.GET_IPD_REPORTS)
-	public Response<IPDReports> getIPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
+	public Response<IPDReportsResponse> getIPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
 			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
-		List<IPDReports> ipdReports = reportsService.getIPDReportsList(locationId, doctorId, patientId, from, to, page,
+		IPDReportsResponse ipdReports = reportsService.getIPDReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
-		Response<IPDReports> response = new Response<IPDReports>();
-		response.setDataList(ipdReports);
+		Response<IPDReportsResponse> response = new Response<IPDReportsResponse>();
+		response.setData(ipdReports);
 		return response;
 	}
 
 	@Path(value = PathProxy.ReportsUrls.GET_OPD_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OPD_REPORTS, notes = PathProxy.ReportsUrls.GET_OPD_REPORTS)
-	public Response<OPDReports> getOPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
+	public Response<OPDReportsResponse> getOPDReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
 			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
-		List<OPDReports> opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
+		OPDReportsResponse opdReports = reportsService.getOPDReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
-		Response<OPDReports> response = new Response<OPDReports>();
-		response.setDataList(opdReports);
+		System.out.println( "opd reports"); 
+		System.out.println(opdReports);
+		Response<OPDReportsResponse> response = new Response<OPDReportsResponse>();
+		response.setData(opdReports);
 		return response;
 	}
 
 	@Path(value = PathProxy.ReportsUrls.GET_OT_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_OT_REPORTS, notes = PathProxy.ReportsUrls.GET_OT_REPORTS)
-	public Response<OTReports> getOTReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
+	public Response<OTReportsResponse> getOTReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
 			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
-		List<OTReports> otReports = reportsService.getOTReportsList(locationId, doctorId, patientId, from, to, page,
+		OTReportsResponse otReports = reportsService.getOTReportsList(locationId, doctorId, patientId, from, to, page,
 				size, updatedTime);
-		Response<OTReports> response = new Response<OTReports>();
-		response.setDataList(otReports);
+		Response<OTReportsResponse> response = new Response<OTReportsResponse>();
+		response.setData(otReports);
 		return response;
 	}
 
 	@Path(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS, notes = PathProxy.ReportsUrls.GET_DELIVERY_REPORTS)
-	public Response<DeliveryReports> getDeliveryReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
+	public Response<DeliveryReportsResponse> getDeliveryReports(@QueryParam("locationId") String locationId,@QueryParam("doctorId") String doctorId,@QueryParam("patientId") String patientId,@QueryParam("from") String from,
 			@QueryParam("to")String to,@QueryParam("page")  int page, @QueryParam("size") int size, @QueryParam("updatedTime") String updatedTime) {
-		List<DeliveryReports> deliveryReports = reportsService.getDeliveryReportsList(locationId, doctorId, patientId, from, to, page, size, updatedTime);
-		Response<DeliveryReports> response = new Response<DeliveryReports>();
-		response.setDataList(deliveryReports);
+		DeliveryReportsResponse deliveryReports = reportsService.getDeliveryReportsList(locationId, doctorId, patientId, from, to, page, size, updatedTime);
+		Response<DeliveryReportsResponse> response = new Response<DeliveryReportsResponse>();
+		response.setData(deliveryReports);
 		return response;
 	}
 

@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -11,99 +13,100 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.enums.RecordsState;
 
 @Document(collection = "records_cl")
-@CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+@CompoundIndexes({ @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}") })
 public class RecordsCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String uniqueEmrId;
+	@Field
+	private String uniqueEmrId;
 
-    @Field
-    private String recordsUrl;
+	@Field
+	private String recordsUrl;
 
-    @Field
-    private String recordsPath;
+	@Field
+	private String recordsPath;
 
-    @Field
-    private String recordsLabel;
+	@Field
+	private String recordsLabel;
 
-    @Field
-    private String recordsType;
+	@Field
+	private String recordsType;
 
-    @Field
-    private String explanation;
+	@Field
+	private String explanation;
 
-    @Indexed
-    private ObjectId patientId;
+	@Indexed
+	private ObjectId patientId;
 
-    @Indexed
-    private ObjectId doctorId;
+	@Indexed
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private Boolean inHistory = false;
+	@Field
+	private Boolean inHistory = false;
 
-    @Field
-    private String uploadedByLocation;
+	@Field
+	private String uploadedByLocation;
 
-    @Field
-    private String prescriptionId;
+	@Field
+	private String prescriptionId;
 
-    @Field
-    private ObjectId prescribedByDoctorId;
+	@Field
+	private ObjectId prescribedByDoctorId;
 
-    @Field
-    private ObjectId prescribedByLocationId;
+	@Field
+	private ObjectId prescribedByLocationId;
 
-    @Field
-    private ObjectId prescribedByHospitalId;
+	@Field
+	private ObjectId prescribedByHospitalId;
 
-    @Field
-    private ObjectId diagnosticTestId;
+	@Field
+	private ObjectId diagnosticTestId;
 
-    @Field
-    private Boolean isFeedbackAvailable = false;
+	@Field
+	private Boolean isFeedbackAvailable = false;
 
-    @Field
-    private String recordsState = RecordsState.APPROVAL_NOT_REQUIRED.toString();
+	@Field
+	private String recordsState = RecordsState.APPROVAL_NOT_REQUIRED.toString();
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private List<String> messages;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public String getRecordsUrl() {
-	return recordsUrl;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setRecordsUrl(String recordsUrl) {
-	this.recordsUrl = recordsUrl;
-    }
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
 
-    public String getRecordsPath() {
-	return recordsPath;
-    }
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
 
-    public void setRecordsPath(String recordsPath) {
-	this.recordsPath = recordsPath;
-    }
+	public String getRecordsPath() {
+		return recordsPath;
+	}
 
-    public String getRecordsLabel() {
+	public void setRecordsPath(String recordsPath) {
+		this.recordsPath = recordsPath;
+	}
+
+	public String getRecordsLabel() {
 		return recordsLabel;
 	}
 
@@ -112,14 +115,14 @@ public class RecordsCollection extends GenericCollection {
 	}
 
 	public String getRecordsType() {
-	return recordsType;
-    }
+		return recordsType;
+	}
 
-    public void setRecordsType(String recordsType) {
-	this.recordsType = recordsType;
-    }
+	public void setRecordsType(String recordsType) {
+		this.recordsType = recordsType;
+	}
 
-    public String getExplanation() {
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -128,54 +131,54 @@ public class RecordsCollection extends GenericCollection {
 	}
 
 	public ObjectId getPatientId() {
-	return patientId;
-    }
+		return patientId;
+	}
 
-    public void setPatientId(ObjectId patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(ObjectId patientId) {
+		this.patientId = patientId;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public String getUploadedByLocation() {
-	return uploadedByLocation;
-    }
+	public String getUploadedByLocation() {
+		return uploadedByLocation;
+	}
 
-    public void setUploadedByLocation(String uploadedByLocation) {
-	this.uploadedByLocation = uploadedByLocation;
-    }
+	public void setUploadedByLocation(String uploadedByLocation) {
+		this.uploadedByLocation = uploadedByLocation;
+	}
 
-    public String getUniqueEmrId() {
+	public String getUniqueEmrId() {
 		return uniqueEmrId;
 	}
 
@@ -184,38 +187,38 @@ public class RecordsCollection extends GenericCollection {
 	}
 
 	public String getPrescriptionId() {
-	return prescriptionId;
-    }
+		return prescriptionId;
+	}
 
-    public void setPrescriptionId(String prescriptionId) {
-	this.prescriptionId = prescriptionId;
-    }
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
 
-    public ObjectId getPrescribedByDoctorId() {
-	return prescribedByDoctorId;
-    }
+	public ObjectId getPrescribedByDoctorId() {
+		return prescribedByDoctorId;
+	}
 
-    public void setPrescribedByDoctorId(ObjectId prescribedByDoctorId) {
-	this.prescribedByDoctorId = prescribedByDoctorId;
-    }
+	public void setPrescribedByDoctorId(ObjectId prescribedByDoctorId) {
+		this.prescribedByDoctorId = prescribedByDoctorId;
+	}
 
-    public ObjectId getPrescribedByLocationId() {
-	return prescribedByLocationId;
-    }
+	public ObjectId getPrescribedByLocationId() {
+		return prescribedByLocationId;
+	}
 
-    public void setPrescribedByLocationId(ObjectId prescribedByLocationId) {
-	this.prescribedByLocationId = prescribedByLocationId;
-    }
+	public void setPrescribedByLocationId(ObjectId prescribedByLocationId) {
+		this.prescribedByLocationId = prescribedByLocationId;
+	}
 
-    public ObjectId getPrescribedByHospitalId() {
-	return prescribedByHospitalId;
-    }
+	public ObjectId getPrescribedByHospitalId() {
+		return prescribedByHospitalId;
+	}
 
-    public void setPrescribedByHospitalId(ObjectId prescribedByHospitalId) {
-	this.prescribedByHospitalId = prescribedByHospitalId;
-    }
+	public void setPrescribedByHospitalId(ObjectId prescribedByHospitalId) {
+		this.prescribedByHospitalId = prescribedByHospitalId;
+	}
 
-    public ObjectId getDiagnosticTestId() {
+	public ObjectId getDiagnosticTestId() {
 		return diagnosticTestId;
 	}
 
@@ -224,20 +227,20 @@ public class RecordsCollection extends GenericCollection {
 	}
 
 	public Boolean getInHistory() {
-	return inHistory;
-    }
+		return inHistory;
+	}
 
-    public void setInHistory(Boolean inHistory) {
-	this.inHistory = inHistory;
-    }
+	public void setInHistory(Boolean inHistory) {
+		this.inHistory = inHistory;
+	}
 
-    public Boolean getIsFeedbackAvailable() {
-	return isFeedbackAvailable;
-    }
+	public Boolean getIsFeedbackAvailable() {
+		return isFeedbackAvailable;
+	}
 
-    public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
-	this.isFeedbackAvailable = isFeedbackAvailable;
-    }
+	public void setIsFeedbackAvailable(Boolean isFeedbackAvailable) {
+		this.isFeedbackAvailable = isFeedbackAvailable;
+	}
 
 	public String getRecordsState() {
 		return recordsState;
@@ -245,6 +248,14 @@ public class RecordsCollection extends GenericCollection {
 
 	public void setRecordsState(String recordsState) {
 		this.recordsState = recordsState;
+	}
+
+	public List<String> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<String> messages) {
+		this.messages = messages;
 	}
 
 	@Override
@@ -257,7 +268,7 @@ public class RecordsCollection extends GenericCollection {
 				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
 				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
 				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
-				+ "]";
+				+ ", messages=" + messages + "]";
 	}
 
 }
