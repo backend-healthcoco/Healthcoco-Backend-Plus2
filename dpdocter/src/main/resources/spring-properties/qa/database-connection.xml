@@ -9,9 +9,9 @@
 		write-concern="SAFE">
 		<mongo:options connect-timeout="${db.connectTimeout}"
 			connections-per-host="${db.connectionPerHost}"
-			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" />
+			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}"
+			ssl="true" />
 	</mongo:mongo>
-
 	<mongo:db-factory dbname="${db.name}" host="${db.host}"
 		mongo-ref="mongo" port="${db.port}" />
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
@@ -28,8 +28,7 @@
 			<mongo:converter ref="readConverter" />
 		</mongo:custom-converters>
 	</mongo:mapping-converter>
-	<bean name="gridFsTemplate"
-		class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
+	<bean id="gridFsTemplate" class="org.springframework.data.mongodb.gridfs.GridFsTemplate">
 		<constructor-arg ref="mongoDbFactory" />
 		<constructor-arg ref="mappingConverter" />
 	</bean>

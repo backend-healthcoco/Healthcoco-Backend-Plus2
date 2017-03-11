@@ -37,14 +37,14 @@ public interface PathProxy {
 
 	}
 
-	public static final String LOGIN_BASE_URL = "/login";
+	public static final String LOGIN_BASE_URL = BASE_URL + "/login";
 
 	public interface LoginUrls {
 
 		public static final String LOGIN_USER = "/user";
 
 		public static final String LOGIN_PATIENT = "/patient";
-		
+
 		public static final String REFRESH_TOKEN = "/refreshToken";
 	}
 
@@ -276,8 +276,8 @@ public interface PathProxy {
 		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
 
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
-					
-}
+
+	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
 
@@ -923,7 +923,7 @@ public interface PathProxy {
 		public static final String BROADCAST_NOTIFICATION = "/broadcast";
 
 		public static final String READ_NOTIFICATION = "/read/{deviceId}";
-		
+
 		public static final String GET_NOTIFICATIONS = "/{userId}";
 	}
 
