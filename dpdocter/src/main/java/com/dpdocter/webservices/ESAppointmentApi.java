@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
@@ -55,8 +56,8 @@ public class ESAppointmentApi {
     @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS, notes = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
     public Response<ESDoctorDocument> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("city") String city,
 	    @QueryParam("location") String location, @QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
-	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @QueryParam("booking") Boolean booking,
-	    @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee, @QueryParam("maxFee") int maxFee,
+	    @QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom, @DefaultValue("false")  @QueryParam("booking") Boolean booking,
+	    @DefaultValue("false") @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee, @QueryParam("maxFee") int maxFee,
 	    @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
 	    @QueryParam("gender") String gender, @QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 	    @QueryParam("service") String service) {

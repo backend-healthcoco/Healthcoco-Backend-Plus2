@@ -533,8 +533,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 
 			if (booking != null && calling != null) {
-				if (booking && calling)
-					;
+				if (booking && calling);
 				else if (booking && !calling) {
 					boolQueryBuilder
 							.must(QueryBuilders.termsQuery("facility", DoctorFacility.BOOK.getType().toLowerCase(),
@@ -552,33 +551,35 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			}
 
 			if (minFee != 0 && maxFee != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
-						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))));
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee).to(maxFee))),
+						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("consultationFee"))));
 			else if (minFee != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("consultationFee",
-						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))));
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("consultationFee",
+						boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee))),
+						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("consultationFee"))));
 			else if (maxFee != 0)
-				boolQueryBuilder
-						.must(QueryBuilders
-								.orQuery(
+				boolQueryBuilder.must(QueryBuilders.orQuery(
 										QueryBuilders.nestedQuery("consultationFee",
-												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
-														.from(0).to(maxFee))),
-										QueryBuilders.notQuery(QueryBuilders.existsQuery("consultationFee"))));
+												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").
+														from(0).to(maxFee))),
+										QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("consultationFee"))));
 
 			if (minExperience != 0 && maxExperience != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience", boolQuery().must(
-						QueryBuilders.rangeQuery("experience.experience").from(minExperience).to(maxExperience))));
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("experience", boolQuery().must(
+						QueryBuilders.rangeQuery("experience.experience").from(minExperience).to(maxExperience))),
+						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("experience"))));
 			else if (minExperience != 0)
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("experience",
-						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))));
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("experience",
+						boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience))),
+						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("experience"))));
 			else if (maxExperience != 0)
 				boolQueryBuilder
 						.must(QueryBuilders.orQuery(
 								QueryBuilders.nestedQuery("experience",
 										boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(0)
 												.to(maxExperience))),
-								QueryBuilders.notQuery(QueryBuilders.existsQuery("experience"))));
+								QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("experience"))));
 
 			if (!DPDoctorUtils.anyStringEmpty(gender)) {
 				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
