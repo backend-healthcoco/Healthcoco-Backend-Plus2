@@ -794,8 +794,8 @@ public class JasperReportServiceImpl implements JasperReportService {
         band = new JRDesignBand();
 		band.setHeight(26);
 		
-        Boolean showIntructions = (Boolean) parameters.get("showIntructions");
-        Boolean showDirection = (Boolean) parameters.get("showDirection");
+		Boolean showIntructions = (Boolean) parameters.get("showIntructions") != null ? (Boolean) parameters.get("showIntructions") : false;
+        Boolean showDirection = (Boolean) parameters.get("showDirection") != null ? (Boolean) parameters.get("showDirection") : false;
         
         int drugWidth = 0, dosageWidth=0, directionWidth=0, durationWidth=0, instructionWidth=0; 
         if(showDirection && showIntructions){
