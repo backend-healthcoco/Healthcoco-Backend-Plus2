@@ -42,4 +42,6 @@ public interface BillingService {
 	AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientInvoice getInvoice(String invoiceId);
+	
+	String downloadInvoice(String invoiceId);
 }
