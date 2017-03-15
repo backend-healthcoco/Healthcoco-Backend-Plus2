@@ -798,14 +798,16 @@ public class JasperReportServiceImpl implements JasperReportService {
         Boolean showDirection = (Boolean) parameters.get("showDirection") != null ? (Boolean) parameters.get("showDirection") : false;
         
         int drugWidth = 0, dosageWidth=0, directionWidth=0, durationWidth=0, instructionWidth=0; 
-        if(showDirection && showIntructions){
-        	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(16*(columnWidth-31)/100);directionWidth=(23*(columnWidth-31)/100);durationWidth=(13*(columnWidth-31)/100);instructionWidth=(18*(columnWidth-31)/100);
-        }else if(showDirection){
-        	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(21*(columnWidth-31)/100);directionWidth=(29*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);
-        }else if(showIntructions){
-        	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(21*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);instructionWidth=(29*(columnWidth-31)/100);
-        }else{
-        	drugWidth = (40*(columnWidth-31))/100;dosageWidth=(30*(columnWidth-31)/100);durationWidth=(30*(columnWidth-31)/100);
+        if(showDirection != null && showIntructions != null){
+        	if(showDirection && showIntructions){
+            	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(16*(columnWidth-31)/100);directionWidth=(23*(columnWidth-31)/100);durationWidth=(13*(columnWidth-31)/100);instructionWidth=(18*(columnWidth-31)/100);
+            }else if(showDirection){
+            	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(21*(columnWidth-31)/100);directionWidth=(29*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);
+            }else if(showIntructions){
+            	drugWidth = (30*(columnWidth-31))/100;dosageWidth=(21*(columnWidth-31)/100);durationWidth=(20*(columnWidth-31)/100);instructionWidth=(29*(columnWidth-31)/100);
+            }else{
+            	drugWidth = (40*(columnWidth-31))/100;dosageWidth=(30*(columnWidth-31)/100);durationWidth=(30*(columnWidth-31)/100);
+            }
         }
         
         Integer titleFontSize = contentFontSize;

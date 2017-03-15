@@ -20,9 +20,6 @@ public class ESGenericCodesAndReactions {
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<Code> codes;
 	
-	@Field(type = FieldType.String)
-	private String reactionType;
-	
     @Field(type = FieldType.Date)
     private Date updatedTime = new Date();
 
@@ -42,14 +39,6 @@ public class ESGenericCodesAndReactions {
 		this.codes = codes;
 	}
 
-	public String getReactionType() {
-		return reactionType;
-	}
-
-	public void setReactionType(String reactionType) {
-		this.reactionType = reactionType;
-	}
-
 	public Date getUpdatedTime() {
 		return updatedTime;
 	}
@@ -60,7 +49,6 @@ public class ESGenericCodesAndReactions {
 
 	@Override
 	public String toString() {
-		return "ESGenericCodesAndReactions [id=" + id + ", codes=" + codes + ", reactionType=" + reactionType
-				+ ", updatedTime=" + updatedTime + "]";
-	}    
+		return "ESGenericCodesAndReactions [id=" + id + ", codes=" + codes + ", updatedTime=" + updatedTime + "]";
+	}
 }

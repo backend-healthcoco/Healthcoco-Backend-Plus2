@@ -44,7 +44,7 @@ public interface ESDoctorRepository extends ElasticsearchRepository<ESDoctorDocu
     		+ "{\"match\": {\"isActive\": \"?3\"}}, {\"match\": {\"isActivate\": \"?3\"}}]}}")
     List<ESDoctorDocument> findByCityLocation(String city, String location, Boolean isDoctorListed, Boolean isActive, Pageable pageRequest);
 
-    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match\": {\"isDoctorListed\": \"?1\"}}, {\"match\": {\"isActive\": \"?3\"}}, {\"match\": {\"isActivate\": \"?3\"}}]}}")
+    @Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"city\": \"?0*\"}}, {\"match\": {\"isDoctorListed\": \"?1\"}}, {\"match\": {\"isActive\": \"?2\"}}, {\"match\": {\"isActivate\": \"?2\"}}]}}")
     List<ESDoctorDocument> findByCity(String city, Boolean isDoctorListed, Boolean isActive, Pageable pageRequest);
 
     @Query("{\"bool\": {\"must\": [{\"bool\": {\"should\": [{\"match_phrase_prefix\": {\"landmarkDetails\": \"?0*\"}}, {\"match_phrase_prefix\": {\"streetAddress\": \"?0*\"}}, {\"match_phrase_prefix\": {\"locality\": \"?0*\"}}]}}, {\"match\": {\"isDoctorListed\": \"?1\"}},"

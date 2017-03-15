@@ -12,6 +12,13 @@ public class Code {
 		super();
 	}
 
+	public Code(String genericCode, String reaction, String explanation) {
+		super();
+		this.genericCode = genericCode;
+		this.reaction = reaction;
+		this.explanation = explanation;
+	}
+
 	public Code(String genericCode, String reaction) {
 		super();
 		this.genericCode = genericCode;

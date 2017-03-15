@@ -1,8 +1,9 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
@@ -84,6 +86,7 @@ import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GenericCodeCollection;
+import com.dpdocter.collections.GenericCodesAndReactionsCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -119,6 +122,8 @@ import com.dpdocter.repository.DrugDosageRepository;
 import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
+import com.dpdocter.repository.GenericCodeRepository;
+import com.dpdocter.repository.GenericCodesAndReactionsRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -164,6 +169,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mongodb.BasicDBObject;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.PrescriptionUtils;
@@ -289,6 +295,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private ESGenericCodesAndReactionsRepository esGenericCodesAndReactionsRepository;
+
+	@Autowired
+	private GenericCodesAndReactionsRepository genericCodesAndReactionsRepository;
+
+	@Autowired
+	private GenericCodeRepository genericCodeRepository;
 
 	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100) // maximum
 																						// 100
@@ -4205,56 +4217,68 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String cvsSplitBy = ",";
 
 		try {
-			br = new BufferedReader(new FileReader(csvFile));
-			while ((line = br.readLine()) != null) {
-				String[] codes = line.split(cvsSplitBy);
-
-				Code codeOfId = new Code(codes[0], "");
-
-				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
-						.findOne(codes[0]);
-				if (esGenericCodesAndReactionsOfZeroIndex == null) {
-					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
-					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
-				}
-				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
-				if (codesList == null)
-					codesList = new ArrayList<Code>();
-
-				for (int i = 1; i < codes.length; i++) {
-					Code code = new Code(codes[i], null);
-					if (!codesList.contains(code))
-						codesList.add(code);
-
-					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
-							.findOne(codes[i]);
-					if (esGenericCodesAndReactions == null) {
-						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
-						esGenericCodesAndReactions.setId(codes[i]);
-						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
-					} else {
-						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
-						if (!codesListOfOther.contains(codeOfId))
-							codesListOfOther.add(codeOfId);
-
-						Collections.sort(codesListOfOther, new Comparator<Code>() {
-							public int compare(Code one, Code other) {
-								return one.getGenericCode().compareTo(other.getGenericCode());
-							}
-						});
-						esGenericCodesAndReactions.setCodes(codesListOfOther);
-					}
-					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
-				}
-
-				Collections.sort(codesList, new Comparator<Code>() {
-					public int compare(Code one, Code other) {
-						return one.getGenericCode().compareTo(other.getGenericCode());
-					}
-				});
-				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
-				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
-						.save(esGenericCodesAndReactionsOfZeroIndex);
+//			br = new BufferedReader(new FileReader(csvFile));
+//			while ((line = br.readLine()) != null) {
+//				String[] codes = line.split(cvsSplitBy);
+//
+//				Code codeOfId = new Code(codes[0], "");
+//
+//				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+//						.findOne(codes[0]);
+//				if (esGenericCodesAndReactionsOfZeroIndex == null) {
+//					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
+//					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
+//				}
+//				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
+//				if (codesList == null)
+//					codesList = new ArrayList<Code>();
+//
+//				for (int i = 1; i < codes.length; i++) {
+//					Code code = new Code(codes[i], null);
+//					if (!codesList.contains(code))
+//						codesList.add(code);
+//
+//					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
+//							.findOne(codes[i]);
+//					if (esGenericCodesAndReactions == null) {
+//						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
+//						esGenericCodesAndReactions.setId(codes[i]);
+//						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
+//					} else {
+//						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
+//						if (!codesListOfOther.contains(codeOfId))
+//							codesListOfOther.add(codeOfId);
+//
+//						Collections.sort(codesListOfOther, new Comparator<Code>() {
+//							public int compare(Code one, Code other) {
+//								return one.getGenericCode().compareTo(other.getGenericCode());
+//							}
+//						});
+//						esGenericCodesAndReactions.setCodes(codesListOfOther);
+//					}
+//					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
+//				}
+//
+//				Collections.sort(codesList, new Comparator<Code>() {
+//					public int compare(Code one, Code other) {
+//						return one.getGenericCode().compareTo(other.getGenericCode());
+//					}
+//				});
+//				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
+//				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+//						.save(esGenericCodesAndReactionsOfZeroIndex);
+//			}
+			
+			
+			Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.findAll();
+			for(ESGenericCodesAndReactions genericCodesAndReaction : esGenericCodesAndReactions){
+				GenericCodesAndReactionsCollection codesAndReactionsCollection = new GenericCodesAndReactionsCollection();
+				codesAndReactionsCollection.setGenericCode(genericCodesAndReaction.getId());
+				genericCodesAndReaction.setId(null);
+				BeanUtil.map(genericCodesAndReaction, codesAndReactionsCollection);
+				codesAndReactionsCollection.setCreatedTime(new Date());
+				codesAndReactionsCollection.setUpdatedTime(new Date());
+				genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4267,6 +4291,35 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				}
 			}
 		}
+		
+//		String outputFile = "/home/healthcoco-neha/genericCodes.csv";
+//		boolean alreadyExists = new File(outputFile).exists();
+//			
+//		try {
+//			CSVWriter csvOutput = new CSVWriter(new FileWriter(outputFile, true), ',');
+//			
+//			if (!alreadyExists)
+//			{
+//				String[] hesaders = {"Code 1", "Code 1 Generic Name", "Code 2", "Code 2 Generic Name", "Reaction","Explanation"};
+//				csvOutput.writeNext(hesaders);
+//			}
+//			
+//			Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.findAll();
+//			for(ESGenericCodesAndReactions esGenericCodesAndReaction : esGenericCodesAndReactions){
+//				GenericCodeCollection code = genericCodeRepository.findByCode(esGenericCodesAndReaction.getId());
+//				List<Code> codes = esGenericCodesAndReaction.getCodes();
+//				Collection<String> genericCodes = CollectionUtils.collect(codes, new BeanToPropertyValueTransformer("genericCode"));
+//				List<GenericCodeCollection> genericCodeCollections = genericCodeRepository.findByCodes(genericCodes);
+//				for(GenericCodeCollection codeCollection : genericCodeCollections){
+//					
+//					String[] hesaders = {code.getCode(), code.getName(), codeCollection.getCode(), codeCollection.getName()};
+//					csvOutput.writeNext(hesaders);
+//				}
+//			}
+//			csvOutput.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		return true;
 	}
 
@@ -4338,6 +4391,250 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			response = true;
 		} catch (Exception e) {
 			throw new BusinessException(ServiceError.Unknown, "" + e);
+		}
+		return response;
+	}
+	
+	@Override
+	public List<GenericCodesAndReaction> getGenericCodeWithReactionForAdmin(int page, int size, String updatedTime, Boolean discarded,
+			String searchTerm) {
+		List<GenericCodesAndReaction> response = null;
+		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
+			if(!discarded)criteria.and("discarded").is(discarded);
+			if(!DPDoctorUtils.anyStringEmpty(searchTerm))criteria.orOperator(new Criteria("genericCode").is(searchTerm),new Criteria("codes.genericCode").is(searchTerm));
+			
+			Aggregation aggregation = null;
+			
+			if(size > 0){
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("generic_code_cl", "genericCode", "code", "firstGenericCode"),
+					Aggregation.unwind("firstGenericCode"), Aggregation.unwind("codes"), 
+					Aggregation.lookup("generic_code_cl", "codes.genericCode", "code", "secondGenericCode"),
+					Aggregation.unwind("secondGenericCode"),
+					new ProjectionOperation(Fields.from(Fields.field("reactionType", "$codes.reaction"),
+							Fields.field("firstGenericCode","$firstGenericCode"),Fields.field("secondGenericCode","$secondGenericCode"), 
+							Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+							Fields.field("createdBy", "$createdBy"))),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
+					Aggregation.skip((page) * size),
+					Aggregation.limit(size));
+			}else{
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("generic_code_cl", "genericCode", "code", "firstGenericCode"),
+						Aggregation.unwind("firstGenericCode"), Aggregation.unwind("codes"), 
+						Aggregation.lookup("generic_code_cl", "codes.genericCode", "code", "secondGenericCode"),
+						Aggregation.unwind("secondGenericCode"),
+						new ProjectionOperation(Fields.from(Fields.field("reactionType", "$codes.reaction"),
+								Fields.field("firstGenericCode","$firstGenericCode"),Fields.field("secondGenericCode","$secondGenericCode"), 
+								Fields.field("createdTime", "$createdTime"), Fields.field("updatedTime", "$updatedTime"),
+								Fields.field("createdBy", "$createdBy"))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			}
+			response = mongoTemplate.aggregate(aggregation, GenericCodesAndReactionsCollection.class, GenericCodesAndReaction.class).getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting Diagnostic Tests");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Generic codes with reaction");
+		}
+		return response;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean addGenericCodeWithReaction(GenericCodesAndReaction request) {
+		Boolean response = false, isFirstUpdated = false, isSecondUpdated = false;
+		try {
+			if(request.getFirstGenericCode() != null && request.getSecondGenericCode() != null) {
+				List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository.findbyGenericCodes(Arrays.asList(request.getFirstGenericCode().getCode(), request.getSecondGenericCode().getCode()));
+				if(genericCodesAndReactionsCollections != null){
+					for(GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections){
+						if(codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(request.getFirstGenericCode().getCode())){
+							List<Code> codesWithReaction = codesAndReactionsCollection.getCodes();
+							Collection<String> codes = CollectionUtils.collect(codesWithReaction, new BeanToPropertyValueTransformer("genericCode"));
+							if(codes.contains(request.getSecondGenericCode().getCode())){
+								for(Code code : codesWithReaction){
+									if(code.getGenericCode().equalsIgnoreCase(request.getSecondGenericCode().getCode())){
+										code.setReaction(request.getReactionType());
+										code.setExplanation(request.getExplanation());
+									}
+								}
+							}else{
+								Code code = new Code(request.getSecondGenericCode().getCode(), request.getReactionType(), request.getExplanation());
+								codesWithReaction.add(code);
+							}
+							codesAndReactionsCollection.setCodes(codesWithReaction);
+							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+							
+							ESGenericCodesAndReactions esCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codesAndReactionsCollection.getGenericCode());
+							if(esCodesAndReactions == null)esCodesAndReactions = new ESGenericCodesAndReactions();
+							esCodesAndReactions.setCodes(null);
+							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+							isFirstUpdated = true;
+						}
+						if(codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(request.getSecondGenericCode().getCode())){
+							List<Code> codesWithReaction = codesAndReactionsCollection.getCodes();
+							Collection<String> codes = CollectionUtils.collect(codesWithReaction, new BeanToPropertyValueTransformer("genericCode"));
+							if(codes.contains(request.getFirstGenericCode().getCode())){
+								for(Code code : codesWithReaction){
+									if(code.getGenericCode().equalsIgnoreCase(request.getFirstGenericCode().getCode())){
+										code.setReaction(request.getReactionType());
+										code.setExplanation(request.getExplanation());
+									}
+								}
+							}else{
+								Code code = new Code(request.getFirstGenericCode().getCode(), request.getReactionType(), request.getExplanation());
+								codesWithReaction.add(code);
+							}
+							codesAndReactionsCollection.setCodes(codesWithReaction);
+							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+							ESGenericCodesAndReactions esCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codesAndReactionsCollection.getGenericCode());
+							if(esCodesAndReactions == null)esCodesAndReactions = new ESGenericCodesAndReactions();
+							esCodesAndReactions.setCodes(null);
+							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+							isSecondUpdated = true;
+						}
+					}	
+				}
+				if(!isFirstUpdated){
+					GenericCodesAndReactionsCollection codesAndReactionsCollection = new GenericCodesAndReactionsCollection();
+					codesAndReactionsCollection.setGenericCode(request.getFirstGenericCode().getCode());
+					codesAndReactionsCollection.setCreatedTime(new Date());
+					codesAndReactionsCollection.setUpdatedTime(new Date());
+					List<Code> codesWithReaction = new ArrayList<Code>();
+					Code code = new Code(request.getSecondGenericCode().getCode(), request.getReactionType(), request.getExplanation());
+					codesWithReaction.add(code);
+					codesAndReactionsCollection.setCodes(codesWithReaction);
+					genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+					ESGenericCodesAndReactions esCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codesAndReactionsCollection.getGenericCode());
+					if(esCodesAndReactions == null)esCodesAndReactions = new ESGenericCodesAndReactions();
+					esCodesAndReactions.setCodes(null);
+					BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+					esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+					esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+				}
+				if(!isSecondUpdated){
+					GenericCodesAndReactionsCollection codesAndReactionsCollection = new GenericCodesAndReactionsCollection();
+					codesAndReactionsCollection.setGenericCode(request.getSecondGenericCode().getCode());
+					codesAndReactionsCollection.setCreatedTime(new Date());
+					codesAndReactionsCollection.setUpdatedTime(new Date());
+					List<Code> codesWithReaction = new ArrayList<Code>();
+					Code code = new Code(request.getFirstGenericCode().getCode(), request.getReactionType(), request.getExplanation());
+					codesWithReaction.add(code);
+					codesAndReactionsCollection.setCodes(codesWithReaction);
+					genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+					ESGenericCodesAndReactions esCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codesAndReactionsCollection.getGenericCode());
+					if(esCodesAndReactions == null)esCodesAndReactions = new ESGenericCodesAndReactions();
+					esCodesAndReactions.setCodes(null);
+					BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+					esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+					esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+				}
+				response = true;
+			} else {
+				logger.error("Generic code cannot be null");
+				throw new BusinessException(ServiceError.Unknown, "Generic code cannot be null");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Adding Generic code");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean deleteGenericCodeWithReaction(GenericCodesAndReaction request) {
+		Boolean response = false;
+		try {
+			if(request.getFirstGenericCode() != null && request.getSecondGenericCode() != null) {
+				List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository.findbyGenericCodes(Arrays.asList(request.getFirstGenericCode().getCode(), request.getSecondGenericCode().getCode()));
+				if(genericCodesAndReactionsCollections != null){
+					for(GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections){
+						List<Code> codesWithReaction = codesAndReactionsCollection.getCodes();
+						@SuppressWarnings("unchecked")
+						Collection<String> codes = CollectionUtils.collect(codesWithReaction, new BeanToPropertyValueTransformer("genericCode"));
+						
+						if(codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(request.getFirstGenericCode().getCode())){
+							if(codes.contains(request.getSecondGenericCode().getCode())){
+								for(Code codeWithReaction : codesWithReaction)
+								if(codeWithReaction.getGenericCode().equalsIgnoreCase(request.getSecondGenericCode().getCode())){
+									codesWithReaction.remove(codeWithReaction);break;
+								}
+							}
+						}
+						if(codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(request.getSecondGenericCode().getCode())){
+							if(codes.contains(request.getFirstGenericCode().getCode())){
+								for(Code codeWithReaction : codesWithReaction)
+								if(codeWithReaction.getGenericCode().equalsIgnoreCase(request.getFirstGenericCode().getCode())){
+									codesWithReaction.remove(codeWithReaction);break;
+								}
+							}
+						}
+						codesAndReactionsCollection.setCodes(codesWithReaction);
+						codesAndReactionsCollection.setUpdatedTime(new Date());
+						genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+						
+						ESGenericCodesAndReactions esCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codesAndReactionsCollection.getGenericCode());
+						if(esCodesAndReactions == null)esCodesAndReactions = new ESGenericCodesAndReactions();
+						esCodesAndReactions.setCodes(null);
+						BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+						esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+						esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+					}
+					response = true;
+				}
+			} else {
+				logger.error("Generic code cannot be null");
+				throw new BusinessException(ServiceError.Unknown, "Generic code cannot be null");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While deleting Generic code with reaction");
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean uploadGenericCodeWithReaction(FormDataBodyPart file) {
+		Boolean response = false;
+		try {
+			String line = null;
+			
+			if (file != null) {
+				InputStream fis = file.getEntityAs(InputStream.class);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+				int i = 0;
+				while((line = reader.readLine()) != null) {
+					if(i != 0){
+						String[] data = line.split(",");
+						String firstGenericCode = data[0], firstGenericCodeName = data[1], secondGenericCode = data[2], secondGenericCodeName = data[3], reaction = null, explanation = null;
+						if(data.length > 4)reaction = data[4];
+						if(data.length > 5)explanation = data[5];
+						
+						GenericCodesAndReaction request = new GenericCodesAndReaction();
+						GenericCode firstGenericCodeObj = new GenericCode();firstGenericCodeObj.setCode(firstGenericCode);firstGenericCodeObj.setName(firstGenericCodeName);
+						request.setFirstGenericCode(firstGenericCodeObj);
+						
+						GenericCode secondGenericCodeObj = new GenericCode();secondGenericCodeObj.setCode(secondGenericCode);secondGenericCodeObj.setName(secondGenericCodeName);
+						request.setSecondGenericCode(secondGenericCodeObj);
+						
+						request.setReactionType(reaction);request.setExplanation(explanation);
+						addGenericCodeWithReaction(request);
+						response = true;	
+					}
+					i++;
+				}				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

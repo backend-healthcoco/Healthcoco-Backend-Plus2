@@ -460,8 +460,16 @@ public interface PathProxy {
 		public static final String DRUGS_INTERACTION = "/drugs/interaction/";
 
 		public static final String ADD_GENERIC_CODES_WITH_REACTION = "/genericCodes/";
+		
+		public static final String GET_GENERIC_CODES_WITH_REACTION = "/genericCodes/get";
 
 		public static final String ADD_FAVOURITES_TO_DRUGS = "favourites/addToDrug";
+	
+		public static final String ADD_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/";
+		
+		public static final String UPLOAD_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/upload";
+		
+		public static final String DELETE_GENERIC_CODE_WITH_REACTION = "/genericCodeWithReaction/delete";
 	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";

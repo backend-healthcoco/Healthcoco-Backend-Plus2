@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -55,6 +56,8 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -72,6 +75,7 @@ public class PrescriptionApi {
 
 	@Autowired
 	private TransactionalManagementService transactionalManagementService;
+	
 	@Autowired
 	private PrescriptionServices prescriptionServices;
 
@@ -978,7 +982,7 @@ public class PrescriptionApi {
 		response.setData(prescriptionServices.addGenericsWithReaction());
 		return response;
 	}
-
+	
 	@Path(value = PathProxy.PrescriptionUrls.ADD_FAVOURITES_TO_DRUGS)
 	@GET
 	public Response<Boolean> addFavouritesToDrug() {
@@ -987,6 +991,5 @@ public class PrescriptionApi {
 		response.setData(prescriptionServices.addFavouritesToDrug());
 		return response;
 	}
-
 
 }

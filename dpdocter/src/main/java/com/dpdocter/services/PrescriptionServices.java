@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -28,6 +29,7 @@ import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
+import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface PrescriptionServices {
 	Drug addDrug(DrugAddEditRequest request);
@@ -153,4 +155,14 @@ public interface PrescriptionServices {
 	Boolean addGenericsWithReaction();
 
 	Boolean addFavouritesToDrug();
+
+	List<GenericCodesAndReaction> getGenericCodeWithReactionForAdmin(int page, int size, String updatedTime,Boolean discarded,
+			String searchTerm);
+	
+	Boolean addGenericCodeWithReaction(GenericCodesAndReaction request);
+
+	Boolean deleteGenericCodeWithReaction(GenericCodesAndReaction request);
+
+	Boolean uploadGenericCodeWithReaction(FormDataBodyPart file);
+
 }
