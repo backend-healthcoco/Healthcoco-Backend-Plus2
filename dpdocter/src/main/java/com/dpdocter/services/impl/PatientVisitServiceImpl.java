@@ -1313,7 +1313,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		patientDetailList.add("<b>Patient ID: </b>"
 				+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 
-		if (patientCard != null && patientCard.getDob() != null) {
+		if (patientCard != null && patientCard.getDob() != null && patientCard.getDob().getAge() != null) {
 			Age ageObj = patientCard.getDob().getAge();
 			if (ageObj.getYears() > 14)
 				age = ageObj.getYears() + "yrs";
