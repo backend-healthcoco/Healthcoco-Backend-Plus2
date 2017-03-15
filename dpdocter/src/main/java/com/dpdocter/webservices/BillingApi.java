@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiOperation;
 public class BillingApi {
 
 	private static Logger logger = Logger.getLogger(BillingApi.class.getName());
-	
+
 	@Autowired
 	private BillingService billingService;
 
@@ -57,7 +57,7 @@ public class BillingApi {
 		}
 
 		InvoiceAndReceiptInitials invoiceAndReceiptInitials = billingService.getInitials(locationId);
-		
+
 		Response<InvoiceAndReceiptInitials> response = new Response<InvoiceAndReceiptInitials>();
 		response.setData(invoiceAndReceiptInitials);
 		return response;
@@ -73,7 +73,7 @@ public class BillingApi {
 		}
 
 		InvoiceAndReceiptInitials invoiceAndReceiptInitials = billingService.updateInitials(request);
-		
+
 		Response<InvoiceAndReceiptInitials> response = new Response<InvoiceAndReceiptInitials>();
 		response.setData(invoiceAndReceiptInitials);
 		return response;
@@ -83,34 +83,37 @@ public class BillingApi {
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_INVOICE, notes = PathProxy.BillingUrls.ADD_EDIT_INVOICE)
 	public Response<DoctorPatientInvoice> addEditInvoice(DoctorPatientInvoice request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()) ||
-				request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
+		if (request == null
+				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+						request.getPatientId())
+				|| request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		DoctorPatientInvoice doctorPatientInvoice = billingService.addEditInvoice(request);
-		
+
 		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
 		response.setData(doctorPatientInvoice);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BillingUrls.GET_INVOICES)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_INVOICES, notes = PathProxy.BillingUrls.GET_INVOICES)
-	public Response<DoctorPatientInvoice> getInvoices(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId, @QueryParam("patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+	public Response<DoctorPatientInvoice> getInvoices(@PathParam("type") String type, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("patientId") String patientId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		List<DoctorPatientInvoice> doctorPatientInvoices = billingService.getInvoices(type, page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded);
-		
+		List<DoctorPatientInvoice> doctorPatientInvoices = billingService.getInvoices(type, page, size, doctorId,
+				locationId, hospitalId, patientId, updatedTime, discarded);
+
 		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
 		response.setDataList(doctorPatientInvoices);
 		return response;
@@ -126,7 +129,7 @@ public class BillingApi {
 		}
 
 		DoctorPatientInvoice doctorPatientInvoice = billingService.getInvoice(invoiceId);
-		
+
 		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
 		response.setData(doctorPatientInvoice);
 		return response;
@@ -135,15 +138,17 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_AVAILABLE_ADVANCE_AMOUNT)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_AVAILABLE_ADVANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_AVAILABLE_ADVANCE_AMOUNT)
-	public Response<Double> getAvailableAdvanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
+	public Response<Double> getAvailableAdvanceAmount(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		Double availableAdvanceAmount = billingService.getAvailableAdvanceAmount(doctorId, locationId, hospitalId, patientId);
-		
+		Double availableAdvanceAmount = billingService.getAvailableAdvanceAmount(doctorId, locationId, hospitalId,
+				patientId);
+
 		Response<Double> response = new Response<Double>();
 		response.setData(availableAdvanceAmount);
 		return response;
@@ -152,14 +157,15 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.DELETE_INVOICE)
 	@DELETE
 	@ApiOperation(value = PathProxy.BillingUrls.DELETE_INVOICE, notes = PathProxy.BillingUrls.DELETE_INVOICE)
-	public Response<DoctorPatientInvoice> deleteInvoice(@PathParam("invoiceId") String invoiceId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<DoctorPatientInvoice> deleteInvoice(@PathParam("invoiceId") String invoiceId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(invoiceId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		DoctorPatientInvoice doctorPatientInvoice = billingService.deleteInvoice(invoiceId, discarded);
-		
+
 		Response<DoctorPatientInvoice> response = new Response<DoctorPatientInvoice>();
 		response.setData(doctorPatientInvoice);
 		return response;
@@ -169,18 +175,19 @@ public class BillingApi {
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.ADD_EDIT_RECEIPT, notes = PathProxy.BillingUrls.ADD_EDIT_RECEIPT)
 	public Response<DoctorPatientReceiptAddEditResponse> addEditReceipt(DoctorPatientReceiptRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId())) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPatientId())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		DoctorPatientReceiptAddEditResponse doctorPatientReceipt = billingService.addEditReceipt(request);
-		
+
 		Response<DoctorPatientReceiptAddEditResponse> response = new Response<DoctorPatientReceiptAddEditResponse>();
 		response.setData(doctorPatientReceipt);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BillingUrls.GET_RECEIPTS)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_RECEIPTS, notes = PathProxy.BillingUrls.GET_RECEIPTS)
@@ -194,24 +201,26 @@ public class BillingApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		List<DoctorPatientReceipt> doctorPatientReceipts = billingService.getReceipts(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded);
-		
+		List<DoctorPatientReceipt> doctorPatientReceipts = billingService.getReceipts(page, size, doctorId, locationId,
+				hospitalId, patientId, updatedTime, discarded);
+
 		Response<DoctorPatientReceipt> response = new Response<DoctorPatientReceipt>();
 		response.setDataList(doctorPatientReceipts);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BillingUrls.DELETE_RECEIPT)
 	@DELETE
 	@ApiOperation(value = PathProxy.BillingUrls.DELETE_RECEIPT, notes = PathProxy.BillingUrls.DELETE_RECEIPT)
-	public Response<DoctorPatientReceipt> deleteReceipt(@PathParam("receiptId") String receiptId, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	public Response<DoctorPatientReceipt> deleteReceipt(@PathParam("receiptId") String receiptId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(receiptId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		DoctorPatientReceipt doctorPatientInvoice = billingService.deleteReceipt(receiptId, discarded);
-		
+
 		Response<DoctorPatientReceipt> response = new Response<DoctorPatientReceipt>();
 		response.setData(doctorPatientInvoice);
 		return response;
@@ -220,15 +229,18 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
 	@POST
 	@ApiOperation(value = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY, notes = PathProxy.BillingUrls.ADD_INVOICE_AND_PAY)
-	public Response<DoctorPatientInvoiceAndReceiptResponse> addInvoiceAndPay(DoctorPatientInvoiceAndReceiptRequest request) {
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId()) ||
-				request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
+	public Response<DoctorPatientInvoiceAndReceiptResponse> addInvoiceAndPay(
+			DoctorPatientInvoiceAndReceiptRequest request) {
+		if (request == null
+				|| DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+						request.getPatientId())
+				|| request.getInvoiceItems() == null || request.getInvoiceItems().isEmpty()) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		DoctorPatientInvoiceAndReceiptResponse doctorPatientInvoice = billingService.addInvoiceAndPay(request);
-		
+
 		Response<DoctorPatientInvoiceAndReceiptResponse> response = new Response<DoctorPatientInvoiceAndReceiptResponse>();
 		response.setData(doctorPatientInvoice);
 		return response;
@@ -237,15 +249,16 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AMOUNT)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AMOUNT, notes = PathProxy.BillingUrls.GET_TOTAL_DUE_AMOUNT)
-	public Response<Double> getTotalDueAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
+	public Response<Double> getTotalDueAmount(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
 		Double availableAdvanceAmount = billingService.getTotalDueAmount(doctorId, locationId, hospitalId, patientId);
-		
+
 		Response<Double> response = new Response<Double>();
 		response.setData(availableAdvanceAmount);
 		return response;
@@ -254,18 +267,20 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_LEDGER)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_LEDGER, notes = PathProxy.BillingUrls.GET_LEDGER)
-	public Response<DoctorPatientLedgerResponse> getLedger(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId, 
-			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
-			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+	public Response<DoctorPatientLedgerResponse> getLedger(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId, @QueryParam(value = "from") String from,
+			@QueryParam(value = "to") String to, @QueryParam(value = "page") int page,
+			@QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		DoctorPatientLedgerResponse doctorPatientLedgers = billingService.getLedger(doctorId, locationId, hospitalId, patientId, from, to, page, size, updatedTime);
-		
+		DoctorPatientLedgerResponse doctorPatientLedgers = billingService.getLedger(doctorId, locationId, hospitalId,
+				patientId, from, to, page, size, updatedTime);
+
 		Response<DoctorPatientLedgerResponse> response = new Response<DoctorPatientLedgerResponse>();
 		response.setData(doctorPatientLedgers);
 		return response;
@@ -274,17 +289,28 @@ public class BillingApi {
 	@Path(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AND_ADVANCE_AMOUNT)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.GET_TOTAL_DUE_AND_ADVANCE_AMOUNT, notes = PathProxy.BillingUrls.GET_TOTAL_DUE_AND_ADVANCE_AMOUNT)
-	public Response<AmountResponse> getTotalDueAndAdvanceAmount(@QueryParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId, @PathParam("patientId") String patientId) {
+	public Response<AmountResponse> getTotalDueAndAdvanceAmount(@QueryParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@PathParam("patientId") String patientId) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, patientId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		AmountResponse amountResponse = billingService.getTotalDueAndAdvanceAmount(doctorId, locationId, hospitalId, patientId);
-		
+		AmountResponse amountResponse = billingService.getTotalDueAndAdvanceAmount(doctorId, locationId, hospitalId,
+				patientId);
+
 		Response<AmountResponse> response = new Response<AmountResponse>();
 		response.setData(amountResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.DOWNLOAD_INVOICE)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.DOWNLOAD_INVOICE, notes = PathProxy.BillingUrls.DOWNLOAD_INVOICE)
+	public Response<String> downloadInvoice(@PathParam("invoiceId") String invoiceId) {
+		Response<String> response = new Response<String>();
+		response.setData(billingService.downloadInvoice(invoiceId));
 		return response;
 	}
 
