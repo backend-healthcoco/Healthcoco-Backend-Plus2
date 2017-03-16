@@ -26,7 +26,7 @@ public class DoctorPatientReceiptRequest {
 	
 	private List<String> invoiceIds;   
 	
-	private Double amountPaid;
+	private Double amountPaid= 0.0;
 	
 	private Double usedAdvanceAmount = 0.0;
 	

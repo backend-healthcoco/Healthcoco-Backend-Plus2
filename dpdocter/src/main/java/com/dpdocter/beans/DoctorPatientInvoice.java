@@ -27,13 +27,13 @@ public class DoctorPatientInvoice extends GenericCollection{
 
 	private Tax totalTax;
 	
-	private Double grandTotal;
+	private Double grandTotal= 0.0;
 	
-	private Double usedAdvanceAmount;
+	private Double usedAdvanceAmount= 0.0;
 	
-	private Double refundAmount;
+	private Double refundAmount= 0.0;
 	
-	private Double balanceAmount;
+	private Double balanceAmount= 0.0;
 
 	private Boolean discarded = false;
 

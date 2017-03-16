@@ -27,19 +27,19 @@ public class DoctorPatientInvoiceAndReceiptRequest {
 
 	private Tax totalTax;
 	
-	private Double grandTotal;
+	private Double grandTotal= 0.0;
 	
-	private Double usedAdvanceAmount;
+	private Double usedAdvanceAmount= 0.0;
 	
-	private Double refundAmount;
+	private Double refundAmount= 0.0;
 	
-	private Double balanceAmount;
+	private Double balanceAmount= 0.0;
 
 	private Boolean discarded = false;
 
 	private ModeOfPayment modeOfPayment;
 
-	private Double amountPaid;
+	private Double amountPaid= 0.0;
 	
 	public String getDoctorId() {
 		return doctorId;
