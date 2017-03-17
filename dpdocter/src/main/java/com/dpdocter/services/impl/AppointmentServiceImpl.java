@@ -646,6 +646,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 										response = new Appointment();
 					BeanUtil.map(appointmentCollection, response);
 					patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
+					patientCard.getUser().setLocationId(patientCard.getLocationId());
+					patientCard.getUser().setHospitalId(patientCard.getHospitalId());
 					BeanUtil.map(patientCard.getUser(), patientCard);
 					patientCard.setUserId(patientCard.getUserId());
 					patientCard.setId(patientCard.getUserId());
@@ -834,6 +836,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						response = new Appointment();
 						BeanUtil.map(appointmentCollection, response);
 						patientCard.getUser().setLocalPatientName(patientCard.getLocalPatientName());
+						patientCard.getUser().setLocationId(patientCard.getLocationId());
+						patientCard.getUser().setHospitalId(patientCard.getHospitalId());
 						BeanUtil.map(patientCard.getUser(), patientCard);
 						patientCard.setUserId(patientCard.getUserId());
 						patientCard.setId(patientCard.getUserId());

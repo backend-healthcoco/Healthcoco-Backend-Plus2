@@ -363,6 +363,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					object.setFirstName(doctor.getFirstName());
 					object.setLocationId(doctor.getLocationId());
 					object.setHospitalId(doctor.getHospitalId());
+					object.setExperience(doctor.getExperience());
 					appointmentSearchResponse.setResponse(object);
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.DOCTOR);
 					response.add(appointmentSearchResponse);
