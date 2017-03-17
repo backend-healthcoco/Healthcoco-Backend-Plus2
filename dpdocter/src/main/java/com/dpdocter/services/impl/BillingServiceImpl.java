@@ -199,10 +199,10 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
 				doctorPatientInvoiceCollection.setTotalTax(request.getTotalTax());
-				doctorPatientInvoiceCollection.setGrandTotal(request.getGrandTotal());
 				doctorPatientInvoiceCollection
 						.setBalanceAmount((request.getGrandTotal() - doctorPatientInvoiceCollection.getGrandTotal())
 								+ doctorPatientInvoiceCollection.getBalanceAmount());
+				doctorPatientInvoiceCollection.setGrandTotal(request.getGrandTotal());
 				if (doctorPatientInvoiceCollection.getBalanceAmount() < 0) {
 					doctorPatientInvoiceCollection
 							.setRefundAmount(doctorPatientInvoiceCollection.getBalanceAmount() * (-1));

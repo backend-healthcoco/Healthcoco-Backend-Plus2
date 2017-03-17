@@ -483,13 +483,22 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (visitId != null) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
-				/*if(patientVisitCollection.getPrescriptionId() != null && patientVisitCollection.getPrescriptionId().size() >1)
+				if(patientVisitCollection.getPrescriptionId() != null && patientVisitCollection.getPrescriptionId().size() > 0 && request.getPrescription().getId() == null)
 				{
-					ObjectMapper objectMapper = new ObjectMapper();
+					/*ObjectMapper objectMapper = new ObjectMapper();
 					String collectionBody = objectMapper.writeValueAsString(patientVisitCollection);
 					String mailRequestBody = objectMapper.writeValueAsString(request);
-					mailService.sendMailToIOSteam("Multiple prescription for visit in database", mailBodyGenerator.generatePrescriptionListMail(collectionBody, mailRequestBody));
-				}*/
+					mailService.sendMailToIOSteam("Multiple prescription for visit in database", mailBodyGenerator.generatePrescriptionListMail(collectionBody, mailRequestBody));*/
+					
+					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl prescription in visit");
+					
+				}
+				if(patientVisitCollection.getClinicalNotesId() != null && patientVisitCollection.getClinicalNotesId().size() > 0 && request.getClinicalNote().getId() == null)
+				{
+				
+					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl clinical notes in visit");
+					
+				}
 			} else {
 				patientVisitCollection = new PatientVisitCollection();
 				patientVisitCollection.setDoctorId(new ObjectId(request.getDoctorId()));
