@@ -483,7 +483,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			if (visitId != null) {
 				patientVisitCollection = patientVisitRepository.findOne(new ObjectId(visitId));
 				patientVisitCollection.setUpdatedTime(new Date());
-				if(patientVisitCollection.getPrescriptionId() != null && patientVisitCollection.getPrescriptionId().size() > 0 && request.getPrescription().getId() == null)
+				if(patientVisitCollection.getPrescriptionId() != null && patientVisitCollection.getPrescriptionId().size() > 0 && request.getPrescription() != null && request.getPrescription().getId() == null)
 				{
 					/*ObjectMapper objectMapper = new ObjectMapper();
 					String collectionBody = objectMapper.writeValueAsString(patientVisitCollection);
@@ -493,7 +493,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl prescription in visit");
 					
 				}
-				if(patientVisitCollection.getClinicalNotesId() != null && patientVisitCollection.getClinicalNotesId().size() > 0 && request.getClinicalNote().getId() == null)
+				if(patientVisitCollection.getClinicalNotesId() != null && patientVisitCollection.getClinicalNotesId().size() > 0 && request.getClinicalNote() != null && request.getClinicalNote().getId() == null)
 				{
 				
 					throw new BusinessException(ServiceError.NotAcceptable,"Trying to add multipl clinical notes in visit");

@@ -204,22 +204,31 @@ public class BlogServicesImpl implements BlogService {
 		try {
 			BlogCollection blogCollection = null;
 			if (!DPDoctorUtils.anyStringEmpty(slugUrl))
+			{
 				blogCollection = blogRepository.findBySlugURL(slugUrl);
-			else
-				blogCollection = blogRepository.findOne(new ObjectId(blogId));
-			blogCollection.setViews(blogCollection.getViews() + 1);
-			blogCollection = blogRepository.save(blogCollection);
-			response = new Blog();
-			BeanUtil.map(blogCollection, response);
-			response.setArticle(this.getBlogArticle(response.getArticleId()));
-			if (userId != null) {
-				BlogLikesCollection blogLikesCollection = blogLikesRepository
-						.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
-				response.setIsliked(blogLikesCollection.getDiscarded());
 			}
-			if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))
-				response.setTitleImage(imagePath + response.getTitleImage());
-
+			else
+			{
+				blogCollection = blogRepository.findOne(new ObjectId(blogId));
+			}
+			if (blogCollection != null) {
+				blogCollection.setViews(blogCollection.getViews() + 1);
+				blogCollection = blogRepository.save(blogCollection);
+				response = new Blog();
+				BeanUtil.map(blogCollection, response);
+				response.setArticle(this.getBlogArticle(response.getArticleId()));
+				if (userId != null) {
+					BlogLikesCollection blogLikesCollection = blogLikesRepository
+							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+					response.setIsliked(blogLikesCollection.getDiscarded());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))
+					response.setTitleImage(imagePath + response.getTitleImage());
+			}
+			else
+			{
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid slug url");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
