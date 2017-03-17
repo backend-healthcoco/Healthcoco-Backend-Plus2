@@ -9,13 +9,13 @@ public class PageSetup {
 
     private String color;
 
-    private Integer leftMargin;
+    private Integer leftMargin = 20;
     
-    private Integer rightMargin;
+    private Integer rightMargin = 20;
     
-    private Integer topMargin;
+    private Integer topMargin = 20;
     
-    private Integer bottomMargin;
+    private Integer bottomMargin = 20 ;
 
     private String pageSize;
 
