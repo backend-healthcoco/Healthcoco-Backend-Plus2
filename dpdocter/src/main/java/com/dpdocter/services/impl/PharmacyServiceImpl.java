@@ -481,8 +481,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 	
 	@Override
 	@Transactional
-	public List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType,int page, int size)
-	{
+	public List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType,int page, int size , Double latitude , Double longitude){
 		List<SearchRequestToPharmacyResponse> response = null;
 		// String searchTerm = null;
 		Criteria criteria = new Criteria();
@@ -500,15 +499,26 @@ public class PharmacyServiceImpl implements PharmacyService {
 			Aggregation aggregation = null;
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("locale_cl", "localeId", "_id", "locale"), Aggregation.unwind("locale"), Aggregation.skip((page) * size),
 						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("locale_cl", "localeId", "_id", "locale"), Aggregation.unwind("locale"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			AggregationResults<SearchRequestToPharmacyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestToPharmacyCollection.class, SearchRequestToPharmacyResponse.class);
 			response = aggregationResults.getMappedResults();
+			if (latitude != null && longitude != null) {
+				for (SearchRequestToPharmacyResponse pharmacyResponse : response) {
+					if (latitude != null && longitude != null
+							&& pharmacyResponse.getLocale().getAddress().getLatitude() != null
+							&& pharmacyResponse.getLocale().getAddress().getLongitude() != null) {
+						pharmacyResponse.setDistance(DPDoctorUtils.distance(latitude, longitude,
+								pharmacyResponse.getLocale().getAddress().getLatitude(),
+								pharmacyResponse.getLocale().getAddress().getLongitude(), "K"));
+					}
+				}
+			}
 		} catch (Exception e) {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();

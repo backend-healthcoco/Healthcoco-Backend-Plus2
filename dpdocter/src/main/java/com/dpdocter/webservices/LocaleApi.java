@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Locale;
@@ -182,8 +183,9 @@ public class LocaleApi {
 		try {
 			
 			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+			System.out.println(data.toString());
 			UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
-			
+			System.out.println(request);
 			ImageURLResponse imageURLResponse = null;
 			if (file != null) {
 				imageURLResponse = localeService.addRXImageMultipart(file);
@@ -243,14 +245,14 @@ public class LocaleApi {
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_FOR_ORDER)
 	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@QueryParam("userId") String userId, @QueryParam("uniqueRequestId") String uniqueRequestId,
-			@QueryParam("replyType") String replyType,@QueryParam("page") int page, @QueryParam("size") int size) {
+			@QueryParam("replyType") String replyType,@QueryParam("page") int page, @QueryParam("size") int size , @QueryParam("lat") Double latitude, @QueryParam("long") Double longitude) {
 		Response<SearchRequestToPharmacyResponse> response = null;
 		List<SearchRequestToPharmacyResponse> list = null;
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
 
-		list = pharmacyService.getPharmacyListbyOrderHistory(userId, uniqueRequestId, replyType, page, size);
+		list = pharmacyService.getPharmacyListbyOrderHistory(userId, uniqueRequestId, replyType, page, size,latitude,longitude);
 
 		response = new Response<SearchRequestToPharmacyResponse>();
 		response.setDataList(list);

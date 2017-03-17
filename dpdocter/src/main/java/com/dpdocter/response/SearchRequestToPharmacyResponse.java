@@ -1,10 +1,6 @@
 package com.dpdocter.response;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Locale;
 
 public class SearchRequestToPharmacyResponse {
 
@@ -17,10 +13,14 @@ public class SearchRequestToPharmacyResponse {
 	private String replyType;
 
 	private String localeId;
+	
+	private Locale locale;
 
 	private String discount;
 
 	private String uniqueResponseId;
+	
+	private Double distance;
 
 	public String getId() {
 		return id;
@@ -78,11 +78,27 @@ public class SearchRequestToPharmacyResponse {
 		this.uniqueResponseId = uniqueResponseId;
 	}
 
+	public Locale getLocale() {
+		return locale;
+	}
+
+	public void setLocale(Locale locale) {
+		this.locale = locale;
+	}
+
+	public Double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(Double distance) {
+		this.distance = distance;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestToPharmacyResponse [id=" + id + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", replyType=" + replyType + ", localeId=" + localeId + ", discount=" + discount
-				+ ", uniqueResponseId=" + uniqueResponseId + "]";
+				+ uniqueRequestId + ", replyType=" + replyType + ", localeId=" + localeId + ", locale=" + locale
+				+ ", discount=" + discount + ", uniqueResponseId=" + uniqueResponseId + "]";
 	}
 
 }

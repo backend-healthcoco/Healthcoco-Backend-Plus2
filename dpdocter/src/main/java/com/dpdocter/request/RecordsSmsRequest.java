@@ -4,7 +4,7 @@ public class RecordsSmsRequest {
 
 	private String doctorId;
 	private String patientId;
-	private String reportId;
+	private String recordId;
 	private String message;
 
 	public String getDoctorId() {
@@ -23,12 +23,12 @@ public class RecordsSmsRequest {
 		this.patientId = patientId;
 	}
 
-	public String getReportId() {
-		return reportId;
+	public String getRecordId() {
+		return recordId;
 	}
 
-	public void setReportId(String reportId) {
-		this.reportId = reportId;
+	public void setRecordId(String recordId) {
+		this.recordId = recordId;
 	}
 
 	public String getMessage() {
@@ -41,7 +41,7 @@ public class RecordsSmsRequest {
 
 	@Override
 	public String toString() {
-		return "ReportSmsRequest [doctorId=" + doctorId + ", patientId=" + patientId + ", reportId=" + reportId
+		return "RecordsSmsRequest [doctorId=" + doctorId + ", patientId=" + patientId + ", recordId=" + recordId
 				+ ", message=" + message + "]";
 	}
 

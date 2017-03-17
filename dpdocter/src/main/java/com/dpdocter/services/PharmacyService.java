@@ -18,9 +18,12 @@ public interface PharmacyService {
 
 	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size);
 
-	List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType, int page,
-			int size);
+	/*List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType, int page,
+			int size);*/
 
 	Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId, String replyType);
+
+	List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
+			String replyType, int page, int size, Double latitude, Double longitude);
 
 }

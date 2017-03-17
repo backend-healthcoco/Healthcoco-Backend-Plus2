@@ -80,6 +80,7 @@ import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
 import com.dpdocter.request.RecordsSearchRequest;
+import com.dpdocter.request.RecordsSmsRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.MailResponse;
@@ -1642,4 +1643,44 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 		return response;
 	}
+	
+	public Boolean sendSMSForRecord(RecordsSmsRequest request)
+	{
+		Boolean status = false;
+		UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+		if(userCollection == null){
+			throw new BusinessException(ServiceError.NoRecord , "User not found");
+		}
+		RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(request.getRecordId()));
+		if(recordsCollection == null){
+			throw new BusinessException(ServiceError.NoRecord , "Record not found");
+		}
+
+		pushNotificationServices.notifyUser(request.getPatientId(), request.getMessage(),
+				ComponentType.REPORTS.getType(), null, null);
+		recordsCollection.getMessages().add(request.getMessage());
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(new ObjectId(request.getDoctorId()));
+		// smsTrackDetail.setHospitalId(new ObjectId(re));
+		// smsTrackDetail.setLocationId(new ObjectId(request.get));
+		smsTrackDetail.setType("Reports");
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(new ObjectId(request.getPatientId()));
+		SMS sms = new SMS();
+		sms.setSmsText(request.getMessage());
+
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(userCollection.getMobileNumber());
+		sms.setSmsAddress(smsAddress);
+
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		status = smsServices.sendSMS(smsTrackDetail, true);
+
+		return status;
+	}
 }
+
