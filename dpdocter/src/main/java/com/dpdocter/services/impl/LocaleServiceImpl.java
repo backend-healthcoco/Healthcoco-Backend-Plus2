@@ -151,12 +151,11 @@ public class LocaleServiceImpl implements LocaleService {
 				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
 				String fileName = fileDetail.getFileName().replaceFirst("."+fileExtension, "");
-				//FileDetails fileDetails = new FileDetails();
 				String recordPath = path + File.separator + fileName
 						+ createdTime.getTime() + "."+fileExtension;
 				//String recordLabel = fileName;
 				imageURLResponse =  new ImageURLResponse();
-				fileManager.saveImage(file, recordPath, true);
+				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}
 			return imageURLResponse;
 		} catch (Exception e) {

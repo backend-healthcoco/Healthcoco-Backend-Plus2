@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URLConnection;
@@ -193,46 +194,53 @@ public class FileManagerImpl implements FileManager {
 	return fileSizeInMB;
     }
     
-    @Override
-    @Transactional
-    public ImageURLResponse saveImage(FormDataBodyPart file, String recordPath, Boolean createThumbnail) {
-	BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-	AmazonS3 s3client = new AmazonS3Client(credentials);
-	ImageURLResponse response = new ImageURLResponse();
-	Double fileSizeInMB = 0.0;
-	try {
-		InputStream fis = file.getEntityAs(InputStream.class);
-	    ObjectMetadata metadata = new ObjectMetadata();
-	    byte[] contentBytes = IOUtils.toByteArray(fis);
-	    
-	    	fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000*1000)).doubleValue();
-	    	if(fileSizeInMB > 10){
-	    		throw new BusinessException(ServiceError.Unknown, " You cannot upload file more than 1O mb");
-	    	}
-	 
-	    metadata.setContentLength(contentBytes.length);
-	    metadata.setContentEncoding(file.getContentDisposition().getType());
-	    metadata.setContentType(file.getMediaType().getType());
-	    metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-	    s3client.putObject(new PutObjectRequest(bucketName, recordPath, fis, metadata));
-	    response.setImageUrl(recordPath);
-	    if(createThumbnail){
-    		response.setThumbnailUrl(saveThumbnailAndReturnThumbNailUrlForLocaleImage(file, recordPath));
-    }
-	} catch (AmazonServiceException ase) {
-	    System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode() + " AWS Error Code:   "
-		    + ase.getErrorCode() + " Error Type:       " + ase.getErrorType() + " Request ID:       " + ase.getRequestId());
-	} catch (AmazonClientException ace) {
-	    System.out.println(
-		    "Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
-	    System.out.println("Error Message: " + ace.getMessage());
-	} catch (BusinessException e) {
-		throw new BusinessException(ServiceError.Unknown, e.getMessage());
-	} catch (Exception e) {
-	    System.out.println("Error Message: " + e.getMessage());
+	@Override
+	@Transactional
+	public ImageURLResponse saveImage(FormDataBodyPart file, String recordPath, Boolean createThumbnail) {
+		BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+		AmazonS3 s3client = new AmazonS3Client(credentials);
+		ImageURLResponse response = new ImageURLResponse();
+		Double fileSizeInMB = 0.0;
+		try {
+			InputStream fis = file.getEntityAs(InputStream.class);
+			ObjectMetadata metadata = new ObjectMetadata();
+			byte[] contentBytes = IOUtils.toByteArray(fis);
+
+			fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000 * 1000)).doubleValue();
+			if (fileSizeInMB > 10) {
+				throw new BusinessException(ServiceError.Unknown, " You cannot upload file more than 1O mb");
+			}
+
+			metadata.setContentLength(contentBytes.length);
+			metadata.setContentEncoding(file.getContentDisposition().getType());
+			metadata.setContentType(file.getMediaType().getType());
+			metadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+			s3client.putObject(new PutObjectRequest(bucketName, recordPath, file.getEntityAs(InputStream.class), metadata));
+			response.setImageUrl(imagePath + recordPath);
+			if (createThumbnail) {
+				response.setThumbnailUrl(imagePath + saveThumbnailAndReturnThumbNailUrlForLocaleImage(file, recordPath));
+			}
+		} catch (AmazonServiceException ase) {
+			ase.printStackTrace();
+			System.out.println("Error Message:    " + ase.getMessage() + " HTTP Status Code: " + ase.getStatusCode()
+					+ " AWS Error Code:   " + ase.getErrorCode() + " Error Type:       " + ase.getErrorType()
+					+ " Request ID:       " + ase.getRequestId());
+
+		} catch (AmazonClientException ace) {
+			ace.printStackTrace();
+			System.out.println(
+					"Caught an AmazonClientException, which means the client encountered an internal error while trying to communicate with S3, such as not being able to access the network.");
+			System.out.println("Error Message: " + ace.getMessage());
+
+		} catch (BusinessException e) {
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error Message: " + e.getMessage());
+		}
+		return response;
+
 	}
-	return response;
-    }
     
     public String saveThumbnailAndReturnThumbNailUrlForLocaleImage(FormDataBodyPart file,String path ) {
     	String thumbnailUrl = "";
