@@ -50,6 +50,8 @@ public class Patient {
 
 	private DOB dob;
 
+	private List<String> consultantDoctorIds;
+	
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -226,14 +228,25 @@ public class Patient {
 		this.isPatientOTPVerified = isPatientOTPVerified;
 	}
 
+	public List<String> getConsultantDoctorIds() {
+		return consultantDoctorIds;
+	}
+
+	public void setConsultantDoctorIds(List<String> consultantDoctorIds) {
+		this.consultantDoctorIds = consultantDoctorIds;
+	}
+
 	@Override
 	public String toString() {
-		return "Patient [patientId=" + patientId + ", bloodGroup=" + bloodGroup + ", profession=" + profession
-				+ ", relations=" + relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId
-				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes
-				+ ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor + ", isPatientOTPVerified="
-				+ isPatientOTPVerified + "]";
+		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
+				+ ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations=" + relations
+				+ ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", addressId=" + addressId
+				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+				+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor="
+				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + ", address="
+				+ address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob + ", consultantDoctorIds="
+				+ consultantDoctorIds + "]";
 	}
+
 }

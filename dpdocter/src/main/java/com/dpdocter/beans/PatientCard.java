@@ -76,6 +76,8 @@ public class PatientCard extends GenericCollection {
 
 	private List<Relations> relations;
 
+	private List<String> consultantDoctorIds;
+	
 	public String getPatientId() {
 		return patientId;
 	}
@@ -412,6 +414,22 @@ public class PatientCard extends GenericCollection {
 		this.reference = reference;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public List<String> getConsultantDoctorIds() {
+		return consultantDoctorIds;
+	}
+
+	public void setConsultantDoctorIds(List<String> consultantDoctorIds) {
+		this.consultantDoctorIds = consultantDoctorIds;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -424,15 +442,10 @@ public class PatientCard extends GenericCollection {
 				+ ", colorCode=" + colorCode + ", isDataAvailableWithOtherDoctor=" + isDataAvailableWithOtherDoctor
 				+ ", isPatientOTPVerified=" + isPatientOTPVerified + ", referredBy=" + referredBy + ", user=" + user
 				+ ", patientGroupCollections=" + patientGroupCollections + ", address=" + address + ", reference="
-				+ reference + "]";
+				+ reference + ", patientId=" + patientId + ", profession=" + profession + ", relations=" + relations
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", addressId=" + addressId + ", secMobile="
+				+ secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
+				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
+				+ notes + "]";
 	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 }

@@ -1,6 +1,7 @@
 package com.dpdocter.elasticsearch.document;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -88,6 +89,9 @@ public class ESPatientDocument {
 	@Field(type = FieldType.String)
 	private String userUId;
 
+	@Field(type = FieldType.String)
+	private List<String> consultantDoctorIds;
+	
 	public String getId() {
 		return id;
 	}
@@ -290,14 +294,24 @@ public class ESPatientDocument {
 		this.firstName = firstName;
 	}
 
+	public List<String> getConsultantDoctorIds() {
+		return consultantDoctorIds;
+	}
+
+	public void setConsultantDoctorIds(List<String> consultantDoctorIds) {
+		this.consultantDoctorIds = consultantDoctorIds;
+	}
+
 	@Override
 	public String toString() {
 		return "ESPatientDocument [id=" + id + ", userId=" + userId + ", PID=" + PID + ", userName=" + userName
-				+ ", firstName=" + firstName + ", gender=" + gender + ", bloodGroup=" + bloodGroup + ", emailAddress="
-				+ emailAddress + ", dob=" + dob + ", city=" + city + ", locality=" + locality + ", postalCode="
-				+ postalCode + ", mobileNumber=" + mobileNumber + ", profession=" + profession + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", referredBy=" + referredBy
-				+ ", createdTime=" + createdTime + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl
-				+ ", colorCode=" + colorCode + ", registrationDate=" + registrationDate + ", userUId=" + userUId + "]";
+				+ ", firstName=" + firstName + ", localPatientName=" + localPatientName + ", gender=" + gender
+				+ ", bloodGroup=" + bloodGroup + ", emailAddress=" + emailAddress + ", dob=" + dob + ", city=" + city
+				+ ", locality=" + locality + ", postalCode=" + postalCode + ", mobileNumber=" + mobileNumber
+				+ ", profession=" + profession + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", referredBy=" + referredBy + ", createdTime=" + createdTime
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode
+				+ ", registrationDate=" + registrationDate + ", userUId=" + userUId + ", consultantDoctorIds="
+				+ consultantDoctorIds + "]";
 	}
 }

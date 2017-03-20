@@ -46,6 +46,7 @@ import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AdvancedSearchType;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -99,7 +100,7 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Override
 	public ESPatientResponseDetails searchPatient(String locationId, String hospitalId, String searchTerm, int page,
-			int size) {
+			int size, String doctorId, String role) {
 
 		List<ESPatientDocument> patients = new ArrayList<ESPatientDocument>();
 		List<ESPatientResponse> patientsResponse = null;
@@ -121,6 +122,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
 							.boost(1))
 					.minimumNumberShouldMatch(1);
+			
+			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));
+			}
+			
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -211,6 +217,9 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 				.must(QueryBuilders.termQuery("locationId", locationId))
 				.must(QueryBuilders.termQuery("hospitalId", hospitalId));
 
+		if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
+			boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", request.getDoctorId()));
+		}
 		if (request.getSearchParameters() != null && !request.getSearchParameters().isEmpty()) {
 			for (AdvancedSearchParameter searchParameter : request.getSearchParameters()) {
 				String searchValue = searchParameter.getSearchValue();

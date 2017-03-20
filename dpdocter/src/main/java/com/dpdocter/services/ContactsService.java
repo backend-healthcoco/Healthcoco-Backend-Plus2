@@ -29,19 +29,19 @@ public interface ContactsService {
 
     Boolean exportContacts(ExportContactsRequest request);
 
-    DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size);
+    DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size, String role);
 
-    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
+    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, String role);
 
     PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
     List<Group> getAllGroups(int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded);
 
     DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded, int page,
-	    int size);
+	    int size, String role);
 
 	DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId, String locationId,
-			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName)
+			String hospitalId, int page, int size, String updatedTime, Boolean discarded, Boolean sortByFirstName, String role)
 			throws Exception;
 
 }

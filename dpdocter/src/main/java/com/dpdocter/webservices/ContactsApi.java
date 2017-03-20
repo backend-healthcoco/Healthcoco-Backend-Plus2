@@ -81,7 +81,8 @@ public class ContactsApi {
     @ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_DOCTOR_SPECIFIC)
     public Response<DoctorContactsResponse> getDoctorContacts(@PathParam("type") String type, @QueryParam("page") int page, @QueryParam("size") int size,
     		@QueryParam(value = "doctorId") String doctorId,@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded, 
+	    @QueryParam("role") String role) {
 
 	DoctorContactsResponse doctorContactsResponse = null;
 
@@ -92,16 +93,16 @@ public class ContactsApi {
 
 	switch (ContactsSearchType.valueOf(type.toUpperCase())) {
 	case DOCTORCONTACTS:
-	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
+	    doctorContactsResponse = contactsService.getDoctorContactsSortedByName(doctorId, locationId, hospitalId, updatedTime, discarded, page, size, role);
 	    break;
 	case RECENTLYADDED:
-	    doctorContactsResponse = contactsService.getDoctorContacts(doctorId, locationId, hospitalId, updatedTime, discarded, page, size);
+	    doctorContactsResponse = contactsService.getDoctorContacts(doctorId, locationId, hospitalId, updatedTime, discarded, page, size, role);
 	    break;
 	case RECENTLYVISITED:
-	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size);
+	    doctorContactsResponse = patientTrackService.recentlyVisited(doctorId, locationId, hospitalId, page, size, role);
 	    break;
 	case MOSTVISITED:
-	    doctorContactsResponse = patientTrackService.mostVisited(doctorId, locationId, hospitalId, page, size);
+	    doctorContactsResponse = patientTrackService.mostVisited(doctorId, locationId, hospitalId, page, size, role);
 	    break;
 	default:
 	    break;
@@ -127,10 +128,10 @@ public class ContactsApi {
     public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("role") String role) {
 
     
-    List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded);
+    List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded, role);
     	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
     	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
     		registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));

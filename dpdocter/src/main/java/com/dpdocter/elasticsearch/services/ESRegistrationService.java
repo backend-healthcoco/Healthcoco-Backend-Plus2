@@ -10,7 +10,7 @@ import com.dpdocter.elasticsearch.response.ESPatientResponseDetails;
 public interface ESRegistrationService {
     boolean addPatient(ESPatientDocument request);
 
-    ESPatientResponseDetails searchPatient(String doctorId, String locationId, String hospitalId, int page, int size);
+    ESPatientResponseDetails searchPatient(String locationId, String hospitalId, String searchTerm, int page, int size, String doctorId, String role);
 
     ESPatientResponseDetails searchPatient(AdvancedSearch request);
 

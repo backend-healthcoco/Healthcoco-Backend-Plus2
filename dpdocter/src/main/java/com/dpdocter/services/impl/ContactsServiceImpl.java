@@ -36,6 +36,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -131,7 +132,7 @@ public class ContactsServiceImpl implements ContactsService {
 				return null;
 			response = getSpecifiedPatientCards(patientIds, request.getDoctorId(), request.getLocationId(),
 					request.getHospitalId(), request.getPage(), request.getSize(), request.getUpdatedTime(),
-					request.getDiscarded(), false);
+					request.getDiscarded(), false, request.getRole());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -143,11 +144,11 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId,
-			String updatedTime, boolean discarded, int page, int size) {
+			String updatedTime, boolean discarded, int page, int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			response = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime,
-					discarded, false);
+					discarded, false, role);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -159,11 +160,11 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse getDoctorContactsSortedByName(String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, int page, int size) {
+			String updatedTime, Boolean discarded, int page, int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			response = getSpecifiedPatientCards(null, doctorId, locationId, hospitalId, page, size, updatedTime,
-					discarded, true);
+					discarded, true, role);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -177,7 +178,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Transactional
 	public DoctorContactsResponse getSpecifiedPatientCards(Collection<ObjectId> patientIds, String doctorId,
 			String locationId, String hospitalId, int page, int size, String updatedTime, Boolean discarded,
-			Boolean sortByFirstName) throws Exception {
+			Boolean sortByFirstName, String role) throws Exception {
 		DoctorContactsResponse response = null;
 		List<PatientCard> patientCards = null;
 
@@ -198,8 +199,11 @@ public class ContactsServiceImpl implements ContactsService {
 			criteria.and("userId").in(patientIds);
 		if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))
 			criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-		if (!DPDoctorUtils.anyStringEmpty(doctorId))
-			criteria.and("doctorId").is(doctorObjectId);
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)){
+			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+				criteria.and("consultantDoctorIds").is(doctorObjectId);
+			}else criteria.and("doctorId").is(doctorObjectId);
+		}
 
 		Aggregation aggregation = null;
 		if (sortByFirstName) {
@@ -515,7 +519,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded) {
+			String hospitalId, String updatedTime, boolean discarded, String role) {
 		List<RegisteredPatientDetails> registeredPatientDetails = null;
 		List<PatientCard> patientCards = null;
 		List<Group> groups = null;
@@ -535,7 +539,10 @@ public class ContactsServiceImpl implements ContactsService {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
-				criteria.and("doctorId").is(doctorObjectId);
+				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+					criteria.and("consultantDoctorIds").is(doctorObjectId);
+				}
+				else criteria.and("doctorId").is(doctorObjectId);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
@@ -550,13 +557,6 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!patientCards.isEmpty()) {
 				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
 				for (PatientCard patientCard : patientCards) {
-					// UserCollection userCollection =
-					// userRepository.findOne(patientCollection.getUserId());
-					/*
-					 * List<PatientGroupCollection> patientGroupCollections =
-					 * patientGroupRepository
-					 * .findByPatientId(patientCollection.getUserId());
-					 */
 
 					@SuppressWarnings("unchecked")
 					Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),

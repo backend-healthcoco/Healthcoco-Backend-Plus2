@@ -375,6 +375,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientCollection.setCreatedTime(createdTime);
 			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId()));
 
+			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+				List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
+				consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
+				patientCollection.setConsultantDoctorIds(consultantDoctorIds);
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
 				patientCollection.setProfession(request.getProfession());
 			}
@@ -474,6 +479,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			registeredPatientDetails.setDob(patientCollection.getDob());
 			registeredPatientDetails.setGender(patientCollection.getGender());
 			registeredPatientDetails.setPID(patientCollection.getPID());
+			registeredPatientDetails.setConsultantDoctorIds(patient.getConsultantDoctorIds());
 			if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
 				registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
 			if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))
@@ -642,7 +648,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					userCollection.setThumbnailUrl(null);
 				}
-
+				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+					List<ObjectId> consultantDoctorIds = patientCollection.getConsultantDoctorIds();
+					if(consultantDoctorIds == null)consultantDoctorIds = new ArrayList<ObjectId>();
+					if(!consultantDoctorIds.contains(new ObjectId(request.getDoctorId())))consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
+					patientCollection.setConsultantDoctorIds(consultantDoctorIds);
+				}
 				patientCollection = patientRepository.save(patientCollection);
 
 				Patient patient = new Patient();
@@ -821,6 +832,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setDob(patientCollection.getDob());
 				registeredPatientDetails.setGender(patientCollection.getGender());
 				registeredPatientDetails.setPID(patientCollection.getPID());
+				registeredPatientDetails.setConsultantDoctorIds(patient.getConsultantDoctorIds());
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getDoctorId()))
 					registeredPatientDetails.setDoctorId(patientCollection.getDoctorId().toString());
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId()))
@@ -873,7 +885,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getUsersByPhoneNumber(String phoneNumber, String doctorId, String locationId,
-			String hospitalId) {
+			String hospitalId, String role) {
 		List<RegisteredPatientDetails> users = null;
 		try {
 			List<UserLookupResponse> userLookupResponses = mongoTemplate.aggregate(
@@ -885,14 +897,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				for (UserLookupResponse userLookupResponse : userLookupResponses) {
 					if (!userLookupResponse.getUserName().equalsIgnoreCase(userLookupResponse.getEmailAddress())) {
 						RegisteredPatientDetails user = new RegisteredPatientDetails();
-
 						if (locationId != null && hospitalId != null) {
-							/*
-							 * List<PatientCollection> patientCollections =
-							 * patientRepository
-							 * .findByUserId(userCollection.getId());
-							 */
-							boolean isPartOfClinic = false;
+							boolean isPartOfClinic = false , isPartOfConsultantDoctor = true;
 							if (userLookupResponse.getPatients() != null) {
 								for (PatientCard patientCard : userLookupResponse.getPatients()) {
 									if (patientCard.getLocationId() != null && patientCard.getHospitalId() != null) {
@@ -900,6 +906,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 												&& patientCard.getHospitalId().equals(hospitalId)) {
 											user.setLocalPatientName(patientCard.getLocalPatientName());
 											isPartOfClinic = true;
+											if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+												if(patientCard.getConsultantDoctorIds() != null && !patientCard.getConsultantDoctorIds().isEmpty()){
+													if(patientCard.getConsultantDoctorIds().contains(doctorId))isPartOfConsultantDoctor = true;
+													else isPartOfConsultantDoctor = false;
+												}else{
+													isPartOfConsultantDoctor = false;
+												}
+											}
 											break;
 										}
 									} else {
@@ -915,7 +929,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 								}
 							}
 							if (!isPartOfClinic) {
-
 								user.setUserId(userLookupResponse.getId().toString());
 								user.setFirstName(userLookupResponse.getFirstName());
 								user.setMobileNumber(userLookupResponse.getMobileNumber());
@@ -924,11 +937,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 								user.setUserId(userLookupResponse.getId().toString());
 							}
 							user.setIsPartOfClinic(isPartOfClinic);
+							user.setIsPartOfConsultantDoctor(isPartOfConsultantDoctor);
 						}
 						users.add(user);
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2174,11 +2187,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
 					if (size > 0)
 						roleCollections = roleRepository.findCustomDoctorRole(new ObjectId(locationId),
-								new ObjectId(hospitalId), new Date(createdTimeStamp), RoleEnum.DOCTOR.getRole(),
+								new ObjectId(hospitalId), new Date(createdTimeStamp), Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomDoctorRole(new ObjectId(locationId),
-								new ObjectId(hospitalId), new Date(createdTimeStamp), RoleEnum.DOCTOR.getRole(),
+								new ObjectId(hospitalId), new Date(createdTimeStamp), Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 					if (size > 0)
@@ -2186,14 +2199,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
 										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
-										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
 										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
-										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
+										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.ADMIN.getRole())) {
 					if (size > 0)
@@ -2322,11 +2335,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 									new ObjectId(hospitalId));
 						} else {
 							if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
-								roleCollections = roleRepository.find(RoleEnum.DOCTOR.getRole(), roleIds,
+								roleCollections = roleRepository.find(Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()), roleIds,
 										new ObjectId(locationId), new ObjectId(hospitalId));
 							} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 								roleCollections = roleRepository.findStaffs(
-										Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+										Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
 												RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
 												RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 										roleIds, new ObjectId(locationId), new ObjectId(hospitalId));

@@ -174,7 +174,7 @@ public class RegistrationApi {
 	@ApiOperation(value = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.EXISTING_PATIENTS_BY_PHONE_NUM, response = Response.class)
 	public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber,
 			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
-			@PathParam("hospitalId") String hospitalId) {
+			@PathParam("hospitalId") String hospitalId, @QueryParam("role") String role) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
@@ -183,7 +183,7 @@ public class RegistrationApi {
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 
 		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, doctorId,
-				locationId, hospitalId);
+				locationId, hospitalId, role);
 		if (users != null && !users.isEmpty()) {
 			for (RegisteredPatientDetails user : users) {
 				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
@@ -227,7 +227,7 @@ public class RegistrationApi {
 		Response<Integer> response = new Response<Integer>();
 		Integer patientCountByMobNum = 0;
 		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null,
-				null);
+				null, null);
 		if (users != null) {
 			patientCountByMobNum = users.size();
 		}

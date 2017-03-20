@@ -19,6 +19,8 @@ public class GetDoctorContactsRequest {
 
     private List<String> groups;
 
+    private String role;
+    
     public String getLocationId() {
 	return locationId;
     }
@@ -83,10 +85,19 @@ public class GetDoctorContactsRequest {
 		this.discarded = discarded;
 	}
 
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 	@Override
 	public String toString() {
 		return "GetDoctorContactsRequest [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", updatedTime=" + updatedTime + ", discarded=" + discarded + ", page=" + page
-				+ ", size=" + size + ", groups=" + groups + "]";
+				+ ", size=" + size + ", groups=" + groups + ", role=" + role + "]";
 	}
+
 }

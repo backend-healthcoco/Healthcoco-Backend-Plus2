@@ -103,6 +103,9 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private Address address;
 
+	@Field
+	private List<ObjectId> consultantDoctorIds;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -332,16 +335,25 @@ public class PatientCollection extends GenericCollection {
 		this.address = address;
 	}
 
+	public List<ObjectId> getConsultantDoctorIds() {
+		return consultantDoctorIds;
+	}
+
+	public void setConsultantDoctorIds(List<ObjectId> consultantDoctorIds) {
+		this.consultantDoctorIds = consultantDoctorIds;
+	}
+
 	@Override
 	public String toString() {
-		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", bloodGroup=" + bloodGroup + ", profession=" + profession + ", relations="
-				+ relations + ", emailAddress=" + emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", userId=" + userId + ", notes=" + notes
-				+ ", PID=" + PID + ", registrationDate=" + registrationDate + ", gender=" + gender + ", dob=" + dob
-				+ ", discarded=" + discarded + ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy
-				+ ", address=" + address + "]";
+		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup=" + bloodGroup
+				+ ", profession=" + profession + ", relations=" + relations + ", emailAddress=" + emailAddress
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+				+ insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + ", registrationDate="
+				+ registrationDate + ", gender=" + gender + ", dob=" + dob + ", discarded=" + discarded
+				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address
+				+ ", consultantDoctorIds=" + consultantDoctorIds + "]";
 	}
 }

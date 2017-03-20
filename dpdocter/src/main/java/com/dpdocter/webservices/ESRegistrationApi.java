@@ -44,13 +44,14 @@ public class ESRegistrationApi {
     @GET
     @ApiOperation(value = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT, notes = PathProxy.SolrRegistrationUrls.SEARCH_PATIENT)
     public Response<ESPatientResponseDetails> searchPatient(@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+	    @PathParam(value = "searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size,
+	    @QueryParam("doctorId") String doctorId, @QueryParam("role") String role) {
 	if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, searchTerm)) {
 	    logger.warn("Location Id, Hospital Id and Search Term Cannot Be Empty");
 	    throw new BusinessException(ServiceError.InvalidInput, "Location Id, Hospital Id and Search Term Cannot Be Empty");
 	}
 
-	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(locationId, hospitalId, searchTerm, page, size);
+	ESPatientResponseDetails patients = solrRegistrationService.searchPatient(locationId, hospitalId, searchTerm, page, size, doctorId, role);
 
 	Response<ESPatientResponseDetails> response = new Response<ESPatientResponseDetails>();
 	response.setData(patients);

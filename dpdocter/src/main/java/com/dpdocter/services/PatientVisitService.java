@@ -24,9 +24,9 @@ public interface PatientVisitService {
 
 	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 
-	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size);
+	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size, String role);
 
-	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size);
+	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size, String role);
 
 	PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 

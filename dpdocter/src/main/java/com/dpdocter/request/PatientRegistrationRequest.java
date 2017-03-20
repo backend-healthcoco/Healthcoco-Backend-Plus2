@@ -12,6 +12,7 @@ public class PatientRegistrationRequest {
 	private String userId;
 
 	private String firstName;
+	
 	private String localPatientName;
 
 	private String mobileNumber;
@@ -68,6 +69,8 @@ public class PatientRegistrationRequest {
 	
 	private Integer regularCheckUpMonths;
 
+	private String role;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -292,20 +295,6 @@ public class PatientRegistrationRequest {
 		this.age = age;
 	}
 
-	@Override
-	public String toString() {
-		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
-				+ localPatientName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", age="
-				+ age + ", image=" + image + ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup="
-				+ bloodGroup + ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile
-				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
-				+ notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
-				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
-				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", regularCheckUpMonths=" + regularCheckUpMonths + "]";
-	}
-
 	public String getLocalPatientName() {
 		return localPatientName;
 	}
@@ -320,6 +309,28 @@ public class PatientRegistrationRequest {
 
 	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
 		this.regularCheckUpMonths = regularCheckUpMonths;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
+				+ localPatientName + ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", dob=" + dob + ", age="
+				+ age + ", image=" + image + ", emailAddress=" + emailAddress + ", groups=" + groups + ", bloodGroup="
+				+ bloodGroup + ", profession=" + profession + ", relations=" + relations + ", secMobile=" + secMobile
+				+ ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
+				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
+				+ notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
+				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
+				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + "]";
 	}
 
 }

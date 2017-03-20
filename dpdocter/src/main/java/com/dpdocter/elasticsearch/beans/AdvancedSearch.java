@@ -4,6 +4,8 @@ import java.util.List;
 
 public class AdvancedSearch {
 
+	private String doctorId;
+	
     private String locationId;
 
     private String hospitalId;
@@ -14,6 +16,8 @@ public class AdvancedSearch {
 
     private int size;
 
+    private String role;
+    
     public String getLocationId() {
 	return locationId;
     }
@@ -54,9 +58,27 @@ public class AdvancedSearch {
 	this.size = size;
     }
 
-    @Override
-    public String toString() {
-	return "AdvancedSearch [locationId=" + locationId + ", hospitalId=" + hospitalId + ", searchParameters=" + searchParameters
-		+ ", page=" + page + ", size=" + size + "]";
-    }
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	@Override
+	public String toString() {
+		return "AdvancedSearch [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", searchParameters=" + searchParameters + ", page=" + page + ", size=" + size + ", role=" + role
+				+ "]";
+	}
+
 }

@@ -117,7 +117,6 @@ import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.RecordsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
@@ -387,7 +386,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page,
-			int size) {
+			int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -415,7 +414,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(results,
 						new BeanToPropertyValueTransformer("id"));
 				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, page,
-						size, "0", true, false);
+						size, "0", true, false, role);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -429,7 +428,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	@Transactional
 	public DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page,
-			int size) {
+			int size, String role) {
 		DoctorContactsResponse response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -460,7 +459,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				List<ObjectId> patientIds = (List<ObjectId>) CollectionUtils.collect(patientTrackCollections,
 						new BeanToPropertyValueTransformer("patientId"));
 				response = contactsService.getSpecifiedPatientCards(patientIds, doctorId, locationId, hospitalId, page,
-						size, "0", true, false);
+						size, "0", true, false, role);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
