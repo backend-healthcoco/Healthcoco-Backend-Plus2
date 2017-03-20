@@ -9,7 +9,7 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 
 public interface ESTreatmentServiceRepository extends ElasticsearchRepository<ESTreatmentServiceDocument, String> {
 
-	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"name\": \"?0*\"}}]}}")
+	@Query("{\"bool\": {\"must\": [{\"match_phrase_prefix\": {\"name\": \"?0*\"}},{\"missing\": {\"field\":\"doctorId\" }},{\"missing\": {\"field\":\"locationId\" }},{\"missing\": {\"field\":\"hospitalId\"}}]}}")
 	List<ESTreatmentServiceDocument> findByName(String searchTerm);
 
 }

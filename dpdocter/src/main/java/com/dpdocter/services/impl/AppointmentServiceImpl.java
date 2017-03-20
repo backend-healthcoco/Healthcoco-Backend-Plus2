@@ -447,7 +447,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
 				
-				if(active)criteria2.and("isActivate").is(true);
+				
 				
 				Criteria criteriaForActive = new Criteria();
 				if(active)criteriaForActive.and("user.isActive").is(true);
@@ -1670,7 +1670,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				
 				Criteria criteria2 = new Criteria("locationId").is(new ObjectId(location.getId()));
 				
-				if(active)criteria2.and("isActivate").is(true);
+				
 				
 				Criteria criteriaForActive = new Criteria();
 				if(active)criteriaForActive.and("user.isActive").is(true);

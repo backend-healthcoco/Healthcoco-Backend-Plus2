@@ -508,7 +508,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
 		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 		try {
-			Criteria criteria = new Criteria("isActivate").is(true).and("doctorId").is(new ObjectId(doctorId));
+			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
