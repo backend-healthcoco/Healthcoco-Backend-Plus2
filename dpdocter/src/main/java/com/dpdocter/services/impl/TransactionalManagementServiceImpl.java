@@ -55,6 +55,7 @@ import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
+import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
@@ -107,10 +108,12 @@ import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
+import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
@@ -143,6 +146,7 @@ import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
+import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MenstrualHistoryRepository;
 import com.dpdocter.repository.NotesRepository;
@@ -336,6 +340,12 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private PushNotificationServices pushNotificationServices;
+	
+	@Autowired
+	private LocaleRepository localeRepository;
+	
+	@Autowired
+	private ESLocaleService esLocaleService;
 
 	@Value(value = "${mail.appointment.details.subject}")
 	private String appointmentDetailsSub;
@@ -462,6 +472,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 						case HOLTER:
 							checkHolter(transactionalCollection.getResourceId());
+							break;
+							
+						case PHARMACY:
+							checkPharmacy(transactionalCollection.getResourceId());
 							break;
 
 						default:
@@ -1184,6 +1198,21 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESHolterDocument esHolterDocument = new ESHolterDocument();
 				BeanUtil.map(holterCollection, esHolterDocument);
 				esClinicalNotesService.addHolter(esHolterDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+	
+	private void checkPharmacy(ObjectId resourceId) {
+		try {
+			LocaleCollection localeCollection = localeRepository.findOne(resourceId);
+			if (localeCollection != null) {
+				ESUserLocaleDocument esUserLocaleDocument = new ESUserLocaleDocument();
+				BeanUtil.map(localeCollection, esUserLocaleDocument);
+				esUserLocaleDocument.setLocaleId(localeCollection.getId().toString());
+				esLocaleService.addLocale(esUserLocaleDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

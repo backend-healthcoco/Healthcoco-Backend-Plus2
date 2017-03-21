@@ -300,7 +300,7 @@ public class LocaleApi {
 	@GET
 	@Path(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
 	@ApiOperation(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION, notes = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
-	public Response<Locale> addEditRecommedation(String localeId, String patientId,RecommendationType type){
+	public Response<Locale> addEditRecommedation(@QueryParam("localeId")String localeId,@QueryParam("patientId")String patientId,@QueryParam("type")RecommendationType type){
 		Locale locale = null;
 		Response<Locale> response =  null;
 		if (DPDoctorUtils.anyStringEmpty(localeId,patientId) || type == null) {
