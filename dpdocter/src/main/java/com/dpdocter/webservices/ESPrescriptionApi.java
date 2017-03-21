@@ -50,7 +50,7 @@ public class ESPrescriptionApi {
 			@QueryParam(value = "searchTerm") String searchTerm, @QueryParam(value = "category") String category,
 			@DefaultValue("false")  @QueryParam(value = "searchByGenericName") Boolean searchByGenericName) {
 
-		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+		if (DPDoctorUtils.anyStringEmpty(range)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
