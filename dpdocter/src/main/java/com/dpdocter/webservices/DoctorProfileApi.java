@@ -317,6 +317,13 @@ public class DoctorProfileApi {
 								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
 						}
 					}
+					if (clinicProfile.getLogoUrl() != null) {
+						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
+					}
+
+					if (clinicProfile.getLogoThumbnailUrl() != null) {
+						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
+					}
 				}
 			}
 		}
@@ -371,7 +378,7 @@ public class DoctorProfileApi {
 		}
 		DoctorVisitingTimeAddEditRequest addEditVisitingTimeResponse = doctorProfileService
 				.addEditVisitingTime(request);
-		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
+		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 		Response<DoctorVisitingTimeAddEditRequest> response = new Response<DoctorVisitingTimeAddEditRequest>();
 		response.setData(addEditVisitingTimeResponse);
 		return response;
@@ -431,7 +438,7 @@ public class DoctorProfileApi {
 		}
 
 		DoctorGeneralInfo addEditGeneralInfoResponse = doctorProfileService.addEditGeneralInfo(request);
-		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()),new ObjectId(request.getLocationId()));
+		transnationalService.checkDoctor(new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
 
 		Response<DoctorGeneralInfo> response = new Response<DoctorGeneralInfo>();
 		response.setData(addEditGeneralInfoResponse);
