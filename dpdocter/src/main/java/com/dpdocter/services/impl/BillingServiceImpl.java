@@ -1066,6 +1066,7 @@ public class BillingServiceImpl implements BillingService {
 				&& !doctorPatientInvoiceCollection.getInvoiceItems().isEmpty()) {
 			invoiceItemJasperDetails = new ArrayList<InvoiceItemJasperDetails>();
 			Boolean showInvoiceItemQuantity = false;
+			Boolean showDiscount = false;
 			int no = 0;
 			for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
 				InvoiceItemJasperDetails invoiceItemJasperDetail = new InvoiceItemJasperDetails();
@@ -1090,12 +1091,19 @@ public class BillingServiceImpl implements BillingService {
 				invoiceItemJasperDetail.setTax((invoiceItem.getTax() != null)
 						? invoiceItem.getTax().getValue() + " " + invoiceItem.getTax().getUnit().getUnit() : "");
 				invoiceItemJasperDetail.setCost(invoiceItem.getCost() + "");
-				invoiceItemJasperDetail.setDiscount((invoiceItem.getDiscount() != null)
-						? invoiceItem.getDiscount().getValue() + " " + invoiceItem.getDiscount().getUnit().getUnit()
-						: "");
+				if (invoiceItem.getDiscount() != null) {
+					if (invoiceItem.getDiscount().getValue() > 0)
+						showDiscount = true;
+					invoiceItemJasperDetail.setDiscount(
+							invoiceItem.getDiscount().getValue() + " " + invoiceItem.getDiscount().getUnit().getUnit());
+				} else {
+					invoiceItemJasperDetail.setDiscount("");
+				}
+
 				invoiceItemJasperDetail.setTotal(invoiceItem.getFinalCost() + "");
 				invoiceItemJasperDetails.add(invoiceItemJasperDetail);
 			}
+			parameters.put("showDiscount", showDiscount);
 			parameters.put("showInvoiceItemQuantity", showInvoiceItemQuantity);
 			parameters.put("items", invoiceItemJasperDetails);
 			String total = "";

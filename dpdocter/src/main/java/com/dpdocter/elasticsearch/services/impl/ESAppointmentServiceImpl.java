@@ -5,14 +5,23 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -83,6 +93,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
+
+	@Autowired
+	TransportClient transportClient;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -375,17 +388,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		if (response.size() < 50) {
 			List<ESTreatmentServiceDocument> treatmentServiceDocuments = esTreatmentServiceRepository
 					.findByName(searchTerm);
+			Set<String> esTreatmentServiceset = null;
 			if (treatmentServiceDocuments != null)
-				for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
-					if (response.size() >= 50)
-						break;
-					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-					appointmentSearchResponse.setId(esTreatmentServiceDocument.getId());
-					appointmentSearchResponse.setResponse(esTreatmentServiceDocument.getName());
-					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
-					response.add(appointmentSearchResponse);
-				}
+				esTreatmentServiceset = new HashSet<String>();
+			for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
+				if (esTreatmentServiceset.size() >= 50)
+					break;
+				esTreatmentServiceset.add(esTreatmentServiceDocument.getName());
+
+			}
+			for (String serviceName : esTreatmentServiceset) {
+				AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+				appointmentSearchResponse.setResponse(serviceName);
+				appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
+				response.add(appointmentSearchResponse);
+			}
 		}
+
 		return response;
 	}
 
@@ -470,6 +489,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (esTreatmentServiceDocuments != null) {
 					Collection<String> serviceIds = CollectionUtils.collect(esTreatmentServiceDocuments,
 							new BeanToPropertyValueTransformer("id"));
+					Collection<String> specialities = CollectionUtils.collect(esTreatmentServiceDocuments,
+							new BeanToPropertyValueTransformer("speciality"));
+					Set<String> specialityIdSet = new HashSet<String>();
+					for (String specialitySTR : specialities) {
+						List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
+								.findByQueryAnnotation(specialitySTR);
+						if (esSpecialityDocuments != null && !esSpecialityDocuments.isEmpty()) {
+							Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+									new BeanToPropertyValueTransformer("id"));
+							if (specialityIds != null) {
+								specialityIdSet.addAll(specialityIds);
+							}
+						}
+
+					}
+					boolQueryBuilder.must(QueryBuilders.termsQuery("specialities", specialityIdSet));
+
 					int count = (int) elasticsearchTemplate.count(
 							new CriteriaQuery(new Criteria("treatmentServiceId").in(serviceIds)),
 							ESTreatmentServiceCostDocument.class);
@@ -479,6 +515,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										.withQuery(QueryBuilders.termsQuery("treatmentServiceId", serviceIds))
 										.withPageable(new PageRequest(0, count)).build(),
 								ESTreatmentServiceCostDocument.class);
+
 				}
 				if (esTreatmentServiceCostDocuments == null || esTreatmentServiceCostDocuments.isEmpty()) {
 					return null;
@@ -557,40 +594,44 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 												.to(maxFee))),
 								QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
 										QueryBuilders.existsQuery("consultationFee")))));
-			
+
 			else if (minFee != 0)
 				boolQueryBuilder
 						.must(QueryBuilders
-								.orQuery(QueryBuilders.nestedQuery("consultationFee",
+								.orQuery(
+										QueryBuilders.nestedQuery("consultationFee",
 												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
 														.from(minFee))),
 										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
 												QueryBuilders.existsQuery("consultationFee")))));
 			else if (maxFee != 0)
-				boolQueryBuilder.must(QueryBuilders
-						.orQuery(QueryBuilders.nestedQuery("consultationFee",
-										boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(0).to(maxFee))),
-									QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
-											QueryBuilders.existsQuery("consultationFee")))));
-							
+				boolQueryBuilder
+						.must(QueryBuilders
+								.orQuery(
+										QueryBuilders.nestedQuery("consultationFee",
+												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
+														.from(0).to(maxFee))),
+										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+												QueryBuilders.existsQuery("consultationFee")))));
+
 			if (minExperience != 0 && maxExperience != 0)
 				boolQueryBuilder.must(QueryBuilders.orQuery(
 						QueryBuilders.nestedQuery("experience",
 								boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience)
 										.to(maxExperience))),
-						QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
-								QueryBuilders.existsQuery("experience")))));
-			
+						QueryBuilders.boolQuery().mustNot(
+								QueryBuilders.nestedQuery("experience", QueryBuilders.existsQuery("experience")))));
+
 			else if (minExperience != 0)
-				boolQueryBuilder
-						.must(QueryBuilders
-								.orQuery(
-										QueryBuilders.nestedQuery("experience",
-												boolQuery().must(QueryBuilders.rangeQuery("experience.experience")
-														.from(minExperience))),
-										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
-												QueryBuilders.existsQuery("experience")))));
-			
+				boolQueryBuilder.must(QueryBuilders
+						.orQuery(
+								QueryBuilders.nestedQuery(
+										"experience",
+										boolQuery().must(
+												QueryBuilders.rangeQuery("experience.experience").from(minExperience))),
+								QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
+										QueryBuilders.existsQuery("experience")))));
+
 			else if (maxExperience != 0)
 				boolQueryBuilder
 						.must(QueryBuilders.orQuery(
