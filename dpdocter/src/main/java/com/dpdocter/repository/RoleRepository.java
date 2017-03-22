@@ -76,7 +76,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query("{'$or': [{'id':{$in :?0}, 'locationId': ?1, 'hospitalId': ?2},{'id':{$in :?0}, 'locationId': null, 'hospitalId': null}]}")
 	public List<RoleCollection> find(Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
-    @Query("{'$or': [{role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3},{role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
+    @Query("{'$or': [{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3},{'role': {'$in': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")
     public List<RoleCollection> find(List<String> roles, Collection<ObjectId> roleIds, ObjectId locationId, ObjectId hospitalId);
 
     @Query("{'$or': [{'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': ?2, 'hospitalId': ?3}, {'role': {'$nin': ?0}, 'id':{$in :?1}, 'locationId': null, 'hospitalId': null}]}")

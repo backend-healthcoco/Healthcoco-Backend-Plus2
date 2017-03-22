@@ -1278,7 +1278,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		JasperReportResponse response = null;
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
 		if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()) {
-			Boolean showTreatmentQuantity = false;
+			Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
 			 int no = 0;
 			 patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
 			 for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
@@ -1294,19 +1294,21 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				 }
 				 patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
 				 
-				 if(treatment.getQuantity() != null){
+				 if(treatment.getQuantity() != null && treatment.getQuantity().getValue() > 0){
 					 showTreatmentQuantity = true;
 					 String quantity = treatment.getQuantity().getValue()+" ";
 					 if(treatment.getQuantity().getType() != null)quantity=
 					 quantity+treatment.getQuantity().getType().getDuration();
 					 patientTreatments.setQuantity(quantity);
 				 }
+				 if(treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)showTreatmentDiscount = true;
 				 patientTreatments.setNote(treatment.getNote() != null ? "<b>Note :</b> "+treatment.getNote() : "");
 				 patientTreatments.setCost(treatment.getCost()+"");
 				 patientTreatments.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()+" "+treatment.getDiscount().getUnit().getUnit() : "");
 				 patientTreatments.setFinalCost(treatment.getFinalCost()+"");
 				 patientTreatmentJasperDetails.add(patientTreatments);
 			}
+			parameters.put("showTreatmentDiscount", showTreatmentDiscount);
 			parameters.put("showTreatmentQuantity", showTreatmentQuantity);
 			parameters.put("services", patientTreatmentJasperDetails);
 			
@@ -1317,7 +1319,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				total = total+ "<b>Total Discount:</b> "+patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit()+"   ";
 			 }
 			 
-			if(patientTreatmentCollection.getGrandTotal() > 0)total = total+ "<b>Grand Total:</b> "+ patientTreatmentCollection.getGrandTotal()+"₹";
+			if(patientTreatmentCollection.getGrandTotal() != 0)total = total+ "<b>Grand Total:</b> "+ patientTreatmentCollection.getGrandTotal()+"₹";
 			parameters.put("grandTotal", total);
 			parameters.put("patienttreatmentId", patientTreatmentCollection.getId().toString());
 			if (parameters.get("followUpAppointment") == null

@@ -1086,7 +1086,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		 if (patientTreatmentCollection != null) {
 			 if (patientTreatmentCollection.getDoctorId() != null && patientTreatmentCollection.getHospitalId() != null	 && patientTreatmentCollection.getLocationId() != null) {
 				 if (patientTreatmentCollection.getTreatments() != null && !patientTreatmentCollection.getTreatments().isEmpty()){
-					 Boolean showTreatmentQuantity = false;
+					 Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
 					 int no = 0;
 					 patientTreatmentJasperDetails = new
 					 ArrayList<PatientTreatmentJasperDetails>();
@@ -1104,19 +1104,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						 }
 						 patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
 						 
-						 if(treatment.getQuantity() != null){
+						 if(treatment.getQuantity() != null && treatment.getQuantity().getValue() > 0){
 							 showTreatmentQuantity = true;
 							 String quantity = treatment.getQuantity().getValue()+" ";
 							 if(treatment.getQuantity().getType() != null)quantity=
 							 quantity+treatment.getQuantity().getType().getDuration();
 							 patientTreatments.setQuantity(quantity);
 						 }
+						 if(treatment.getDiscount() != null && treatment.getDiscount().getValue() > 0)showTreatmentDiscount = true;
 						 patientTreatments.setNote(treatment.getNote() != null ? "<b>Note :</b> "+treatment.getNote() : "");
 						 patientTreatments.setCost(treatment.getCost()+"");
 						 patientTreatments.setDiscount((treatment.getDiscount() != null) ? treatment.getDiscount().getValue()+" "+treatment.getDiscount().getUnit().getUnit() : "");
 						 patientTreatments.setFinalCost(treatment.getFinalCost()+"");
 						 patientTreatmentJasperDetails.add(patientTreatments);
 					 }
+					 parameters.put("showTreatmentDiscount", showTreatmentDiscount);
 					 parameters.put("showTreatmentQuantity", showTreatmentQuantity);
 					 if(parameters.get("followUpAppointment") == null && !DPDoctorUtils.anyStringEmpty(patientTreatmentCollection.getAppointmentId()) && patientTreatmentCollection.getTime() != null){
 						 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
@@ -1141,7 +1143,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						 if(patientTreatmentCollection.getTotalDiscount() != null && patientTreatmentCollection.getTotalDiscount().getValue() > 0.0){
 								total = total+ "<b>Total Discount:</b> "+patientTreatmentCollection.getTotalDiscount().getValue()+" "+patientTreatmentCollection.getTotalDiscount().getUnit().getUnit()+"   ";
 						 }
-						if(patientTreatmentCollection.getGrandTotal() > 0)total = total+ "<b>Grand Total:</b> "+ patientTreatmentCollection.getGrandTotal()+"₹";
+						if(patientTreatmentCollection.getGrandTotal() != 0)total = total+ "<b>Grand Total:</b> "+ patientTreatmentCollection.getGrandTotal()+"₹";
 						response.put("grandTotal", total);
 					 }
 				 }

@@ -1808,6 +1808,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 			if (doctorRole.getRole().equals(RoleEnum.DOCTOR.getRole())
+					|| doctorRole.getRole().equals(RoleEnum.CONSULTANT_DOCTOR.getRole())
 					|| doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole())
 					|| doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole())
 					|| doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())) {
@@ -1944,6 +1945,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					}
 				}
 				if (doctorRole.getRole().equals(RoleEnum.DOCTOR.getRole())
+						|| doctorRole.getRole().equals(RoleEnum.CONSULTANT_DOCTOR.getRole())
 						|| doctorRole.getRole().equals(RoleEnum.SUPER_ADMIN.getRole())
 						|| doctorRole.getRole().equals(RoleEnum.HOSPITAL_ADMIN.getRole())
 						|| doctorRole.getRole().equals(RoleEnum.LOCATION_ADMIN.getRole())) {

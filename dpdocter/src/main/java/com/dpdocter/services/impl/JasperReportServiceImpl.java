@@ -1118,6 +1118,7 @@ public class JasperReportServiceImpl implements JasperReportService {
         
         Integer titleFontSize = contentFontSize;
         if(contentFontSize > 13)titleFontSize = 13;
+
         jrDesignLine = new JRDesignLine();
         jrDesignLine.setX(0); jrDesignLine.setY(0); jrDesignLine.setHeight(1);jrDesignLine.setWidth(columnWidth);
         jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
@@ -1959,18 +1960,36 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		jasperDesign.addStyle(normalStyle);
 
-		Boolean showTreatmentQuantity = (Boolean) parameters.get("showTreatmentQuantity");
+		Boolean showTreatmentQuantity = (Boolean) parameters.get("showTreatmentQuantity"),
+				showTreatmentDiscount = (Boolean) parameters.get("showTreatmentDiscount");
 
-		int serviceWidth = (30 * (columnWidth - 30)) / 100, quantityWidth = (12 * (columnWidth - 30)) / 100,
-				otherFieldsWidth = (11 * (columnWidth - 30)) / 100, xSpace = 0,
-				statusWidth = (20 * (columnWidth - 30)) / 100, discountWidth = (15 * (columnWidth - 30)) / 100;
+		int serviceWidth, quantityWidth = 0, otherFieldsWidth, statusWidth, discountWidth = 0, xSpace = 0;
 
-		// if(showTreatmentQuantity){
-		// serviceWidth = (50*(columnWidth-31))/100; quantityWidth =
-		// (50*(columnWidth-31))/100;
-		// }else{
-		// serviceWidth = columnWidth;
-		// }
+		if(showTreatmentDiscount && showTreatmentQuantity){
+			serviceWidth = (30 * (columnWidth - 30)) / 100; quantityWidth = (12 * (columnWidth - 30)) / 100;
+					otherFieldsWidth = (11 * (columnWidth - 30)) / 100;
+					statusWidth = (20 * (columnWidth - 30)) / 100; discountWidth = (15 * (columnWidth - 30)) / 100;
+
+		}else if(showTreatmentQuantity){
+			serviceWidth = (33 * (columnWidth - 30)) / 100; 
+			quantityWidth = (15 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (14 * (columnWidth - 30)) / 100;
+			statusWidth = (23 * (columnWidth - 30)) / 100;
+		
+		}else if(showTreatmentDiscount){
+			serviceWidth = (33 * (columnWidth - 30)) / 100; 
+			otherFieldsWidth = (12 * (columnWidth - 30)) / 100;
+			statusWidth = (21 * (columnWidth - 30)) / 100; 
+			discountWidth = (16 * (columnWidth - 30)) / 100;
+		
+		}else{
+			serviceWidth = (35 * (columnWidth - 30)) / 100; 
+			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
+			statusWidth = (25 * (columnWidth - 30)) / 100; 
+		}
+		
+		Integer titleFontSize = contentFontSize;
+        if(contentFontSize > 13)titleFontSize = 13;
 
 		band = new JRDesignBand();
 		band.setHeight(26);
@@ -1989,7 +2008,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(35);
-		jrDesignTextField.setBold(true);
+		jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
@@ -2001,7 +2020,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(serviceWidth);
-		jrDesignTextField.setBold(true);
+		jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + serviceWidth;
@@ -2013,7 +2032,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setY(4);
 			jrDesignTextField.setHeight(15);
 			jrDesignTextField.setWidth(quantityWidth);
-			jrDesignTextField.setBold(true);
+			jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
 			jrDesignTextField.setStretchWithOverflow(true);
 			band.addElement(jrDesignTextField);
 			xSpace = xSpace + quantityWidth;
@@ -2025,29 +2044,31 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(otherFieldsWidth);
-		jrDesignTextField.setBold(true);
+		jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{Discount}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(4);
-		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(discountWidth);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		xSpace = xSpace + discountWidth;
-
+		if(showTreatmentDiscount){
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Discount}"));
+			jrDesignTextField.setX(xSpace);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(discountWidth);
+			jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			xSpace = xSpace + discountWidth;
+		}
+		
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
 		jrDesignTextField.setX(xSpace);
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(statusWidth);
-		jrDesignTextField.setBold(true);
+		jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + statusWidth;
@@ -2058,7 +2079,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(4);
 		jrDesignTextField.setHeight(15);
 		jrDesignTextField.setWidth(otherFieldsWidth);
-		jrDesignTextField.setBold(true);
+		jrDesignTextField.setBold(true);jrDesignTextField.setFontSize(new Float(titleFontSize));
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
