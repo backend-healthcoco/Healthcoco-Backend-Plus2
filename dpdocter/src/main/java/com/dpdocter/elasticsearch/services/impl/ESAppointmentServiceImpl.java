@@ -555,32 +555,32 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								nestedQuery("consultationFee",
 										boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(minFee)
 												.to(maxFee))),
-								boolQuery().mustNot(QueryBuilders.existsQuery("consultationFee"))));
+								QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+										QueryBuilders.existsQuery("consultationFee")))));
+			
 			else if (minFee != 0)
 				boolQueryBuilder
 						.must(QueryBuilders
-								.orQuery(
-										QueryBuilders.nestedQuery("consultationFee",
+								.orQuery(QueryBuilders.nestedQuery("consultationFee",
 												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
 														.from(minFee))),
-										QueryBuilders.boolQuery()
-												.mustNot(QueryBuilders.existsQuery("consultationFee"))));
+										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+												QueryBuilders.existsQuery("consultationFee")))));
 			else if (maxFee != 0)
-				boolQueryBuilder
-						.filter(QueryBuilders
-								.orQuery(
-										QueryBuilders.nestedQuery("consultationFee",
-												boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount")
-														.from(0).to(maxFee))),
-										QueryBuilders.boolQuery()
-												.mustNot(QueryBuilders.existsQuery("consultationFee"))));
-
+				boolQueryBuilder.must(QueryBuilders
+						.orQuery(QueryBuilders.nestedQuery("consultationFee",
+										boolQuery().must(QueryBuilders.rangeQuery("consultationFee.amount").from(0).to(maxFee))),
+									QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("consultationFee",
+											QueryBuilders.existsQuery("consultationFee")))));
+							
 			if (minExperience != 0 && maxExperience != 0)
 				boolQueryBuilder.must(QueryBuilders.orQuery(
 						QueryBuilders.nestedQuery("experience",
 								boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(minExperience)
 										.to(maxExperience))),
-						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("experience"))));
+						QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
+								QueryBuilders.existsQuery("experience")))));
+			
 			else if (minExperience != 0)
 				boolQueryBuilder
 						.must(QueryBuilders
@@ -588,14 +588,17 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										QueryBuilders.nestedQuery("experience",
 												boolQuery().must(QueryBuilders.rangeQuery("experience.experience")
 														.from(minExperience))),
-										QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("experience"))));
+										QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
+												QueryBuilders.existsQuery("experience")))));
+			
 			else if (maxExperience != 0)
 				boolQueryBuilder
 						.must(QueryBuilders.orQuery(
 								QueryBuilders.nestedQuery("experience",
 										boolQuery().must(QueryBuilders.rangeQuery("experience.experience").from(0)
 												.to(maxExperience))),
-								QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("experience"))));
+								QueryBuilders.boolQuery().mustNot(QueryBuilders.nestedQuery("experience",
+										QueryBuilders.existsQuery("experience")))));
 
 			if (!DPDoctorUtils.anyStringEmpty(gender)) {
 				boolQueryBuilder.must(QueryBuilders.matchQuery("gender", gender));
