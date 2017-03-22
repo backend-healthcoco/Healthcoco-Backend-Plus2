@@ -840,7 +840,7 @@ public class PrescriptionApi {
 	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT, notes = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
 	public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
 			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
-		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId) || (DPDoctorUtils.anyStringEmpty(patientId) && DPDoctorUtils.anyStringEmpty(locationId,hospitalId))) {
+		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId)) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
