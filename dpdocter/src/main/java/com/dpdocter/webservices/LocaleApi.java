@@ -22,6 +22,7 @@ import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.enums.RecommendationType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
@@ -183,14 +184,16 @@ public class LocaleApi {
 		try {
 			
 			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-			System.out.println(data.toString());
+			//System.out.println(data.toString());
 			UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
-			System.out.println(request);
+			//System.out.println(request);
 			ImageURLResponse imageURLResponse = null;
 			if (file != null) {
 				imageURLResponse = localeService.addRXImageMultipart(file);
 				if (request != null){
-					request.getPrescriptionRequest().setPrescriptionURL(imageURLResponse.getImageUrl());
+					PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
+					prescriptionRequest.setPrescriptionURL(imageURLResponse.getImageUrl());
+					request.setPrescriptionRequest(prescriptionRequest);
 				}
 			}
 			
