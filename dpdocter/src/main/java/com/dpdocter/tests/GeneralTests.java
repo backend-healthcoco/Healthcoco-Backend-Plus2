@@ -8,6 +8,3 @@ public class GeneralTests {
 
 	}
 }
-//Java program to find minimum number of swaps
-//required to sort an array
-

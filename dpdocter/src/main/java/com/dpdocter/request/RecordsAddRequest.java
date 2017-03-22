@@ -31,6 +31,8 @@ public class RecordsAddRequest {
     private String recordsLabel;
     
     private String recordsState;
+   
+    private Boolean registerPatient = false;
     
     public String getPatientId() {
 	return patientId;
@@ -144,13 +146,21 @@ public class RecordsAddRequest {
 		this.recordsState = recordsState;
 	}
 
+	public Boolean getRegisterPatient() {
+		return registerPatient;
+	}
+
+	public void setRegisterPatient(Boolean registerPatient) {
+		this.registerPatient = registerPatient;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
 				+ ", explanation=" + explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId="
-				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + ", recordsState=" + recordsState + "]";
+				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + ", recordsState=" + recordsState
+				+ ", registerPatient=" + registerPatient + "]";
 	}
-
 }

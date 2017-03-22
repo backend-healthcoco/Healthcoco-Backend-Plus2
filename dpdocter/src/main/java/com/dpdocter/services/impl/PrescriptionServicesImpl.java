@@ -545,8 +545,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 								"Invalid Doctor Id, Hospital Id, Or Location Id");
 					}
 				} else {
-					logger.warn("Cannot Delete Global Drug");
-					throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete Global Drug");
+					DoctorDrugCollection doctorDrugCollection = doctorDrugRepository
+							.findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
+									new ObjectId(doctorId), new ObjectId(locationId), new ObjectId(hospitalId));
+					
+					if (doctorDrugCollection != null) {
+						doctorDrugCollection.setDiscarded(discarded);
+						doctorDrugCollection.setUpdatedTime(new Date());
+						doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
+						if (doctorDrugCollection != null) {
+							ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
+							BeanUtil.map(drugCollection, esDoctorDrugDocument);
+							BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
+							esDoctorDrugDocument.setId(drugCollection.getId().toString());
+							esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
+						}
+					}
 				}
 			} else {
 				logger.warn("Drug Not Found");
@@ -3441,12 +3455,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	@Transactional
-	public PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId) {
+	public PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId, String locationId, String hospitalId) {
 		PrescriptionTestAndRecord response = null;
 		List<TestAndRecordDataResponse> tests = null;
+		PrescriptionCollection prescriptionCollection = null;
+		Boolean isPatientRegistered = true;
 		try {
-			PrescriptionCollection prescriptionCollection = prescriptionRepository
-					.findByUniqueIdAndPatientId(uniqueEmrId, new ObjectId(patientId));
+			if(DPDoctorUtils.anyStringEmpty(patientId)){
+				prescriptionCollection = prescriptionRepository.findByUniqueId(uniqueEmrId);
+				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), new ObjectId(locationId), new ObjectId(hospitalId));
+				if(patientCollection == null)isPatientRegistered = false;
+			}else{
+				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(uniqueEmrId, new ObjectId(patientId));	
+			}
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDiagnosticTests() != null
 						&& !prescriptionCollection.getDiagnosticTests().isEmpty()) {
@@ -3471,6 +3492,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (tests != null && !tests.isEmpty()) {
 						response = new PrescriptionTestAndRecord();
 						response.setUniqueEmrId(prescriptionCollection.getUniqueEmrId());
+						response.setPatientId(prescriptionCollection.getPatientId().toString());
+						response.setIsPatientRegistered(isPatientRegistered);
 						response.setTests(tests);
 					}
 				} else {

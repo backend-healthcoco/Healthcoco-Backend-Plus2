@@ -2395,6 +2395,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					.findOne(new ObjectId(doctorResponse.getLocationId()));
 			if (locationCollection != null) {
 				BeanUtil.map(locationCollection, esDoctorDocument);
+				esDoctorDocument.setClinicWorkingSchedules(locationCollection.getClinicWorkingSchedules());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

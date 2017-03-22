@@ -839,12 +839,12 @@ public class PrescriptionApi {
 	@GET
 	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT, notes = PathProxy.PrescriptionUrls.CHECK_PRESCRIPTION_EXISTS_FOR_PATIENT)
 	public Response<PrescriptionTestAndRecord> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
-			@PathParam("patientId") String patientId) {
-		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId, patientId)) {
+			@QueryParam("patientId") String patientId, @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId) || (DPDoctorUtils.anyStringEmpty(patientId) && DPDoctorUtils.anyStringEmpty(locationId,hospitalId))) {
 			logger.error("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueEmrId, patientId);
+		PrescriptionTestAndRecord dataResponse = prescriptionServices.checkPrescriptionExists(uniqueEmrId, patientId, locationId, hospitalId);
 
 		Response<PrescriptionTestAndRecord> response = new Response<PrescriptionTestAndRecord>();
 		response.setData(dataResponse);
@@ -992,4 +992,19 @@ public class PrescriptionApi {
 		return response;
 	}
 
+//	@Path(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
+//	@GET
+//	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID, notes = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
+//	public Response<String> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
+//			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+//		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId, locationId, hospitalId)) {
+//			logger.error("Invalid Input");
+//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//		}
+//		String patientId = prescriptionServices.checkPrescriptionExists(uniqueEmrId, locationId, hospitalId);
+//
+//		Response<String> response = new Response<String>();
+//		response.setData(dataResponse);
+//		return response;
+//	}
 }

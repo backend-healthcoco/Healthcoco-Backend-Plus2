@@ -76,6 +76,7 @@ import com.dpdocter.repository.TagsRepository;
 import com.dpdocter.repository.UserAllowanceDetailsRepository;
 import com.dpdocter.repository.UserRecordsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
@@ -97,6 +98,7 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RecordsService;
+import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
@@ -199,11 +201,22 @@ public class RecordsServiceImpl implements RecordsService {
 	@Autowired
 	private SMSServices smsServices;
 
+	@Autowired
+	private RegistrationService registrationService;
+	
 	@Override
 	@Transactional
 	public Records addRecord(RecordsAddRequest request) {
 		try {
 
+			if(request.getRegisterPatient()){
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setDoctorId(request.getDoctorId());
+				patientRegistrationRequest.setUserId(request.getPatientId());
+				patientRegistrationRequest.setLocationId(request.getLocationId());
+				patientRegistrationRequest.setHospitalId(request.getHospitalId());
+				registrationService.registerExistingPatient(patientRegistrationRequest);
+			}
 			Date createdTime = new Date();
 			UserCollection patientUserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(

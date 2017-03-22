@@ -58,4 +58,7 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     @Query("{'uniqueEmrId' : ?0, 'patientId' : ?1}")
     PrescriptionCollection findByUniqueIdAndPatientId(String uniqueEmrId, ObjectId patientId);
 
+    @Query("{'uniqueEmrId' : ?0}")
+	PrescriptionCollection findByUniqueId(String uniqueEmrId);
+
 }
