@@ -24,6 +24,8 @@ public class RecordsAddRequestMultipart {
 
     private String recordsUrl;
     
+    private Boolean registerPatient = false;
+    
     public String getId() {
 		return id;
 	}
@@ -112,11 +114,20 @@ public class RecordsAddRequestMultipart {
 		this.recordsUrl = recordsUrl;
 	}
 
+	public Boolean getRegisterPatient() {
+		return registerPatient;
+	}
+
+	public void setRegisterPatient(Boolean registerPatient) {
+		this.registerPatient = registerPatient;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsAddRequestMultipart [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
 				+ ", explanation=" + explanation + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", recordsType=" + recordsType + ", visitId=" + visitId + ", prescriptionId=" + prescriptionId
-				+ ", diagnosticTestId=" + diagnosticTestId + ", recordsUrl=" + recordsUrl + "]";
+				+ ", diagnosticTestId=" + diagnosticTestId + ", recordsUrl=" + recordsUrl + ", registerPatient="
+				+ registerPatient + "]";
 	}
 }

@@ -571,7 +571,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(1);
 		jrDesignTextField.setWidth((50 * columnWidth) / 100);
 		jrDesignTextField.setHeight(9);
-		jrDesignTextField.setMarkup("html");
+//		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{patientLeftText}"));
@@ -582,7 +582,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(1);
 		jrDesignTextField.setWidth((38 * columnWidth) / 100);
 		jrDesignTextField.setHeight(9);
-		jrDesignTextField.setMarkup("html");
+//		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{patientRightText}"));

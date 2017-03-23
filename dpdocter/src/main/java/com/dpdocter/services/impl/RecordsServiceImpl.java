@@ -1223,6 +1223,14 @@ public class RecordsServiceImpl implements RecordsService {
 	@Transactional
 	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
 		try {
+			if(request.getRegisterPatient()){
+				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setDoctorId(request.getDoctorId());
+				patientRegistrationRequest.setUserId(request.getPatientId());
+				patientRegistrationRequest.setLocationId(request.getLocationId());
+				patientRegistrationRequest.setHospitalId(request.getHospitalId());
+				registrationService.registerExistingPatient(patientRegistrationRequest);
+			}
 			Date createdTime = new Date();
 			UserCollection patientUserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
