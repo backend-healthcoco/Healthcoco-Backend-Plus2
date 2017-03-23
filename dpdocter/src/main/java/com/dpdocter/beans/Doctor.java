@@ -12,6 +12,8 @@ import com.dpdocter.enums.UserState;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Doctor {
 	private String id;
+	
+	private String title;
 
 	private String firstName;
 
@@ -169,5 +171,13 @@ public class Doctor {
 				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities="
 				+ specialities + ", doctorClinicProfile=" + doctorClinicProfile + ", userState=" + userState
 				+ ", isActive=" + isActive + "]";
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }
