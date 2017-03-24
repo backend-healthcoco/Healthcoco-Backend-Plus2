@@ -10,12 +10,16 @@ public class PrescriptionTestAndRecord {
 	
 	private String localPatientName;
 	
+	private String firstName;
+	
 	private String mobileNumber;
 	
     private String uniqueEmrId;
 
     private List<TestAndRecordDataResponse> tests;
 
+	private String doctorName;
+	
     public Boolean getIsPatientRegistered() {
 		return isPatientRegistered;
 	}
@@ -64,11 +68,27 @@ public class PrescriptionTestAndRecord {
 		this.mobileNumber = mobileNumber;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionTestAndRecord [isPatientRegistered=" + isPatientRegistered + ", patientId=" + patientId
-				+ ", localPatientName=" + localPatientName + ", mobileNumber=" + mobileNumber + ", uniqueEmrId="
-				+ uniqueEmrId + ", tests=" + tests + "]";
+				+ ", localPatientName=" + localPatientName + ", firstName=" + firstName + ", mobileNumber="
+				+ mobileNumber + ", uniqueEmrId=" + uniqueEmrId + ", tests=" + tests + ", doctorName=" + doctorName
+				+ "]";
 	}
-
 }

@@ -144,11 +144,7 @@ public interface PrescriptionServices {
 	public Advice deleteAdvice(String adviceId, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
-	// Boolean makeCustomDrugFavourite();
-
 	Drug addFavouriteDrug(DrugAddEditRequest request);
-
-	Boolean addGenericNameInDrugs();
 
 	List<DrugInteractionResposne> drugInteraction(List<Drug> request);
 

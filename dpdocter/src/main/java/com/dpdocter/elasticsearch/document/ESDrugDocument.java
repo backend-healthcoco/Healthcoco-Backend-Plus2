@@ -58,9 +58,6 @@ public class ESDrugDocument {
     @Field(type = FieldType.String)
     private String MRP;
 
-    @MultiField(mainField = @Field(type = FieldType.String))
-    private List<String> genericCodes;
-
     @Field(type = FieldType.Nested)
     private Duration duration;
 
@@ -79,7 +76,7 @@ public class ESDrugDocument {
     @Field(type = FieldType.Nested)
     private List<GenericCode> genericNames;
 
-    @Field
+    @Field(type = FieldType.Long)
     private long rankingCount = 0;
 
     public String getId() {
@@ -194,14 +191,6 @@ public class ESDrugDocument {
 		MRP = mRP;
 	}
 
-	public List<String> getGenericCodes() {
-		return genericCodes;
-	}
-
-	public void setGenericCodes(List<String> genericCodes) {
-		this.genericCodes = genericCodes;
-	}
-
 	public Duration getDuration() {
 		return duration;
 	}
@@ -264,7 +253,7 @@ public class ESDrugDocument {
 				+ drugCode + ", drugTypeId=" + drugTypeId + ", drugType=" + drugType + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", updatedTime=" + updatedTime + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP="
-				+ MRP + ", genericCodes=" + genericCodes + ", duration=" + duration + ", dosage=" + dosage
+				+ MRP + ", duration=" + duration + ", dosage=" + dosage
 				+ ", dosageTime=" + dosageTime + ", direction=" + direction + ", categories=" + categories
 				+ ", genericNames=" + genericNames + ", rankingCount=" + rankingCount + "]";
 	}

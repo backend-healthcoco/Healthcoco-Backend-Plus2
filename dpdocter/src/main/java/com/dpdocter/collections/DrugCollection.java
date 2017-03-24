@@ -34,9 +34,6 @@ public class DrugCollection extends GenericCollection {
     private Strength strength;
 
     @Field
-    private List<String> genericCodes;
-
-    @Field
     private List<GenericCode> genericNames;
 
     @Field
@@ -51,7 +48,6 @@ public class DrugCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
-   // @Indexed(unique = true)
     @Field
     private String drugCode;
 
@@ -122,14 +118,6 @@ public class DrugCollection extends GenericCollection {
     public void setStrength(Strength strength) {
 	this.strength = strength;
     }
-
-	public List<String> getGenericCodes() {
-		return genericCodes;
-	}
-
-	public void setGenericCodes(List<String> genericCodes) {
-		this.genericCodes = genericCodes;
-	}
 
 	public ObjectId getDoctorId() {
 	return doctorId;
@@ -254,11 +242,11 @@ public class DrugCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "DrugCollection [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation="
-				+ explanation + ", strength=" + strength + ", genericCodes=" + genericCodes + ", genericNames="
-				+ genericNames + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId=" + locationId
-				+ ", discarded=" + discarded + ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize="
-				+ packSize + ", MRP=" + MRP + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime="
-				+ dosageTime + ", direction=" + direction + ", categories=" + categories + ", rankingCount="
-				+ rankingCount + "]";
+				+ explanation + ", strength=" + strength + ", genericNames=" + genericNames + ", doctorId=" + doctorId
+				+ ", hospitalId=" + hospitalId + ", locationId=" + locationId + ", discarded=" + discarded
+				+ ", drugCode=" + drugCode + ", companyName=" + companyName + ", packSize=" + packSize + ", MRP=" + MRP
+				+ ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime + ", direction="
+				+ direction + ", categories=" + categories + ", rankingCount=" + rankingCount + "]";
 	}
+
 }

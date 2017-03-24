@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -43,6 +42,7 @@ import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
+import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
@@ -56,8 +56,6 @@ import com.dpdocter.services.OTPService;
 import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 import com.dpdocter.services.TransactionalManagementService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -951,19 +949,6 @@ public class PrescriptionApi {
 		return response;
 	}
 
-	/*
-	 * Don't not use it. To add genericNames in drugs using generic codes.For
-	 * updating mongodb data
-	 */
-	@Path(value = PathProxy.PrescriptionUrls.ADD_GENERIC_NAME_IN_DRUGS)
-	@GET
-	public Response<Boolean> addGenericNameInDrugs() {
-
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(prescriptionServices.addGenericNameInDrugs());
-		return response;
-	}
-
 	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
 	@POST
 	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request) {//@PathParam("patientId") String patientId, 
@@ -991,20 +976,4 @@ public class PrescriptionApi {
 		response.setData(prescriptionServices.addFavouritesToDrug());
 		return response;
 	}
-
-//	@Path(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
-//	@GET
-//	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID, notes = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
-//	public Response<String> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
-//			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-//		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId, locationId, hospitalId)) {
-//			logger.error("Invalid Input");
-//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-//		}
-//		String patientId = prescriptionServices.checkPrescriptionExists(uniqueEmrId, locationId, hospitalId);
-//
-//		Response<String> response = new Response<String>();
-//		response.setData(dataResponse);
-//		return response;
-//	}
 }

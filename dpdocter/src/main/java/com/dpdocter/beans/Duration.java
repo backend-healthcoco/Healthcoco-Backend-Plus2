@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class Duration {
     private String value;
 
-    @Field(type = FieldType.Nested)
+//    @Field(type = FieldType.Nested)
     private DrugDurationUnit durationUnit;
 
     public String getValue() {

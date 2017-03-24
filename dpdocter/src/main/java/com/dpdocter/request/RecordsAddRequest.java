@@ -33,7 +33,11 @@ public class RecordsAddRequest {
     private String recordsState;
    
     private Boolean registerPatient = false;
-    
+
+	private String firstName;
+	
+	private String mobileNumber;
+	
     public String getPatientId() {
 	return patientId;
     }
@@ -154,6 +158,22 @@ public class RecordsAddRequest {
 		this.registerPatient = registerPatient;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "RecordsAddRequest [patientId=" + patientId + ", doctorId=" + doctorId + ", recordsUrl=" + recordsUrl
@@ -161,6 +181,7 @@ public class RecordsAddRequest {
 				+ ", hospitalId=" + hospitalId + ", recordsType=" + recordsType + ", createdBy=" + createdBy
 				+ ", visitId=" + visitId + ", prescriptionId=" + prescriptionId + ", diagnosticTestId="
 				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + ", recordsState=" + recordsState
-				+ ", registerPatient=" + registerPatient + "]";
+				+ ", registerPatient=" + registerPatient + ", firstName=" + firstName + ", mobileNumber=" + mobileNumber
+				+ "]";
 	}
 }

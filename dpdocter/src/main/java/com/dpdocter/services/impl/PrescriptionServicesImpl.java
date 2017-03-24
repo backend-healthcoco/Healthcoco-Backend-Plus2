@@ -85,7 +85,6 @@ import com.dpdocter.collections.DrugDosageCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
-import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.GenericCodesAndReactionsCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LabTestCollection;
@@ -150,6 +149,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
+import com.dpdocter.response.PrescriptionLookupResponse;
 import com.dpdocter.response.PrescriptionTestAndRecord;
 import com.dpdocter.response.TemplateAddEditResponse;
 import com.dpdocter.response.TemplateAddEditResponseDetails;
@@ -3458,15 +3458,25 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public PrescriptionTestAndRecord checkPrescriptionExists(String uniqueEmrId, String patientId, String locationId, String hospitalId) {
 		PrescriptionTestAndRecord response = null;
 		List<TestAndRecordDataResponse> tests = null;
-		PrescriptionCollection prescriptionCollection = null;
+		PrescriptionLookupResponse prescriptionCollection = null;
 		Boolean isPatientRegistered = true;
 		try {
 			if(DPDoctorUtils.anyStringEmpty(patientId)){
-				prescriptionCollection = prescriptionRepository.findByUniqueId(uniqueEmrId);
-				PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(prescriptionCollection.getPatientId(), new ObjectId(locationId), new ObjectId(hospitalId));
-				if(patientCollection == null)isPatientRegistered = false;
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId)),
+						Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
+						new ProjectionOperation(Fields.from(Fields.field("id","$id"),
+								Fields.field("uniqueEmrId","$uniqueEmrId"),Fields.field("doctorId","$doctorId"),
+								Fields.field("locationId","$locationId"),Fields.field("hospitalId","$hospitalId"),
+								Fields.field("diagnosticTests","$diagnosticTests"),Fields.field("patientId","$patientId"),
+								Fields.field("firstName","$user.firstName"), Fields.field("mobileNumber","$user.mobileNumber"),
+								Fields.field("createdBy","$createdBy"),Fields.field("locationName","$location.locationName"))));
+				prescriptionCollection = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, PrescriptionLookupResponse.class).getUniqueMappedResult();
+				
+				Integer patientCount = patientRepository.findCount(new ObjectId(prescriptionCollection.getPatientId()), new ObjectId(locationId), new ObjectId(hospitalId));
+				if(patientCount == null || patientCount == 0)isPatientRegistered = false;
 			}else{
-				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(uniqueEmrId, new ObjectId(patientId));	
+				prescriptionCollection = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("uniqueEmrId").is(uniqueEmrId).and("patientId").is(new ObjectId(patientId)))), PrescriptionCollection.class, PrescriptionLookupResponse.class).getUniqueMappedResult();
 			}
 			if (prescriptionCollection != null) {
 				if (prescriptionCollection.getDiagnosticTests() != null
@@ -3495,6 +3505,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						response.setPatientId(prescriptionCollection.getPatientId().toString());
 						response.setIsPatientRegistered(isPatientRegistered);
 						response.setTests(tests);
+						response.setFirstName(prescriptionCollection.getFirstName());
+						response.setMobileNumber(prescriptionCollection.getMobileNumber());
+						response.setDoctorName(prescriptionCollection.getCreatedBy());
+						response.setLocationName(prescriptionCollection.getLocationName());
 					}
 				} else {
 					throw new BusinessException(ServiceError.NoRecord, "No test Exists for this prescription");
@@ -3997,58 +4011,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Drug");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
-		}
-		return response;
-	}
-
-	@Override
-	public Boolean addGenericNameInDrugs() {
-		Boolean response = false;
-
-		try {
-			List<DrugCollection> drugCollections = drugRepository.findAll();
-			for (DrugCollection drugCollection : drugCollections) {
-				if (drugCollection.getGenericCodes() != null && !drugCollection.getGenericCodes().isEmpty()) {
-					List<GenericCode> genericNames = mongoTemplate.aggregate(
-							Aggregation.newAggregation(
-									Aggregation.match(new Criteria("code").in(drugCollection.getGenericCodes()))),
-							GenericCodeCollection.class, GenericCode.class).getMappedResults();
-					if (genericNames != null && !genericNames.isEmpty()) {
-						drugCollection.setGenericNames(genericNames);
-						drugCollection.setUpdatedTime(new Date());
-						drugCollection = drugRepository.save(drugCollection);
-
-						transnationalService.addResource(drugCollection.getId(), Resource.DRUG, false);
-						ESDrugDocument esDrugDocument = new ESDrugDocument();
-						BeanUtil.map(drugCollection, esDrugDocument);
-						if (drugCollection.getDrugType() != null) {
-							esDrugDocument.setDrugTypeId(drugCollection.getDrugType().getId());
-							esDrugDocument.setDrugType(drugCollection.getDrugType().getType());
-						}
-						esPrescriptionService.addDrug(esDrugDocument);
-
-						List<DoctorDrugCollection> doctorDrugCollections = doctorDrugRepository
-								.findByDrugId(drugCollection.getId());
-						for (DoctorDrugCollection doctorDrugCollection : doctorDrugCollections) {
-							doctorDrugCollection.setGenericNames(genericNames);
-							doctorDrugCollection.setUpdatedTime(new Date());
-							doctorDrugCollection = doctorDrugRepository.save(doctorDrugCollection);
-
-							ESDoctorDrugDocument esDoctorDrugDocument = new ESDoctorDrugDocument();
-							BeanUtil.map(drugCollection, esDoctorDrugDocument);
-							BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-							esDoctorDrugDocument.setId(drugCollection.getId().toString());
-							esPrescriptionService.addDoctorDrug(esDoctorDrugDocument, doctorDrugCollection.getId());
-						}
-					}
-					response = true;
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Making Custom Drugs Favourite");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Making Custom Drugs Favourite");
 		}
 		return response;
 	}

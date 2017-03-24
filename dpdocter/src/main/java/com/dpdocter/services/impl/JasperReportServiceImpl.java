@@ -571,7 +571,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(1);
 		jrDesignTextField.setWidth((50 * columnWidth) / 100);
 		jrDesignTextField.setHeight(9);
-//		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{patientLeftText}"));
@@ -582,7 +582,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(1);
 		jrDesignTextField.setWidth((38 * columnWidth) / 100);
 		jrDesignTextField.setHeight(9);
-//		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{patientRightText}"));
@@ -1747,17 +1747,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{Discount}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(4);
-		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(discountWidth);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		xSpace = xSpace + discountWidth;
-
+		if(showDiscount){
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Discount}"));
+			jrDesignTextField.setX(xSpace);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(discountWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			xSpace = xSpace + discountWidth;
+		}
+		
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Tax}"));
 		jrDesignTextField.setX(xSpace);
@@ -1846,16 +1848,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(discountWidth);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		xSpace = xSpace + discountWidth;
-
+		if(showDiscount){
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
+			jrDesignTextField.setX(xSpace);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(discountWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			xSpace = xSpace + discountWidth;
+		}
+		
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{tax}"));
 		jrDesignTextField.setX(xSpace);
@@ -2236,16 +2240,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(discountWidth);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		xSpace = xSpace + discountWidth;
-
+		if(showTreatmentDiscount){
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
+			jrDesignTextField.setX(xSpace);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(discountWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			xSpace = xSpace + discountWidth;
+		}
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{status}"));
 		jrDesignTextField.setX(xSpace);

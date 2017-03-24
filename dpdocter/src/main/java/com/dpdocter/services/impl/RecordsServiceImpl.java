@@ -41,7 +41,9 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -208,20 +210,42 @@ public class RecordsServiceImpl implements RecordsService {
 	@Transactional
 	public Records addRecord(RecordsAddRequest request) {
 		try {
-
+			String patientEmailAddress = null, localPatientName = null, patientMobileNumber= null;
+			PrescriptionCollection prescriptionCollection = null;
+			if (request.getPrescriptionId() != null) {
+				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(), new ObjectId(request.getPatientId()));
+			}
+			
 			if(request.getRegisterPatient()){
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setFirstName(request.getFirstName());
+				patientRegistrationRequest.setLocalPatientName(request.getFirstName());
+				patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
 				patientRegistrationRequest.setDoctorId(request.getDoctorId());
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
-				registrationService.registerExistingPatient(patientRegistrationRequest);
+				RegisteredPatientDetails patientDetails = registrationService.registerExistingPatient(patientRegistrationRequest);
+				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
+				localPatientName = patientDetails.getLocalPatientName();
+				patientMobileNumber = patientDetails.getMobileNumber();
+			}else{
+				List<PatientCard> patientCards = mongoTemplate
+						.aggregate(Aggregation.newAggregation(
+								Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
+										.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId")
+										.is(new ObjectId(request.getHospitalId()))),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+								PatientCollection.class, PatientCard.class)
+						.getMappedResults();
+				if (patientCards != null && !patientCards.isEmpty()){
+					patientEmailAddress = patientCards.get(0).getEmailAddress();
+					localPatientName = patientCards.get(0).getLocalPatientName();
+					patientMobileNumber = patientCards.get(0).getMobileNumber();
+				}
 			}
 			Date createdTime = new Date();
-			UserCollection patientUserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
-					new ObjectId(request.getHospitalId()));
+			
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
 			if (!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())) {
@@ -260,16 +284,12 @@ public class RecordsServiceImpl implements RecordsService {
 			if (locationCollection != null) {
 				recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 			}
-			PrescriptionCollection prescriptionCollection = null;
-			if (recordsCollection.getPrescriptionId() != null) {
-				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(
-						recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
-				if (prescriptionCollection != null) {
+			if (prescriptionCollection != null) {
 					recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
 					recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
 					recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
-				}
 			}
+			
 
 			recordsCollection = recordsRepository.save(recordsCollection);
 
@@ -293,13 +313,13 @@ public class RecordsServiceImpl implements RecordsService {
 					userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 					if (userCollection != null) {
 						String subject = approvedRecordToDoctorSubject;
-						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
+						subject = subject.replace("{patientName}", localPatientName)
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
 								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
-								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
+								recordsCollection.getCreatedBy(), localPatientName,
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
 								"approvedRecordToDoctorTemplate.vm");
 						mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
@@ -309,16 +329,16 @@ public class RecordsServiceImpl implements RecordsService {
 					userCollection = userRepository.findOne(prescriptionCollection.getDoctorId());
 					if (userCollection != null) {
 						String subject = notApprovedRecordToDoctorSubject;
-						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
+						subject = subject.replace("{patientName}", localPatientName)
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
 								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
-								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
+								recordsCollection.getCreatedBy(), localPatientName,
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
 								"notApprovedRecordToDoctorTemplate.vm");
-						mailService.sendEmail(patientCollection.getEmailAddress(), subject, body, null);
+						mailService.sendEmail(patientEmailAddress, subject, body, null);
 					}
 				}
 			}
@@ -327,7 +347,7 @@ public class RecordsServiceImpl implements RecordsService {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
-				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
+				sendRecordSmsToPatient(localPatientName, patientMobileNumber,
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId(), recordsCollection.getPatientId());
@@ -1223,20 +1243,43 @@ public class RecordsServiceImpl implements RecordsService {
 	@Transactional
 	public Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request) {
 		try {
+			String patientEmailAddress = null, localPatientName = null, patientMobileNumber= null;
+			PrescriptionCollection prescriptionCollection = null;
+			if (request.getPrescriptionId() != null) {
+				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(), new ObjectId(request.getPatientId()));
+			}
+			
 			if(request.getRegisterPatient()){
 				PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
+				patientRegistrationRequest.setFirstName(request.getFirstName());
+				patientRegistrationRequest.setLocalPatientName(request.getFirstName());
+				patientRegistrationRequest.setMobileNumber(request.getMobileNumber());
 				patientRegistrationRequest.setDoctorId(request.getDoctorId());
 				patientRegistrationRequest.setUserId(request.getPatientId());
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
-				registrationService.registerExistingPatient(patientRegistrationRequest);
+				RegisteredPatientDetails patientDetails = registrationService.registerExistingPatient(patientRegistrationRequest);
+				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
+				localPatientName = patientDetails.getLocalPatientName();
+				patientMobileNumber = patientDetails.getMobileNumber();
+			}else{
+				List<PatientCard> patientCards = mongoTemplate
+						.aggregate(Aggregation.newAggregation(
+								Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
+										.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId")
+										.is(new ObjectId(request.getHospitalId()))),
+								Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
+								PatientCollection.class, PatientCard.class)
+						.getMappedResults();
+				if (patientCards != null && !patientCards.isEmpty()){
+					patientEmailAddress = patientCards.get(0).getEmailAddress();
+					localPatientName = patientCards.get(0).getLocalPatientName();
+					patientMobileNumber = patientCards.get(0).getMobileNumber();
+				}
 			}
+			
 			Date createdTime = new Date();
-			UserCollection patientUserCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
-			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
-					new ObjectId(request.getHospitalId()));
-
+			
 			RecordsCollection recordsCollection = null, oldRecord = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				recordsCollection = recordsRepository.findOne(new ObjectId(request.getId()));
@@ -1292,11 +1335,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (locationCollection != null) {
 					recordsCollection.setUploadedByLocation(locationCollection.getLocationName());
 				}
-				PrescriptionCollection prescriptionCollection = null;
-				if (recordsCollection.getPrescriptionId() != null) {
-					prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(
-							recordsCollection.getPrescriptionId(), recordsCollection.getPatientId());
-				}
+				
 				if (prescriptionCollection != null) {
 					recordsCollection.setPrescribedByDoctorId(prescriptionCollection.getDoctorId());
 					recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
@@ -1323,26 +1362,26 @@ public class RecordsServiceImpl implements RecordsService {
 					if (recordsCollection.getRecordsState()
 							.equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
 						String subject = approvedRecordToDoctorSubject;
-						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
+						subject = subject.replace("{patientName}", localPatientName)
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
 								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
-								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
+								recordsCollection.getCreatedBy(), localPatientName,
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
 								"approvedRecordToDoctorTemplate.vm");
 						mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
 					} else if (recordsCollection.getRecordsState()
 							.equalsIgnoreCase(RecordsState.APPROVAL_REQUIRED.toString())) {
 						String subject = notApprovedRecordToDoctorSubject;
-						subject = subject.replace("{patientName}", patientCollection.getLocalPatientName())
+						subject = subject.replace("{patientName}", localPatientName)
 								.replace("{reportName}", recordsCollection.getRecordsLabel())
 								.replace("{clinicName}", recordsCollection.getUploadedByLocation());
 						pushNotificationServices.notifyUser(prescriptionCollection.getDoctorId().toString(), subject,
 								ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
 						body = mailBodyGenerator.generateRecordEmailBody(prescriptionCollection.getCreatedBy(),
-								recordsCollection.getCreatedBy(), patientCollection.getLocalPatientName(),
+								recordsCollection.getCreatedBy(), localPatientName,
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
 								"notApprovedRecordToDoctorTemplate.vm");
 						mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
@@ -1354,7 +1393,7 @@ public class RecordsServiceImpl implements RecordsService {
 				pushNotificationServices.notifyUser(recordsCollection.getPatientId().toString(),
 						"Your Report from " + recordsCollection.getUploadedByLocation() + " is here - Tap to view it!",
 						ComponentType.REPORTS.getType(), recordsCollection.getId().toString(), null);
-				sendRecordSmsToPatient(patientCollection.getLocalPatientName(), patientUserCollection.getMobileNumber(),
+				sendRecordSmsToPatient(localPatientName, patientMobileNumber,
 						recordsCollection.getRecordsLabel(), recordsCollection.getUploadedByLocation(),
 						recordsCollection.getDoctorId(), recordsCollection.getLocationId(),
 						recordsCollection.getHospitalId(), recordsCollection.getPatientId());
