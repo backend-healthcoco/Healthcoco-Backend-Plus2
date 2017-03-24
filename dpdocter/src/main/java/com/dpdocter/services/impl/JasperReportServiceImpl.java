@@ -582,7 +582,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(1);
 		jrDesignTextField.setWidth((38 * columnWidth) / 100);
 		jrDesignTextField.setHeight(9);
+
 		jrDesignTextField.setMarkup("html");
+
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{patientRightText}"));
@@ -1747,7 +1749,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		if(showDiscount){
+		if (showDiscount) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Discount}"));
 			jrDesignTextField.setX(xSpace);
@@ -1759,7 +1761,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			xSpace = xSpace + discountWidth;
 		}
-		
+
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Tax}"));
 		jrDesignTextField.setX(xSpace);
@@ -1848,7 +1850,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		if(showDiscount){
+		if (showDiscount) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
 			jrDesignTextField.setX(xSpace);
@@ -1859,7 +1861,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			xSpace = xSpace + discountWidth;
 		}
-		
+
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{tax}"));
 		jrDesignTextField.setX(xSpace);
@@ -2240,7 +2242,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + otherFieldsWidth;
 
-		if(showTreatmentDiscount){
+		if (showTreatmentDiscount) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{discount}"));
 			jrDesignTextField.setX(xSpace);
@@ -2271,11 +2273,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$F{note}.equals(null) && !$F{note}.isEmpty()"));
 		band.setHeight(20);
-
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{note}"));
 		jrDesignTextField.setX(0);
@@ -2287,7 +2287,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
 		band = new JRDesignBand();
 		band.setHeight(1);
 		jrDesignLine = new JRDesignLine();

@@ -389,19 +389,20 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			List<ESTreatmentServiceDocument> treatmentServiceDocuments = esTreatmentServiceRepository
 					.findByName(searchTerm);
 			Set<String> esTreatmentServiceset = null;
-			if (treatmentServiceDocuments != null)
+			if (treatmentServiceDocuments != null) {
 				esTreatmentServiceset = new HashSet<String>();
-			for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
-				if (esTreatmentServiceset.size() >= 50)
-					break;
-				esTreatmentServiceset.add(esTreatmentServiceDocument.getName());
+				for (ESTreatmentServiceDocument esTreatmentServiceDocument : treatmentServiceDocuments) {
+					if (esTreatmentServiceset.size() >= 50)
+						break;
+					esTreatmentServiceset.add(esTreatmentServiceDocument.getName());
 
-			}
-			for (String serviceName : esTreatmentServiceset) {
-				AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-				appointmentSearchResponse.setResponse(serviceName);
-				appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
-				response.add(appointmentSearchResponse);
+				}
+				for (String serviceName : esTreatmentServiceset) {
+					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
+					appointmentSearchResponse.setResponse(serviceName);
+					appointmentSearchResponse.setResponseType(AppointmentResponseType.SERVICE);
+					response.add(appointmentSearchResponse);
+				}
 			}
 		}
 
@@ -412,17 +413,24 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		if (response.size() < 50) {
 			List<ESDiagnosticTestDocument> diagnosticTestDocuments = esDiagnosticTestRepository
 					.findByTestName(searchTerm);
-			if (diagnosticTestDocuments != null)
+			Set<String> esTestSet = null;
+			if (diagnosticTestDocuments != null) {
+				esTestSet = new HashSet<String>();
 				for (ESDiagnosticTestDocument diagnosticTest : diagnosticTestDocuments) {
-					if (response.size() >= 50)
+					if (esTestSet.size() >= 50)
 						break;
+					esTestSet.add(diagnosticTest.getTestName());
+
+				}
+				for (String testName : esTestSet) {
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-					appointmentSearchResponse.setId(diagnosticTest.getId());
-					appointmentSearchResponse.setResponse(diagnosticTest.getTestName());
+					appointmentSearchResponse.setResponse(testName);
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.LABTEST);
 					response.add(appointmentSearchResponse);
 				}
+			}
 		}
+
 		return response;
 	}
 
