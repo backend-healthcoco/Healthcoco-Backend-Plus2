@@ -19,6 +19,7 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -116,5 +117,7 @@ public interface RegistrationService {
 	Boolean registerPatients(String doctorId, String locationId, String hospitalId);
 
 	Boolean updateDoctorClinicProfile();
+
+	ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient);
 
 }

@@ -2970,27 +2970,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient) {
-		ESPatientDocument esPatientDocument = null;
-		try {
-			esPatientDocument = new ESPatientDocument();
-			if (patient.getAddress() != null) {
-				BeanUtil.map(patient.getAddress(), esPatientDocument);
-			}
-			if (patient.getPatient() != null) {
-				BeanUtil.map(patient.getPatient(), esPatientDocument);
-			}
-			BeanUtil.map(patient, esPatientDocument);
-			if (patient.getBackendPatientId() != null)
-				esPatientDocument.setId(patient.getBackendPatientId());
-			if (patient.getReferredBy() != null)
-				esPatientDocument.setReferredBy(patient.getReferredBy().getId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return esPatientDocument;
-	}
-
 	@Override
 	public Boolean updateDoctorClinicProfile() {
 		Boolean response = false;
@@ -3018,6 +2997,28 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, "Error");
 		}
 		return response;
+	}
+
+	@Override
+	public ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient) {
+		ESPatientDocument esPatientDocument = null;
+		try {
+			esPatientDocument = new ESPatientDocument();
+			if (patient.getAddress() != null) {
+				BeanUtil.map(patient.getAddress(), esPatientDocument);
+			}
+			if (patient.getPatient() != null) {
+				BeanUtil.map(patient.getPatient(), esPatientDocument);
+			}
+			BeanUtil.map(patient, esPatientDocument);
+			if (patient.getBackendPatientId() != null)
+				esPatientDocument.setId(patient.getBackendPatientId());
+			if (patient.getReferredBy() != null)
+				esPatientDocument.setReferredBy(patient.getReferredBy().getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return esPatientDocument;
 	}
 
 }

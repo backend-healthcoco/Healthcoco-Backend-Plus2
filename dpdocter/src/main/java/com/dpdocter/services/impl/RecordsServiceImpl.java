@@ -62,8 +62,10 @@ import com.dpdocter.collections.TagsCollection;
 import com.dpdocter.collections.UserAllowanceDetailsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRecordsCollection;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RecordsState;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -102,6 +104,7 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RecordsService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -206,6 +209,12 @@ public class RecordsServiceImpl implements RecordsService {
 	@Autowired
 	private RegistrationService registrationService;
 	
+	@Autowired
+	private ESRegistrationService esRegistrationService;
+
+	@Autowired
+	private TransactionalManagementService transnationalService;
+
 	@Override
 	@Transactional
 	public Records addRecord(RecordsAddRequest request) {
@@ -229,6 +238,9 @@ public class RecordsServiceImpl implements RecordsService {
 				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
+				
+				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT,false);
+				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 			}else{
 				List<PatientCard> patientCards = mongoTemplate
 						.aggregate(Aggregation.newAggregation(
@@ -338,7 +350,7 @@ public class RecordsServiceImpl implements RecordsService {
 								recordsCollection.getCreatedBy(), localPatientName,
 								recordsCollection.getRecordsLabel(), recordsCollection.getUniqueEmrId(),
 								"notApprovedRecordToDoctorTemplate.vm");
-						mailService.sendEmail(patientEmailAddress, subject, body, null);
+						mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
 					}
 				}
 			}
@@ -1262,6 +1274,9 @@ public class RecordsServiceImpl implements RecordsService {
 				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
+				
+				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT,false);
+				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 			}else{
 				List<PatientCard> patientCards = mongoTemplate
 						.aggregate(Aggregation.newAggregation(

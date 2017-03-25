@@ -38,7 +38,6 @@ import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Suggestion;
-import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
@@ -125,13 +124,13 @@ public class RegistrationApi {
 			registeredPatientDetails = registrationService.registerNewPatient(request);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
-			esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
 		} else {
 			registeredPatientDetails = registrationService.registerExistingPatient(request);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
-			esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -161,7 +160,7 @@ public class RegistrationApi {
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
-		esRegistrationService.addPatient(getESPatientDocument(registeredPatientDetails));
+		esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -638,27 +637,6 @@ public class RegistrationApi {
 		Response<RegisterDoctorResponse> response = new Response<RegisterDoctorResponse>();
 		response.setData(doctorResponse);
 		return response;
-	}
-
-	private ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient) {
-		ESPatientDocument esPatientDocument = null;
-		try {
-			esPatientDocument = new ESPatientDocument();
-			if (patient.getAddress() != null) {
-				BeanUtil.map(patient.getAddress(), esPatientDocument);
-			}
-			if (patient.getPatient() != null) {
-				BeanUtil.map(patient.getPatient(), esPatientDocument);
-			}
-			BeanUtil.map(patient, esPatientDocument);
-			if (patient.getBackendPatientId() != null)
-				esPatientDocument.setId(patient.getBackendPatientId());
-			if (patient.getReferredBy() != null)
-				esPatientDocument.setReferredBy(patient.getReferredBy().getId());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return esPatientDocument;
 	}
 
 	private String getFinalImageURL(String imageURL) {

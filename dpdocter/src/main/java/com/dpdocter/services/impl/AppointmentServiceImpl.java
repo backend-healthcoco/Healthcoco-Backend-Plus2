@@ -72,11 +72,13 @@ import com.dpdocter.collections.SMSFormatCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSContent;
 import com.dpdocter.enums.SMSFormatType;
 import com.dpdocter.enums.SMSStatus;
@@ -115,6 +117,7 @@ import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
+import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -223,6 +226,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Autowired
 	private RecommendationsRepository recommendationsRepository;
+
+	@Autowired
+	private ESRegistrationService esRegistrationService;
+
+	@Autowired
+	private TransactionalManagementService transnationalService;
 
 	@Override
 	@Transactional
@@ -729,6 +738,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if (patientDetails != null) {
 					request.setPatientId(patientDetails.getUserId());
 				}
+				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT,false);
+				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 			} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
 				Integer patientCount = patientRepository.findCount(new ObjectId(request.getPatientId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
@@ -740,7 +751,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 					patientRegistrationRequest.setUserId(request.getPatientId());
 					patientRegistrationRequest.setLocationId(request.getLocationId());
 					patientRegistrationRequest.setHospitalId(request.getHospitalId());
-					registrationService.registerExistingPatient(patientRegistrationRequest);
+					RegisteredPatientDetails patientDetails = registrationService.registerExistingPatient(patientRegistrationRequest);
+					transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT,false);
+					esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 				}
 			}
 
