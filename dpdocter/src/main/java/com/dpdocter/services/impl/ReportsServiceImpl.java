@@ -333,8 +333,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(ipdReports);
 				}
 			}
-			int count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId),
-					new ObjectId(patientId));
+			int count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
 			ipdReportsResponse = new IPDReportsResponse();
 			ipdReportsResponse.setIpdReports(response);
 			ipdReportsResponse.setCount(count);
@@ -509,8 +508,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(opdReports);
 				}
 			}
-			int count = opdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId),
-					new ObjectId(patientId));
+			int count = opdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
 			opdReportsResponse = new OPDReportsResponse();
 			opdReportsResponse.setOpdReports(response);
 			opdReportsResponse.setCount(count);
@@ -637,8 +635,7 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(otReports);
 				}
 			}
-			int count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId),
-					new ObjectId(patientId));
+			int count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -753,7 +750,7 @@ public class ReportsServiceImpl implements ReportsService {
 				}
 			}
 			int count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId),
-					new ObjectId(doctorId), new ObjectId(patientId));
+					new ObjectId(doctorId));
 			deliveryReportsResponse = new DeliveryReportsResponse();
 			deliveryReportsResponse.setDeliveryReports(response);
 			deliveryReportsResponse.setCount(count);

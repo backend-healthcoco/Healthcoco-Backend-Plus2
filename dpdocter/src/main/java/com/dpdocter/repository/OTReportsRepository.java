@@ -8,7 +8,7 @@ import com.dpdocter.collections.OTReportsCollection;
 
 public interface OTReportsRepository extends MongoRepository<OTReportsCollection, ObjectId> {
 
-	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1, 'patientId': ?2}", count = true)
-	Integer getReportsCount(ObjectId locationId, ObjectId doctorId, ObjectId patientId);
+	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1}", count = true)
+	Integer getReportsCount(ObjectId locationId, ObjectId doctorId);
 
 }

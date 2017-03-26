@@ -8,7 +8,7 @@ import com.dpdocter.collections.DeliveryReportsCollection;
 
 public interface DeliveryReportsRepository extends MongoRepository<DeliveryReportsCollection, ObjectId> {
 
-	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1, 'patientId': ?2}", count = true)
-	Integer getReportsCount(ObjectId locationId, ObjectId doctorId, ObjectId patientId);
+	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1}", count = true)
+	Integer getReportsCount(ObjectId locationId, ObjectId doctorId);
 
 }

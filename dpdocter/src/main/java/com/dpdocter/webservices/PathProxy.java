@@ -1054,4 +1054,15 @@ public interface PathProxy {
 
 	}
 
+	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";
+
+	public interface FeedbackUrls {
+		public static final String ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK = "/addEditAppointmentGeneralFeedback";
+		public static final String ADD_EDIT_PRESCRIPTION_FEEDBACK = "/addEditPRescriptionFeedback";
+		public static final String ADD_EDIT_PHARMACY_FEEDBACK = "/addEditPharmacyFeedback";
+		public static final String GET_GENERAL_APPOINTMENT_FEEDBACK = "/getAppointmentGeneralFeedback";
+		public static final String GET_PRESCRIPTION_FEEDBACK = "/getPrescriptionFeedback";
+		public static final String GET_PHARMACY_FEEDBACK = "/getPharmacyFeedback";
+	}
+
 }
