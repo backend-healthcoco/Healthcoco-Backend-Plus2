@@ -17,7 +17,9 @@ public class EyeTest {
 	
 	private Integer nearAxis;
 	
-	private String va;
+	private String nearVA;
+	
+	private String distanceVA;
 
 	public Float getDistanceSPH() {
 		return distanceSPH;
@@ -67,18 +69,26 @@ public class EyeTest {
 		this.nearAxis = nearAxis;
 	}
 
-	public String getVa() {
-		return va;
+	public String getNearVA() {
+		return nearVA;
 	}
 
-	public void setVa(String va) {
-		this.va = va;
+	public void setNearVA(String nearVA) {
+		this.nearVA = nearVA;
+	}
+
+	public String getDistanceVA() {
+		return distanceVA;
+	}
+
+	public void setDistanceVA(String distanceVA) {
+		this.distanceVA = distanceVA;
 	}
 
 	@Override
 	public String toString() {
 		return "EyeTest [distanceSPH=" + distanceSPH + ", nearSPH=" + nearSPH + ", distanceCylinder=" + distanceCylinder
 				+ ", nearCylinder=" + nearCylinder + ", distanceAxis=" + distanceAxis + ", nearAxis=" + nearAxis
-				+ ", va=" + va + "]";
+				+ ", nearVA=" + nearVA + ", distanceVA=" + distanceVA + "]";
 	}
 }
