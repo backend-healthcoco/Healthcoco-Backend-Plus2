@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
@@ -1053,4 +1054,25 @@ public class PrescriptionApi {
 		response.setData(eyePrescription);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS, notes = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTIONS)
+	public Response<EyePrescription> getEyePrescriptions(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam(value = "isOTPVerified") Boolean isOTPVerified) {
+		List<EyePrescription> eyePrescriptions = null;
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input.");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.");
+		}
+		eyePrescriptions = prescriptionServices.getEyePrescriptions(page, size, doctorId, locationId, hospitalId, patientId, updatedTime, discarded, isOTPVerified);
+		Response<EyePrescription> response = new Response<>();
+		response.setDataList(eyePrescriptions);
+		return response;
+	}
+	
 }

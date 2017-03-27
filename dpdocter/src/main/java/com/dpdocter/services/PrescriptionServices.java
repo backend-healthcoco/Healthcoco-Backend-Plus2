@@ -145,7 +145,11 @@ public interface PrescriptionServices {
 	public Advice deleteAdvice(String adviceId, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
+	// Boolean makeCustomDrugFavourite();
+
 	Drug addFavouriteDrug(DrugAddEditRequest request);
+
+	//Boolean addGenericNameInDrugs();
 
 	List<DrugInteractionResposne> drugInteraction(List<Drug> request);
 
@@ -167,5 +171,8 @@ public interface PrescriptionServices {
 	EyePrescription editEyePrescription(EyePrescription request);
 
 	EyePrescription getEyePrescription(String id);
+
+	List<EyePrescription> getEyePrescriptions(int page, int size, String doctorId, String locationId, String hospitalId,
+			String patientId, String updatedTime, Boolean discarded, Boolean isOTPVerified);
 
 }

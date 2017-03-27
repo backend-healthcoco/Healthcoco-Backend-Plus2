@@ -87,6 +87,7 @@ import com.dpdocter.collections.DrugDosageCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.GenericCodesAndReactionsCollection;
@@ -4721,6 +4722,45 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		response = new EyePrescription();
 		BeanUtil.map(eyePrescriptionCollection, response);
 		return response;
+	}
+
+	
+
+	@Override
+	@Transactional
+	public List<EyePrescription> getEyePrescriptions(int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String updatedTime, Boolean discarded, Boolean isOTPVerified) {
+		List<EyePrescription> eyePrescriptions = null;
+		//List<EyeObservationCollection> eyeObservationCollections = null;
+		ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+		if (!DPDoctorUtils.anyStringEmpty(patientId))
+			patientObjectId = new ObjectId(patientId);
+		if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			doctorObjectId = new ObjectId(doctorId);
+		if (!DPDoctorUtils.anyStringEmpty(locationId))
+			locationObjectId = new ObjectId(locationId);
+		if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+			hospitalObjectId = new ObjectId(hospitalId);
+
+		long createdTimestamp = Long.parseLong(updatedTime);
+
+		Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimestamp)).and("patientId").is(patientObjectId);
+		if(!discarded)criteria.and("discarded").is(discarded);
+		//if(inHistory)criteria.and("inHistory").is(inHistory);
+		
+		if(!isOTPVerified){
+			if(!DPDoctorUtils.anyStringEmpty(locationId, hospitalId))criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			if(!DPDoctorUtils.anyStringEmpty(doctorId))criteria.and("doctorId").is(doctorObjectId);	
+		}
+		
+		Aggregation aggregation = null;
+		
+		if (size > 0)aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size), Aggregation.limit(size));
+		else aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		
+		AggregationResults<EyePrescription> aggregationResults = mongoTemplate.aggregate(aggregation, EyePrescriptionCollection.class, EyePrescription.class);
+		eyePrescriptions = aggregationResults.getMappedResults();
+		return eyePrescriptions;
 	}
 
 	
