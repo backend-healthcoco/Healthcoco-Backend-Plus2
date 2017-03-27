@@ -18,7 +18,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.aop.NoLogging;
 import com.dpdocter.beans.AccessControl;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.Hospital;
@@ -187,6 +186,7 @@ public class LoginServiceImpl implements LoginService {
 										otherRoleCollection.getRoleCollection().getLocationId().toString().equalsIgnoreCase(locationCollection.getId().toString()))){
 									if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
 											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
@@ -198,6 +198,7 @@ public class LoginServiceImpl implements LoginService {
 												"You are staff member so please login from website.");
 									} else if (isMobileApp
 											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()

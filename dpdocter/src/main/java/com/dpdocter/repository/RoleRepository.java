@@ -97,11 +97,11 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}}]}")
 	public List<RoleCollection> findCustomGlobalRole(ObjectId locationId, ObjectId hospitalId, Date date, Sort sort);
 
-    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role': ?3},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role':?3}]}")
-	public List<RoleCollection> findCustomGlobalDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date,	String role, Pageable pageable);
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role': {'$in' : ?3}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role': {'$in' : ?3}}]}")
+	public List<RoleCollection> findCustomGlobalDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date,	List<String> roles, Pageable pageable);
 
-    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':?3},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role': ?3}]}")
-	public List<RoleCollection> findCustomGlobalDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date,	String role, Sort sort);
+    @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role': {'$in' : ?3}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role': {'$in' : ?3}}]}")
+	public List<RoleCollection> findCustomGlobalDoctorRole(ObjectId locationId, ObjectId hospitalId, Date date,	List<String> roles, Sort sort);
 
     @Query("{'$or': [{'locationId': ?0, 'hospitalId': ?1,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}},{'locationId': null, 'hospitalId': null,'updatedTime': {'$gt': ?2}, 'role':{'$nin': ?3}}]}")
 	public List<RoleCollection> findCustomGlobalStaffRole(ObjectId locationId, ObjectId hospitalId, Date date, List<String> roleIds, Pageable pageable);

@@ -528,8 +528,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						logger.error("No user found");
 						throw new BusinessException(ServiceError.NoRecord, "No user found");
 					}
-					clinicProfile.add(getDoctorClinic(doctorClinicProfileLookupResponse, patientId, isMobileApp,
-							doctorClinicProfileLookupResponses.size()));
+					DoctorClinicProfile doctorClinicProfile = getDoctorClinic(doctorClinicProfileLookupResponse, patientId, isMobileApp, doctorClinicProfileLookupResponses.size());
+					if(doctorClinicProfile != null)clinicProfile.add(doctorClinicProfile);
 				}
 			}
 
@@ -651,6 +651,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			for (RoleCollection otherRoleCollection : roleCollections) {
 				if (isMobileApp && locationSize == 1
 						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
@@ -658,6 +659,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					throw new BusinessException(ServiceError.NotAuthorized,
 							"You are staff member so please login from website.");
 				} else if (isMobileApp && !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
 						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
 						|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {

@@ -59,7 +59,6 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
-import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
@@ -87,9 +86,7 @@ import com.dpdocter.collections.DrugDosageCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
-import com.dpdocter.collections.EyeObservationCollection;
 import com.dpdocter.collections.EyePrescriptionCollection;
-import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.GenericCodesAndReactionsCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LabTestCollection;
@@ -4657,7 +4654,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			UserCollection userCollection = userRepository.findOne(eyePrescriptionCollection.getDoctorId());
 			Date createdTime = new Date();
 			eyePrescriptionCollection.setCreatedTime(createdTime);
-			//eyePrescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
+			eyePrescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
 			eyePrescriptionCollection
 					.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
 		
@@ -4698,8 +4695,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
 		}
 		BeanUtil.map(request, eyePrescriptionCollection);
-		eyePrescriptionCollection.setVisualAcuities(request.getVisualAcuities());
-		eyePrescriptionCollection.setEyeTests(request.getEyeTests());
 		eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
 		if(eyePrescriptionCollection != null)
 		{

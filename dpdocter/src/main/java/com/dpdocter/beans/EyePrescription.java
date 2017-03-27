@@ -1,7 +1,6 @@
 package com.dpdocter.beans;
 
 import java.util.Date;
-import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.request.AppointmentRequest;
@@ -10,6 +9,8 @@ public class EyePrescription extends GenericCollection {
 
 	private String id;
 
+	private String uniqueEmrId;
+	
 	private String doctorId;
 
 	private String locationId;
@@ -18,9 +19,21 @@ public class EyePrescription extends GenericCollection {
 
 	private String patientId;
 
-	private List<VisualAcuity> visualAcuities;
+	private EyeTest leftEyeTest;
+	
+	private EyeTest rightEyeTest;
 
-	private List<EyeTest> eyeTests;
+	private String type;
+	
+	private Integer pupilaryDistance;
+	
+	private String lensType;
+	
+	private String usage;
+	
+	private String remarks;
+	
+	private String prescriptionCode;
 
 	private Boolean inHistory = false;
 
@@ -28,8 +41,6 @@ public class EyePrescription extends GenericCollection {
 
 	private Boolean isOTPVerified = false;
 
-	private String uniqueEmrId;
-	
 	private String appointmentId;
 
 	private WorkingHours time;
@@ -80,20 +91,68 @@ public class EyePrescription extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public List<VisualAcuity> getVisualAcuities() {
-		return visualAcuities;
+	public EyeTest getLeftEyeTest() {
+		return leftEyeTest;
 	}
 
-	public void setVisualAcuities(List<VisualAcuity> visualAcuities) {
-		this.visualAcuities = visualAcuities;
+	public void setLeftEyeTest(EyeTest leftEyeTest) {
+		this.leftEyeTest = leftEyeTest;
 	}
 
-	public List<EyeTest> getEyeTests() {
-		return eyeTests;
+	public EyeTest getRightEyeTest() {
+		return rightEyeTest;
 	}
 
-	public void setEyeTests(List<EyeTest> eyeTests) {
-		this.eyeTests = eyeTests;
+	public void setRightEyeTest(EyeTest rightEyeTest) {
+		this.rightEyeTest = rightEyeTest;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Integer getPupilaryDistance() {
+		return pupilaryDistance;
+	}
+
+	public void setPupilaryDistance(Integer pupilaryDistance) {
+		this.pupilaryDistance = pupilaryDistance;
+	}
+
+	public String getLensType() {
+		return lensType;
+	}
+
+	public void setLensType(String lensType) {
+		this.lensType = lensType;
+	}
+
+	public String getUsage() {
+		return usage;
+	}
+
+	public void setUsage(String usage) {
+		this.usage = usage;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	public String getPrescriptionCode() {
+		return prescriptionCode;
+	}
+
+	public void setPrescriptionCode(String prescriptionCode) {
+		this.prescriptionCode = prescriptionCode;
 	}
 
 	public Boolean getInHistory() {
@@ -171,10 +230,13 @@ public class EyePrescription extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "EyePrescription [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", patientId=" + patientId + ", visualAcuities=" + visualAcuities + ", eyeTests="
-				+ eyeTests + ", inHistory=" + inHistory + ", discarded=" + discarded + ", isOTPVerified="
-				+ isOTPVerified + "]";
+		return "EyePrescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", leftEyeTest="
+				+ leftEyeTest + ", rightEyeTest=" + rightEyeTest + ", type=" + type + ", pupilaryDistance="
+				+ pupilaryDistance + ", lensType=" + lensType + ", usage=" + usage + ", remarks=" + remarks
+				+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", discarded=" + discarded
+				+ ", isOTPVerified=" + isOTPVerified + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", fromDate=" + fromDate + ", appointmentRequest=" + appointmentRequest + ", visitId=" + visitId
+				+ "]";
 	}
-
 }

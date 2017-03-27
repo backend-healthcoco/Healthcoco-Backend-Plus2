@@ -2,118 +2,83 @@ package com.dpdocter.beans;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.dpdocter.enums.EyeSightednessUnit;
-import com.dpdocter.enums.EyeType;
-
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class EyeTest {
 
-	private Float baseCurve;
-	private Float diameter;
-	private Float power;
-	private EyeSightednessUnit powerUnit;
-	private Float cylinder;
-	private EyeSightednessUnit cylinderUnit;
-	private Integer axis;
-	private Float addition;
-	private EyeSightednessUnit additionUnit;
-	private Integer pupilaryDistance;
-	private EyeType eyeType;
+	private Float distanceSPH;
+	
+	private Float nearSPH;
+	
+	private Float distanceCylinder;
+	
+	private Float nearCylinder;
+	
+	private Integer distanceAxis;
+	
+	private Integer nearAxis;
+	
+	private String va;
 
-	public Float getBaseCurve() {
-		return baseCurve;
+	public Float getDistanceSPH() {
+		return distanceSPH;
 	}
 
-	public void setBaseCurve(Float baseCurve) {
-		this.baseCurve = baseCurve;
+	public void setDistanceSPH(Float distanceSPH) {
+		this.distanceSPH = distanceSPH;
 	}
 
-	public Float getDiameter() {
-		return diameter;
+	public Float getNearSPH() {
+		return nearSPH;
 	}
 
-	public void setDiameter(Float diameter) {
-		this.diameter = diameter;
+	public void setNearSPH(Float nearSPH) {
+		this.nearSPH = nearSPH;
 	}
 
-	public Float getPower() {
-		return power;
+	public Float getDistanceCylinder() {
+		return distanceCylinder;
 	}
 
-	public void setPower(Float power) {
-		this.power = power;
+	public void setDistanceCylinder(Float distanceCylinder) {
+		this.distanceCylinder = distanceCylinder;
 	}
 
-	public Float getCylinder() {
-		return cylinder;
+	public Float getNearCylinder() {
+		return nearCylinder;
 	}
 
-	public void setCylinder(Float cylinder) {
-		this.cylinder = cylinder;
+	public void setNearCylinder(Float nearCylinder) {
+		this.nearCylinder = nearCylinder;
 	}
 
-	public Integer getAxis() {
-		return axis;
+	public Integer getDistanceAxis() {
+		return distanceAxis;
 	}
 
-	public void setAxis(Integer axis) {
-		this.axis = axis;
+	public void setDistanceAxis(Integer distanceAxis) {
+		this.distanceAxis = distanceAxis;
 	}
 
-	public Float getAddition() {
-		return addition;
+	public Integer getNearAxis() {
+		return nearAxis;
 	}
 
-	public void setAddition(Float addition) {
-		this.addition = addition;
+	public void setNearAxis(Integer nearAxis) {
+		this.nearAxis = nearAxis;
 	}
 
-	public Integer getPupilaryDistance() {
-		return pupilaryDistance;
+	public String getVa() {
+		return va;
 	}
 
-	public void setPupilaryDistance(Integer pupilaryDistance) {
-		this.pupilaryDistance = pupilaryDistance;
-	}
-
-	public EyeSightednessUnit getPowerUnit() {
-		return powerUnit;
-	}
-
-	public void setPowerUnit(EyeSightednessUnit powerUnit) {
-		this.powerUnit = powerUnit;
-	}
-
-	public EyeSightednessUnit getCylinderUnit() {
-		return cylinderUnit;
-	}
-
-	public void setCylinderUnit(EyeSightednessUnit cylinderUnit) {
-		this.cylinderUnit = cylinderUnit;
-	}
-
-	public EyeSightednessUnit getAdditionUnit() {
-		return additionUnit;
-	}
-
-	public void setAdditionUnit(EyeSightednessUnit additionUnit) {
-		this.additionUnit = additionUnit;
-	}
-
-	public EyeType getEyeType() {
-		return eyeType;
-	}
-
-	public void setEyeType(EyeType eyeType) {
-		this.eyeType = eyeType;
+	public void setVa(String va) {
+		this.va = va;
 	}
 
 	@Override
 	public String toString() {
-		return "EyeTest [baseCurve=" + baseCurve + ", diameter=" + diameter + ", power=" + power + ", powerUnit="
-				+ powerUnit + ", cylinder=" + cylinder + ", cylinderUnit=" + cylinderUnit + ", axis=" + axis
-				+ ", addition=" + addition + ", additionUnit=" + additionUnit + ", pupilaryDistance=" + pupilaryDistance
-				+ ", eyeType=" + eyeType + "]";
+		return "EyeTest [distanceSPH=" + distanceSPH + ", nearSPH=" + nearSPH + ", distanceCylinder=" + distanceCylinder
+				+ ", nearCylinder=" + nearCylinder + ", distanceAxis=" + distanceAxis + ", nearAxis=" + nearAxis
+				+ ", va=" + va + "]";
 	}
-
 }

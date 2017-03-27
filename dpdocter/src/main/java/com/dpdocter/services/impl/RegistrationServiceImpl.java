@@ -2128,11 +2128,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (role.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())) {
 					if (size > 0)
 						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
-								new ObjectId(hospitalId), new Date(createdTimeStamp), RoleEnum.DOCTOR.getRole(),
+								new ObjectId(hospitalId), new Date(createdTimeStamp), Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
 					else
 						roleCollections = roleRepository.findCustomGlobalDoctorRole(new ObjectId(locationId),
-								new ObjectId(hospitalId), new Date(createdTimeStamp), RoleEnum.DOCTOR.getRole(),
+								new ObjectId(hospitalId), new Date(createdTimeStamp), Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.CONSULTANT_DOCTOR.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
 				} else if (role.equalsIgnoreCase(RoleEnum.STAFF.getRole())) {
 					if (size > 0)
