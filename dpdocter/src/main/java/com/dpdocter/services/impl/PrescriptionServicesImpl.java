@@ -59,6 +59,8 @@ import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.EyeObservation;
+import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
@@ -85,6 +87,8 @@ import com.dpdocter.collections.DrugDosageCollection;
 import com.dpdocter.collections.DrugDurationUnitCollection;
 import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.EyePrescriptionCollection;
+import com.dpdocter.collections.GenericCodeCollection;
 import com.dpdocter.collections.GenericCodesAndReactionsCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LabTestCollection;
@@ -121,6 +125,7 @@ import com.dpdocter.repository.DrugDosageRepository;
 import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
+import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.GenericCodeRepository;
 import com.dpdocter.repository.GenericCodesAndReactionsRepository;
 import com.dpdocter.repository.HistoryRepository;
@@ -262,6 +267,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Autowired
 	private PatientVisitService patientVisitService;
+	
+	@Autowired
+	private EyePrescriptionRepository eyePrescriptionRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -4623,5 +4631,98 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public EyePrescription addEditEyePrescription(EyePrescription request , Boolean isAppointmentAdd)
+	{
+		
+		EyePrescription response = null;
+		try {
+			Appointment appointment = null;
+			if (isAppointmentAdd) {
+				if (request.getAppointmentRequest() != null) {
+					appointment = addPrescriptionAppointment(request.getAppointmentRequest());
+				}
+			}
+			EyePrescriptionCollection eyePrescriptionCollection = new EyePrescriptionCollection();
+			if (appointment != null) {
+				request.setAppointmentId(appointment.getAppointmentId());
+				request.setTime(appointment.getTime());
+				request.setFromDate(appointment.getFromDate());
+			}
+			BeanUtil.map(request, eyePrescriptionCollection);
+
+			UserCollection userCollection = userRepository.findOne(eyePrescriptionCollection.getDoctorId());
+			Date createdTime = new Date();
+			eyePrescriptionCollection.setCreatedTime(createdTime);
+			//eyePrescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
+			eyePrescriptionCollection
+					.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
+		
+
+			if (userCollection != null) {
+				eyePrescriptionCollection
+						.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+								+ userCollection.getFirstName());
+			}
+			eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
+
+			response = new EyePrescription();
+			BeanUtil.map(eyePrescriptionCollection, response);
+			response.setVisitId(request.getVisitId());
+			pushNotificationServices.notifyUser(eyePrescriptionCollection.getPatientId().toString(),
+					"Your prescription by " + eyePrescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
+					ComponentType.PRESCRIPTIONS.getType(), eyePrescriptionCollection.getId().toString(), null);
+			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
+				sendDownloadAppMessage(eyePrescriptionCollection.getPatientId(), eyePrescriptionCollection.getDoctorId(),
+						eyePrescriptionCollection.getLocationId(), eyePrescriptionCollection.getHospitalId(),
+						eyePrescriptionCollection.getCreatedBy());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Eye Prescription");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Eye Prescription");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public EyePrescription editEyePrescription(EyePrescription request)
+	{
+		EyePrescription response = null;
+		EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(request.getId()));
+		if(eyePrescriptionCollection == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+		}
+		BeanUtil.map(request, eyePrescriptionCollection);
+		eyePrescriptionCollection.setVisualAcuities(request.getVisualAcuities());
+		eyePrescriptionCollection.setEyeTests(request.getEyeTests());
+		eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
+		if(eyePrescriptionCollection != null)
+		{
+			response = new EyePrescription();
+			BeanUtil.map(eyePrescriptionCollection, response);
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public EyePrescription getEyePrescription(String id)
+	{
+		EyePrescription response = null;
+		EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(id));
+		if(eyePrescriptionCollection == null)
+		{
+			throw new BusinessException(ServiceError.InvalidInput, "Record not found");
+		}
+		response = new EyePrescription();
+		BeanUtil.map(eyePrescriptionCollection, response);
+		return response;
+	}
+
+	
 
 }

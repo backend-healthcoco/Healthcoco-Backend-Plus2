@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.VisitedFor;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PatientVisit {
 	private String id;
@@ -30,6 +31,8 @@ public class PatientVisit {
 	private List<String> clinicalNotesId;
 
 	private List<String> recordId;
+
+	private String eyePrescriptionId;
 
 	private List<ObjectId> treatmentId;
 
@@ -167,6 +170,14 @@ public class PatientVisit {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getEyePrescriptionId() {
+		return eyePrescriptionId;
+	}
+
+	public void setEyePrescriptionId(String eyePrescriptionId) {
+		this.eyePrescriptionId = eyePrescriptionId;
 	}
 
 	@Override

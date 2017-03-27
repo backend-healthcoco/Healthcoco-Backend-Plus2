@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Records;
@@ -33,18 +34,20 @@ public class PatientVisitResponse extends GenericCollection {
 	private List<Prescription> prescriptions;
 
 	private List<ClinicalNotes> clinicalNotes;
-	
+
 	private List<PatientTreatment> patientTreatment;
 
 	private List<Records> records;
 
 	private String appointmentId;
-	
+
 	private Appointment appointmentRequest;
 
 	private WorkingHours time;
 
 	private Date fromDate;
+
+	private EyePrescription eyePrescription;
 
 	public String getId() {
 		return id;
@@ -166,6 +169,14 @@ public class PatientVisitResponse extends GenericCollection {
 		this.fromDate = fromDate;
 	}
 
+	public EyePrescription getEyePrescription() {
+		return eyePrescription;
+	}
+
+	public void setEyePrescription(EyePrescription eyePrescription) {
+		this.eyePrescription = eyePrescription;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
@@ -183,5 +194,4 @@ public class PatientVisitResponse extends GenericCollection {
 		this.appointmentRequest = appointmentRequest;
 	}
 
-	
 }

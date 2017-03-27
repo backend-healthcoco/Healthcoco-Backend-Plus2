@@ -312,6 +312,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						patientVisitCollection.getTreatmentId().add(id);
 				}
 			}
+			
+			else if (visitedFor.equals(VisitedFor.EYE_PRESCRIPTION)) {
+				if (patientVisitCollection.getEyePrescriptionId() == null) {
+					patientVisitCollection.setEyePrescriptionId(id);
+				} else {
+					if (!patientVisitCollection.getTreatmentId().add(id))
+						patientVisitCollection.getTreatmentId().add(id);
+				}
+			}
 
 			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);

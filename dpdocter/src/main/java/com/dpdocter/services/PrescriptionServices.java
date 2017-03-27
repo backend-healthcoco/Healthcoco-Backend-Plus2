@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
@@ -160,5 +161,11 @@ public interface PrescriptionServices {
 	Boolean deleteGenericCodeWithReaction(GenericCodesAndReaction request);
 
 	Boolean uploadGenericCodeWithReaction(FormDataBodyPart file);
+
+	EyePrescription addEditEyePrescription(EyePrescription request, Boolean isAppointmentAdd);
+
+	EyePrescription editEyePrescription(EyePrescription request);
+
+	EyePrescription getEyePrescription(String id);
 
 }

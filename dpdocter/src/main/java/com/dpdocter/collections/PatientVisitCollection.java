@@ -56,6 +56,9 @@ public class PatientVisitCollection extends GenericCollection {
 	private List<ObjectId> recordId;
 
 	@Field
+	private ObjectId eyePrescriptionId;
+
+	@Field
 	private String appointmentId;
 
 	@Field
@@ -179,7 +182,6 @@ public class PatientVisitCollection extends GenericCollection {
 		this.treatmentId = treatmentId;
 	}
 
-
 	public WorkingHours getTime() {
 		return time;
 	}
@@ -202,6 +204,14 @@ public class PatientVisitCollection extends GenericCollection {
 
 	public void setAppointmentId(String appointmentId) {
 		this.appointmentId = appointmentId;
+	}
+
+	public ObjectId getEyePrescriptionId() {
+		return eyePrescriptionId;
+	}
+
+	public void setEyePrescriptionId(ObjectId eyePrescriptionId) {
+		this.eyePrescriptionId = eyePrescriptionId;
 	}
 
 	@Override

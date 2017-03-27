@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.EyePrescription;
+import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -974,6 +976,81 @@ public class PrescriptionApi {
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(prescriptionServices.addFavouritesToDrug());
+		return response;
+	}
+
+//	@Path(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
+//	@GET
+//	@ApiOperation(value = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID, notes = PathProxy.PrescriptionUrls.CHECK_PATIENT_EXISTS_FOR_LAB_WITH_PRESCRIPTIONID)
+//	public Response<String> checkPrescriptionExists(@PathParam("uniqueEmrId") String uniqueEmrId,
+//			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
+//		if (DPDoctorUtils.anyStringEmpty(uniqueEmrId, locationId, hospitalId)) {
+//			logger.error("Invalid Input");
+//			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+//		}
+//		String patientId = prescriptionServices.checkPrescriptionExists(uniqueEmrId, locationId, hospitalId);
+//
+//		Response<String> response = new Response<String>();
+//		response.setData(dataResponse);
+//		return response;
+//	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.ADD_EYE_PRESCRPTION)
+	@POST
+	public Response<EyePrescription> addEyePrescription( EyePrescription request) {
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPatientId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		EyePrescription eyePrescription = prescriptionServices.addEditEyePrescription(request, true);
+
+		// patient track
+		if (eyePrescription != null) {
+			String visitId = patientTrackService.addRecord(eyePrescription, VisitedFor.EYE_PRESCRIPTION,
+					eyePrescription.getVisitId());
+			eyePrescription.setVisitId(visitId);
+		}
+
+		Response<EyePrescription> response = new Response<EyePrescription>();
+		response.setData(eyePrescription);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.EDIT_EYE_PRESCRPTION)
+	@POST
+	public Response<EyePrescription> editEyePrescription( EyePrescription request) {
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPatientId() , request.getId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		EyePrescription eyePrescription = prescriptionServices.editEyePrescription(request);
+		// patient track
+		/*if (eyePrescription != null) {
+			String visitId = patientTrackService.addRecord(eyePrescription, VisitedFor.EYE_PRESCRIPTION,
+					eyePrescription.getVisitId());
+			eyePrescription.setVisitId(visitId);
+		}*/
+
+		Response<EyePrescription> response = new Response<EyePrescription>();
+		response.setData(eyePrescription);
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.GET_EYE_PRESCRPTION_BY_ID)
+	@GET
+	public Response<EyePrescription> getEyePrescription( @PathParam("id") String id) {
+
+		if (DPDoctorUtils.anyStringEmpty(id)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		} 
+		EyePrescription eyePrescription = prescriptionServices.getEyePrescription(id);
+		Response<EyePrescription> response = new Response<EyePrescription>();
+		response.setData(eyePrescription);
 		return response;
 	}
 }
