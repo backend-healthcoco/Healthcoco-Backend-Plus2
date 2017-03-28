@@ -179,4 +179,8 @@ public interface PrescriptionServices {
 
 	void emailEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
 
+	int getEyePrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified);
+
+
 }

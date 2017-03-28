@@ -35,6 +35,8 @@ public class PatientVisitLookupBean extends GenericCollection {
 	private List<ObjectId> treatmentId;
 
 	private List<ObjectId> recordId;
+	
+	private ObjectId eyePrescriptionId;
 
 	private String appointmentId;
 
@@ -189,5 +191,15 @@ public class PatientVisitLookupBean extends GenericCollection {
 	public void setAppointmentRequest(Appointment appointmentRequest) {
 		this.appointmentRequest = appointmentRequest;
 	}
+
+	public ObjectId getEyePrescriptionId() {
+		return eyePrescriptionId;
+	}
+
+	public void setEyePrescriptionId(ObjectId eyePrescriptionId) {
+		this.eyePrescriptionId = eyePrescriptionId;
+	}
+	
+	
 
 }

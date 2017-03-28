@@ -40,6 +40,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.EyePrescription;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
@@ -53,12 +54,14 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.HistoryCollection;
@@ -70,6 +73,7 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
@@ -87,6 +91,7 @@ import com.dpdocter.repository.ClinicalNotesRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -95,6 +100,7 @@ import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
@@ -156,6 +162,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private ClinicalNotesRepository clinicalNotesRepository;
+	
+	@Autowired
+	private DoctorRepository doctorRepository;
 
 	@Autowired
 	private RecordsService recordsService;
@@ -204,6 +213,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Autowired
 	private AppointmentRepository appointmentRepository;
+	
+	@Autowired
+	private SpecialityRepository specialityRepository;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -316,15 +328,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			else if (visitedFor.equals(VisitedFor.EYE_PRESCRIPTION)) {
 				if (patientVisitCollection.getEyePrescriptionId() == null) {
 					patientVisitCollection.setEyePrescriptionId(id);
-				} else {
-					if (!patientVisitCollection.getTreatmentId().add(id))
-						patientVisitCollection.getTreatmentId().add(id);
 				}
 			}
-
 			patientVisitCollection.setUpdatedTime(new Date());
 			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while saving patient visit record : " + e.getCause().getMessage());
@@ -764,6 +771,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				visitedFors.add(CLINICAL_NOTES);
 				visitedFors.add(PRESCRIPTION);
 				visitedFors.add(VisitedFor.TREATMENT);
+				visitedFors.add(VisitedFor.EYE_PRESCRIPTION);
 			} else {
 				visitedFors.add(VisitedFor.valueOf(visitFor.toUpperCase()));
 			}
@@ -849,6 +857,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						List<PatientTreatment> patientTreatment = patientTreatmentServices.getPatientTreatmentByIds(
 								patientVisitlookupBean.getTreatmentId(), patientVisitlookupBean.getId());
 						patientVisitResponse.setPatientTreatment(patientTreatment);
+					}
+					
+					if (patientVisitlookupBean.getEyePrescriptionId() != null) {
+						EyePrescription eyePrescription = prescriptionServices.getEyePrescription(String.valueOf(patientVisitlookupBean.getEyePrescriptionId()));
+						patientVisitResponse.setEyePrescription(eyePrescription);;
 					}
 					response.add(patientVisitResponse);
 				}
@@ -1962,6 +1975,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			visitedFors.add(VisitedFor.PRESCRIPTION);
 			visitedFors.add(VisitedFor.REPORTS);
 			visitedFors.add(VisitedFor.TREATMENT);
+			visitedFors.add(VisitedFor.EYE_PRESCRIPTION);
 
 			Criteria criteria = new Criteria("discarded").is(false).and("patientId").is(patientObjectId)
 					.and("visitedFor").in(visitedFors);

@@ -881,6 +881,10 @@ public class RecordsServiceImpl implements RecordsService {
 							locationObjectId, hospitalObjectId, isOTPVerified));
 					break;
 					
+				case EYE_PRESCRIPTION:
+					count.setValue(prescriptionService.getEyePrescriptionCount(doctorObjectId, patientObjectId,
+							locationObjectId, hospitalObjectId, isOTPVerified));
+
 				default:
 					break;
 				}

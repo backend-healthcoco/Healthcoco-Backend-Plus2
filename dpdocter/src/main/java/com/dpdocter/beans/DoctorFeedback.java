@@ -7,7 +7,7 @@ import com.dpdocter.enums.PricingEnum;
 public class DoctorFeedback extends GenericCollection {
 
 	private String id;
-	private FeedbackEnum interconnedtednessOfPlatform;
+	private FeedbackEnum interconnectednessOfPlatform;
 	private FeedbackEnum usefulnessOFPrescription;;
 	private FeedbackEnum usefulOfListing;
 	private FeedbackEnum usefulOfAppointment;
@@ -39,11 +39,11 @@ public class DoctorFeedback extends GenericCollection {
 	}
 
 	public FeedbackEnum getInterconnedtednessOfPlatform() {
-		return interconnedtednessOfPlatform;
+		return interconnectednessOfPlatform;
 	}
 
-	public void setInterconnedtednessOfPlatform(FeedbackEnum interconnedtednessOfPlatform) {
-		this.interconnedtednessOfPlatform = interconnedtednessOfPlatform;
+	public void setInterconnedtednessOfPlatform(FeedbackEnum interconnectednessOfPlatform) {
+		this.interconnectednessOfPlatform = interconnectednessOfPlatform;
 	}
 
 	public FeedbackEnum getUsefulnessOFPrescription() {
@@ -216,7 +216,7 @@ public class DoctorFeedback extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DoctorFeedback [id=" + id + ", interconnedtednessOfPlatform=" + interconnedtednessOfPlatform
+		return "DoctorFeedback [id=" + id + ", interconnedtednessOfPlatform=" + interconnectednessOfPlatform
 				+ ", usefulnessOFPrescription=" + usefulnessOFPrescription + ", usefulOfListing=" + usefulOfListing
 				+ ", usefulOfAppointment=" + usefulOfAppointment + ", valueAdditionToPractice="
 				+ valueAdditionToPractice + ", timeSavingInPrescription=" + timeSavingInPrescription

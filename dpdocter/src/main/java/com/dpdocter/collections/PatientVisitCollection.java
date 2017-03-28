@@ -220,7 +220,8 @@ public class PatientVisitCollection extends GenericCollection {
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
 				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", treatmentId="
-				+ treatmentId + ", recordId=" + recordId + ", appointmentId=" + appointmentId + ", time=" + time
-				+ ", fromDate=" + fromDate + ", discarded=" + discarded + "]";
+				+ treatmentId + ", recordId=" + recordId + ", eyePrescriptionId=" + eyePrescriptionId
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", discarded="
+				+ discarded + "]";
 	}
 }
