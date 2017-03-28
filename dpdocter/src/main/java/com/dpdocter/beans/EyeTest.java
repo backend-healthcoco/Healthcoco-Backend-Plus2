@@ -5,13 +5,13 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class EyeTest {
 
-	private Float distanceSPH;
+	private Double distanceSPH;
 	
-	private Float nearSPH;
+	private Double nearSPH;
 	
-	private Float distanceCylinder;
+	private Double distanceCylinder;
 	
-	private Float nearCylinder;
+	private Double nearCylinder;
 	
 	private Integer distanceAxis;
 	
@@ -21,35 +21,35 @@ public class EyeTest {
 	
 	private String distanceVA;
 
-	public Float getDistanceSPH() {
+	public Double getDistanceSPH() {
 		return distanceSPH;
 	}
 
-	public void setDistanceSPH(Float distanceSPH) {
+	public void setDistanceSPH(Double distanceSPH) {
 		this.distanceSPH = distanceSPH;
 	}
 
-	public Float getNearSPH() {
+	public Double getNearSPH() {
 		return nearSPH;
 	}
 
-	public void setNearSPH(Float nearSPH) {
+	public void setNearSPH(Double nearSPH) {
 		this.nearSPH = nearSPH;
 	}
 
-	public Float getDistanceCylinder() {
+	public Double getDistanceCylinder() {
 		return distanceCylinder;
 	}
 
-	public void setDistanceCylinder(Float distanceCylinder) {
+	public void setDistanceCylinder(Double distanceCylinder) {
 		this.distanceCylinder = distanceCylinder;
 	}
 
-	public Float getNearCylinder() {
+	public Double getNearCylinder() {
 		return nearCylinder;
 	}
 
-	public void setNearCylinder(Float nearCylinder) {
+	public void setNearCylinder(Double nearCylinder) {
 		this.nearCylinder = nearCylinder;
 	}
 

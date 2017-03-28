@@ -375,7 +375,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			patientCollection.setCreatedTime(createdTime);
 			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId()));
 
-			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 				List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
 				consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
 				patientCollection.setConsultantDoctorIds(consultantDoctorIds);
@@ -648,7 +648,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					userCollection.setThumbnailUrl(null);
 				}
-				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 					List<ObjectId> consultantDoctorIds = patientCollection.getConsultantDoctorIds();
 					if(consultantDoctorIds == null)consultantDoctorIds = new ArrayList<ObjectId>();
 					if(!consultantDoctorIds.contains(new ObjectId(request.getDoctorId())))consultantDoctorIds.add(new ObjectId(request.getDoctorId()));

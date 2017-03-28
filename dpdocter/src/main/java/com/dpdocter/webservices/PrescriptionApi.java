@@ -23,9 +23,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.EyePrescription;
-import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
@@ -45,7 +43,6 @@ import com.dpdocter.request.DrugDosageAddEditRequest;
 import com.dpdocter.request.DrugDurationUnitAddEditRequest;
 import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.request.TemplateAddEditRequest;
-import com.dpdocter.response.DrugAddEditResponse;
 import com.dpdocter.response.DrugDirectionAddEditResponse;
 import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
@@ -1074,5 +1071,38 @@ public class PrescriptionApi {
 		response.setDataList(eyePrescriptions);
 		return response;
 	}
-	
+
+	@Path(value = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DOWNLOAD_EYE_PRESCRIPTION)
+	public Response<String> downloadEyePrescription(@PathParam("prescriptionId") String prescriptionId) {
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<String> response = new Response<String>();
+		response.setData(prescriptionServices.downloadEyePrescription(prescriptionId));
+		return response;
+	}
+
+	@Path(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.EMAIL_EYE_PRESCRIPTION)
+	public Response<Boolean> emailEyePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+		}
+		prescriptionServices.emailEyePrescription(prescriptionId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 }

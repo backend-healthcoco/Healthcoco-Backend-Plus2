@@ -175,4 +175,8 @@ public interface PrescriptionServices {
 	List<EyePrescription> getEyePrescriptions(int page, int size, String doctorId, String locationId, String hospitalId,
 			String patientId, String updatedTime, Boolean discarded, Boolean isOTPVerified);
 
+	String downloadEyePrescription(String prescriptionId);
+
+	void emailEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId, String emailAddress);
+
 }

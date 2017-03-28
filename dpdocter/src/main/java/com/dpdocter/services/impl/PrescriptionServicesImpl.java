@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +61,7 @@ import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.EyePrescription;
+import com.dpdocter.beans.EyeTest;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
@@ -148,6 +150,7 @@ import com.dpdocter.response.DrugDosageAddEditResponse;
 import com.dpdocter.response.DrugDurationUnitAddEditResponse;
 import com.dpdocter.response.DrugInteractionResposne;
 import com.dpdocter.response.DrugTypeAddEditResponse;
+import com.dpdocter.response.EyeTestJasperResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PrescriptionAddEditResponse;
@@ -3558,12 +3561,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						jasperReportResponse.getFileSystemResource().getFile().delete();
 			} else {
 				logger.warn("Patient Visit Id does not exist");
-				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Prescription Id does not exist");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while getting Patient Visits PDF");
-			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Prescription PDF");
 		}
 		return response;
 	}
@@ -4208,57 +4211,56 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		String cvsSplitBy = ",";
 
 		try {
-//			br = new BufferedReader(new FileReader(csvFile));
-//			while ((line = br.readLine()) != null) {
-//				String[] codes = line.split(cvsSplitBy);
-//
-//				Code codeOfId = new Code(codes[0], "");
-//
-//				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
-//						.findOne(codes[0]);
-//				if (esGenericCodesAndReactionsOfZeroIndex == null) {
-//					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
-//					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
-//				}
-//				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
-//				if (codesList == null)
-//					codesList = new ArrayList<Code>();
-//
-//				for (int i = 1; i < codes.length; i++) {
-//					Code code = new Code(codes[i], null);
-//					if (!codesList.contains(code))
-//						codesList.add(code);
-//
-//					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
-//							.findOne(codes[i]);
-//					if (esGenericCodesAndReactions == null) {
-//						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
-//						esGenericCodesAndReactions.setId(codes[i]);
-//						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
-//					} else {
-//						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
-//						if (!codesListOfOther.contains(codeOfId))
-//							codesListOfOther.add(codeOfId);
-//
-//						Collections.sort(codesListOfOther, new Comparator<Code>() {
-//							public int compare(Code one, Code other) {
-//								return one.getGenericCode().compareTo(other.getGenericCode());
-//							}
-//						});
-//						esGenericCodesAndReactions.setCodes(codesListOfOther);
-//					}
-//					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
-//				}
-//
-//				Collections.sort(codesList, new Comparator<Code>() {
-//					public int compare(Code one, Code other) {
-//						return one.getGenericCode().compareTo(other.getGenericCode());
-//					}
-//				});
-//				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
-//				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
-//						.save(esGenericCodesAndReactionsOfZeroIndex);
-//			}
+			br = new BufferedReader(new FileReader(csvFile));
+			while ((line = br.readLine()) != null) {
+				String[] codes = line.split(cvsSplitBy);
+
+				Code codeOfId = new Code(codes[0], "");
+
+				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+						.findOne(codes[0]);
+				if (esGenericCodesAndReactionsOfZeroIndex == null) {
+					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
+					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
+				}
+				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
+				if (codesList == null)
+					codesList = new ArrayList<Code>();
+
+				for (int i = 1; i < codes.length; i++) {
+					Code code = new Code(codes[i], null);
+					if (!codesList.contains(code))
+						codesList.add(code);
+
+					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.findOne(codes[i]);
+					if (esGenericCodesAndReactions == null) {
+						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
+						esGenericCodesAndReactions.setId(codes[i]);
+						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
+					} else {
+						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
+						if (!codesListOfOther.contains(codeOfId))
+							codesListOfOther.add(codeOfId);
+
+						Collections.sort(codesListOfOther, new Comparator<Code>() {
+							public int compare(Code one, Code other) {
+								return one.getGenericCode().compareTo(other.getGenericCode());
+							}
+						});
+						esGenericCodesAndReactions.setCodes(codesListOfOther);
+					}
+					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
+				}
+
+				Collections.sort(codesList, new Comparator<Code>() {
+					public int compare(Code one, Code other) {
+						return one.getGenericCode().compareTo(other.getGenericCode());
+					}
+				});
+				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
+				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
+						.save(esGenericCodesAndReactionsOfZeroIndex);
+			}
 			
 			
 			Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.findAll();
@@ -4758,6 +4760,191 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return eyePrescriptions;
 	}
 
-	
+	@Override
+	public String downloadEyePrescription(String prescriptionId) {
+		String response = null;
+		try {
+			EyePrescriptionCollection prescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(prescriptionId));
 
+			if (prescriptionCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
+						prescriptionCollection.getHospitalId());
+				UserCollection user = userRepository.findOne(new ObjectId("57af66d2e4b09b7b5450b3b1"));
+
+				JasperReportResponse jasperReportResponse = createEyePrescriptionJasper(prescriptionCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Patient Visit Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Patient Visit Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while getting Patient Visits PDF");
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Visits PDF");
+		}
+		return response;
+
+	}
+
+	private JasperReportResponse createEyePrescriptionJasper(EyePrescriptionCollection prescriptionCollection, PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		
+		EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
+		if(prescriptionCollection.getLeftEyeTest() != null)BeanUtil.map(prescriptionCollection.getLeftEyeTest(), eyResponse);
+		parameters.put("leftEyeTest", eyResponse);
+		
+		eyResponse = new EyeTestJasperResponse();
+		if(prescriptionCollection.getLeftEyeTest() != null)BeanUtil.map(prescriptionCollection.getLeftEyeTest(), eyResponse);
+		parameters.put("rightEyeTest", eyResponse);
+		
+		parameters.put("type", prescriptionCollection.getType());
+		parameters.put("pupilaryDistance", prescriptionCollection.getPupilaryDistance());
+		parameters.put("lensType", prescriptionCollection.getLensType());
+		parameters.put("usage", prescriptionCollection.getUsage());
+		parameters.put("remarks", prescriptionCollection.getRemarks());
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
+				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
+		
+		patientVisitService.generatePatientDetails((printSettings != null && printSettings.getHeaderSetup() != null	? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,"<b>RxID: </b>" + (prescriptionCollection.getUniqueEmrId() != null
+						? prescriptionCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+		
+		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId("5794add2e4b01f1d73f9b74e"));
+		
+		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
+				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getTopMargin() != null
+						? printSettings.getPageSetup().getTopMargin() : 20)
+				: 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getBottomMargin() != null
+						? printSettings.getPageSetup().getBottomMargin() : 20)
+				: 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != null
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+
+		response = jasperReportService.createPDF(ComponentType.EYE_PRESCRIPTION, parameters, "mongo-optho-prescription.jrxml",
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""),
+				prescriptionSubReportA4FileName);
+		return response;
+	}
+
+	@Override
+	public void emailEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		EyePrescriptionCollection prescriptionCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+			try {
+				prescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(prescriptionId));
+				if (prescriptionCollection != null) {
+					if (prescriptionCollection.getDoctorId() != null && prescriptionCollection.getHospitalId() != null
+							&& prescriptionCollection.getLocationId() != null) {
+						if (prescriptionCollection.getDoctorId().equals(doctorId)
+								&& prescriptionCollection.getHospitalId().equals(hospitalId)
+								&& prescriptionCollection.getLocationId().equals(locationId)) {
+
+							user = userRepository.findOne(prescriptionCollection.getPatientId());
+							patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+									prescriptionCollection.getPatientId(), prescriptionCollection.getLocationId(),
+									prescriptionCollection.getHospitalId());
+							user.setFirstName(patient.getLocalPatientName());
+							emailTrackCollection.setDoctorId(prescriptionCollection.getDoctorId());
+							emailTrackCollection.setHospitalId(prescriptionCollection.getHospitalId());
+							emailTrackCollection.setLocationId(prescriptionCollection.getLocationId());
+							emailTrackCollection.setType(ComponentType.PRESCRIPTIONS.getType());
+							emailTrackCollection.setSubject("Prescription");
+							if (user != null) {
+								emailTrackCollection.setPatientName(patient.getLocalPatientName());
+								emailTrackCollection.setPatientId(user.getId());
+							}
+
+							JasperReportResponse jasperReportResponse = createEyePrescriptionJasper(prescriptionCollection, patient, user);
+							mailAttachment = new MailAttachment();
+							mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+							mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+							UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+							LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+							mailResponse = new MailResponse();
+							mailResponse.setMailAttachment(mailAttachment);
+							mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+							String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+									? locationCollection.getStreetAddress() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+											? locationCollection.getLandmarkDetails() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+											? locationCollection.getLocality() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+											? locationCollection.getCity() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+											? locationCollection.getState() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+											? locationCollection.getCountry() + ", " : "")
+									+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+											? locationCollection.getPostalCode() : "");
+
+							if (address.charAt(address.length() - 2) == ',') {
+								address = address.substring(0, address.length() - 2);
+							}
+							mailResponse.setClinicAddress(address);
+							mailResponse.setClinicName(locationCollection.getLocationName());
+							SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+							sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+							mailResponse.setMailRecordCreatedDate(sdf.format(prescriptionCollection.getCreatedTime()));
+							mailResponse.setPatientName(user.getFirstName());
+							emailTackService.saveEmailTrack(emailTrackCollection);
+
+						} else {
+							logger.warn("Prescription Id, doctorId, location Id, hospital Id does not match");
+							throw new BusinessException(ServiceError.NotFound,
+									"Prescription Id, doctorId, location Id, hospital Id does not match");
+						}
+					}
+
+				} else {
+					logger.warn("Prescription not found.Please check prescriptionId.");
+					throw new BusinessException(ServiceError.NoRecord,
+							"Prescription not found.Please check prescriptionId.");
+				}
+			
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Prescription", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Prescription", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 }
