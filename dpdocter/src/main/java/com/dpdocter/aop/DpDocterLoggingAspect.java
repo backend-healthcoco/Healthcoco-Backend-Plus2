@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.aopalliance.intercept.Joinpoint;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -54,8 +55,8 @@ public class DpDocterLoggingAspect {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
 		sdf.setTimeZone(timeZone);
-
-		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
+		String expceptionMsg = ExceptionUtils.getStackTrace(e);
+		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),expceptionMsg);
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 		Response<Exception> response = new Response<Exception>();
@@ -73,8 +74,8 @@ public class DpDocterLoggingAspect {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
 			sdf.setTimeZone(timeZone);
-	
-			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
+			String expceptionMsg = ExceptionUtils.getStackTrace(e);
+			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),expceptionMsg);
 			LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 			LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 			Response<Exception> response = new Response<Exception>();
@@ -91,8 +92,8 @@ public class DpDocterLoggingAspect {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
 			sdf.setTimeZone(timeZone);
-	
-			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),e.toString());
+			String expceptionMsg = ExceptionUtils.getStackTrace(e);
+			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),expceptionMsg);
 			LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 			LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 			Response<Exception> response = new Response<Exception>();

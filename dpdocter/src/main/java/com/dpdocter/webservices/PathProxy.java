@@ -1074,5 +1074,11 @@ public interface PathProxy {
 		public static final String GET_PRESCRIPTION_FEEDBACK = "/getPrescriptionFeedback";
 		public static final String GET_PHARMACY_FEEDBACK = "/getPharmacyFeedback";
 	}
+	
+	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
+
+	public interface DischargeSummaryUrls {
+
+	}
 
 }
