@@ -648,12 +648,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					userCollection.setThumbnailUrl(null);
 				}
-				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
-					List<ObjectId> consultantDoctorIds = patientCollection.getConsultantDoctorIds();
-					if(consultantDoctorIds == null)consultantDoctorIds = new ArrayList<ObjectId>();
-					if(!consultantDoctorIds.contains(new ObjectId(request.getDoctorId())))consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
-					patientCollection.setConsultantDoctorIds(consultantDoctorIds);
-				}
 				patientCollection = patientRepository.save(patientCollection);
 
 				Patient patient = new Patient();
@@ -788,6 +782,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 				registeredPatientDetails.setUserId(userCollection.getId().toString());
 				patientCollection.setFirstName(userCollection.getFirstName());
+				
+				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
+					List<ObjectId> consultantDoctorIds = patientCollection.getConsultantDoctorIds();
+					if(consultantDoctorIds == null)consultantDoctorIds = new ArrayList<ObjectId>();
+					if(!consultantDoctorIds.contains(new ObjectId(request.getDoctorId())))consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
+					patientCollection.setConsultantDoctorIds(consultantDoctorIds);
+				}
+							
 				patientCollection = patientRepository.save(patientCollection);
 				registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
 				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
