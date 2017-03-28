@@ -1009,6 +1009,7 @@ public class PrescriptionApi {
 			String visitId = patientTrackService.addRecord(eyePrescription, VisitedFor.EYE_PRESCRIPTION,
 					eyePrescription.getVisitId());
 			eyePrescription.setVisitId(visitId);
+			prescriptionServices.updateEyePrescriptionVisitId(eyePrescription.getId(), visitId);
 		}
 
 		Response<EyePrescription> response = new Response<EyePrescription>();

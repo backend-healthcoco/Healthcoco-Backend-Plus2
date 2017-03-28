@@ -5074,4 +5074,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 	}
 
+	@Override
+	@Transactional
+	public void updateEyePrescriptionVisitId(String eyePrescriptionId, String visitId) {
+		EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
+				.findOne(new ObjectId(eyePrescriptionId));
+		eyePrescriptionCollection.setVisitId(new ObjectId(visitId));
+		eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
+	}
 }

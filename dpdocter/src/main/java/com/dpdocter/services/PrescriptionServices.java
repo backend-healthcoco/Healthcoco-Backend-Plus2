@@ -182,5 +182,7 @@ public interface PrescriptionServices {
 	int getEyePrescriptionCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
+	void updateEyePrescriptionVisitId(String eyePrescriptionId, String visitId);
+
 
 }
