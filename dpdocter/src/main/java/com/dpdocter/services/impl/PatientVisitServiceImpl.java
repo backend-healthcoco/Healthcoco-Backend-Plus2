@@ -54,16 +54,15 @@ import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
-import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DiseasesCollection;
-import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -73,7 +72,6 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.RecordsCollection;
 import com.dpdocter.collections.ReferencesCollection;
-import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
@@ -93,6 +91,7 @@ import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DiseasesRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.EyePrescriptionRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientTreamentRepository;
@@ -105,6 +104,7 @@ import com.dpdocter.repository.TreatmentServicesRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddMultipleDataRequest;
 import com.dpdocter.request.AppointmentRequest;
+import com.dpdocter.response.EyeTestJasperResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientTreatmentResponse;
@@ -250,6 +250,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Value(value = "${jasper.print.prescription.subreport.a5.fileName}")
 	private String prescriptionSubReportA5FileName;
 
+	@Autowired
+	private EyePrescriptionRepository eyePrescriptionRepository;
+	
 	@Override
 	@Transactional
 	public String addRecord(Object details, VisitedFor visitedFor, String visitId) {
@@ -1038,20 +1041,29 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}	
 				}
 		 }
+		 if(!showUSG && !isLabPrint){
+				if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
+					EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findOne(patientVisitLookupResponse.getEyePrescriptionId());
+					EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
+					if (eyePrescriptionCollection.getLeftEyeTest() != null)
+						BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
+					parameters.put("leftEyeTest", eyResponse);
+
+					eyResponse = new EyeTestJasperResponse();
+					if (eyePrescriptionCollection.getLeftEyeTest() != null)
+						BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
+					parameters.put("rightEyeTest", eyResponse);
+
+					parameters.put("type", eyePrescriptionCollection.getType());
+					parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance());
+					parameters.put("lensType", eyePrescriptionCollection.getLensType());
+					parameters.put("usage", eyePrescriptionCollection.getUsage());
+					parameters.put("remarks", eyePrescriptionCollection.getRemarks());	
+					parameters.put("eyePrescriptions", "eyePrescriptions");
+				}
+		 }
 		 		 
 
-		// List<PatientTreatmentJasperDetails> patientTreatments = null;
-		// if (patientVisitCollection.getTreatmentId() != null) {
-		// patientTreatments = new ArrayList<PatientTreatmentJasperDetails>();
-		// for (ObjectId treatmentId : patientVisitCollection.getTreatmentId())
-		// {
-		// if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
-		// patientTreatments =
-		// getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
-		//// patientTreatments.add(patientTreatmentJasperDetails);
-		// }
-		// }
-		// }
 		
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))

@@ -4943,7 +4943,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 						? prescriptionCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 
-		patientVisitService.generatePrintSetup(parameters, printSettings, new ObjectId("5794add2e4b01f1d73f9b74e"));
+		patientVisitService.generatePrintSetup(parameters, printSettings, prescriptionCollection.getDoctorId());
 
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "PRESCRIPTION-"
 				+ prescriptionCollection.getUniqueEmrId() + new Date().getTime();

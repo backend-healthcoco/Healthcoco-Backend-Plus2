@@ -71,7 +71,8 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceAxis(String distanceAxis) {
-		this.distanceAxis = distanceAxis;
+		if(distanceAxis == null)this.distanceAxis = "--";
+		else this.distanceAxis = distanceAxis;
 	}
 
 	public String getNearAxis() {
@@ -79,7 +80,8 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearAxis(String nearAxis) {
-		this.nearAxis = nearAxis;
+		if(nearAxis == null)this.nearAxis = "--";
+		else this.nearAxis = nearAxis;
 	}
 
 	public String getNearVA() {
@@ -87,7 +89,8 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearVA(String nearVA) {
-		this.nearVA = nearVA;
+		if(nearVA == null)this.nearVA = "--";
+		else this.nearVA = nearVA;
 	}
 
 	public String getDistanceVA() {
@@ -95,7 +98,8 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceVA(String distanceVA) {
-		this.distanceVA = distanceVA;
+		if(distanceVA == null)this.distanceVA = "--";
+		else this.distanceVA = distanceVA;
 	}
 
 	@Override

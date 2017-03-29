@@ -264,6 +264,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 				createInvoiceSubreport(jasperDesign, parameters, contentFontSize, columnWidth, pageWidth, pageHeight,
 						normalStyle);
 
+			if(parameters.get("eyePrescriptions") != null){
+				createEyePrescription(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
+			}
 			if (parameters.get("followUpAppointment") != null) {
 				band = new JRDesignBand();
 				band.setHeight(21);
@@ -2368,7 +2371,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(20);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{PRESCRIPTION}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{LENSPRESCRIPTION}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(20);

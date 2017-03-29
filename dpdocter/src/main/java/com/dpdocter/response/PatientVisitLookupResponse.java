@@ -43,6 +43,8 @@ public class PatientVisitLookupResponse extends GenericCollection{
 
 	private List<ObjectId> recordId;
 
+	private ObjectId eyePrescriptionId;
+	
 	private List<PrescriptionCollection> prescriptions;
 
 	private List<ClinicalNotesCollection> clinicalNotes;
@@ -237,16 +239,23 @@ public class PatientVisitLookupResponse extends GenericCollection{
 		this.recordId = recordId;
 	}
 
+	public ObjectId getEyePrescriptionId() {
+		return eyePrescriptionId;
+	}
+
+	public void setEyePrescriptionId(ObjectId eyePrescriptionId) {
+		this.eyePrescriptionId = eyePrescriptionId;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitLookupResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", visitedTime=" + visitedTime + ", visitedFor=" + visitedFor + ", total=" + total
 				+ ", prescriptionId=" + prescriptionId + ", clinicalNotesId=" + clinicalNotesId + ", treatmentId="
-				+ treatmentId + ", recordId=" + recordId + ", prescriptions=" + prescriptions + ", clinicalNotes="
-				+ clinicalNotes + ", treatments=" + treatments + ", records=" + records + ", appointmentId="
-				+ appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", doctor=" + doctor + ", location="
-				+ location + "]";
+				+ treatmentId + ", recordId=" + recordId + ", eyePrescriptionId=" + eyePrescriptionId
+				+ ", prescriptions=" + prescriptions + ", clinicalNotes=" + clinicalNotes + ", treatments=" + treatments
+				+ ", records=" + records + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate="
+				+ fromDate + ", doctor=" + doctor + ", location=" + location + "]";
 	}
-
 }
