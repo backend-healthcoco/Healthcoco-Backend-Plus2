@@ -559,10 +559,16 @@ public class RecordsServiceImpl implements RecordsService {
 					criteria.and("discarded").is(request.getDiscarded());
 
 				if (!isOTPVerified) {
-					if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
-						criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
-						criteria.and("doctorId").is(doctorObjectId);
+					Criteria ownCriteria = new Criteria(), prescribedByCriteria = new Criteria();
+					if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)){
+						ownCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+						prescribedByCriteria = new Criteria("prescribedByLocationId").is(locationObjectId).and("prescribedByHospitalId").is(hospitalObjectId);
+					}
+					if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)){
+						ownCriteria = new Criteria("doctorId").is(doctorObjectId);
+						prescribedByCriteria = new Criteria("prescribedByDoctorId").is(doctorObjectId);
+					}
+					criteria.orOperator(ownCriteria, prescribedByCriteria);
 				}
 
 				Aggregation aggregation = null;
@@ -1092,10 +1098,16 @@ public class RecordsServiceImpl implements RecordsService {
 				criteria.and("inHistory").is(inHistory);
 
 			if (!isOTPVerified) {
-				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
-					criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId))
-					criteria.and("doctorId").is(doctorObjectId);
+				Criteria ownCriteria = new Criteria(), prescribedByCriteria = new Criteria();
+				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId)){
+					ownCriteria = new Criteria("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+					prescribedByCriteria = new Criteria("prescribedByLocationId").is(locationObjectId).and("prescribedByHospitalId").is(hospitalObjectId);
+				}
+				if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)){
+					ownCriteria = new Criteria("doctorId").is(doctorObjectId);
+					prescribedByCriteria = new Criteria("prescribedByDoctorId").is(doctorObjectId);
+				}
+				criteria.orOperator(ownCriteria, prescribedByCriteria);
 			}
 
 			Aggregation aggregation = null;
