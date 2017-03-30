@@ -2,21 +2,21 @@ package com.dpdocter.response;
 
 public class EyeTestJasperResponse {
 
-	private String distanceSPH;
+	private String distanceSPH = "--";
 	
-	private String nearSPH;
+	private String nearSPH = "--";
 	
-	private String distanceCylinder;
+	private String distanceCylinder = "--";
 	
-	private String nearCylinder;
+	private String nearCylinder = "--";
 	
-	private String distanceAxis;
+	private String distanceAxis = "--";
 	
-	private String nearAxis;
+	private String nearAxis = "--";
 	
-	private String nearVA;
+	private String nearVA = "--";
 	
-	private String distanceVA;
+	private String distanceVA = "--";
 
 	public String getDistanceSPH() {
 		return distanceSPH;
@@ -71,7 +71,7 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setDistanceAxis(String distanceAxis) {
-		if(distanceAxis == null)this.distanceAxis = "--";
+		if(distanceAxis == null || distanceAxis.equalsIgnoreCase("0"))this.distanceAxis = "--";
 		else this.distanceAxis = distanceAxis;
 	}
 
@@ -80,7 +80,7 @@ public class EyeTestJasperResponse {
 	}
 
 	public void setNearAxis(String nearAxis) {
-		if(nearAxis == null)this.nearAxis = "--";
+		if(nearAxis == null || nearAxis.equalsIgnoreCase("0"))this.nearAxis = "--";
 		else this.nearAxis = nearAxis;
 	}
 

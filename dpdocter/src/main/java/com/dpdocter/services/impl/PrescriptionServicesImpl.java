@@ -61,7 +61,6 @@ import com.dpdocter.beans.DrugDosage;
 import com.dpdocter.beans.DrugDurationUnit;
 import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.EyePrescription;
-import com.dpdocter.beans.EyeTest;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.GenericCodesAndReaction;
 import com.dpdocter.beans.LabTest;
@@ -4921,8 +4920,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		parameters.put("leftEyeTest", eyResponse);
 
 		eyResponse = new EyeTestJasperResponse();
-		if (prescriptionCollection.getLeftEyeTest() != null)
-			BeanUtil.map(prescriptionCollection.getLeftEyeTest(), eyResponse);
+		if (prescriptionCollection.getRightEyeTest() != null)
+			BeanUtil.map(prescriptionCollection.getRightEyeTest(), eyResponse);
 		parameters.put("rightEyeTest", eyResponse);
 
 		parameters.put("type", prescriptionCollection.getType());

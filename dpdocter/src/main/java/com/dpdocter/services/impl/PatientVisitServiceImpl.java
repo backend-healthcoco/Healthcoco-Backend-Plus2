@@ -1050,8 +1050,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					parameters.put("leftEyeTest", eyResponse);
 
 					eyResponse = new EyeTestJasperResponse();
-					if (eyePrescriptionCollection.getLeftEyeTest() != null)
-						BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
+					if (eyePrescriptionCollection.getRightEyeTest() != null)
+						BeanUtil.map(eyePrescriptionCollection.getRightEyeTest(), eyResponse);
 					parameters.put("rightEyeTest", eyResponse);
 
 					parameters.put("type", eyePrescriptionCollection.getType());
