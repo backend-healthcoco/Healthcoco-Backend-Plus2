@@ -14,11 +14,20 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.DoctorExperience;
+import com.dpdocter.beans.Education;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
 public class ESDoctorDocument extends DoctorLocation {
+	public List<Education> getEducation() {
+		return education;
+	}
+
+	public void setEducation(List<Education> education) {
+		this.education = education;
+	}
+
 	@Id
 	private String id;
 
@@ -87,6 +96,9 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	@Field(type = FieldType.String)
 	private String registerNumber;
+
+	@Field(type = FieldType.Nested)
+	private List<Education> education;
 
 	@Field(type = FieldType.Nested)
 	private DOB dob;

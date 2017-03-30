@@ -86,11 +86,11 @@ public class BlogServicesImpl implements BlogService {
 			}
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
-						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
+						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 			}
 			AggregationResults<BlogCollection> results = mongoTemplate.aggregate(aggregation, BlogCollection.class,
 					BlogCollection.class);
@@ -351,13 +351,13 @@ public class BlogServicesImpl implements BlogService {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("fevourite_Blogs_cl", "_id", "blogId", "fevourite"),
 						Aggregation.unwind("fevourite"), Aggregation.match(criteria), Aggregation.skip((page) * size),
-						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "fevourite.updatedTime"));
+						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "fevourite.createdTime"));
 
 			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("fevourite_Blogs_cl", "_id", "blogId", "fevourite"),
 						Aggregation.match(criteria), Aggregation.unwind("fevourite"),
-						Aggregation.sort(Sort.Direction.DESC, "fevourite.updatedTime"));
+						Aggregation.sort(Sort.Direction.DESC, "fevourite.createdTime"));
 			}
 
 			AggregationResults<BlogCollection> results = mongoTemplate.aggregate(aggregation, BlogCollection.class,
