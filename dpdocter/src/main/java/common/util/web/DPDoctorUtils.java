@@ -57,7 +57,7 @@ public class DPDoctorUtils {
 	public static boolean anyStringEmpty(String... values) {
 		boolean result = false;
 		for (String value : values) {
-			if (StringUtils.isEmpty(value)) {
+			if (StringUtils.isEmpty(value)||value == null) {
 				result = true;
 				break;
 			}

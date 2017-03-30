@@ -13,8 +13,18 @@ public class Clinic {
     private Location location;
 
     private List<Doctor> doctors;
+  
+    private Integer reportCount=0;
 
-    public String getId() {
+    public Integer getReportCount() {
+		return reportCount;
+	}
+
+	public void setReportCount(Integer reportCount) {
+		this.reportCount = reportCount;
+	}
+
+	public String getId() {
 	return id;
     }
 

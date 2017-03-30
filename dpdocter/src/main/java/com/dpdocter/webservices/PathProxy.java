@@ -475,12 +475,12 @@ public interface PathProxy {
 		public static final String GET_EYE_PRESCRPTION_BY_ID = "eyePrescription/{id}/get";
 		public static final String GET_EYE_PRESCRPTIONS = "eyePrescription/getAll";
 		public static final String DELETE_EYE_PRESCRIPTION = "eyePrescription/{id}/delete";
-		
+
 		public static final String EMAIL_EYE_PRESCRIPTION = "/eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DOWNLOAD_EYE_PRESCRIPTION = "/eye/download/{prescriptionId}";
 
-		}
+	}
 
 	public static final String HISTORY_BASE_URL = BASE_URL + "/history";
 
@@ -618,6 +618,10 @@ public interface PathProxy {
 		public static final String SET_CLINIC_RECOMMENDATION = "/recommendation/{locationId}/{patientId}";
 
 		public static final String GET_PATIENT = "/getPatient";
+
+		public static final String GET_LABS_WITH_REPORTS_COUNT = "/getLabsWithReportCount/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{prescribedByDoctorId}/{prescribedByLocationId}/{prescribedByHospitalId}";
 
 	}
 
@@ -1044,18 +1048,14 @@ public interface PathProxy {
 	public interface LocaleUrls {
 
 		public static final String UPLOAD = "/upload";
-
 		public static final String EDIT_LOCALE_CONTACT_DETAILS = "/editContactDetails";
 		public static final String EDIT_LOCALE_ADDRESS_DETAILS = "/editAddressDetails";
 		public static final String EDIT_LOCALE_OTHER_DETAILS = "/editOtherDetails";
 		public static final String EDIT_LOCALE_VISIT_DETAILS = "/editVisitDetails";
 		public static final String EDIT_LOCALE_IMAGES = "/{id}/editImages";
-
 		public static final String GET_LOCALE_DETAILS = "/get";
-
 		public static final String ADD_USER_REQUEST = "/addUserRequest";
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
-
 		public static final String GET_PATIENT_ORDER_HISTORY = "/getPatientOrderHistory/{userId}";
 		public static final String GET_PHARMCIES_FOR_ORDER = "/getPharmaciesForOrder";
 		public static final String GET_PHARMCIES_COUNT_FOR_ORDER = "/getPharmaciesCountForOrder";
@@ -1064,6 +1064,7 @@ public interface PathProxy {
 
 	}
 
+	
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";
 
 	public interface FeedbackUrls {
@@ -1074,10 +1075,17 @@ public interface PathProxy {
 		public static final String GET_PRESCRIPTION_FEEDBACK = "/getPrescriptionFeedback";
 		public static final String GET_PHARMACY_FEEDBACK = "/getPharmacyFeedback";
 	}
-	
+
 	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
 
 	public interface DischargeSummaryUrls {
+	}
+		public static final String LAB_BASE_URL = BASE_URL + "/lab";
+
+	public interface LabUrls {
+		public static final String GET_CLINICS_WITH_REPORTS_COUNT = "/getClinicWithReportCount/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{doctorId}/{locationId}/{hospitalId}";
+
 
 	}
 

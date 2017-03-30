@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
@@ -53,6 +54,7 @@ import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.services.DoctorProfileService;
+import com.dpdocter.services.LabService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -78,6 +80,9 @@ public class DoctorProfileApi {
 
 	@Autowired
 	private LocationServices locationService;
+
+	@Autowired
+	private LabService labService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -597,6 +602,42 @@ public class DoctorProfileApi {
 		DoctorContactsResponse doctorContactsResponse = doctorProfileService.getPatient(page, size, doctorId,
 				locationId, hospitalId, from, to);
 		response.setData(doctorContactsResponse);
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT, notes = PathProxy.DoctorProfileUrls.GET_LABS_WITH_REPORTS_COUNT)
+	public Response<List<Clinic>> getLabWithReportCount(@PathParam(value = "doctorId") String doctorId,
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId) || DPDoctorUtils.anyStringEmpty(locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<List<Clinic>> response = new Response<List<Clinic>>();
+		response.setDataList(labService.getLabWithReportCount(doctorId, locationId, hospitalId));
+		return response;
+	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR, notes = PathProxy.DoctorProfileUrls.GET_REPORTS_FOR_SPECIFIC_DOCTOR)
+	public Response<List<Clinic>> getLabWithReportCount(
+			@PathParam(value = "prescribedByDoctorId") String prescribedByDoctorId,
+			@PathParam(value = "prescribedByLocationId") String prescribedByLocationId,
+			@PathParam(value = "prescribedByHospitalId") String prescribedByHospitalId,
+			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "size") int size,
+			@QueryParam(value = "page") int page) {
+		if (DPDoctorUtils.anyStringEmpty(prescribedByDoctorId) || DPDoctorUtils.anyStringEmpty(prescribedByLocationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<List<Clinic>> response = new Response<List<Clinic>>();
+		response.setDataList(labService.getReports(doctorId, locationId, hospitalId, prescribedByDoctorId,
+				prescribedByLocationId, prescribedByHospitalId, size, page));
 		return response;
 	}
 

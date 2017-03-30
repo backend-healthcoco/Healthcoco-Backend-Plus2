@@ -42,6 +42,8 @@ public class Doctor {
 	private UserState userState = UserState.USERSTATECOMPLETE;
 	
 	private Boolean isActive = false;
+	
+	private Integer reportCount=0;
 
 	public String getId() {
 		return id;
@@ -179,5 +181,13 @@ public class Doctor {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Integer getReportCount() {
+		return reportCount;
+	}
+
+	public void setReportCount(Integer reportCount) {
+		this.reportCount = reportCount;
 	}
 }
