@@ -51,6 +51,7 @@ import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.GynacPermissionsEnum;
@@ -90,6 +91,7 @@ import com.dpdocter.request.RegularCheckUpAddEditRequest;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DoctorProfileService;
 import com.dpdocter.services.FileManager;
@@ -517,8 +519,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
 							Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-							Aggregation.unwind("doctor"),
-							Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollections")),
+							Aggregation.unwind("doctor")),
 					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
 			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
@@ -640,15 +641,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setFeedbacks(feedbacks);
 			doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
 
+			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(doctorClinicProfileLookupResponse.getDoctorId())
+					.and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId())),
+							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"), Aggregation.unwind("roleCollection")), 
+					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 			List<Role> roles = null;
 
-			@SuppressWarnings("unchecked")
-			Collection<ObjectId> roleIds = CollectionUtils.collect(
-					doctorClinicProfileLookupResponse.getUserRoleCollections(),
-					new BeanToPropertyValueTransformer("roleId"));
-			List<RoleCollection> roleCollections = roleRepository.find(roleIds, locationCollection.getId(),
-					locationCollection.getHospitalId());
-			for (RoleCollection otherRoleCollection : roleCollections) {
+			for (UserRoleLookupResponse roleLookupResponse : userRoleLookupResponses) {
+				RoleCollection otherRoleCollection = roleLookupResponse.getRoleCollection();
 				if (isMobileApp && locationSize == 1
 						&& !(otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 								|| otherRoleCollection.getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
@@ -668,7 +669,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 				if (otherRoleCollection != null) {
 					AccessControl accessControl = accessControlServices.getAccessControls(otherRoleCollection.getId(),
-							locationCollection.getId(), locationCollection.getHospitalId());
+							otherRoleCollection.getLocationId(), otherRoleCollection.getHospitalId());
 
 					Role role = new Role();
 					BeanUtil.map(otherRoleCollection, role);

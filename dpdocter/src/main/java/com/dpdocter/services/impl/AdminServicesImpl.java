@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ContactUs;
-import com.dpdocter.beans.DrugType;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
@@ -24,7 +22,6 @@ import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ContactUsCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DrugCollection;
-import com.dpdocter.collections.DrugTypeCollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
 import com.dpdocter.collections.MedicalCouncilCollection;

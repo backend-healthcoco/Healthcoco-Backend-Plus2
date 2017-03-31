@@ -2537,7 +2537,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 	private JRDesignTextField addEyePrescriptionItem(String value, int xPoint, int dataWidth, boolean isBold, HorizontalTextAlignEnum alignEnum, int titleFontSize) {
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression(value));
-		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!"+value+".equals(null) && !"+value+".isEmpty()"));
 		jrDesignTextField.setX(xPoint);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(20);

@@ -160,6 +160,8 @@ public interface PathProxy {
 		public static final String ADD_SUGGESTION = "/suggestion/add";
 
 		public static final String GET_SUGGESTION = "/getSuggestion/{userId}";
+		
+		public static final String UPDATE_ROLE_COLLECTION_DATA = "updateRoleCollectionData";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
