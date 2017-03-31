@@ -17,12 +17,21 @@ public class UserRoleCollection extends GenericCollection {
     @Field
     private ObjectId roleId;
 
-    public UserRoleCollection(ObjectId userId, ObjectId roleId) {
-	this.userId = userId;
-	this.roleId = roleId;
-    }
+    @Field
+    private ObjectId locationId;
 
-    public UserRoleCollection() {
+    @Field
+    private ObjectId hospitalId;
+
+    public UserRoleCollection(ObjectId userId, ObjectId roleId, ObjectId locationId, ObjectId hospitalId) {
+		super();
+		this.userId = userId;
+		this.roleId = roleId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+	}
+
+	public UserRoleCollection() {
     }
 
     public ObjectId getId() {
@@ -49,9 +58,25 @@ public class UserRoleCollection extends GenericCollection {
 	this.roleId = roleId;
     }
 
-    @Override
-    public String toString() {
-	return "UserRoleCollection [id=" + id + ", userId=" + userId + ", roleId=" + roleId + "]";
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "UserRoleCollection [id=" + id + ", userId=" + userId + ", roleId=" + roleId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + "]";
+	}
 }

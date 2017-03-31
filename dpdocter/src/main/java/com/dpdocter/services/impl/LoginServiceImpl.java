@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -180,10 +179,10 @@ public class LoginServiceImpl implements LoginService {
 
 							Boolean isStaff = false;
 							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {
-								if((otherRoleCollection.getRoleCollection().getHospitalId() == null && 
-										otherRoleCollection.getRoleCollection().getLocationId() == null) ||
-										(otherRoleCollection.getRoleCollection().getHospitalId().toString().equalsIgnoreCase(hospitalCollection.getId().toString()) &&
-										otherRoleCollection.getRoleCollection().getLocationId().toString().equalsIgnoreCase(locationCollection.getId().toString()))){
+								if((otherRoleCollection.getHospitalId() == null && 
+										otherRoleCollection.getLocationId() == null) ||
+										(otherRoleCollection.getHospitalId().toString().equalsIgnoreCase(hospitalCollection.getId().toString()) &&
+										otherRoleCollection.getLocationId().toString().equalsIgnoreCase(locationCollection.getId().toString()))){
 									if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
 											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
@@ -210,8 +209,8 @@ public class LoginServiceImpl implements LoginService {
 
 									if (otherRoleCollection != null) {
 										AccessControl accessControl = accessControlServices.getAccessControls(
-												new ObjectId(otherRoleCollection.getId()), locationCollection.getId(),
-												locationCollection.getHospitalId());
+												otherRoleCollection.getRoleCollection().getId(), otherRoleCollection.getRoleCollection().getLocationId(),
+												otherRoleCollection.getRoleCollection().getHospitalId());
 
 										Role role = new Role();
 										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);

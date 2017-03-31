@@ -120,4 +120,6 @@ public interface RegistrationService {
 
 	ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient);
 
+	Boolean updateRoleCollectionData();
+
 }

@@ -196,7 +196,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    userCollection = userRepository.save(userCollection);
 
 	    // assign roles
-	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	    UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId(), null, null);
 	    userRoleRepository.save(userRoleCollection);
 
 	    // save Patient Info
@@ -487,7 +487,7 @@ public class SignUpServiceImpl implements SignUpService {
 	userCollection = userRepository.save(userCollection);
 	
 	// assign roles
-	UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId());
+	UserRoleCollection userRoleCollection = new UserRoleCollection(userCollection.getId(), roleCollection.getId(), null, null);
 	userRoleRepository.save(userRoleCollection);
 
 	// save Patient Info

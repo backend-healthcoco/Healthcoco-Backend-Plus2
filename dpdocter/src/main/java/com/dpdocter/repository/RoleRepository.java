@@ -115,4 +115,7 @@ public interface RoleRepository extends MongoRepository<RoleCollection, ObjectId
     @Query("{'locationId': ?0, 'role': ?1}")
 	public RoleCollection findLocationAdmin(ObjectId locationId, String role);
 
+    @Query("{'locationId': {'$ne' : null}, 'hospitalId': {'$ne' : null}}")
+	public List<RoleCollection> findCustomRoles();
+
 }

@@ -12,7 +12,6 @@ import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.DoctorFacility;
 
 public class DoctorClinicProfileLookupResponse extends GenericCollection{
@@ -64,8 +63,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 	private DoctorCollection doctor;
 	
 	private UserCollection user;
-	
-	List<UserRoleCollection> userRoleCollections;
 	
 	public ObjectId getId() {
 		return id;
@@ -251,14 +248,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 		this.user = user;
 	}
 
-	public List<UserRoleCollection> getUserRoleCollections() {
-		return userRoleCollections;
-	}
-
-	public void setUserRoleCollections(List<UserRoleCollection> userRoleCollections) {
-		this.userRoleCollections = userRoleCollections;
-	}
-
 	public HospitalCollection getHospital() {
 		return hospital;
 	}
@@ -277,7 +266,6 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 				+ ", workingSchedules=" + workingSchedules + ", facility=" + facility + ", noOfReviews=" + noOfReviews
 				+ ", noOfRecommenations=" + noOfRecommenations + ", timeZone=" + timeZone + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user
-				+ ", userRoleCollections=" + userRoleCollections + "]";
+				+ ", location=" + location + ", hospital=" + hospital + ", doctor=" + doctor + ", user=" + user + "]";
 	}
 }

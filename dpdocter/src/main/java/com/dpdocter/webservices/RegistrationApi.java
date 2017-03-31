@@ -894,4 +894,14 @@ public class RegistrationApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_ROLE_COLLECTION_DATA)
+	@GET
+	public Response<Boolean> updateRoleCollectionData() {
+
+		Boolean updateRoleCollectionDataResponse = registrationService.updateRoleCollectionData();
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(updateRoleCollectionDataResponse);
+		return response;
+	}
+
 }
