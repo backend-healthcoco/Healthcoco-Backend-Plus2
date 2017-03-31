@@ -18,6 +18,7 @@ import com.dpdocter.beans.ContactUs;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Resume;
 import com.dpdocter.beans.SendAppLink;
+import com.dpdocter.collections.AppLinkDetailsCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ContactUsCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
@@ -46,6 +47,7 @@ import com.dpdocter.enums.AppType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AppLinkDetailsRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ContactUsRepository;
 import com.dpdocter.repository.DiagnosticTestRepository;
@@ -127,6 +129,9 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Autowired
 	private ESDrugRepository esDrugRepository;
+
+	@Autowired
+	private AppLinkDetailsRepository appLinkDetailsRepository;
 
 	@Autowired
 	private DrugRepository drugRepository;
@@ -248,49 +253,50 @@ public class AdminServicesImpl implements AdminServices {
 		String cvsSplitBy = ",";
 
 		try {
-//			br = new BufferedReader(new FileReader(csvFile));
-//			while ((line = br.readLine()) != null) {
-//				String[] obj = line.split(cvsSplitBy);
-//				String drugType = obj[2];
-//				DrugTypeCollection drugTypeCollection = drugTypeRepository.findByType(drugType);
-//
-//				DrugType type = null;
-//				if (drugTypeCollection != null) {
-//					type = new DrugType();
-//					drugTypeCollection.setType(drugType);
-//					BeanUtil.map(drugTypeCollection, type);
-//
-//				}
-//
-//				DrugCollection drugCollection = new DrugCollection();
-//				drugCollection.setCreatedBy("ADMIN");
-//				drugCollection.setCreatedTime(new Date());
-//				drugCollection.setUpdatedTime(new Date());
-//				drugCollection.setDiscarded(false);
-//				drugCollection.setDrugName(obj[1]);
-//				drugCollection.setDrugType(type);
-//				drugCollection.setDoctorId(null);
-//				drugCollection.setHospitalId(null);
-//				drugCollection.setLocationId(null);
-//				drugCollection.setDrugCode(obj[0]);
-//				drugCollection.setPackSize(obj[3]);
-//				drugCollection.setCompanyName(obj[4]);
-//
-//				if (obj.length > 5) {
-//					String[] genericCodesArray = obj[5].split("\\+");
-//
-//					if (genericCodesArray.length > 0) {
-//						List<String> genericCodes = new ArrayList<String>();
-//						for (String code : genericCodesArray)
-//							genericCodes.add(code);
-//						drugCollection.setGenericCodes(genericCodes);
-//					}
-//				}
-//
-//				drugCollection = drugRepository.save(drugCollection);
+			// br = new BufferedReader(new FileReader(csvFile));
+			// while ((line = br.readLine()) != null) {
+			// String[] obj = line.split(cvsSplitBy);
+			// String drugType = obj[2];
+			// DrugTypeCollection drugTypeCollection =
+			// drugTypeRepository.findByType(drugType);
+			//
+			// DrugType type = null;
+			// if (drugTypeCollection != null) {
+			// type = new DrugType();
+			// drugTypeCollection.setType(drugType);
+			// BeanUtil.map(drugTypeCollection, type);
+			//
+			// }
+			//
+			// DrugCollection drugCollection = new DrugCollection();
+			// drugCollection.setCreatedBy("ADMIN");
+			// drugCollection.setCreatedTime(new Date());
+			// drugCollection.setUpdatedTime(new Date());
+			// drugCollection.setDiscarded(false);
+			// drugCollection.setDrugName(obj[1]);
+			// drugCollection.setDrugType(type);
+			// drugCollection.setDoctorId(null);
+			// drugCollection.setHospitalId(null);
+			// drugCollection.setLocationId(null);
+			// drugCollection.setDrugCode(obj[0]);
+			// drugCollection.setPackSize(obj[3]);
+			// drugCollection.setCompanyName(obj[4]);
+			//
+			// if (obj.length > 5) {
+			// String[] genericCodesArray = obj[5].split("\\+");
+			//
+			// if (genericCodesArray.length > 0) {
+			// List<String> genericCodes = new ArrayList<String>();
+			// for (String code : genericCodesArray)
+			// genericCodes.add(code);
+			// drugCollection.setGenericCodes(genericCodes);
+			// }
+			// }
+			//
+			// drugCollection = drugRepository.save(drugCollection);
 
 			List<DrugCollection> drugCollections = drugRepository.findAll();
-			for(DrugCollection drugCollection : drugCollections){
+			for (DrugCollection drugCollection : drugCollections) {
 				ESDrugDocument esDrugDocument = new ESDrugDocument();
 				BeanUtil.map(drugCollection, esDrugDocument);
 				if (drugCollection.getDrugType() != null) {
@@ -514,7 +520,6 @@ public class AdminServicesImpl implements AdminServices {
 
 	@Override
 	public Boolean sendLink(SendAppLink request) {
-
 		Boolean response = false;
 		try {
 			String appType = "", appBitLink = "", appDeviceType = "";
@@ -531,13 +536,23 @@ public class AdminServicesImpl implements AdminServices {
 				appBitLink = ipadAppBitLink;
 				appDeviceType = "ipad";
 			}
-
 			if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-				SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
-						appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink),
-						request.getMobileNumber(), "Get App Link");
-				sMSServices.sendSMS(smsTrackDetail, false);
-				response = true;
+				AppLinkDetailsCollection appLinkDetailsCollection = appLinkDetailsRepository
+						.findByMobileNumber(request.getMobileNumber());
+				if (appLinkDetailsCollection == null) {
+					appLinkDetailsCollection = new AppLinkDetailsCollection();
+					appLinkDetailsCollection.setMobileNumber(request.getMobileNumber());
+					appLinkDetailsCollection.setCreatedTime(new Date());
+				}
+				if (appLinkDetailsCollection.getCount() < 3) {
+					SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
+							appLinkMessage.replace("{appType}", appType).replace("{appLink}", appBitLink),
+							request.getMobileNumber(), "Get App Link");
+					sMSServices.sendSMS(smsTrackDetail, false);
+					response = true;
+					appLinkDetailsCollection.setCount(appLinkDetailsCollection.getCount() + 1);
+					appLinkDetailsRepository.save(appLinkDetailsCollection);
+				}
 			} else if (!DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
 				String body = mailBodyGenerator.generateAppLinkEmailBody(appType, appBitLink, appDeviceType,
 						"appLinkTemplate.vm");
