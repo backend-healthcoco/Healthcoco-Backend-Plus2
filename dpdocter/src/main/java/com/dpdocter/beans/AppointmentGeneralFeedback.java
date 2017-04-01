@@ -6,10 +6,13 @@ public class AppointmentGeneralFeedback extends GenericCollection {
 
 	private String id;
 	private String locationId;
+	private String locationName;
 	private String doctorId;
+	private String doctorName;
 	private String patientId;
+	private PatientCard patientCard;
 	private String hospitalId;
-	private String patientName;
+	private String hospitalName;
 	private Boolean doctorRecommendation;
 	private Boolean isAppointmentStartedOnTime;
 	private String howLateWasAppointment;
@@ -127,14 +130,6 @@ public class AppointmentGeneralFeedback extends GenericCollection {
 		this.isAnonymous = isAnonymous;
 	}
 
-	public String getPatientName() {
-		return patientName;
-	}
-
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
 	public Boolean getIsApproved() {
 		return isApproved;
 	}
@@ -167,10 +162,43 @@ public class AppointmentGeneralFeedback extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public PatientCard getPatientCard() {
+		return patientCard;
+	}
+
+	public void setPatientCard(PatientCard patientCard) {
+		this.patientCard = patientCard;
+	}
+
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
 	@Override
 	public String toString() {
-		return "AppointmentGeneralFeedback [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
-				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", patientName=" + patientName
+		return "AppointmentGeneralFeedback [id=" + id + ", locationId=" + locationId + ", locationName=" + locationName
+				+ ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", patientId=" + patientId
+				+ ", patientCard=" + patientCard + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
 				+ ", doctorRecommendation=" + doctorRecommendation + ", isAppointmentStartedOnTime="
 				+ isAppointmentStartedOnTime + ", howLateWasAppointment=" + howLateWasAppointment
 				+ ", overallExperience=" + overallExperience + ", reasonOfVisit=" + reasonOfVisit

@@ -34,12 +34,12 @@ public class DpDocterLoggingAspect {
 	
 	@Around(value = "com.dpdocter.aop.PointcutDefinition.serviceLayer() ")
 	public Object beforeUpdateAccountDescription(ProceedingJoinPoint pjp ) throws Throwable {
-		Object response =  pjp.proceed();
+		
 		LOGGER.warn("Logging access to " + pjp.getTarget().getClass().getSimpleName() + ". "
 					+ " Executing :: " + pjp.getSignature().getName() + "()" );
 		long start = System.currentTimeMillis();
 	    LOGGER.warn("Going to call the method " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + new Date());
-	         
+	    Object response =  pjp.proceed();
 	    LOGGER.warn("Method execution completed for " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + new Date());
 	    long elapsedTime = System.currentTimeMillis() - start;
 	    LOGGER.warn("Method " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " took "+ elapsedTime + " milliseconds for execution");

@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorClinicProfile {
@@ -89,7 +90,13 @@ public class DoctorClinicProfile {
 	private Boolean isAutoSMS = false;
 
 	private Boolean isActivate = false;
-	
+
+	private Boolean isSendRegularCheckupSMS;
+
+	private Integer regularCheckupMonth;
+
+	private RegularCheckUpTypeEnum checkUpTypeEnum;
+
 	public String getId() {
 		return id;
 	}
@@ -416,6 +423,30 @@ public class DoctorClinicProfile {
 
 	public void setIsActivate(Boolean isActivate) {
 		this.isActivate = isActivate;
+	}
+
+	public Boolean getIsSendRegularCheckupSMS() {
+		return isSendRegularCheckupSMS;
+	}
+
+	public void setIsSendRegularCheckupSMS(Boolean isSendRegularCheckupSMS) {
+		this.isSendRegularCheckupSMS = isSendRegularCheckupSMS;
+	}
+
+	public Integer getRegularCheckupMonth() {
+		return regularCheckupMonth;
+	}
+
+	public void setRegularCheckupMonth(Integer regularCheckupMonth) {
+		this.regularCheckupMonth = regularCheckupMonth;
+	}
+
+	public RegularCheckUpTypeEnum getCheckUpTypeEnum() {
+		return checkUpTypeEnum;
+	}
+
+	public void setCheckUpTypeEnum(RegularCheckUpTypeEnum checkUpTypeEnum) {
+		this.checkUpTypeEnum = checkUpTypeEnum;
 	}
 
 	@Override

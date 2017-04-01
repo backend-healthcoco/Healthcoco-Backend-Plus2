@@ -12,6 +12,7 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @Document(collection = "doctor_clinic_profile_cl")
 public class DoctorClinicProfileCollection extends GenericCollection {
@@ -22,19 +23,19 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private ObjectId userLocationId;
 
 	@Indexed
-    private ObjectId doctorId;
+	private ObjectId doctorId;
 
-    @Indexed
-    private ObjectId locationId;
+	@Indexed
+	private ObjectId locationId;
 
-    @Field
-    private Boolean isActivate = false;
+	@Field
+	private Boolean isActivate = false;
 
-    @Field
-    private Boolean isVerified = true;
+	@Field
+	private Boolean isVerified = true;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
 	@Field
 	private List<String> appointmentBookingNumber;
@@ -71,9 +72,18 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private Boolean isSendBirthdaySMS = true;
-	
-	@Field 
+
+	@Field
 	private Boolean isAutoSMS = false;
+
+	@Field
+	private Boolean isSendRegularCheckupSMS;
+
+	@Field
+	private Integer regularCheckUpMonths;
+
+	@Field
+	private RegularCheckUpTypeEnum checkUpTypeEnum;
 
 	public ObjectId getId() {
 		return id;
@@ -82,7 +92,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-	
+
 	public ObjectId getDoctorId() {
 		return doctorId;
 	}
@@ -235,6 +245,30 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 		this.isAutoSMS = isAutoSMS;
 	}
 
+	public Boolean getIsSendRegularCheckupSMS() {
+		return isSendRegularCheckupSMS;
+	}
+
+	public void setIsSendRegularCheckupSMS(Boolean isSendRegularCheckupSMS) {
+		this.isSendRegularCheckupSMS = isSendRegularCheckupSMS;
+	}
+
+	public Integer getRegularCheckUpMonths() {
+		return regularCheckUpMonths;
+	}
+
+	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
+		this.regularCheckUpMonths = regularCheckUpMonths;
+	}
+
+	public RegularCheckUpTypeEnum getCheckUpTypeEnum() {
+		return checkUpTypeEnum;
+	}
+
+	public void setCheckUpTypeEnum(RegularCheckUpTypeEnum checkUpTypeEnum) {
+		this.checkUpTypeEnum = checkUpTypeEnum;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfileCollection [id=" + id + ", userLocationId=" + userLocationId + ", doctorId="
@@ -244,6 +278,8 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 				+ ", appointmentSlot=" + appointmentSlot + ", workingSchedules=" + workingSchedules + ", facility="
 				+ facility + ", noOfReviews=" + noOfReviews + ", noOfRecommenations=" + noOfRecommenations
 				+ ", timeZone=" + timeZone + ", isDoctorListed=" + isDoctorListed + ", rankingCount=" + rankingCount
-				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + "]";
+				+ ", isSendBirthdaySMS=" + isSendBirthdaySMS + ", isAutoSMS=" + isAutoSMS + ", isSendRegularCheckupSMS="
+				+ isSendRegularCheckupSMS + ", regularCheckUpMonths=" + regularCheckUpMonths + ", checkUpTypeEnum="
+				+ checkUpTypeEnum + "]";
 	}
 }

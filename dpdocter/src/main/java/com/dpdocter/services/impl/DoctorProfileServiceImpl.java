@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.crypto.dom.DOMCryptoContext;
+
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -1258,7 +1260,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return response;
 	}
 	
-	@Override
+	/*@Override
 	@Transactional
 	public RegularCheckUpAddEditRequest addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
 		UserCollection userCollection = null;
@@ -1268,6 +1270,26 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			BeanUtil.map(request, userCollection);
 			userRepository.save(userCollection);
 			response = new RegularCheckUpAddEditRequest();
+			BeanUtil.map(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor Profile");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+		}
+		return response;
+	}*/
+	
+	@Override
+	@Transactional
+	public DoctorClinicProfile addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
+		DoctorClinicProfileCollection doctorClinicProfileCollection = null;
+		DoctorClinicProfile response = null;
+		try {
+			doctorClinicProfileCollection = doctorClinicProfileRepository.findOne(new ObjectId(request.getDoctorId()));
+			doctorClinicProfileCollection.setRegularCheckUpMonths(request.getRegularCheckUpMonths());
+			doctorClinicProfileRepository.save(doctorClinicProfileCollection);
+			response = new DoctorClinicProfile();
 			BeanUtil.map(request, response);
 
 		} catch (Exception e) {

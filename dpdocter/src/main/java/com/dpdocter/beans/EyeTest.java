@@ -6,20 +6,28 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class EyeTest {
 
 	private Double distanceSPH;
-	
+
 	private Double nearSPH;
-	
+
 	private Double distanceCylinder;
-	
+
 	private Double nearCylinder;
-	
+
 	private Integer distanceAxis;
-	
+
 	private Integer nearAxis;
-	
+
 	private String nearVA;
-	
+
 	private String distanceVA;
+
+	private Double nearBaseCurve;
+
+	private Double distanceBaseCurve;
+
+	private Double nearDiameter;
+
+	private Double distanceDiameter;
 
 	public Double getDistanceSPH() {
 		return distanceSPH;
@@ -83,6 +91,38 @@ public class EyeTest {
 
 	public void setDistanceVA(String distanceVA) {
 		this.distanceVA = distanceVA;
+	}
+
+	public Double getNearBaseCurve() {
+		return nearBaseCurve;
+	}
+
+	public void setNearBaseCurve(Double nearBaseCurve) {
+		this.nearBaseCurve = nearBaseCurve;
+	}
+
+	public Double getDistanceBaseCurve() {
+		return distanceBaseCurve;
+	}
+
+	public void setDistanceBaseCurve(Double distanceBaseCurve) {
+		this.distanceBaseCurve = distanceBaseCurve;
+	}
+
+	public Double getNearDiameter() {
+		return nearDiameter;
+	}
+
+	public void setNearDiameter(Double nearDiameter) {
+		this.nearDiameter = nearDiameter;
+	}
+
+	public Double getDistanceDiameter() {
+		return distanceDiameter;
+	}
+
+	public void setDistanceDiameter(Double distanceDiameter) {
+		this.distanceDiameter = distanceDiameter;
 	}
 
 	@Override

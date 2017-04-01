@@ -4,7 +4,7 @@ public class RegularCheckUpAddEditRequest {
 
 	private String doctorId;
 
-	private String regularCheckUpMonths;
+	private Integer regularCheckUpMonths;
 
 	public String getDoctorId() {
 		return doctorId;
@@ -14,11 +14,11 @@ public class RegularCheckUpAddEditRequest {
 		this.doctorId = doctorId;
 	}
 
-	public String getRegularCheckUpMonths() {
+	public Integer getRegularCheckUpMonths() {
 		return regularCheckUpMonths;
 	}
 
-	public void setRegularCheckUpMonths(String regularCheckUpMonths) {
+	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
 		this.regularCheckUpMonths = regularCheckUpMonths;
 	}
 

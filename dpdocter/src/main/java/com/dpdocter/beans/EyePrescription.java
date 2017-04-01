@@ -10,7 +10,7 @@ public class EyePrescription extends GenericCollection {
 	private String id;
 
 	private String uniqueEmrId;
-	
+
 	private String doctorId;
 
 	private String locationId;
@@ -20,19 +20,25 @@ public class EyePrescription extends GenericCollection {
 	private String patientId;
 
 	private EyeTest leftEyeTest;
-	
+
 	private EyeTest rightEyeTest;
 
 	private String type;
-	
+
 	private Integer pupilaryDistance;
-	
+
 	private String lensType;
-	
+
 	private String usage;
-	
+
+	private String replacementInterval;
+
+	private String lensColor;
+
+	private String lensBrand;
+
 	private String remarks;
-	
+
 	private String prescriptionCode;
 
 	private Boolean inHistory = false;
@@ -194,7 +200,6 @@ public class EyePrescription extends GenericCollection {
 	public void setVisitId(String visitId) {
 		this.visitId = visitId;
 	}
-	
 
 	public String getAppointmentId() {
 		return appointmentId;
@@ -228,12 +233,37 @@ public class EyePrescription extends GenericCollection {
 		this.appointmentRequest = appointmentRequest;
 	}
 
+	public String getReplacementInterval() {
+		return replacementInterval;
+	}
+
+	public void setReplacementInterval(String replacementInterval) {
+		this.replacementInterval = replacementInterval;
+	}
+
+	public String getLensColor() {
+		return lensColor;
+	}
+
+	public void setLensColor(String lensColor) {
+		this.lensColor = lensColor;
+	}
+
+	public String getLensBrand() {
+		return lensBrand;
+	}
+
+	public void setLensBrand(String lensBrand) {
+		this.lensBrand = lensBrand;
+	}
+
 	@Override
 	public String toString() {
 		return "EyePrescription [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", leftEyeTest="
 				+ leftEyeTest + ", rightEyeTest=" + rightEyeTest + ", type=" + type + ", pupilaryDistance="
-				+ pupilaryDistance + ", lensType=" + lensType + ", usage=" + usage + ", remarks=" + remarks
+				+ pupilaryDistance + ", lensType=" + lensType + ", usage=" + usage + ", replacementInterval="
+				+ replacementInterval + ", lensColor=" + lensColor + ", lensBrand=" + lensBrand + ", remarks=" + remarks
 				+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", discarded=" + discarded
 				+ ", isOTPVerified=" + isOTPVerified + ", appointmentId=" + appointmentId + ", time=" + time
 				+ ", fromDate=" + fromDate + ", appointmentRequest=" + appointmentRequest + ", visitId=" + visitId

@@ -28,25 +28,34 @@ public class EyePrescriptionCollection extends GenericCollection {
 
 	@Field
 	private EyeTest leftEyeTest;
-	
+
 	@Field
 	private EyeTest rightEyeTest;
 
 	@Field
 	private String type;
-	
+
 	@Field
 	private Integer pupilaryDistance;
-	
+
 	@Field
 	private String lensType;
-	
+
 	@Field
 	private String usage;
-	
+
 	@Field
 	private String remarks;
-	
+
+	@Field
+	private String replacementInterval;
+
+	@Field
+	private String lensColor;
+
+	@Field
+	private String lensBrand;
+
 	@Field
 	private String prescriptionCode;
 
@@ -206,14 +215,39 @@ public class EyePrescriptionCollection extends GenericCollection {
 		this.remarks = remarks;
 	}
 
+	public String getReplacementInterval() {
+		return replacementInterval;
+	}
+
+	public void setReplacementInterval(String replacementInterval) {
+		this.replacementInterval = replacementInterval;
+	}
+
+	public String getLensColor() {
+		return lensColor;
+	}
+
+	public void setLensColor(String lensColor) {
+		this.lensColor = lensColor;
+	}
+
+	public String getLensBrand() {
+		return lensBrand;
+	}
+
+	public void setLensBrand(String lensBrand) {
+		this.lensBrand = lensBrand;
+	}
+
 	@Override
 	public String toString() {
 		return "EyePrescriptionCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId
 				+ ", leftEyeTest=" + leftEyeTest + ", rightEyeTest=" + rightEyeTest + ", type=" + type
 				+ ", pupilaryDistance=" + pupilaryDistance + ", lensType=" + lensType + ", usage=" + usage
-				+ ", remarks=" + remarks + ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory
+				+ ", remarks=" + remarks + ", replacementInterval=" + replacementInterval + ", lensColor=" + lensColor
+				+ ", lensBrand=" + lensBrand + ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory
 				+ ", discarded=" + discarded + ", isOTPVerified=" + isOTPVerified + ", visitId=" + visitId + "]";
 	}
-	
+
 }

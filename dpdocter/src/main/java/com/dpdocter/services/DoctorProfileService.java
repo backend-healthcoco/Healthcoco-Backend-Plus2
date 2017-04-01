@@ -97,7 +97,7 @@ public interface DoctorProfileService {
 	public DoctorContactsResponse getPatient(int page, int size, String doctorId, String locationId, String hospitalId,
 			long from, long to);
 
-	RegularCheckUpAddEditRequest addRegularCheckupMonths(RegularCheckUpAddEditRequest request);
+	DoctorClinicProfile addRegularCheckupMonths(RegularCheckUpAddEditRequest request);
 
 	
 
