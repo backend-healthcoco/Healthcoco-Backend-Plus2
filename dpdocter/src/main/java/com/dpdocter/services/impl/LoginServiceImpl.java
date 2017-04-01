@@ -215,7 +215,8 @@ public class LoginServiceImpl implements LoginService {
 										Role role = new Role();
 										BeanUtil.map(otherRoleCollection.getRoleCollection(), role);
 										role.setAccessModules(accessControl.getAccessModules());
-
+										role.setLocationId(otherRoleCollection.getLocationId());
+										role.setHospitalId(otherRoleCollection.getHospitalId());
 										if (roles == null)
 											roles = new ArrayList<Role>();
 										roles.add(role);

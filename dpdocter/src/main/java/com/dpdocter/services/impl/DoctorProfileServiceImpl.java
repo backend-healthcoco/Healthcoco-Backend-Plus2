@@ -675,6 +675,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 					Role role = new Role();
 					BeanUtil.map(otherRoleCollection, role);
+					role.setLocationId(roleLookupResponse.getLocationId());
+					role.setHospitalId(roleLookupResponse.getHospitalId());
 					role.setAccessModules(accessControl.getAccessModules());
 
 					if (roles == null)

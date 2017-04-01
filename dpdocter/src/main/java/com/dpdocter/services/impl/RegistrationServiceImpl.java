@@ -2114,6 +2114,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+										RoleEnum.CONSULTANT_DOCTOR.getRole(),
 										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
 										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new PageRequest(page, size, Direction.DESC, "createdTime"));
@@ -2121,6 +2122,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						roleCollections = roleRepository.findCustomGlobalStaffRole(new ObjectId(locationId),
 								new ObjectId(hospitalId), new Date(createdTimeStamp),
 								Arrays.asList(RoleEnum.DOCTOR.getRole(), RoleEnum.LOCATION_ADMIN.getRole(),
+										RoleEnum.CONSULTANT_DOCTOR.getRole(),
 										RoleEnum.HOSPITAL_ADMIN.getRole(), RoleEnum.ADMIN.getRole(),
 										RoleEnum.PATIENT.getRole(), RoleEnum.SUPER_ADMIN.getRole()),
 								new Sort(Sort.Direction.DESC, "createdTime"));
