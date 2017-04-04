@@ -2,19 +2,19 @@ package com.dpdocter.enums;
 
 public enum ComponentType {
 
-    CLINICAL_NOTES("CLINICAL_NOTES"), REPORTS("REPORTS"), PRESCRIPTIONS("PRESCRIPTIONS"), ALL("ALL"),
-    BILLING("BILLING"), VISITS("VISITS"), PATIENT("PATIENT"), DOCTOR("DOCTOR"),
-    TREATMENT("TREATMENT"), APPOINTMENT("APPOINTMENT"), CALENDAR_REMINDER("CALENDAR_REMINDER"),INVOICE("INVOICE"),
-    EYE_PRESCRIPTION("EYE_PRESCRIPTION");
+	CLINICAL_NOTES("CLINICAL_NOTES"), REPORTS("REPORTS"), PRESCRIPTIONS("PRESCRIPTIONS"), ALL("ALL"), BILLING(
+			"BILLING"), VISITS("VISITS"), PATIENT("PATIENT"), DOCTOR("DOCTOR"), TREATMENT("TREATMENT"), APPOINTMENT(
+					"APPOINTMENT"), CALENDAR_REMINDER("CALENDAR_REMINDER"), INVOICE(
+							"INVOICE"), RECEIPT("RECEIPT"), EYE_PRESCRIPTION("EYE_PRESCRIPTION");
 
-    private String type;
+	private String type;
 
-    private ComponentType(String type) {
-	this.type = type;
-    }
+	private ComponentType(String type) {
+		this.type = type;
+	}
 
-    public String getType() {
-	return type;
-    }
+	public String getType() {
+		return type;
+	}
 
 }

@@ -313,5 +313,14 @@ public class BillingApi {
 		response.setData(billingService.downloadInvoice(invoiceId));
 		return response;
 	}
+	
+	@Path(value = PathProxy.BillingUrls.DOWNLOAD_RECEIPT)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.DOWNLOAD_RECEIPT, notes = PathProxy.BillingUrls.DOWNLOAD_RECEIPT)
+	public Response<String> downloadReceipt(@PathParam("receiptId") String receiptId) {
+		Response<String> response = new Response<String>();
+		response.setData(billingService.downloadReceipt(receiptId));
+		return response;
+	}
 
 }

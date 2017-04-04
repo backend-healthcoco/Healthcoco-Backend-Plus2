@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -92,6 +93,12 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+
+	@Value(value = "${jasper.print.receipt.a4.fileName}")
+	private String receiptA4FileName;
+
+	@Value(value = "${jasper.print.receipt.a5.fileName}")
+	private String receiptA5FileName;
 
 	@Value(value = "${jasper.print.invoice.a4.fileName}")
 	private String invoiceA4FileName;
@@ -1171,4 +1178,88 @@ public class BillingServiceImpl implements BillingService {
 		}
 		return response;
 	}
+
+	@Override
+	public String downloadReceipt(String receiptId) {
+		String response = null;
+		try {
+			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository
+					.findOne(new ObjectId(receiptId));
+			if (doctorPatientReceiptCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getLocationId(),
+						doctorPatientReceiptCollection.getHospitalId());
+				UserCollection user = userRepository.findOne(doctorPatientReceiptCollection.getPatientId());
+				JasperReportResponse jasperReportResponse = createJasperForReceipt(doctorPatientReceiptCollection,
+						patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Invoice Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Invoice Id does not exist");
+			}
+
+		} catch (Exception e) {
+			logger.error("Error while getting download invoice" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting download invoice " + e);
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasperForReceipt(DoctorPatientReceiptCollection doctorPatientReceiptCollection,
+			PatientCollection patient, UserCollection user) throws IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+		String pattern = "dd/MM/yyyy";
+		UserCollection doctor=userRepository.findOne(doctorPatientReceiptCollection.getDoctorId());
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		String content = "<br>Received with thanks<br>&nbsp;&nbsp;&nbsp;The sum of Rupees:- "
+				+ doctorPatientReceiptCollection.getAmountPaid() + " by "
+				+ doctorPatientReceiptCollection.getModeOfPayment() + " On Date:-"
+				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
+		parameters.put("content", content);
+		parameters.put("paid", "RS.&nbsp;"+doctorPatientReceiptCollection.getAmountPaid());
+		parameters.put("name", doctor.getTitle().toUpperCase()+" "+doctor.getFirstName());
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
+				doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType());
+ 
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>RECEIPTID: </b>" + (doctorPatientReceiptCollection.getUniqueReceiptId() != null
+						? doctorPatientReceiptCollection.getUniqueReceiptId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+		patientVisitService.generatePrintSetup(parameters, printSettings, doctorPatientReceiptCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "RECEIPT-"
+				+ doctorPatientReceiptCollection.getUniqueReceiptId() + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.RECEIPT, parameters, receiptA4FileName, layout, pageSize,
+				topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+	}
+
 }

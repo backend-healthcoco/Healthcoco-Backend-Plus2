@@ -44,4 +44,6 @@ public interface BillingService {
 	DoctorPatientInvoice getInvoice(String invoiceId);
 	
 	String downloadInvoice(String invoiceId);
+	
+	String downloadReceipt(String receiptId);
 }

@@ -1043,6 +1043,8 @@ public interface PathProxy {
 		public static final String CREATE_LEDGER = "/ledger";
 
 		public static final String DOWNLOAD_INVOICE = "/downloadInvoice/{invoiceId}";
+		
+		public static final String DOWNLOAD_RECEIPT= "/downloadReceipt/{receiptId}";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
