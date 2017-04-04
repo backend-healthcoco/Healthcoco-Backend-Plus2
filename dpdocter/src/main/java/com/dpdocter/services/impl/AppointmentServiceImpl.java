@@ -741,9 +741,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT,false);
 				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 			} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				Integer patientCount = patientRepository.findCount(new ObjectId(request.getPatientId()),
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(new ObjectId(request.getPatientId()),
 						new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-				if (patientCount == null || patientCount == 0) {
+				if (patient == null) {
 					PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 					patientRegistrationRequest.setDoctorId(request.getDoctorId());
 					patientRegistrationRequest.setLocalPatientName(request.getLocalPatientName());
@@ -754,6 +754,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					RegisteredPatientDetails patientDetails = registrationService.registerExistingPatient(patientRegistrationRequest);
 					transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT,false);
 					esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+				}else{
+					List<ObjectId> consultantDoctorIds = patient.getConsultantDoctorIds();
+					if(consultantDoctorIds == null)consultantDoctorIds = new ArrayList<ObjectId>();
+					if(!consultantDoctorIds.contains(new ObjectId(request.getDoctorId())))consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
+					patient.setConsultantDoctorIds(consultantDoctorIds);
+					patient.setUpdatedTime(new Date());
+					patientRepository.save(patient);
 				}
 			}
 
