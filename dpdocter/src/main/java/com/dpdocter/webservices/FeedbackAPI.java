@@ -100,7 +100,7 @@ public class FeedbackAPI {
 		return response;
 	}
 	
-	@GET
+	@POST
 	@Path(PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
 	public Response<AppointmentGeneralFeedback> getGeneralAppointmentFeedback(FeedbackGetRequest request)
@@ -118,7 +118,7 @@ public class FeedbackAPI {
 		return response;
 	}
 	
-	@GET
+	@POST
 	@Path(PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	public Response<PharmacyFeedback> getPharmacyFeedback(FeedbackGetRequest request)
@@ -137,7 +137,7 @@ public class FeedbackAPI {
 	}
 	
 	
-	@GET
+	@POST
 	@Path(PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
 	public Response<PrescriptionFeedback> getPrescriptionFeedback(FeedbackGetRequest request)
