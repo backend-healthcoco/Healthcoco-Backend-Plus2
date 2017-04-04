@@ -676,6 +676,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
 													.lt(minTime)))),
 									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
+				} else {
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+							boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
 				}
 			} else {
 				if (maxTime != 0 || minTime != 0) {
@@ -873,6 +876,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 																			"clinicWorkingSchedules.workingHours.fromTime")
 																	.gt(0).lt(minTime)))),
 											QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days)))));
+				}else {
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
+							boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
 				}
 			} else {
 				if (maxTime != 0 || minTime != 0) {
