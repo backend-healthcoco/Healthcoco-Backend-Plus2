@@ -62,7 +62,7 @@ public interface DoctorProfileService {
 	String addEditCoverPicture(DoctorProfilePictureAddEditRequest request);
 
 	DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean isMobileApp);
+			Boolean isMobileApp , Boolean isSearched);
 
 	List<ProfessionalMembership> getProfessionalMemberships(int page, int size, String updatedTime);
 
@@ -98,6 +98,8 @@ public interface DoctorProfileService {
 			long from, long to);
 
 	DoctorClinicProfile addRegularCheckupMonths(RegularCheckUpAddEditRequest request);
+
+	Boolean updateDoctorProfileViews(String doctorId);
 
 	
 

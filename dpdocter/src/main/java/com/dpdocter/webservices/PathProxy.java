@@ -624,6 +624,8 @@ public interface PathProxy {
 		public static final String GET_LABS_WITH_REPORTS_COUNT = "/getLabsWithReportCount/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{prescribedByDoctorId}/{prescribedByLocationId}/{prescribedByHospitalId}";
+		
+		public static final String GET_DOCTOR_STATS = "/{doctorId}/getStats";
 
 	}
 

@@ -53,7 +53,9 @@ import com.dpdocter.request.DoctorRegistrationAddEditRequest;
 import com.dpdocter.request.DoctorSpecialityAddEditRequest;
 import com.dpdocter.request.DoctorVisitingTimeAddEditRequest;
 import com.dpdocter.response.DoctorMultipleDataAddEditResponse;
+import com.dpdocter.response.DoctorStatisticsResponse;
 import com.dpdocter.services.DoctorProfileService;
+import com.dpdocter.services.DoctorStatsService;
 import com.dpdocter.services.LabService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.TransactionalManagementService;
@@ -83,6 +85,9 @@ public class DoctorProfileApi {
 
 	@Autowired
 	private LabService labService;
+	
+	@Autowired
+	private DoctorStatsService doctorStatsService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -292,13 +297,13 @@ public class DoctorProfileApi {
 	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@QueryParam(value = "patientId") String patientId) {
+			@QueryParam(value = "patientId") String patientId, @DefaultValue(value = "false") @QueryParam(value = "isSearched") Boolean isSearched ) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp);
+				isMobileApp , isSearched);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
@@ -330,6 +335,11 @@ public class DoctorProfileApi {
 						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
 					}
 				}
+			}
+			
+			if(patientId != null || isSearched == true)
+			{
+				doctorProfileService.updateDoctorProfileViews(doctorId);
 			}
 		}
 		Response<DoctorProfile> response = new Response<DoctorProfile>();
@@ -638,6 +648,22 @@ public class DoctorProfileApi {
 		Response<List<Clinic>> response = new Response<List<Clinic>>();
 		response.setDataList(labService.getReports(doctorId, locationId, hospitalId, prescribedByDoctorId,
 				prescribedByLocationId, prescribedByHospitalId, size, page));
+		return response;
+	}
+	
+	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
+	public Response<DoctorStatisticsResponse> getDoctorsStats(
+			@PathParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+			@DefaultValue("WEEK") @QueryParam(value = "type") String type) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		DoctorStatisticsResponse doctorStatisticsResponse  = doctorStatsService.getDoctorStats(doctorId, locationId, type);
+		Response<DoctorStatisticsResponse> response = new Response<DoctorStatisticsResponse>();
+		response.setData(doctorStatisticsResponse);
 		return response;
 	}
 

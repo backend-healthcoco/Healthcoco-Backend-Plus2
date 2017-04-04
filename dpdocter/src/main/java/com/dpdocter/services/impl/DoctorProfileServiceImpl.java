@@ -40,6 +40,7 @@ import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorProfileViewCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.EducationInstituteCollection;
 import com.dpdocter.collections.EducationQualificationCollection;
@@ -63,6 +64,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.DoctorProfileViewRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.ProfessionalMembershipRepository;
@@ -141,6 +143,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	DynamicUIRepository dynamicUIRepository;
+
+	@Autowired
+	DoctorProfileViewRepository doctorProfileViewRepository;
 
 	@Override
 	@Transactional
@@ -502,7 +507,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Override
 	@Transactional
 	public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean isMobileApp) {
+			Boolean isMobileApp , Boolean isSearched) {
 		DoctorProfile doctorProfile = null;
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
@@ -515,6 +520,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
+			
+			if(isSearched == false)
+			{
+				criteria.and("isActivate").is(true);
+			}
 
 			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(criteria),
@@ -531,8 +541,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						logger.error("No user found");
 						throw new BusinessException(ServiceError.NoRecord, "No user found");
 					}
-					DoctorClinicProfile doctorClinicProfile = getDoctorClinic(doctorClinicProfileLookupResponse, patientId, isMobileApp, doctorClinicProfileLookupResponses.size());
-					if(doctorClinicProfile != null)clinicProfile.add(doctorClinicProfile);
+					DoctorClinicProfile doctorClinicProfile = getDoctorClinic(doctorClinicProfileLookupResponse,
+							patientId, isMobileApp, doctorClinicProfileLookupResponses.size());
+					if (doctorClinicProfile != null)
+						clinicProfile.add(doctorClinicProfile);
 				}
 			}
 
@@ -644,9 +656,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorClinic.setNoOfFeedbacks((int) mongoTemplate.count(new Query(criteria), FeedbackCollection.class));
 
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(doctorClinicProfileLookupResponse.getDoctorId())
-					.and("locationId").is(locationCollection.getId()).and("hospitalId").is(locationCollection.getHospitalId())),
-							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"), Aggregation.unwind("roleCollection")), 
+					Aggregation.newAggregation(
+							Aggregation.match(new Criteria("userId").is(doctorClinicProfileLookupResponse.getDoctorId())
+									.and("locationId").is(locationCollection.getId()).and("hospitalId")
+									.is(locationCollection.getHospitalId())),
+							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
+							Aggregation.unwind("roleCollection")),
 					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 			List<Role> roles = null;
 
@@ -1261,27 +1276,24 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
-	/*@Override
-	@Transactional
-	public RegularCheckUpAddEditRequest addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
-		UserCollection userCollection = null;
-		RegularCheckUpAddEditRequest response = null;
-		try {
-			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			BeanUtil.map(request, userCollection);
-			userRepository.save(userCollection);
-			response = new RegularCheckUpAddEditRequest();
-			BeanUtil.map(request, response);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Editing Doctor Profile");
-			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
-		}
-		return response;
-	}*/
-	
+	/*
+	 * @Override
+	 * 
+	 * @Transactional public RegularCheckUpAddEditRequest
+	 * addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
+	 * UserCollection userCollection = null; RegularCheckUpAddEditRequest
+	 * response = null; try { userCollection = userRepository.findOne(new
+	 * ObjectId(request.getDoctorId())); BeanUtil.map(request, userCollection);
+	 * userRepository.save(userCollection); response = new
+	 * RegularCheckUpAddEditRequest(); BeanUtil.map(request, response);
+	 * 
+	 * } catch (Exception e) { e.printStackTrace(); logger.error(e +
+	 * " Error Editing Doctor Profile"); throw new
+	 * BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
+	 * } return response; }
+	 */
+
 	@Override
 	@Transactional
 	public DoctorClinicProfile addRegularCheckupMonths(RegularCheckUpAddEditRequest request) {
@@ -1300,6 +1312,24 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 		}
 		return response;
+	}
+
+	@Override
+	@Transactional
+	public Boolean updateDoctorProfileViews(String doctorId) {
+		Boolean status = false;
+		try {
+			DoctorProfileViewCollection doctorProfileViewCollection = new DoctorProfileViewCollection();
+			doctorProfileViewCollection.setDoctorId(new ObjectId(doctorId));
+			doctorProfileViewRepository.save(doctorProfileViewCollection);
+			status = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.warn(e);
+		}
+		return status;
+
 	}
 
 }
