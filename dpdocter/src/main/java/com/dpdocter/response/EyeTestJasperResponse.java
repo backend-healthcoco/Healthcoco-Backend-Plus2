@@ -18,6 +18,14 @@ public class EyeTestJasperResponse {
 	
 	private String distanceVA = "--";
 
+	private String nearBaseCurve = "--";
+
+	private String distanceBaseCurve = "--";
+
+	private String nearDiameter = "--";
+
+	private String distanceDiameter = "--";
+
 	public String getDistanceSPH() {
 		return distanceSPH;
 	}
@@ -102,10 +110,60 @@ public class EyeTestJasperResponse {
 		else this.distanceVA = distanceVA;
 	}
 
+	public String getNearBaseCurve() {
+		return nearBaseCurve;
+	}
+
+	public void setNearBaseCurve(String nearBaseCurve) {
+		if(nearBaseCurve == null)this.nearBaseCurve = "--";
+		else{
+			if(!nearBaseCurve.startsWith("-"))this.nearBaseCurve = "+"+nearBaseCurve;
+			else this.nearBaseCurve = nearBaseCurve;
+		}
+	}
+
+	public String getDistanceBaseCurve() {
+		return distanceBaseCurve;
+	}
+
+	public void setDistanceBaseCurve(String distanceBaseCurve) {
+		if(distanceBaseCurve == null)this.distanceBaseCurve = "--";
+		else{
+			if(!distanceBaseCurve.startsWith("-"))this.distanceBaseCurve = "+"+distanceBaseCurve;
+			else this.distanceBaseCurve = distanceBaseCurve;
+		}
+	}
+
+	public String getNearDiameter() {
+		return nearDiameter;
+	}
+
+	public void setNearDiameter(String nearDiameter) {
+		if(nearDiameter == null)this.nearDiameter = "--";
+		else{
+			if(!nearDiameter.startsWith("-"))this.nearDiameter = "+"+nearDiameter;
+			else this.nearDiameter = nearDiameter;
+		}
+	}
+
+	public String getDistanceDiameter() {
+		return distanceDiameter;
+	}
+
+	public void setDistanceDiameter(String distanceDiameter) {
+		if(distanceDiameter == null)this.distanceDiameter = "--";
+		else{
+			if(!distanceDiameter.startsWith("-"))this.distanceDiameter = "+"+distanceDiameter;
+			else this.distanceDiameter = distanceDiameter;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return "EyeTestJasperResponse [distanceSPH=" + distanceSPH + ", nearSPH=" + nearSPH + ", distanceCylinder="
 				+ distanceCylinder + ", nearCylinder=" + nearCylinder + ", distanceAxis=" + distanceAxis + ", nearAxis="
-				+ nearAxis + ", nearVA=" + nearVA + ", distanceVA=" + distanceVA + "]";
+				+ nearAxis + ", nearVA=" + nearVA + ", distanceVA=" + distanceVA + ", nearBaseCurve=" + nearBaseCurve
+				+ ", distanceBaseCurve=" + distanceBaseCurve + ", nearDiameter=" + nearDiameter + ", distanceDiameter="
+				+ distanceDiameter + "]";
 	}
 }
