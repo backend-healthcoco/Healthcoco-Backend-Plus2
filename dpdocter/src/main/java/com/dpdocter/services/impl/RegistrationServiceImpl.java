@@ -370,7 +370,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, patientCollection);
 			patientCollection.setFirstName(request.getLocalPatientName());
 			patientCollection.setUserId(userCollection.getId());
-			patientCollection.setRegistrationDate(request.getDateOfVisit());
+			if(request.getRegistrationDate() != null)patientCollection.setRegistrationDate(request.getRegistrationDate());
+			else patientCollection.setRegistrationDate(new Date().getTime());
 
 			patientCollection.setCreatedTime(createdTime);
 			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId()));
@@ -684,7 +685,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection = new PatientCollection();
 					patientCollection.setCreatedTime(new Date());
 					BeanUtil.map(request, patientCollection);
-					patientCollection.setRegistrationDate(request.getDateOfVisit());
+					if(request.getRegistrationDate() != null)patientCollection.setRegistrationDate(request.getRegistrationDate());
+					else patientCollection.setRegistrationDate(new Date().getTime());
 				}
 
 				patientCollection.setRelations(request.getRelations());

@@ -78,6 +78,8 @@ public class PatientCard extends GenericCollection {
 
 	private List<String> consultantDoctorIds;
 	
+	private Long registrationDate;
+	
 	public String getPatientId() {
 		return patientId;
 	}
@@ -430,6 +432,14 @@ public class PatientCard extends GenericCollection {
 		this.consultantDoctorIds = consultantDoctorIds;
 	}
 
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -443,9 +453,9 @@ public class PatientCard extends GenericCollection {
 				+ ", isPatientOTPVerified=" + isPatientOTPVerified + ", referredBy=" + referredBy + ", user=" + user
 				+ ", patientGroupCollections=" + patientGroupCollections + ", address=" + address + ", reference="
 				+ reference + ", patientId=" + patientId + ", profession=" + profession + ", relations=" + relations
-				+ ", consultantDoctorIds=" + consultantDoctorIds + ", addressId=" + addressId + ", secMobile="
-				+ secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber + ", drivingLicenseId="
-				+ drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName=" + insuranceName + ", notes="
-				+ notes + "]";
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
+				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
+				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
+				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
 	}
 }

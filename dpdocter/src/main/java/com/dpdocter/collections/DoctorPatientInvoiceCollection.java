@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -65,6 +66,9 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 
 	@Field
 	private Boolean discarded = false;
+
+	@Field
+	private Date invoiceDate;
 
 	public ObjectId getId() {
 		return id;
@@ -194,6 +198,14 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 		this.totalTax = totalTax;
 	}
 
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -201,6 +213,6 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 				+ ", receiptIds=" + receiptIds + ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount
 				+ ", totalCost=" + totalCost + ", totalTax=" + totalTax + ", grandTotal=" + grandTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
-				+ balanceAmount + ", discarded=" + discarded + "]";
+				+ balanceAmount + ", discarded=" + discarded + ", invoiceDate=" + invoiceDate + "]";
 	}
 }

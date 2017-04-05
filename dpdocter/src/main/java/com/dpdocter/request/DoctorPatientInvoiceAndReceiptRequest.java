@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.Discount;
@@ -41,6 +42,8 @@ public class DoctorPatientInvoiceAndReceiptRequest {
 
 	private Double amountPaid= 0.0;
 	
+	private Date invoiceDate;
+
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -169,6 +172,14 @@ public class DoctorPatientInvoiceAndReceiptRequest {
 		this.totalTax = totalTax;
 	}
 
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceAndReceiptRequest [doctorId=" + doctorId + ", locationId=" + locationId
@@ -176,6 +187,7 @@ public class DoctorPatientInvoiceAndReceiptRequest {
 				+ ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost
 				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", usedAdvanceAmount=" + usedAdvanceAmount
 				+ ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount + ", discarded=" + discarded
-				+ ", modeOfPayment=" + modeOfPayment + ", amountPaid=" + amountPaid + "]";
+				+ ", modeOfPayment=" + modeOfPayment + ", amountPaid=" + amountPaid + ", invoiceDate=" + invoiceDate
+				+ "]";
 	}
 }

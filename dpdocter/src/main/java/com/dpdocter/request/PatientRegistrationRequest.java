@@ -71,6 +71,8 @@ public class PatientRegistrationRequest {
 
 	private String role;
 	
+	private Long registrationDate;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -319,6 +321,14 @@ public class PatientRegistrationRequest {
 		this.role = role;
 	}
 
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -330,7 +340,7 @@ public class PatientRegistrationRequest {
 				+ notes + ", address=" + address + ", dateOfVisit=" + dateOfVisit + ", pastHistoryId=" + pastHistoryId
 				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
 				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + "]";
+				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + ", registrationDate="
+				+ registrationDate + "]";
 	}
-
 }

@@ -1,5 +1,6 @@
 package com.dpdocter.beans;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
@@ -38,7 +39,9 @@ public class DoctorPatientInvoice extends GenericCollection{
 	private Boolean discarded = false;
 
 	private List<String> receiptIds;
-	
+
+	private Date invoiceDate;
+
 	public String getId() {
 		return id;
 	}
@@ -167,6 +170,14 @@ public class DoctorPatientInvoice extends GenericCollection{
 		this.totalTax = totalTax;
 	}
 
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoice [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -174,7 +185,7 @@ public class DoctorPatientInvoice extends GenericCollection{
 				+ ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost
 				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", usedAdvanceAmount=" + usedAdvanceAmount
 				+ ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount + ", discarded=" + discarded
-				+ ", receiptIds=" + receiptIds + "]";
+				+ ", receiptIds=" + receiptIds + ", invoiceDate=" + invoiceDate + "]";
 	}
 
 }

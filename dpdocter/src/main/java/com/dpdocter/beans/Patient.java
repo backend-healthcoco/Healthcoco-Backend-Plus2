@@ -51,6 +51,8 @@ public class Patient {
 	private DOB dob;
 
 	private List<String> consultantDoctorIds;
+
+	private Long registrationDate;
 	
 	public String getLocalPatientName() {
 		return localPatientName;
@@ -236,6 +238,14 @@ public class Patient {
 		this.consultantDoctorIds = consultantDoctorIds;
 	}
 
+	public Long getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Long registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
@@ -246,7 +256,6 @@ public class Patient {
 				+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor="
 				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + ", address="
 				+ address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob + ", consultantDoctorIds="
-				+ consultantDoctorIds + "]";
+				+ consultantDoctorIds + ", registrationDate=" + registrationDate + "]";
 	}
-
 }

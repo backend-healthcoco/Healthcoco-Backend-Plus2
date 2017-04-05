@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.DoctorPatientReceipt;
@@ -32,6 +33,9 @@ private String id;
 	private Boolean discarded = false;
 	
 	DoctorPatientReceipt doctorPatientReceipt;
+	
+	private Date invoiceDate;
+
 
 	public String getId() {
 		return id;
@@ -137,12 +141,21 @@ private String id;
 		this.doctorPatientReceipt = doctorPatientReceipt;
 	}
 
+	public Date getInvoiceDate() {
+		return invoiceDate;
+	}
+
+	public void setInvoiceDate(Date invoiceDate) {
+		this.invoiceDate = invoiceDate;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceAndReceiptResponse [id=" + id + ", doctorId=" + doctorId + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId="
 				+ uniqueInvoiceId + ", invoiceItems=" + invoiceItems + ", grandTotal=" + grandTotal
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
-				+ balanceAmount + ", discarded=" + discarded + ", doctorPatientReceipt=" + doctorPatientReceipt + "]";
+				+ balanceAmount + ", discarded=" + discarded + ", doctorPatientReceipt=" + doctorPatientReceipt
+				+ ", invoiceDate=" + invoiceDate + "]";
 	}
 }

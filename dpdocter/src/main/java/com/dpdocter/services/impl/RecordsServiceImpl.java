@@ -253,7 +253,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (patientCards != null && !patientCards.isEmpty()){
 					patientEmailAddress = patientCards.get(0).getEmailAddress();
 					localPatientName = patientCards.get(0).getLocalPatientName();
-					patientMobileNumber = patientCards.get(0).getMobileNumber();
+					patientMobileNumber = patientCards.get(0).getUser().getMobileNumber();
 				}
 			}
 			Date createdTime = new Date();
@@ -1305,7 +1305,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (patientCards != null && !patientCards.isEmpty()){
 					patientEmailAddress = patientCards.get(0).getEmailAddress();
 					localPatientName = patientCards.get(0).getLocalPatientName();
-					patientMobileNumber = patientCards.get(0).getMobileNumber();
+					patientMobileNumber = patientCards.get(0).getUser().getMobileNumber();
 				}
 			}
 			
