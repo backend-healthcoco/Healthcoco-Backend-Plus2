@@ -24,9 +24,11 @@ public interface PatientVisitService {
 
 	boolean addRecord(String patientId, String doctorId, String locationId, String hospitalId, VisitedFor visitedFor);
 
-	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size, String role);
+	DoctorContactsResponse recentlyVisited(String doctorId, String locationId, String hospitalId, int page, int size,
+			String role);
 
-	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size, String role);
+	DoctorContactsResponse mostVisited(String doctorId, String locationId, String hospitalId, int page, int size,
+			String role);
 
 	PatientVisitResponse addMultipleData(AddMultipleDataRequest request);
 
@@ -37,7 +39,7 @@ public interface PatientVisitService {
 
 	Boolean email(String visitId, String emailAddress);
 
-	PatientVisit deleteVisit(String visitId, Boolean discarded);
+	PatientVisitResponse deleteVisit(String visitId, Boolean discarded);
 
 	Boolean smsVisit(String visitId, String doctorId, String locationId, String hospitalId, String mobileNumber);
 
@@ -49,7 +51,9 @@ public interface PatientVisitService {
 	int getVisitCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-	String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren);
+	String getPatientVisitFile(String visitId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA,
+			Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD,
+			Boolean showNoOfChildren);
 
 	void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId);
 

@@ -49,6 +49,8 @@ public class PatientVisitResponse extends GenericCollection {
 
 	private EyePrescription eyePrescription;
 
+	private Boolean discarded = false;
+
 	public String getId() {
 		return id;
 	}
@@ -192,6 +194,14 @@ public class PatientVisitResponse extends GenericCollection {
 
 	public void setAppointmentRequest(Appointment appointmentRequest) {
 		this.appointmentRequest = appointmentRequest;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 }
