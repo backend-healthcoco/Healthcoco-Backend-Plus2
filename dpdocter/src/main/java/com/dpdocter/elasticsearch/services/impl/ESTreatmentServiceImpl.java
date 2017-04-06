@@ -3,6 +3,7 @@ package com.dpdocter.elasticsearch.services.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
@@ -211,6 +213,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								
 								specialities = CollectionUtils.collect(resultsSpeciality,
 										new BeanToPropertyValueTransformer("speciality"));
 								specialities.add("ALL");
@@ -225,10 +228,14 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
 					null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
+			if (response != null && !response.isEmpty())
+				
+				response = new ArrayList<ESTreatmentServiceDocument>(
+						new LinkedHashSet<ESTreatmentServiceDocument>(response));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Complaints");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting service");
 		}
 		return response;
 	}

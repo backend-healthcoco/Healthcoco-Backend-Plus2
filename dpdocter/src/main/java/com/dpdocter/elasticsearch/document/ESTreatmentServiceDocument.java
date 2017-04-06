@@ -119,6 +119,14 @@ public class ESTreatmentServiceDocument {
 		return discarded;
 	}
 
+	@Override
+	public String toString() {
+		return "ESTreatmentServiceDocument [id=" + id + ", name=" + name + ", speciality=" + speciality
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + ", cost=" + cost + ", treatmentCode="
+				+ treatmentCode + ", rankingCount=" + rankingCount + "]";
+	}
+
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
@@ -131,10 +139,15 @@ public class ESTreatmentServiceDocument {
 		this.updatedTime = updatedTime;
 	}
 
+	
 	@Override
-	public String toString() {
-		return "ESTreatmentServiceDocument [id=" + id + ", name=" + name + ", speciality=" + speciality
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + "]";
+	public boolean equals(Object obj) {
+		ESTreatmentServiceDocument treatmentServiceDocument = (ESTreatmentServiceDocument) obj;
+		return this.treatmentCode.equalsIgnoreCase(treatmentServiceDocument.treatmentCode);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.treatmentCode.hashCode();
 	}
 }
