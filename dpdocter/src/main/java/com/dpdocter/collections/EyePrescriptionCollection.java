@@ -36,7 +36,7 @@ public class EyePrescriptionCollection extends GenericCollection {
 	private String type;
 
 	@Field
-	private Integer pupilaryDistance;
+	private Double pupilaryDistance;
 
 	@Field
 	private String lensType;
@@ -183,11 +183,11 @@ public class EyePrescriptionCollection extends GenericCollection {
 		this.type = type;
 	}
 
-	public Integer getPupilaryDistance() {
+	public Double getPupilaryDistance() {
 		return pupilaryDistance;
 	}
 
-	public void setPupilaryDistance(Integer pupilaryDistance) {
+	public void setPupilaryDistance(Double pupilaryDistance) {
 		this.pupilaryDistance = pupilaryDistance;
 	}
 
