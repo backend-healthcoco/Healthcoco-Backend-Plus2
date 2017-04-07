@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.mongodb.DuplicateKeyException;
 
@@ -27,6 +28,9 @@ public class DpDocterLoggingAspect {
 	
 	@Autowired
 	MailService mailService;
+	
+	@Autowired
+	MailBodyGenerator mailBodyGenerator;
 	
 
 	private Logger LOGGER = Logger.getLogger(DpDocterLoggingAspect.class);
@@ -56,7 +60,7 @@ public class DpDocterLoggingAspect {
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
 		sdf.setTimeZone(timeZone);
 		String expceptionMsg = ExceptionUtils.getStackTrace(e);
-		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),expceptionMsg);
+		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(expceptionMsg));
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 		Response<Exception> response = new Response<Exception>();
@@ -75,7 +79,7 @@ public class DpDocterLoggingAspect {
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
 			sdf.setTimeZone(timeZone);
 			String expceptionMsg = ExceptionUtils.getStackTrace(e);
-			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),expceptionMsg);
+			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(expceptionMsg));
 			LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 			LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 			Response<Exception> response = new Response<Exception>();
@@ -93,7 +97,7 @@ public class DpDocterLoggingAspect {
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
 			sdf.setTimeZone(timeZone);
 			String expceptionMsg = ExceptionUtils.getStackTrace(e);
-			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),expceptionMsg);
+			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(expceptionMsg));
 			LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 			LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 			Response<Exception> response = new Response<Exception>();

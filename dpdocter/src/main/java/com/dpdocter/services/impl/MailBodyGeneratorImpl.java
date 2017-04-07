@@ -330,5 +330,17 @@ public class MailBodyGeneratorImpl implements MailBodyGenerator {
 		return text;
 
 	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	@Transactional
+	public String generateExceptionEmailBody(String exception) {
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		model.put("exceptionMsg", exception);
+
+		String text = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "exceptionMail.vm", "UTF-8", model);
+		return text;
+	}
 
 }

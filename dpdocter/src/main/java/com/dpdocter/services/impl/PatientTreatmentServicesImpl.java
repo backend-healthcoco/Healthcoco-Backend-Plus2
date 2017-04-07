@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
@@ -55,6 +56,7 @@ import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -82,6 +84,7 @@ import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientTreatmentServices;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.ReportsService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.mongodb.BasicDBObject;
 
@@ -153,6 +156,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
+	
+	@Autowired
+	private ReportsService reportsService;
 
 	@Override
 	@Transactional
@@ -382,6 +388,29 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			response = new PatientTreatmentResponse();
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
+			
+			String visitId = patientVisitService.addRecord(response, VisitedFor.TREATMENT,
+					response.getVisitId());
+			response.setVisitId(visitId);
+			if (patientTreatmentCollection != null) {
+				OPDReports opdReports = new OPDReports();
+				OPDReports oldOPDReport = reportsService.getOPDReportByVisitId(visitId);
+				
+				if (oldOPDReport != null) {
+					BeanUtil.map(oldOPDReport, opdReports);
+					opdReports.setPrescriptionId(String.valueOf(patientTreatmentCollection.getId()));
+				} else {
+					opdReports.setPatientId(String.valueOf(patientTreatmentCollection.getPatientId()));
+					opdReports.setTreatmentId(String.valueOf(patientTreatmentCollection.getId()));
+					opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.getDoctorId()));
+					opdReports.setLocationId(String.valueOf(patientTreatmentCollection.getLocationId()));
+					opdReports.setHospitalId(String.valueOf(patientTreatmentCollection.getHospitalId()));
+					opdReports.setVisitId(visitId);
+					opdReports.setCreatedTime(patientTreatmentCollection.getCreatedTime());
+				}
+				opdReports = reportsService.submitOPDReport(opdReports);
+			}
+			
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
 			throw new BusinessException(ServiceError.Unknown,

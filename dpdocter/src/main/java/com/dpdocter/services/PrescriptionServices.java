@@ -184,5 +184,11 @@ public interface PrescriptionServices {
 
 	void updateEyePrescriptionVisitId(String eyePrescriptionId, String visitId);
 
+	EyePrescription deleteEyePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId,
+			String patientId, Boolean discarded);
+
+	Boolean smsEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String mobileNumber, String type);
+
 
 }

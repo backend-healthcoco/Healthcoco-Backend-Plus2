@@ -379,7 +379,7 @@ public class DoctorProfileApi {
 		response.setData(addEditAppointmentNumbersResponse);
 		return response;
 	}
-
+	
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
@@ -666,5 +666,23 @@ public class DoctorProfileApi {
 		response.setData(doctorStatisticsResponse);
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING, notes = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
+	public Response<Boolean> updateEMRSetting(
+			@PathParam(value = "doctorId") String doctorId, @QueryParam(value = "discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		Boolean status = doctorProfileService.updateEMRSetting(doctorId, discarded);
+		
+		response.setData(status);
+		return response;
+	}
+	
 
 }

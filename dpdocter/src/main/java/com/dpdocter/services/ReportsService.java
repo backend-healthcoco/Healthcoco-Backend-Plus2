@@ -35,4 +35,6 @@ public interface ReportsService {
 
 	public Boolean addPrescriptionOPDReports();
 
+	OPDReports getOPDReportByVisitId(String visitId);
+
 }

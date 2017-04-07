@@ -378,11 +378,11 @@ public class PrescriptionApi {
 		PrescriptionAddEditResponse prescriptionAddEditResponse = prescriptionServices.addPrescription(request, true);
 
 		// patient track
-		if (prescriptionAddEditResponse != null) {
+		/*if (prescriptionAddEditResponse != null) {
 			String visitId = patientTrackService.addRecord(prescriptionAddEditResponse, VisitedFor.PRESCRIPTION,
 					prescriptionAddEditResponse.getVisitId());
 			prescriptionAddEditResponse.setVisitId(visitId);
-		}
+		}*/
 
 		Response<PrescriptionAddEditResponse> response = new Response<PrescriptionAddEditResponse>();
 		response.setData(prescriptionAddEditResponse);

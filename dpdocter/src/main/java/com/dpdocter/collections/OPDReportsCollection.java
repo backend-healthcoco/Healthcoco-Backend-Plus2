@@ -28,6 +28,8 @@ public class OPDReportsCollection extends GenericCollection {
 	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;
+	@Field
+	private ObjectId visitId;
 
 	public ObjectId getId() {
 		return id;
@@ -109,12 +111,20 @@ public class OPDReportsCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public ObjectId getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(ObjectId visitId) {
+		this.visitId = visitId;
+	}
+
 	@Override
 	public String toString() {
 		return "OPDReportsCollection [id=" + id + ", patientId=" + patientId + ", prescriptionId=" + prescriptionId
 				+ ", amountReceived=" + amountReceived + ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate
 				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + "]";
+				+ hospitalId + ", visitId=" + visitId + "]";
 	}
 
 }

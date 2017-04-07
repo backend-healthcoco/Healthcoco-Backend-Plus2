@@ -112,6 +112,7 @@ import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -966,15 +967,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			}
 			prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
 
-			if (prescriptionCollection != null) {
-				OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
-						String.valueOf(prescriptionCollection.getId()),
-						String.valueOf(prescriptionCollection.getDoctorId()),
-						String.valueOf(prescriptionCollection.getLocationId()),
-						String.valueOf(prescriptionCollection.getHospitalId()),
-						prescriptionCollection.getCreatedTime());
-				opdReports = reportsService.submitOPDReport(opdReports);
-			}
+			
 			response = new PrescriptionAddEditResponse();
 			List<TestAndRecordData> prescriptionTest = prescriptionCollection.getDiagnosticTests();
 			prescriptionCollection.setDiagnosticTests(null);
@@ -997,7 +990,27 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			response.setItems(itemDetails);
-			response.setVisitId(request.getVisitId());
+			String visitId = patientVisitService.addRecord(response, VisitedFor.PRESCRIPTION,
+					response.getVisitId());
+			response.setVisitId(visitId);
+			if (prescriptionCollection != null) {
+				OPDReports opdReports = null;
+				OPDReports oldOPDReport = reportsService.getOPDReportByVisitId(visitId);
+				
+				if (oldOPDReport != null) {
+					opdReports = new OPDReports();
+					BeanUtil.map(oldOPDReport, opdReports);
+					opdReports.setPrescriptionId(String.valueOf(prescriptionCollection.getId()));
+				} else {
+					opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+							String.valueOf(prescriptionCollection.getId()),
+							String.valueOf(prescriptionCollection.getDoctorId()),
+							String.valueOf(prescriptionCollection.getLocationId()),
+							String.valueOf(prescriptionCollection.getHospitalId()), String.valueOf(visitId),
+							prescriptionCollection.getCreatedTime());
+				}
+				opdReports = reportsService.submitOPDReport(opdReports);
+			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
@@ -5095,4 +5108,137 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		eyePrescriptionCollection.setVisitId(new ObjectId(visitId));
 		eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
 	}
+	
+	
+	@Override
+	@Transactional
+	public EyePrescription deleteEyePrescription(String prescriptionId, String doctorId, String hospitalId, String locationId,
+			String patientId, Boolean discarded) {
+		EyePrescription response = null;
+		EyePrescriptionCollection eyePrescriptionCollection = null;
+		LocationCollection locationCollection = null;
+		try {
+			locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			eyePrescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(prescriptionId));
+			if (eyePrescriptionCollection != null) {
+				if (eyePrescriptionCollection.getDoctorId() != null && eyePrescriptionCollection.getHospitalId() != null
+						&& eyePrescriptionCollection.getLocationId() != null
+						&& eyePrescriptionCollection.getPatientId() != null) {
+					if (eyePrescriptionCollection.getDoctorId().equals(doctorId)
+							&& eyePrescriptionCollection.getHospitalId().equals(hospitalId)
+							&& eyePrescriptionCollection.getLocationId().equals(locationId)
+							&& eyePrescriptionCollection.getPatientId().equals(patientId)) {
+						eyePrescriptionCollection.setDiscarded(discarded);
+						eyePrescriptionCollection.setUpdatedTime(new Date());
+						eyePrescriptionCollection = eyePrescriptionRepository.save(eyePrescriptionCollection);
+						response = new EyePrescription();
+					
+						BeanUtil.map(eyePrescriptionCollection, response);
+						
+					
+						pushNotificationServices.notifyUser(patientId,
+								"Please discontinue " + eyePrescriptionCollection.getUniqueEmrId() + " prescribed by "
+										+ eyePrescriptionCollection.getCreatedBy()
+										+ ", for further details please contact "
+										+ locationCollection.getLocationName(),
+								ComponentType.PRESCRIPTIONS.getType(), eyePrescriptionCollection.getId().toString(), null);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+						throw new BusinessException(ServiceError.NotAuthorized,
+								"Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+					}
+				} else {
+					logger.warn("Invalid Doctor Id, Hospital Id, Location Id, Or Patient Id");
+					throw new BusinessException(ServiceError.NotAuthorized, "Cannot Delete EYE Prescription");
+				}
+			} else {
+				logger.warn("Prescription Not Found");
+				throw new BusinessException(ServiceError.NotFound, "Eye Prescription Not Found");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error Occurred While Deleting Prescription");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Eye Prescription");
+		}
+		return response;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public Boolean smsEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String mobileNumber, String type) {
+		Boolean response = false;
+		EyePrescriptionCollection eyePrescriptionCollection = null;
+		try {
+			eyePrescriptionCollection = eyePrescriptionRepository.findOne(new ObjectId(prescriptionId));
+			if (eyePrescriptionCollection != null) {
+				if (eyePrescriptionCollection.getDoctorId() != null && eyePrescriptionCollection.getHospitalId() != null
+						&& eyePrescriptionCollection.getLocationId() != null) {
+					if (eyePrescriptionCollection.getDoctorId().equals(doctorId)
+							&& eyePrescriptionCollection.getHospitalId().equals(hospitalId)
+							&& eyePrescriptionCollection.getLocationId().equals(locationId)) {
+
+						UserCollection userCollection = userRepository.findOne(eyePrescriptionCollection.getPatientId());
+						PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(
+								eyePrescriptionCollection.getPatientId(), eyePrescriptionCollection.getLocationId(),
+								eyePrescriptionCollection.getHospitalId());
+						if (patientCollection != null) {
+
+								SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+
+								String patientName = patientCollection.getLocalPatientName() != null
+										? patientCollection.getLocalPatientName().split(" ")[0] : "", doctorName = "",
+										clinicContactNum = "";
+
+								UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
+								if (doctor != null)
+									doctorName = doctor.getTitle() + " " + doctor.getFirstName();
+
+								LocationCollection locationCollection = locationRepository
+										.findOne(new ObjectId(locationId));
+								if (locationCollection != null && locationCollection.getClinicNumber() != null)
+									clinicContactNum = " " + locationCollection.getClinicNumber();
+
+								smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+								smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+								smsTrackDetail.setLocationId(new ObjectId(locationId));
+								smsTrackDetail.setType(type);
+								SMSDetail smsDetail = new SMSDetail();
+								smsDetail.setUserId(eyePrescriptionCollection.getPatientId());
+								if (userCollection != null)
+									smsDetail.setUserName(patientCollection.getLocalPatientName());
+								SMS sms = new SMS();
+								sms.setSmsText("Hi " + patientName + ", your eyes prescription "
+										+ eyePrescriptionCollection.getUniqueEmrId() + " by " + doctorName + ". "
+										+  "For queries,contact Doctor" + clinicContactNum
+										+ ".");
+
+								SMSAddress smsAddress = new SMSAddress();
+								smsAddress.setRecipient(mobileNumber);
+								sms.setSmsAddress(smsAddress);
+
+								smsDetail.setSms(sms);
+								smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+								List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+								smsDetails.add(smsDetail);
+								smsTrackDetail.setSmsDetails(smsDetails);
+								response = sMSServices.sendSMS(smsTrackDetail, true);
+							
+						}
+					} else {
+						logger.warn("Prescription not found.Please check prescriptionId.");
+						throw new BusinessException(ServiceError.NoRecord,
+								"Prescription not found.Please check prescriptionId.");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+	
 }

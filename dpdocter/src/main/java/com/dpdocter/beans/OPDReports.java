@@ -6,7 +6,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
 
-
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class OPDReports extends GenericCollection {
 
@@ -18,6 +17,7 @@ public class OPDReports extends GenericCollection {
 	private String amountReceived;
 	private String receiptNo;
 	private Long receiptDate;
+	private String natureOfProfessionalServiceRendered;
 	private String remarks;
 	private String doctorId;
 	private String doctorName;
@@ -25,12 +25,15 @@ public class OPDReports extends GenericCollection {
 	private String locationName;
 	private String hospitalId;
 	private String hospitalName;
+	private String visitId;
+	private String treatmentId;
 
 	public OPDReports() {
 		super();
 	}
 
-	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId, Date createdTime) {
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId,
+			Date createdTime) {
 		super();
 		this.patientId = patientId;
 		this.prescriptionId = prescriptionId;
@@ -39,8 +42,21 @@ public class OPDReports extends GenericCollection {
 		this.hospitalId = hospitalId;
 		super.setCreatedTime(createdTime);
 	}
+	
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId,
+			String visitId,Date createdTime) {
+		super();
+		this.patientId = patientId;
+		this.prescriptionId = prescriptionId;
+		this.doctorId = doctorId;
+		this.locationId = locationId;
+		this.hospitalId = hospitalId;
+		this.visitId = visitId;
+		super.setCreatedTime(createdTime);
+	}
 
-	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId, Date createdTime, Date updatedTime) {
+	public OPDReports(String patientId, String prescriptionId, String doctorId, String locationId, String hospitalId,
+			Date createdTime, Date updatedTime) {
 		super();
 		this.patientId = patientId;
 		this.prescriptionId = prescriptionId;
@@ -171,13 +187,39 @@ public class OPDReports extends GenericCollection {
 		this.prescription = prescription;
 	}
 
+	public String getNatureOfProfessionalServiceRendered() {
+		return natureOfProfessionalServiceRendered;
+	}
+
+	public void setNatureOfProfessionalServiceRendered(String natureOfProfessionalServiceRendered) {
+		this.natureOfProfessionalServiceRendered = natureOfProfessionalServiceRendered;
+	}
+
+	public String getVisitId() {
+		return visitId;
+	}
+
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
+	
+
+	public String getTreatmentId() {
+		return treatmentId;
+	}
+
+	public void setTreatmentId(String treatmentId) {
+		this.treatmentId = treatmentId;
+	}
+
 	@Override
 	public String toString() {
 		return "OPDReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", prescriptionId="
 				+ prescriptionId + ", prescription=" + prescription + ", amountReceived=" + amountReceived
-				+ ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", remarks=" + remarks + ", doctorId="
-				+ doctorId + ", doctorName=" + doctorName + ", locationId=" + locationId + ", locationName="
-				+ locationName + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName + "]";
+				+ ", receiptNo=" + receiptNo + ", receiptDate=" + receiptDate + ", natureOfProfessionalServiceRendered="
+				+ natureOfProfessionalServiceRendered + ", remarks=" + remarks + ", doctorId=" + doctorId
+				+ ", doctorName=" + doctorName + ", locationId=" + locationId + ", locationName=" + locationName
+				+ ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName + ", visitId=" + visitId + "]";
 	}
 
 }

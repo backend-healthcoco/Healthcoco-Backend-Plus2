@@ -61,6 +61,9 @@ public class DoctorCollection extends GenericCollection {
 
     @Field
     private DOB dob;
+    
+    @Field
+    private Boolean isGetDiscardedEMR;
 
     public ObjectId getId() {
 	return id;
@@ -183,7 +186,15 @@ public class DoctorCollection extends GenericCollection {
 	if(this.dob != null)dob.getAge();
     }
 
-    @Override
+    public Boolean getIsGetDiscardedEMR() {
+		return isGetDiscardedEMR;
+	}
+
+	public void setIsGetDiscardedEMR(Boolean isGetDiscardedEMR) {
+		this.isGetDiscardedEMR = isGetDiscardedEMR;
+	}
+
+	@Override
     public String toString() {
 	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId=" + userId
 		+ ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements

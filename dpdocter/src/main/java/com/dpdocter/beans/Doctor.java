@@ -12,15 +12,15 @@ import com.dpdocter.enums.UserState;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Doctor {
 	private String id;
-	
+
 	private String title;
 
 	private String firstName;
 
 	private String lastName;
-	
+
 	private String countryCode;
-	
+
 	private String mobileNumber;
 
 	private String emailAddress;
@@ -40,10 +40,12 @@ public class Doctor {
 	private DoctorClinicProfile doctorClinicProfile;
 
 	private UserState userState = UserState.USERSTATECOMPLETE;
-	
+
 	private Boolean isActive = false;
-	
-	private Integer reportCount=0;
+
+	private Integer reportCount = 0;
+
+	private Boolean isGetDiscardedEMR = false;
 
 	public String getId() {
 		return id;
@@ -167,12 +169,13 @@ public class Doctor {
 
 	@Override
 	public String toString() {
-		return "Doctor [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", countryCode="
-				+ countryCode + ", mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress + ", imageUrl="
-				+ imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode + ", coverImageUrl="
-				+ coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", specialities="
-				+ specialities + ", doctorClinicProfile=" + doctorClinicProfile + ", userState=" + userState
-				+ ", isActive=" + isActive + "]";
+		return "Doctor [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", countryCode=" + countryCode + ", mobileNumber=" + mobileNumber + ", emailAddress=" + emailAddress
+				+ ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", colorCode=" + colorCode
+				+ ", coverImageUrl=" + coverImageUrl + ", coverThumbnailImageUrl=" + coverThumbnailImageUrl
+				+ ", specialities=" + specialities + ", doctorClinicProfile=" + doctorClinicProfile + ", userState="
+				+ userState + ", isActive=" + isActive + ", reportCount=" + reportCount + ", isGetDiscardedEMR="
+				+ isGetDiscardedEMR + "]";
 	}
 
 	public String getTitle() {
@@ -190,4 +193,13 @@ public class Doctor {
 	public void setReportCount(Integer reportCount) {
 		this.reportCount = reportCount;
 	}
+
+	public Boolean getIsGetDiscardedEMR() {
+		return isGetDiscardedEMR;
+	}
+
+	public void setIsGetDiscardedEMR(Boolean isGetDiscardedEMR) {
+		this.isGetDiscardedEMR = isGetDiscardedEMR;
+	}
+
 }

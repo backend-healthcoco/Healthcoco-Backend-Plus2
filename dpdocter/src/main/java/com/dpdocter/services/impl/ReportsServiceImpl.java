@@ -781,4 +781,18 @@ public class ReportsServiceImpl implements ReportsService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public OPDReports getOPDReportByVisitId(String visitId)
+	{
+		OPDReports response = null;
+		OPDReportsCollection opdReportsCollection = opdReportsRepository.getOPDReportByVisitId(new ObjectId(visitId));
+		if(opdReportsCollection != null)
+		{
+			response = new OPDReports();
+			BeanUtil.map(opdReportsCollection, response);
+		}
+		return response;
+	}
 }

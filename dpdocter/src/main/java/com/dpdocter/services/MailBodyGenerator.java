@@ -45,4 +45,6 @@ public interface MailBodyGenerator {
 	String generateContactEmailBody(DoctorContactUs contactUs, String type);
 
 	String generatePrescriptionListMail(String collectionBody, String requestBody);
+
+	String generateExceptionEmailBody(String exception);
 }

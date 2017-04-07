@@ -101,6 +101,8 @@ public interface DoctorProfileService {
 
 	Boolean updateDoctorProfileViews(String doctorId);
 
+	Boolean updateEMRSetting(String doctorId, Boolean discarded);
+
 	
 
 }

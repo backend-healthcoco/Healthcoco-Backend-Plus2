@@ -59,6 +59,8 @@ public class DoctorProfile {
 
 	private Integer regularCheckUpMonths;
 
+	private Boolean isGetDiscardedEMR = false;
+
 	public String getId() {
 		return id;
 	}
@@ -287,6 +289,14 @@ public class DoctorProfile {
 
 	public void setRegularCheckUpMonths(Integer regularCheckUpMonths) {
 		this.regularCheckUpMonths = regularCheckUpMonths;
+	}
+
+	public Boolean getIsGetDiscardedEMR() {
+		return isGetDiscardedEMR;
+	}
+
+	public void setIsGetDiscardedEMR(Boolean isGetDiscardedEMR) {
+		this.isGetDiscardedEMR = isGetDiscardedEMR;
 	}
 
 }

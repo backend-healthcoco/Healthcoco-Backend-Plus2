@@ -10,6 +10,9 @@ public interface OPDReportsRepository extends MongoRepository<OPDReportsCollecti
 
 	@Query("{'prescriptionId': ?0}")
 	public OPDReportsCollection getOPDReportByPrescriptionId(ObjectId prescriptionId);
+	
+	@Query("{'visitId': ?0}")
+	public OPDReportsCollection getOPDReportByVisitId(ObjectId visitId);
 
 	@Query(value = "{ 'locationId': ?0, 'doctorId': ?1}", count = true)
 	Integer getReportsCount(ObjectId locationId, ObjectId doctorId);

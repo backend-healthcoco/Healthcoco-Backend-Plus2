@@ -1331,5 +1331,29 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return status;
 
 	}
+	
+	@Override
+	@Transactional
+	public Boolean updateEMRSetting(String doctorId , Boolean discarded) {
+		Boolean status = false;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findOne(new ObjectId(doctorId));
+			if(doctorCollection == null)
+			{
+				throw new BusinessException(ServiceError.NoRecord , "Doctor not found");
+			}
+			doctorCollection.setIsGetDiscardedEMR(discarded);
+			doctorRepository.save(doctorCollection);
+			status = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.warn(e);
+		}
+		return status;
+
+	}
+	
+	
 
 }
