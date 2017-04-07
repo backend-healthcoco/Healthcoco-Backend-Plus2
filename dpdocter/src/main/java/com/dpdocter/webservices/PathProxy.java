@@ -832,6 +832,8 @@ public interface PathProxy {
 		public static final String GENERATE_TREATMENT_CODE = "/treatmentCode/add";
 
 		public static final String ADD_FAVOURITES_TO_TREATMENT_SERVICES = "favourites/addToTreatmentService";
+		
+		public static final String ADD_TREATMENT_SERVICES_TO_DOCTOR = "/service/{serviceId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
 
 	}
 

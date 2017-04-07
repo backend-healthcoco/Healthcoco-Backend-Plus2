@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
@@ -58,4 +59,6 @@ public interface PatientTreatmentServices {
 	public Integer genrateTreatmentCode();
 
 	public TreatmentService addFavouritesToService(TreatmentService request);
+	
+	TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId);
 }

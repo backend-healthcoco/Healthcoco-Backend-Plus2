@@ -19,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
@@ -372,6 +374,31 @@ public class PatientTreamentAPI {
 
 		Response<TreatmentService> response = new Response<TreatmentService>();
 		response.setData(patientTreatmentServices.addFavouritesToService(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.PatientTreatmentURLs.ADD_TREATMENT_SERVICES_TO_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.ADD_TREATMENT_SERVICES_TO_DOCTOR, notes = PathProxy.PatientTreatmentURLs.ADD_TREATMENT_SERVICES_TO_DOCTOR)
+	public Response<TreatmentService> makeDrugFavourite(@PathParam("serviceId") String serviceId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		if (DPDoctorUtils.anyStringEmpty(serviceId, doctorId, locationId, hospitalId)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		TreatmentService treatmentServiceResponse = patientTreatmentServices.makeServiceFavourite(serviceId, doctorId,
+				locationId, hospitalId);
+		transactionalManagementService.addResource(new ObjectId(treatmentServiceResponse.getId()),
+				Resource.TREATMENTSERVICE, false);
+		if (treatmentServiceResponse != null) {
+			ESTreatmentServiceDocument esTreatmentServiceDocument = new ESTreatmentServiceDocument();
+			BeanUtil.map(treatmentServiceResponse, esTreatmentServiceDocument);
+
+			esTreatmentService.addEditService(esTreatmentServiceDocument);
+		}
+		Response<TreatmentService> response = new Response<TreatmentService>();
+		response.setData(treatmentServiceResponse);
 		return response;
 	}
 }

@@ -71,8 +71,7 @@ public class PrescriptionApi {
 
 	private static Logger logger = Logger.getLogger(PrescriptionApi.class.getName());
 
-	@Autowired
-	private TransactionalManagementService transactionalManagementService;
+
 	
 	@Autowired
 	private PrescriptionServices prescriptionServices;
@@ -898,7 +897,7 @@ public class PrescriptionApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Advice advice = prescriptionServices.addAdvice(request);
-		transactionalManagementService.addResource(new ObjectId(advice.getId()), Resource.ADVICE, false);
+		transnationalService.addResource(new ObjectId(advice.getId()), Resource.ADVICE, false);
 		ESAdvicesDocument esAdvices = new ESAdvicesDocument();
 		BeanUtil.map(advice, esAdvices);
 		esPrescriptionService.addAdvices(esAdvices);

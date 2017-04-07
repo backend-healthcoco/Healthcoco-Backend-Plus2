@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PatientTreatment;
@@ -38,6 +39,7 @@ import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -1576,6 +1578,46 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving treatmentService");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving treatmentService");
+		}
+		return response;
+	}
+	
+	@Override
+	public TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId) {
+		TreatmentService response = null;
+
+		try {
+			ObjectId serviceObjectId = new ObjectId(serviceId), doctorObjectId = new ObjectId(doctorId),
+					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
+		TreatmentServicesCollection originalService = treatmentServicesRepository.findOne(serviceObjectId);
+			if (originalService == null) {
+				logger.error("Invalid Service Id");
+				throw new BusinessException(ServiceError.Unknown, "Invalid Service Id");
+			}
+			TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findbyTreatmentCodeAndDoctorId(originalService.getTreatmentCode(),
+					doctorObjectId);
+			if (servicesCollection == null) {
+				servicesCollection = originalService;
+
+				servicesCollection.setLocationId(locationObjectId);
+				servicesCollection.setHospitalId(hospitalObjectId);
+				servicesCollection.setDoctorId(doctorObjectId);
+				servicesCollection.setRankingCount(1);
+				servicesCollection.setId(null);
+			} else {
+				servicesCollection.setLocationId(locationObjectId);
+				servicesCollection.setHospitalId(hospitalObjectId);
+				servicesCollection.setRankingCount(servicesCollection.getRankingCount() + 1);
+				servicesCollection.setUpdatedTime(new Date());
+			}
+			servicesCollection = treatmentServicesRepository.save(servicesCollection);
+			response = new TreatmentService();
+			BeanUtil.map(servicesCollection, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While making Service Favourite");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While making Service Favourite");
 		}
 		return response;
 	}
