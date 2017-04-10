@@ -476,11 +476,15 @@ public interface PathProxy {
 		public static final String EDIT_EYE_PRESCRPTION = "eyePrescription/edit";
 		public static final String GET_EYE_PRESCRPTION_BY_ID = "eyePrescription/{id}/get";
 		public static final String GET_EYE_PRESCRPTIONS = "eyePrescription/getAll";
-		public static final String DELETE_EYE_PRESCRIPTION = "eyePrescription/{id}/delete";
 
 		public static final String EMAIL_EYE_PRESCRIPTION = "/eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DOWNLOAD_EYE_PRESCRIPTION = "/eye/download/{prescriptionId}";
+		
+		public static final String SMS_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
+		
+		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
+		
 
 	}
 

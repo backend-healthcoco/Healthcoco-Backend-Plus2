@@ -1105,4 +1105,45 @@ public class PrescriptionApi {
 		response.setData(true);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
+	@GET
+	@ApiOperation(value = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.SMS_EYE_PRESCRIPTION)
+	public Response<Boolean> smsEyePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "mobileNumber") String mobileNumber) {
+
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, locationId, hospitalId, mobileNumber)) {
+			logger.warn(
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. Prescription Id, Doctor Id, Location Id, Hospital Id, Mobile Number Cannot Be Empty");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(prescriptionServices.smsEyePrescription(prescriptionId, doctorId, locationId, hospitalId, mobileNumber, "EYE_PRESCRIPTION"));
+		return response;
+	}
+	
+	@Path(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
+	@DELETE
+	@ApiOperation(value = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION, notes = PathProxy.PrescriptionUrls.DELETE_EYE_PRESCRIPTION)
+	public Response<EyePrescription> deleteEyePrescription(@PathParam(value = "prescriptionId") String prescriptionId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(prescriptionId, doctorId, hospitalId, locationId)) {
+			logger.warn("Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Prescription Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		EyePrescription prescriptionDeleteResponse = prescriptionServices.deleteEyePrescription(prescriptionId, doctorId, hospitalId, locationId, patientId, discarded);
+		Response<EyePrescription> response = new Response<EyePrescription>();
+		response.setData(prescriptionDeleteResponse);
+		return response;
+	}
+
+	
+
 }
