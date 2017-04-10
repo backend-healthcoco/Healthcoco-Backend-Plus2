@@ -4937,14 +4937,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			BeanUtil.map(prescriptionCollection.getRightEyeTest(), eyResponse);
 		parameters.put("rightEyeTest", eyResponse);
 
-		if(!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getType()) && prescriptionCollection.getType().equalsIgnoreCase("CONTACTLENS"))
-			if(DPDoctorUtils.allStringsEmpty(prescriptionCollection.getLeftEyeTest().getDistanceVA(), prescriptionCollection.getLeftEyeTest().getNearVA(),
-					prescriptionCollection.getRightEyeTest().getDistanceVA(), prescriptionCollection.getRightEyeTest().getNearVA()))
+		if(!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getType()) && prescriptionCollection.getType().equalsIgnoreCase("CONTACT LENS"))
+			if((prescriptionCollection.getLeftEyeTest() != null && DPDoctorUtils.allStringsEmpty(prescriptionCollection.getLeftEyeTest().getDistanceVA(), prescriptionCollection.getLeftEyeTest().getNearVA())
+			|| (prescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(prescriptionCollection.getRightEyeTest().getDistanceVA(), prescriptionCollection.getRightEyeTest().getNearVA()))))
 				parameters.put("noOfFields", 5);
 			else parameters.put("noOfFields", 6);
 		else{
-			if(DPDoctorUtils.allStringsEmpty(prescriptionCollection.getLeftEyeTest().getDistanceVA(), prescriptionCollection.getLeftEyeTest().getNearVA(),
-					prescriptionCollection.getRightEyeTest().getDistanceVA(), prescriptionCollection.getRightEyeTest().getNearVA()))
+			if((prescriptionCollection.getLeftEyeTest() != null && DPDoctorUtils.allStringsEmpty(prescriptionCollection.getLeftEyeTest().getDistanceVA(), prescriptionCollection.getLeftEyeTest().getNearVA())
+					|| (prescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(prescriptionCollection.getRightEyeTest().getDistanceVA(), prescriptionCollection.getRightEyeTest().getNearVA()))))
 				parameters.put("noOfFields", 3);
 			else parameters.put("noOfFields", 4);
 		}

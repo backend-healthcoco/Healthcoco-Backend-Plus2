@@ -1073,14 +1073,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						BeanUtil.map(eyePrescriptionCollection.getRightEyeTest(), eyResponse);
 					parameters.put("rightEyeTest", eyResponse);
 
-					if(!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getType()) && eyePrescriptionCollection.getType().equalsIgnoreCase("CONTACTLENS"))
-						if(DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(), eyePrescriptionCollection.getLeftEyeTest().getNearVA(),
-								eyePrescriptionCollection.getRightEyeTest().getDistanceVA(), eyePrescriptionCollection.getRightEyeTest().getNearVA()))
+					if(!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getType()) && eyePrescriptionCollection.getType().equalsIgnoreCase("CONTACT LENS"))
+						if((eyePrescriptionCollection.getLeftEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(), eyePrescriptionCollection.getLeftEyeTest().getNearVA())
+						|| (eyePrescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getRightEyeTest().getDistanceVA(), eyePrescriptionCollection.getRightEyeTest().getNearVA()))))
 							parameters.put("noOfFields", 5);
 						else parameters.put("noOfFields", 6);
 					else{
-						if(DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(), eyePrescriptionCollection.getLeftEyeTest().getNearVA(),
-								eyePrescriptionCollection.getRightEyeTest().getDistanceVA(), eyePrescriptionCollection.getRightEyeTest().getNearVA()))
+						if((eyePrescriptionCollection.getLeftEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(), eyePrescriptionCollection.getLeftEyeTest().getNearVA())
+								|| (eyePrescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getRightEyeTest().getDistanceVA(), eyePrescriptionCollection.getRightEyeTest().getNearVA()))))
 							parameters.put("noOfFields", 3);
 						else parameters.put("noOfFields", 4);
 					}
@@ -1096,28 +1096,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					parameters.put("eyePrescriptions", "eyePrescriptions");
 				}
 			}
-		if (!showUSG && !isLabPrint) {
-			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
-				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
-						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
-				EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
-				if (eyePrescriptionCollection.getLeftEyeTest() != null)
-					BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
-				parameters.put("leftEyeTest", eyResponse);
-
-				eyResponse = new EyeTestJasperResponse();
-				if (eyePrescriptionCollection.getRightEyeTest() != null)
-					BeanUtil.map(eyePrescriptionCollection.getRightEyeTest(), eyResponse);
-				parameters.put("rightEyeTest", eyResponse);
-
-				parameters.put("type", eyePrescriptionCollection.getType());
-				parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance());
-				parameters.put("lensType", eyePrescriptionCollection.getLensType());
-				parameters.put("usage", eyePrescriptionCollection.getUsage());
-				parameters.put("remarks", eyePrescriptionCollection.getRemarks());
-				parameters.put("eyePrescriptions", "eyePrescriptions");
-			}
-		}
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
