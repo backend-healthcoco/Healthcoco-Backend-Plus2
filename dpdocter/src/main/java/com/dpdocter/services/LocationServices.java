@@ -11,4 +11,6 @@ public interface LocationServices {
 	List<GeocodedLocation> geocodeTimeZone(Double latitude, Double longitude);
 
 	public Location addEditRecommedation(String locationId, String patientId);
+
+	Boolean setDefaultLab(String locationId, String defaultLabId);
 }

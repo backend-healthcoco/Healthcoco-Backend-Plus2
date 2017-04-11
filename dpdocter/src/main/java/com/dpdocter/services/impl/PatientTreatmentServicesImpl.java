@@ -391,25 +391,26 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
 			
-			String visitId = patientVisitService.addRecord(response, VisitedFor.TREATMENT,
+		/*	String visitId = patientVisitService.addRecord(response, VisitedFor.TREATMENT,
 					response.getVisitId());
-			response.setVisitId(visitId);
+			response.setVisitId(visitId);*/
 			if (patientTreatmentCollection != null) {
 				OPDReports opdReports = new OPDReports();
-				OPDReports oldOPDReport = reportsService.getOPDReportByVisitId(visitId);
-				
-				if (oldOPDReport != null) {
-					BeanUtil.map(oldOPDReport, opdReports);
-					opdReports.setPrescriptionId(String.valueOf(patientTreatmentCollection.getId()));
-				} else {
-					opdReports.setPatientId(String.valueOf(patientTreatmentCollection.getPatientId()));
-					opdReports.setTreatmentId(String.valueOf(patientTreatmentCollection.getId()));
-					opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.getDoctorId()));
-					opdReports.setLocationId(String.valueOf(patientTreatmentCollection.getLocationId()));
-					opdReports.setHospitalId(String.valueOf(patientTreatmentCollection.getHospitalId()));
-					opdReports.setVisitId(visitId);
-					opdReports.setCreatedTime(patientTreatmentCollection.getCreatedTime());
-				}
+				/*
+				 * OPDReports oldOPDReport =
+				 * reportsService.getOPDReportByVisitId(visitId);
+				 * 
+				 * if (oldOPDReport != null) { BeanUtil.map(oldOPDReport,
+				 * opdReports); opdReports.setPrescriptionId(String.valueOf(
+				 * patientTreatmentCollection.getId())); } else {
+				 */
+				opdReports.setPatientId(String.valueOf(patientTreatmentCollection.getPatientId()));
+				opdReports.setTreatmentId(String.valueOf(patientTreatmentCollection.getId()));
+				opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.getDoctorId()));
+				opdReports.setLocationId(String.valueOf(patientTreatmentCollection.getLocationId()));
+				opdReports.setHospitalId(String.valueOf(patientTreatmentCollection.getHospitalId()));
+				opdReports.setCreatedTime(patientTreatmentCollection.getCreatedTime());
+
 				opdReports = reportsService.submitOPDReport(opdReports);
 			}
 			

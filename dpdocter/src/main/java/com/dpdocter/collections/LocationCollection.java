@@ -131,6 +131,15 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private Integer noOfClinicReview = 0;
 
+	/*@Field
+	private Boolean isParent;
+
+	@Field
+	private List<ObjectId> associatedLabs;
+
+	@Field
+	private ObjectId defaultParentLabId;*/
+
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
 	}
@@ -443,6 +452,30 @@ public class LocationCollection extends GenericCollection {
 		this.receiptInitial = receiptInitial;
 	}
 
+	/*public Boolean getIsParent() {
+		return isParent;
+	}
+
+	public void setIsParent(Boolean isParent) {
+		this.isParent = isParent;
+	}
+
+	public List<ObjectId> getAssociatedLabs() {
+		return associatedLabs;
+	}
+
+	public void setAssociatedLabs(List<ObjectId> associatedLabs) {
+		this.associatedLabs = associatedLabs;
+	}
+
+	public ObjectId getDefaultParentLabId() {
+		return defaultParentLabId;
+	}
+
+	public void setDefaultParentLabId(ObjectId defaultParentLabId) {
+		this.defaultParentLabId = defaultParentLabId;
+	}*/
+
 	@Override
 	public String toString() {
 		return "LocationCollection [id=" + id + ", locationName=" + locationName + ", country=" + country + ", state="
@@ -459,7 +492,7 @@ public class LocationCollection extends GenericCollection {
 				+ ", isLocationListed=" + isLocationListed + ", patientInitial=" + patientInitial + ", patientCounter="
 				+ patientCounter + ", clinicRankingCount=" + clinicRankingCount + ", noOfClinicRecommendations="
 				+ noOfClinicRecommendations + ", locationType=" + locationType + ", invoiceInitial=" + invoiceInitial
-				+ ", receiptInitial=" + receiptInitial + "]";
+				+ ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview + "]";
 	}
 
 }

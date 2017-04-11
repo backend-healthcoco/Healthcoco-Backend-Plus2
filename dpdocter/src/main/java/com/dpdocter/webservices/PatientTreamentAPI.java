@@ -208,11 +208,11 @@ public class PatientTreamentAPI {
 		}
 		PatientTreatmentResponse addEditPatientTreatmentResponse = patientTreatmentServices
 				.addEditPatientTreatment(request, true);
-		/*if (addEditPatientTreatmentResponse != null) {
+		if (addEditPatientTreatmentResponse != null) {
 			String visitId = patientTrackService.addRecord(addEditPatientTreatmentResponse, VisitedFor.TREATMENT,
 					request.getVisitId());
 			addEditPatientTreatmentResponse.setVisitId(visitId);
-		}*/
+		}
 
 		Response<PatientTreatmentResponse> response = new Response<PatientTreatmentResponse>();
 		response.setData(addEditPatientTreatmentResponse);

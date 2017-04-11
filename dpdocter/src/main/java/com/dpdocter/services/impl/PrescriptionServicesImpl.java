@@ -990,25 +990,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				response.setDiagnosticTests(tests);
 			}
 			response.setItems(itemDetails);
-			String visitId = patientVisitService.addRecord(response, VisitedFor.PRESCRIPTION,
+			/*String visitId = patientVisitService.addRecord(response, VisitedFor.PRESCRIPTION,
 					response.getVisitId());
-			response.setVisitId(visitId);
+			response.setVisitId(visitId);*/
 			if (prescriptionCollection != null) {
-				OPDReports opdReports = null;
-				OPDReports oldOPDReport = reportsService.getOPDReportByVisitId(visitId);
-				
-				if (oldOPDReport != null) {
-					opdReports = new OPDReports();
-					BeanUtil.map(oldOPDReport, opdReports);
-					opdReports.setPrescriptionId(String.valueOf(prescriptionCollection.getId()));
-				} else {
-					opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+					OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
 							String.valueOf(prescriptionCollection.getId()),
 							String.valueOf(prescriptionCollection.getDoctorId()),
 							String.valueOf(prescriptionCollection.getLocationId()),
-							String.valueOf(prescriptionCollection.getHospitalId()), String.valueOf(visitId),
+							String.valueOf(prescriptionCollection.getHospitalId()),
 							prescriptionCollection.getCreatedTime());
-				}
+				
 				opdReports = reportsService.submitOPDReport(opdReports);
 			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
