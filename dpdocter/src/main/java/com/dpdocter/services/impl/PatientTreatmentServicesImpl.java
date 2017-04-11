@@ -394,16 +394,16 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		/*	String visitId = patientVisitService.addRecord(response, VisitedFor.TREATMENT,
 					response.getVisitId());
 			response.setVisitId(visitId);*/
-			if (patientTreatmentCollection != null) {
+			/*if (patientTreatmentCollection != null) {
 				OPDReports opdReports = new OPDReports();
-				/*
+				
 				 * OPDReports oldOPDReport =
 				 * reportsService.getOPDReportByVisitId(visitId);
 				 * 
 				 * if (oldOPDReport != null) { BeanUtil.map(oldOPDReport,
 				 * opdReports); opdReports.setPrescriptionId(String.valueOf(
 				 * patientTreatmentCollection.getId())); } else {
-				 */
+				 
 				opdReports.setPatientId(String.valueOf(patientTreatmentCollection.getPatientId()));
 				opdReports.setTreatmentId(String.valueOf(patientTreatmentCollection.getId()));
 				opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.getDoctorId()));
@@ -412,7 +412,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				opdReports.setCreatedTime(patientTreatmentCollection.getCreatedTime());
 
 				opdReports = reportsService.submitOPDReport(opdReports);
-			}
+			}*/
 			
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
