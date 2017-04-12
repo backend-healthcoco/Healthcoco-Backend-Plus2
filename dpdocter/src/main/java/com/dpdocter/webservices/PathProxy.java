@@ -994,6 +994,7 @@ public interface PathProxy {
 	public interface DynamicUIUrls {
 		public static final String GET_ALL_PERMISSIONS_FOR_DOCTOR = "/getAllPermissionsForDoctor/{doctorId}";
 		public static final String GET_PERMISSIONS_FOR_DOCTOR = "/getPermissionsForDoctor/{doctorId}";
+		public static final String GET_BOTH_PERMISSION_FOR_DOCTOR = "/getBothPermissionsForDoctor/{doctorId}";
 		public static final String POST_PERMISSIONS = "/postPermissions";
 	}
 
