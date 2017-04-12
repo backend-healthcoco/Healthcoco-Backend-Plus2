@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class DoctorProfile {
+public class DoctorProfile extends GenericCollection {
 	private String id;
 
 	private String userId;
