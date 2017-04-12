@@ -633,9 +633,7 @@ public class BillingServiceImpl implements BillingService {
 					new Query(new Criteria("id").is(new ObjectId(receiptId))), update,
 					DoctorPatientReceiptCollection.class);
 			// doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
-			doctorPatientReceiptCollection.setDiscarded(discarded);
-			doctorPatientReceiptCollection.setUpdatedTime(new Date());
-			doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+
 			if (doctorPatientReceiptCollection != null) {
 				response = new DoctorPatientReceipt();
 				BeanUtil.map(doctorPatientReceiptCollection, response);
@@ -1074,12 +1072,14 @@ public class BillingServiceImpl implements BillingService {
 			invoiceItemJasperDetails = new ArrayList<InvoiceItemJasperDetails>();
 			Boolean showInvoiceItemQuantity = false;
 			Boolean showDiscount = false;
+			Boolean showStatus = false;
 			int no = 0;
 			for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
 				InvoiceItemJasperDetails invoiceItemJasperDetail = new InvoiceItemJasperDetails();
 
 				invoiceItemJasperDetail.setNo(++no);
 				if (invoiceItem.getStatus() != null) {
+					showStatus = true;
 					String status = invoiceItem.getStatus().getTreamentStatus().replaceAll("_", " ");
 					status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 					invoiceItemJasperDetail.setStatus(status);
@@ -1111,6 +1111,7 @@ public class BillingServiceImpl implements BillingService {
 				invoiceItemJasperDetails.add(invoiceItemJasperDetail);
 			}
 			parameters.put("showDiscount", showDiscount);
+			parameters.put("showStatus", showStatus);
 			parameters.put("showInvoiceItemQuantity", showInvoiceItemQuantity);
 			parameters.put("items", invoiceItemJasperDetails);
 			String total = "";
@@ -1214,19 +1215,19 @@ public class BillingServiceImpl implements BillingService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
-		UserCollection doctor=userRepository.findOne(doctorPatientReceiptCollection.getDoctorId());
+		UserCollection doctor = userRepository.findOne(doctorPatientReceiptCollection.getDoctorId());
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String content = "<br>Received with thanks<br>&nbsp;&nbsp;&nbsp;The sum of Rupees:- "
 				+ doctorPatientReceiptCollection.getAmountPaid() + " by "
 				+ doctorPatientReceiptCollection.getModeOfPayment() + " On Date:-"
 				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
-		parameters.put("paid", "RS.&nbsp;"+doctorPatientReceiptCollection.getAmountPaid());
-		parameters.put("name", doctor.getTitle().toUpperCase()+" "+doctor.getFirstName());
+		parameters.put("paid", "RS.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
+		parameters.put("name", doctor.getTitle().toUpperCase() + " " + doctor.getFirstName());
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
 				doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType());
- 
+
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
