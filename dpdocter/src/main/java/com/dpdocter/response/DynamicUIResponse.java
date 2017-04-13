@@ -1,29 +1,42 @@
 package com.dpdocter.response;
 
-import com.dpdocter.beans.DynamicUI;
 import com.dpdocter.beans.UIPermissions;
 
 public class DynamicUIResponse {
-	private DynamicUI dynamicUI ;
-	
-	private UIPermissions uiPermissions;
+	private UIPermissions doctorPermissions;
 
-	public DynamicUI getDynamicUI() {
-		return dynamicUI;
+	private UIPermissions allPermissions;
+
+	private String doctorId;
+
+	public UIPermissions getDoctorPermissions() {
+		return doctorPermissions;
 	}
 
-	public void setDynamicUI(DynamicUI dynamicUI) {
-		this.dynamicUI = dynamicUI;
+	public void setDoctorPermissions(UIPermissions doctorPermissions) {
+		this.doctorPermissions = doctorPermissions;
 	}
 
-	public UIPermissions getUiPermissions() {
-		return uiPermissions;
+	public UIPermissions getAllPermissions() {
+		return allPermissions;
 	}
 
-	public void setUiPermissions(UIPermissions uiPermissions) {
-		this.uiPermissions = uiPermissions;
+	public void setAllPermissions(UIPermissions allPermissions) {
+		this.allPermissions = allPermissions;
 	}
-	
-	
-	
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	@Override
+	public String toString() {
+		return "DynamicUIResponse [doctorPermissions=" + doctorPermissions + ", allPermissions=" + allPermissions
+				+ ", doctorId=" + doctorId + "]";
+	}
+
 }

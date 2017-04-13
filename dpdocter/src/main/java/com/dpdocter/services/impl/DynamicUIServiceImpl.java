@@ -31,6 +31,7 @@ import com.dpdocter.repository.DynamicUIRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DynamicUIRequest;
+import com.dpdocter.response.DynamicUIResponse;
 import com.dpdocter.services.DynamicUIService;
 
 @Service
@@ -323,4 +324,18 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return Arrays.toString(VitalSignPermissions.values()).replaceAll("^.|.$", "").split(", ");
 	}
 
+	@Override
+	@Transactional
+	public DynamicUIResponse getBothPermissions(String doctorId)
+	{
+		DynamicUIResponse uiResponse = new DynamicUIResponse();
+		uiResponse.setAllPermissions(getAllPermissionForDoctor(doctorId));
+		DynamicUI dynamicUI = getPermissionForDoctor(doctorId);
+		if(dynamicUI != null)
+		{
+			uiResponse.setDoctorPermissions(dynamicUI.getUiPermissions());
+			uiResponse.setDoctorId(dynamicUI.getDoctorId());
+		}
+		return uiResponse;
+	}
 }

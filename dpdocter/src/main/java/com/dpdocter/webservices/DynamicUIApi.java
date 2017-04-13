@@ -88,8 +88,7 @@ public class DynamicUIApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id is null");
 		}
 		DynamicUIResponse dynamicUIResponse = new DynamicUIResponse();
-		dynamicUIResponse.setDynamicUI(dynamicUIService.getPermissionForDoctor(doctorId));
-		dynamicUIResponse.setUiPermissions(dynamicUIService.getAllPermissionForDoctor(doctorId));
+		dynamicUIResponse = dynamicUIService.getBothPermissions(doctorId);
 		Response<DynamicUIResponse> response = new Response<DynamicUIResponse>();
 		response.setData(dynamicUIResponse);
 		return response;
