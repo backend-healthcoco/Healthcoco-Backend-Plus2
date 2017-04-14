@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
@@ -201,8 +200,9 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
 						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
 								.must(QueryBuilders.termsQuery("_id", specialitiesId));
-						if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-							boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality", searchTerm));
+						// if (!DPDoctorUtils.anyStringEmpty(searchTerm))
+						// boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("speciality",
+						// searchTerm));
 
 						int count = (int) elasticsearchTemplate.count(
 								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
@@ -213,11 +213,11 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
 									.queryForList(searchQuery, ESSpecialityDocument.class);
 							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
-								
+
 								specialities = CollectionUtils.collect(resultsSpeciality,
 										new BeanToPropertyValueTransformer("speciality"));
 								specialities.add("ALL");
-								specialities.add(null);
+
 							}
 						}
 					}
@@ -229,7 +229,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 					null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 			if (response != null && !response.isEmpty())
-				
+
 				response = new ArrayList<ESTreatmentServiceDocument>(
 						new LinkedHashSet<ESTreatmentServiceDocument>(response));
 		} catch (Exception e) {

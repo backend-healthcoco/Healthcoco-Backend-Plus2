@@ -57,7 +57,7 @@ public class DPDoctorUtils {
 	public static boolean anyStringEmpty(String... values) {
 		boolean result = false;
 		for (String value : values) {
-			if (StringUtils.isEmpty(value)||value == null) {
+			if (StringUtils.isEmpty(value) || value == null) {
 				result = true;
 				break;
 			}
@@ -203,7 +203,7 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
 				|| resource.equals(Resource.INDICATION_OF_USG) || resource.equals(Resource.PV)
 				|| resource.equals(Resource.ECG) || resource.equals(Resource.XRAY) || resource.equals(Resource.ECHO)
-				|| resource.equals(Resource.HOLTER)) {
+				|| resource.equals(Resource.HOLTER) || resource.equals(Resource.TREATMENTSERVICE)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
@@ -342,7 +342,8 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.NOTES) || resource.equals(Resource.PROVISIONAL_DIAGNOSIS)
 				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMIC_EXAMINATION)
 				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
-				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)) {
+				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
+				|| resource.equals(Resource.TREATMENTSERVICE)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
