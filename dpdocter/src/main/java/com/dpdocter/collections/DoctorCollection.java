@@ -14,179 +14,184 @@ import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorExperienceDetail;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Education;
+import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "docter_cl")
 public class DoctorCollection extends GenericCollection {
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private List<String> additionalNumbers;
+	@Field
+	private List<String> additionalNumbers;
 
-    @Field
-    private List<String> otherEmailAddresses;
+	@Field
+	private List<String> otherEmailAddresses;
 
-    @Indexed
-    private ObjectId userId;
+	@Indexed
+	private ObjectId userId;
 
-    @Field
-    private DoctorExperience experience;
+	@Field
+	private DoctorExperience experience;
 
-    @Field
-    private List<Education> education;
+	@Field
+	private List<Education> education;
 
-    @Indexed
-    private List<ObjectId> specialities;
+	@Indexed
+	private List<ObjectId> specialities;
 
-    @Field
-    private List<Achievement> achievements;
+	@Field
+	private List<Achievement> achievements;
 
-    @Field
-    private String professionalStatement;
+	@Field
+	private String professionalStatement;
 
-    @Field
-    private List<DoctorRegistrationDetail> registrationDetails;
+	@Field
+	private List<DoctorRegistrationDetail> registrationDetails;
 
-    @Field
-    private List<DoctorExperienceDetail> experienceDetails;
+	@Field
+	private List<DoctorExperienceDetail> experienceDetails;
 
-    @Field
-    private List<ObjectId> professionalMemberships;
+	@Field
+	private List<ObjectId> professionalMemberships;
 
-    @Field
-    private String registerNumber;
+	@Field
+	private String registerNumber;
 
-    @Field
-    private String gender;
+	@Field
+	private String gender;
 
-    @Field
-    private DOB dob;
-    
-    @Field
-    private Boolean isGetDiscardedEMR;
+	@Field
+	private DOB dob;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean isGetDiscardedEMR;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private Boolean isVerified;
+	
+	public ObjectId getId() {
+		return id;
+	}
 
-    public List<String> getAdditionalNumbers() {
-	return additionalNumbers;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setAdditionalNumbers(List<String> additionalNumbers) {
-	this.additionalNumbers = additionalNumbers;
-    }
+	public List<String> getAdditionalNumbers() {
+		return additionalNumbers;
+	}
 
-    public List<String> getOtherEmailAddresses() {
-	return otherEmailAddresses;
-    }
+	public void setAdditionalNumbers(List<String> additionalNumbers) {
+		this.additionalNumbers = additionalNumbers;
+	}
 
-    public void setOtherEmailAddresses(List<String> otherEmailAddresses) {
-	this.otherEmailAddresses = otherEmailAddresses;
-    }
+	public List<String> getOtherEmailAddresses() {
+		return otherEmailAddresses;
+	}
 
-    public ObjectId getUserId() {
-	return userId;
-    }
+	public void setOtherEmailAddresses(List<String> otherEmailAddresses) {
+		this.otherEmailAddresses = otherEmailAddresses;
+	}
 
-    public void setUserId(ObjectId userId) {
-	this.userId = userId;
-    }
+	public ObjectId getUserId() {
+		return userId;
+	}
 
-    public DoctorExperience getExperience() {
-	return experience;
-    }
+	public void setUserId(ObjectId userId) {
+		this.userId = userId;
+	}
 
-    public void setExperience(DoctorExperience experience) {
-	this.experience = experience;
-    }
+	public DoctorExperience getExperience() {
+		return experience;
+	}
 
-    public List<Education> getEducation() {
-	return education;
-    }
+	public void setExperience(DoctorExperience experience) {
+		this.experience = experience;
+	}
 
-    public void setEducation(List<Education> education) {
-	this.education = education;
-    }
+	public List<Education> getEducation() {
+		return education;
+	}
 
-    public List<ObjectId> getSpecialities() {
-	return specialities;
-    }
+	public void setEducation(List<Education> education) {
+		this.education = education;
+	}
 
-    public void setSpecialities(List<ObjectId> specialities) {
-	this.specialities = specialities;
-    }
+	public List<ObjectId> getSpecialities() {
+		return specialities;
+	}
 
-    public List<Achievement> getAchievements() {
-	return achievements;
-    }
+	public void setSpecialities(List<ObjectId> specialities) {
+		this.specialities = specialities;
+	}
 
-    public void setAchievements(List<Achievement> achievements) {
-	this.achievements = achievements;
-    }
+	public List<Achievement> getAchievements() {
+		return achievements;
+	}
 
-    public String getProfessionalStatement() {
-	return professionalStatement;
-    }
+	public void setAchievements(List<Achievement> achievements) {
+		this.achievements = achievements;
+	}
 
-    public void setProfessionalStatement(String professionalStatement) {
-	this.professionalStatement = professionalStatement;
-    }
+	public String getProfessionalStatement() {
+		return professionalStatement;
+	}
 
-    public List<DoctorRegistrationDetail> getRegistrationDetails() {
-	return registrationDetails;
-    }
+	public void setProfessionalStatement(String professionalStatement) {
+		this.professionalStatement = professionalStatement;
+	}
 
-    public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
-	this.registrationDetails = registrationDetails;
-    }
+	public List<DoctorRegistrationDetail> getRegistrationDetails() {
+		return registrationDetails;
+	}
 
-    public List<DoctorExperienceDetail> getExperienceDetails() {
-	return experienceDetails;
-    }
+	public void setRegistrationDetails(List<DoctorRegistrationDetail> registrationDetails) {
+		this.registrationDetails = registrationDetails;
+	}
 
-    public void setExperienceDetails(List<DoctorExperienceDetail> experienceDetails) {
-	this.experienceDetails = experienceDetails;
-    }
+	public List<DoctorExperienceDetail> getExperienceDetails() {
+		return experienceDetails;
+	}
 
-    public List<ObjectId> getProfessionalMemberships() {
-	return professionalMemberships;
-    }
+	public void setExperienceDetails(List<DoctorExperienceDetail> experienceDetails) {
+		this.experienceDetails = experienceDetails;
+	}
 
-    public void setProfessionalMemberships(List<ObjectId> professionalMemberships) {
-	this.professionalMemberships = professionalMemberships;
-    }
+	public List<ObjectId> getProfessionalMemberships() {
+		return professionalMemberships;
+	}
 
-    public String getRegisterNumber() {
-	return registerNumber;
-    }
+	public void setProfessionalMemberships(List<ObjectId> professionalMemberships) {
+		this.professionalMemberships = professionalMemberships;
+	}
 
-    public void setRegisterNumber(String registerNumber) {
-	this.registerNumber = registerNumber;
-    }
+	public String getRegisterNumber() {
+		return registerNumber;
+	}
 
-    public String getGender() {
-	return gender;
-    }
+	public void setRegisterNumber(String registerNumber) {
+		this.registerNumber = registerNumber;
+	}
 
-    public void setGender(String gender) {
-	this.gender = gender;
-    }
+	public String getGender() {
+		return gender;
+	}
 
-    public DOB getDob() {
-	return dob;
-    }
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
 
-    public void setDob(DOB dob) {
-	this.dob = dob;
-	if(this.dob != null)dob.getAge();
-    }
+	public DOB getDob() {
+		return dob;
+	}
 
-    public Boolean getIsGetDiscardedEMR() {
+	public void setDob(DOB dob) {
+		this.dob = dob;
+		if (this.dob != null)
+			dob.getAge();
+	}
+
+	public Boolean getIsGetDiscardedEMR() {
 		return isGetDiscardedEMR;
 	}
 
@@ -194,12 +199,22 @@ public class DoctorCollection extends GenericCollection {
 		this.isGetDiscardedEMR = isGetDiscardedEMR;
 	}
 
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
+	}
+
 	@Override
-    public String toString() {
-	return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses=" + otherEmailAddresses + ", userId=" + userId
-		+ ", experience=" + experience + ", education=" + education + ", specialities=" + specialities + ", achievements=" + achievements
-		+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
-		+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber=" + registerNumber + ", gender=" + gender
-		+ ", dob=" + dob + "]";
-    }
+	public String toString() {
+		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
+				+ otherEmailAddresses + ", userId=" + userId + ", experience=" + experience + ", education=" + education
+				+ ", specialities=" + specialities + ", achievements=" + achievements + ", professionalStatement="
+				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
+				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber="
+				+ registerNumber + ", gender=" + gender + ", dob=" + dob + ", isGetDiscardedEMR=" + isGetDiscardedEMR
+				+ ", isVerified=" + isVerified + "]";
+	}
 }

@@ -107,6 +107,7 @@ import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.AppointmentLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.SlotDataResponse;
+import com.dpdocter.response.StartEndTImeinDateTime;
 import com.dpdocter.response.UserLocationWithDoctorClinicProfile;
 import com.dpdocter.response.UserRoleResponse;
 import com.dpdocter.services.AppointmentService;
@@ -122,6 +123,7 @@ import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
+import common.util.web.DateUtil;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -1915,19 +1917,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 				doctorObjectId = new ObjectId(request.getDoctorId());
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				locationObjectId = new ObjectId(request.getLocationId());
-
 			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 
 			AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
 					doctorObjectId, locationObjectId, request.getTime().getFromTime(), request.getTime().getToTime(),
 					request.getFromDate(), request.getToDate(), AppointmentState.CANCEL.getState());
-
 			if (userCollection != null) {
 				if (appointmentCollection == null || !request.getIsCalenderBlocked()) {
 					appointmentCollection = new AppointmentCollection();
 					BeanUtil.map(request, appointmentCollection);
 					appointmentCollection.setAppointmentId(
 							UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
+					appointmentCollection.setDoctorId(doctorObjectId);
+					appointmentCollection.setLocationId(locationObjectId);
 					appointmentCollection.setState(AppointmentState.CONFIRM);
 					appointmentCollection.setType(AppointmentType.EVENT);
 					appointmentCollection.setCreatedTime(new Date());
@@ -1938,10 +1940,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
 					if (request.getIsCalenderBlocked()) {
+						
 						AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
 						BeanUtil.map(appointmentCollection, bookedSlotCollection);
 						bookedSlotCollection.setId(null);
 						bookedSlotCollection.setAppointmentId(appointmentCollection.getAppointmentId());
+						bookedSlotCollection.setDoctorId(doctorObjectId);
+						bookedSlotCollection.setLocationId(locationObjectId);
 						appointmentBookedSlotRepository.save(bookedSlotCollection);
 					}
 
@@ -1978,6 +1983,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						if (!request.getIsCalenderBlocked())
 							appointmentCollectionToCheck = null;
 				}
+				
 				if (appointmentCollectionToCheck == null) {
 					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentCollection, appointmentWorkFlowCollection);
