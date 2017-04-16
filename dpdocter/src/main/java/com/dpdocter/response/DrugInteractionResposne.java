@@ -6,11 +6,24 @@ public class DrugInteractionResposne {
 	
 	private String reaction;
 
-	public DrugInteractionResposne(String text, String reaction) {
+	private String explanation;
+
+	public DrugInteractionResposne(String text, String reaction, String explanation) {
 		super();
 		this.text = text;
 		this.reaction = reaction;
+		this.explanation = explanation;
 	}
+
+	public String getExplanation() {
+		return explanation;
+	}
+
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
 
 	public String getText() {
 		return text;
@@ -30,6 +43,8 @@ public class DrugInteractionResposne {
 
 	@Override
 	public String toString() {
-		return "DrugInteractionResposne [text=" + text + ", reaction=" + reaction + "]";
+		return "DrugInteractionResposne [text=" + text + ", reaction=" + reaction + ", explanation=" + explanation
+				+ "]";
 	}
+
 }

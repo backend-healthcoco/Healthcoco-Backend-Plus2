@@ -69,6 +69,9 @@ public class PrescriptionCollection extends GenericCollection {
 	@Field
 	private Date fromDate;
 
+	@Field
+	private Boolean isActive = true;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -205,6 +208,14 @@ public class PrescriptionCollection extends GenericCollection {
 		this.fromDate = fromDate;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
 	@Override
 	public String toString() {
 		return "PrescriptionCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", name=" + name + ", doctorId="
@@ -212,6 +223,6 @@ public class PrescriptionCollection extends GenericCollection {
 				+ ", items=" + items + ", diagnosticTests=" + diagnosticTests + ", patientId=" + patientId
 				+ ", prescriptionCode=" + prescriptionCode + ", inHistory=" + inHistory + ", advice=" + advice
 				+ ", isFeedbackAvailable=" + isFeedbackAvailable + ", appointmentId=" + appointmentId + ", time=" + time
-				+ ", fromDate=" + fromDate + "]";
+				+ ", fromDate=" + fromDate + ", isActive=" + isActive + "]";
 	}
 }

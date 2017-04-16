@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -4062,10 +4063,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DrugInteractionResposne> drugInteraction(List<Drug> request) {
+	public List<DrugInteractionResposne> drugInteraction(List<Drug> request, String patientId) {
 		List<DrugInteractionResposne> response = null;
 		try {
-
+//			List<Drug> ongoingDrugs = getOngoingDrugs(patientId);
 			// if(!DPDoctorUtils.anyStringEmpty(patientId)){
 			// Aggregation aggregation =
 			// Aggregation.newAggregation(Aggregation.match(new
@@ -4083,6 +4084,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			// BeanToPropertyValueTransformer("Drug"));
 			// System.out.println(drugIds);
 			// }
+//			if(ongoingDrugs != null && !ongoingDrugs.isEmpty())request.addAll(ongoingDrugs);
 			List<String> genericCodes = new ArrayList<String>();
 
 			for (int k = 0; k < request.size(); k++) {
@@ -4107,15 +4109,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					for (int j = drugCount + 1; j < request.size(); j++) {
 
 						if (request.get(j).getGenericNames() != null && !request.get(j).getGenericNames().isEmpty()) {
-							Boolean reaction = checkReactionBetweenDrugGenericCodes(
+							DrugInteractionResposne reaction = checkReactionBetweenDrugGenericCodes(
 									request.get(drugCount).getGenericNames(), request.get(j).getGenericNames());
-							if (reaction) {
+							if (reaction != null) {
 								if (response == null)
 									response = new ArrayList<DrugInteractionResposne>();
 								DrugInteractionResposne interactionResposne = new DrugInteractionResposne(
 										request.get(drugCount).getDrugName() + "  reacts with  "
 												+ request.get(j).getDrugName(),
-										"");
+												reaction.getReaction(), reaction.getExplanation());
 								response.add(interactionResposne);
 							}
 						}
@@ -4133,9 +4135,106 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 
-	private Boolean checkReactionBetweenDrugGenericCodes(List<GenericCode> genericCodesOfFirstDrug,
+	private List<Drug> getOngoingDrugs(String patientId) {
+		List<Drug> response = null;
+		try{
+			ObjectId patientObjectId = new ObjectId(patientId);
+			
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("name", "$name"),
+					Fields.field("uniqueEmrId", "$uniqueEmrId"), Fields.field("locationId", "$locationId"),
+					Fields.field("hospitalId", "$hospitalId"), Fields.field("doctorId", "$doctorId"),
+					Fields.field("discarded", "$discarded"), Fields.field("inHistory", "$inHistory"),
+					Fields.field("advice", "$advice"), 
+					Fields.field("patientId", "$patientId"),
+					Fields.field("createdTime", "$createdTime"), Fields.field("createdBy", "$createdBy"),
+					Fields.field("updatedTime", "$updatedTime"), Fields.field("items.drug", "$drug"),
+					Fields.field("items.duration", "$items.duration")));
+			
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("isActive").is(true)
+					.and("items").exists(true).and("patientId").is(patientObjectId)),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$items").append("preserveNullAndEmptyArrays", true)
+										.append("includeArrayIndex", "arrayIndex1"))),
+						Aggregation.lookup("drug_cl", "items.drugId", "_id", "drug"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$drug").append("preserveNullAndEmptyArrays", true))),
+						projectList,
+						new CustomAggregationOperation(new BasicDBObject("$group",
+								new BasicDBObject("_id", "$_id").append("name", new BasicDBObject("$first", "$name"))
+										.append("uniqueEmrId", new BasicDBObject("$first", "$uniqueEmrId"))
+										.append("locationId", new BasicDBObject("$first", "$locationId"))
+										.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+										.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+										.append("discarded", new BasicDBObject("$first", "$discarded"))
+										.append("items", new BasicDBObject("$push", "$items"))
+										.append("inHistory", new BasicDBObject("$first", "$inHistory"))
+										.append("advice", new BasicDBObject("$first", "$advice"))
+										.append("patientId", new BasicDBObject("$first", "$patientId"))
+										.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+										.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+										.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			
+			List<Prescription> prescriptionCollections = mongoTemplate.aggregate(aggregation, PrescriptionCollection.class, Prescription.class).getMappedResults();
+			for(Prescription prescriptionCollection : prescriptionCollections){
+				for(PrescriptionItemDetail prescriptionItem : prescriptionCollection.getItems()){
+					if(prescriptionItem.getDuration() != null && !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue()) && prescriptionItem.getDuration().getDurationUnit() != null){
+						int noOfDays = 0;
+						Calendar cal = Calendar.getInstance();
+						Date createdTime = prescriptionCollection.getCreatedTime();
+						cal.setTime(createdTime);
+						
+						switch(prescriptionItem.getDuration().getDurationUnit().getUnit()){
+						
+						case "time(s)": break;
+						case "year(s)": {						
+							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "month(s)": {						
+							cal.add(Calendar.MONTH, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "week(s)": {				
+							noOfDays = Integer.parseInt(prescriptionItem.getDuration().getValue()) * 7;
+							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "day(s)": {						
+							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "hour(s)" : {						
+							break; 
+						 }
+						}
+						if(noOfDays > 0){
+							if(response == null)response = new ArrayList<Drug>();
+							response.add(prescriptionItem.getDrug());
+						}
+					}		
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While get Ongoing Drugs");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While get Ongoing Drugs");
+		}
+		return response;
+	}
+
+	private DrugInteractionResposne checkReactionBetweenDrugGenericCodes(List<GenericCode> genericCodesOfFirstDrug,
 			List<GenericCode> genericCodesOfOtherDrug) {
-		Boolean response = false;
+		DrugInteractionResposne response = null;
 		try {
 			List<GenericCode> commonCodes = commonCodesBetweenTwoDrugs(genericCodesOfFirstDrug,
 					genericCodesOfOtherDrug);
@@ -4160,19 +4259,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 								int index = Collections.binarySearch(codes, code, comparator);
 								if (index >= 0 && index < codes.size()) {
-									return true;
-									// if(codes.get(index).getReaction().equalsIgnoreCase("MAJOR"))
-									// return "MAJOR";
-									// listOfReactions.add(codes.get(index).getReaction());
+									if(DPDoctorUtils.anyStringEmpty(codes.get(index).getReaction())){
+										response = new DrugInteractionResposne("","","");
+									}
+									else{
+										if(codes.get(index).getReaction().equalsIgnoreCase("MAJOR")){
+											response = new DrugInteractionResposne("",codes.get(index).getReaction(), codes.get(index).getExplanation());	
+										}else if(codes.get(index).getReaction().equalsIgnoreCase("MODERATE")){
+											if(!(response != null && response.getReaction().equalsIgnoreCase("MAJOR")))
+												response = new DrugInteractionResposne("",codes.get(index).getReaction(), codes.get(index).getExplanation());
+										}else if(codes.get(index).getReaction().equalsIgnoreCase("MINOR")){
+											if(!(response != null && response.getReaction().equalsIgnoreCase("MAJOR") && response.getReaction().equalsIgnoreCase("MODERATE")))
+												response = new DrugInteractionResposne("",codes.get(index).getReaction(), codes.get(index).getExplanation());
+										}
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			// if(listOfReactions.contains("MODERATE"))return "MODERATE";
-			// else if(listOfReactions.contains("MINOR"))return "MINOR";
-
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While drugInteraction");
@@ -4248,74 +4354,49 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	public Boolean addGenericsWithReaction() {
-		String csvFile = "/home/ubuntu/genericCodesWithReaction.csv";
+		String csvFile = "/home/healthcoco-neha/OnlinegenericCodes.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
-
 		try {
 			br = new BufferedReader(new FileReader(csvFile));
 			while ((line = br.readLine()) != null) {
 				String[] codes = line.split(cvsSplitBy);
-
-				Code codeOfId = new Code(codes[0], "");
-
-				ESGenericCodesAndReactions esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
-						.findOne(codes[0]);
-				if (esGenericCodesAndReactionsOfZeroIndex == null) {
-					esGenericCodesAndReactionsOfZeroIndex = new ESGenericCodesAndReactions();
-					esGenericCodesAndReactionsOfZeroIndex.setId(codes[0]);
-				}
-				List<Code> codesList = esGenericCodesAndReactionsOfZeroIndex.getCodes();
-				if (codesList == null)
-					codesList = new ArrayList<Code>();
-
-				for (int i = 1; i < codes.length; i++) {
-					Code code = new Code(codes[i], null);
-					if (!codesList.contains(code))
-						codesList.add(code);
-
-					ESGenericCodesAndReactions esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
-							.findOne(codes[i]);
-					if (esGenericCodesAndReactions == null) {
-						esGenericCodesAndReactions = new ESGenericCodesAndReactions();
-						esGenericCodesAndReactions.setId(codes[i]);
-						esGenericCodesAndReactions.setCodes(Arrays.asList(codeOfId));
-					} else {
-						List<Code> codesListOfOther = esGenericCodesAndReactions.getCodes();
-						if (!codesListOfOther.contains(codeOfId))
-							codesListOfOther.add(codeOfId);
-
-						Collections.sort(codesListOfOther, new Comparator<Code>() {
-							public int compare(Code one, Code other) {
-								return one.getGenericCode().compareTo(other.getGenericCode());
+				if(codes.length > 4 && codes[4] != null && !codes[4].isEmpty() && (codes[4].equalsIgnoreCase("MAJOR") || codes[4].equalsIgnoreCase("MINOR") || codes[4].equalsIgnoreCase("MODERATE"))){
+					String genericCodeOne = codes[0], genericCodeTwo = codes[2];
+					
+					List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository.findbyGenericCodes(Arrays.asList(codes[0],codes[1]));
+					for(GenericCodesAndReactionsCollection codesAndReactionsCollection : genericCodesAndReactionsCollections){
+						if(codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(genericCodeOne)){
+							for(Code code : codesAndReactionsCollection.getCodes()){
+								if(code.getGenericCode().equalsIgnoreCase(genericCodeTwo)){
+									code.setReaction(codes[4]);
+									code.setExplanation(codes[5]);
+								}
 							}
-						});
-						esGenericCodesAndReactions.setCodes(codesListOfOther);
+							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+							
+							ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
+							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+						}
+						if(codesAndReactionsCollection.getGenericCode().equalsIgnoreCase(genericCodeTwo)){
+							for(Code code : codesAndReactionsCollection.getCodes()){
+								if(code.getGenericCode().equalsIgnoreCase(genericCodeOne)){
+									code.setReaction(codes[4]);
+									code.setExplanation(codes[5]);
+								}
+							}
+							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+							
+							ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
+							BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+							esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
+						}
 					}
-					esGenericCodesAndReactions = esGenericCodesAndReactionsRepository.save(esGenericCodesAndReactions);
 				}
-
-				Collections.sort(codesList, new Comparator<Code>() {
-					public int compare(Code one, Code other) {
-						return one.getGenericCode().compareTo(other.getGenericCode());
-					}
-				});
-				esGenericCodesAndReactionsOfZeroIndex.setCodes(codesList);
-				esGenericCodesAndReactionsOfZeroIndex = esGenericCodesAndReactionsRepository
-						.save(esGenericCodesAndReactionsOfZeroIndex);
-			}
-
-			Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
-					.findAll();
-			for (ESGenericCodesAndReactions genericCodesAndReaction : esGenericCodesAndReactions) {
-				GenericCodesAndReactionsCollection codesAndReactionsCollection = new GenericCodesAndReactionsCollection();
-				codesAndReactionsCollection.setGenericCode(genericCodesAndReaction.getId());
-				genericCodesAndReaction.setId(null);
-				BeanUtil.map(genericCodesAndReaction, codesAndReactionsCollection);
-				codesAndReactionsCollection.setCreatedTime(new Date());
-				codesAndReactionsCollection.setUpdatedTime(new Date());
-				genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -4498,6 +4579,19 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public Boolean addGenericCodeWithReaction(GenericCodesAndReaction request) {
 		Boolean response = false, isFirstUpdated = false, isSecondUpdated = false;
 		try {
+			
+			Iterable<ESGenericCodesAndReactions> esGenericCodesAndReactions = esGenericCodesAndReactionsRepository
+					.findAll();
+			for (ESGenericCodesAndReactions genericCodesAndReaction : esGenericCodesAndReactions) {
+				GenericCodesAndReactionsCollection codesAndReactionsCollection = new GenericCodesAndReactionsCollection();
+				codesAndReactionsCollection.setGenericCode(genericCodesAndReaction.getId());
+				genericCodesAndReaction.setId(null);
+				BeanUtil.map(genericCodesAndReaction, codesAndReactionsCollection);
+				codesAndReactionsCollection.setCreatedTime(new Date());
+				codesAndReactionsCollection.setUpdatedTime(new Date());
+				genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+			}
+			
 			if (request.getFirstGenericCode() != null && request.getSecondGenericCode() != null) {
 				List<GenericCodesAndReactionsCollection> genericCodesAndReactionsCollections = genericCodesAndReactionsRepository
 						.findbyGenericCodes(Arrays.asList(request.getFirstGenericCode().getCode(),
@@ -5155,7 +5249,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		return response;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public Boolean smsEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,

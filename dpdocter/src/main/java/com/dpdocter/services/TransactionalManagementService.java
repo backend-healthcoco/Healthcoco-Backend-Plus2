@@ -40,4 +40,6 @@ public interface TransactionalManagementService {
 
 	void checkDoctorDrug(ObjectId resourceId);
 
+	void updateActivePrescription();
+
 }

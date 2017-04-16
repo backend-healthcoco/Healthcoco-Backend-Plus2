@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
@@ -763,6 +765,68 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			appLinkDetailsCollection.setCount(0);
 		}
 		appLinkDetailsRepository.save(appLinkDetailsCollections);		
+	}
+
+//	@Scheduled(fixedDelay = 1800000)
+	@Override
+	@Transactional
+	public void updateActivePrescription() {
+		try {
+			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findActiveAndDrugExistRx();
+			for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
+				Boolean isActive = false;
+				for(PrescriptionItem prescriptionItem : prescriptionCollection.getItems()){
+					if(prescriptionItem.getDuration() != null && !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue()) && prescriptionItem.getDuration().getDurationUnit() != null){
+						int noOfDays = 0;
+						Calendar cal = Calendar.getInstance();
+						Date createdTime = prescriptionCollection.getCreatedTime();
+						cal.setTime(createdTime);
+						
+						switch(prescriptionItem.getDuration().getDurationUnit().getUnit()){
+						
+						case "time(s)": break;
+						case "year(s)": {						
+							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "month(s)": {						
+							cal.add(Calendar.MONTH, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "week(s)": {				
+							noOfDays = Integer.parseInt(prescriptionItem.getDuration().getValue()) * 7;
+							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "day(s)": {						
+							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							long diff = cal.getTime().getTime() - new Date().getTime();
+							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						}
+						case "hour(s)" : {						
+//							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+//							long diff = cal.getTime().getTime() - new Date().getTime();
+//							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+							break; 
+						 }
+						}
+						if(noOfDays > 0)isActive = true;
+					}		
+				}
+				prescriptionCollection.setIsActive(isActive);
+				prescriptionRepository.save(prescriptionCollection);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
 	}
 
 	public void checkOTP() {

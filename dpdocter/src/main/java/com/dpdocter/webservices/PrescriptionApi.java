@@ -70,8 +70,6 @@ import io.swagger.annotations.ApiOperation;
 public class PrescriptionApi {
 
 	private static Logger logger = Logger.getLogger(PrescriptionApi.class.getName());
-
-
 	
 	@Autowired
 	private PrescriptionServices prescriptionServices;
@@ -950,9 +948,9 @@ public class PrescriptionApi {
 
 	@Path(value = PathProxy.PrescriptionUrls.DRUGS_INTERACTION)
 	@POST
-	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request) {//@PathParam("patientId") String patientId, 
+	public Response<DrugInteractionResposne> drugInteraction(List<Drug> request, @QueryParam("patientId") String patientId) { 
 
-		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request);
+		List<DrugInteractionResposne> drugInteractionResposnes = prescriptionServices.drugInteraction(request, patientId);
 		Response<DrugInteractionResposne> response = new Response<DrugInteractionResposne>();
 		response.setDataList(drugInteractionResposnes);
 		return response;
