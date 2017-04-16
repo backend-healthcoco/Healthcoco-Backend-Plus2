@@ -1084,6 +1084,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							parameters.put("noOfFields", 3);
 						else parameters.put("noOfFields", 4);
 					}
+					parameters.put("quality", eyePrescriptionCollection.getQuality());
 					parameters.put("type", eyePrescriptionCollection.getType());
 					parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance());
 					parameters.put("lensType", eyePrescriptionCollection.getLensType());

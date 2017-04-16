@@ -5034,6 +5034,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				parameters.put("noOfFields", 3);
 			else parameters.put("noOfFields", 4);
 		}
+		parameters.put("quality", prescriptionCollection.getQuality());
 		parameters.put("type", prescriptionCollection.getType());
 		parameters.put("pupilaryDistance", prescriptionCollection.getPupilaryDistance());
 		parameters.put("lensType", prescriptionCollection.getLensType());

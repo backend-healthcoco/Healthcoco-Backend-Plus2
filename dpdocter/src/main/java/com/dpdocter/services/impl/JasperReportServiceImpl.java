@@ -2357,18 +2357,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-//		band = new JRDesignBand();
-//		band.setHeight(1);
-//
-//		jrDesignLine = new JRDesignLine();
-//		jrDesignLine.setX(0);
-//		jrDesignLine.setY(0);
-//		jrDesignLine.setHeight(1);
-//		jrDesignLine.setWidth(columnWidth);
-//		jrDesignLine.setPositionType(PositionTypeEnum.FIX_RELATIVE_TO_TOP);
-//		band.addElement(jrDesignLine);
-//		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
 		band = new JRDesignBand();
 		band.setHeight(20);
 		
@@ -2386,7 +2374,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrRectangle.setX(0);jrRectangle.setY(0);jrRectangle.setHeight(20);jrRectangle.setWidth(100);band.addElement(jrRectangle);
 		band.addElement(jrDesignTextField);
 		
-		int titleWidth = (columnWidth - 60) / 2;
+		int noOfFields = (int) parameters.get("noOfFields");
+		int dataWidth = (columnWidth - 60) / (2 * noOfFields);
+		
+		int titleWidth = dataWidth * noOfFields;
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{RightEye}"));
 		jrDesignTextField.setX(61);
@@ -2438,12 +2429,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 //		band.addElement(jrDesignLine);
 //		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		int noOfFields = (int) parameters.get("noOfFields");
-		int dataWidth = (titleWidth) / noOfFields;
+		
 		band = new JRDesignBand();
 		band.setHeight(20);
 
 		int fieldXPoint = 61;
+		
+		jrRectangle = new JRDesignRectangle();
+		jrRectangle.setX(0);jrRectangle.setY(0);jrRectangle.setHeight(20);jrRectangle.setWidth(100);band.addElement(jrRectangle);
+		
 		addEyePrescriptionItem("$P{SPH}", fieldXPoint, dataWidth, true, HorizontalTextAlignEnum.CENTER,
 				contentFontSize, band, titleWidth);
 		fieldXPoint = fieldXPoint + dataWidth;
@@ -2467,10 +2461,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			
 			addEyePrescriptionItem("$P{DIA}", fieldXPoint, dataWidth,
 					true, HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
 		}
-		
-		fieldXPoint = 61 + titleWidth;
-		
+				
 		addEyePrescriptionItem("$P{SPH}", fieldXPoint, dataWidth, true,
 				HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
 		fieldXPoint = fieldXPoint + dataWidth;
@@ -2501,7 +2494,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setHeight(20);
-		addEyePrescriptionItem("$P{Distance}", 1, 60, true, HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
+		addEyePrescriptionItem("$P{Distance}", 0, 60, true, HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
 
 		fieldXPoint = 61;
 		addEyePrescriptionItem("$P{rightEyeTest}.getDistanceSPH()", fieldXPoint, dataWidth, false,
@@ -2527,9 +2520,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 	
 			addEyePrescriptionItem("$P{rightEyeTest}.getDistanceDiameter()", fieldXPoint,
 			dataWidth, false, HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
 		}
 		
-		fieldXPoint = 61 + titleWidth;
 		addEyePrescriptionItem("$P{leftEyeTest}.getDistanceSPH()", fieldXPoint, dataWidth, false,
 				HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
 		fieldXPoint = fieldXPoint + dataWidth;
@@ -2561,9 +2554,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		fieldXPoint = 61;
 		band = new JRDesignBand();
 		band.setHeight(20);
-		addEyePrescriptionItem("$P{Near}", 1, fieldXPoint, true, HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
-		
-		
+		addEyePrescriptionItem("$P{Near}", 0, fieldXPoint, true, HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
+				
 		addEyePrescriptionItem("$P{rightEyeTest}.getNearSPH()", fieldXPoint, dataWidth, false,
 				HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
 		fieldXPoint = fieldXPoint + dataWidth;
@@ -2588,10 +2580,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 	
 			addEyePrescriptionItem("$P{rightEyeTest}.getNearDiameter()", fieldXPoint,
 			dataWidth, false, HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
+			fieldXPoint = fieldXPoint + dataWidth;
 		}
 	
-		fieldXPoint = 61 + titleWidth;
-		
 		addEyePrescriptionItem("$P{leftEyeTest}.getNearSPH()", fieldXPoint, dataWidth, false,
 				HorizontalTextAlignEnum.CENTER, contentFontSize, band, titleWidth);
 		fieldXPoint = fieldXPoint + dataWidth;
@@ -2677,7 +2668,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 					HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
-
+		if (parameters.get("quality") != null && !parameters.get("quality").toString().isEmpty()) {
+			band = new JRDesignBand();
+			band.setHeight(20);
+			addEyePrescriptionItem("$P{Quality}", 1, 125, true, HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
+			addEyePrescriptionItem("$P{quality}", 125, columnWidth - 125, false,
+					HorizontalTextAlignEnum.LEFT, contentFontSize, band, titleWidth);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		}
 		if (parameters.get("remarks") != null && !parameters.get("remarks").toString().isEmpty()) {
 			band = new JRDesignBand();
 			band.setHeight(20);
@@ -2690,7 +2688,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (parameters.get("pupilaryDistance") != null && parameters.get("lensType") != null
 				&& !parameters.get("lensType").toString().isEmpty() && parameters.get("usage") != null
 				&& !parameters.get("usage").toString().isEmpty() && parameters.get("remarks") != null
-				&& !parameters.get("remarks").toString().isEmpty())
+				&& !parameters.get("remarks").toString().isEmpty() && 
+				parameters.get("quality") != null && !parameters.get("quality").toString().isEmpty()
+				&& parameters.get("lensColor") != null && !parameters.get("lensColor").toString().isEmpty()
+				&& parameters.get("lensBrand") != null && !parameters.get("lensBrand").toString().isEmpty())
 			((JRDesignSection) jasperDesign.getDetailSection())
 					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 	}
