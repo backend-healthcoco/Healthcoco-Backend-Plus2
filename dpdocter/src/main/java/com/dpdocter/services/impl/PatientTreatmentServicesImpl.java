@@ -158,7 +158,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 	@Autowired
 	private ESTreatmentServiceRepository esTreatmentServiceRepository;
-	
+
 	@Autowired
 	private ReportsService reportsService;
 
@@ -195,6 +195,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					if (!DPDoctorUtils.anyStringEmpty(treatmentService.getName())) {
 						treatmentServicesCollection.setName(treatmentService.getName());
 					}
+					treatmentServicesCollection.setCost(treatmentService.getCost());
 					treatmentServicesCollection.setSpeciality(treatmentService.getSpeciality());
 					treatmentServicesCollection.setUpdatedTime(new Date());
 					treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
@@ -390,30 +391,37 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			response = new PatientTreatmentResponse();
 			BeanUtil.map(patientTreatmentCollection, response);
 			response.setTreatments(treatmentResponses);
-			
-		/*	String visitId = patientVisitService.addRecord(response, VisitedFor.TREATMENT,
-					response.getVisitId());
-			response.setVisitId(visitId);*/
-			/*if (patientTreatmentCollection != null) {
-				OPDReports opdReports = new OPDReports();
-				
-				 * OPDReports oldOPDReport =
-				 * reportsService.getOPDReportByVisitId(visitId);
-				 * 
-				 * if (oldOPDReport != null) { BeanUtil.map(oldOPDReport,
-				 * opdReports); opdReports.setPrescriptionId(String.valueOf(
-				 * patientTreatmentCollection.getId())); } else {
-				 
-				opdReports.setPatientId(String.valueOf(patientTreatmentCollection.getPatientId()));
-				opdReports.setTreatmentId(String.valueOf(patientTreatmentCollection.getId()));
-				opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.getDoctorId()));
-				opdReports.setLocationId(String.valueOf(patientTreatmentCollection.getLocationId()));
-				opdReports.setHospitalId(String.valueOf(patientTreatmentCollection.getHospitalId()));
-				opdReports.setCreatedTime(patientTreatmentCollection.getCreatedTime());
 
-				opdReports = reportsService.submitOPDReport(opdReports);
-			}*/
-			
+			/*
+			 * String visitId = patientVisitService.addRecord(response,
+			 * VisitedFor.TREATMENT, response.getVisitId());
+			 * response.setVisitId(visitId);
+			 */
+			/*
+			 * if (patientTreatmentCollection != null) { OPDReports opdReports =
+			 * new OPDReports();
+			 * 
+			 * OPDReports oldOPDReport =
+			 * reportsService.getOPDReportByVisitId(visitId);
+			 * 
+			 * if (oldOPDReport != null) { BeanUtil.map(oldOPDReport,
+			 * opdReports); opdReports.setPrescriptionId(String.valueOf(
+			 * patientTreatmentCollection.getId())); } else {
+			 * 
+			 * opdReports.setPatientId(String.valueOf(patientTreatmentCollection
+			 * .getPatientId())); opdReports.setTreatmentId(String.valueOf(
+			 * patientTreatmentCollection.getId()));
+			 * opdReports.setDoctorId(String.valueOf(patientTreatmentCollection.
+			 * getDoctorId())); opdReports.setLocationId(String.valueOf(
+			 * patientTreatmentCollection.getLocationId()));
+			 * opdReports.setHospitalId(String.valueOf(
+			 * patientTreatmentCollection.getHospitalId()));
+			 * opdReports.setCreatedTime(patientTreatmentCollection.
+			 * getCreatedTime());
+			 * 
+			 * opdReports = reportsService.submitOPDReport(opdReports); }
+			 */
+
 		} catch (Exception e) {
 			logger.error("Error occurred while adding or editing treatment for patients", e);
 			throw new BusinessException(ServiceError.Unknown,
@@ -1582,21 +1590,22 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId) {
+	public TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId,
+			String hospitalId) {
 		TreatmentService response = null;
 
 		try {
 			ObjectId serviceObjectId = new ObjectId(serviceId), doctorObjectId = new ObjectId(doctorId),
 					locationObjectId = new ObjectId(locationId), hospitalObjectId = new ObjectId(hospitalId);
-		TreatmentServicesCollection originalService = treatmentServicesRepository.findOne(serviceObjectId);
+			TreatmentServicesCollection originalService = treatmentServicesRepository.findOne(serviceObjectId);
 			if (originalService == null) {
 				logger.error("Invalid Service Id");
 				throw new BusinessException(ServiceError.Unknown, "Invalid Service Id");
 			}
-			TreatmentServicesCollection servicesCollection = treatmentServicesRepository.findbyTreatmentCodeAndDoctorId(originalService.getTreatmentCode(),
-					doctorObjectId);
+			TreatmentServicesCollection servicesCollection = treatmentServicesRepository
+					.findbyTreatmentCodeAndDoctorId(originalService.getTreatmentCode(), doctorObjectId);
 			if (servicesCollection == null) {
 				servicesCollection = originalService;
 
