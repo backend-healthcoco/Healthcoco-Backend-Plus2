@@ -1084,7 +1084,7 @@ public class BillingServiceImpl implements BillingService {
 					status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 					invoiceItemJasperDetail.setStatus(status);
 				} else {
-					invoiceItemJasperDetail.setStatus("--");
+					invoiceItemJasperDetail.setStatus("");
 				}
 				invoiceItemJasperDetail.setServiceName(invoiceItem.getName());
 
@@ -1094,6 +1094,8 @@ public class BillingServiceImpl implements BillingService {
 					if (invoiceItem.getQuantity().getType() != null)
 						quantity = quantity + invoiceItem.getQuantity().getType().getDuration();
 					invoiceItemJasperDetail.setQuantity(quantity);
+				}else{
+					invoiceItemJasperDetail.setQuantity("");
 				}
 				invoiceItemJasperDetail.setTax((invoiceItem.getTax() != null)
 						? invoiceItem.getTax().getValue() + " " + invoiceItem.getTax().getUnit().getUnit() : "");
