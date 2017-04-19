@@ -1086,7 +1086,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					}
 					parameters.put("quality", eyePrescriptionCollection.getQuality());
 					parameters.put("type", eyePrescriptionCollection.getType());
-					parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance());
+					parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance() != null ? eyePrescriptionCollection.getPupilaryDistance()+" mm" : null);
 					parameters.put("lensType", eyePrescriptionCollection.getLensType());
 					parameters.put("usage", eyePrescriptionCollection.getUsage());
 					parameters.put("remarks", eyePrescriptionCollection.getRemarks());

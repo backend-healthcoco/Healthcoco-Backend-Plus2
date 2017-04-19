@@ -5036,7 +5036,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 		parameters.put("quality", prescriptionCollection.getQuality());
 		parameters.put("type", prescriptionCollection.getType());
-		parameters.put("pupilaryDistance", prescriptionCollection.getPupilaryDistance());
+		parameters.put("pupilaryDistance", prescriptionCollection.getPupilaryDistance() != null ? prescriptionCollection.getPupilaryDistance()+" mm" : null);
 		parameters.put("lensType", prescriptionCollection.getLensType());
 		parameters.put("usage", prescriptionCollection.getUsage());
 		parameters.put("remarks", prescriptionCollection.getRemarks());
