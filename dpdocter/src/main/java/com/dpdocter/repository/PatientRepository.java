@@ -96,4 +96,6 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 	@Query(value = "{'doctorId':?0, 'updatedTime': {'$gt': ?1}, 'discarded':{'$in': ?2}}", count = true)
 	Integer findByUserIdDoctorId(ObjectId doctorId, Date date, boolean[] discards);
 
+	@Query("{'PID':?0}")
+	PatientCollection getByPID(String PID);
 }
