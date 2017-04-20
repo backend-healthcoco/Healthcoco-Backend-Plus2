@@ -30,6 +30,7 @@ import com.dpdocter.beans.ClinicLogo;
 import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
+import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
@@ -38,6 +39,7 @@ import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Suggestion;
+import com.dpdocter.beans.UserRecords;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
@@ -56,6 +58,8 @@ import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -145,18 +149,19 @@ public class RegistrationApi {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		} else if(!DPDoctorUtils.allStringsEmpty(request.getHospitalId(), request.getDoctorId(), request.getLocationId())){
-			if(DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())){
+		} else if (!DPDoctorUtils.allStringsEmpty(request.getHospitalId(), request.getDoctorId(),
+				request.getLocationId())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 				logger.warn(invalidInput);
 				throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-			}else if (request.getLocalPatientName().length() < 2) {
+			} else if (request.getLocalPatientName().length() < 2) {
 				logger.warn(firstNameValidaton);
 				throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
-			}			
-		}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+			}
+		} else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
-		} 
+		}
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
@@ -225,8 +230,8 @@ public class RegistrationApi {
 		}
 		Response<Integer> response = new Response<Integer>();
 		Integer patientCountByMobNum = 0;
-		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null,
-				null, null);
+		List<RegisteredPatientDetails> users = registrationService.getUsersByPhoneNumber(mobileNumber, null, null, null,
+				null);
 		if (users != null) {
 			patientCountByMobNum = users.size();
 		}
@@ -901,6 +906,57 @@ public class RegistrationApi {
 		Boolean updateRoleCollectionDataResponse = registrationService.updateRoleCollectionData();
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(updateRoleCollectionDataResponse);
+		return response;
+	}
+
+	@POST
+	@Path(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM, notes = PathProxy.RegistrationUrls.ADD_CONSENT_FORM)
+	public Response<ConsentForm> addConsentForm(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		ConsentForm request = data.getValueAs(ConsentForm.class);
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPID(), request.getPatientId(),
+				request.getDoctorId(), request.getLocationId(), request.getHospitalId()) || file == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		ConsentForm consentForm = registrationService.addConcentForm(file, request);
+
+		if (consentForm != null) {
+			consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
+		}
+
+		Response<ConsentForm> response = new Response<ConsentForm>();
+		response.setData(consentForm);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM, notes = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
+	public Response<ConsentForm> getConsentForm(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("PID") String PID, @QueryParam("searchTerm") String searchTerm,
+			@DefaultValue("true") @QueryParam("discarded") boolean discarded) {
+
+		Response<ConsentForm> response = new Response<ConsentForm>();
+		List<ConsentForm> consentForms = registrationService.getConcentForm(page, size, patientId, doctorId, locationId,
+				hospitalId, PID, searchTerm, discarded);
+		response.setDataList(consentForms);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
+	@DELETE
+	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM, notes = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
+	public Response<ConsentForm> deleteConsentForm(@PathParam("consentFormId") String consentFormId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		Response<ConsentForm> response = new Response<ConsentForm>();
+		response.setData(registrationService.deleteConcentForm(consentFormId, discarded));
 		return response;
 	}
 

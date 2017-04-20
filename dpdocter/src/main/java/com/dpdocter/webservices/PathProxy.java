@@ -160,8 +160,14 @@ public interface PathProxy {
 		public static final String ADD_SUGGESTION = "/suggestion/add";
 
 		public static final String GET_SUGGESTION = "/getSuggestion/{userId}";
-		
+
 		public static final String UPDATE_ROLE_COLLECTION_DATA = "updateRoleCollectionData";
+
+		public static final String ADD_CONSENT_FORM = "/consentForm/add";
+
+		public static final String GET_CONSENT_FORM = "/consentForm";
+
+		public static final String DELETE_CONSENT_FORM = "/consentForm/{consentFormId}/delete";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -480,11 +486,10 @@ public interface PathProxy {
 		public static final String EMAIL_EYE_PRESCRIPTION = "/eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String DOWNLOAD_EYE_PRESCRIPTION = "/eye/download/{prescriptionId}";
-		
+
 		public static final String SMS_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
-		
+
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
-		
 
 	}
 
@@ -628,9 +633,9 @@ public interface PathProxy {
 		public static final String GET_LABS_WITH_REPORTS_COUNT = "/getLabsWithReportCount/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{prescribedByDoctorId}/{prescribedByLocationId}/{prescribedByHospitalId}";
-		
+
 		public static final String GET_DOCTOR_STATS = "/{doctorId}/getStats";
-		
+
 		public static final String UPDATE_EMR_SETTING = "/{doctorId}/updateEMRSetting";
 
 	}
@@ -836,7 +841,7 @@ public interface PathProxy {
 		public static final String GENERATE_TREATMENT_CODE = "/treatmentCode/add";
 
 		public static final String ADD_FAVOURITES_TO_TREATMENT_SERVICES = "favourites/addToTreatmentService";
-		
+
 		public static final String ADD_TREATMENT_SERVICES_TO_DOCTOR = "/service/{serviceId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
 
 	}
@@ -1054,8 +1059,8 @@ public interface PathProxy {
 		public static final String CREATE_LEDGER = "/ledger";
 
 		public static final String DOWNLOAD_INVOICE = "/downloadInvoice/{invoiceId}";
-		
-		public static final String DOWNLOAD_RECEIPT= "/downloadReceipt/{receiptId}";
+
+		public static final String DOWNLOAD_RECEIPT = "/downloadReceipt/{receiptId}";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";
@@ -1079,7 +1084,6 @@ public interface PathProxy {
 
 	}
 
-	
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";
 
 	public interface FeedbackUrls {
@@ -1095,12 +1099,12 @@ public interface PathProxy {
 
 	public interface DischargeSummaryUrls {
 	}
-		public static final String LAB_BASE_URL = BASE_URL + "/lab";
+
+	public static final String LAB_BASE_URL = BASE_URL + "/lab";
 
 	public interface LabUrls {
 		public static final String GET_CLINICS_WITH_REPORTS_COUNT = "/getClinicWithReportCount/{doctorId}/{locationId}/{hospitalId}";
 		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{doctorId}/{locationId}/{hospitalId}";
-
 
 	}
 
