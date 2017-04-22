@@ -924,10 +924,6 @@ public class RegistrationApi {
 
 		ConsentForm consentForm = registrationService.addConcentForm(file, request);
 
-		if (consentForm != null) {
-			consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
-		}
-
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		response.setData(consentForm);
 		return response;
