@@ -1027,12 +1027,12 @@ public class BillingServiceImpl implements BillingService {
 				dueAmount = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
-						DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
+						DoctorPatientDueAmountCollection.class, AmountResponse.class).getUniqueMappedResult();
 			}else{
 				dueAmount = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
-						DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
+						DoctorPatientDueAmountCollection.class, AmountResponse.class).getUniqueMappedResult();
 			}
 			
 			DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
