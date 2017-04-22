@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class ConsentForm extends GenericCollection {
@@ -15,6 +13,8 @@ public class ConsentForm extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
+	
+	private String formId;
 
 	private String patientId;
 
@@ -46,6 +46,7 @@ public class ConsentForm extends GenericCollection {
 
 	private Boolean discarded = false;
 
+	
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -196,6 +197,14 @@ public class ConsentForm extends GenericCollection {
 
 	public void setMedicalHistory(String medicalHistory) {
 		this.medicalHistory = medicalHistory;
+	}
+
+	public String getFormId() {
+		return formId;
+	}
+
+	public void setFormId(String formId) {
+		this.formId = formId;
 	}
 
 }

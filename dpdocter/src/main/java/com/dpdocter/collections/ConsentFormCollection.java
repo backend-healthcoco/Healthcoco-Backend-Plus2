@@ -31,6 +31,9 @@ public class ConsentFormCollection extends GenericCollection {
 	private String PID;
 
 	@Field
+	private String formId;
+
+	@Field
 	private String localPatientName;
 
 	@Field
@@ -65,12 +68,20 @@ public class ConsentFormCollection extends GenericCollection {
 
 	@Field
 	private String medicalHistory;
-	
+
 	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
+	}
+
+	public String getFormId() {
+		return formId;
+	}
+
+	public void setFormId(String formId) {
+		this.formId = formId;
 	}
 
 	public void setId(ObjectId id) {
@@ -220,6 +231,5 @@ public class ConsentFormCollection extends GenericCollection {
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
-	
 
 }

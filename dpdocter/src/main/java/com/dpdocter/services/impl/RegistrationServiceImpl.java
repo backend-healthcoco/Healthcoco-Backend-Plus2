@@ -3087,20 +3087,31 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (patientCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patientId");
 			}
+			UserCollection doctor=userRepository.findOne(new ObjectId(request.getDoctorId()));
 
 			request.setPatientId(patientCollection.getUserId().toString());
 			String path = "sign" + File.separator + request.getPatientId();
 			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 			String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
 			String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
-			String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-			ImageURLResponse imageURLResponse = fileManager.saveImage(file, recordPath, false);
-			request.setSignImageURL(imageURLResponse.getImageUrl());
-			ConsentFormCollection consentFormCollection = new ConsentFormCollection();
-			BeanUtil.map(request, consentFormCollection);
-			consentFormCollection = consentFormRepository.save(consentFormCollection);
-			response = new ConsentForm();
-			BeanUtil.map(consentFormCollection, response);
+			String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+			ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+			if (imageURLResponse != null) {
+				request.setSignImageURL(imagepath);
+				ConsentFormCollection consentFormCollection = new ConsentFormCollection();
+				BeanUtil.map(request, consentFormCollection);
+				
+				consentFormCollection.setUpdatedTime( createdTime);
+				consentFormCollection.setFormId(UniqueIdInitial.CONSENT_FORM+DPDoctorUtils.generateRandomId());
+				consentFormCollection.setCreatedBy(doctor.getFirstName());
+				
+				
+				consentFormCollection = consentFormRepository.save(consentFormCollection);
+				response = new ConsentForm();
+				BeanUtil.map(consentFormCollection, response);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid image");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3119,7 +3130,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				criteria.and("patientId").is(new ObjectId(doctorId));
+				criteria.and("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
@@ -3128,9 +3139,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("PID").is(PID);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("emailAddress").regex("^" + searchTerm, "i"),
-						new Criteria("localPatientName").regex("^" + searchTerm),
-						new Criteria("emailAddress").regex("^" + searchTerm));
+				criteria = criteria.and("localPatientName").regex("^" + searchTerm, "i");
+						
 			}
 			criteria.and("discarded").is(discarded);
 			if (size > 0) {
