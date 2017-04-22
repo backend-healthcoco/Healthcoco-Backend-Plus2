@@ -3081,20 +3081,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 
 			Date createdTime = new Date();
-			PatientCollection patientCollection = patientRepository.getByPID(request.getPID());
+			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
+					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
 			if (patientCollection == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid PID");
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid patientId");
 			}
-			UserCollection docter = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			if (docter == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid docterId");
-			}
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
-			if (locationCollection == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid locationId");
-			}
-			request.setPatientId(patientCollection.getUserId().toString());
 
+			request.setPatientId(patientCollection.getUserId().toString());
 			String path = "sign" + File.separator + request.getPatientId();
 			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 			String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
@@ -3121,7 +3115,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<ConsentForm> response = null;
 		try {
 			Aggregation aggregation = null;
-			Criteria criteria = null;
+			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))

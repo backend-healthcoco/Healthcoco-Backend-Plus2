@@ -39,7 +39,6 @@ import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Suggestion;
-import com.dpdocter.beans.UserRecords;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
@@ -918,7 +917,7 @@ public class RegistrationApi {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		ConsentForm request = data.getValueAs(ConsentForm.class);
 
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPID(), request.getPatientId(),
+		if (request == null || DPDoctorUtils.anyStringEmpty( request.getPatientId(),
 				request.getDoctorId(), request.getLocationId(), request.getHospitalId()) || file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
