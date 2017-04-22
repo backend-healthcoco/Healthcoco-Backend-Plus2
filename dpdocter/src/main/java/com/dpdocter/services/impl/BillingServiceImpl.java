@@ -282,6 +282,7 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientDueAmountCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
 					doctorPatientDueAmountCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
+					doctorPatientDueAmountCollection.setDueAmount(0.0);
 				}
 				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()+dueAmount);
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
@@ -291,6 +292,7 @@ public class BillingServiceImpl implements BillingService {
 			throw be;
 		} catch (Exception e) {
 			logger.error("Error while adding invoice" + e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while adding invoice" + e);
 		}
 		return response;
