@@ -3087,7 +3087,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			if (patientCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patientId");
 			}
-			UserCollection doctor=userRepository.findOne(new ObjectId(request.getDoctorId()));
+			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 
 			request.setPatientId(patientCollection.getUserId().toString());
 			String path = "sign" + File.separator + request.getPatientId();
@@ -3100,15 +3100,16 @@ public class RegistrationServiceImpl implements RegistrationService {
 				request.setSignImageURL(imagepath);
 				ConsentFormCollection consentFormCollection = new ConsentFormCollection();
 				BeanUtil.map(request, consentFormCollection);
-				
-				consentFormCollection.setUpdatedTime( createdTime);
-				consentFormCollection.setFormId(UniqueIdInitial.CONSENT_FORM+DPDoctorUtils.generateRandomId());
+
+				consentFormCollection.setUpdatedTime(createdTime);
+				consentFormCollection
+						.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
 				consentFormCollection.setCreatedBy(doctor.getFirstName());
-				
-				
+
 				consentFormCollection = consentFormRepository.save(consentFormCollection);
 				response = new ConsentForm();
 				BeanUtil.map(consentFormCollection, response);
+				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid image");
 			}
@@ -3140,7 +3141,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.and("localPatientName").regex("^" + searchTerm, "i");
-						
+
 			}
 			criteria.and("discarded").is(discarded);
 			if (size > 0) {
