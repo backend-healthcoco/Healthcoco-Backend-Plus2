@@ -3192,7 +3192,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-		return null;
+		return response;
 	}
 
 }
