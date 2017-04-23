@@ -1,8 +1,10 @@
 package com.dpdocter.webservices;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -33,66 +35,93 @@ import io.swagger.annotations.ApiOperation;
 @Produces(MediaType.APPLICATION_JSON)
 @Api(value = PathProxy.DISCHARGE_SUMMARY_BASE_URL)
 public class DischargeSummaryAPI {
-	
+
 	private Logger logger = Logger.getLogger(DischargeSummaryAPI.class);
-	
+
 	@Autowired
 	DischargeSummaryService dischargeSummaryService;
-	
+
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
-	@ApiOperation(value = "API for adding discharge summary")
-	public Response<DischargeSummary> addEditDischargeSummary(DischargeSummary request)
-	{
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
+	public Response<DischargeSummary> addEditDischargeSummary(DischargeSummary request) {
 		Response<DischargeSummary> response = null;
 		DischargeSummary dischargeSummary = null;
-		try {
-			if (request == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
-			}
-			//dischargeSummary = new DischargeSummary();
-			dischargeSummary = dischargeSummaryService.addEditDischargeSummary(request);
-			if (dischargeSummary != null) {
-				response = new Response<DischargeSummary>();
-				response.setData(dischargeSummary);
-			} 
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.warn(e);
-			e.printStackTrace();
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}
+		dischargeSummary = dischargeSummaryService.addEditDischargeSummary(request);
+		if (dischargeSummary != null) {
+			response = new Response<DischargeSummary>();
+			response.setData(dischargeSummary);
+		}
+
 		return response;
 	}
-	
-	/*String doctorId, String locationId, String hospitalId, String patientId,
-	int page, int size, String updatedTime*/
-	
-	
+
+	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_COUNT)
 	@GET
-	@ApiOperation(value = "API for getting discharge summaries")
-	public Response<DischargeSummary> getDischargeSummary(@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
-			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "patientId") String patientId, @QueryParam(value = "page") int page,
-		    @QueryParam(value = "size") int size, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime)
-	{
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_COUNT, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_COUNT)
+	public Response<Integer> getDischargeSummaryCount(@QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
+		Response<Integer> response = null;
+		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor or patient id is null");
+		}
+
+		response = new Response<Integer>();
+		response.setData(dischargeSummaryService.getDischargeSummaryCount(doctorId, locationId, hospitalId, patientId,
+				updatedTime));
+
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
+	public Response<DischargeSummary> getDischargeSummary(@QueryParam(value = "page") int page,
+			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "patientId") String patientId,
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		Response<DischargeSummary> response = null;
 		List<DischargeSummary> dischargeSummaries = null;
-		try {
-			if (DPDoctorUtils.anyStringEmpty(patientId, doctorId)) {
-				throw new BusinessException(ServiceError.InvalidInput, "Doctor or patient id is null");
-			}
-			dischargeSummaries = dischargeSummaryService.getDischargeSummary(doctorId, locationId, hospitalId,
-					patientId, page, size, updatedTime);
-			response = new Response<>();
-			response.setDataList(dischargeSummaries);
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.warn(e);
-			e.printStackTrace();
+
+		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Doctor or patient id or locationId or hospitalId is null");
+		}
+		dischargeSummaries = dischargeSummaryService.getDischargeSummary(doctorId, locationId, hospitalId, patientId,
+				page, size, updatedTime);
+		response = new Response<DischargeSummary>();
+		response.setDataList(dischargeSummaries);
+
+		return response;
+
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
+	public Response<DischargeSummary> viewDischargeSummary(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
+		Response<DischargeSummary> response = null;
+		DischargeSummary dischargeSummary = null;
+
+		if (dischargeSummeryId == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+		}
+		// dischargeSummary = new DischargeSummary();
+		dischargeSummary = dischargeSummaryService.viewDischargeSummary(dischargeSummeryId);
+		if (dischargeSummary != null) {
+			response = new Response<DischargeSummary>();
+			response.setData(dischargeSummary);
+
 		}
 		return response;
-		
 	}
-	
-	
 
 }

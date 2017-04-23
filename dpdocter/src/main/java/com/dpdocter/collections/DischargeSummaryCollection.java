@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -9,12 +10,13 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.ReviewDates;
 import com.dpdocter.beans.Treatment;
 
 @Document(collection = "discharge_summary_cl")
-public class DischargeSummaryCollection extends GenericCollection{
-
+public class DischargeSummaryCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
@@ -26,15 +28,53 @@ public class DischargeSummaryCollection extends GenericCollection{
 	@Field
 	private ObjectId hospitalId;
 	@Field
-	private List<ClinicalNotes> clinicalNotes;
-	@Field
 	private List<Prescription> prescriptions;
 	@Field
-	private List<Treatment> treatments;
+	private String diagnosis;
 	@Field
-	private Long admissionDate;
+	private String pastHistory;
 	@Field
-	private Long dischargeDate;
+	private String familyHistory;
+	@Field
+	private String personalHistory;
+	@Field
+	private List<String> complaints;
+	@Field
+	private String presentComplaints;
+	@Field
+	private String historyOfPresentComplaints;
+	@Field
+	private String menstrualHistory;
+	@Field
+	private String obstetricHistory;
+	@Field
+	private String generalExamination;
+	@Field
+	private String systemicExamination;
+	@Field
+	private String observation;
+	@Field
+	private String investigation;
+	@Field
+	private String pa;
+	@Field
+	private String pv;
+	@Field
+	private String echo;
+	@Field
+	private String xRayDetails;
+	@Field
+	private String operationNotes;
+	@Field
+	private String treatmentsGiven;
+	@Field
+	private ReviewDates nextReview;
+	@Field
+	private String dischargeId;
+	@Field
+	private Date admissionDate;
+	@Field
+	private Date dischargeDate;
 	@Field
 	private String labourNotes;
 	@Field
@@ -45,6 +85,16 @@ public class DischargeSummaryCollection extends GenericCollection{
 	private String conditionsAtDischarge;
 	@Field
 	private String summary;
+	@Field
+	private Boolean discaded = false;
+
+	public Boolean getDiscaded() {
+		return discaded;
+	}
+
+	public void setDiscaded(Boolean discaded) {
+		this.discaded = discaded;
+	}
 
 	public ObjectId getId() {
 		return id;
@@ -86,14 +136,6 @@ public class DischargeSummaryCollection extends GenericCollection{
 		this.hospitalId = hospitalId;
 	}
 
-	public List<ClinicalNotes> getClinicalNotes() {
-		return clinicalNotes;
-	}
-
-	public void setClinicalNotes(List<ClinicalNotes> clinicalNotes) {
-		this.clinicalNotes = clinicalNotes;
-	}
-
 	public List<Prescription> getPrescriptions() {
 		return prescriptions;
 	}
@@ -102,27 +144,187 @@ public class DischargeSummaryCollection extends GenericCollection{
 		this.prescriptions = prescriptions;
 	}
 
-	public List<Treatment> getTreatments() {
-		return treatments;
+	public String getDiagnosis() {
+		return diagnosis;
 	}
 
-	public void setTreatments(List<Treatment> treatments) {
-		this.treatments = treatments;
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
 	}
 
-	public Long getAdmissionDate() {
+	public String getPastHistory() {
+		return pastHistory;
+	}
+
+	public void setPastHistory(String pastHistory) {
+		this.pastHistory = pastHistory;
+	}
+
+	public String getFamilyHistory() {
+		return familyHistory;
+	}
+
+	public void setFamilyHistory(String familyHistory) {
+		this.familyHistory = familyHistory;
+	}
+
+	public String getPersonalHistory() {
+		return personalHistory;
+	}
+
+	public void setPersonalHistory(String personalHistory) {
+		this.personalHistory = personalHistory;
+	}
+
+	public List<String> getComplaints() {
+		return complaints;
+	}
+
+	public void setComplaints(List<String> complaints) {
+		this.complaints = complaints;
+	}
+
+	public String getPresentComplaints() {
+		return presentComplaints;
+	}
+
+	public void setPresentComplaints(String presentComplaints) {
+		this.presentComplaints = presentComplaints;
+	}
+
+	public String getHistoryOfPresentComplaints() {
+		return historyOfPresentComplaints;
+	}
+
+	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
+		this.historyOfPresentComplaints = historyOfPresentComplaints;
+	}
+
+	public String getMenstrualHistory() {
+		return menstrualHistory;
+	}
+
+	public void setMenstrualHistory(String menstrualHistory) {
+		this.menstrualHistory = menstrualHistory;
+	}
+
+	public String getObstetricHistory() {
+		return obstetricHistory;
+	}
+
+	public void setObstetricHistory(String obstetricHistory) {
+		this.obstetricHistory = obstetricHistory;
+	}
+
+	public String getGeneralExamination() {
+		return generalExamination;
+	}
+
+	public void setGeneralExamination(String generalExamination) {
+		this.generalExamination = generalExamination;
+	}
+
+	public String getSystemicExamination() {
+		return systemicExamination;
+	}
+
+	public void setSystemicExamination(String systemicExamination) {
+		this.systemicExamination = systemicExamination;
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation;
+	}
+
+	public String getInvestigation() {
+		return investigation;
+	}
+
+	public void setInvestigation(String investigation) {
+		this.investigation = investigation;
+	}
+
+	public String getPa() {
+		return pa;
+	}
+
+	public void setPa(String pa) {
+		this.pa = pa;
+	}
+
+	public String getPv() {
+		return pv;
+	}
+
+	public void setPv(String pv) {
+		this.pv = pv;
+	}
+
+	public String getEcho() {
+		return echo;
+	}
+
+	public void setEcho(String echo) {
+		this.echo = echo;
+	}
+
+	public String getxRayDetails() {
+		return xRayDetails;
+	}
+
+	public void setxRayDetails(String xRayDetails) {
+		this.xRayDetails = xRayDetails;
+	}
+
+	public String getOperationNotes() {
+		return operationNotes;
+	}
+
+	public void setOperationNotes(String operationNotes) {
+		this.operationNotes = operationNotes;
+	}
+
+	public String getTreatmentsGiven() {
+		return treatmentsGiven;
+	}
+
+	public void setTreatmentsGiven(String treatmentsGiven) {
+		this.treatmentsGiven = treatmentsGiven;
+	}
+
+	public ReviewDates getNextReview() {
+		return nextReview;
+	}
+
+	public void setNextReview(ReviewDates nextReview) {
+		this.nextReview = nextReview;
+	}
+
+	public String getDischargeId() {
+		return dischargeId;
+	}
+
+	public void setDischargeId(String dischargeId) {
+		this.dischargeId = dischargeId;
+	}
+
+	public Date getAdmissionDate() {
 		return admissionDate;
 	}
 
-	public void setAdmissionDate(Long admissionDate) {
+	public void setAdmissionDate(Date admissionDate) {
 		this.admissionDate = admissionDate;
 	}
 
-	public Long getDischargeDate() {
+	public Date getDischargeDate() {
 		return dischargeDate;
 	}
 
-	public void setDischargeDate(Long dischargeDate) {
+	public void setDischargeDate(Date dischargeDate) {
 		this.dischargeDate = dischargeDate;
 	}
 
@@ -164,16 +366,6 @@ public class DischargeSummaryCollection extends GenericCollection{
 
 	public void setSummary(String summary) {
 		this.summary = summary;
-	}
-
-	@Override
-	public String toString() {
-		return "DischargeSummaryCollection [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", clinicalNotes=" + clinicalNotes
-				+ ", prescriptions=" + prescriptions + ", treatments=" + treatments + ", admissionDate=" + admissionDate
-				+ ", dischargeDate=" + dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight=" + babyWeight
-				+ ", babyNotes=" + babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge + ", summary="
-				+ summary + "]";
 	}
 
 }

@@ -1098,6 +1098,11 @@ public interface PathProxy {
 	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
 
 	public interface DischargeSummaryUrls {
+		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
+		public static final String GET_DISCHARGE_SUMMARY_COUNT = "/getDischargeSummeryCount";
+		public static final String ADD_DISCHARGE_SUMMARY = "/add";
+		public static final String VIEW_DISCHARGE_SUMMARY = "/view/{dischargeSummeryId}";
+		
 	}
 
 	public static final String LAB_BASE_URL = BASE_URL + "/lab";
@@ -1105,7 +1110,6 @@ public interface PathProxy {
 	public interface LabUrls {
 		public static final String GET_CLINICS_WITH_REPORTS_COUNT = "/getClinicWithReportCount/{doctorId}/{locationId}/{hospitalId}";
 		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{doctorId}/{locationId}/{hospitalId}";
-
 	}
 
 }
