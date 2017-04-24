@@ -55,6 +55,8 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private String pa;
 	@Field
+	private String ps;
+	@Field
 	private String pv;
 	@Field
 	private String echo;
@@ -366,5 +368,14 @@ public class DischargeSummaryCollection extends GenericCollection {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
+
+	public String getPs() {
+		return ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
+	}
+	
 
 }

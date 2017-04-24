@@ -263,20 +263,24 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
 					doctorPatientLedgerCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
-//					doctorPatientLedgerCollection.setDueAmount(balanceAmount + doctorPatientInvoiceCollection.getBalanceAmount());
+					// doctorPatientLedgerCollection.setDueAmount(balanceAmount
+					// + doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				} else {
-//					doctorPatientLedgerCollection.setDueAmount(balanceAmount + doctorPatientInvoiceCollection.getBalanceAmount());
+					// doctorPatientLedgerCollection.setDueAmount(balanceAmount
+					// + doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setDebitAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
 				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
-						.find(doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
+						.find(doctorPatientInvoiceCollection.getPatientId(),
+								doctorPatientInvoiceCollection.getDoctorId(),
+								doctorPatientInvoiceCollection.getLocationId(),
 								doctorPatientInvoiceCollection.getHospitalId());
-				if(doctorPatientDueAmountCollection == null){
+				if (doctorPatientDueAmountCollection == null) {
 					doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
 					doctorPatientDueAmountCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
 					doctorPatientDueAmountCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
@@ -284,7 +288,8 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
 					doctorPatientDueAmountCollection.setDueAmount(0.0);
 				}
-				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()+dueAmount);
+				doctorPatientDueAmountCollection
+						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() + dueAmount);
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 			}
 		} catch (BusinessException be) {
@@ -423,7 +428,7 @@ public class BillingServiceImpl implements BillingService {
 														.and("hospitalId")
 														.is(doctorPatientReceiptCollection.getHospitalId())),
 												DoctorPatientReceiptCollection.class) + 1));
-				dueAmount = request.getAmountPaid();			
+				dueAmount = request.getAmountPaid();
 			} else {
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(request.getId()));
 				dueAmount = request.getAmountPaid() - doctorPatientReceiptCollection.getAmountPaid();
@@ -539,37 +544,43 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientLedgerCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					doctorPatientLedgerCollection.setReceiptId(doctorPatientReceiptCollection.getId());
-//					doctorPatientLedgerCollection
-//							.setDueAmount(balanceAmount - doctorPatientReceiptCollection.getAmountPaid());
+					// doctorPatientLedgerCollection
+					// .setDueAmount(balanceAmount -
+					// doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setCreatedTime(new Date());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				} else {
 					doctorPatientLedgerCollection.setCreditAmount(doctorPatientReceiptCollection.getAmountPaid());
-//					doctorPatientLedgerCollection
-//							.setDueAmount(balanceAmount - doctorPatientReceiptCollection.getAmountPaid());
+					// doctorPatientLedgerCollection
+					// .setDueAmount(balanceAmount -
+					// doctorPatientReceiptCollection.getAmountPaid());
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
 
 				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
-						.find(doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
+						.find(doctorPatientReceiptCollection.getPatientId(),
+								doctorPatientReceiptCollection.getDoctorId(),
+								doctorPatientReceiptCollection.getLocationId(),
 								doctorPatientReceiptCollection.getHospitalId());
-				if(doctorPatientDueAmountCollection == null){
+				if (doctorPatientDueAmountCollection == null) {
 					doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
 					doctorPatientDueAmountCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
 					doctorPatientDueAmountCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					doctorPatientDueAmountCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
 				}
-				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()-dueAmount);
+				doctorPatientDueAmountCollection
+						.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() - dueAmount);
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 
-				AmountResponse amountResponse = getTotalDueAndAdvanceAmount(request.getDoctorId(), request.getLocationId(), request.getHospitalId(), request.getPatientId());
-				
-				if (amountResponse != null){
+				AmountResponse amountResponse = getTotalDueAndAdvanceAmount(request.getDoctorId(),
+						request.getLocationId(), request.getHospitalId(), request.getPatientId());
+
+				if (amountResponse != null) {
 					response.setTotalRemainingAdvanceAmount(amountResponse.getTotalRemainingAdvanceAmount());
-				    response.setTotalDueAmount(amountResponse.getTotalDueAmount());
+					response.setTotalDueAmount(amountResponse.getTotalDueAmount());
 				}
 			}
 		} catch (BusinessException be) {
@@ -634,6 +645,44 @@ public class BillingServiceImpl implements BillingService {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting receipts" + e);
 		}
 		return responses;
+	}
+
+	@Override
+	public int getReceiptCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, Boolean isOTPVerified) {
+		int response = 0;
+		try {
+			if (isOTPVerified)
+			response = doctorPatientReceiptRepository.countByPatientId(patientObjectId);
+		else
+			response = doctorPatientReceiptRepository.countByPatientIdDoctorLocationHospital(patientObjectId,
+					doctorObjectId, locationObjectId, hospitalObjectId);
+
+		}
+		catch (Exception e) {
+			logger.error("Error while getting receipts count" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting receipts count" + e);
+		}
+		return response;
+	}
+	
+	@Override
+	public int getInvoiceCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, Boolean isOTPVerified) {
+		int response = 0;
+		try {
+			if (isOTPVerified)
+			response = doctorPatientInvoiceRepository.countByPatientId(patientObjectId);
+		else
+			response = doctorPatientInvoiceRepository.countByPatientIdDoctorLocationHospital(patientObjectId,
+					doctorObjectId, locationObjectId, hospitalObjectId);
+
+		}
+		catch (Exception e) {
+			logger.error("Error while getting invoice count" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting invoice count" + e);
+		}
+		return response;
 	}
 
 	@Override
@@ -843,7 +892,7 @@ public class BillingServiceImpl implements BillingService {
 				response.setDoctorPatientReceipt(doctorPatientReceipt);
 				DoctorPatientLedgerCollection doctorPatientLedgerCollection = doctorPatientLedgerRepository
 						.findByInvoiceId(doctorPatientInvoiceCollection.getId());
-				
+
 				if (doctorPatientLedgerCollection == null) {
 					doctorPatientLedgerCollection = new DoctorPatientLedgerCollection();
 					doctorPatientLedgerCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
@@ -861,7 +910,7 @@ public class BillingServiceImpl implements BillingService {
 
 				DoctorPatientLedgerCollection doctorPatientLedgerReceiptCollection = doctorPatientLedgerRepository
 						.findByReceiptId(doctorPatientReceiptCollection.getId());
-				
+
 				if (doctorPatientLedgerReceiptCollection == null) {
 					doctorPatientLedgerReceiptCollection = new DoctorPatientLedgerCollection();
 					doctorPatientLedgerReceiptCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
@@ -879,20 +928,23 @@ public class BillingServiceImpl implements BillingService {
 				}
 				doctorPatientLedgerReceiptCollection = doctorPatientLedgerRepository
 						.save(doctorPatientLedgerReceiptCollection);
-				
+
 				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
-						.find(doctorPatientReceiptCollection.getPatientId(), doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
+						.find(doctorPatientReceiptCollection.getPatientId(),
+								doctorPatientReceiptCollection.getDoctorId(),
+								doctorPatientReceiptCollection.getLocationId(),
 								doctorPatientReceiptCollection.getHospitalId());
-				if(doctorPatientDueAmountCollection == null){
+				if (doctorPatientDueAmountCollection == null) {
 					doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
 					doctorPatientDueAmountCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
 					doctorPatientDueAmountCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
 					doctorPatientDueAmountCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
 				}
-				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()-doctorPatientReceiptCollection.getAmountPaid());
+				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()
+						- doctorPatientReceiptCollection.getAmountPaid());
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
-				
+
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -914,12 +966,12 @@ public class BillingServiceImpl implements BillingService {
 
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
-			if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				dueAmount = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
 						DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
-			}else{
+			} else {
 				dueAmount = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
@@ -992,18 +1044,19 @@ public class BillingServiceImpl implements BillingService {
 				response = new DoctorPatientLedgerResponse();
 				response.setDoctorPatientLedgers(doctorPatientLedgers);
 				AmountResponse dueAmount = null;
-				if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 					dueAmount = mongoTemplate.aggregate(
 							Aggregation.newAggregation(Aggregation.match(criteria),
 									Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
 							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
-				}else{
+				} else {
 					dueAmount = mongoTemplate.aggregate(
 							Aggregation.newAggregation(Aggregation.match(criteria),
 									Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
 							DoctorPatientLedgerCollection.class, AmountResponse.class).getUniqueMappedResult();
 				}
-				if(dueAmount != null)response.setTotalDueAmount(dueAmount.getTotalDueAmount());
+				if (dueAmount != null)
+					response.setTotalDueAmount(dueAmount.getTotalDueAmount());
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting ledger" + e);
@@ -1021,20 +1074,20 @@ public class BillingServiceImpl implements BillingService {
 					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
-			
+
 			AmountResponse dueAmount = null;
-			if(!DPDoctorUtils.anyStringEmpty(doctorId)){
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				dueAmount = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.group("doctorId").sum("dueAmount").as("totalDueAmount")),
 						DoctorPatientDueAmountCollection.class, AmountResponse.class).getUniqueMappedResult();
-			}else{
+			} else {
 				dueAmount = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.group("locationId").sum("dueAmount").as("totalDueAmount")),
 						DoctorPatientDueAmountCollection.class, AmountResponse.class).getUniqueMappedResult();
 			}
-			
+
 			DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
 					.aggregate(
 							Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1113,7 +1166,7 @@ public class BillingServiceImpl implements BillingService {
 					status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 					invoiceItemJasperDetail.setStatus(status);
 				} else {
-					invoiceItemJasperDetail.setStatus("");
+					invoiceItemJasperDetail.setStatus("--");
 				}
 				invoiceItemJasperDetail.setServiceName(invoiceItem.getName());
 
@@ -1123,7 +1176,7 @@ public class BillingServiceImpl implements BillingService {
 					if (invoiceItem.getQuantity().getType() != null)
 						quantity = quantity + invoiceItem.getQuantity().getType().getDuration();
 					invoiceItemJasperDetail.setQuantity(quantity);
-				}else{
+				} else {
 					invoiceItemJasperDetail.setQuantity("");
 				}
 				invoiceItemJasperDetail.setTax((invoiceItem.getTax() != null)

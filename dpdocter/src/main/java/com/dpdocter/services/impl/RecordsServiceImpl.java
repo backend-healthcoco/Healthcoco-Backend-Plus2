@@ -89,7 +89,9 @@ import com.dpdocter.request.RecordsSmsRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RecordsLookupResponse;
+import com.dpdocter.services.BillingService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.EmailTackService;
@@ -173,6 +175,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+
+	@Autowired
+	private BillingService BillingService;
 
 	@Autowired
 	private UserRecordsRepository userRecordsRepository;
@@ -899,6 +904,15 @@ public class RecordsServiceImpl implements RecordsService {
 				case DISCHARGE_SUMMARY:
 					count.setValue(dischargeSummaryService.getDischargeSummaryCount(doctorObjectId, patientObjectId,
 							locationObjectId, hospitalObjectId, isOTPVerified));
+					break;
+				case INVOICE:
+					count.setValue(BillingService.getInvoiceCount(doctorObjectId, patientObjectId, locationObjectId,
+							hospitalObjectId, isOTPVerified));
+					break;
+
+				case RECEIPT:
+					count.setValue(BillingService.getReceiptCount(doctorObjectId, patientObjectId, locationObjectId,
+							hospitalObjectId, isOTPVerified));
 					break;
 				default:
 					break;

@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
@@ -18,7 +20,8 @@ public interface BillingService {
 
 	DoctorPatientInvoice addEditInvoice(DoctorPatientInvoice request);
 
-	List<DoctorPatientInvoice> getInvoices(String type, int page, int size, String doctorId, String locationId, String hospitalId, String patientId, String updatedTime, Boolean discarded);
+	List<DoctorPatientInvoice> getInvoices(String type, int page, int size, String doctorId, String locationId,
+			String hospitalId, String patientId, String updatedTime, Boolean discarded);
 
 	DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded);
 
@@ -37,13 +40,20 @@ public interface BillingService {
 
 	Double getTotalDueAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
-	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId, String from, String to, int page, int size, String updatedTime);
+	DoctorPatientLedgerResponse getLedger(String doctorId, String locationId, String hospitalId, String patientId,
+			String from, String to, int page, int size, String updatedTime);
 
 	AmountResponse getTotalDueAndAdvanceAmount(String doctorId, String locationId, String hospitalId, String patientId);
 
 	DoctorPatientInvoice getInvoice(String invoiceId);
-	
+
 	String downloadInvoice(String invoiceId);
-	
+
 	String downloadReceipt(String receiptId);
+
+	int getReceiptCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, Boolean isOTPVerified);
+	
+	int getInvoiceCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, Boolean isOTPVerified);
 }

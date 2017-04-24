@@ -29,6 +29,7 @@ public class DischargeSummary extends GenericCollection {
 	private String observation;
 	private String investigation;
 	private String pa;
+	private String ps;
 	private String pv;
 	private String echo;
 	private String xRayDetails;
@@ -324,5 +325,14 @@ public class DischargeSummary extends GenericCollection {
 	public void setDiscaded(Boolean discaded) {
 		this.discaded = discaded;
 	}
+
+	public String getPs() {
+		return ps;
+	}
+
+	public void setPs(String ps) {
+		this.ps = ps;
+	}
+	
 
 }

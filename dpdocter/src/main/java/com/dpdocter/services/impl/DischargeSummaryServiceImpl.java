@@ -176,9 +176,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public Integer getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId,
+	public int getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId,
 			ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified) {
-		Integer response = 0;
+		int response = 0;
 		try {
 			if (isOTPVerified)
 				response = dischargeSummaryRepository.countByPatientId(patientObjectId);

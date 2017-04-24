@@ -15,7 +15,7 @@ public interface DischargeSummaryService {
 	List<DischargeSummary> getDischargeSummary(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, String updatedTime);
 
-	Integer getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+	int getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
 	DischargeSummary viewDischargeSummary(String summaryId);
