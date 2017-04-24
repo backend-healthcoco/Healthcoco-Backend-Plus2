@@ -566,40 +566,36 @@ public class SMSServicesImpl implements SMSServices {
 	@Override
 	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) throws TwilioRestException {
 		Boolean response = false;
-		String responseId = null;
 		try {
-			if (!isEnvProduction) {
+//			if (!isEnvProduction) {
 				response = sendSMS(smsTrackDetail, save);
-			} else {
-				if (sendSmsFromTwilio) {
-					for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-						if (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null) {
-							String recipient = TWILIO_COUNTRY_CODE + smsDetails.getSms().getSmsAddress().getRecipient();
-							smsDetails.getSms().getSmsAddress().setRecipient(recipient);
-							SMS sms = new SMS();
-							BeanUtil.map(smsDetails.getSms(), sms);
-							TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
-
-							List<NameValuePair> params = new ArrayList<NameValuePair>();
-							params.add(new BasicNameValuePair("To", recipient));
-							params.add(new BasicNameValuePair("From", TWILIO_FROM_NUMBER));// 15005550006
-							params.add(new BasicNameValuePair("Body", sms.getSmsText()));
-
-							MessageFactory messageFactory = client.getAccount().getMessageFactory();
-							com.twilio.sdk.resource.instance.Message message = messageFactory.create(params);
-							responseId = message.getSid();
-							smsTrackDetail.setResponseId(responseId);
-						}
-					}
-					if (!DPDoctorUtils.anyStringEmpty(responseId))
-						response = true;
-				} else {
-					response = sendSMS(smsTrackDetail, save);
-				}
-			}
-
-			if (save)
-				smsTrackRepository.save(smsTrackDetail);
+//			} else {
+//				if (sendSmsFromTwilio) {
+//					for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
+//						if (smsDetails.getSms() != null && smsDetails.getSms().getSmsAddress() != null) {
+//							String recipient = TWILIO_COUNTRY_CODE + smsDetails.getSms().getSmsAddress().getRecipient();
+//							smsDetails.getSms().getSmsAddress().setRecipient(recipient);
+//							SMS sms = new SMS();
+//							BeanUtil.map(smsDetails.getSms(), sms);
+//							TwilioRestClient client = new TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN);
+//
+//							List<NameValuePair> params = new ArrayList<NameValuePair>();
+//							params.add(new BasicNameValuePair("To", recipient));
+//							params.add(new BasicNameValuePair("From", TWILIO_FROM_NUMBER));// 15005550006
+//							params.add(new BasicNameValuePair("Body", sms.getSmsText()));
+//
+//							MessageFactory messageFactory = client.getAccount().getMessageFactory();
+//							com.twilio.sdk.resource.instance.Message message = messageFactory.create(params);
+//							responseId = message.getSid();
+//							smsTrackDetail.setResponseId(responseId);
+//						}
+//					}
+//					if (!DPDoctorUtils.anyStringEmpty(responseId))
+//						response = true;
+//				} else {
+//					response = sendSMS(smsTrackDetail, save);
+//				}
+//			}
 
 		} catch (BusinessException e) {
 			logger.error(e);
