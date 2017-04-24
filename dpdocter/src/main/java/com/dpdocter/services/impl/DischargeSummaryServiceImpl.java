@@ -19,11 +19,14 @@ import com.dpdocter.beans.DischargeSummary;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.PatientVisitService;
 
@@ -44,7 +47,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
-	private PatientVisitService PatientVisitService;
+	private UserRepository userRepository;
 
 	@Transactional
 	@Override
@@ -52,37 +55,38 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		DischargeSummary response = null;
 		try {
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					new ObjectId(dischargeSummary.getPatientId()), new ObjectId(dischargeSummary.getDoctorId()),
-					new ObjectId(dischargeSummary.getLocationId()), new ObjectId(dischargeSummary.getHospitalId()));
-			if (patientCollection != null) {
-				DischargeSummaryCollection dischargeSummaryCollection = null;
 
-				if (dischargeSummary.getId() == null) {
-					dischargeSummaryCollection = new DischargeSummaryCollection();
+			DischargeSummaryCollection dischargeSummaryCollection = null;
 
-				} else {
-					dischargeSummaryCollection = dischargeSummaryRepository
-							.findOne(new ObjectId(dischargeSummary.getId()));
-				}
-				if (dischargeSummaryCollection != null) {
+			if (dischargeSummary.getId() == null) {
+				dischargeSummaryCollection = new DischargeSummaryCollection();
 
-					BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
-					dischargeSummaryCollection.setUpdatedTime(new Date());
-
+			} else {
+				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
+			}
+			if (dischargeSummaryCollection != null) {
+				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getDoctorId(),
+						dischargeSummaryCollection.getLocationId(), dischargeSummaryCollection.getHospitalId());
+				UserCollection doctor = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+				if (patientCollection != null) {
+					dischargeSummaryCollection.setCreatedTime(new Date());
+					dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
+					dischargeSummaryCollection.setDischargeId(
+							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 					dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
-
 					PatientCard patientCard = new PatientCard();
 					BeanUtil.map(patientCollection, patientCard);
 					response = new DischargeSummary();
 					BeanUtil.map(dischargeSummaryCollection, response);
 					response.setPatient(patientCard);
 				} else {
-					throw new BusinessException(ServiceError.InvalidInput, "Invalid  discharge summary Id  ");
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id  ");
 
 				}
 			} else {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id  ");
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid  discharge summary Id  ");
 
 			}
 		} catch (Exception e) {

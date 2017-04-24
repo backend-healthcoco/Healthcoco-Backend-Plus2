@@ -28,7 +28,7 @@ public class ConsentForm extends GenericCollection {
 
 	private DOB dob;
 
-	private Address address;
+	private String address;
 
 	private String mobileNumber;
 
@@ -135,11 +135,13 @@ public class ConsentForm extends GenericCollection {
 		this.dob = dob;
 	}
 
-	public Address getAddress() {
+
+
+	public String getAddress() {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public void setAddress(String address) {
 		this.address = address;
 	}
 

@@ -3100,8 +3100,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				request.setSignImageURL(imagepath);
 				ConsentFormCollection consentFormCollection = new ConsentFormCollection();
 				BeanUtil.map(request, consentFormCollection);
-
-				consentFormCollection.setUpdatedTime(createdTime);
+				consentFormCollection.setCreatedTime(createdTime);;
 				consentFormCollection
 						.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
 				consentFormCollection.setCreatedBy(doctor.getFirstName());
