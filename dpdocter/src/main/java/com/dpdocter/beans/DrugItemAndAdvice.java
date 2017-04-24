@@ -2,19 +2,18 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import com.dpdocter.response.TestAndRecordDataResponse;
-
 public class DrugItemAndAdvice {
-	private List<TestAndRecordDataResponse> diagnosticTests;
+
+	private List<PrescriptionItemDetail> items;
 
 	private String advice;
 
-	public List<TestAndRecordDataResponse> getDiagnosticTests() {
-		return diagnosticTests;
+	public List<PrescriptionItemDetail> getItems() {
+		return items;
 	}
 
-	public void setDiagnosticTests(List<TestAndRecordDataResponse> diagnosticTests) {
-		this.diagnosticTests = diagnosticTests;
+	public void setItems(List<PrescriptionItemDetail> items) {
+		this.items = items;
 	}
 
 	public String getAdvice() {
@@ -24,8 +23,5 @@ public class DrugItemAndAdvice {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
-	
-	
-	
 
 }

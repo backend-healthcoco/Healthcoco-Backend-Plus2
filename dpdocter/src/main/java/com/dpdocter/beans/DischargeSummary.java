@@ -19,7 +19,7 @@ public class DischargeSummary extends GenericCollection {
 	private String pastHistory;
 	private String familyHistory;
 	private String personalHistory;
-	private List<String> complaints;
+	private String complaints;
 	private String presentComplaints;
 	private String historyOfPresentComplaints;
 	private String menstrualHistory;
@@ -45,6 +45,34 @@ public class DischargeSummary extends GenericCollection {
 	private String conditionsAtDischarge;
 	private String summary;
 	private Boolean discaded = false;
+	private String indicationOfUSG;
+	private String ecgDetails;
+	private String holter;
+	
+
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+
+	public String getEcgDetails() {
+		return ecgDetails;
+	}
+
+	public void setEcgDetails(String ecgDetails) {
+		this.ecgDetails = ecgDetails;
+	}
+
+	public String getHolter() {
+		return holter;
+	}
+
+	public void setHolter(String holter) {
+		this.holter = holter;
+	}
 
 	public String getId() {
 		return id;
@@ -274,11 +302,11 @@ public class DischargeSummary extends GenericCollection {
 		return conditionsAtDischarge;
 	}
 
-	public List<String> getComplaints() {
+	public String getComplaints() {
 		return complaints;
 	}
 
-	public void setComplaints(List<String> complaints) {
+	public void setComplaints(String complaints) {
 		this.complaints = complaints;
 	}
 
@@ -333,6 +361,5 @@ public class DischargeSummary extends GenericCollection {
 	public void setPs(String ps) {
 		this.ps = ps;
 	}
-	
 
 }

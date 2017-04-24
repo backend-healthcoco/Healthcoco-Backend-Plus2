@@ -35,7 +35,7 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private String personalHistory;
 	@Field
-	private List<String> complaints;
+	private String complaints;
 	@Field
 	private String presentComplaints;
 	@Field
@@ -86,6 +86,36 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String summary;
 	@Field
 	private Boolean discaded = false;
+	@Field
+	private String indicationOfUSG;
+	@Field
+	private String ecgDetails;
+	@Field
+	private String holter;
+
+	public String getIndicationOfUSG() {
+		return indicationOfUSG;
+	}
+
+	public void setIndicationOfUSG(String indicationOfUSG) {
+		this.indicationOfUSG = indicationOfUSG;
+	}
+
+	public String getEcgDetails() {
+		return ecgDetails;
+	}
+
+	public void setEcgDetails(String ecgDetails) {
+		this.ecgDetails = ecgDetails;
+	}
+
+	public String getHolter() {
+		return holter;
+	}
+
+	public void setHolter(String holter) {
+		this.holter = holter;
+	}
 
 	public Boolean getDiscaded() {
 		return discaded;
@@ -135,8 +165,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	
-
 	public DrugItemAndAdvice getPrescriptions() {
 		return prescriptions;
 	}
@@ -177,11 +205,11 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.personalHistory = personalHistory;
 	}
 
-	public List<String> getComplaints() {
+	public String getComplaints() {
 		return complaints;
 	}
 
-	public void setComplaints(List<String> complaints) {
+	public void setComplaints(String complaints) {
 		this.complaints = complaints;
 	}
 
@@ -376,6 +404,5 @@ public class DischargeSummaryCollection extends GenericCollection {
 	public void setPs(String ps) {
 		this.ps = ps;
 	}
-	
 
 }
