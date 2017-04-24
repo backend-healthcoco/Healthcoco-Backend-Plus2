@@ -8,12 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.ClinicalNotes;
-import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.ReviewDates;
-import com.dpdocter.beans.Treatment;
 
 @Document(collection = "discharge_summary_cl")
 public class DischargeSummaryCollection extends GenericCollection {

@@ -1,14 +1,11 @@
 package com.dpdocter.services.impl;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -18,24 +15,17 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.ClinicalNotes;
-import com.dpdocter.beans.ComplaintAndDate;
-import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DischargeSummary;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.PatientCollection;
-import com.dpdocter.collections.PrescriptionCollection;
-import com.dpdocter.collections.UserCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.response.PatientVisitResponse;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.PatientVisitService;
-import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
