@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DrugItemAndAdvice;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.ReviewDates;
 
@@ -24,7 +25,7 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
-	private List<Prescription> prescriptions;
+	private DrugItemAndAdvice prescriptions;
 	@Field
 	private String diagnosis;
 	@Field
@@ -132,11 +133,13 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public List<Prescription> getPrescriptions() {
+	
+
+	public DrugItemAndAdvice getPrescriptions() {
 		return prescriptions;
 	}
 
-	public void setPrescriptions(List<Prescription> prescriptions) {
+	public void setPrescriptions(DrugItemAndAdvice prescriptions) {
 		this.prescriptions = prescriptions;
 	}
 

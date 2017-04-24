@@ -11,24 +11,19 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DischargeSummary;
-import com.dpdocter.beans.PatientCard;
 import com.dpdocter.collections.DischargeSummaryCollection;
-import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DischargeSummaryRepository;
-import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.services.DischargeSummaryService;
-import com.dpdocter.services.PatientVisitService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -39,9 +34,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private DischargeSummaryRepository dischargeSummaryRepository;
-
-	@Autowired
-	private PatientRepository patientRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -66,25 +58,17 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			if (dischargeSummaryCollection != null) {
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getDoctorId(),
-						dischargeSummaryCollection.getLocationId(), dischargeSummaryCollection.getHospitalId());
-				UserCollection doctor = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
-				if (patientCollection != null) {
-					dischargeSummaryCollection.setCreatedTime(new Date());
-					dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
-					dischargeSummaryCollection.setDischargeId(
-							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
-					dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
-					PatientCard patientCard = new PatientCard();
-					BeanUtil.map(patientCollection, patientCard);
-					response = new DischargeSummary();
-					BeanUtil.map(dischargeSummaryCollection, response);
-					response.setPatient(patientCard);
-				} else {
-					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id  ");
 
-				}
+				UserCollection doctor = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+
+				dischargeSummaryCollection.setCreatedTime(new Date());
+				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
+				dischargeSummaryCollection.setDischargeId(
+						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+				response = new DischargeSummary();
+				BeanUtil.map(dischargeSummaryCollection, response);
+
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid  discharge summary Id  ");
 
@@ -156,14 +140,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			AggregationResults<DischargeSummary> aggregationResults = mongoTemplate.aggregate(aggregation,
 					DischargeSummaryCollection.class, DischargeSummary.class);
 			response = aggregationResults.getMappedResults();
-			for (DischargeSummary dischargeSummary : response) {
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						new ObjectId(dischargeSummary.getPatientId()), new ObjectId(dischargeSummary.getDoctorId()),
-						new ObjectId(dischargeSummary.getLocationId()), new ObjectId(dischargeSummary.getHospitalId()));
-				PatientCard patientCard = new PatientCard();
-				BeanUtil.map(patientCollection, patientCard);
-				dischargeSummary.setPatient(patientCard);
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -181,15 +157,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
 					.findOne(new ObjectId(dischargeSummeryId));
 			if (dischargeSummaryCollection != null) {
-
-				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getDoctorId(),
-						dischargeSummaryCollection.getLocationId(), dischargeSummaryCollection.getHospitalId());
-				PatientCard patientCard = new PatientCard();
-				BeanUtil.map(patientCollection, patientCard);
 				response = new DischargeSummary();
 				BeanUtil.map(dischargeSummaryCollection, response);
-				response.setPatient(patientCard);
 
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid discharge summaryId ");
@@ -207,30 +176,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	@Override
-	public Integer getDischargeSummaryCount(String doctorId, String locationId, String hospitalId, String patientId,
-			String updatedTime) {
+	public Integer getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId,
+			ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer response = 0;
 		try {
-
-			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
-				patientObjectId = new ObjectId(patientId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(Long.parseLong(updatedTime))).and("patientId")
-					.is(patientObjectId);
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				criteria.and("locationId").is(locationObjectId);
-			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				criteria.and("hospitalId").is(hospitalObjectId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				criteria.and("doctorId").is(doctorObjectId);
-			response = (int) mongoTemplate.count(new Query(criteria), DischargeSummaryCollection.class);
+			if (isOTPVerified)
+				response = dischargeSummaryRepository.countByPatientId(patientObjectId);
+			else
+				response = dischargeSummaryRepository.countByPatientIdDoctorLocationHospital(patientObjectId,
+						doctorObjectId, locationObjectId, hospitalObjectId);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1099,10 +1099,9 @@ public interface PathProxy {
 
 	public interface DischargeSummaryUrls {
 		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
-		public static final String GET_DISCHARGE_SUMMARY_COUNT = "/getDischargeSummeryCount";
 		public static final String ADD_DISCHARGE_SUMMARY = "/add";
 		public static final String VIEW_DISCHARGE_SUMMARY = "/view/{dischargeSummeryId}";
-		
+
 	}
 
 	public static final String LAB_BASE_URL = BASE_URL + "/lab";

@@ -14,8 +14,7 @@ public class DischargeSummary extends GenericCollection {
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
-	private PatientCard patient;
-	private List<Prescription> prescriptions;
+	private DrugItemAndAdvice prescriptions;
 	private String diagnosis;
 	private String pastHistory;
 	private String familyHistory;
@@ -62,14 +61,6 @@ public class DischargeSummary extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public PatientCard getPatient() {
-		return patient;
-	}
-
-	public void setPatient(PatientCard patient) {
-		this.patient = patient;
-	}
-
 	public String getDoctorId() {
 		return doctorId;
 	}
@@ -94,11 +85,11 @@ public class DischargeSummary extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public List<Prescription> getPrescriptions() {
+	public DrugItemAndAdvice getPrescriptions() {
 		return prescriptions;
 	}
 
-	public void setPrescriptions(List<Prescription> prescriptions) {
+	public void setPrescriptions(DrugItemAndAdvice prescriptions) {
 		this.prescriptions = prescriptions;
 	}
 

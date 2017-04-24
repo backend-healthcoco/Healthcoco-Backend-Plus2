@@ -3081,15 +3081,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 
 			Date createdTime = new Date();
-			PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-					new ObjectId(request.getPatientId()), new ObjectId(request.getDoctorId()),
-					new ObjectId(request.getLocationId()), new ObjectId(request.getHospitalId()));
-			if (patientCollection == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid patientId");
-			}
+
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 
-			request.setPatientId(patientCollection.getUserId().toString());
 			String path = "sign" + File.separator + request.getPatientId();
 			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 			String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
@@ -3100,7 +3094,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				request.setSignImageURL(imagepath);
 				ConsentFormCollection consentFormCollection = new ConsentFormCollection();
 				BeanUtil.map(request, consentFormCollection);
-				consentFormCollection.setCreatedTime(createdTime);;
+				consentFormCollection.setCreatedTime(createdTime);
+				;
 				consentFormCollection
 						.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
 				consentFormCollection.setCreatedBy(doctor.getFirstName());

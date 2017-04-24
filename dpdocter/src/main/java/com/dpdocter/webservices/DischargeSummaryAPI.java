@@ -60,26 +60,6 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_COUNT)
-	@GET
-	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_COUNT, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_COUNT)
-	public Response<Integer> getDischargeSummaryCount(@QueryParam(value = "doctorId") String doctorId,
-			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
-			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
-		Response<Integer> response = null;
-		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Doctor or patient id is null");
-		}
-
-		response = new Response<Integer>();
-		response.setData(dischargeSummaryService.getDischargeSummaryCount(doctorId, locationId, hospitalId, patientId,
-				updatedTime));
-
-		return response;
-
-	}
-
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
