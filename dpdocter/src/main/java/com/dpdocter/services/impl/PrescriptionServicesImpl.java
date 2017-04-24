@@ -4066,7 +4066,10 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public List<DrugInteractionResposne> drugInteraction(List<Drug> request, String patientId) {
 		List<DrugInteractionResposne> response = null;
 		try {
-//			List<Drug> ongoingDrugs = getOngoingDrugs(patientId);
+			if(!DPDoctorUtils.anyStringEmpty(patientId)){
+				List<Drug> ongoingDrugs = getOngoingDrugs(patientId);
+				if(ongoingDrugs != null && !ongoingDrugs.isEmpty())request.addAll(ongoingDrugs);
+			}
 			// if(!DPDoctorUtils.anyStringEmpty(patientId)){
 			// Aggregation aggregation =
 			// Aggregation.newAggregation(Aggregation.match(new
@@ -4084,7 +4087,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			// BeanToPropertyValueTransformer("Drug"));
 			// System.out.println(drugIds);
 			// }
-//			if(ongoingDrugs != null && !ongoingDrugs.isEmpty())request.addAll(ongoingDrugs);
 			List<String> genericCodes = new ArrayList<String>();
 
 			for (int k = 0; k < request.size(); k++) {

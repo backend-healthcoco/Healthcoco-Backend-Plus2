@@ -767,7 +767,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		appLinkDetailsRepository.save(appLinkDetailsCollections);		
 	}
 
-//	@Scheduled(fixedDelay = 1800000)
+	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
 	@Override
 	@Transactional
 	public void updateActivePrescription() {

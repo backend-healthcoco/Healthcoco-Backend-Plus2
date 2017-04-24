@@ -5,9 +5,9 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class EyeTest {
 
-	private Double distanceSPH;
+	private String distanceSPH;
 
-	private Double nearSPH;
+	private String nearSPH;
 
 	private Double distanceCylinder;
 
@@ -29,19 +29,19 @@ public class EyeTest {
 
 	private Double distanceDiameter;
 
-	public Double getDistanceSPH() {
+	public String getDistanceSPH() {
 		return distanceSPH;
 	}
 
-	public void setDistanceSPH(Double distanceSPH) {
+	public void setDistanceSPH(String distanceSPH) {
 		this.distanceSPH = distanceSPH;
 	}
 
-	public Double getNearSPH() {
+	public String getNearSPH() {
 		return nearSPH;
 	}
 
-	public void setNearSPH(Double nearSPH) {
+	public void setNearSPH(String nearSPH) {
 		this.nearSPH = nearSPH;
 	}
 
