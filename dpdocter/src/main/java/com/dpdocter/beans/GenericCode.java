@@ -12,6 +12,8 @@ public class GenericCode extends GenericCollection{
     
     private String name;
 
+    private String strength;
+
     public String getId() {
 	return id;
     }
@@ -36,8 +38,17 @@ public class GenericCode extends GenericCollection{
 	this.name = name;
     }
 
-    @Override
-    public String toString() {
-	return "GenericCode [id=" + id + ", code=" + code + ", name=" + name + "]";
-    }
+	public String getStrength() {
+		return strength;
+	}
+
+	public void setStrength(String strength) {
+		this.strength = strength;
+	}
+
+	@Override
+	public String toString() {
+		return "GenericCode [id=" + id + ", code=" + code + ", name=" + name + ", strength=" + strength + "]";
+	}
+
 }
