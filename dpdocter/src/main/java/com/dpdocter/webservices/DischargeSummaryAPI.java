@@ -19,9 +19,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.DischargeSummary;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.services.DischargeSummaryService;
 
 import common.util.web.DPDoctorUtils;
@@ -44,16 +45,15 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
-	public Response<DischargeSummary> addEditDischargeSummary(DischargeSummary request) {
-		Response<DischargeSummary> response = null;
-		DischargeSummary dischargeSummary = null;
-
+	public Response<DischargeSummaryResponse> addEditDischargeSummary(DischargeSummaryRequest request) {
+		Response<DischargeSummaryResponse> response = null;
+		DischargeSummaryResponse dischargeSummary = null;
 		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}
 		dischargeSummary = dischargeSummaryService.addEditDischargeSummary(request);
 		if (dischargeSummary != null) {
-			response = new Response<DischargeSummary>();
+			response = new Response<DischargeSummaryResponse>();
 			response.setData(dischargeSummary);
 		}
 
@@ -63,13 +63,13 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY)
-	public Response<DischargeSummary> getDischargeSummary(@QueryParam(value = "page") int page,
+	public Response<DischargeSummaryResponse> getDischargeSummary(@QueryParam(value = "page") int page,
 			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "patientId") String patientId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
-		Response<DischargeSummary> response = null;
-		List<DischargeSummary> dischargeSummaries = null;
+		Response<DischargeSummaryResponse> response = null;
+		List<DischargeSummaryResponse> dischargeSummaries = null;
 
 		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -77,7 +77,7 @@ public class DischargeSummaryAPI {
 		}
 		dischargeSummaries = dischargeSummaryService.getDischargeSummary(doctorId, locationId, hospitalId, patientId,
 				page, size, updatedTime);
-		response = new Response<DischargeSummary>();
+		response = new Response<DischargeSummaryResponse>();
 		response.setDataList(dischargeSummaries);
 
 		return response;
@@ -87,9 +87,10 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.VIEW_DISCHARGE_SUMMARY)
-	public Response<DischargeSummary> viewDischargeSummary(@PathParam("dischargeSummeryId") String dischargeSummeryId) {
-		Response<DischargeSummary> response = null;
-		DischargeSummary dischargeSummary = null;
+	public Response<DischargeSummaryResponse> viewDischargeSummary(
+			@PathParam("dischargeSummeryId") String dischargeSummeryId) {
+		Response<DischargeSummaryResponse> response = null;
+		DischargeSummaryResponse dischargeSummary = null;
 
 		if (dischargeSummeryId == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
@@ -97,7 +98,7 @@ public class DischargeSummaryAPI {
 		// dischargeSummary = new DischargeSummary();
 		dischargeSummary = dischargeSummaryService.viewDischargeSummary(dischargeSummeryId);
 		if (dischargeSummary != null) {
-			response = new Response<DischargeSummary>();
+			response = new Response<DischargeSummaryResponse>();
 			response.setData(dischargeSummary);
 
 		}

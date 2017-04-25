@@ -1,20 +1,20 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
 import java.util.Date;
-import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.beans.PrescriptionItemAndAdvice;
+import com.dpdocter.beans.ReviewDates;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class DischargeSummary extends GenericCollection {
+public class DischargeSummaryResponse {
+
 	private String id;
 	private String patientId;
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
-	private DrugItemAndAdvice prescriptions;
+	private PrescriptionItemAndAdvice prescriptions;
 	private String diagnosis;
 	private String pastHistory;
 	private String familyHistory;
@@ -48,7 +48,6 @@ public class DischargeSummary extends GenericCollection {
 	private String indicationOfUSG;
 	private String ecgDetails;
 	private String holter;
-	
 
 	public String getIndicationOfUSG() {
 		return indicationOfUSG;
@@ -114,11 +113,11 @@ public class DischargeSummary extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public DrugItemAndAdvice getPrescriptions() {
+	public PrescriptionItemAndAdvice getPrescriptions() {
 		return prescriptions;
 	}
 
-	public void setPrescriptions(DrugItemAndAdvice prescriptions) {
+	public void setPrescriptions(PrescriptionItemAndAdvice prescriptions) {
 		this.prescriptions = prescriptions;
 	}
 

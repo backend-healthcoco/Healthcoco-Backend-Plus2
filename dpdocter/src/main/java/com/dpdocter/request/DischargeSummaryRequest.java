@@ -1,97 +1,54 @@
-package com.dpdocter.collections;
+package com.dpdocter.request;
 
 import java.util.Date;
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.PrescriptionItemAndAdviceAdd;
-import com.dpdocter.beans.Prescription;
-import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.ReviewDates;
+import com.dpdocter.collections.GenericCollection;
 
-@Document(collection = "discharge_summary_cl")
-public class DischargeSummaryCollection extends GenericCollection {
-	@Id
-	private ObjectId id;
-	@Field
-	private ObjectId patientId;
-	@Field
-	private ObjectId doctorId;
-	@Field
-	private ObjectId locationId;
-	@Field
-	private ObjectId hospitalId;
-	@Field
-	private PrescriptionAndAdvice prescriptions;
-	@Field
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+public class DischargeSummaryRequest extends GenericCollection {
+	private String id;
+	private String patientId;
+	private String doctorId;
+	private String locationId;
+	private String hospitalId;
+	private PrescriptionItemAndAdviceAdd prescriptions;
 	private String diagnosis;
-	@Field
 	private String pastHistory;
-	@Field
 	private String familyHistory;
-	@Field
 	private String personalHistory;
-	@Field
 	private String complaints;
-	@Field
 	private String presentComplaints;
-	@Field
 	private String historyOfPresentComplaints;
-	@Field
 	private String menstrualHistory;
-	@Field
 	private String obstetricHistory;
-	@Field
 	private String generalExamination;
-	@Field
 	private String systemicExamination;
-	@Field
 	private String observation;
-	@Field
 	private String investigation;
-	@Field
 	private String pa;
-	@Field
 	private String ps;
-	@Field
 	private String pv;
-	@Field
 	private String echo;
-	@Field
 	private String xRayDetails;
-	@Field
 	private String operationNotes;
-	@Field
 	private String treatmentsGiven;
-	@Field
 	private ReviewDates nextReview;
-	@Field
 	private String dischargeId;
-	@Field
 	private Date admissionDate;
-	@Field
 	private Date dischargeDate;
-	@Field
 	private String labourNotes;
-	@Field
 	private String babyWeight;
-	@Field
 	private String babyNotes;
-	@Field
 	private String conditionsAtDischarge;
-	@Field
 	private String summary;
-	@Field
 	private Boolean discaded = false;
-	@Field
 	private String indicationOfUSG;
-	@Field
 	private String ecgDetails;
-	@Field
 	private String holter;
 
 	public String getIndicationOfUSG() {
@@ -118,61 +75,51 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.holter = holter;
 	}
 
-	public Boolean getDiscaded() {
-		return discaded;
-	}
-
-	public void setDiscaded(Boolean discaded) {
-		this.discaded = discaded;
-	}
-
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public ObjectId getPatientId() {
+	public String getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(ObjectId patientId) {
+	public void setPatientId(String patientId) {
 		this.patientId = patientId;
 	}
 
-	public ObjectId getDoctorId() {
+	public String getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(ObjectId doctorId) {
+	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getLocationId() {
+	public String getLocationId() {
 		return locationId;
 	}
 
-	public void setLocationId(ObjectId locationId) {
+	public void setLocationId(String locationId) {
 		this.locationId = locationId;
 	}
 
-	public ObjectId getHospitalId() {
+	public String getHospitalId() {
 		return hospitalId;
 	}
 
-	public void setHospitalId(ObjectId hospitalId) {
+	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
 
-	
-
-	public PrescriptionAndAdvice getPrescriptions() {
+	public PrescriptionItemAndAdviceAdd getPrescriptions() {
 		return prescriptions;
 	}
 
-	public void setPrescriptions(PrescriptionAndAdvice prescriptions) {
+	public void setPrescriptions(PrescriptionItemAndAdviceAdd prescriptions) {
 		this.prescriptions = prescriptions;
 	}
 
@@ -206,30 +153,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setPersonalHistory(String personalHistory) {
 		this.personalHistory = personalHistory;
-	}
-
-	public String getComplaints() {
-		return complaints;
-	}
-
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
-	}
-
-	public String getPresentComplaints() {
-		return presentComplaints;
-	}
-
-	public void setPresentComplaints(String presentComplaints) {
-		this.presentComplaints = presentComplaints;
-	}
-
-	public String getHistoryOfPresentComplaints() {
-		return historyOfPresentComplaints;
-	}
-
-	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
-		this.historyOfPresentComplaints = historyOfPresentComplaints;
 	}
 
 	public String getMenstrualHistory() {
@@ -320,14 +243,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.operationNotes = operationNotes;
 	}
 
-	public String getTreatmentsGiven() {
-		return treatmentsGiven;
-	}
-
-	public void setTreatmentsGiven(String treatmentsGiven) {
-		this.treatmentsGiven = treatmentsGiven;
-	}
-
 	public ReviewDates getNextReview() {
 		return nextReview;
 	}
@@ -388,6 +303,38 @@ public class DischargeSummaryCollection extends GenericCollection {
 		return conditionsAtDischarge;
 	}
 
+	public String getComplaints() {
+		return complaints;
+	}
+
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
+	}
+
+	public String getPresentComplaints() {
+		return presentComplaints;
+	}
+
+	public void setPresentComplaints(String presentComplaints) {
+		this.presentComplaints = presentComplaints;
+	}
+
+	public String getHistoryOfPresentComplaints() {
+		return historyOfPresentComplaints;
+	}
+
+	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
+		this.historyOfPresentComplaints = historyOfPresentComplaints;
+	}
+
+	public String getTreatmentsGiven() {
+		return treatmentsGiven;
+	}
+
+	public void setTreatmentsGiven(String treatmentsGiven) {
+		this.treatmentsGiven = treatmentsGiven;
+	}
+
 	public void setConditionsAtDischarge(String conditionsAtDischarge) {
 		this.conditionsAtDischarge = conditionsAtDischarge;
 	}
@@ -398,6 +345,14 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setSummary(String summary) {
 		this.summary = summary;
+	}
+
+	public Boolean getDiscaded() {
+		return discaded;
+	}
+
+	public void setDiscaded(Boolean discaded) {
+		this.discaded = discaded;
 	}
 
 	public String getPs() {

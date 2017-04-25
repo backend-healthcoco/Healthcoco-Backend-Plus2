@@ -4,20 +4,21 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-import com.dpdocter.beans.DischargeSummary;
+import com.dpdocter.request.DischargeSummaryRequest;
+import com.dpdocter.response.DischargeSummaryResponse;
 
 public interface DischargeSummaryService {
 
-	DischargeSummary addEditDischargeSummary(DischargeSummary dischargeSummary);
+	DischargeSummaryResponse addEditDischargeSummary(DischargeSummaryRequest dischargeSummary);
 
 	// List<DischargeSummary> getAllDischargeSummary();
 
-	List<DischargeSummary> getDischargeSummary(String doctorId, String locationId, String hospitalId, String patientId,
+	List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId, String patientId,
 			int page, int size, String updatedTime);
 
 	int getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-	DischargeSummary viewDischargeSummary(String summaryId);
+	DischargeSummaryResponse viewDischargeSummary(String summaryId);
 
 }

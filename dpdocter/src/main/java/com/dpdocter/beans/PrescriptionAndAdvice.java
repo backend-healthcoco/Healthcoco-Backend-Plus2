@@ -2,17 +2,16 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-public class DrugItemAndAdvice {
-
-	private List<PrescriptionItemDetail> items;
+public class PrescriptionAndAdvice {
+	private List<PrescriptionItem> items;
 
 	private String advice;
 
-	public List<PrescriptionItemDetail> getItems() {
+	public List<PrescriptionItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<PrescriptionItemDetail> items) {
+	public void setItems(List<PrescriptionItem> items) {
 		this.items = items;
 	}
 
@@ -23,5 +22,6 @@ public class DrugItemAndAdvice {
 	public void setAdvice(String advice) {
 		this.advice = advice;
 	}
+	
 
 }
