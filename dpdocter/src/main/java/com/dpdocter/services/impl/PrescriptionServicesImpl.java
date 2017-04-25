@@ -113,7 +113,6 @@ import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
-import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -4356,7 +4355,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Override
 	public Boolean addGenericsWithReaction() {
-		String csvFile = "/home/healthcoco-neha/OnlinegenericCodes.csv";
+		String csvFile = "/home/ubuntu/OnlinegenericCodes.csv";
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
@@ -4373,7 +4372,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							for(Code code : codesAndReactionsCollection.getCodes()){
 								if(code.getGenericCode().equalsIgnoreCase(genericCodeTwo)){
 									code.setReaction(codes[4]);
-									code.setExplanation(codes[5]);
+									if(codes.length > 5)code.setExplanation(codes[5]);
 								}
 							}
 							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
@@ -4387,7 +4386,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							for(Code code : codesAndReactionsCollection.getCodes()){
 								if(code.getGenericCode().equalsIgnoreCase(genericCodeOne)){
 									code.setReaction(codes[4]);
-									code.setExplanation(codes[5]);
+									if(codes.length > 5)code.setExplanation(codes[5]);
 								}
 							}
 							genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
@@ -4398,6 +4397,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
 						}
 					}
+				}
+			}
+			
+			List<GenericCodesAndReactionsCollection> codesAndReactionsCollections = genericCodesAndReactionsRepository.findByReaction("");
+			for(GenericCodesAndReactionsCollection codesAndReactionsCollection : codesAndReactionsCollections){
+				List<Code> codes = new ArrayList<Code>();
+				for(Code code : codesAndReactionsCollection.getCodes()){
+					if(!DPDoctorUtils.anyStringEmpty(code.getReaction()))codes.add(code);
+				}
+				if(codes == null || codes.isEmpty()){
+					esGenericCodesAndReactionsRepository.delete(codesAndReactionsCollection.getGenericCode());
+					genericCodesAndReactionsRepository.delete(codesAndReactionsCollection);
+				}else{
+					codesAndReactionsCollection.setCodes(codes);
+					genericCodesAndReactionsRepository.save(codesAndReactionsCollection);
+					
+					ESGenericCodesAndReactions esCodesAndReactions = new ESGenericCodesAndReactions();
+					BeanUtil.map(codesAndReactionsCollection, esCodesAndReactions);
+					esCodesAndReactions.setId(codesAndReactionsCollection.getGenericCode());
+					esGenericCodesAndReactionsRepository.save(esCodesAndReactions);
 				}
 			}
 		} catch (Exception e) {

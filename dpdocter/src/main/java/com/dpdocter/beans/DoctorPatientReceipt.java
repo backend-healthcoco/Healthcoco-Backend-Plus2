@@ -32,11 +32,11 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private String uniqueInvoiceId;
 	
-	private Double amountPaid;
+	private Double amountPaid = 0.0;
 	
-	private Double remainingAdvanceAmount;
+	private Double remainingAdvanceAmount = 0.0;
 	
-	private Double balanceAmount;
+	private Double balanceAmount = 0.0;
 	
 	private Date receivedDate;
 

@@ -17,4 +17,9 @@ public interface GenericCodesAndReactionsRepository extends MongoRepository<Gene
 	@Query("{'genericCode': {$in : ?0}}")
 	List<GenericCodesAndReactionsCollection> findbyGenericCodes(List<String> asList);
 
+	@Query("{'$or': [{'codes.reaction': ?0}, {'codes.reaction': { $exists: false}}]}")
+	List<GenericCodesAndReactionsCollection> findByReaction(String string);
+	
+	  
+
 }

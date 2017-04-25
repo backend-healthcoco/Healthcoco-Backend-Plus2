@@ -9,9 +9,9 @@ public class DoctorPatientReceiptAddEditResponse {
 	
 	private DoctorPatientInvoice invoice;
 	
-	private Double totalRemainingAdvanceAmount;
+	private Double totalRemainingAdvanceAmount = 0.0;
 	
-	private Double totalDueAmount;
+	private Double totalDueAmount = 0.0;
 
 	public DoctorPatientReceipt getDoctorPatientReceipt() {
 		return doctorPatientReceipt;

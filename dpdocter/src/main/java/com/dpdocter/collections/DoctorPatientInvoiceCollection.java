@@ -53,16 +53,16 @@ public class DoctorPatientInvoiceCollection extends GenericCollection{
 	private Tax totalTax;
 
 	@Field
-	private Double grandTotal;
+	private Double grandTotal = 0.0;
 	
 	@Field
-	private Double usedAdvanceAmount;
+	private Double usedAdvanceAmount = 0.0;
 	
 	@Field
-	private Double refundAmount;
+	private Double refundAmount = 0.0;
 	
 	@Field
-	private Double balanceAmount;
+	private Double balanceAmount = 0.0;
 
 	@Field
 	private Boolean discarded = false;
