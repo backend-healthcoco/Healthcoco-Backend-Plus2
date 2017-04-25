@@ -176,6 +176,7 @@ public class BillingServiceImpl implements BillingService {
 			Map<String, UserCollection> doctorsMap = new HashMap<String, UserCollection>();
 			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = new DoctorPatientInvoiceCollection();
 			ObjectId doctorObjectId = new ObjectId(request.getDoctorId());
+			Double dueAmount = 0.0;
 			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, doctorPatientInvoiceCollection);
 				UserCollection userCollection = userRepository.findOne(doctorObjectId);
@@ -200,6 +201,7 @@ public class BillingServiceImpl implements BillingService {
 														.is(doctorPatientInvoiceCollection.getHospitalId())),
 												DoctorPatientInvoiceCollection.class) + 1));
 				doctorPatientInvoiceCollection.setBalanceAmount(request.getGrandTotal());
+				dueAmount = doctorPatientInvoiceCollection.getBalanceAmount();
 			} else {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
 				if (doctorPatientInvoiceCollection.getReceiptIds() != null
@@ -207,6 +209,7 @@ public class BillingServiceImpl implements BillingService {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as receipt is already added.");
 				}
+				dueAmount = -doctorPatientInvoiceCollection.getBalanceAmount();
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 				doctorPatientInvoiceCollection.setTotalCost(request.getTotalCost());
 				doctorPatientInvoiceCollection.setTotalDiscount(request.getTotalDiscount());
@@ -220,6 +223,7 @@ public class BillingServiceImpl implements BillingService {
 							.setRefundAmount(doctorPatientInvoiceCollection.getBalanceAmount() * (-1));
 					doctorPatientInvoiceCollection.setBalanceAmount(0.0);
 				}
+				dueAmount = dueAmount + doctorPatientInvoiceCollection.getBalanceAmount();
 			}
 			List<InvoiceItem> invoiceItems = new ArrayList<InvoiceItem>();
 			for (InvoiceItemResponse invoiceItemResponse : request.getInvoiceItems()) {
@@ -271,6 +275,19 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientLedgerCollection.setUpdatedTime(new Date());
 				}
 				doctorPatientLedgerCollection = doctorPatientLedgerRepository.save(doctorPatientLedgerCollection);
+				DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository
+						.find(doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
+								doctorPatientInvoiceCollection.getHospitalId());
+				if(doctorPatientDueAmountCollection == null){
+					doctorPatientDueAmountCollection = new DoctorPatientDueAmountCollection();
+					doctorPatientDueAmountCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
+					doctorPatientDueAmountCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
+					doctorPatientDueAmountCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
+					doctorPatientDueAmountCollection.setPatientId(doctorPatientInvoiceCollection.getPatientId());
+					doctorPatientDueAmountCollection.setDueAmount(0.0);
+				}
+				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()+dueAmount);
+				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
@@ -408,10 +425,10 @@ public class BillingServiceImpl implements BillingService {
 														.and("hospitalId")
 														.is(doctorPatientReceiptCollection.getHospitalId())),
 												DoctorPatientReceiptCollection.class) + 1));
-				dueAmount = request.getAmountPaid();
+				dueAmount = request.getAmountPaid() != null ? request.getAmountPaid() : 0.0;
 			} else {
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(request.getId()));
-				dueAmount = request.getAmountPaid() - doctorPatientReceiptCollection.getAmountPaid();
+				dueAmount = (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0) - doctorPatientReceiptCollection.getAmountPaid();
 			}
 			if (doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.ADVANCE.name())) {
 				doctorPatientReceiptCollection.setRemainingAdvanceAmount(request.getAmountPaid());
@@ -427,7 +444,7 @@ public class BillingServiceImpl implements BillingService {
 						throw new BusinessException(ServiceError.InvalidInput, "Invalid Invoice Id");
 					}
 					List<ObjectId> receiptIds = doctorPatientInvoiceCollection.getReceiptIds();
-					if (request.getUsedAdvanceAmount() > 0) {
+					if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 						List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
 								.findAvailableAdvanceReceipts(ReceiptType.ADVANCE.name(),
@@ -439,7 +456,7 @@ public class BillingServiceImpl implements BillingService {
 						if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 							throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
 
-						Double advanceAmountToBeUsed = request.getUsedAdvanceAmount();
+						Double advanceAmountToBeUsed = request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0;
 						for (DoctorPatientReceiptCollection receiptCollection : receiptsOfAdvancePayment) {
 							InvoiceIdWithAmount invoiceIdWithAmount = new InvoiceIdWithAmount();
 							invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
@@ -473,22 +490,22 @@ public class BillingServiceImpl implements BillingService {
 							}
 						}
 						doctorPatientInvoiceCollection.setUsedAdvanceAmount(
-								doctorPatientInvoiceCollection.getUsedAdvanceAmount() + request.getUsedAdvanceAmount());
+								doctorPatientInvoiceCollection.getUsedAdvanceAmount() + (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection
 								.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 						doctorPatientInvoiceCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()
-										- request.getAmountPaid() - request.getUsedAdvanceAmount());
+										- (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0) - (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					} else {
 						doctorPatientInvoiceCollection.setUsedAdvanceAmount(
-								doctorPatientInvoiceCollection.getUsedAdvanceAmount() + request.getUsedAdvanceAmount());
+								doctorPatientInvoiceCollection.getUsedAdvanceAmount() + (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection
 								.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 						doctorPatientInvoiceCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()
-										- request.getAmountPaid() - request.getUsedAdvanceAmount());
+										- (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0) - (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					}
@@ -567,6 +584,7 @@ public class BillingServiceImpl implements BillingService {
 			logger.error(be);
 			throw be;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Error while adding receipts" + e);
 			throw new BusinessException(ServiceError.Unknown, "Error while adding receipts" + e);
 		}
@@ -796,7 +814,7 @@ public class BillingServiceImpl implements BillingService {
 			invoiceIdWithAmount.setInvoiceId(doctorPatientInvoiceCollection.getId());
 			doctorPatientReceiptCollection.setInvoiceIdsWithAmount(Arrays.asList(invoiceIdWithAmount));
 
-			if (request.getUsedAdvanceAmount() > 0) {
+			if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 				List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
 						.findAvailableAdvanceReceipts(ReceiptType.ADVANCE.name(),
@@ -807,7 +825,7 @@ public class BillingServiceImpl implements BillingService {
 				if (receiptsOfAdvancePayment == null || receiptsOfAdvancePayment.isEmpty())
 					throw new BusinessException(ServiceError.InvalidInput, "Advance Amount is not available");
 
-				Double advanceAmountToBeUsed = request.getUsedAdvanceAmount();
+				Double advanceAmountToBeUsed = request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0;
 				for (DoctorPatientReceiptCollection receiptCollection : receiptsOfAdvancePayment) {
 					invoiceIdWithAmount = new InvoiceIdWithAmount();
 					invoiceIdWithAmount.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
@@ -840,19 +858,19 @@ public class BillingServiceImpl implements BillingService {
 					}
 				}
 				doctorPatientInvoiceCollection.setUsedAdvanceAmount(
-						doctorPatientInvoiceCollection.getUsedAdvanceAmount() + request.getUsedAdvanceAmount());
+						doctorPatientInvoiceCollection.getUsedAdvanceAmount() + (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 				doctorPatientReceiptCollection
 						.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 				doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()
-						- request.getAmountPaid() - request.getUsedAdvanceAmount());
+						- (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0) - (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 				doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 			} else {
 				doctorPatientInvoiceCollection.setUsedAdvanceAmount(
-						doctorPatientInvoiceCollection.getUsedAdvanceAmount() + request.getUsedAdvanceAmount());
+						doctorPatientInvoiceCollection.getUsedAdvanceAmount() + (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 				doctorPatientReceiptCollection
 						.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
 				doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()
-						- request.getAmountPaid() - request.getUsedAdvanceAmount());
+						- (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0) - (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 				doctorPatientReceiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 			}
 			doctorPatientReceiptCollection = doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
@@ -921,8 +939,8 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientDueAmountCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
 					doctorPatientDueAmountCollection.setPatientId(doctorPatientReceiptCollection.getPatientId());
 				}
-				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount()
-						- doctorPatientReceiptCollection.getAmountPaid());
+				doctorPatientDueAmountCollection.setDueAmount(doctorPatientDueAmountCollection.getDueAmount() +
+						doctorPatientInvoiceCollection.getGrandTotal() - doctorPatientReceiptCollection.getAmountPaid());
 				doctorPatientDueAmountRepository.save(doctorPatientDueAmountCollection);
 
 			}

@@ -50,13 +50,13 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 	private String uniqueInvoiceId;
 	
 	@Field
-	private Double amountPaid;
+	private Double amountPaid = 0.0;
 	
 	@Field
-	private Double remainingAdvanceAmount;
+	private Double remainingAdvanceAmount = 0.0;
 	
 	@Field
-	private Double balanceAmount;
+	private Double balanceAmount = 0.0;
 	
 	@Field
 	private Date receivedDate;
