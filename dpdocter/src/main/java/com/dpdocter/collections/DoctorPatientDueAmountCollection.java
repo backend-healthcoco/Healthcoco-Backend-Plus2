@@ -29,7 +29,7 @@ public class DoctorPatientDueAmountCollection extends GenericCollection{
 	private ObjectId patientId;
 	
 	@Field
-	private Double dueAmount;
+	private Double dueAmount = 0.0;
 
 	public ObjectId getId() {
 		return id;
