@@ -937,7 +937,7 @@ public class RegistrationApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("PID") String PID, @QueryParam("searchTerm") String searchTerm,
 			@DefaultValue("true") @QueryParam("discarded") boolean discarded,
-			@DefaultValue("0") @QueryParam("updateTime") long updateTime) {
+			@DefaultValue("0") @QueryParam("updatedTime") long updatedTime) {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = registrationService.getConcentForm(page, size, patientId, doctorId, locationId,

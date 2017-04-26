@@ -3117,11 +3117,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	public List<ConsentForm> getConcentForm(int page, int size, String patientId, String doctorId, String locationId,
-			String hospitalId, String PID, String searchTerm, boolean discarded, long updateTime) {
+			String hospitalId, String PID, String searchTerm, boolean discarded, long updatedTime) {
 		List<ConsentForm> response = null;
 		try {
+
 			Aggregation aggregation = null;
-			Criteria criteria = new Criteria("updateTime").gt(new Date(updateTime));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTime));
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
