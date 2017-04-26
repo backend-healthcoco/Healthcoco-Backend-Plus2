@@ -941,7 +941,7 @@ public class RegistrationApi {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = registrationService.getConcentForm(page, size, patientId, doctorId, locationId,
-				hospitalId, PID, searchTerm, discarded,updatedTime);
+				hospitalId, PID, searchTerm, discarded, updatedTime);
 		response.setDataList(consentForms);
 		return response;
 	}
@@ -953,6 +953,15 @@ public class RegistrationApi {
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		response.setData(registrationService.deleteConcentForm(consentFormId, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
+	@DELETE
+	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM, notes = PathProxy.RegistrationUrls.DELETE_CONSENT_FORM)
+	public Response<String> downloadConsentForm(@PathParam("consentFormId") String consentFormId) {
+		Response<String> response = new Response<String>();
+		response.setData(registrationService.downloadConcentForm(consentFormId));
 		return response;
 	}
 

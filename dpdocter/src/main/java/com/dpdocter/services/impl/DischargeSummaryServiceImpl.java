@@ -193,21 +193,22 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				BeanUtil.map(dischargeSummaryCollection, summaryResponse);
 				List<PrescriptionItemDetail> items = null;
 				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
-						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+					if (dischargeSummaryCollection.getPrescriptions().getItems() != null)
+						for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
+							PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 
-						BeanUtil.map(item, prescriptionItemDetail);
+							BeanUtil.map(item, prescriptionItemDetail);
 
-						items = new ArrayList<PrescriptionItemDetail>();
-						if (item.getDrugId() != null) {
-							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-							Drug drug = new Drug();
-							BeanUtil.map(drugCollection, drug);
-							prescriptionItemDetail.setDrug(drug);
+							items = new ArrayList<PrescriptionItemDetail>();
+							if (item.getDrugId() != null) {
+								DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+								Drug drug = new Drug();
+								BeanUtil.map(drugCollection, drug);
+								prescriptionItemDetail.setDrug(drug);
+							}
+							items.add(prescriptionItemDetail);
+
 						}
-						items.add(prescriptionItemDetail);
-
-					}
 					summaryResponse.getPrescriptions().setItems(items);
 				}
 				response.add(summaryResponse);
@@ -235,6 +236,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				if (dischargeSummaryCollection.getPrescriptions() != null) {
 					List<PrescriptionItemDetail> items = null;
+					if (dischargeSummaryCollection.getPrescriptions().getItems() != null)
 					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
 						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 
