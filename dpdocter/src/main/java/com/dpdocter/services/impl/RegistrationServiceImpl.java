@@ -12,8 +12,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -72,6 +74,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -133,6 +136,7 @@ import com.dpdocter.response.CheckPatientSignUpResponse;
 import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.PatientCollectionResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
@@ -3095,7 +3099,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				ConsentFormCollection consentFormCollection = new ConsentFormCollection();
 				BeanUtil.map(request, consentFormCollection);
 				consentFormCollection.setCreatedTime(createdTime);
-				;
 				consentFormCollection
 						.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
 				consentFormCollection.setCreatedBy(doctor.getFirstName());
@@ -3191,4 +3194,41 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
+	@Override
+	public String downloadConcentForm(String consentFormId) {
+		String response = null;
+
+		try {
+			ConsentFormCollection consentFormCollection = consentFormRepository.findOne(new ObjectId(consentFormId));
+			if (consentFormCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+						consentFormCollection.getPatientId(), consentFormCollection.getDoctorId(),
+						consentFormCollection.getLocationId(), consentFormCollection.getHospitalId());
+				UserCollection user = userRepository.findOne(consentFormCollection.getPatientId());
+				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Invoice Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Exception in download Consent Form ");
+		}
+
+		return response;
+	}
+
+	private JasperReportResponse createJasper(ConsentFormCollection consentFormCollection, PatientCollection patient,
+			UserCollection user) throws IOException {
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		JasperReportResponse response = null;
+
+		return response;
+	}
 }
