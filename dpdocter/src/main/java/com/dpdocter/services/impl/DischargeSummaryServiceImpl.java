@@ -199,11 +199,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						BeanUtil.map(item, prescriptionItemDetail);
 
 						items = new ArrayList<PrescriptionItemDetail>();
-
-						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-						Drug drug = new Drug();
-						BeanUtil.map(drugCollection, drug);
-						prescriptionItemDetail.setDrug(drug);
+						if (item.getDrugId() != null) {
+							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+							Drug drug = new Drug();
+							BeanUtil.map(drugCollection, drug);
+							prescriptionItemDetail.setDrug(drug);
+						}
 						items.add(prescriptionItemDetail);
 
 					}
@@ -240,11 +241,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						BeanUtil.map(item, prescriptionItemDetail);
 
 						items = new ArrayList<PrescriptionItemDetail>();
-
-						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-						Drug drug = new Drug();
-						BeanUtil.map(drugCollection, drug);
-						prescriptionItemDetail.setDrug(drug);
+						if (item.getDrugId() != null) {
+							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+							Drug drug = new Drug();
+							BeanUtil.map(drugCollection, drug);
+							prescriptionItemDetail.setDrug(drug);
+						}
 						items.add(prescriptionItemDetail);
 
 					}
