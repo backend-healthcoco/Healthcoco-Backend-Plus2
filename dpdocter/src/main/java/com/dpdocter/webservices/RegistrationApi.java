@@ -941,7 +941,7 @@ public class RegistrationApi {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = registrationService.getConcentForm(page, size, patientId, doctorId, locationId,
-				hospitalId, PID, searchTerm, discarded,updateTime);
+				hospitalId, PID, searchTerm, discarded,updatedTime);
 		response.setDataList(consentForms);
 		return response;
 	}
