@@ -4,10 +4,11 @@ import java.util.Date;
 
 import com.dpdocter.beans.PrescriptionItemAndAdvice;
 import com.dpdocter.beans.ReviewDates;
+import com.dpdocter.collections.GenericCollection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class DischargeSummaryResponse {
+public class DischargeSummaryResponse extends GenericCollection {
 
 	private String id;
 	private String patientId;

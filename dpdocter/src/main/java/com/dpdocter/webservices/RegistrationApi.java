@@ -917,8 +917,8 @@ public class RegistrationApi {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		ConsentForm request = data.getValueAs(ConsentForm.class);
 
-		if (request == null || DPDoctorUtils.anyStringEmpty( request.getPatientId(),
-				request.getDoctorId(), request.getLocationId(), request.getHospitalId()) || file == null) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(),
+				request.getLocationId(), request.getHospitalId()) || file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
@@ -936,11 +936,12 @@ public class RegistrationApi {
 			@QueryParam("patientId") String patientId, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("PID") String PID, @QueryParam("searchTerm") String searchTerm,
-			@DefaultValue("true") @QueryParam("discarded") boolean discarded) {
+			@DefaultValue("true") @QueryParam("discarded") boolean discarded,
+			@DefaultValue("0") @QueryParam("updateTime") long updateTime) {
 
 		Response<ConsentForm> response = new Response<ConsentForm>();
 		List<ConsentForm> consentForms = registrationService.getConcentForm(page, size, patientId, doctorId, locationId,
-				hospitalId, PID, searchTerm, discarded);
+				hospitalId, PID, searchTerm, discarded,updateTime);
 		response.setDataList(consentForms);
 		return response;
 	}

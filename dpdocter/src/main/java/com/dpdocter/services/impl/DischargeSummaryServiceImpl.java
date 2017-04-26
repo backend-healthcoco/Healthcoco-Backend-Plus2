@@ -153,7 +153,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			String patientId, int page, int size, String updatedTime) {
 		List<DischargeSummaryResponse> response = null;
 		try {
-
+			DischargeSummaryResponse summaryResponse = null;
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
@@ -184,9 +184,34 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 						Aggregation.match(criteria), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			AggregationResults<DischargeSummaryResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					DischargeSummaryCollection.class, DischargeSummaryResponse.class);
-			response = aggregationResults.getMappedResults();
+			AggregationResults<DischargeSummaryCollection> aggregationResults = mongoTemplate.aggregate(aggregation,
+					DischargeSummaryCollection.class, DischargeSummaryCollection.class);
+			List<DischargeSummaryCollection> dischargeSummaryCollections = aggregationResults.getMappedResults();
+			response = new ArrayList<DischargeSummaryResponse>();
+			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
+				summaryResponse = new DischargeSummaryResponse();
+				BeanUtil.map(dischargeSummaryCollection, summaryResponse);
+				List<PrescriptionItemDetail> items = null;
+				if (dischargeSummaryCollection.getPrescriptions() != null) {
+					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
+						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+
+						BeanUtil.map(item, prescriptionItemDetail);
+
+						items = new ArrayList<PrescriptionItemDetail>();
+
+						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+						Drug drug = new Drug();
+						BeanUtil.map(drugCollection, drug);
+						prescriptionItemDetail.setDrug(drug);
+						items.add(prescriptionItemDetail);
+
+					}
+					summaryResponse.getPrescriptions().setItems(items);
+				}
+				response.add(summaryResponse);
+
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -218,20 +243,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
 						Drug drug = new Drug();
-
-						if (drugCollection != null) {
-							BeanUtil.map(drugCollection, drug);
-							DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
-							BeanUtil.map(drugCollection, drugAddEditRequest);
-							drugAddEditRequest.setDoctorId(dischargeSummaryCollection.getDoctorId().toString());
-							drugAddEditRequest.setHospitalId(dischargeSummaryCollection.getHospitalId().toString());
-							drugAddEditRequest.setLocationId(dischargeSummaryCollection.getLocationId().toString());
-							drugAddEditRequest.setDirection(item.getDirection());
-							drugAddEditRequest.setDuration(item.getDuration());
-							drugAddEditRequest.setDosage(item.getDosage());
-							drugAddEditRequest.setDosageTime(item.getDosageTime());
-
-						}
+						BeanUtil.map(drugCollection, drug);
 						prescriptionItemDetail.setDrug(drug);
 						items.add(prescriptionItemDetail);
 
@@ -243,7 +255,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid discharge summaryId ");
 
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while view discharge summary : " + e.getCause().getMessage());

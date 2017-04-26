@@ -135,7 +135,7 @@ public interface RegistrationService {
 	ConsentForm addConcentForm(FormDataBodyPart file, ConsentForm request);
 
 	List<ConsentForm> getConcentForm(int page, int size, String patientId, String doctorId, String locationId,
-			String hospitalId, String PID, String searchTerm, boolean discarded);
+			String hospitalId, String PID, String searchTerm, boolean discarded,long updateTime);
 
 	ConsentForm deleteConcentForm(String consentFormId, boolean discarded);
 }

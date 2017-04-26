@@ -3117,11 +3117,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	public List<ConsentForm> getConcentForm(int page, int size, String patientId, String doctorId, String locationId,
-			String hospitalId, String PID, String searchTerm, boolean discarded) {
+			String hospitalId, String PID, String searchTerm, boolean discarded, long updateTime) {
 		List<ConsentForm> response = null;
 		try {
 			Aggregation aggregation = null;
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria("updateTime").gt(new Date(updateTime));
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
@@ -3134,9 +3134,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("PID").is(PID);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.and("localPatientName").regex("^" + searchTerm, "i");
-
+				criteria = criteria.orOperator(new Criteria("localPatientName").regex("^" + searchTerm, "i"),
+						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
 			}
+
 			criteria.and("discarded").is(discarded);
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
