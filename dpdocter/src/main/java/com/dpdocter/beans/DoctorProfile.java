@@ -63,6 +63,14 @@ public class DoctorProfile extends GenericCollection {
 
 	private Boolean isGetDiscardedEMR = false;
 
+	private String metaTitle;
+
+	private String metaDesccription;
+
+	private String metaKeyword;
+
+	private String slugUrl;
+
 	public String getId() {
 		return id;
 	}
@@ -274,7 +282,9 @@ public class DoctorProfile extends GenericCollection {
 				+ education + ", specialities=" + specialities + ", achievements=" + achievements
 				+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails
 				+ ", experienceDetails=" + experienceDetails + ", professionalMemberships=" + professionalMemberships
-				+ ", clinicProfile=" + clinicProfile + ", regularCheckUpMonths=" + regularCheckUpMonths + "]";
+				+ ", clinicProfile=" + clinicProfile + ", regularCheckUpMonths=" + regularCheckUpMonths
+				+ ", isGetDiscardedEMR=" + isGetDiscardedEMR + ", metaTitle=" + metaTitle + ", metaDesccription="
+				+ metaDesccription + ", metaKeyword=" + metaKeyword + ", slugUrl=" + slugUrl + "]";
 	}
 
 	public String getCountryCode() {
@@ -299,6 +309,38 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setIsGetDiscardedEMR(Boolean isGetDiscardedEMR) {
 		this.isGetDiscardedEMR = isGetDiscardedEMR;
+	}
+
+	public String getMetaTitle() {
+		return metaTitle;
+	}
+
+	public void setMetaTitle(String metaTitle) {
+		this.metaTitle = metaTitle;
+	}
+
+	public String getMetaDesccription() {
+		return metaDesccription;
+	}
+
+	public void setMetaDesccription(String metaDesccription) {
+		this.metaDesccription = metaDesccription;
+	}
+
+	public String getMetaKeyword() {
+		return metaKeyword;
+	}
+
+	public void setMetaKeyword(String metaKeyword) {
+		this.metaKeyword = metaKeyword;
+	}
+
+	public String getSlugUrl() {
+		return slugUrl;
+	}
+
+	public void setSlugUrl(String slugUrl) {
+		this.slugUrl = slugUrl;
 	}
 
 }

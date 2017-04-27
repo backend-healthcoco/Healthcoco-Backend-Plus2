@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.DrugDirection;
-import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.PrescriptionItemAndAdvice;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DrugCollection;

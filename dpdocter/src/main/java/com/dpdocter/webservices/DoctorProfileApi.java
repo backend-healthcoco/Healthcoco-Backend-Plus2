@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.ClinicImage;
 import com.dpdocter.beans.DoctorClinicProfile;
@@ -85,7 +86,7 @@ public class DoctorProfileApi {
 
 	@Autowired
 	private LabService labService;
-	
+
 	@Autowired
 	private DoctorStatsService doctorStatsService;
 
@@ -297,13 +298,14 @@ public class DoctorProfileApi {
 	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
-			@QueryParam(value = "patientId") String patientId, @DefaultValue(value = "false") @QueryParam(value = "isSearched") Boolean isSearched ) {
+			@QueryParam(value = "patientId") String patientId,
+			@DefaultValue(value = "false") @QueryParam(value = "isSearched") Boolean isSearched) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
-				isMobileApp , isSearched);
+				isMobileApp, isSearched);
 		if (doctorProfile != null) {
 			if (doctorProfile.getImageUrl() != null) {
 				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
@@ -336,9 +338,8 @@ public class DoctorProfileApi {
 					}
 				}
 			}
-			
-			if(patientId != null || isSearched == true)
-			{
+
+			if (patientId != null || isSearched == true) {
 				doctorProfileService.updateDoctorProfileViews(doctorId);
 			}
 		}
@@ -379,7 +380,7 @@ public class DoctorProfileApi {
 		response.setData(addEditAppointmentNumbersResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
 	@POST
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_VISITING_TIME)
@@ -640,7 +641,8 @@ public class DoctorProfileApi {
 			@QueryParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
 			@QueryParam(value = "hospitalId") String hospitalId, @QueryParam(value = "size") int size,
 			@QueryParam(value = "page") int page) {
-		if (DPDoctorUtils.anyStringEmpty(prescribedByDoctorId) || DPDoctorUtils.anyStringEmpty(prescribedByLocationId)) {
+		if (DPDoctorUtils.anyStringEmpty(prescribedByDoctorId)
+				|| DPDoctorUtils.anyStringEmpty(prescribedByLocationId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
@@ -650,39 +652,108 @@ public class DoctorProfileApi {
 				prescribedByLocationId, prescribedByHospitalId, size, page));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_STATS)
-	public Response<DoctorStatisticsResponse> getDoctorsStats(
-			@PathParam(value = "doctorId") String doctorId, @QueryParam(value = "locationId") String locationId,
+	public Response<DoctorStatisticsResponse> getDoctorsStats(@PathParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId,
 			@DefaultValue("WEEK") @QueryParam(value = "type") String type) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		DoctorStatisticsResponse doctorStatisticsResponse  = doctorStatsService.getDoctorStats(doctorId, locationId, type);
+		DoctorStatisticsResponse doctorStatisticsResponse = doctorStatsService.getDoctorStats(doctorId, locationId,
+				type);
 		Response<DoctorStatisticsResponse> response = new Response<DoctorStatisticsResponse>();
 		response.setData(doctorStatisticsResponse);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING, notes = PathProxy.DoctorProfileUrls.UPDATE_EMR_SETTING)
-	public Response<Boolean> updateEMRSetting(
-			@PathParam(value = "doctorId") String doctorId, @QueryParam(value = "discarded") Boolean discarded) {
+	public Response<Boolean> updateEMRSetting(@PathParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Boolean> response = new Response<Boolean>();
 		Boolean status = doctorProfileService.updateEMRSetting(doctorId, discarded);
-		
+
 		response.setData(status);
 		return response;
 	}
+
+	@Path(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
+	@POST
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO, notes = PathProxy.DoctorProfileUrls.ADD_EDIT_SEO)
+	public Response<AddEditSEORequest> addEditSEO(AddEditSEORequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		AddEditSEORequest addEditSEORequest = doctorProfileService.addEditSEO(request);
+		Response<AddEditSEORequest> response = new Response<AddEditSEORequest>();
+		response.setData(addEditSEORequest);
+		return response;
+	}
 	
+	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
+	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("slugURL") String slugURL,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
+			@QueryParam(value = "patientId") String patientId,
+			@DefaultValue(value = "false") @QueryParam(value = "isSearched") Boolean isSearched) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Doctor Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
+		}
+		DoctorProfile doctorProfile = doctorProfileService.getDoctorProfile(doctorId, locationId, hospitalId, patientId,
+				isMobileApp, isSearched);
+		if (doctorProfile != null) {
+			if (doctorProfile.getImageUrl() != null) {
+				doctorProfile.setImageUrl(getFinalImageURL(doctorProfile.getImageUrl()));
+			}
+			if (doctorProfile.getThumbnailUrl() != null) {
+				doctorProfile.setThumbnailUrl(getFinalImageURL(doctorProfile.getThumbnailUrl()));
+			}
+			if (doctorProfile.getCoverImageUrl() != null) {
+				doctorProfile.setCoverImageUrl(getFinalImageURL(doctorProfile.getCoverImageUrl()));
+			}
+			if (doctorProfile.getCoverThumbnailImageUrl() != null) {
+				doctorProfile.setCoverThumbnailImageUrl(getFinalImageURL(doctorProfile.getCoverThumbnailImageUrl()));
+			}
+			if (doctorProfile.getClinicProfile() != null & !doctorProfile.getClinicProfile().isEmpty()) {
+				for (DoctorClinicProfile clinicProfile : doctorProfile.getClinicProfile()) {
+					if (clinicProfile.getImages() != null) {
+						for (ClinicImage clinicImage : clinicProfile.getImages()) {
+							if (clinicImage.getImageUrl() != null)
+								clinicImage.setImageUrl(getFinalImageURL(clinicImage.getImageUrl()));
+							if (clinicImage.getThumbnailUrl() != null)
+								clinicImage.setThumbnailUrl(getFinalImageURL(clinicImage.getThumbnailUrl()));
+						}
+					}
+					if (clinicProfile.getLogoUrl() != null) {
+						clinicProfile.setLogoUrl(getFinalImageURL(clinicProfile.getLogoUrl()));
+					}
+
+					if (clinicProfile.getLogoThumbnailUrl() != null) {
+						clinicProfile.setLogoThumbnailUrl(getFinalImageURL(clinicProfile.getLogoThumbnailUrl()));
+					}
+				}
+			}
+
+			if (patientId != null || isSearched == true) {
+				doctorProfileService.updateDoctorProfileViews(doctorId);
+			}
+		}
+		Response<DoctorProfile> response = new Response<DoctorProfile>();
+		response.setData(doctorProfile);
+		return response;
+	}
 
 }

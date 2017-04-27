@@ -613,6 +613,7 @@ public interface PathProxy {
 		public static final String GET_EDUCATION_INSTITUTES = "/getEducationInstitutes";
 
 		public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
+		public static final String GET_DOCTOR_PROFILE_BY_SLUG_URL = "{slugURL}/{doctorId}/view ";
 
 		public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
 
@@ -637,6 +638,8 @@ public interface PathProxy {
 		public static final String GET_DOCTOR_STATS = "/{doctorId}/getStats";
 
 		public static final String UPDATE_EMR_SETTING = "/{doctorId}/updateEMRSetting";
+		
+		public static final String ADD_EDIT_SEO = "/addEditSEO";
 
 	}
 

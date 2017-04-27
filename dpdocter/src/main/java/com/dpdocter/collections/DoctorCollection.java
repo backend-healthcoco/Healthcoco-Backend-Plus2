@@ -68,7 +68,19 @@ public class DoctorCollection extends GenericCollection {
 
 	@Field
 	private Boolean isVerified;
-	
+
+	@Field
+	private String metaTitle;
+
+	@Field
+	private String metaDesccription;
+
+	@Field
+	private String metaKeyword;
+
+	@Field
+	private String slugUrl;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -207,6 +219,38 @@ public class DoctorCollection extends GenericCollection {
 		this.isVerified = isVerified;
 	}
 
+	public String getMetaTitle() {
+		return metaTitle;
+	}
+
+	public void setMetaTitle(String metaTitle) {
+		this.metaTitle = metaTitle;
+	}
+
+	public String getMetaDesccription() {
+		return metaDesccription;
+	}
+
+	public void setMetaDesccription(String metaDesccription) {
+		this.metaDesccription = metaDesccription;
+	}
+
+	public String getMetaKeyword() {
+		return metaKeyword;
+	}
+
+	public void setMetaKeyword(String metaKeyword) {
+		this.metaKeyword = metaKeyword;
+	}
+
+	public String getSlugUrl() {
+		return slugUrl;
+	}
+
+	public void setSlugUrl(String slugUrl) {
+		this.slugUrl = slugUrl;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorCollection [id=" + id + ", additionalNumbers=" + additionalNumbers + ", otherEmailAddresses="
@@ -215,6 +259,7 @@ public class DoctorCollection extends GenericCollection {
 				+ professionalStatement + ", registrationDetails=" + registrationDetails + ", experienceDetails="
 				+ experienceDetails + ", professionalMemberships=" + professionalMemberships + ", registerNumber="
 				+ registerNumber + ", gender=" + gender + ", dob=" + dob + ", isGetDiscardedEMR=" + isGetDiscardedEMR
-				+ ", isVerified=" + isVerified + "]";
+				+ ", isVerified=" + isVerified + ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription
+				+ ", metaKeyword=" + metaKeyword + ", slugUrl=" + slugUrl + "]";
 	}
 }

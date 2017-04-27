@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AccessControl;
+import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorExperience;
@@ -1353,6 +1354,31 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return status;
 
 	}
+	
+	@Override
+	@Transactional
+	public AddEditSEORequest addEditSEO(AddEditSEORequest request) {
+		UserCollection userCollection = null;
+		DoctorCollection doctorCollection = null;
+		AddEditSEORequest response = null;
+		try {
+			doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+			doctorCollection.setMetaTitle(request.getMetaTitle());
+			doctorCollection.setMetaKeyword(request.getMetaKeyword());
+			doctorCollection.setMetaDesccription(request.getMetaDesccription());
+			doctorCollection.setSlugUrl(request.getSlugUrl());
+			doctorRepository.save(doctorCollection);
+			response = new AddEditSEORequest();
+			BeanUtil.map(doctorCollection, response);
+			response.setDoctorId(doctorCollection.getUserId().toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Editing Doctor SEO");
+			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor SEO");
+		}
+		return response;
+	}
+
 	
 	
 

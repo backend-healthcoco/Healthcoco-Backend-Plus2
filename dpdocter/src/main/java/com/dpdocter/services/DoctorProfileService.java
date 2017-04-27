@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.AddEditSEORequest;
 import com.dpdocter.beans.DoctorClinicProfile;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.DoctorGeneralInfo;
@@ -102,6 +103,8 @@ public interface DoctorProfileService {
 	Boolean updateDoctorProfileViews(String doctorId);
 
 	Boolean updateEMRSetting(String doctorId, Boolean discarded);
+
+	AddEditSEORequest addEditSEO(AddEditSEORequest request);
 
 	
 
