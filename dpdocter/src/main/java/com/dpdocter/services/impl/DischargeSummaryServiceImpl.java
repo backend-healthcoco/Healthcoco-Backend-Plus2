@@ -191,15 +191,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
 				summaryResponse = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, summaryResponse);
-				List<PrescriptionItemDetail> items = null;
+
 				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					if (dischargeSummaryCollection.getPrescriptions().getItems() != null)
+					List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
+					if (dischargeSummaryCollection.getPrescriptions().getItems() != null
+							&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
 						for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
 							PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-
 							BeanUtil.map(item, prescriptionItemDetail);
-
-							items = new ArrayList<PrescriptionItemDetail>();
 							if (item.getDrugId() != null) {
 								DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
 								Drug drug = new Drug();
@@ -235,23 +234,24 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				BeanUtil.map(dischargeSummaryCollection, response);
 
 				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					List<PrescriptionItemDetail> items = null;
-					if (dischargeSummaryCollection.getPrescriptions().getItems() != null)
-					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
-						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+					List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
 
-						BeanUtil.map(item, prescriptionItemDetail);
+					if (dischargeSummaryCollection.getPrescriptions().getItems() != null
+							&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
+						for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
+							PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 
-						items = new ArrayList<PrescriptionItemDetail>();
-						if (item.getDrugId() != null) {
-							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-							Drug drug = new Drug();
-							BeanUtil.map(drugCollection, drug);
-							prescriptionItemDetail.setDrug(drug);
+							BeanUtil.map(item, prescriptionItemDetail);
+
+							if (item.getDrugId() != null) {
+								DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+								Drug drug = new Drug();
+								BeanUtil.map(drugCollection, drug);
+								prescriptionItemDetail.setDrug(drug);
+							}
+							items.add(prescriptionItemDetail);
+
 						}
-						items.add(prescriptionItemDetail);
-
-					}
 					response.getPrescriptions().setItems(items);
 				}
 
