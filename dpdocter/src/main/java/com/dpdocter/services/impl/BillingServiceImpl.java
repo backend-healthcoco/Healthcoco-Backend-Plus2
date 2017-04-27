@@ -1129,6 +1129,7 @@ public class BillingServiceImpl implements BillingService {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Error while getting download invoice" + e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting download invoice " + e);
 		}
