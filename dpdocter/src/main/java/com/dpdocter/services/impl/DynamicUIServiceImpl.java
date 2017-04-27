@@ -67,8 +67,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			UIPermissions tempPermissions = null;
 			String speciality = null;
 			if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
-
-				tempPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
+				uiPermissions = getAllPermissionBySpeciality(String.valueOf("EMPTY"));
 			} else {
 				for (ObjectId specialityId : doctorCollection.getSpecialities()) {
 
@@ -87,7 +86,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 						tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
 						vitalSignPermissionSet.addAll(tempPermissions.getVitalSignPermissions());
 						dischargeSummaryPermissionSet.addAll(tempPermissions.getDischargeSummaryPermissions());
-						
+
 					}
 				}
 				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
@@ -97,7 +96,6 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
 				uiPermissions.setVitalSignPermissions(new ArrayList<String>(vitalSignPermissionSet));
 				uiPermissions.setDischargeSummaryPermissions(new ArrayList<String>(dischargeSummaryPermissionSet));
-				
 
 			}
 		}
