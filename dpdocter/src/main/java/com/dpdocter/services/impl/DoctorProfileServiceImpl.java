@@ -1064,10 +1064,12 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 						} else {
 							doctorCollection.setSpecialities(null);
+							assignDefaultUIPermissions(request.getDoctorId());
 							specialitiesresponse = null;
 						}
 					} else {
 						doctorCollection.setSpecialities(null);
+						assignDefaultUIPermissions(request.getDoctorId());
 						specialitiesresponse = null;
 					}
 				} else {
