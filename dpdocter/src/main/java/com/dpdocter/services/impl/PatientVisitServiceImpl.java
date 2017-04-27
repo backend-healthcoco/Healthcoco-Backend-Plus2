@@ -42,6 +42,7 @@ import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.EyePrescription;
+import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientDetails;
 import com.dpdocter.beans.PatientTreatment;
@@ -1735,13 +1736,21 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										duration = "--";
 									else
 										duration = durationValue + " " + durationUnit;
+									
+									String genericName = "";
+									if(drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()){
+										for(GenericCode genericCode : drug.getGenericNames()){
+											if(DPDoctorUtils.anyStringEmpty(genericName))genericName = "<b>Generic Names : </b>"+ genericCode.getName();
+											else genericName = genericName + "+"+ genericCode.getName();
+										}
+									}
 									PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(
 											++no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--");
+													? prescriptionItem.getInstructions() : "--", genericName);
 
 									prescriptionItems.add(prescriptionJasperDetails);
 								}

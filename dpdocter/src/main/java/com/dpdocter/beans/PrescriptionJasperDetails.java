@@ -17,13 +17,16 @@ public class PrescriptionJasperDetails {
 
     private String instruction;
 
-    public PrescriptionJasperDetails(int no, String drug, String dosage, String duration, String direction, String instruction) {
+    private String genericNames;
+    
+    public PrescriptionJasperDetails(int no, String drug, String dosage, String duration, String direction, String instruction, String genericNames) {
 	this.no = no;
 	this.drug = drug;
 	this.dosage = dosage;
 	this.duration = duration;
 	this.direction = direction;
 	this.instruction = instruction;
+	this.genericNames = genericNames;
     }
 
     public int getNo() {
@@ -74,10 +77,19 @@ public class PrescriptionJasperDetails {
 	this.instruction = instruction;
     }
 
-    @Override
-    public String toString() {
-	return "PrescriptionJasperDetails [no=" + no + ", drug=" + drug + ", dosage=" + dosage + ", duration=" + duration + ", direction=" + direction
-		+ ", instruction=" + instruction + "]";
-    }
+	public String getGenericNames() {
+		return genericNames;
+	}
+
+	public void setGenericNames(String genericNames) {
+		this.genericNames = genericNames;
+	}
+
+	@Override
+	public String toString() {
+		return "PrescriptionJasperDetails [no=" + no + ", drug=" + drug + ", dosage=" + dosage + ", duration="
+				+ duration + ", direction=" + direction + ", instruction=" + instruction + ", genericNames="
+				+ genericNames + "]";
+	}
 
 }

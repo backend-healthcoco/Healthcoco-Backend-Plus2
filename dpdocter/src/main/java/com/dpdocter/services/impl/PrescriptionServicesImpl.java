@@ -3658,13 +3658,22 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 							else
 								duration = durationValue + " " + durationUnit;
 							no = no + 1;
+							
+							String genericName = "";
+							if(drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()){
+								for(GenericCode genericCode : drug.getGenericNames()){
+									if(DPDoctorUtils.anyStringEmpty(genericName))genericName = "<b>Generic Names : </b>"+ genericCode.getName();
+									else genericName = genericName + "+"+ genericCode.getName();
+								}
+							}
+							
 							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
 									drugName,
 									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
 											? prescriptionItem.getDosage() : "--",
 									duration, directions.isEmpty() ? "--" : directions,
 									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-											? prescriptionItem.getInstructions() : "--");
+											? prescriptionItem.getInstructions() : "--", genericName);
 							prescriptionItems.add(prescriptionJasperDetails);
 						}
 					}
