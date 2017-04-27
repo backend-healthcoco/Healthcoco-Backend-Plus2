@@ -11,6 +11,7 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -99,6 +100,7 @@ import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.DoctorProfileService;
+import com.dpdocter.services.DynamicUIService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -147,6 +149,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	DoctorProfileViewRepository doctorProfileViewRepository;
+	
+	@Autowired
+	DynamicUIService dynamicUIService;
 
 	@Override
 	@Transactional
@@ -291,8 +296,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 					} else
 						doctorCollection.setSpecialities(null);
+						assignDefaultUIPermissions(request.getDoctorId());
 				} else {
 					doctorCollection.setSpecialities(null);
+					assignDefaultUIPermissions(request.getDoctorId());
 				}
 				doctorRepository.save(doctorCollection);
 				BeanUtil.map(doctorCollection, response);
@@ -306,6 +313,14 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			throw new BusinessException(ServiceError.Unknown, "Error Editing Doctor Profile");
 		}
 		return response;
+	}
+	
+	private void assignDefaultUIPermissions(String doctorId)
+	{
+		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
+		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
+		dynamicUICollection.setUiPermissions(uiPermissions);
+		dynamicUIRepository.save(dynamicUICollection);
 	}
 
 	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
@@ -1358,7 +1373,6 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Override
 	@Transactional
 	public AddEditSEORequest addEditSEO(AddEditSEORequest request) {
-		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		AddEditSEORequest response = null;
 		try {

@@ -15,4 +15,6 @@ public interface DynamicUIService {
 
 	DynamicUIResponse getBothPermissions(String doctorId);
 
+	UIPermissions getDefaultPermissions();
+
 }

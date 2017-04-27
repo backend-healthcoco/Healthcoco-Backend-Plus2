@@ -272,7 +272,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		return uiPermissions;
 	}
 
-	private UIPermissions getDefaultPermissions() {
+	@Override
+	@Transactional
+	public UIPermissions getDefaultPermissions() {
 		UIPermissions uiPermissions = null;
 		ArrayList<String> clinicalNotesPermission = null;
 		ArrayList<String> prescriptionPermission = null;
