@@ -965,4 +965,25 @@ public class RegistrationApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM, notes = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
+	public Response<Boolean> emailConsentForm(@PathParam(value = "consentFormId") String consentFormId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		if (DPDoctorUtils.anyStringEmpty(consentFormId, doctorId, locationId, hospitalId, emailAddress)) {
+			logger.warn(
+					"Invalid Input. consentFormId , Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input. consentFormId, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
+		}
+		registrationService.emailConsentForm(consentFormId, doctorId, locationId, hospitalId, emailAddress);
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
 }

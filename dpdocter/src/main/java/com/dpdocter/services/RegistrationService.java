@@ -140,4 +140,7 @@ public interface RegistrationService {
 	ConsentForm deleteConcentForm(String consentFormId, boolean discarded);
 
 	String downloadConcentForm(String consentFormId);
+
+	public void emailConsentForm(String consentFormId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 }

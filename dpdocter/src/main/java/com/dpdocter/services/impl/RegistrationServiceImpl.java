@@ -60,6 +60,7 @@ import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Profession;
@@ -75,6 +76,7 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -137,6 +139,7 @@ import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.PatientCollectionResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
@@ -144,6 +147,7 @@ import com.dpdocter.response.RegisterDoctorResponse;
 import com.dpdocter.response.UserLookupResponse;
 import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
+import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
 import com.dpdocter.services.JasperReportService;
@@ -264,6 +268,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private JasperReportService jasperReportService;
+
+	@Autowired
+	private EmailTackService emailTackService;
 
 	@Value(value = "${jasper.print.consentForm.a4.fileName}")
 	private String consentFormA4FileName;
@@ -3261,8 +3268,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			consentFormItemJasperdetails.setDeclaration(consentFormCollection.getDeclaration());
 
 		if (consentFormCollection.getDateOfSign() != null)
-			consentFormItemJasperdetails.setDateOfSign(
-					simpleDateFormat.format(consentFormCollection.getDateOfSign()));
+			consentFormItemJasperdetails.setDateOfSign(simpleDateFormat.format(consentFormCollection.getDateOfSign()));
 
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMedicalHistory()))
 			consentFormItemJasperdetails.setMedicalHistory(consentFormCollection.getMedicalHistory());
@@ -3320,4 +3326,102 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		return response;
 	}
+
+	@Override
+	public void emailConsentForm(String consentFormId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		ConsentFormCollection consentFormCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			consentFormCollection = consentFormRepository.findOne(new ObjectId(consentFormId));
+			if (consentFormCollection != null) {
+				if (consentFormCollection.getDoctorId() != null && consentFormCollection.getHospitalId() != null
+						&& consentFormCollection.getLocationId() != null) {
+					if (consentFormCollection.getDoctorId().equals(doctorId)
+							&& consentFormCollection.getHospitalId().equals(hospitalId)
+							&& consentFormCollection.getLocationId().equals(locationId)) {
+
+						user = userRepository.findOne(consentFormCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								consentFormCollection.getPatientId(), consentFormCollection.getLocationId(),
+								consentFormCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(consentFormCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(consentFormCollection.getHospitalId());
+						emailTrackCollection.setLocationId(consentFormCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.CONSENT_FORM.getType());
+						emailTrackCollection.setSubject("Consent Form");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse.setMailRecordCreatedDate(sdf.format(consentFormCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("consentForm Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								"consentForm Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Consent Form not found.Please check consentFormId.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Consent Form not found.Please check consentFormId.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Consent Form", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Consent Form", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
 }
