@@ -13,7 +13,7 @@ public class ConsentForm extends GenericCollection {
 	private String locationId;
 
 	private String hospitalId;
-	
+
 	private String formId;
 
 	private String patientId;
@@ -38,7 +38,7 @@ public class ConsentForm extends GenericCollection {
 
 	private String declaration;
 
-	private Date dateOfSign;
+	private Date dateOfSign = new Date();;
 
 	private String signImageURL;
 
@@ -46,7 +46,6 @@ public class ConsentForm extends GenericCollection {
 
 	private Boolean discarded = false;
 
-	
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -134,8 +133,6 @@ public class ConsentForm extends GenericCollection {
 	public void setDob(DOB dob) {
 		this.dob = dob;
 	}
-
-
 
 	public String getAddress() {
 		return address;

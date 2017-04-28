@@ -52,6 +52,7 @@ import com.dpdocter.beans.ClinicProfile;
 import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
+import com.dpdocter.beans.ConsentFormItemJasperdetails;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Feedback;
@@ -74,7 +75,6 @@ import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DoctorPatientReceiptCollection;
 import com.dpdocter.collections.FeedbackCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -146,10 +146,12 @@ import com.dpdocter.response.UserRoleLookupResponse;
 import com.dpdocter.services.AccessControlServices;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.GenerateUniqueUserNameService;
+import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.LocationServices;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.OTPService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -184,6 +186,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
 
 	// @Autowired
 	// private GroupRepository groupRepository;
@@ -256,6 +261,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private ConsentFormRepository consentFormRepository;
+
+	@Autowired
+	private JasperReportService jasperReportService;
+
+	@Value(value = "${jasper.print.consentForm.a4.fileName}")
+	private String consentFormA4FileName;
 
 	@Value(value = "${mail.signup.subject.activation}")
 	private String signupSubject;
@@ -3228,6 +3239,84 @@ public class RegistrationServiceImpl implements RegistrationService {
 			UserCollection user) throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		ConsentFormItemJasperdetails consentFormItemJasperdetails = new ConsentFormItemJasperdetails();
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLocalPatientName()))
+			consentFormItemJasperdetails.setName(consentFormCollection.getLocalPatientName());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getGender()))
+			consentFormItemJasperdetails.setGender(consentFormCollection.getGender());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getEmailAddress()))
+			consentFormItemJasperdetails.setEmailAddress(consentFormCollection.getEmailAddress());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getAddress()))
+			consentFormItemJasperdetails.setAddress(consentFormCollection.getAddress());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getBloodGroup()))
+			consentFormItemJasperdetails.setBloodGroup(consentFormCollection.getBloodGroup());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getDeclaration()))
+			consentFormItemJasperdetails.setDeclaration(consentFormCollection.getDeclaration());
+
+		if (consentFormCollection.getDateOfSign() != null)
+			consentFormItemJasperdetails.setDateOfSign(
+					simpleDateFormat.format(consentFormCollection.getDateOfSign()));
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMedicalHistory()))
+			consentFormItemJasperdetails.setMedicalHistory(consentFormCollection.getMedicalHistory());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLandLineNumber()))
+			consentFormItemJasperdetails.setLandLineNumber(consentFormCollection.getLandLineNumber());
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getSignImageURL()))
+			consentFormItemJasperdetails.setSignImageUrl(imagePath + consentFormCollection.getSignImageURL());
+
+		if (consentFormCollection.getDob() != null) {
+			consentFormItemJasperdetails.setBirthDate(consentFormCollection.getDob().getDays() + "/"
+					+ consentFormCollection.getDob().getMonths() + "/" + consentFormCollection.getDob().getYears());
+			consentFormItemJasperdetails.setAge(consentFormCollection.getDob().getAge().getYears() + "yrs:"
+					+ consentFormCollection.getDob().getAge().getMonths() + "ms:"
+					+ consentFormCollection.getDob().getAge().getDays() + "d");
+		}
+
+		parameters.put("item", consentFormItemJasperdetails);
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(consentFormCollection.getDoctorId(),
+				consentFormCollection.getLocationId(), consentFormCollection.getHospitalId(),
+				ComponentType.ALL.getType());
+
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>FORMID: </b>"
+						+ (consentFormCollection.getFormId() != null ? consentFormCollection.getFormId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+		patientVisitService.generatePrintSetup(parameters, printSettings, consentFormCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "CONSENTFORM-" + consentFormCollection.getFormId()
+				+ new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.CONSENT_FORM, parameters, consentFormA4FileName, layout,
+				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
 	}

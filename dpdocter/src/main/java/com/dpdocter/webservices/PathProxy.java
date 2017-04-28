@@ -168,6 +168,8 @@ public interface PathProxy {
 		public static final String GET_CONSENT_FORM = "/consentForm";
 
 		public static final String DELETE_CONSENT_FORM = "/consentForm/{consentFormId}/delete";
+		
+		public static final String DOWNLOAD_CONSENT_FORM = "/consentForm/download/{consentFormId}/";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
