@@ -178,9 +178,9 @@ public class LocaleApi {
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
-	public Response<Boolean> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
-		Response<Boolean> response = null;
-		Boolean status = false;
+	public Response<UserSearchRequest> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
+		Response<UserSearchRequest> response = null;
+		UserSearchRequest status = null;
 		try {
 			
 			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
@@ -190,6 +190,7 @@ public class LocaleApi {
 			ImageURLResponse imageURLResponse = null;
 			if (file != null) {
 				imageURLResponse = localeService.addRXImageMultipart(file);
+				System.out.println(imageURLResponse);
 				if (request != null){
 					PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
 					prescriptionRequest.setPrescriptionURL(imageURLResponse.getImageUrl());
@@ -201,7 +202,7 @@ public class LocaleApi {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 			status = pharmacyService.addSearchRequest(request);
-			response = new Response<Boolean>();
+			response = new Response<UserSearchRequest>();
 			response.setData(status);
 
 		} catch (Exception e) {

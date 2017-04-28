@@ -95,11 +95,11 @@ public class Location {
 
 	private Integer noOfClinicReview = 0;
 
-	/*private Boolean isParent = false;
+	private Boolean isParent = false;
 
 	private List<String> associatedLabs;
 
-	private String defaultParentLabId;*/
+	/* private String defaultParentLabId; */
 
 	public String getId() {
 		return id;
@@ -437,7 +437,7 @@ public class Location {
 		this.noOfClinicReview = noOfClinicReview;
 	}
 
-	/*public Boolean getIsParent() {
+	public Boolean getIsParent() {
 		return isParent;
 	}
 
@@ -453,13 +453,12 @@ public class Location {
 		this.associatedLabs = associatedLabs;
 	}
 
-	public String getDefaultParentLabId() {
-		return defaultParentLabId;
-	}
-
-	public void setDefaultParentLabId(String defaultParentLabId) {
-		this.defaultParentLabId = defaultParentLabId;
-	}*/
+	/*
+	 * public String getDefaultParentLabId() { return defaultParentLabId; }
+	 * 
+	 * public void setDefaultParentLabId(String defaultParentLabId) {
+	 * this.defaultParentLabId = defaultParentLabId; }
+	 */
 
 	@Override
 	public String toString() {
@@ -478,7 +477,8 @@ public class Location {
 				+ ", locationType=" + locationType + ", patientInitial=" + patientInitial + ", patientCounter="
 				+ patientCounter + ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", isClinicRecommended="
 				+ isClinicRecommended + ", hospital=" + hospital + ", invoiceInitial=" + invoiceInitial
-				+ ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview + "]";
+				+ ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview + ", isParent="
+				+ isParent + ", associatedLabs=" + associatedLabs + "]";
 	}
 
 }

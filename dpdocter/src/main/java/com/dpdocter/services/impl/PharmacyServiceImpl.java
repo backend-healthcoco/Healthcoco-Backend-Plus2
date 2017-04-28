@@ -83,18 +83,17 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Override
 	@Transactional
-	public Boolean addSearchRequest(UserSearchRequest request) {
+	public UserSearchRequest addSearchRequest(UserSearchRequest request) {
 		/*
 		 * TODO : generate uniqueRequestId then add request in queue and
 		 * collection. write two different methods addInQueue and addInDb so
 		 * that it can be reuse or else it will be easy to change flow if
 		 * required
 		 */
-		Boolean response = false;
+		UserSearchRequest response = null;
 		try {
 			addSearchRequestInQueue(request);
-			addSearchRequestInCollection(request);
-			response = true;
+			response = addSearchRequestInCollection(request);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While adding Search Request In Queue");
@@ -104,11 +103,15 @@ public class PharmacyServiceImpl implements PharmacyService {
 		return response;
 	}
 
-	private void addSearchRequestInCollection(UserSearchRequest request) {
+	private UserSearchRequest addSearchRequestInCollection(UserSearchRequest request) {
+		UserSearchRequest response = null;
 		SearchRequestFromUserCollection searchRequestFromUserCollection = new SearchRequestFromUserCollection();
 		BeanUtil.map(request, searchRequestFromUserCollection);
 		searchRequestFromUserCollection.setCreatedTime(new Date());
-		searchRequestFromUserRepository.save(searchRequestFromUserCollection);
+		searchRequestFromUserCollection = searchRequestFromUserRepository.save(searchRequestFromUserCollection);
+		response = new UserSearchRequest();
+		BeanUtil.map(searchRequestFromUserCollection, response); 
+		return response;
 
 	}
 

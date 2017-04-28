@@ -10,7 +10,7 @@ import com.dpdocter.response.SearchRequestToPharmacyResponse;
 
 public interface PharmacyService {
 
-	Boolean addSearchRequest(UserSearchRequest request);
+	UserSearchRequest addSearchRequest(UserSearchRequest request);
 
 	/*Boolean addResponseInQueue(PharmacyResponse request);*/
 
