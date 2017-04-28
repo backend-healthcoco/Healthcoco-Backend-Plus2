@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 public class ConsentFormItemJasperdetails {
 	private String name = "--";
 	private String gender = "--";
+	private String PID = "--";
 	private String birthDate = "--";
 	private String age = "--";
 	private String bloodGroup = "--";
@@ -119,6 +120,12 @@ public class ConsentFormItemJasperdetails {
 		this.dateOfSign = dateOfSign;
 	}
 
-	
+	public String getPID() {
+		return PID;
+	}
+
+	public void setPID(String pID) {
+		PID = pID;
+	}
 
 }

@@ -3219,11 +3219,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			ConsentFormCollection consentFormCollection = consentFormRepository.findOne(new ObjectId(consentFormId));
 			if (consentFormCollection != null) {
-				PatientCollection patient = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						consentFormCollection.getPatientId(), consentFormCollection.getDoctorId(),
-						consentFormCollection.getLocationId(), consentFormCollection.getHospitalId());
 				UserCollection user = userRepository.findOne(consentFormCollection.getPatientId());
-				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
+				JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, user);
 				if (jasperReportResponse != null)
 					response = getFinalImageURL(jasperReportResponse.getPath());
 				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
@@ -3242,84 +3239,131 @@ public class RegistrationServiceImpl implements RegistrationService {
 		return response;
 	}
 
-	private JasperReportResponse createJasper(ConsentFormCollection consentFormCollection, PatientCollection patient,
-			UserCollection user) throws IOException {
+	private JasperReportResponse createJasper(ConsentFormCollection consentFormCollection, UserCollection user)
+			throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		ConsentFormItemJasperdetails consentFormItemJasperdetails = new ConsentFormItemJasperdetails();
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLocalPatientName()))
+		Boolean show = false;
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLocalPatientName())) {
 			consentFormItemJasperdetails.setName(consentFormCollection.getLocalPatientName());
+			show = true;
+		}
+		parameters.put("showName", show);
+		show = false;
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getGender()))
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getGender())) {
 			consentFormItemJasperdetails.setGender(consentFormCollection.getGender());
+			show = true;
+		}
+		parameters.put("showGender", show);
+		show = false;
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getEmailAddress()))
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getPID())) {
+			consentFormItemJasperdetails.setPID("<b>PID:</b>" + consentFormCollection.getPID());
+			show = true;
+		}
+		parameters.put("showPID", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMobileNumber())) {
+			consentFormItemJasperdetails.setMobileNumber(consentFormCollection.getMobileNumber());
+			show = true;
+		}
+		parameters.put("showMbno", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getEmailAddress())) {
 			consentFormItemJasperdetails.setEmailAddress(consentFormCollection.getEmailAddress());
+			show = true;
+		}
+		parameters.put("showEmail", show);
+		show = false;
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getAddress()))
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getAddress())) {
 			consentFormItemJasperdetails.setAddress(consentFormCollection.getAddress());
+			show = true;
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getBloodGroup()))
+		}
+		parameters.put("showAddress", show);
+
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getBloodGroup())) {
 			consentFormItemJasperdetails.setBloodGroup(consentFormCollection.getBloodGroup());
+			show = true;
+		}
+		parameters.put("showBloodGroup", show);
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getDeclaration()))
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getDeclaration())) {
 			consentFormItemJasperdetails.setDeclaration(consentFormCollection.getDeclaration());
+			show = true;
+		}
+		parameters.put("showDeclaration", show);
 
-		if (consentFormCollection.getDateOfSign() != null)
+		show = false;
+
+		if (consentFormCollection.getDateOfSign() != null) {
 			consentFormItemJasperdetails.setDateOfSign(simpleDateFormat.format(consentFormCollection.getDateOfSign()));
+			show = true;
+		}
+		parameters.put("showSignDate", show);
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMedicalHistory()))
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getMedicalHistory())) {
 			consentFormItemJasperdetails.setMedicalHistory(consentFormCollection.getMedicalHistory());
+			show = true;
+		}
+		parameters.put("showMedicalHistory", show);
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLandLineNumber()))
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getLandLineNumber())) {
 			consentFormItemJasperdetails.setLandLineNumber(consentFormCollection.getLandLineNumber());
+			show = true;
+		}
 
-		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getSignImageURL()))
+		parameters.put("showLandLineNo", show);
+
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getSignImageURL())) {
 			consentFormItemJasperdetails.setSignImageUrl(imagePath + consentFormCollection.getSignImageURL());
+			show = true;
+		}
+
+		parameters.put("showSignImage", show);
+
+		show = false;
 
 		if (consentFormCollection.getDob() != null) {
 			consentFormItemJasperdetails.setBirthDate(consentFormCollection.getDob().getDays() + "/"
 					+ consentFormCollection.getDob().getMonths() + "/" + consentFormCollection.getDob().getYears());
-			consentFormItemJasperdetails.setAge(consentFormCollection.getDob().getAge().getYears() + "yrs:"
-					+ consentFormCollection.getDob().getAge().getMonths() + "ms:"
-					+ consentFormCollection.getDob().getAge().getDays() + "d");
+			consentFormItemJasperdetails.setAge(consentFormCollection.getDob().getAge().getYears() + " years : "
+					+ consentFormCollection.getDob().getAge().getMonths() + " months :"
+					+ consentFormCollection.getDob().getAge().getDays() + " days");
+			show = true;
 		}
 
-		parameters.put("item", consentFormItemJasperdetails);
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(consentFormCollection.getDoctorId(),
-				consentFormCollection.getLocationId(), consentFormCollection.getHospitalId(),
-				ComponentType.ALL.getType());
+		parameters.put("showDOB", show);
 
-		patientVisitService.generatePatientDetails(
-				(printSettings != null && printSettings.getHeaderSetup() != null
-						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient,
-				"<b>FORMID: </b>"
-						+ (consentFormCollection.getFormId() != null ? consentFormCollection.getFormId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
-		patientVisitService.generatePrintSetup(parameters, printSettings, consentFormCollection.getDoctorId());
+		parameters.put("item", consentFormItemJasperdetails);
+
+		patientVisitService.generatePrintSetup(parameters, null, consentFormCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CONSENTFORM-" + consentFormCollection.getFormId()
 				+ new Date().getTime();
 
-		String layout = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
-				: "PORTRAIT";
-		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
-		Integer topMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
-		Integer bottonMargin = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
-		Integer leftMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
-						? printSettings.getPageSetup().getLeftMargin() : 20)
-				: 20;
-		Integer rightMargin = printSettings != null
-				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
-						? printSettings.getPageSetup().getRightMargin() : 20)
-				: 20;
+		String layout = "PORTRAIT";
+		String pageSize = "A4";
+		Integer topMargin = 20;
+		Integer bottonMargin = 20;
+		Integer leftMargin = 20;
+		Integer rightMargin = 20;
 		response = jasperReportService.createPDF(ComponentType.CONSENT_FORM, parameters, consentFormA4FileName, layout,
 				pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
@@ -3333,7 +3377,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 		MailResponse mailResponse = null;
 		ConsentFormCollection consentFormCollection = null;
 		MailAttachment mailAttachment = null;
-		PatientCollection patient = null;
 		UserCollection user = null;
 		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
 		try {
@@ -3346,21 +3389,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 							&& consentFormCollection.getLocationId().equals(locationId)) {
 
 						user = userRepository.findOne(consentFormCollection.getPatientId());
-						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-								consentFormCollection.getPatientId(), consentFormCollection.getLocationId(),
-								consentFormCollection.getHospitalId());
-						user.setFirstName(patient.getLocalPatientName());
+
+						user.setFirstName(consentFormCollection.getLocalPatientName());
 						emailTrackCollection.setDoctorId(consentFormCollection.getDoctorId());
 						emailTrackCollection.setHospitalId(consentFormCollection.getHospitalId());
 						emailTrackCollection.setLocationId(consentFormCollection.getLocationId());
 						emailTrackCollection.setType(ComponentType.CONSENT_FORM.getType());
 						emailTrackCollection.setSubject("Consent Form");
 						if (user != null) {
-							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientName(consentFormCollection.getLocalPatientName());
 							emailTrackCollection.setPatientId(user.getId());
 						}
 
-						JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, patient, user);
+						JasperReportResponse jasperReportResponse = createJasper(consentFormCollection, user);
 						mailAttachment = new MailAttachment();
 						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
 						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());

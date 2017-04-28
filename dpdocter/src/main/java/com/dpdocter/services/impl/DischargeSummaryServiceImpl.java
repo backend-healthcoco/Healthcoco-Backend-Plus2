@@ -67,7 +67,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			if (dischargeSummary.getId() == null) {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
-
+				dischargeSummary.setDischargeId(
+						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
 				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
 			}
@@ -79,8 +80,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				dischargeSummaryCollection.setCreatedTime(new Date());
 				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
-				dischargeSummaryCollection.setDischargeId(
-						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				response = new DischargeSummaryResponse();
 
