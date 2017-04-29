@@ -45,6 +45,7 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -88,6 +89,9 @@ public class RegistrationApi {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
+	
+	@Autowired
+	private DoctorRepository doctorRepository;
 
 	@Context
 	private UriInfo uriInfo;

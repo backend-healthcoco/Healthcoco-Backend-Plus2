@@ -190,7 +190,7 @@ public class LocaleApi {
 			ImageURLResponse imageURLResponse = null;
 			if (file != null) {
 				imageURLResponse = localeService.addRXImageMultipart(file);
-				System.out.println(imageURLResponse);
+				//System.out.println(imageURLResponse);
 				if (request != null){
 					PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
 					prescriptionRequest.setPrescriptionURL(imageURLResponse.getImageUrl());

@@ -161,7 +161,12 @@ public class LoginServiceImpl implements LoginService {
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
 									Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id", "hospital"), Aggregation.unwind("hospital")), 
 							DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
-					if (doctorClinicProfileLookupResponses != null) {
+					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
+						logger.warn("None of your clinic is active");
+						//user.setUserState(UserState.NOTACTIVATED);
+						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
+					}
+					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
 						List<Hospital> hospitals = new ArrayList<Hospital>();
 						Map<String, Hospital> checkHospitalId = new HashMap<String, Hospital>();
 						for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
@@ -247,6 +252,7 @@ public class LoginServiceImpl implements LoginService {
 
 					} else {
 						logger.warn("None of your clinic is active");
+						//user.setUserState(UserState.NOTACTIVATED);
 						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
 					}
 				}
