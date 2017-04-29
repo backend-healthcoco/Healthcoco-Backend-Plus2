@@ -86,7 +86,7 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private String summary;
 	@Field
-	private Boolean discaded = false;
+	private Boolean discarded = false;
 	@Field
 	private String indicationOfUSG;
 	@Field
@@ -118,12 +118,12 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.holter = holter;
 	}
 
-	public Boolean getDiscaded() {
-		return discaded;
+	public Boolean getDiscarded() {
+		return discarded;
 	}
 
-	public void setDiscaded(Boolean discaded) {
-		this.discaded = discaded;
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public ObjectId getId() {

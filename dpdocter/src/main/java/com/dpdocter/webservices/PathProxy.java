@@ -168,9 +168,9 @@ public interface PathProxy {
 		public static final String GET_CONSENT_FORM = "/consentForm";
 
 		public static final String DELETE_CONSENT_FORM = "/consentForm/{consentFormId}/delete";
-		
+
 		public static final String DOWNLOAD_CONSENT_FORM = "/consentForm/download/{consentFormId}/";
-		
+
 		public static final String EMAIL_CONSENT_FORM = "/{consentFormId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 	}
 
@@ -642,7 +642,7 @@ public interface PathProxy {
 		public static final String GET_DOCTOR_STATS = "/{doctorId}/getStats";
 
 		public static final String UPDATE_EMR_SETTING = "/{doctorId}/updateEMRSetting";
-		
+
 		public static final String ADD_EDIT_SEO = "/addEditSEO";
 
 	}
@@ -1108,7 +1108,9 @@ public interface PathProxy {
 		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
 		public static final String ADD_DISCHARGE_SUMMARY = "/add";
 		public static final String VIEW_DISCHARGE_SUMMARY = "/view/{dischargeSummeryId}";
-
+		public static final String DELETE_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DOWNLOAD_DISCHARGE_SUMMARY = "/consentForm/download/{dischargeSummeryId}/";
+		public static final String EMAIL_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 	}
 
 	public static final String LAB_BASE_URL = BASE_URL + "/lab";

@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class ConsentForm extends GenericCollection {
@@ -19,6 +21,8 @@ public class ConsentForm extends GenericCollection {
 	private String patientId;
 
 	private String PID;
+	
+	private String locationName;
 
 	private String localPatientName;
 
@@ -204,6 +208,14 @@ public class ConsentForm extends GenericCollection {
 
 	public void setFormId(String formId) {
 		this.formId = formId;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
 	}
 
 }

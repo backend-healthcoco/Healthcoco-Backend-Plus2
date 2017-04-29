@@ -13,12 +13,20 @@ public interface DischargeSummaryService {
 
 	// List<DischargeSummary> getAllDischargeSummary();
 
-	List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, String updatedTime);
+	List<DischargeSummaryResponse> getDischargeSummary(String doctorId, String locationId, String hospitalId,
+			String patientId, int page, int size, String updatedTime);
 
 	int getDischargeSummaryCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
 	DischargeSummaryResponse viewDischargeSummary(String summaryId);
+
+	DischargeSummaryResponse deleteDischargeSummary(String dischargeSummeryId, String doctorId, String hospitalId,
+			String locationId, Boolean discarded);
+
+	String downloadDischargeSummary(String dischargeSummeryId);
+
+	void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 
 }

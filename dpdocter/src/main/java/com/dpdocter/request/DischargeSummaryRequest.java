@@ -46,7 +46,7 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String babyNotes;
 	private String conditionsAtDischarge;
 	private String summary;
-	private Boolean discaded = false;
+	private Boolean discarded = false;
 	private String indicationOfUSG;
 	private String ecgDetails;
 	private String holter;
@@ -347,12 +347,12 @@ public class DischargeSummaryRequest extends GenericCollection {
 		this.summary = summary;
 	}
 
-	public Boolean getDiscaded() {
-		return discaded;
+	public Boolean getDiscarded() {
+		return discarded;
 	}
 
-	public void setDiscaded(Boolean discaded) {
-		this.discaded = discaded;
+	public void setDiscaded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	public String getPs() {

@@ -287,4 +287,74 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
+	@Override
+	public DischargeSummaryResponse deleteDischargeSummary(String dischargeSummeryId, String doctorId,
+			String hospitalId, String locationId, Boolean discarded) {
+		DischargeSummaryResponse response = null;
+		try {
+			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
+					.findOne(new ObjectId(dischargeSummeryId));
+			if (dischargeSummaryCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDoctorId(),
+						dischargeSummaryCollection.getHospitalId(), dischargeSummaryCollection.getLocationId())) {
+					if (dischargeSummaryCollection.getDoctorId().toString().equals(doctorId)
+							&& dischargeSummaryCollection.getHospitalId().toString().equals(hospitalId)
+							&& dischargeSummaryCollection.getLocationId().toString().equals(locationId)) {
+						dischargeSummaryCollection.setDiscarded(discarded);
+						dischargeSummaryCollection.setUpdatedTime(new Date());
+						dischargeSummaryRepository.save(dischargeSummaryCollection);
+						response = new DischargeSummaryResponse();
+						BeanUtil.map(dischargeSummaryCollection, response);
+						if (dischargeSummaryCollection.getPrescriptions() != null) {
+							List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
+
+							if (dischargeSummaryCollection.getPrescriptions().getItems() != null
+									&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
+								for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
+									PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+
+									BeanUtil.map(item, prescriptionItemDetail);
+
+									if (item.getDrugId() != null) {
+										DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+										Drug drug = new Drug();
+										BeanUtil.map(drugCollection, drug);
+										prescriptionItemDetail.setDrug(drug);
+									}
+									items.add(prescriptionItemDetail);
+
+								}
+							response.getPrescriptions().setItems(items);
+						}
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				}
+			} else {
+				logger.warn("Discharge Summary not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Discharge Summary not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public String downloadDischargeSummary(String dischargeSummeryId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
