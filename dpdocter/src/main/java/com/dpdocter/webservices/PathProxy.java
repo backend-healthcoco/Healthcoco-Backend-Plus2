@@ -1109,7 +1109,7 @@ public interface PathProxy {
 		public static final String ADD_DISCHARGE_SUMMARY = "/add";
 		public static final String VIEW_DISCHARGE_SUMMARY = "/view/{dischargeSummeryId}";
 		public static final String DELETE_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/delete";
-		public static final String DOWNLOAD_DISCHARGE_SUMMARY = "/consentForm/download/{dischargeSummeryId}/";
+		public static final String DOWNLOAD_DISCHARGE_SUMMARY = "/download/{dischargeSummeryId}/";
 		public static final String EMAIL_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 	}
 
