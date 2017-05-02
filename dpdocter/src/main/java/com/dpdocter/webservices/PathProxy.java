@@ -171,7 +171,7 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_CONSENT_FORM = "/consentForm/download/{consentFormId}/";
 
-		public static final String EMAIL_CONSENT_FORM = "/{consentFormId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+		public static final String EMAIL_CONSENT_FORM = "/consentForm/{consentFormId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -330,7 +330,7 @@ public interface PathProxy {
 
 		public static final String DELETE_RECORD = "/{recordId}/delete";
 
-		public static final String DOWNLOAD_RECORD = "/download/{recordId}";
+		public static final String DOWNLOAD_RECORD = "/download/{recordId}/{fileId}";
 
 		public static final String DELETE_TAG = "/tagrecord/{tagid}/delete";
 
@@ -355,6 +355,10 @@ public interface PathProxy {
 		public static final String GET_USER_RECORDS_ALLOWANCE = "user/allowance";
 
 		public static final String DELETE_OR_HIDE_USER_RECORD = "user/{recordId}/delete";
+
+		public static final String DELETE_RECORDS_FILE = "/{recordId}/delete";
+
+		public static final String UPDATE_RECORDS_DATA = "/updateData";
 
 	}
 

@@ -7,7 +7,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 
 @Document(collection = "consent_form_cl")

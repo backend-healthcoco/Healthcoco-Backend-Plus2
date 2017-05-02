@@ -924,7 +924,7 @@ public class RegistrationApi {
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (request == null) {
+		if (file == null||request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getLocationId(),

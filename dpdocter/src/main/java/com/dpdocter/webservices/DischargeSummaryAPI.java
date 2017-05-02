@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -14,19 +13,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Drug;
-import com.dpdocter.elasticsearch.document.ESDrugDocument;
-import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.services.DischargeSummaryService;
@@ -114,7 +107,8 @@ public class DischargeSummaryAPI {
 	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
 	@DELETE
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DELETE_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> deleteDischargeSummary(@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
+	public Response<DischargeSummaryResponse> deleteDischargeSummary(
+			@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
@@ -124,12 +118,13 @@ public class DischargeSummaryAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Discharge Summery  Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		DischargeSummaryResponse	dischargeSummaryResponse = dischargeSummaryService.deleteDischargeSummary(dischargeSummeryId, doctorId, hospitalId, locationId, discarded);
+		DischargeSummaryResponse dischargeSummaryResponse = dischargeSummaryService
+				.deleteDischargeSummary(dischargeSummeryId, doctorId, hospitalId, locationId, discarded);
 		Response<DischargeSummaryResponse> response = new Response<DischargeSummaryResponse>();
 		response.setData(dischargeSummaryResponse);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
 	@GET
 	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.DOWNLOAD_DISCHARGE_SUMMARY)
@@ -139,10 +134,10 @@ public class DischargeSummaryAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
+	@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
 	@GET
-	@ApiOperation(value = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM, notes = PathProxy.RegistrationUrls.EMAIL_CONSENT_FORM)
-	public Response<Boolean> emailConsentForm(@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
+	public Response<Boolean> emailDischargeSummary(@PathParam(value = "dischargeSummeryId") String dischargeSummeryId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "emailAddress") String emailAddress) {
@@ -153,12 +148,12 @@ public class DischargeSummaryAPI {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Invalid Input. dischargeSummeryId, Doctor Id, Location Id, Hospital Id, EmailAddress Cannot Be Empty");
 		}
-		dischargeSummaryService.emailDischargeSummary(dischargeSummeryId, doctorId, locationId, hospitalId, emailAddress);
+		dischargeSummaryService.emailDischargeSummary(dischargeSummeryId, doctorId, locationId, hospitalId,
+				emailAddress);
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
 	}
-
 
 }

@@ -1,12 +1,19 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -16,22 +23,44 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
+import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.beans.User;
+import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.request.DrugAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
+import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.DischargeSummaryService;
+import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 import com.dpdocter.services.PrescriptionServices;
 
 import common.util.web.DPDoctorUtils;
@@ -48,13 +77,43 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+
+	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private EmailTackService emailTackService;
+
+	@Autowired
+	private MailService mailService;
 
 	@Autowired
 	private DrugRepository drugRepository;
 
 	@Autowired
+	private LocationRepository locationRepository;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
 	private PrescriptionServices prescriptionServices;
+
+	@Autowired
+	private JasperReportService jasperReportService;
+
+	@Autowired
+	private PatientRepository patientRepository;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
+
+	@Value(value = "${jasper.print.dischargeSummary.a4.fileName}")
+	private String dischargeSummaryReportA4FileName;
+
+	@Value(value = "${image.path}")
+	private String imagePath;
 
 	@Transactional
 	@Override
@@ -67,30 +126,33 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			if (dischargeSummary.getId() == null) {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
+				dischargeSummary.setCreatedTime(new Date());
+				UserCollection doctor = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
+				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setDischargeId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
 				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
 			}
 			if (dischargeSummaryCollection != null) {
-
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
-
-				UserCollection doctor = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
-
-				dischargeSummaryCollection.setCreatedTime(new Date());
-				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
+				if (dischargeSummary.getPrescriptions() != null) {
+					PrescriptionAndAdvice prescription = new PrescriptionAndAdvice();
+					BeanUtil.map(dischargeSummary.getPrescriptions(), prescription);
+					dischargeSummaryCollection.setPrescriptions(prescription);
+				}
 
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				response = new DischargeSummaryResponse();
 
 				BeanUtil.map(dischargeSummaryCollection, response);
 				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					List<PrescriptionItemDetail> items = null;
+					List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
+					;
 					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
 						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 						BeanUtil.map(item, prescriptionItemDetail);
-						items = new ArrayList<PrescriptionItemDetail>();
+
 						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
 						Drug drug = new Drug();
 						if (drugCollection != null) {
@@ -346,14 +408,482 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Override
 	public String downloadDischargeSummary(String dischargeSummeryId) {
-		// TODO Auto-generated method stub
+		String response = null;
+
+		try {
+			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
+					.findOne(new ObjectId(dischargeSummeryId));
+			if (dischargeSummaryCollection != null) {
+
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
+						dischargeSummaryCollection.getHospitalId());
+
+				UserCollection user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+				JasperReportResponse jasperReportResponse = createJasper(dischargeSummaryCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Invoice Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Exception in download Consent Form ");
+		}
 		return null;
+	}
+
+	private JasperReportResponse createJasper(DischargeSummaryCollection dischargeSummaryCollection,
+			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+		JasperReportResponse response = null;
+		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		Boolean show = false;
+		if (dischargeSummaryCollection.getPrescriptions() != null) {
+			int no = 0;
+			Boolean showIntructions = false, showDirection = false;
+			if (dischargeSummaryCollection.getPrescriptions().getItems() != null
+					&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty()) {
+				for (PrescriptionItem prescriptionItem : dischargeSummaryCollection.getPrescriptions().getItems()) {
+					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
+						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+						if (drug != null) {
+							String drugType = drug.getDrugType() != null
+									? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
+									: "";
+							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName;
+							String durationValue = prescriptionItem.getDuration() != null
+									? (prescriptionItem.getDuration().getValue() != null
+											? prescriptionItem.getDuration().getValue() : "")
+									: "";
+							String durationUnit = prescriptionItem.getDuration() != null
+									? (prescriptionItem.getDuration()
+											.getDurationUnit() != null
+													? (!DPDoctorUtils.anyStringEmpty(
+															prescriptionItem.getDuration().getDurationUnit().getUnit())
+																	? prescriptionItem.getDuration().getDurationUnit()
+																			.getUnit()
+																	: "")
+													: "")
+									: "";
+
+							String directions = "";
+							if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
+								showDirection = true;
+								if (prescriptionItem.getDirection().get(0).getDirection() != null) {
+									if (directions == "")
+										directions = directions
+												+ (prescriptionItem.getDirection().get(0).getDirection());
+									else
+										directions = directions + ","
+												+ (prescriptionItem.getDirection().get(0).getDirection());
+								}
+							}
+							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+								showIntructions = true;
+							}
+							String duration = "";
+							if (durationValue == "" && durationValue == "")
+								duration = "--";
+							else
+								duration = durationValue + " " + durationUnit;
+							no = no + 1;
+
+							String genericName = "";
+							if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+								for (GenericCode genericCode : drug.getGenericNames()) {
+									if (DPDoctorUtils.anyStringEmpty(genericName))
+										genericName = "<b>Generic Names : </b>" + genericCode.getName();
+									else
+										genericName = genericName + "+" + genericCode.getName();
+								}
+							}
+
+							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
+									drugName,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+											? prescriptionItem.getDosage() : "--",
+									duration, directions.isEmpty() ? "--" : directions,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+											? prescriptionItem.getInstructions() : "--",
+									genericName);
+							prescriptionItems.add(prescriptionJasperDetails);
+						}
+					}
+				}
+
+				parameters.put("prescriptionItems", prescriptionItems);
+				parameters.put("showIntructions", showIntructions);
+				parameters.put("showDirection", showDirection);
+			}
+			if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptions().getAdvice())) {
+				show = true;
+				parameters.put("advice", dischargeSummaryCollection.getPrescriptions().getAdvice());
+			}
+			parameters.put("showAdvice", show);
+		}
+		show = false;
+		if (dischargeSummaryCollection.getAdmissionDate() != null) {
+			show = true;
+			parameters.put("dOA",
+					"<b>DOA:</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+		}
+		parameters.put("showDOA", show);
+		show = false;
+		if (dischargeSummaryCollection.getDischargeDate() != null) {
+			show = true;
+			parameters.put("dOD",
+					"<b>DOD:</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+		}
+		parameters.put("showDOD", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
+			show = true;
+			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
+		}
+		parameters.put("showBabyNotes", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyWeight())) {
+			show = true;
+			parameters.put("babyWeight", dischargeSummaryCollection.getBabyWeight());
+		}
+		parameters.put("showBabyWeight", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getComplaints())) {
+			show = true;
+			parameters.put("complaints", dischargeSummaryCollection.getComplaints());
+		}
+		parameters.put("showcompl", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getEcho())) {
+			show = true;
+			parameters.put("echo", dischargeSummaryCollection.getEcho());
+		}
+		parameters.put("showecho", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getConditionsAtDischarge())) {
+			show = true;
+			parameters.put("condition", dischargeSummaryCollection.getConditionsAtDischarge());
+		}
+		parameters.put("showcondition", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getDiagnosis())) {
+			show = true;
+			parameters.put("diagnosis", dischargeSummaryCollection.getDiagnosis());
+		}
+		parameters.put("showDiagnosis", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getFamilyHistory())) {
+			show = true;
+			parameters.put("familyHistory", dischargeSummaryCollection.getFamilyHistory());
+		}
+		parameters.put("showfH", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getHolter())) {
+			show = true;
+			parameters.put("holter", dischargeSummaryCollection.getHolter());
+		}
+		parameters.put("showholter", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getEcgDetails())) {
+			show = true;
+			parameters.put("ecgDetails", dischargeSummaryCollection.getEcgDetails());
+		}
+		parameters.put("showEcg", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getGeneralExamination())) {
+			show = true;
+			parameters.put("generalExam", dischargeSummaryCollection.getGeneralExamination());
+		}
+		parameters.put("showGExam", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getIndicationOfUSG())) {
+			show = true;
+			parameters.put("indicationOfUSG", dischargeSummaryCollection.getIndicationOfUSG());
+		}
+		parameters.put("showINUSG", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getxRayDetails())) {
+			show = true;
+			parameters.put("xRayDetails", dischargeSummaryCollection.getxRayDetails());
+		}
+		parameters.put("showXD", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getHistoryOfPresentComplaints())) {
+			show = true;
+			parameters.put("historyOfPresentComplaints", dischargeSummaryCollection.getHistoryOfPresentComplaints());
+		}
+		parameters.put("showHPC", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getObservation())) {
+			show = true;
+			parameters.put("observation", dischargeSummaryCollection.getObservation());
+		}
+		parameters.put("showObserv", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getInvestigation())) {
+			show = true;
+			parameters.put("investigation", dischargeSummaryCollection.getInvestigation());
+		}
+		parameters.put("showINV", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getLabourNotes())) {
+			show = true;
+			parameters.put("labourNotes", dischargeSummaryCollection.getLabourNotes());
+		}
+		parameters.put("showLN", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getMenstrualHistory())) {
+			show = true;
+			parameters.put("menstrualHistory", dischargeSummaryCollection.getMenstrualHistory());
+		}
+		parameters.put("showMH", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getObstetricHistory())) {
+			show = true;
+			parameters.put("obstetricHistory", dischargeSummaryCollection.getObstetricHistory());
+		}
+		parameters.put("showOH", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPastHistory())) {
+			show = true;
+			parameters.put("pastHistory", dischargeSummaryCollection.getPastHistory());
+		}
+		parameters.put("showPH", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
+			show = true;
+			parameters.put("operationNotes", dischargeSummaryCollection.getOperationNotes());
+		}
+		parameters.put("showON", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getTreatmentsGiven())) {
+			show = true;
+			parameters.put("treatmentGiven", dischargeSummaryCollection.getTreatmentsGiven());
+		}
+		parameters.put("showTG", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSystemicExamination())) {
+			show = true;
+			parameters.put("systemExam", dischargeSummaryCollection.getSystemicExamination());
+		}
+		parameters.put("showSExam", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSummary())) {
+			show = true;
+			parameters.put("summary", dischargeSummaryCollection.getSummary());
+		}
+		parameters.put("showSum", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPa())) {
+			show = true;
+			parameters.put("pa", dischargeSummaryCollection.getPa());
+		}
+		parameters.put("showPA", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPs())) {
+			show = true;
+			parameters.put("ps", dischargeSummaryCollection.getPs());
+		}
+		parameters.put("showPS", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPv())) {
+			show = true;
+			parameters.put("pv", dischargeSummaryCollection.getPv());
+		}
+		parameters.put("showPV", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPersonalHistory())) {
+			show = true;
+			parameters.put("pesonalHistory", dischargeSummaryCollection.getPersonalHistory());
+		}
+		parameters.put("showPersonalHistory", show);
+		show = false;
+
+		if (dischargeSummaryCollection.getNextReview() != null) {
+			show = true;
+			parameters.put("fromDate", "<b>From :</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getNextReview().getFromDate()));
+			parameters.put("toDate",
+					"<b>To:</b>" + simpleDateFormat.format(dischargeSummaryCollection.getNextReview().getToDate()));
+		}
+		parameters.put("showNextReview", show);
+		show = false;
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
+				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
+
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getDischargeId() != null
+						? dischargeSummaryCollection.getDischargeId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
+				+ dischargeSummaryCollection.getDischargeId() + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.DISCHARGE_SUMMARY, parameters,
+				dischargeSummaryReportA4FileName, layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
 	}
 
 	@Override
 	public void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress) {
-		// TODO Auto-generated method stub
+		MailResponse mailResponse = null;
+		DischargeSummaryCollection dischargeSummaryCollection = null;
+		MailAttachment mailAttachment = null;
+		UserCollection user = null;
+		PatientCollection patient = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummeryId));
+			if (dischargeSummaryCollection != null) {
+				if (dischargeSummaryCollection.getDoctorId() != null
+						&& dischargeSummaryCollection.getHospitalId() != null
+						&& dischargeSummaryCollection.getLocationId() != null) {
+					if (dischargeSummaryCollection.getDoctorId().equals(doctorId)
+							&& dischargeSummaryCollection.getHospitalId().equals(hospitalId)
+							&& dischargeSummaryCollection.getLocationId().equals(locationId)) {
+
+						user = userRepository.findOne(dischargeSummaryCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
+								dischargeSummaryCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(dischargeSummaryCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(dischargeSummaryCollection.getHospitalId());
+						emailTrackCollection.setLocationId(dischargeSummaryCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.DISCHARGE_SUMMARY.getType());
+						emailTrackCollection.setSubject("Discharge Summary");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(dischargeSummaryCollection, patient,
+								user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse.setMailRecordCreatedDate(sdf.format(dischargeSummaryCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("consentForm Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								"consentForm Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Consent Form not found.Please check consentFormId.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Consent Form not found.Please check consentFormId.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Consent Form", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Consent Form", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 
 	}
 
