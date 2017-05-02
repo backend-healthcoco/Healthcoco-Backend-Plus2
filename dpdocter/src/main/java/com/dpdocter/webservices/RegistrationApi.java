@@ -89,7 +89,7 @@ public class RegistrationApi {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
 
@@ -921,8 +921,14 @@ public class RegistrationApi {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		ConsentForm request = data.getValueAs(ConsentForm.class);
 
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(),
-				request.getLocationId(), request.getHospitalId()) || file == null) {
+		if (file == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
