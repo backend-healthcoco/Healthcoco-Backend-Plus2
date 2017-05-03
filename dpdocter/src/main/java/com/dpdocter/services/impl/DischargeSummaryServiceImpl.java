@@ -40,6 +40,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -433,9 +434,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, "Exception in download Consent Form ");
+			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
 		}
-		return null;
+		return response;
 	}
 
 	private JasperReportResponse createJasper(DischargeSummaryCollection dischargeSummaryCollection,
@@ -447,6 +448,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Boolean show = false;
 		if (dischargeSummaryCollection.getPrescriptions() != null) {
+			show = true;
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
 			if (dischargeSummaryCollection.getPrescriptions().getItems() != null
@@ -521,15 +523,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 
 				parameters.put("prescriptionItems", prescriptionItems);
+				parameters.put("showPrescription", show);
 				parameters.put("showIntructions", showIntructions);
 				parameters.put("showDirection", showDirection);
 			}
-			if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptions().getAdvice())) {
-				show = true;
-				parameters.put("advice", dischargeSummaryCollection.getPrescriptions().getAdvice());
-			}
-			parameters.put("showAdvice", show);
 		}
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptions().getAdvice())) {
+			show = true;
+			parameters.put("advice", dischargeSummaryCollection.getPrescriptions().getAdvice());
+		}
+		parameters.put("showAdvice", show);
+
 		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
 			show = true;
@@ -728,6 +733,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("pesonalHistory", dischargeSummaryCollection.getPersonalHistory());
 		}
 		parameters.put("showPersonalHistory", show);
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaints())) {
+			show = true;
+			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaints());
+		}
+		parameters.put("showpresentComplaints", show);
 		show = false;
 
 		if (dischargeSummaryCollection.getNextReview() != null) {
@@ -743,7 +754,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
-
+		parameters.put("contentLineSpace",
+				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
@@ -859,22 +872,22 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						emailTackService.saveEmailTrack(emailTrackCollection);
 
 					} else {
-						logger.warn("consentForm Id, doctorId, location Id, hospital Id does not match");
+						logger.warn("DischargeSummary Id, doctorId, location Id, hospital Id does not match");
 						throw new BusinessException(ServiceError.NotFound,
-								"consentForm Id, doctorId, location Id, hospital Id does not match");
+								" DischargeSummary  Id, doctorId, location Id, hospital Id does not match");
 					}
 				}
 
 			} else {
-				logger.warn("Consent Form not found.Please check consentFormId.");
+				logger.warn("Discharge Summary  not found.Please check summaryId.");
 				throw new BusinessException(ServiceError.NoRecord,
-						"Consent Form not found.Please check consentFormId.");
+						"Discharge Summary not found.Please check summaryId.");
 			}
 
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Consent Form", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Consent Form", body,
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Discharge Summary", body,
 					mailResponse.getMailAttachment());
 			if (mailResponse.getMailAttachment() != null
 					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
