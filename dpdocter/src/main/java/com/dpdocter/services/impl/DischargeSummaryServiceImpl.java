@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -23,11 +24,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionItemAndAdvice;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.User;
@@ -122,24 +125,82 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		DischargeSummaryResponse response = null;
 		try {
-
+			List<PrescriptionItemDetail> itemDetails = null;
+			PrescriptionItemAndAdvice itemAndAdvice = null;
 			DischargeSummaryCollection dischargeSummaryCollection = null;
-
+			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
+			
 			if (dischargeSummary.getId() == null) {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummary.setCreatedTime(new Date());
-				UserCollection doctor = userRepository.findOne(dischargeSummaryCollection.getDoctorId());
 				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setDischargeId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
 				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
 			}
+
 			if (dischargeSummaryCollection != null) {
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
-				if (dischargeSummary.getPrescriptions() != null) {
+
+				if (dischargeSummaryCollection.getPrescriptions() != null) {
 					PrescriptionAndAdvice prescription = new PrescriptionAndAdvice();
-					BeanUtil.map(dischargeSummary.getPrescriptions(), prescription);
+					itemAndAdvice = new PrescriptionItemAndAdvice();
+					List<PrescriptionItem> items = null;
+					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
+						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
+						if (item.getDrugId() != null) {
+							List<DrugDirection> directions = null;
+							if (item.getDirection() != null && !item.getDirection().isEmpty()) {
+								for (DrugDirection drugDirection : item.getDirection()) {
+									if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
+										if (directions == null)
+											directions = new ArrayList<DrugDirection>();
+										directions.add(drugDirection);
+									}
+								}
+								item.setDirection(directions);
+							}
+							if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
+								if (item.getDuration().getDurationUnit().getId() == null)
+									item.setDuration(null);
+							} else {
+								item.setDuration(null);
+							}
+							if (items == null) {
+								items = new ArrayList<PrescriptionItem>();
+								itemDetails = new ArrayList<PrescriptionItemDetail>();
+							}
+							BeanUtil.map(item, prescriptionItemDetail);
+							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
+							Drug drug = new Drug();
+
+							if (drugCollection != null) {
+								BeanUtil.map(drugCollection, drug);
+								DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
+								BeanUtil.map(drugCollection, drugAddEditRequest);
+								drugAddEditRequest.setDoctorId(doctor.getId().toString());
+								drugAddEditRequest.setHospitalId(dischargeSummary.getHospitalId());
+								drugAddEditRequest.setLocationId(dischargeSummary.getLocationId());
+								drugAddEditRequest.setDirection(item.getDirection());
+								drugAddEditRequest.setDuration(item.getDuration());
+								drugAddEditRequest.setDosage(item.getDosage());
+								drugAddEditRequest.setDosageTime(item.getDosageTime());
+								prescriptionServices.addFavouriteDrug(drugAddEditRequest);
+							}
+
+							prescriptionItemDetail.setDrug(drug);
+							items.add(item);
+							itemDetails.add(prescriptionItemDetail);
+						}
+					}
+					itemAndAdvice.setItems(itemDetails);
+					prescription.setItems(items);
+					if (dischargeSummary.getPrescriptions().getAdvice() != null) {
+						prescription.setAdvice(dischargeSummaryCollection.getPrescriptions().getAdvice());
+						itemAndAdvice.setAdvice(dischargeSummaryCollection.getPrescriptions().getAdvice());
+
+					}
 					dischargeSummaryCollection.setPrescriptions(prescription);
 				}
 
@@ -147,34 +208,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				response = new DischargeSummaryResponse();
 
 				BeanUtil.map(dischargeSummaryCollection, response);
-				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
-					;
-					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
-						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-						BeanUtil.map(item, prescriptionItemDetail);
-
-						DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-						Drug drug = new Drug();
-						if (drugCollection != null) {
-							BeanUtil.map(drugCollection, drug);
-							DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
-							BeanUtil.map(drugCollection, drugAddEditRequest);
-							drugAddEditRequest.setDoctorId(dischargeSummaryCollection.getDoctorId().toString());
-							drugAddEditRequest.setHospitalId(dischargeSummaryCollection.getHospitalId().toString());
-							drugAddEditRequest.setLocationId(dischargeSummaryCollection.getLocationId().toString());
-							drugAddEditRequest.setDirection(item.getDirection());
-							drugAddEditRequest.setDuration(item.getDuration());
-							drugAddEditRequest.setDosage(item.getDosage());
-							drugAddEditRequest.setDosageTime(item.getDosageTime());
-							prescriptionServices.addFavouriteDrug(drugAddEditRequest);
-						}
-						prescriptionItemDetail.setDrug(drug);
-						items.add(prescriptionItemDetail);
-
-					}
-					response.getPrescriptions().setItems(items);
-				}
+				response.setPrescriptions(itemAndAdvice);
 
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid  discharge summary Id  ");
