@@ -43,6 +43,7 @@ import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -89,7 +90,6 @@ import com.dpdocter.request.RecordsSmsRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.MailResponse;
-import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RecordsLookupResponse;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.ClinicalNotesService;
@@ -271,13 +271,20 @@ public class RecordsServiceImpl implements RecordsService {
 
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
+			RecordsFile recordsFile = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())) {
 				String recordsURL = request.getRecordsUrl().replaceAll(imagePath, "");
-				recordsCollection.setRecordsUrl(recordsURL);
-				recordsCollection.setRecordsPath(recordsURL);
-				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(
+				recordsFile = new RecordsFile();
+				recordsFile.setRecordsUrl(recordsURL);
+				recordsFile.setRecordsPath(recordsURL);
+				recordsFile.setRecordsType(request.getRecordsType());
+
+				if (DPDoctorUtils.anyStringEmpty(request.getRecordsFileLabel()))
+					recordsFile.setRecordsFileLabel(
 							FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+				else
+					recordsFile.setRecordsFileLabel(request.getRecordsFileLabel());
+
 			}
 			if (request.getFileDetails() != null) {
 				String recordLabel = request.getFileDetails().getFileName();
@@ -289,12 +296,17 @@ public class RecordsServiceImpl implements RecordsService {
 				String fileName = request.getFileDetails().getFileName() + "."
 						+ request.getFileDetails().getFileExtension();
 				String recordPath = path + File.separator + fileName;
+				recordsFile = new RecordsFile();
 
-				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
-				recordsCollection.setRecordsPath(recordPath);
-				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(recordLabel);
-			}
+				recordsFile.setRecordsUrl(imageURLResponse.getImageUrl());
+				recordsFile.setRecordsPath(recordPath);
+				recordsFile.setRecordsType(request.getRecordsType());
+				if (DPDoctorUtils.anyStringEmpty(request.getRecordsFileLabel()))
+
+					recordsFile.setRecordsFileLabel(recordLabel);
+			} else
+				recordsFile.setRecordsFileLabel(request.getRecordsFileLabel());
+
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
 			UserCollection userCollection = userRepository.findOne(recordsCollection.getDoctorId());
@@ -313,6 +325,11 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
 			}
 
+			if (recordsFile != null) {
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				recordsCollection.getFiles().add(recordsFile);
+
+			}
 			recordsCollection = recordsRepository.save(recordsCollection);
 
 			if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null
@@ -422,12 +439,16 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			RecordsCollection recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
+			RecordsFile recordsFile = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())) {
 				String recordsURL = request.getRecordsUrl().replaceAll(imagePath, "");
-				recordsCollection.setRecordsUrl(recordsURL);
-				recordsCollection.setRecordsPath(recordsURL);
-				recordsCollection
-						.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+				recordsFile = new RecordsFile();
+				recordsFile.setRecordsUrl(recordsURL);
+				recordsFile.setRecordsPath(recordsURL);
+				recordsFile.setRecordsType(request.getRecordsType());
+				recordsFile.setRecordsFileLabel(
+						FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+
 			}
 			if (request.getFileDetails() != null) {
 				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + new Date().getTime());
@@ -439,8 +460,11 @@ public class RecordsServiceImpl implements RecordsService {
 						+ request.getFileDetails().getFileExtension();
 				String recordPath = path + File.separator + fileName;
 
-				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
-				recordsCollection.setRecordsPath(recordPath);
+				recordsFile = new RecordsFile();
+				recordsFile.setRecordsUrl(imageURLResponse.getImageUrl());
+				recordsFile.setRecordsPath(recordPath);
+				recordsFile.setRecordsType(request.getRecordsType());
+				recordsFile.setRecordsFileLabel(request.getRecordsFileLabel());
 			}
 			RecordsCollection oldRecord = recordsRepository.findOne(new ObjectId(request.getId()));
 			recordsCollection.setCreatedTime(oldRecord.getCreatedTime());
@@ -456,6 +480,11 @@ public class RecordsServiceImpl implements RecordsService {
 			recordsCollection.setRecordsState(oldRecord.getRecordsState());
 			recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
 
+			if (recordsFile != null) {
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				recordsCollection.getFiles().add(recordsFile);
+
+			}
 			recordsCollection = recordsRepository.save(recordsCollection);
 
 			// pushNotificationServices.notifyUser(recordsCollection.getPatientId(),
@@ -611,7 +640,10 @@ public class RecordsServiceImpl implements RecordsService {
 					 */
 					if (recordsLookupResponse.getPatientVisit() != null)
 						record.setVisitId(recordsLookupResponse.getPatientVisit().getId().toString());
-					record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+					for (RecordsFile recordsFile : record.getFiles()) {
+						recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+					}
+
 					records.add(record);
 				}
 			}
@@ -691,22 +723,32 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public FileDownloadResponse getRecordFile(String recordId) {
+	public FileDownloadResponse getRecordFile(String recordId, String fileId) {
 		FileDownloadResponse response = null;
+
+		RecordsFile file = null;
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+
 			if (recordsCollection != null) {
-				if (recordsCollection.getRecordsPath() != null) {
+
+				for (RecordsFile recordsFile : recordsCollection.getFiles()) {
+					if (recordsFile.getFileId().equals(fileId)) {
+						file = recordsFile;
+						break;
+					}
+
+				}
+				if (file.getRecordsPath() != null) {
 					BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 					AmazonS3 s3client = new AmazonS3Client(credentials);
 
-					S3Object object = s3client
-							.getObject(new GetObjectRequest(bucketName, recordsCollection.getRecordsUrl()));
+					S3Object object = s3client.getObject(new GetObjectRequest(bucketName, file.getRecordsUrl()));
 					InputStream objectData = object.getObjectContent();
 					if (objectData != null) {
 						response = new FileDownloadResponse();
 						response.setInputStream(objectData);
-						response.setFileName(FilenameUtils.getName(recordsCollection.getRecordsUrl()));
+						response.setFileName(FilenameUtils.getName(file.getRecordsUrl()));
 					}
 					return response;
 				} else {
@@ -804,7 +846,9 @@ public class RecordsServiceImpl implements RecordsService {
 				for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
 					Records record = new Records();
 					BeanUtil.map(recordsLookupResponse, record);
-					record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+					for (RecordsFile recordsFile : record.getFiles()) {
+						recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+					}
 
 					/*
 					 * PatientVisitCollection patientVisitCollection =
@@ -953,7 +997,9 @@ public class RecordsServiceImpl implements RecordsService {
 				 */
 				if (recordsLookupResponses.getPatientVisit() != null)
 					record.setVisitId(recordsLookupResponses.getPatientVisit().getId().toString());
-				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+				for (RecordsFile recordsFile : record.getFiles()) {
+					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				}
 			}
 
 		} catch (Exception e) {
@@ -975,15 +1021,19 @@ public class RecordsServiceImpl implements RecordsService {
 		MailResponse mailResponse = null;
 		MailAttachment mailAttachment = null;
 		try {
+			String url = null;
 			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 
+			for (RecordsFile recordsFile : recordsCollection.getFiles()) {
+				url = recordsFile.getRecordsUrl();
+
+			}
 			if (recordsCollection != null) {
 
 				BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 				AmazonS3 s3client = new AmazonS3Client(credentials);
 
-				S3Object object = s3client
-						.getObject(new GetObjectRequest(bucketName, recordsCollection.getRecordsUrl()));
+				S3Object object = s3client.getObject(new GetObjectRequest(bucketName, url));
 				InputStream objectData = object.getObjectContent();
 
 				mailAttachment = new MailAttachment();
@@ -993,11 +1043,10 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getPatientId(), new ObjectId(locationId), new ObjectId(hospitalId));
 				if (patient != null) {
 
-					mailAttachment.setAttachmentName(patient.getLocalPatientName() + new Date() + "REPORTS."
-							+ FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
-				} else {
 					mailAttachment.setAttachmentName(
-							new Date() + "REPORTS." + FilenameUtils.getExtension(recordsCollection.getRecordsUrl()));
+							patient.getLocalPatientName() + new Date() + "REPORTS." + FilenameUtils.getExtension(url));
+				} else {
+					mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(url));
 				}
 
 				UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
@@ -1157,7 +1206,9 @@ public class RecordsServiceImpl implements RecordsService {
 			for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
 				Records record = new Records();
 				BeanUtil.map(recordsLookupResponse, record);
-				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+				for (RecordsFile recordsFile : record.getFiles()) {
+					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				}
 				/*
 				 * PatientVisitCollection patientVisitCollection =
 				 * patientVisitRepository
@@ -1281,7 +1332,9 @@ public class RecordsServiceImpl implements RecordsService {
 				 */
 				if (recordsLookupResponse.getPatientVisit() != null)
 					record.setVisitId(recordsLookupResponse.getPatientVisit().getId().toString());
-				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+				for (RecordsFile recordsFile : record.getFiles()) {
+					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				}
 				records.add(record);
 			}
 		} catch (Exception e) {
@@ -1298,6 +1351,7 @@ public class RecordsServiceImpl implements RecordsService {
 		try {
 			String patientEmailAddress = null, localPatientName = null, patientMobileNumber = null;
 			PrescriptionCollection prescriptionCollection = null;
+
 			if (request.getPrescriptionId() != null) {
 				prescriptionCollection = prescriptionRepository.findByUniqueIdAndPatientId(request.getPrescriptionId(),
 						new ObjectId(request.getPatientId()));
@@ -1317,7 +1371,6 @@ public class RecordsServiceImpl implements RecordsService {
 				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
-
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
 				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 			} else {
@@ -1346,12 +1399,18 @@ public class RecordsServiceImpl implements RecordsService {
 			if (recordsCollection == null)
 				recordsCollection = new RecordsCollection();
 			BeanUtil.map(request, recordsCollection);
+			RecordsFile recordsFile = null;
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getRecordsUrl())) {
+
 				String recordsURL = request.getRecordsUrl().replaceAll(imagePath, "");
-				recordsCollection.setRecordsUrl(recordsURL);
-				recordsCollection.setRecordsPath(recordsURL);
-				recordsCollection
-						.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+				recordsFile = new RecordsFile();
+				recordsFile.setRecordsUrl(recordsURL);
+				recordsFile.setRecordsPath(recordsURL);
+				recordsFile.setRecordsFileLabel(
+						FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+				recordsFile.setRecordsType(request.getRecordsType());
+
 			}
 			if (file != null) {
 				String path = "records" + File.separator + request.getPatientId();
@@ -1361,9 +1420,13 @@ public class RecordsServiceImpl implements RecordsService {
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 				String recordLabel = fileName;
 				fileManager.saveRecord(file, recordPath, 0.0, false);
-				recordsCollection.setRecordsUrl(recordPath);
-				recordsCollection.setRecordsPath(recordPath);
-				recordsCollection.setRecordsLabel(recordLabel);
+				recordsFile = new RecordsFile();
+
+				recordsFile.setRecordsUrl(recordPath);
+				recordsFile.setRecordsPath(recordPath);
+				recordsFile.setRecordsFileLabel(recordLabel);
+				recordsFile.setRecordsType(request.getRecordsType());
+
 			}
 
 			if (oldRecord != null) {
@@ -1378,6 +1441,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setPrescribedByHospitalId(oldRecord.getHospitalId());
 				recordsCollection.setPrescriptionId(oldRecord.getPrescriptionId());
 				recordsCollection.setDiagnosticTestId(oldRecord.getDiagnosticTestId());
+
 			} else {
 				recordsCollection
 						.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -1442,6 +1506,11 @@ public class RecordsServiceImpl implements RecordsService {
 						mailService.sendEmail(userCollection.getEmailAddress(), subject, body, null);
 					}
 				}
+			}
+			if (recordsFile != null) {
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				recordsCollection.getFiles().add(recordsFile);
+
 			}
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {
@@ -1825,7 +1894,66 @@ public class RecordsServiceImpl implements RecordsService {
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
 		status = smsServices.sendSMS(smsTrackDetail, true);
-
 		return status;
+	}
+
+	@Override
+	public Integer updateRecords() {
+		Integer response = 0;
+		try {
+			List<RecordsCollection> recordsCollections = recordsRepository.findAll();
+			RecordsFile recordsFile = null;
+			List<RecordsFile> files = null;
+
+			for (RecordsCollection recordsCollection : recordsCollections) {
+				recordsFile = new RecordsFile();
+				files = new ArrayList<RecordsFile>();
+
+				recordsFile.setRecordsUrl(recordsCollection.getRecordsUrl());
+				recordsFile.setRecordsPath(recordsCollection.getRecordsPath());
+				recordsFile.setRecordsFileLabel(recordsCollection.getRecordsLabel());
+				recordsFile.setRecordsType(recordsCollection.getRecordsType());
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				files.add(recordsFile);
+				recordsCollection.setFiles(files);
+
+			}
+			recordsCollections = recordsRepository.save(recordsCollections);
+			response = recordsCollections.size();
+
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Records deleteRecordsFile(String recordId, List<String> fileIds) {
+		Records response = null;
+		try {
+			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
+			if (recordsCollection == null) {
+				logger.warn("Record Not found.Check RecordId");
+				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
+			}
+			for (RecordsFile recordsFile : recordsCollection.getFiles()) {
+				for (String fileId : fileIds) {
+					if (recordsFile.getFileId().equals(fileId)) {
+						recordsCollection.getFiles().remove(recordsFile);
+					}
+
+				}
+			}
+			recordsCollection = recordsRepository.save(recordsCollection);
+			response = new Records();
+			for (RecordsFile recordsFile : response.getFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 }

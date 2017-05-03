@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.UserAllowanceDetails;
 import com.dpdocter.beans.UserRecords;
@@ -88,7 +90,9 @@ public class RecordsApi {
 			Records visitRecord = new Records();
 			BeanUtil.map(records, visitRecord);
 			visitRecord.setPrescriptionId(null);
-			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+			for (RecordsFile recordsFile : records.getFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
 			String visitId = patientTrackService.addRecord(visitRecord, VisitedFor.REPORTS, request.getVisitId());
 			records.setVisitId(visitId);
 		}
@@ -270,20 +274,6 @@ public class RecordsApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RecordsUrls.DOWNLOAD_RECORD)
-	@GET
-	@ApiOperation(value = PathProxy.RecordsUrls.DOWNLOAD_RECORD, notes = PathProxy.RecordsUrls.DOWNLOAD_RECORD)
-	public javax.ws.rs.core.Response downloadRecords(@PathParam("recordId") String recordId) {
-		FileDownloadResponse file = recordsService.getRecordFile(recordId);
-		if (file == null) {
-			ResponseBuilder response = javax.ws.rs.core.Response.status(Status.BAD_REQUEST);
-			return response.build();
-		}
-		ResponseBuilder response = javax.ws.rs.core.Response.ok(file.getInputStream());
-		response.header("Content-Disposition", "attachment; filename=" + file.getFileName());
-		return response.build();
-	}
-
 	@Path(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
 	@POST
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS, notes = PathProxy.RecordsUrls.GET_FLEXIBLE_COUNTS)
@@ -309,7 +299,10 @@ public class RecordsApi {
 		request.setId(recordId);
 		Records records = recordsService.editRecord(request);
 		if (records != null) {
-			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+			for (RecordsFile recordsFile : records.getFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
+
 			String visitId = patientTrackService.editRecord(records.getId(), VisitedFor.REPORTS);
 			records.setVisitId(visitId);
 		}
@@ -356,7 +349,9 @@ public class RecordsApi {
 
 		// patient track
 		if (records != null) {
-			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+			for (RecordsFile recordsFile : records.getFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
 			String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
 			records.setVisitId(visitId);
 		}
@@ -406,7 +401,8 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.ADD_USER_RECORDS)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_USER_RECORDS, notes = PathProxy.RecordsUrls.ADD_USER_RECORDS)
-	public Response<UserRecords> addUserRecords(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
+	public Response<UserRecords> addUserRecords(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		UserRecords request = data.getValueAs(UserRecords.class);
 
@@ -446,26 +442,27 @@ public class RecordsApi {
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
 	public Response<UserRecords> getUserRecordsByuserId(@PathParam("userId") String userId,
-			@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
-			@QueryParam("hospitalId") String hospitalId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
 			@DefaultValue("false") @QueryParam("isDoctor") Boolean isDoctor) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("User Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "User Id Cannot Be Empty");
-		}else if(isDoctor && DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)){
-			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id, locationId or HospitalId Cannot Be Empty");
+		} else if (isDoctor && DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Doctor Id, locationId or HospitalId Cannot Be Empty");
 		}
 		Response<UserRecords> response = new Response<UserRecords>();
-		if(isDoctor){
+		if (isDoctor) {
 			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, userId);
-			if(!isOTPVerified) {
+			if (!isOTPVerified) {
 				return response;
 			}
 		}
-		List<UserRecords> records = recordsService.getUserRecordsByuserId(userId, page, size, updatedTime, discarded, isDoctor);		
+		List<UserRecords> records = recordsService.getUserRecordsByuserId(userId, page, size, updatedTime, discarded,
+				isDoctor);
 		response.setDataList(records);
 		return response;
 
@@ -474,7 +471,8 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS_ALLOWANCE)
 	@GET
 	@ApiOperation(value = "GET_USER_RECORDS_ALLOWANCE", notes = "GET_USER_RECORDS_ALLOWANCE")
-	public Response<UserAllowanceDetails> getUserRecordAllowance(@QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber) {
+	public Response<UserAllowanceDetails> getUserRecordAllowance(@QueryParam("userId") String userId,
+			@QueryParam("mobileNumber") String mobileNumber) {
 		if (DPDoctorUtils.anyStringEmpty(userId) && DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn("Record Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id Cannot Be Empty");
@@ -492,7 +490,8 @@ public class RecordsApi {
 	@DELETE
 	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD, notes = PathProxy.RecordsUrls.DELETE_OR_HIDE_USER_RECORD)
 	public Response<UserRecords> deleteUserRecord(@PathParam("recordId") String recordId,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded, @DefaultValue("false") @QueryParam("isVisible") Boolean isVisible) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
+			@DefaultValue("false") @QueryParam("isVisible") Boolean isVisible) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -502,4 +501,17 @@ public class RecordsApi {
 		response.setData(records);
 		return response;
 	}
+
+	@Path(value = PathProxy.RecordsUrls.UPDATE_RECORDS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.RecordsUrls.UPDATE_RECORDS_DATA, notes = PathProxy.RecordsUrls.UPDATE_RECORDS_DATA)
+	public Response<Integer> updateRecords() {
+		Integer record = recordsService.updateRecords();
+		Response<Integer> response = new Response<Integer>();
+		response.setData(record);
+		return response;
+
+	}
+
+
 }

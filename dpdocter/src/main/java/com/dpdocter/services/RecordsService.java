@@ -19,46 +19,49 @@ import com.dpdocter.response.MailResponse;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
 public interface RecordsService {
-    Records addRecord(RecordsAddRequest request);
+	Records addRecord(RecordsAddRequest request);
 
-    void tagRecord(TagRecordRequest request);
+	void tagRecord(TagRecordRequest request);
 
-    List<Records> searchRecords(RecordsSearchRequest request);
+	List<Records> searchRecords(RecordsSearchRequest request);
 
-    List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId, String patientId, String updatedTime,
-	    boolean isOTPVerified, boolean discarded, boolean inHistory);
+	List<Records> getRecords(int page, int size, String doctorId, String hospitalId, String locationId,
+			String patientId, String updatedTime, boolean isOTPVerified, boolean discarded, boolean inHistory);
 
-    List<Records> getRecordsByIds(List<ObjectId> recordIds, ObjectId visitId);
+	List<Records> getRecordsByIds(List<ObjectId> recordIds, ObjectId visitId);
 
-    Records getRecordById(String recordId);
+	Records getRecordById(String recordId);
 
-    void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId, String emailAddress);
+	void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 
-    MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
+	MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
 
-    Tags addEditTag(Tags tags);
+	Tags addEditTag(Tags tags);
 
-    Tags deleteTag(String tagId, Boolean discarded);
+	Tags deleteTag(String tagId, Boolean discarded);
 
-    List<Tags> getAllTags(String doctorId, String locationId, String hospitalId);
+	List<Tags> getAllTags(String doctorId, String locationId, String hospitalId);
 
-    String getPatientEmailAddress(String patientId);
+	String getPatientEmailAddress(String patientId);
 
-    FileDownloadResponse getRecordFile(String recordId);
+	FileDownloadResponse getRecordFile(String recordId, String fileId);
 
-    Records deleteRecord(String recordId, Boolean discarded);
+	Records deleteRecord(String recordId, Boolean discarded);
 
-    Integer getRecordCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
+	Integer getRecordCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-    FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
+	FlexibleCounts getFlexibleCounts(FlexibleCounts flexibleCounts);
 
-    Records editRecord(RecordsEditRequest request);
+	Records editRecord(RecordsEditRequest request);
 
-    void changeLabelAndDescription(String recordId, String label, String explanation);
+	void changeLabelAndDescription(String recordId, String label, String explanation);
 
-    List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded, Boolean isDoctorApp);
+	List<Records> getRecordsByPatientId(String patientId, int page, int size, String updatedTime, Boolean discarded,
+			Boolean isDoctorApp);
 
-    Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
+	Records addRecordsMultipart(FormDataBodyPart file, RecordsAddRequestMultipart request);
 
 	String saveRecordsImage(FormDataBodyPart file, String patientIdString);
 
@@ -68,10 +71,14 @@ public interface RecordsService {
 
 	UserRecords getUserRecordById(String recordId);
 
-	List<UserRecords> getUserRecordsByuserId(String userId, int page, int size, String updatedTime, Boolean discarded, Boolean isDoctor);
+	List<UserRecords> getUserRecordsByuserId(String userId, int page, int size, String updatedTime, Boolean discarded,
+			Boolean isDoctor);
 
 	UserAllowanceDetails getUserRecordAllowance(String userId, String mobileNumber);
 
 	UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible);
 
+	public Integer updateRecords();
+
+	public Records deleteRecordsFile(String recordId, List<String> fileIds);
 }

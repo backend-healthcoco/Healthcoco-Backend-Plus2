@@ -54,6 +54,7 @@ import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.WorkingHours;
@@ -653,7 +654,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		Records records = recordsService.addRecord(request.getRecord());
 
 		if (records != null) {
-			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+			for (RecordsFile recordsFile : records.getFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
 
 			if (patientVisitCollection.getVisitedFor() != null) {
 				if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.REPORTS))
@@ -1050,54 +1053,70 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 		}
 		List<DBObject> patientTreatments = null;
-		if(!showUSG && !isLabPrint){
-				if (patientVisitLookupResponse.getTreatmentId() != null) {
-					patientTreatments = new ArrayList<DBObject>();
-					for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
-						if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
-							DBObject patientTreatmentServices  = getPatientTreatmentJasperDetails(treatmentId.toString(), parameters);
-							if(patientTreatmentServices != null)patientTreatments.add(patientTreatmentServices);break;
-						}
-					}	
-				}
-		 }
-		 if(!showUSG && !isLabPrint){
-				if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
-					EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository.findOne(patientVisitLookupResponse.getEyePrescriptionId());
-					EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
-					if (eyePrescriptionCollection.getLeftEyeTest() != null)
-						BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
-					parameters.put("leftEyeTest", eyResponse);
-
-					eyResponse = new EyeTestJasperResponse();
-					if (eyePrescriptionCollection.getRightEyeTest() != null)
-						BeanUtil.map(eyePrescriptionCollection.getRightEyeTest(), eyResponse);
-					parameters.put("rightEyeTest", eyResponse);
-
-					if(!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getType()) && eyePrescriptionCollection.getType().equalsIgnoreCase("CONTACT LENS"))
-						if((eyePrescriptionCollection.getLeftEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(), eyePrescriptionCollection.getLeftEyeTest().getNearVA())
-						|| (eyePrescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getRightEyeTest().getDistanceVA(), eyePrescriptionCollection.getRightEyeTest().getNearVA()))))
-							parameters.put("noOfFields", 5);
-						else parameters.put("noOfFields", 6);
-					else{
-						if((eyePrescriptionCollection.getLeftEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(), eyePrescriptionCollection.getLeftEyeTest().getNearVA())
-								|| (eyePrescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getRightEyeTest().getDistanceVA(), eyePrescriptionCollection.getRightEyeTest().getNearVA()))))
-							parameters.put("noOfFields", 3);
-						else parameters.put("noOfFields", 4);
+		if (!showUSG && !isLabPrint) {
+			if (patientVisitLookupResponse.getTreatmentId() != null) {
+				patientTreatments = new ArrayList<DBObject>();
+				for (ObjectId treatmentId : patientVisitLookupResponse.getTreatmentId()) {
+					if (!DPDoctorUtils.anyStringEmpty(treatmentId)) {
+						DBObject patientTreatmentServices = getPatientTreatmentJasperDetails(treatmentId.toString(),
+								parameters);
+						if (patientTreatmentServices != null)
+							patientTreatments.add(patientTreatmentServices);
+						break;
 					}
-					parameters.put("quality", eyePrescriptionCollection.getQuality());
-					parameters.put("type", eyePrescriptionCollection.getType());
-					parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance() != null ? eyePrescriptionCollection.getPupilaryDistance()+" mm" : null);
-					parameters.put("lensType", eyePrescriptionCollection.getLensType());
-					parameters.put("usage", eyePrescriptionCollection.getUsage());
-					parameters.put("remarks", eyePrescriptionCollection.getRemarks());
-					parameters.put("replacementInterval", eyePrescriptionCollection.getReplacementInterval());
-					parameters.put("lensColor", eyePrescriptionCollection.getLensColor());
-					parameters.put("lensBrand", eyePrescriptionCollection.getLensBrand());
-	
-					parameters.put("eyePrescriptions", "eyePrescriptions");
 				}
 			}
+		}
+		if (!showUSG && !isLabPrint) {
+			if (patientVisitLookupResponse.getEyePrescriptionId() != null) {
+				EyePrescriptionCollection eyePrescriptionCollection = eyePrescriptionRepository
+						.findOne(patientVisitLookupResponse.getEyePrescriptionId());
+				EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
+				if (eyePrescriptionCollection.getLeftEyeTest() != null)
+					BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
+				parameters.put("leftEyeTest", eyResponse);
+
+				eyResponse = new EyeTestJasperResponse();
+				if (eyePrescriptionCollection.getRightEyeTest() != null)
+					BeanUtil.map(eyePrescriptionCollection.getRightEyeTest(), eyResponse);
+				parameters.put("rightEyeTest", eyResponse);
+
+				if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getType())
+						&& eyePrescriptionCollection.getType().equalsIgnoreCase("CONTACT LENS"))
+					if ((eyePrescriptionCollection.getLeftEyeTest() != null
+							&& DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(),
+									eyePrescriptionCollection.getLeftEyeTest().getNearVA())
+							|| (eyePrescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(
+									eyePrescriptionCollection.getRightEyeTest().getDistanceVA(),
+									eyePrescriptionCollection.getRightEyeTest().getNearVA()))))
+						parameters.put("noOfFields", 5);
+					else
+						parameters.put("noOfFields", 6);
+				else {
+					if ((eyePrescriptionCollection.getLeftEyeTest() != null
+							&& DPDoctorUtils.allStringsEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceVA(),
+									eyePrescriptionCollection.getLeftEyeTest().getNearVA())
+							|| (eyePrescriptionCollection.getRightEyeTest() != null && DPDoctorUtils.allStringsEmpty(
+									eyePrescriptionCollection.getRightEyeTest().getDistanceVA(),
+									eyePrescriptionCollection.getRightEyeTest().getNearVA()))))
+						parameters.put("noOfFields", 3);
+					else
+						parameters.put("noOfFields", 4);
+				}
+				parameters.put("quality", eyePrescriptionCollection.getQuality());
+				parameters.put("type", eyePrescriptionCollection.getType());
+				parameters.put("pupilaryDistance", eyePrescriptionCollection.getPupilaryDistance() != null
+						? eyePrescriptionCollection.getPupilaryDistance() + " mm" : null);
+				parameters.put("lensType", eyePrescriptionCollection.getLensType());
+				parameters.put("usage", eyePrescriptionCollection.getUsage());
+				parameters.put("remarks", eyePrescriptionCollection.getRemarks());
+				parameters.put("replacementInterval", eyePrescriptionCollection.getReplacementInterval());
+				parameters.put("lensColor", eyePrescriptionCollection.getLensColor());
+				parameters.put("lensBrand", eyePrescriptionCollection.getLensBrand());
+
+				parameters.put("eyePrescriptions", "eyePrescriptions");
+			}
+		}
 
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
@@ -1736,12 +1755,14 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										duration = "--";
 									else
 										duration = durationValue + " " + durationUnit;
-									
+
 									String genericName = "";
-									if(drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()){
-										for(GenericCode genericCode : drug.getGenericNames()){
-											if(DPDoctorUtils.anyStringEmpty(genericName))genericName = "<b>Generic Names : </b>"+ genericCode.getName();
-											else genericName = genericName + "+"+ genericCode.getName();
+									if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+										for (GenericCode genericCode : drug.getGenericNames()) {
+											if (DPDoctorUtils.anyStringEmpty(genericName))
+												genericName = "<b>Generic Names : </b>" + genericCode.getName();
+											else
+												genericName = genericName + "+" + genericCode.getName();
 										}
 									}
 									PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(
@@ -1750,7 +1771,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 													? prescriptionItem.getDosage() : "--",
 											duration, directions.isEmpty() ? "--" : directions,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
-													? prescriptionItem.getInstructions() : "--", genericName);
+													? prescriptionItem.getInstructions() : "--",
+											genericName);
 
 									prescriptionItems.add(prescriptionJasperDetails);
 								}

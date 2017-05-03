@@ -30,6 +30,8 @@ public class RecordsAddRequest {
 
     private String recordsLabel;
     
+    private String recordsFileLabel;
+    
     private String recordsState;
    
     private Boolean registerPatient = false;
@@ -183,5 +185,13 @@ public class RecordsAddRequest {
 				+ diagnosticTestId + ", recordsLabel=" + recordsLabel + ", recordsState=" + recordsState
 				+ ", registerPatient=" + registerPatient + ", firstName=" + firstName + ", mobileNumber=" + mobileNumber
 				+ "]";
+	}
+
+	public String getRecordsFileLabel() {
+		return recordsFileLabel;
+	}
+
+	public void setRecordsFileLabel(String recordsFileLabel) {
+		this.recordsFileLabel = recordsFileLabel;
 	}
 }

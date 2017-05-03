@@ -4,51 +4,55 @@ import com.dpdocter.beans.FileDetails;
 
 public class RecordsEditRequest {
 
-    private String id;
+	private String id;
 
-    private String patientId;
+	private String patientId;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String explanation;
+	private String explanation;
 
-    private FileDetails fileDetails;
+	private FileDetails fileDetails;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String visitId;
+	private String visitId;
 
-    private String recordsUrl;
-    
-    private String recordsLabel;
-    
-    public String getId() {
-	return id;
-    }
+	private String recordsUrl;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String recordsLabel;
 
-    public String getPatientId() {
-	return patientId;
-    }
+	private String recordsFileLabel;
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	private String recordsType;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getExplanation() {
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -57,36 +61,36 @@ public class RecordsEditRequest {
 	}
 
 	public FileDetails getFileDetails() {
-	return fileDetails;
-    }
+		return fileDetails;
+	}
 
-    public void setFileDetails(FileDetails fileDetails) {
-	this.fileDetails = fileDetails;
-    }
+	public void setFileDetails(FileDetails fileDetails) {
+		this.fileDetails = fileDetails;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public String getVisitId() {
-	return visitId;
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
-    public void setVisitId(String visitId) {
-	this.visitId = visitId;
-    }
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
 
 	public String getRecordsUrl() {
 		return recordsUrl;
@@ -110,5 +114,21 @@ public class RecordsEditRequest {
 				+ explanation + ", fileDetails=" + fileDetails + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", visitId=" + visitId + ", recordsUrl=" + recordsUrl + ", recordsLabel=" + recordsLabel
 				+ "]";
+	}
+
+	public String getRecordsFileLabel() {
+		return recordsFileLabel;
+	}
+
+	public void setRecordsFileLabel(String recordsFileLabel) {
+		this.recordsFileLabel = recordsFileLabel;
+	}
+
+	public String getRecordsType() {
+		return recordsType;
+	}
+
+	public void setRecordsType(String recordsType) {
+		this.recordsType = recordsType;
 	}
 }
