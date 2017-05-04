@@ -129,7 +129,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			PrescriptionItemAndAdvice itemAndAdvice = null;
 			DischargeSummaryCollection dischargeSummaryCollection = null;
 			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
-			
+
 			if (dischargeSummary.getId() == null) {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummary.setCreatedTime(new Date());
@@ -143,7 +143,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummaryCollection != null) {
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
 
-				if (dischargeSummaryCollection.getPrescriptions() != null) {
+				if (dischargeSummary.getPrescriptions() != null) {
 					PrescriptionAndAdvice prescription = new PrescriptionAndAdvice();
 					itemAndAdvice = new PrescriptionItemAndAdvice();
 					List<PrescriptionItem> items = null;
@@ -557,11 +557,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				}
 
 				parameters.put("prescriptionItems", prescriptionItems);
-				parameters.put("showPrescription", show);
+
 				parameters.put("showIntructions", showIntructions);
 				parameters.put("showDirection", showDirection);
 			}
 		}
+		parameters.put("showPrescription", show);
 		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptions().getAdvice())) {
 			show = true;
