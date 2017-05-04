@@ -327,9 +327,16 @@ public class RecordsServiceImpl implements RecordsService {
 
 			if (recordsFile != null) {
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
-				recordsCollection.getFiles().add(recordsFile);
+				if (recordsCollection.getFiles() != null) {
+					recordsCollection.getFiles().add(recordsFile);
+				} else {
+					List<RecordsFile> recordsFiles = new ArrayList<RecordsFile>();
+					recordsFiles.add(recordsFile);
+					recordsCollection.setFiles(recordsFiles);
 
+				}
 			}
+
 			recordsCollection = recordsRepository.save(recordsCollection);
 
 			if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null
@@ -482,8 +489,16 @@ public class RecordsServiceImpl implements RecordsService {
 
 			if (recordsFile != null) {
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
-				recordsCollection.getFiles().add(recordsFile);
+				if (oldRecord.getFiles() != null) {
+					oldRecord.getFiles().add(recordsFile);
+				}
 
+				else {
+					List<RecordsFile> recordsFiles = new ArrayList<RecordsFile>();
+					recordsFiles.add(recordsFile);
+					oldRecord.setFiles(recordsFiles);
+
+				}
 			}
 			recordsCollection = recordsRepository.save(recordsCollection);
 
@@ -506,14 +521,15 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	@Transactional
 	public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId,
-			String emailAddress) {
+			String emailAddress, List<String> fileIds) {
 		try {
-			MailResponse mailResponse = createMailData(recordId, doctorId, locationId, hospitalId);
+			MailResponse mailResponse = createMailData(recordId, doctorId, locationId, hospitalId, fileIds);
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
 					mailResponse.getMailRecordCreatedDate(), "Report", "emrMailTemplate.vm");
-			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Report", body,
-					mailResponse.getMailAttachment());
+
+			mailService.sendEmailMultiAttach(emailAddress, mailResponse.getDoctorName() + " sent you Report", body,
+					mailResponse.getMailAttachments());
 		} catch (MessagingException e) {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -1013,47 +1029,61 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Override
 	@Transactional
-	public MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId) {
-		return createMailData(recordId, doctorId, locationId, hospitalId);
+	public MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId,
+			List<String> fileIds) {
+		return createMailData(recordId, doctorId, locationId, hospitalId, fileIds);
 	}
 
-	private MailResponse createMailData(String recordId, String doctorId, String locationId, String hospitalId) {
+	private MailResponse createMailData(String recordId, String doctorId, String locationId, String hospitalId,
+			List<String> fileIds) {
 		MailResponse mailResponse = null;
 		MailAttachment mailAttachment = null;
+		List<MailAttachment> mailAttachments = null;
 		try {
-			String url = null;
+
 			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 
-			for (RecordsFile recordsFile : recordsCollection.getFiles()) {
-				url = recordsFile.getRecordsUrl();
-
-			}
 			if (recordsCollection != null) {
-
-				BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-				AmazonS3 s3client = new AmazonS3Client(credentials);
-
-				S3Object object = s3client.getObject(new GetObjectRequest(bucketName, url));
-				InputStream objectData = object.getObjectContent();
-
-				mailAttachment = new MailAttachment();
-				mailAttachment.setFileSystemResource(null);
-				mailAttachment.setInputStream(objectData);
+				mailAttachments = new ArrayList<MailAttachment>();
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						recordsCollection.getPatientId(), new ObjectId(locationId), new ObjectId(hospitalId));
-				if (patient != null) {
+				List<RecordsFile> files = new ArrayList<RecordsFile>();
+				for (RecordsFile file : recordsCollection.getFiles()) {
+					if (fileIds != null && !fileIds.isEmpty()) {
+						if (fileIds.contains(file.getRecordsUrl())) {
+							files.add(file);
+						}
+					} else {
+						files.add(file);
+					}
 
-					mailAttachment.setAttachmentName(
-							patient.getLocalPatientName() + new Date() + "REPORTS." + FilenameUtils.getExtension(url));
-				} else {
-					mailAttachment.setAttachmentName(new Date() + "REPORTS." + FilenameUtils.getExtension(url));
 				}
+				for (RecordsFile recordsFile : files) {
 
+					BasicAWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
+					AmazonS3 s3client = new AmazonS3Client(credentials);
+
+					S3Object object = s3client.getObject(new GetObjectRequest(bucketName, recordsFile.getRecordsUrl()));
+					InputStream objectData = object.getObjectContent();
+
+					mailAttachment = new MailAttachment();
+					mailAttachment.setFileSystemResource(null);
+					mailAttachment.setInputStream(objectData);
+
+					if (patient != null) {
+						mailAttachment.setAttachmentName(patient.getLocalPatientName() + new Date() + "REPORTS."
+								+ FilenameUtils.getExtension(recordsFile.getRecordsUrl()));
+					} else {
+						mailAttachment.setAttachmentName(
+								new Date() + "REPORTS." + FilenameUtils.getExtension(recordsFile.getRecordsUrl()));
+					}
+
+				}
 				UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
 				LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-
+				mailAttachments.add(mailAttachment);
 				mailResponse = new MailResponse();
-				mailResponse.setMailAttachment(mailAttachment);
+				mailResponse.setMailAttachments(mailAttachments);
 				mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
 				String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
 						? locationCollection.getStreetAddress() + ", " : "")
@@ -1090,11 +1120,14 @@ public class RecordsServiceImpl implements RecordsService {
 
 				emailTackService.saveEmailTrack(emailTrackCollection);
 				// objectData.close();
+
 			} else {
 				logger.warn("Record not found.Please check recordId.");
 				throw new BusinessException(ServiceError.NotFound, "Record not found.Please check recordId.");
 			}
-		} catch (BusinessException e) {
+		} catch (
+
+		BusinessException e) {
 			logger.error(e);
 			throw e;
 		} catch (Exception e) {
@@ -1248,7 +1281,7 @@ public class RecordsServiceImpl implements RecordsService {
 
 			if (isDoctorApp) {
 				/*
-				 * if (size > 0) recordsCollections =
+				 * if (size > 0) recordsColloections =
 				 * recordsRepository.findRecordsByPatientId(patientObjectId, new
 				 * Date(updatedTimeLong), discards, new PageRequest(page, size,
 				 * Sort.Direction.DESC, "createdTime")); else recordsCollections
@@ -1509,8 +1542,16 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			if (recordsFile != null) {
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
-				recordsCollection.getFiles().add(recordsFile);
+				if (recordsCollection.getFiles() != null) {
+					recordsCollection.getFiles().add(recordsFile);
+				}
 
+				else {
+					List<RecordsFile> recordsFiles = new ArrayList<RecordsFile>();
+					recordsFiles.add(recordsFile);
+					recordsCollection.setFiles(recordsFiles);
+
+				}
 			}
 			if (!DPDoctorUtils.anyStringEmpty(recordsCollection.getRecordsState()) && recordsCollection
 					.getRecordsState().equalsIgnoreCase(RecordsState.APPROVAL_NOT_REQUIRED.toString())) {

@@ -471,8 +471,7 @@ public class HistoryServicesImpl implements HistoryServices {
 						PrescriptionItemDetail prescriptionItemDetails = new PrescriptionItemDetail();
 						BeanUtil.map(prescriptionItem, prescriptionItemDetails);
 						if (prescriptionItem.getDrugId() != null) {
-							DrugCollection drugCollection = drugRepository
-									.findOne(prescriptionItem.getDrugId());
+							DrugCollection drugCollection = drugRepository.findOne(prescriptionItem.getDrugId());
 							Drug drug = new Drug();
 							if (drugCollection != null)
 								BeanUtil.map(drugCollection, drug);
@@ -1674,25 +1673,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$specialNotes").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.skip(page * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
@@ -1715,25 +1717,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "'$specialNotes'")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "'$specialNotes'").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.skip(page * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			} else {
@@ -1757,25 +1762,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "'$specialNotes'")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "'$specialNotes'").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.skip(page * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
@@ -1798,25 +1806,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "'$medicalhistory'").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "'$specialNotes'")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "'$specialNotes'").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			}
 
@@ -1930,7 +1941,7 @@ public class HistoryServicesImpl implements HistoryServices {
 			ObjectId hospitalObjectId, boolean isOTPVerified) {
 		Integer historyCount = 0;
 		try {
-			
+
 			Criteria criteria = new Criteria("patientId").is(patientObjectId);
 			if (!isOTPVerified) {
 				if (!DPDoctorUtils.anyStringEmpty(locationObjectId, hospitalObjectId))
@@ -1939,12 +1950,14 @@ public class HistoryServicesImpl implements HistoryServices {
 					criteria.and("doctorId").is(doctorObjectId);
 			}
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria));
-//					Aggregation.unwind("generalRecords"),
-//					Aggregation.group("_id","generalRecords.data").count().as("count")); 
-//			historyCount = (int) mongoTemplate.count(new Query(criteria), HistoryCollection.class);
-			
-			List<HistoryCollection> historyCollections = mongoTemplate.aggregate(aggregation, HistoryCollection.class, HistoryCollection.class).getMappedResults();
-			
+			// Aggregation.unwind("generalRecords"),
+			// Aggregation.group("_id","generalRecords.data").count().as("count"));
+			// historyCount = (int) mongoTemplate.count(new Query(criteria),
+			// HistoryCollection.class);
+
+			List<HistoryCollection> historyCollections = mongoTemplate
+					.aggregate(aggregation, HistoryCollection.class, HistoryCollection.class).getMappedResults();
+
 			if (historyCollections != null) {
 				for (HistoryCollection historyCollection : historyCollections) {
 					if (historyCollection.getGeneralRecords() != null
@@ -2147,8 +2160,10 @@ public class HistoryServicesImpl implements HistoryServices {
 					mailAttachments.add(mailResponse.getMailAttachment());
 					break;
 				case REPORT:
-					mailResponse = recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId);
-					mailAttachments.add(mailResponse.getMailAttachment());
+					mailResponse = recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId,
+							null);
+					for (MailAttachment attachment : mailResponse.getMailAttachments())
+						mailAttachments.add(attachment);
 					break;
 				}
 			}
@@ -2339,25 +2354,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$specialNotes").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.skip(page * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				} else
@@ -2380,25 +2398,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$specialNotes").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			} else {
@@ -2421,25 +2442,27 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes")
-											.append("preserveNullAndEmptyArrays",
-													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$specialNotes").append(
+													"preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.skip(page * size), Aggregation.limit(size),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				else
@@ -2462,25 +2485,28 @@ public class HistoryServicesImpl implements HistoryServices {
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
 									new BasicDBObject("path", "$medicalhistory").append("preserveNullAndEmptyArrays",
 											true))),
-							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$specialNotes")
-											.append("preserveNullAndEmptyArrays",
+							new CustomAggregationOperation(
+									new BasicDBObject("$unwind",
+											new BasicDBObject("path", "$specialNotes").append(
+													"preserveNullAndEmptyArrays",
 													true))),
-							new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("id", "$_id")
-									.append("locationId", new BasicDBObject("$first", "$locationId"))
-									.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
-									.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-									.append("patientId", new BasicDBObject("$first", "$patientId"))
-									.append("discarded", new BasicDBObject("$first", "$discarded"))
-									.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
-									.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
-									.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
-									.append("drugsAndAllergies", new BasicDBObject("$first", "$drugsAndAllergies"))
-									.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
-									.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
-									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-									.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("id", "$_id")
+											.append("locationId", new BasicDBObject("$first", "$locationId"))
+											.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+											.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+											.append("patientId", new BasicDBObject("$first", "$patientId"))
+											.append("discarded", new BasicDBObject("$first", "$discarded"))
+											.append("generalRecords", new BasicDBObject("$first", "$generalRecords"))
+											.append("familyhistory", new BasicDBObject("$addToSet", "$familyhistory"))
+											.append("medicalhistory", new BasicDBObject("$addToSet", "$medicalhistory"))
+											.append("drugsAndAllergies",
+													new BasicDBObject("$first", "$drugsAndAllergies"))
+											.append("personalHistory", new BasicDBObject("$first", "$personalHistory"))
+											.append("specialNotes", new BasicDBObject("$addToSet", "$specialNotes"))
+											.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+											.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+											.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 			}

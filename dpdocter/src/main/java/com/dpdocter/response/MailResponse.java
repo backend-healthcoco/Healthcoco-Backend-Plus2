@@ -1,10 +1,14 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import com.dpdocter.beans.MailAttachment;
 
 public class MailResponse {
 
 	private MailAttachment mailAttachment;
+	 
+	private List<MailAttachment> mailAttachments;
 	
 	private String doctorName;
 	
@@ -62,6 +66,14 @@ public class MailResponse {
 
 	public void setClinicName(String clinicName) {
 		this.clinicName = clinicName;
+	}
+
+	public List<MailAttachment> getMailAttachments() {
+		return mailAttachments;
+	}
+
+	public void setMailAttachments(List<MailAttachment> mailAttachments) {
+		this.mailAttachments = mailAttachments;
 	}
 
 	@Override

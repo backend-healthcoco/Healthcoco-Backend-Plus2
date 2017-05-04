@@ -33,9 +33,10 @@ public interface RecordsService {
 	Records getRecordById(String recordId);
 
 	void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId,
-			String emailAddress);
+			String emailAddress,List<String> fileIds);
 
-	MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
+	MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId,
+			List<String> fileIds);
 
 	Tags addEditTag(Tags tags);
 

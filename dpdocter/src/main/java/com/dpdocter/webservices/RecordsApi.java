@@ -14,8 +14,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
@@ -233,12 +230,13 @@ public class RecordsApi {
 	@ApiOperation(value = PathProxy.RecordsUrls.EMAIL_RECORD, notes = PathProxy.RecordsUrls.EMAIL_RECORD)
 	public Response<Boolean> emailRecords(@PathParam("recordId") String recordId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
-			@PathParam(value = "hospitalId") String hospitalId, @PathParam("emailAddress") String emailAddress) {
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam("emailAddress") String emailAddress,
+			@MatrixParam("fileIds") List<String> fileIds) {
 		if (DPDoctorUtils.anyStringEmpty(recordId, emailAddress, doctorId, locationId, hospitalId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress);
+		recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress, fileIds);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -513,5 +511,19 @@ public class RecordsApi {
 
 	}
 
+	@Path(value = PathProxy.RecordsUrls.DELETE_RECORDS_FILE)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_RECORDS_FILE, notes = PathProxy.RecordsUrls.DELETE_RECORDS_FILE)
+	public Response<Records> deleteUserRecord(@PathParam("recordId") String recordId,
+			@MatrixParam("fileIds") List<String> fileIds) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Records records = recordsService.deleteRecordsFile(recordId, fileIds);
+		Response<Records> response = new Response<Records>();
+		response.setData(records);
+		return response;
+	}
 
 }

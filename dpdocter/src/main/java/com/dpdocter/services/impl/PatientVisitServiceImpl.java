@@ -29,7 +29,6 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -945,9 +944,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						for (RecordsCollection record : patientVisitLookupResponse.getRecords()) {
 							MailResponse mailResponse = recordsService.getRecordMailData(record.getId().toString(),
 									record.getDoctorId().toString(), record.getLocationId().toString(),
-									record.getHospitalId().toString());
-							if (mailResponse.getMailAttachment() != null)
-								mailAttachments.add(mailResponse.getMailAttachment());
+									record.getHospitalId().toString(), null);
+							if (mailResponse.getMailAttachments() != null
+									&& !mailResponse.getMailAttachments().isEmpty()) {
+								for (MailAttachment attachment : mailResponse.getMailAttachments())
+									mailAttachments.add(attachment);
+							}
 						}
 					}
 					UserCollection doctorUser = patientVisitLookupResponse.getDoctor();
