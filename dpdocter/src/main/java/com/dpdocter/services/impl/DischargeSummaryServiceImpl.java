@@ -145,9 +145,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				if (dischargeSummary.getPrescriptions() != null) {
 					PrescriptionAndAdvice prescription = new PrescriptionAndAdvice();
+					BeanUtil.map(dischargeSummary.getPrescriptions(), prescription);
 					itemAndAdvice = new PrescriptionItemAndAdvice();
 					List<PrescriptionItem> items = null;
-					for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
+					for (PrescriptionItem item : prescription.getItems()) {
 						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
 						if (item.getDrugId() != null) {
 							List<DrugDirection> directions = null;
