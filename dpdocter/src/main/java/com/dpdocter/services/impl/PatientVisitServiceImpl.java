@@ -1835,22 +1835,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				}
 
 			// discard records
+
 			if (patientVisitCollection.getRecordId() != null)
 				for (ObjectId id : patientVisitCollection.getRecordId()) {
 					records.add(recordsService.deleteRecord(id.toString(), discarded));
 
 				}
+			EyePrescription eyePrescription = null;
 			EyePrescriptionCollection eyePrescriptionCollection = null;
 			// discard EyePrescription
+
 			if (patientVisitCollection.getEyePrescriptionId() != null) {
 				eyePrescriptionCollection = eyePrescriptionRepository
 						.findOne(patientVisitCollection.getEyePrescriptionId());
 				eyePrescriptionCollection.setDiscarded(discarded);
-			}
-			eyePrescriptionRepository.save(eyePrescriptionCollection);
 
-			EyePrescription eyePrescription = new EyePrescription();
-			BeanUtil.map(eyePrescriptionCollection, eyePrescription);
+				eyePrescriptionRepository.save(eyePrescriptionCollection);
+
+				eyePrescription = new EyePrescription();
+				BeanUtil.map(eyePrescriptionCollection, eyePrescription);
+			}
 			response = new PatientVisitResponse();
 			BeanUtil.map(patientVisitCollection, response);
 			response.setPrescriptions(prescriptions);
@@ -1863,6 +1867,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			throw be;
 		} catch (Exception e) {
 			logger.error("Error while deleting visit " + e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while deleting visit" + e);
 		}
 
