@@ -1049,14 +1049,16 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getPatientId(), new ObjectId(locationId), new ObjectId(hospitalId));
 				List<RecordsFile> files = new ArrayList<RecordsFile>();
 				for (RecordsFile file : recordsCollection.getFiles()) {
-					if (fileIds != null && !fileIds.isEmpty()) {
-						if (fileIds.contains(file.getRecordsUrl())) {
+					for (String fileId : fileIds) {
+
+						if (file.getFileId().equals(fileId))
 							files.add(file);
-						}
-					} else {
-						files.add(file);
 					}
 
+				}
+
+				if (fileIds == null || fileIds.isEmpty()) {
+					files = recordsCollection.getFiles();
 				}
 				for (RecordsFile recordsFile : files) {
 
@@ -1978,21 +1980,24 @@ public class RecordsServiceImpl implements RecordsService {
 				logger.warn("Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
 			}
-			for (RecordsFile recordsFile : recordsCollection.getFiles()) {
+
+			for (int index = 0; recordsCollection.getFiles().size() > index; index++) {
 				for (String fileId : fileIds) {
-					if (recordsFile.getFileId().equals(fileId)) {
-						recordsCollection.getFiles().remove(recordsFile);
+					if (recordsCollection.getFiles().get(index).getFileId().equals(fileId)) {
+						recordsCollection.getFiles().remove(index);
 					}
 
 				}
 			}
 			recordsCollection = recordsRepository.save(recordsCollection);
 			response = new Records();
+			BeanUtil.map(recordsCollection, response);
 			for (RecordsFile recordsFile : response.getFiles()) {
 				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
 			}
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
