@@ -186,7 +186,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			break;
-		case "GYNECOLOGIST/OBSTETRICIAN":
+		case "GYNAECOLOGIST/OBSTETRICIAN":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			clinicalNotesPermission.add(GynacPermissionsEnum.PA.getPermissions());
