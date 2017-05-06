@@ -38,6 +38,9 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 	@Field
 	private Double debitAmount;
 
+	@Field
+	private Boolean discarded = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -110,9 +113,18 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 		this.debitAmount = debitAmount;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientLedgerCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + "]";
+				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId
+				+ ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", discarded=" + discarded + "]";
 	}
 }
