@@ -1762,7 +1762,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
 										for (GenericCode genericCode : drug.getGenericNames()) {
 											if (DPDoctorUtils.anyStringEmpty(genericName))
-												genericName = "<b>Generic Names : </b>" + genericCode.getName();
+												genericName = genericCode.getName();
 											else
 												genericName = genericName + "+" + genericCode.getName();
 										}
