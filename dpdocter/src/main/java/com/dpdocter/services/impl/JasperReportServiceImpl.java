@@ -51,7 +51,6 @@ import net.sf.jasperreports.engine.design.JRDesignSubreport;
 import net.sf.jasperreports.engine.design.JRDesignSubreportParameter;
 import net.sf.jasperreports.engine.design.JRDesignTextField;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.type.FillEnum;
 import net.sf.jasperreports.engine.type.HorizontalImageAlignEnum;
 import net.sf.jasperreports.engine.type.HorizontalTextAlignEnum;
 import net.sf.jasperreports.engine.type.PositionTypeEnum;
@@ -412,7 +411,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		band = new JRDesignBand();
 		band.setPrintWhenExpression(new JRDesignExpression("!$P{diagrams}.isEmpty()"));
-		band.setHeight(135);
+		band.setHeight(158);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		jrDesignTextField = new JRDesignTextField();
@@ -429,24 +428,25 @@ public class JasperReportServiceImpl implements JasperReportService {
 		listComponent.setPrintOrderValue(PrintOrderEnum.HORIZONTAL);
 
 		DesignListContents contents = new DesignListContents();
-		contents.setHeight(126);
-		contents.setWidth(150);
+		contents.setHeight(150);
+		contents.setWidth(columnWidth-100);
+	
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
-		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+		jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 		jrDesignImage.setExpression(new JRDesignExpression("$F{url}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(2);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignImage.setHeight(100);
-		jrDesignImage.setWidth(120);
+		jrDesignImage.setHeight(130);
+		jrDesignImage.setWidth(columnWidth-120);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		contents.addElement(jrDesignImage);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{tags}"));
-		jrDesignTextField.setY(108);
+		jrDesignTextField.setY(130);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(100);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setWidth(columnWidth-120);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setStretchWithOverflow(true);
 		contents.addElement(jrDesignTextField);
 
@@ -455,7 +455,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		JRDesignComponentElement reportElement = new JRDesignComponentElement();
 		reportElement.setComponentKey(
 				new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "list"));
-		reportElement.setHeight(126);
+		reportElement.setHeight(150);
 		reportElement.setWidth(columnWidth - 80);
 		reportElement.setX(80);
 		reportElement.setY(8);
@@ -691,7 +691,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
 			jrDesignImage.setPrintWhenExpression(new JRDesignExpression("!$P{logoURL}.isEmpty()"));
-			jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 			expression = new JRDesignExpression();
 			expression.setText("$P{logoURL}");
 			jrDesignImage.setExpression(expression);
@@ -873,14 +873,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 
 		band = new JRDesignBand();
-		band.setPrintWhenExpression(new JRDesignExpression("!$F{diagrams}.equals( null )"));
-		band.setHeight(126);
+		band.setPrintWhenExpression(new JRDesignExpression("!$P{diagrams}.isEmpty()"));
+		band.setHeight(158);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{Diagrams}"));
 		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(0);
+		jrDesignTextField.setY(8);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(80);
 		jrDesignTextField.setBold(true);
@@ -891,28 +891,25 @@ public class JasperReportServiceImpl implements JasperReportService {
 		listComponent.setPrintOrderValue(PrintOrderEnum.HORIZONTAL);
 
 		DesignListContents contents = new DesignListContents();
-		contents.setHeight(126);
-		contents.setWidth(150);
+		contents.setHeight(150);
+		contents.setWidth(columnWidth-100);
+	
 		JRDesignImage jrDesignImage = new JRDesignImage(null);
-		jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
-		expression = new JRDesignExpression();
-		expression.setText("$F{url}");
-		jrDesignImage.setExpression(expression);
+		jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
+		jrDesignImage.setExpression(new JRDesignExpression("$F{url}"));
 		jrDesignImage.setX(0);
 		jrDesignImage.setY(2);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignImage.setHeight(100);
-		jrDesignImage.setWidth(120);
+		jrDesignImage.setHeight(130);
+		jrDesignImage.setWidth(columnWidth-120);
+		jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 		contents.addElement(jrDesignImage);
 
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField
-				.setPrintWhenExpression(new JRDesignExpression("!$F{tags}.isEmpty() && !$F{tags}.equals( null )"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{tags}"));
-		jrDesignTextField.setY(108);
+		jrDesignTextField.setY(130);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(100);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setWidth(columnWidth-120);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
 		jrDesignTextField.setStretchWithOverflow(true);
 		contents.addElement(jrDesignTextField);
 
@@ -921,10 +918,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		JRDesignComponentElement reportElement = new JRDesignComponentElement();
 		reportElement.setComponentKey(
 				new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "list"));
-		reportElement.setHeight(126);
+		reportElement.setHeight(150);
 		reportElement.setWidth(columnWidth - 80);
 		reportElement.setX(80);
-		reportElement.setY(0);
+		reportElement.setY(8);
 		reportElement.setComponent(listComponent);
 
 		band.addElement(reportElement);
@@ -3123,7 +3120,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		show = (Boolean) parameters.get("showSignImage");
 		if (show) {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
-			jrDesignImage.setScaleImage(ScaleImageEnum.FILL_FRAME);
+			jrDesignImage.setScaleImage(ScaleImageEnum.RETAIN_SHAPE);
 			expression = new JRDesignExpression();
 			expression.setText("$P{item}.getSignImageUrl()");
 			jrDesignImage.setExpression(expression);
