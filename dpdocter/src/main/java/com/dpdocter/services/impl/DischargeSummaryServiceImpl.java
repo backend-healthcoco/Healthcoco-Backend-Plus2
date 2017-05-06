@@ -538,7 +538,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 							if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
 								for (GenericCode genericCode : drug.getGenericNames()) {
 									if (DPDoctorUtils.anyStringEmpty(genericName))
-										genericName = "<b>Generic Names : </b>" + genericCode.getName();
+										genericName = genericCode.getName();
 									else
 										genericName = genericName + "+" + genericCode.getName();
 								}
@@ -575,14 +575,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
 			show = true;
 			parameters.put("dOA",
-					"<b>DOA:</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+					"<b>DOA:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
 		}
 		parameters.put("showDOA", show);
 		show = false;
 		if (dischargeSummaryCollection.getDischargeDate() != null) {
 			show = true;
 			parameters.put("dOD",
-					"<b>DOD:</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+					"<b>DOD:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
 		}
 		parameters.put("showDOD", show);
 		show = false;
