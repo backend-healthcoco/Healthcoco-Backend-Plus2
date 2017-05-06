@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 public class DoctorPatientLedger {
 
 	private String id;
@@ -23,6 +25,8 @@ public class DoctorPatientLedger {
 	private DoctorPatientInvoice invoice;
 	
 	private DoctorPatientReceipt receipt;
+
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -112,12 +116,20 @@ public class DoctorPatientLedger {
 		this.receipt = receipt;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientLedger [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", patientId=" + patientId + ", receiptId=" + receiptId + ", invoiceId=" + invoiceId + ", dueAmount="
 				+ dueAmount + ", creditAmount=" + creditAmount + ", debitAmount=" + debitAmount + ", invoice=" + invoice
-				+ ", receipt=" + receipt + "]";
+				+ ", receipt=" + receipt + ", discarded=" + discarded + "]";
 	}
 }
 

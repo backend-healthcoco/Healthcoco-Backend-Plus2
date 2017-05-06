@@ -6,7 +6,7 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
-import com.dpdocter.response.InvoiceIdWithAmountResponse;
+import com.dpdocter.response.AdvanceReceiptIdWithAmountResponse;
 
 public class DoctorPatientReceipt extends GenericCollection{
 
@@ -26,7 +26,7 @@ public class DoctorPatientReceipt extends GenericCollection{
 	
 	private ModeOfPayment modeOfPayment;
 	
-	private List<InvoiceIdWithAmountResponse> invoiceIdsWithAmount;   
+	private List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts;   
 	
 	private String invoiceId; 
 	
@@ -108,12 +108,12 @@ public class DoctorPatientReceipt extends GenericCollection{
 		this.modeOfPayment = modeOfPayment;
 	}
 
-	public List<InvoiceIdWithAmountResponse> getInvoiceIdsWithAmount() {
-		return invoiceIdsWithAmount;
+	public List<AdvanceReceiptIdWithAmountResponse> getAdvanceReceiptIdWithAmounts() {
+		return advanceReceiptIdWithAmounts;
 	}
 
-	public void setInvoiceIdsWithAmount(List<InvoiceIdWithAmountResponse> invoiceIdsWithAmount) {
-		this.invoiceIdsWithAmount = invoiceIdsWithAmount;
+	public void setAdvanceReceiptIdWithAmounts(List<AdvanceReceiptIdWithAmountResponse> advanceReceiptIdWithAmounts) {
+		this.advanceReceiptIdWithAmounts = advanceReceiptIdWithAmounts;
 	}
 
 	public Double getAmountPaid() {
@@ -183,8 +183,8 @@ public class DoctorPatientReceipt extends GenericCollection{
 	public String toString() {
 		return "DoctorPatientReceiptCollection [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
 				+ receiptType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", invoiceIdsWithAmount="
-				+ invoiceIdsWithAmount + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
+				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", advanceReceiptIdWithAmounts="
+				+ advanceReceiptIdWithAmounts + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
 				+ ", amountPaid=" + amountPaid + ", remainingAdvanceAmount=" + remainingAdvanceAmount
 				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + "]";

@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.InvoiceIdWithAmount;
+import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
@@ -41,7 +41,7 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 	private ModeOfPayment modeOfPayment;
 	
 	@Field
-	private List<InvoiceIdWithAmount> invoiceIdsWithAmount;   //For ReceiptType=ADVANCE
+	private List<AdvanceReceiptIdWithAmount> advanceReceiptIdWithAmounts;   //For ReceiptType=ADVANCE
 	
 	@Field
 	private ObjectId invoiceId; //For ReceiptType=INVOICE
@@ -131,12 +131,12 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 		this.modeOfPayment = modeOfPayment;
 	}
 
-	public List<InvoiceIdWithAmount> getInvoiceIdsWithAmount() {
-		return invoiceIdsWithAmount;
+	public List<AdvanceReceiptIdWithAmount> getAdvanceReceiptIdWithAmounts() {
+		return advanceReceiptIdWithAmounts;
 	}
 
-	public void setInvoiceIdsWithAmount(List<InvoiceIdWithAmount> invoiceIdsWithAmount) {
-		this.invoiceIdsWithAmount = invoiceIdsWithAmount;
+	public void setAdvanceReceiptIdWithAmounts(List<AdvanceReceiptIdWithAmount> advanceReceiptIdWithAmounts) {
+		this.advanceReceiptIdWithAmounts = advanceReceiptIdWithAmounts;
 	}
 
 	public Double getAmountPaid() {
@@ -207,11 +207,10 @@ public class DoctorPatientReceiptCollection extends GenericCollection{
 	public String toString() {
 		return "DoctorPatientReceiptCollection [id=" + id + ", uniqueReceiptId=" + uniqueReceiptId + ", receiptType="
 				+ receiptType + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", invoiceIdsWithAmount="
-				+ invoiceIdsWithAmount + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
+				+ ", patientId=" + patientId + ", modeOfPayment=" + modeOfPayment + ", advanceReceiptIdWithAmounts="
+				+ advanceReceiptIdWithAmounts + ", invoiceId=" + invoiceId + ", uniqueInvoiceId=" + uniqueInvoiceId
 				+ ", amountPaid=" + amountPaid + ", remainingAdvanceAmount=" + remainingAdvanceAmount
 				+ ", balanceAmount=" + balanceAmount + ", receivedDate=" + receivedDate + ", discarded=" + discarded
 				+ ", usedAdvanceAmount=" + usedAdvanceAmount + "]";
 	}
-
 }
