@@ -3199,7 +3199,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{dOA}"));
-			jrDesignTextField.setX(5);
+			jrDesignTextField.setX(1);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
 			jrDesignTextField.setWidth(175);
@@ -3219,10 +3219,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{dOD}"));
-			jrDesignTextField.setX(176);
+			jrDesignTextField.setX(177);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setWidth(columnWidth-175);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
 			jrDesignTextField.setBold(false);
