@@ -873,7 +873,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 
 		band = new JRDesignBand();
-		band.setPrintWhenExpression(new JRDesignExpression("!$P{diagrams}.isEmpty()"));
+		band.setPrintWhenExpression(new JRDesignExpression("!$F{diagrams}.isEmpty()"));
 		band.setHeight(158);
 		band.setSplitType(SplitTypeEnum.STRETCH);
 
