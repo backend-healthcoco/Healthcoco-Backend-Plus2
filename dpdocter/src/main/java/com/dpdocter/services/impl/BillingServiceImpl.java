@@ -380,40 +380,51 @@ public class BillingServiceImpl implements BillingService {
 	public DoctorPatientInvoice deleteInvoice(String invoiceId, Boolean discarded) {
 		DoctorPatientInvoice response = null;
 		try {
-//			DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository
-//					.findOne(new ObjectId(invoiceId));
-//			doctorPatientInvoiceCollection.setDiscarded(discarded);
-//			doctorPatientInvoiceCollection.setUpdatedTime(new Date());
-//			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
-//			if (doctorPatientInvoiceCollection != null) {
-//				response = new DoctorPatientInvoice();
-//				BeanUtil.map(doctorPatientInvoiceCollection, response);
-//			}
-			
-//			List<DoctorPatientInvoiceResponse> invoiceResponses = mongoTemplate.aggregate(
-//					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(invoiceId))),
-//					new CustomAggregationOperation(new BasicDBObject("$unwind",
-//									new BasicDBObject("path", "$receiptIds").append("preserveNullAndEmptyArrays",
-//											true))),
-//					Aggregation.lookup("doctor_patient_receipt_cl", "receiptIds", "_id", "receiptCollection")),		
-//					DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceResponse.class).getMappedResults();
-//			
-//			if(invoiceResponses == null)return response;
-//			DoctorPatientInvoiceResponse doctorPatientInvoiceResponse = invoiceResponses.get(0);
-//			
-//			for(DoctorPatientInvoiceResponse invoiceResponse : invoiceResponses){
-//				if(invoiceResponse.getReceiptCollection() != null){
-//					DoctorPatientReceiptCollection receiptCollection = invoiceResponse.getReceiptCollection();
-//					if(receiptCollection.getReceiptType().name().equals(ReceiptType.INVOICE)){
-//						receiptCollection.setDiscarded(true);
-//						receiptCollection.setUpdatedTime(new Date());
-//						
-//					}else if(receiptCollection.getReceiptType().name().equals(ReceiptType.ADVANCE)){
-//						receiptCollection.setUpdatedTime(new Date());
-//					}
-//				}
-//			}
-			
+			// DoctorPatientInvoiceCollection doctorPatientInvoiceCollection =
+			// doctorPatientInvoiceRepository
+			// .findOne(new ObjectId(invoiceId));
+			// doctorPatientInvoiceCollection.setDiscarded(discarded);
+			// doctorPatientInvoiceCollection.setUpdatedTime(new Date());
+			// doctorPatientInvoiceCollection =
+			// doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+			// if (doctorPatientInvoiceCollection != null) {
+			// response = new DoctorPatientInvoice();
+			// BeanUtil.map(doctorPatientInvoiceCollection, response);
+			// }
+
+			// List<DoctorPatientInvoiceResponse> invoiceResponses =
+			// mongoTemplate.aggregate(
+			// Aggregation.newAggregation(Aggregation.match(new
+			// Criteria("id").is(new ObjectId(invoiceId))),
+			// new CustomAggregationOperation(new BasicDBObject("$unwind",
+			// new BasicDBObject("path",
+			// "$receiptIds").append("preserveNullAndEmptyArrays",
+			// true))),
+			// Aggregation.lookup("doctor_patient_receipt_cl", "receiptIds",
+			// "_id", "receiptCollection")),
+			// DoctorPatientInvoiceCollection.class,
+			// DoctorPatientInvoiceResponse.class).getMappedResults();
+			//
+			// if(invoiceResponses == null)return response;
+			// DoctorPatientInvoiceResponse doctorPatientInvoiceResponse =
+			// invoiceResponses.get(0);
+			//
+			// for(DoctorPatientInvoiceResponse invoiceResponse :
+			// invoiceResponses){
+			// if(invoiceResponse.getReceiptCollection() != null){
+			// DoctorPatientReceiptCollection receiptCollection =
+			// invoiceResponse.getReceiptCollection();
+			// if(receiptCollection.getReceiptType().name().equals(ReceiptType.INVOICE)){
+			// receiptCollection.setDiscarded(true);
+			// receiptCollection.setUpdatedTime(new Date());
+			//
+			// }else
+			// if(receiptCollection.getReceiptType().name().equals(ReceiptType.ADVANCE)){
+			// receiptCollection.setUpdatedTime(new Date());
+			// }
+			// }
+			// }
+
 		} catch (BusinessException be) {
 			be.printStackTrace();
 			logger.error(be);
@@ -426,16 +437,19 @@ public class BillingServiceImpl implements BillingService {
 		return response;
 	}
 
-//	private DoctorPatientReceiptCollection discardReceipt(DoctorPatientReceiptCollection receiptCollection, String type) {
-//		try{
-//			
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error("Error while deleting invoices" + e);
-//			throw new BusinessException(ServiceError.Unknown, "Error while deleting invoices" + e);
-//		}
-//		return receiptCollection;
-//	}
+	// private DoctorPatientReceiptCollection
+	// discardReceipt(DoctorPatientReceiptCollection receiptCollection, String
+	// type) {
+	// try{
+	//
+	// }catch (Exception e) {
+	// e.printStackTrace();
+	// logger.error("Error while deleting invoices" + e);
+	// throw new BusinessException(ServiceError.Unknown, "Error while deleting
+	// invoices" + e);
+	// }
+	// return receiptCollection;
+	// }
 
 	@Override
 	public DoctorPatientReceiptAddEditResponse addEditReceipt(DoctorPatientReceiptRequest request) {
@@ -487,7 +501,8 @@ public class BillingServiceImpl implements BillingService {
 						throw new BusinessException(ServiceError.InvalidInput, "Invalid Invoice Id");
 					}
 					List<ObjectId> receiptIds = doctorPatientInvoiceCollection.getReceiptIds();
-					List<AdvanceReceiptIdWithAmount> receiptIdWithAmounts = doctorPatientReceiptCollection.getAdvanceReceiptIdWithAmounts();
+					List<AdvanceReceiptIdWithAmount> receiptIdWithAmounts = doctorPatientReceiptCollection
+							.getAdvanceReceiptIdWithAmounts();
 					if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 						List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
@@ -502,7 +517,7 @@ public class BillingServiceImpl implements BillingService {
 
 						Double advanceAmountToBeUsed = request.getUsedAdvanceAmount() != null
 								? request.getUsedAdvanceAmount() : 0.0;
-										
+
 						for (DoctorPatientReceiptCollection receiptCollection : receiptsOfAdvancePayment) {
 							AdvanceReceiptIdWithAmount invoiceIdWithAmount = new AdvanceReceiptIdWithAmount();
 							invoiceIdWithAmount.setUniqueReceiptId(receiptCollection.getUniqueReceiptId());
@@ -520,7 +535,7 @@ public class BillingServiceImpl implements BillingService {
 									advanceAmountToBeUsed = advanceAmountToBeUsed
 											- receiptCollection.getRemainingAdvanceAmount();
 								}
-								
+
 								if (receiptIdWithAmounts == null || receiptIdWithAmounts.isEmpty()) {
 									receiptIdWithAmounts = new ArrayList<AdvanceReceiptIdWithAmount>();
 								}
@@ -553,7 +568,8 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					}
-					doctorPatientReceiptCollection.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
+					doctorPatientReceiptCollection
+							.setUniqueInvoiceId(doctorPatientInvoiceCollection.getUniqueInvoiceId());
 					doctorPatientReceiptCollection.setAdvanceReceiptIdWithAmounts(receiptIdWithAmounts);
 					doctorPatientReceiptCollection.setInvoiceId(doctorPatientInvoiceCollection.getId());
 					doctorPatientReceiptCollection = doctorPatientReceiptRepository
@@ -736,25 +752,33 @@ public class BillingServiceImpl implements BillingService {
 					new Query(new Criteria("id").is(new ObjectId(receiptId))), update,
 					DoctorPatientReceiptCollection.class);
 
-//			if(doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.INVOICE.name())){
-//				if(doctorPatientReceiptCollection.getUsedAdvanceAmount() != null && doctorPatientReceiptCollection.getUsedAdvanceAmount() > 0.0){
-//					List<DoctorPatientInvoiceResponse> invoiceResponses = mongoTemplate.aggregate(
-//							Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(doctorPatientReceiptCollection.getInvoiceId())),
-//									new CustomAggregationOperation(new BasicDBObject("$unwind",
-//													new BasicDBObject("path", "$receiptIds").append("preserveNullAndEmptyArrays",
-//															true))),
-//									Aggregation.lookup("doctor_patient_receipt_cl", "receiptIds", "_id", "receiptCollection"),
-//									Aggregation.match(new Criteria("receiptType").is(ReceiptType.ADVANCE.name())),
-//									Aggregation.sort(new Sort(Direction.ASC, ""))),		
-//									DoctorPatientInvoiceCollection.class, DoctorPatientInvoiceResponse.class).getMappedResults();
-//				}else{
-//					DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(doctorPatientReceiptCollection.getInvoiceId());
-//					doctorPatientInvoiceCollection.setUpdatedTime(new Date());
-//					doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()+doctorPatientReceiptCollection.getAmountPaid());
-//					doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
-//				}
-//				
-//			}
+			// if(doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.INVOICE.name())){
+			// if(doctorPatientReceiptCollection.getUsedAdvanceAmount() != null
+			// && doctorPatientReceiptCollection.getUsedAdvanceAmount() > 0.0){
+			// List<DoctorPatientInvoiceResponse> invoiceResponses =
+			// mongoTemplate.aggregate(
+			// Aggregation.newAggregation(Aggregation.match(new
+			// Criteria("id").is(doctorPatientReceiptCollection.getInvoiceId())),
+			// new CustomAggregationOperation(new BasicDBObject("$unwind",
+			// new BasicDBObject("path",
+			// "$receiptIds").append("preserveNullAndEmptyArrays",
+			// true))),
+			// Aggregation.lookup("doctor_patient_receipt_cl", "receiptIds",
+			// "_id", "receiptCollection"),
+			// Aggregation.match(new
+			// Criteria("receiptType").is(ReceiptType.ADVANCE.name())),
+			// Aggregation.sort(new Sort(Direction.ASC, ""))),
+			// DoctorPatientInvoiceCollection.class,
+			// DoctorPatientInvoiceResponse.class).getMappedResults();
+			// }else{
+			// DoctorPatientInvoiceCollection doctorPatientInvoiceCollection =
+			// doctorPatientInvoiceRepository.findOne(doctorPatientReceiptCollection.getInvoiceId());
+			// doctorPatientInvoiceCollection.setUpdatedTime(new Date());
+			// doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()+doctorPatientReceiptCollection.getAmountPaid());
+			// doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
+			// }
+			//
+			// }
 			if (doctorPatientReceiptCollection != null) {
 				response = new DoctorPatientReceipt();
 				BeanUtil.map(doctorPatientReceiptCollection, response);
@@ -870,7 +894,8 @@ public class BillingServiceImpl implements BillingService {
 
 			doctorPatientReceiptCollection.setReceiptType(ReceiptType.INVOICE);
 
-			List<AdvanceReceiptIdWithAmount> receiptIdWithAmounts = doctorPatientReceiptCollection.getAdvanceReceiptIdWithAmounts();
+			List<AdvanceReceiptIdWithAmount> receiptIdWithAmounts = doctorPatientReceiptCollection
+					.getAdvanceReceiptIdWithAmounts();
 			if (request.getUsedAdvanceAmount() != null && request.getUsedAdvanceAmount() > 0) {
 
 				List<DoctorPatientReceiptCollection> receiptsOfAdvancePayment = doctorPatientReceiptRepository
@@ -1363,7 +1388,8 @@ public class BillingServiceImpl implements BillingService {
 				+ doctorPatientReceiptCollection.getAmountPaid() + " by "
 				+ doctorPatientReceiptCollection.getModeOfPayment() + " On Date:-"
 				+ doctorPatientReceiptCollection.getReceivedDate() != null
-						? simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate()) : "";
+						? simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
+						: simpleDateFormat.format(new Date());
 		parameters.put("content", content);
 		parameters.put("paid", "RS.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
 		parameters.put("name", doctor.getTitle().toUpperCase() + " " + doctor.getFirstName());
