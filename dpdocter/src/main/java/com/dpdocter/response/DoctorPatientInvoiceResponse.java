@@ -97,14 +97,6 @@ public class DoctorPatientInvoiceResponse extends GenericCollection{
 		this.uniqueInvoiceId = uniqueInvoiceId;
 	}
 
-	public List<InvoiceItemResponse> getInvoiceItems() {
-		return invoiceItems;
-	}
-
-	public void setInvoiceItems(List<InvoiceItemResponse> invoiceItems) {
-		this.invoiceItems = invoiceItems;
-	}
-
 	public Discount getTotalDiscount() {
 		return totalDiscount;
 	}
@@ -185,13 +177,31 @@ public class DoctorPatientInvoiceResponse extends GenericCollection{
 		this.invoiceDate = invoiceDate;
 	}
 
+	public List<InvoiceItem> getInvoiceItems() {
+		return invoiceItems;
+	}
+
+	public void setInvoiceItems(List<InvoiceItem> invoiceItems) {
+		this.invoiceItems = invoiceItems;
+	}
+
+	public List<ObjectId> getReceiptIds() {
+		return receiptIds;
+	}
+
+	public void setReceiptIds(List<ObjectId> receiptIds) {
+		this.receiptIds = receiptIds;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorPatientInvoiceResponse [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
-				+ ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost
-				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", usedAdvanceAmount=" + usedAdvanceAmount
-				+ ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount + ", discarded=" + discarded
-				+ ", receiptCollection=" + receiptCollection + ", invoiceDate=" + invoiceDate + "]";
+				+ ", invoiceItems=" + invoiceItems + ", receiptIds=" + receiptIds + ", totalDiscount=" + totalDiscount
+				+ ", totalCost=" + totalCost + ", totalTax=" + totalTax + ", grandTotal=" + grandTotal
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
+				+ balanceAmount + ", discarded=" + discarded + ", receiptCollection=" + receiptCollection
+				+ ", invoiceDate=" + invoiceDate + "]";
 	}
+
 }
