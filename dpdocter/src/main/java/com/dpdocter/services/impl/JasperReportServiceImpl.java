@@ -1290,6 +1290,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(drugWidth);
+		jrDesignTextField.setMarkup("html");
+		jrDesignTextField.setFontSize(new Float(titleFontSize - 1));
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
@@ -1356,7 +1358,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
-		band = new JRDesignBand();
+		/*band = new JRDesignBand();
 		band.setHeight(20);
 		band.setPrintWhenExpression(
 				new JRDesignExpression("!$F{genericNames}.equals( null ) && !$F{genericNames}.isEmpty()"));
@@ -1369,7 +1371,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);*/
 
 		band = new JRDesignBand();
 		band.setHeight(13);

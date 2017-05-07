@@ -1258,7 +1258,7 @@ public class BillingServiceImpl implements BillingService {
 			parameters.put("items", invoiceItemJasperDetails);
 			String total = "";
 			if (doctorPatientInvoiceCollection.getTotalCost() > 0)
-				total = "<b>Total Cost :</b> ₹"  +doctorPatientInvoiceCollection.getTotalCost() + " &nbsp;&nbsp;&nbsp;";
+				total = "<b>Total Cost :</b> ₹" + doctorPatientInvoiceCollection.getTotalCost() + " &nbsp;&nbsp;&nbsp;";
 			parameters.put("totalCost", total);
 			if (doctorPatientInvoiceCollection.getTotalDiscount() != null
 					&& doctorPatientInvoiceCollection.getTotalDiscount().getValue() > 0.0) {
@@ -1362,7 +1362,8 @@ public class BillingServiceImpl implements BillingService {
 		String content = "<br>Received with thanks<br>&nbsp;&nbsp;&nbsp;The sum of Rupees:- "
 				+ doctorPatientReceiptCollection.getAmountPaid() + " by "
 				+ doctorPatientReceiptCollection.getModeOfPayment() + " On Date:-"
-				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
+				+ doctorPatientReceiptCollection.getReceivedDate() != null
+						? simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate()) : "";
 		parameters.put("content", content);
 		parameters.put("paid", "RS.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
 		parameters.put("name", doctor.getTitle().toUpperCase() + " " + doctor.getFirstName());

@@ -1698,8 +1698,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									String drugType = drug.getDrugType() != null
 											? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")
 											: "";
+									String genericName = "";
+									if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+										for (GenericCode genericCode : drug.getGenericNames()) {
+											if (DPDoctorUtils.anyStringEmpty(genericName))
+												genericName = genericCode.getName();
+											else
+												genericName = genericName + "+" + genericCode.getName();
+										}
+									}
 									String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-									drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName;
+									drugName = (drugType + drugName) == "" ? "--"
+											: drugType + " " + drugName + "<br><font size='1'><i>" + genericName
+													+ "</i></font>";
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue() : "")
@@ -1736,14 +1747,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										duration = "--";
 									else
 										duration = durationValue + " " + durationUnit;
-									
-									String genericName = "";
-									if(drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()){
-										for(GenericCode genericCode : drug.getGenericNames()){
-											if(DPDoctorUtils.anyStringEmpty(genericName))genericName = "<b>Generic Names : </b>"+ genericCode.getName();
-											else genericName = genericName + "+"+ genericCode.getName();
-										}
-									}
+
 									PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(
 											++no, drugName,
 											!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
