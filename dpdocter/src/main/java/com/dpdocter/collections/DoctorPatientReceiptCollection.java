@@ -14,59 +14,60 @@ import com.dpdocter.enums.ModeOfPayment;
 import com.dpdocter.enums.ReceiptType;
 
 @Document(collection = "doctor_patient_receipt_cl")
-public class DoctorPatientReceiptCollection extends GenericCollection{
+public class DoctorPatientReceiptCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private String uniqueReceiptId;
-	
+
 	@Field
-	private ReceiptType receiptType; 
-	
+	private ReceiptType receiptType;
+
 	@Indexed
 	private ObjectId doctorId;
-	
+
 	@Field
 	private ObjectId locationId;
-	
+
 	@Field
 	private ObjectId hospitalId;
-	
+
 	@Field
 	private ObjectId patientId;
-	
+
 	@Field
 	private ModeOfPayment modeOfPayment;
-	
+
 	@Field
-	private List<AdvanceReceiptIdWithAmount> advanceReceiptIdWithAmounts;   //For ReceiptType=ADVANCE
-	
+	private List<AdvanceReceiptIdWithAmount> advanceReceiptIdWithAmounts; // For
+																			// ReceiptType=ADVANCE
+
 	@Field
-	private ObjectId invoiceId; //For ReceiptType=INVOICE
-	
+	private ObjectId invoiceId; // For ReceiptType=INVOICE
+
 	@Field
 	private String uniqueInvoiceId;
-	
+
 	@Field
 	private Double amountPaid = 0.0;
-	
+
 	@Field
 	private Double remainingAdvanceAmount = 0.0;
-	
+
 	@Field
 	private Double balanceAmount = 0.0;
-	
+
 	@Field
-	private Date receivedDate;
+	private Date receivedDate = new Date();
 
 	@Field
 	private Boolean discarded = false;
 
 	@Field
 	private Double usedAdvanceAmount = 0.0;
-	
+
 	public ObjectId getId() {
 		return id;
 	}

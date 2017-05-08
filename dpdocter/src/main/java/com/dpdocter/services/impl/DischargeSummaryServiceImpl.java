@@ -562,6 +562,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 				parameters.put("showIntructions", showIntructions);
 				parameters.put("showDirection", showDirection);
+				parameters.put("showPrescription", show);
 			}
 		}
 		parameters.put("showPrescription", show);

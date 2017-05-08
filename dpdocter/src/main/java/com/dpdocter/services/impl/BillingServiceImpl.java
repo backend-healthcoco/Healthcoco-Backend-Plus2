@@ -1238,6 +1238,7 @@ public class BillingServiceImpl implements BillingService {
 			Boolean showInvoiceItemQuantity = false;
 			Boolean showDiscount = false;
 			Boolean showStatus = false;
+			Boolean showTax = false;
 			int no = 0;
 			for (InvoiceItem invoiceItem : doctorPatientInvoiceCollection.getInvoiceItems()) {
 				InvoiceItemJasperDetails invoiceItemJasperDetail = new InvoiceItemJasperDetails();
@@ -1262,9 +1263,15 @@ public class BillingServiceImpl implements BillingService {
 				} else {
 					invoiceItemJasperDetail.setQuantity("");
 				}
-				invoiceItemJasperDetail.setTax((invoiceItem.getTax() != null)
-						? invoiceItem.getTax().getValue() + " " + invoiceItem.getTax().getUnit().getUnit() : "");
+				if (invoiceItem.getTax() != null) {
+					invoiceItemJasperDetail
+							.setTax(invoiceItem.getTax().getValue() + " " + invoiceItem.getTax().getUnit().getUnit());
+					if (invoiceItem.getTax().getValue() > 0) {
+						showTax = true;
+					}
+				}
 				invoiceItemJasperDetail.setCost(invoiceItem.getCost() + "");
+
 				if (invoiceItem.getDiscount() != null) {
 					if (invoiceItem.getDiscount().getValue() > 0)
 						showDiscount = true;
@@ -1278,6 +1285,7 @@ public class BillingServiceImpl implements BillingService {
 				invoiceItemJasperDetails.add(invoiceItemJasperDetail);
 			}
 			parameters.put("showDiscount", showDiscount);
+			parameters.put("showTax", showTax);
 			parameters.put("showStatus", showStatus);
 			parameters.put("showInvoiceItemQuantity", showInvoiceItemQuantity);
 			parameters.put("items", invoiceItemJasperDetails);
@@ -1345,6 +1353,7 @@ public class BillingServiceImpl implements BillingService {
 					Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 		}
 		return response;
+
 	}
 
 	@Override
@@ -1366,13 +1375,15 @@ public class BillingServiceImpl implements BillingService {
 					if (jasperReportResponse.getFileSystemResource().getFile().exists())
 						jasperReportResponse.getFileSystemResource().getFile().delete();
 			} else {
-				logger.warn("Invoice Id does not exist");
-				throw new BusinessException(ServiceError.NotFound, "Invoice Id does not exist");
+				logger.warn("Reciept Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Reciept Id does not exist");
 			}
 
 		} catch (Exception e) {
-			logger.error("Error while getting download invoice" + e);
-			throw new BusinessException(ServiceError.Unknown, "Error while getting download invoice " + e);
+
+			logger.error("Error while getting download Reciept" + e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting download Reciept " + e);
 		}
 		return response;
 	}
@@ -1384,12 +1395,14 @@ public class BillingServiceImpl implements BillingService {
 		String pattern = "dd/MM/yyyy";
 		UserCollection doctor = userRepository.findOne(doctorPatientReceiptCollection.getDoctorId());
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		String content = "<br>Received with thanks<br>&nbsp;&nbsp;&nbsp;The sum of Rupees:- "
-				+ doctorPatientReceiptCollection.getAmountPaid() + " by "
-				+ doctorPatientReceiptCollection.getModeOfPayment() + " On Date:-"
-				+ doctorPatientReceiptCollection.getReceivedDate() != null
-						? simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate())
-						: simpleDateFormat.format(new Date());
+		String userName = "";
+		if (!DPDoctorUtils.allStringsEmpty(user.getTitle())) {
+			userName = user.getTitle();
+		}
+		String content = "<br>Received with thanks from &nbsp;&nbsp; " + userName + user.getFirstName()
+				+ "<br>The sum of Rupees:- " + doctorPatientReceiptCollection.getAmountPaid() + "<br> By "
+				+ doctorPatientReceiptCollection.getModeOfPayment() + "&nbsp;&nbsp;&nbsp;On Date:-"
+				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
 		parameters.put("paid", "RS.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
 		parameters.put("name", doctor.getTitle().toUpperCase() + " " + doctor.getFirstName());
