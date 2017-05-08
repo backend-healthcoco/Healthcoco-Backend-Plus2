@@ -483,12 +483,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Boolean show = false;
 		if (dischargeSummaryCollection.getPrescriptions() != null) {
-			show = true;
+
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
 			if (dischargeSummaryCollection.getPrescriptions().getItems() != null
 					&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty()) {
 				for (PrescriptionItem prescriptionItem : dischargeSummaryCollection.getPrescriptions().getItems()) {
+					show = true;
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
 						if (drug != null) {
