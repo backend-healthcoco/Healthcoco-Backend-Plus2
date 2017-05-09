@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -27,14 +26,11 @@ import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemAndAdvice;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
-import com.dpdocter.beans.User;
-import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
@@ -482,6 +478,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Boolean show = false;
+		
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
+				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
+		
 		if (dischargeSummaryCollection.getPrescriptions() != null) {
 
 			int no = 0;
@@ -497,18 +498,19 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
 									: "";
 							String genericName = "";
-							if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
 								for (GenericCode genericCode : drug.getGenericNames()) {
 									if (DPDoctorUtils.anyStringEmpty(genericName))
 										genericName = genericCode.getName();
 									else
 										genericName = genericName + "+" + genericCode.getName();
 								}
+								genericName = "<br><font size='1'><i>" + genericName
+										+ "</i></font>";
 							}
 							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
 							drugName = (drugType + drugName) == "" ? "--"
-									: drugType + " " + drugName + "<br><font size='1'><i>" + genericName
-											+ "</i></font>";
+									: drugType + " " + drugName + genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
 											? prescriptionItem.getDuration().getValue() : "")
@@ -790,9 +792,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showNextReview", show);
 		show = false;
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
-				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
