@@ -1021,7 +1021,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					if (!DPDoctorUtils.anyStringEmpty(prescriptionId)) {
 						DBObject prescriptionItems = new BasicDBObject();
 						List<PrescriptionJasperDetails> prescriptionJasperDetails = getPrescriptionJasperDetails(
-								prescriptionId.toString(), prescriptionItems, parameters, isLabPrint);
+								prescriptionId.toString(), prescriptionItems, parameters, isLabPrint, printSettings);
 						if (prescriptionJasperDetails != null && !prescriptionJasperDetails.isEmpty())
 							prescriptionItems.put("items", prescriptionJasperDetails);
 						resourceId = (String) prescriptionItems.get("resourceId");
@@ -1659,7 +1659,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	}
 
 	private List<PrescriptionJasperDetails> getPrescriptionJasperDetails(String prescriptionId,
-			DBObject prescriptionItemsObj, Map<String, Object> parameters, Boolean isLabPrint) {
+			DBObject prescriptionItemsObj, Map<String, Object> parameters, Boolean isLabPrint, PrintSettingsCollection printSettings) {
 		PrescriptionCollection prescriptionCollection = null;
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		try {
@@ -1699,18 +1699,19 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 											? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() : "")
 											: "";
 									String genericName = "";
-									if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+									if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
 										for (GenericCode genericCode : drug.getGenericNames()) {
 											if (DPDoctorUtils.anyStringEmpty(genericName))
 												genericName = genericCode.getName();
 											else
 												genericName = genericName + "+" + genericCode.getName();
 										}
+										genericName = "<br><font size='1'><i>" + genericName
+												+ "</i></font>";
 									}
 									String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
 									drugName = (drugType + drugName) == "" ? "--"
-											: drugType + " " + drugName + "<br><font size='1'><i>" + genericName
-													+ "</i></font>";
+											: drugType + " " + drugName + genericName;
 									String durationValue = prescriptionItem.getDuration() != null
 											? (prescriptionItem.getDuration().getValue() != null
 													? prescriptionItem.getDuration().getValue() : "")

@@ -62,7 +62,7 @@ public class PrintSettingsCollection extends GenericCollection {
     private String contentLineStyle = LineStyle.INLINE.getStyle();
 
     @Field
-    private Boolean showDrugGenericNames = false;
+    private boolean showDrugGenericNames = false;
     
     public ObjectId getId() {
 	return id;
@@ -168,11 +168,11 @@ public class PrintSettingsCollection extends GenericCollection {
 		this.contentLineStyle = contentLineStyle;
 	}
 
-	public Boolean getShowDrugGenericNames() {
+	public boolean getShowDrugGenericNames() {
 		return showDrugGenericNames;
 	}
 
-	public void setShowDrugGenericNames(Boolean showDrugGenericNames) {
+	public void setShowDrugGenericNames(boolean showDrugGenericNames) {
 		this.showDrugGenericNames = showDrugGenericNames;
 	}
 

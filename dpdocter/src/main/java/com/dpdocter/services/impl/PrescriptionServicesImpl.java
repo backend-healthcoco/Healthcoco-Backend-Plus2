@@ -3610,6 +3610,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
+		
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
+				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
+				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
+		
 		if (!isLabPrint) {
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
@@ -3623,17 +3628,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									: "";
 							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
 							String genericName = "";
-							if (drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
 								for (GenericCode genericCode : drug.getGenericNames()) {
 									if (DPDoctorUtils.anyStringEmpty(genericName))
 										genericName = genericCode.getName();
 									else
 										genericName = genericName + "+" + genericCode.getName();
 								}
+								genericName = "<br><font size='1'><i>" + genericName
+										+ "</i></font>";
 							}
 							drugName = (drugType + drugName) == "" ? "--"
-									: drugType + " " + drugName + "<br><font size='1'><i>" + genericName
-											+ "</i></font>";
+									: drugType + " " + drugName + genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
 											? prescriptionItem.getDuration().getValue() : "")
@@ -3728,9 +3734,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		else
 			parameters.put("labTest", null);
 
-		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
-				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
-				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
