@@ -3264,7 +3264,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getPID())) {
-			consentFormItemJasperdetails.setPID("<b>PID:</b>" + consentFormCollection.getPID());
+			consentFormItemJasperdetails.setPID("<b>PID : </b>" + consentFormCollection.getPID());
 			show = true;
 		}
 		parameters.put("showPID", show);

@@ -1289,14 +1289,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(35);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(drugWidth-3);
+		jrDesignTextField.setWidth(drugWidth - 3);
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$F{dosage}"));
-		jrDesignTextField.setX(38+ drugWidth);
+		jrDesignTextField.setX(38 + drugWidth);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(dosageWidth);
@@ -2917,12 +2917,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 
 		band = new JRDesignBand();
-		band.setHeight(50);
+		band.setHeight(30);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{personalDetail}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(50);
+		jrDesignTextField.setHeight(30);
 		jrDesignTextField.setWidth(251);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
@@ -2935,9 +2935,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{item}.getPID()"));
-			jrDesignTextField.setX(300);
+			jrDesignTextField.setX(columnWidth - 120);
 			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(50);
+			jrDesignTextField.setHeight(30);
 			jrDesignTextField.setWidth(120);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
@@ -2952,9 +2952,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{Name}", 2, 125, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
+			addEyePrescription("$P{Name}", 2, 100, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
 					contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getName()", 127, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{item}.getName()", 102, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
@@ -2962,9 +2962,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{Gender}", 2, 125, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
+			addEyePrescription("$P{Gender}", 2, 100, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
 					contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getGender()", 127, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{item}.getGender()", 102, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
@@ -2972,17 +2972,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{BirthDate}", 2, 125, true, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{BirthDate}", 2, 100, true, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getBirthDate()", 127, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{item}.getBirthDate()", 102, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{Age}", 2, 125, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
+			addEyePrescription("$P{Age}", 2, 100, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
 					contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getAge()", 127, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{item}.getAge()", 102, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
@@ -2990,19 +2990,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{BloodGroup}", 2, 125, true, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{BloodGroup}", 2, 100, true, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getBloodGroup()", 127, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{item}.getBloodGroup()", 102, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
 		band = new JRDesignBand();
-		band.setHeight(50);
+		band.setHeight(30);
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{contactDetail}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(50);
+		jrDesignTextField.setHeight(30);
 		jrDesignTextField.setWidth(columnWidth);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
@@ -3016,19 +3016,20 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{MobileNumber}", 2, 125, true, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{MobileNumber}", 2, 100, true, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getMobileNumber()", 127, columnWidth - 134, false,
+			addEyePrescription("$P{item}.getMobileNumber()", 102, columnWidth - 134, false,
 					HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
+
 		show = (Boolean) parameters.get("showEmail");
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{EmailAddress}", 2, 125, true, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{EmailAddress}", 2, 100, true, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getEmailAddress()", 127, columnWidth - 134, false,
+			addEyePrescription("$P{item}.getEmailAddress()", 102, columnWidth - 134, false,
 					HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
@@ -3036,9 +3037,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{LandLineNumber}", 2, 125, true, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{LandLineNumber}", 2, 100, true, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getLandLineNumber()", 127, columnWidth - 134, false,
+			addEyePrescription("$P{item}.getLandLineNumber()", 102, columnWidth - 134, false,
 					HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
@@ -3046,21 +3047,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			band = new JRDesignBand();
 			band.setHeight(20);
-			addEyePrescription("$P{Address}", 2, 125, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
+			addEyePrescription("$P{Address}", 2, 100, true, HorizontalTextAlignEnum.LEFT, VerticalTextAlignEnum.MIDDLE,
 					contentFontSize, band, 125, 0, 125);
-			addEyePrescription("$P{item}.getAddress()", 127, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
+			addEyePrescription("$P{item}.getAddress()", 102, columnWidth - 134, false, HorizontalTextAlignEnum.LEFT,
 					VerticalTextAlignEnum.MIDDLE, contentFontSize, band, 340, 125, 0);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
 		show = (Boolean) parameters.get("showMedicalHistory");
 		if (show) {
 			band = new JRDesignBand();
-			band.setHeight(50);
+			band.setHeight(30);
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{medicalHistory}"));
 			jrDesignTextField.setX(1);
 			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(50);
+			jrDesignTextField.setHeight(30);
 			jrDesignTextField.setWidth(columnWidth);
 			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
@@ -3086,6 +3087,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
+		band = new JRDesignBand();
+		band.setHeight(10);
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		show = (Boolean) parameters.get("showDeclaration");
 		if (show) {
 			band = new JRDesignBand();
@@ -3104,6 +3108,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
+
 		show = (Boolean) parameters.get("showSignDate");
 		band = new JRDesignBand();
 		band.setHeight(50);
@@ -3121,6 +3126,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setFontSize(new Float(contentFontSize + 1));
 			band.addElement(jrDesignTextField);
 		}
+
 		show = (Boolean) parameters.get("showSignImage");
 		if (show) {
 			JRDesignImage jrDesignImage = new JRDesignImage(null);
@@ -3132,6 +3138,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignImage.setY(0);
 			jrDesignImage.setHeight(50);
 			jrDesignImage.setWidth(220);
+			jrDesignImage.setHorizontalImageAlign(HorizontalImageAlignEnum.CENTER);
 			band.addElement(jrDesignImage);
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
