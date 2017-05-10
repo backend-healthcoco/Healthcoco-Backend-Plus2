@@ -80,13 +80,7 @@ public class UserRecords extends GenericCollection {
 		this.userId = userId;
 	}
 
-	public Double getFileSizeInMB() {
-		return fileSizeInMB;
-	}
-
-	public void setFileSizeInMB(Double fileSizeInMB) {
-		this.fileSizeInMB = fileSizeInMB;
-	}
+	
 
 	public Boolean getIsVisible() {
 		return isVisible;
@@ -104,11 +98,5 @@ public class UserRecords extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "UserRecords [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
-				+ ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType + ", explanation=" + explanation
-				+ ", userId=" + userId + ", fileSizeInMB=" + fileSizeInMB + ", isVisible=" + isVisible + ", discarded="
-				+ discarded + "]";
-	}
+	
 }
