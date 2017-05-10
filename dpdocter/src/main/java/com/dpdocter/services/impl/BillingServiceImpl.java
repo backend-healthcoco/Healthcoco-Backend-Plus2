@@ -203,6 +203,8 @@ public class BillingServiceImpl implements BillingService {
 												DoctorPatientInvoiceCollection.class) + 1));
 				doctorPatientInvoiceCollection.setBalanceAmount(request.getGrandTotal());
 				dueAmount = doctorPatientInvoiceCollection.getBalanceAmount();
+				if(doctorPatientInvoiceCollection.getInvoiceDate() == null)doctorPatientInvoiceCollection.setInvoiceDate(new Date());
+				doctorPatientInvoiceCollection.setCreatedTime(new Date());
 			} else {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
 				if (doctorPatientInvoiceCollection.getReceiptIds() != null
@@ -482,6 +484,7 @@ public class BillingServiceImpl implements BillingService {
 														.is(doctorPatientReceiptCollection.getHospitalId())),
 												DoctorPatientReceiptCollection.class) + 1));
 				dueAmount = request.getAmountPaid() != null ? request.getAmountPaid() : 0.0;
+				if(doctorPatientReceiptCollection.getReceivedDate() == null)doctorPatientReceiptCollection.setReceivedDate(new Date());
 			} else {
 				doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(request.getId()));
 				dueAmount = (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
@@ -837,6 +840,7 @@ public class BillingServiceImpl implements BillingService {
 				doctorsMap.put(request.getDoctorId(), userCollection);
 			}
 			doctorPatientInvoiceCollection.setCreatedTime(new Date());
+			if(doctorPatientInvoiceCollection.getInvoiceDate() == null)doctorPatientInvoiceCollection.setInvoiceDate(new Date());
 			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
 			if (locationCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Location Id");
@@ -882,6 +886,7 @@ public class BillingServiceImpl implements BillingService {
 					(!DPDoctorUtils.anyStringEmpty(userCollection.getTitle()) ? userCollection.getTitle() + " " : "")
 							+ userCollection.getFirstName());
 			doctorPatientReceiptCollection.setCreatedTime(new Date());
+			if(doctorPatientReceiptCollection.getReceivedDate() == null)doctorPatientReceiptCollection.setReceivedDate(new Date());
 			doctorPatientReceiptCollection
 					.setUniqueReceiptId(
 							locationCollection.getReceiptInitial()
