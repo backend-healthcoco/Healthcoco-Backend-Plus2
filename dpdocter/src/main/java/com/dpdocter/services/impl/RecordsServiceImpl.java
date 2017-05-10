@@ -1710,29 +1710,33 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				userRecordsCollection = userRecordsRepository.findOne(new ObjectId(request.getId()));
-				oldRecord = userRecordsCollection;
+				oldRecord = userRecordsRepository.findOne(new ObjectId(request.getId()));
+
 			}
-			if (userRecordsCollection == null)
-				userRecordsCollection = new UserRecordsCollection();
+
+			userRecordsCollection = new UserRecordsCollection();
 			BeanUtil.map(request, userRecordsCollection);
+			RecordsFile recordsFile = null;
 			if (file != null) {
 				String path = "userRecords" + File.separator + request.getUserId();
 				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
 				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-				String recordLabel = fileName;
+				String recordfileLabel = fileName;
 				Double fileSizeInMB = fileManager.saveRecord(file, recordPath,
 						userAllowanceDetailsCollection.getAvailableRecordsSizeInMB(), true);
-				userRecordsCollection.setFileSizeInMB(fileSizeInMB);
 
 				userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
 						userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() - fileSizeInMB);
 				userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+				recordsFile = new RecordsFile();
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				recordsFile.setFileSizeInMB(fileSizeInMB);
+				recordsFile.setRecordsUrl(recordPath);
+				recordsFile.setRecordsFileLabel(recordfileLabel);
+				recordsFile.setRecordsType(request.getRecordsType());
 
-				userRecordsCollection.setRecordsUrl(recordPath);
-				userRecordsCollection.setRecordsLabel(recordLabel);
 			}
 
 			if (oldRecord != null) {
@@ -1741,6 +1745,8 @@ public class RecordsServiceImpl implements RecordsService {
 				userRecordsCollection.setDiscarded(oldRecord.getDiscarded());
 				userRecordsCollection.setUniqueEmrId(oldRecord.getUniqueEmrId());
 				userRecordsCollection.setIsVisible(oldRecord.getIsVisible());
+				userRecordsCollection.setRecordsFiles(oldRecord.getRecordsFiles());
+
 			} else {
 				userRecordsCollection
 						.setUniqueEmrId(UniqueIdInitial.USERREPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -1749,6 +1755,19 @@ public class RecordsServiceImpl implements RecordsService {
 					userRecordsCollection
 							.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
 									+ userCollection.getFirstName());
+				}
+				userRecordsCollection.setCreatedTime(new Date());
+			}
+			if (recordsFile != null) {
+				if (userRecordsCollection.getRecordsFiles() != null) {
+					userRecordsCollection.getRecordsFiles().add(recordsFile);
+				}
+
+				else {
+					List<RecordsFile> recordsFiles = new ArrayList<RecordsFile>();
+					recordsFiles.add(recordsFile);
+					userRecordsCollection.setRecordsFiles(recordsFiles);
+
 				}
 			}
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
@@ -1773,7 +1792,9 @@ public class RecordsServiceImpl implements RecordsService {
 			if (userRecordsCollection != null) {
 				userRecords = new UserRecords();
 				BeanUtil.map(userRecordsCollection, userRecords);
-				userRecords.setRecordsUrl(getFinalImageURL(userRecords.getRecordsUrl()));
+				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
+					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				}
 			}
 
 		} catch (Exception e) {
@@ -1818,7 +1839,10 @@ public class RecordsServiceImpl implements RecordsService {
 					UserRecordsCollection.class, UserRecords.class);
 			response = aggregationResults.getMappedResults();
 			for (UserRecords userRecords : response) {
-				userRecords.setRecordsUrl(getFinalImageURL(userRecords.getRecordsUrl()));
+				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
+					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				}
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1993,6 +2017,38 @@ public class RecordsServiceImpl implements RecordsService {
 			response = new Records();
 			BeanUtil.map(recordsCollection, response);
 			for (RecordsFile recordsFile : response.getFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds) {
+		UserRecords response = null;
+		try {
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
+			if (userRecordsCollection == null) {
+				logger.warn("User Record Not found.Check RecordId");
+				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
+			}
+
+			for (int index = 0; userRecordsCollection.getRecordsFiles().size() > index; index++) {
+				for (String fileId : fileIds) {
+					if (userRecordsCollection.getRecordsFiles().get(index).getFileId().equals(fileId)) {
+						userRecordsCollection.getRecordsFiles().remove(index);
+					}
+
+				}
+			}
+			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
+			response = new UserRecords();
+			BeanUtil.map(userRecordsCollection, response);
+			for (RecordsFile recordsFile : response.getRecordsFiles()) {
 				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
 			}
 		} catch (Exception e) {

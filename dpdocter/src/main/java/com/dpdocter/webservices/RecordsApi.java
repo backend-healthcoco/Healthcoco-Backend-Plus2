@@ -411,7 +411,9 @@ public class RecordsApi {
 		UserRecords records = recordsService.addUserRecordsMultipart(file, request);
 
 		if (records != null) {
-			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
+			for (RecordsFile recordsFile : records.getRecordsFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
 		}
 
 		Response<UserRecords> response = new Response<UserRecords>();
@@ -514,7 +516,7 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.DELETE_RECORDS_FILE)
 	@DELETE
 	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_RECORDS_FILE, notes = PathProxy.RecordsUrls.DELETE_RECORDS_FILE)
-	public Response<Records> deleteUserRecord(@PathParam("recordId") String recordId,
+	public Response<Records> deleteRecordFile(@PathParam("recordId") String recordId,
 			@MatrixParam("fileIds") List<String> fileIds) {
 		if (DPDoctorUtils.anyStringEmpty(recordId)) {
 			logger.warn("Invalid Input");
@@ -522,6 +524,21 @@ public class RecordsApi {
 		}
 		Records records = recordsService.deleteRecordsFile(recordId, fileIds);
 		Response<Records> response = new Response<Records>();
+		response.setData(records);
+		return response;
+	}
+
+	@Path(value = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE)
+	@DELETE
+	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE, notes = PathProxy.RecordsUrls.DELETE_USER_RECORDS_FILE)
+	public Response<UserRecords> deleteUserRecordFile(@PathParam("recordId") String recordId,
+			@MatrixParam("fileIds") List<String> fileIds) {
+		if (DPDoctorUtils.anyStringEmpty(recordId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		UserRecords records = recordsService.deleteUserRecordsFile(recordId, fileIds);
+		Response<UserRecords> response = new Response<UserRecords>();
 		response.setData(records);
 		return response;
 	}

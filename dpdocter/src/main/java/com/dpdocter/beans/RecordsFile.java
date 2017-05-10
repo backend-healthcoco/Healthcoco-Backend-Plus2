@@ -12,6 +12,8 @@ public class RecordsFile {
 
 	private String recordsType;
 
+	private Double fileSizeInMB;
+
 	public String getFileId() {
 		return fileId;
 	}
@@ -36,8 +38,6 @@ public class RecordsFile {
 		this.recordsPath = recordsPath;
 	}
 
-	
-
 	public String getRecordsType() {
 		return recordsType;
 	}
@@ -52,6 +52,14 @@ public class RecordsFile {
 
 	public void setRecordsFileLabel(String recordsFileLabel) {
 		this.recordsFileLabel = recordsFileLabel;
+	}
+
+	public Double getFileSizeInMB() {
+		return fileSizeInMB;
+	}
+
+	public void setFileSizeInMB(Double fileSizeInMB) {
+		this.fileSizeInMB = fileSizeInMB;
 	}
 
 }

@@ -358,6 +358,8 @@ public interface PathProxy {
 
 		public static final String DELETE_RECORDS_FILE = "file/{recordId}/delete";
 
+		public static final String DELETE_USER_RECORDS_FILE = "user/file/{recordId}/delete";
+
 		public static final String UPDATE_RECORDS_DATA = "/updateData";
 
 	}

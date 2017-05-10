@@ -1,28 +1,36 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import com.dpdocter.collections.GenericCollection;
 
-public class UserRecords extends GenericCollection{
+public class UserRecords extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String uniqueEmrId;
+	private String uniqueEmrId;
 
-    private String recordsUrl;
+	private List<RecordsFile> recordsFiles;
 
-    private String recordsLabel;
+	private String recordsLabel;
 
-    private String recordsType;
+	private String recordsType;
 
-    private String explanation;
+	private String explanation;
 
-    private String userId;
+	private String userId;
 
-    private Double fileSizeInMB = 0.0;
+	private Boolean isVisible = true;
 
-    private Boolean isVisible = true;
+	private Boolean discarded = false;
 
-    private Boolean discarded = false;
+	public List<RecordsFile> getRecordsFiles() {
+		return recordsFiles;
+	}
+
+	public void setRecordsFiles(List<RecordsFile> recordsFiles) {
+		this.recordsFiles = recordsFiles;
+	}
 
 	public String getId() {
 		return id;
@@ -38,14 +46,6 @@ public class UserRecords extends GenericCollection{
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
-	}
-
-	public String getRecordsUrl() {
-		return recordsUrl;
-	}
-
-	public void setRecordsUrl(String recordsUrl) {
-		this.recordsUrl = recordsUrl;
 	}
 
 	public String getRecordsLabel() {

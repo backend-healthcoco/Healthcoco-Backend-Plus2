@@ -1,43 +1,43 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.RecordsFile;
+
 @Document(collection = "user_records_cl")
-public class UserRecordsCollection extends GenericCollection{
+public class UserRecordsCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String uniqueEmrId;
+	@Field
+	private String uniqueEmrId;
+	@Field
+	private List<RecordsFile> recordsFiles;
 
-    @Field
-    private String recordsUrl;
+	@Field
+	private String recordsLabel;
 
-    @Field
-    private String recordsLabel;
+	@Field
+	private String explanation;
 
-    @Field
-    private String recordsType;
+	@Indexed
+	private ObjectId userId;
 
-    @Field
-    private String explanation;
+	@Field
+	private Double fileSizeInMB = 0.0;
 
-    @Indexed
-    private ObjectId userId;
+	@Field
+	private Boolean isVisible = true;
 
-    @Field
-    private Double fileSizeInMB = 0.0;
-
-    @Field
-    private Boolean isVisible = true;
-
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
 	public ObjectId getId() {
 		return id;
@@ -55,28 +55,12 @@ public class UserRecordsCollection extends GenericCollection{
 		this.uniqueEmrId = uniqueEmrId;
 	}
 
-	public String getRecordsUrl() {
-		return recordsUrl;
-	}
-
-	public void setRecordsUrl(String recordsUrl) {
-		this.recordsUrl = recordsUrl;
-	}
-
 	public String getRecordsLabel() {
 		return recordsLabel;
 	}
 
 	public void setRecordsLabel(String recordsLabel) {
 		this.recordsLabel = recordsLabel;
-	}
-
-	public String getRecordsType() {
-		return recordsType;
-	}
-
-	public void setRecordsType(String recordsType) {
-		this.recordsType = recordsType;
 	}
 
 	public String getExplanation() {
@@ -119,11 +103,14 @@ public class UserRecordsCollection extends GenericCollection{
 		this.discarded = discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "UserRecordsCollection [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
-				+ ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType + ", explanation=" + explanation
-				+ ", userId=" + userId + ", fileSizeInMB=" + fileSizeInMB + ", isVisible=" + isVisible + ", discarded="
-				+ discarded + "]";
+	public List<RecordsFile> getRecordsFiles() {
+		return recordsFiles;
 	}
+
+	public void setRecordsFiles(List<RecordsFile> recordsFiles) {
+		this.recordsFiles = recordsFiles;
+	}
+
+	
+
 }

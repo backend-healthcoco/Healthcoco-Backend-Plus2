@@ -33,7 +33,7 @@ public interface RecordsService {
 	Records getRecordById(String recordId);
 
 	void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId,
-			String emailAddress,List<String> fileIds);
+			String emailAddress, List<String> fileIds);
 
 	MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId,
 			List<String> fileIds);
@@ -82,4 +82,6 @@ public interface RecordsService {
 	public Integer updateRecords();
 
 	public Records deleteRecordsFile(String recordId, List<String> fileIds);
+
+	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds);
 }
