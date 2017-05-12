@@ -151,21 +151,28 @@ public class ReportsServiceImpl implements ReportsService {
 	public OPDReports submitOPDReport(OPDReports opdReports) {
 		OPDReports response = null;
 		OPDReportsCollection opdReportsCollection = new OPDReportsCollection();
-		UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
+		
 		if (opdReports != null) {
 			OPDReportsCollection opdReportsCollectionOld = opdReportsRepository
 					.getOPDReportByPrescriptionId(new ObjectId(opdReports.getPrescriptionId()));
 			if (opdReportsCollectionOld != null) {
 				BeanUtil.map(opdReportsCollectionOld, opdReportsCollection);
-				// set other field while editing
 				opdReportsCollection.setAmountReceived(opdReports.getAmountReceived());
-				opdReportsCollection.setReceiptDate(opdReports.getAmountReceived());
+				if(opdReports.getReceiptDate() != null){
+					opdReportsCollection.setReceiptDate(new Date(opdReports.getReceiptDate()));	
+				}else{
+					opdReportsCollection.setReceiptDate(new Date());
+				}
 				opdReportsCollection.setReceiptNo(opdReports.getReceiptNo());
 				opdReportsCollection.setRemarks(opdReports.getRemarks());
+				opdReportsCollection.setUpdatedTime(new Date());
 			} else {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(opdReports.getDoctorId()));
 				BeanUtil.map(opdReports, opdReportsCollection);
+				opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				opdReportsCollection.setCreatedTime(new Date());
 			}
-			opdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+			
 			opdReportsCollection = opdReportsRepository.save(opdReportsCollection);
 			try {
 

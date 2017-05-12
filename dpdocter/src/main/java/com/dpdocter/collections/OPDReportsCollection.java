@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,7 +21,7 @@ public class OPDReportsCollection extends GenericCollection {
 	@Field
 	private String receiptNo;
 	@Field
-	private String receiptDate;
+	private Date receiptDate;
 	@Field
 	private String remarks;
 	@Field
@@ -71,11 +73,11 @@ public class OPDReportsCollection extends GenericCollection {
 		this.receiptNo = receiptNo;
 	}
 
-	public String getReceiptDate() {
+	public Date getReceiptDate() {
 		return receiptDate;
 	}
 
-	public void setReceiptDate(String receiptDate) {
+	public void setReceiptDate(Date receiptDate) {
 		this.receiptDate = receiptDate;
 	}
 

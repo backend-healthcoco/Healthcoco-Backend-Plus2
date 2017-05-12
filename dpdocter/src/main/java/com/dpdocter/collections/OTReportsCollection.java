@@ -46,6 +46,9 @@ public class OTReportsCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 
+	@Field
+	private String operationalNotes;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -174,6 +177,14 @@ public class OTReportsCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getOperationalNotes() {
+		return operationalNotes;
+	}
+
+	public void setOperationalNotes(String operationalNotes) {
+		this.operationalNotes = operationalNotes;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReportsCollection [id=" + id + ", patientId=" + patientId + ", operationDate=" + operationDate
@@ -181,7 +192,8 @@ public class OTReportsCollection extends GenericCollection {
 				+ ", surgery=" + surgery + ", finalDiagnosis=" + finalDiagnosis + ", operatingSurgeon="
 				+ operatingSurgeon + ", anaesthetist=" + anaesthetist + ", assitingDoctors=" + assitingDoctors
 				+ ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE + ", remarks=" + remarks
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", operationalNotes=" + operationalNotes + "]";
 	}
 
 }

@@ -31,6 +31,7 @@ public class OTReports extends GenericCollection {
 	private String hospitalName;
 	private TimeDuration timeDuration;
 
+	private String operationalNotes;
 	public String getId() {
 		return id;
 	}
@@ -199,6 +200,14 @@ public class OTReports extends GenericCollection {
 		this.timeDuration = timeDuration;
 	}
 
+	public String getOperationalNotes() {
+		return operationalNotes;
+	}
+
+	public void setOperationalNotes(String operationalNotes) {
+		this.operationalNotes = operationalNotes;
+	}
+
 	@Override
 	public String toString() {
 		return "OTReports [id=" + id + ", patientId=" + patientId + ", patient=" + patient + ", operationDate="
@@ -208,7 +217,7 @@ public class OTReports extends GenericCollection {
 				+ assitingDoctors + ", assitingNurses=" + assitingNurses + ", materialForHPE=" + materialForHPE
 				+ ", remarks=" + remarks + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", locationId="
 				+ locationId + ", locationName=" + locationName + ", hospitalId=" + hospitalId + ", hospitalName="
-				+ hospitalName + ", timeDuration=" + timeDuration + "]";
+				+ hospitalName + ", timeDuration=" + timeDuration + ", operationalNotes=" + operationalNotes + "]";
 	}
 
 }
