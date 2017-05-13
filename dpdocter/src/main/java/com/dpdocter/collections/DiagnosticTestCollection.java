@@ -5,47 +5,55 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.enums.TestSampleType;
+
 @Document(collection = "diagnostic_test_cl")
 public class DiagnosticTestCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String testName;
+	@Field
+	private String testName;
 
-    @Field
-    private String explanation;
+	@Field
+	private String explanation;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private Double cost;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private String sampleType;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private String code;
+	@Field
+	private ObjectId hospitalId;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private Boolean discarded = false;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private String code;
 
-    public String getTestName() {
-	return testName;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getExplanation() {
+	public String getTestName() {
+		return testName;
+	}
+
+	public void setTestName(String testName) {
+		this.testName = testName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -54,28 +62,28 @@ public class DiagnosticTestCollection extends GenericCollection {
 	}
 
 	public ObjectId getLocationId() {
-	return locationId;
-    }
+		return locationId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getCode() {
 		return code;
@@ -85,10 +93,26 @@ public class DiagnosticTestCollection extends GenericCollection {
 		this.code = code;
 	}
 
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public String getSampleType() {
+		return sampleType;
+	}
+
+	public void setSampleType(String sampleType) {
+		this.sampleType = sampleType;
+	}
+
 	@Override
 	public String toString() {
 		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", explanation=" + explanation
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", code="
-				+ code + "]";
+				+ ", cost=" + cost + ", sampleType=" + sampleType + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", code=" + code + "]";
 	}
 }

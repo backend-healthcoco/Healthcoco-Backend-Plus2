@@ -33,10 +33,12 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.AdvancedSearchParameter;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
+import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.repository.ESCollectionBoyRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESPatientRepository;
@@ -77,7 +79,10 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 
 	@Autowired
 	private UserRepository userRepository;
-
+	
+	@Autowired
+	private ESCollectionBoyRepository esCollectionBoyRepository;
+	
 	@Value(value = "${image.path}")
 	private String imagePath;
 
@@ -380,5 +385,19 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 			e.printStackTrace();
 			logger.error("Error While Saving Doctor Details to ES : " + e.getMessage());
 		}
+	}
+	
+	@Override
+	public boolean addCollectionBoy(ESCollectionBoyDocument request) {
+		boolean response = false;
+		try {
+			esCollectionBoyRepository.save(request);
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.COLLECTION_BOY, true);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error While Saving Locale Details to ES : " + e.getMessage());
+		}
+		return response;
 	}
 }

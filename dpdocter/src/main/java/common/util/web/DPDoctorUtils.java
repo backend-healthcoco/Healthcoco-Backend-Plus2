@@ -647,5 +647,16 @@ public class DPDoctorUtils {
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
+	
+	public static String randomString(int length) {
+		final String GENERATOR_STRING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		SecureRandom rnd = new SecureRandom();
+		StringBuilder sb = new StringBuilder(length);
+		for (int i = 0; i < length; i++)
+		{
+			sb.append(GENERATOR_STRING.charAt(rnd.nextInt(GENERATOR_STRING.length())));
+		}
+		return sb.toString();
+	}
 
 }

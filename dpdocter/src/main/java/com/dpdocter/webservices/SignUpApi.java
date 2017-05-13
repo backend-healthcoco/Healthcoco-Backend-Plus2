@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.ClinicContactUs;
+import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DoctorContactUs;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
@@ -281,6 +282,21 @@ public class SignUpApi {
 
 		Response<String> response = new Response<String>();
 		response.setData(clinicContactUsService.submitClinicContactUSInfo(clinicContactUs));
+		return response;
+	}
+	
+	@Path(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
+	@POST
+	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
+	public Response<CollectionBoy> adminSignup(CollectionBoy request) {
+		if (request == null ) {
+			logger.warn("Request send  is NULL");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
+		}
+		CollectionBoy collectionBoy = signUpService.signupCollectionBoys(request);
+
+		Response<CollectionBoy> response = new Response<CollectionBoy>();
+		response.setData(collectionBoy);
 		return response;
 	}
 

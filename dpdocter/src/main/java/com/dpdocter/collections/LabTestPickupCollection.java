@@ -1,0 +1,166 @@
+package com.dpdocter.collections;
+
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.dpdocter.beans.LabTestSample;
+
+@Document(collection = "lab_test_pickup_cl")
+public class LabTestPickupCollection extends GenericCollection {
+
+	@Id
+	private ObjectId id;
+	@Field
+	private String daughterLabCRN;
+	@Field
+	private String parentLabCRN;
+	@Field
+	private Long pickupTime;
+	@Field
+	private Long deliveryTime;
+	@Field
+	private List<LabTestSample> labTestSamples;
+	@Field
+	private String status;
+	@Field
+	private ObjectId doctorId;
+	@Field
+	private String daughterLabLocationId;
+	@Field
+	private String parentLabLocationId;
+	@Field
+	private Boolean discarded = false;
+	@Field
+	private Integer numberOfSamplesRequested;
+	@Field
+	private Integer numberOfSamplesPicked;
+	@Field
+	private String requestId;
+
+	public ObjectId getId() {
+		return id;
+	}
+
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
+
+	public String getDaughterLabCRN() {
+		return daughterLabCRN;
+	}
+
+	public void setDaughterLabCRN(String daughterLabCRN) {
+		this.daughterLabCRN = daughterLabCRN;
+	}
+
+	public String getParentLabCRN() {
+		return parentLabCRN;
+	}
+
+	public void setParentLabCRN(String parentLabCRN) {
+		this.parentLabCRN = parentLabCRN;
+	}
+
+	public Long getPickupTime() {
+		return pickupTime;
+	}
+
+	public void setPickupTime(Long pickupTime) {
+		this.pickupTime = pickupTime;
+	}
+
+	public Long getDeliveryTime() {
+		return deliveryTime;
+	}
+
+	public void setDeliveryTime(Long deliveryTime) {
+		this.deliveryTime = deliveryTime;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getDaughterLabLocationId() {
+		return daughterLabLocationId;
+	}
+
+	public void setDaughterLabLocationId(String daughterLabLocationId) {
+		this.daughterLabLocationId = daughterLabLocationId;
+	}
+
+	public String getParentLabLocationId() {
+		return parentLabLocationId;
+	}
+
+	public void setParentLabLocationId(String parentLabLocationId) {
+		this.parentLabLocationId = parentLabLocationId;
+	}
+
+	public List<LabTestSample> getLabTestSamples() {
+		return labTestSamples;
+	}
+
+	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
+		this.labTestSamples = labTestSamples;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Integer getNumberOfSamplesRequested() {
+		return numberOfSamplesRequested;
+	}
+
+	public void setNumberOfSamplesRequested(Integer numberOfSamplesRequested) {
+		this.numberOfSamplesRequested = numberOfSamplesRequested;
+	}
+
+	public Integer getNumberOfSamplesPicked() {
+		return numberOfSamplesPicked;
+	}
+
+	public void setNumberOfSamplesPicked(Integer numberOfSamplesPicked) {
+		this.numberOfSamplesPicked = numberOfSamplesPicked;
+	}
+
+	@Override
+	public String toString() {
+		return "LabTestPickupCollection [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN="
+				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSamples="
+				+ labTestSamples + ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId="
+				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
+				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
+				+ numberOfSamplesPicked + ", requestId=" + requestId + "]";
+	}
+
+}

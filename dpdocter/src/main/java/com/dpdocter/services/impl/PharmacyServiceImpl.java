@@ -26,6 +26,7 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
+import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 import com.dpdocter.enums.ReplyType;
@@ -35,6 +36,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocaleRepository;
+import com.dpdocter.repository.OrderDrugRepository;
 import com.dpdocter.repository.SearchRequestFromUserRepository;
 import com.dpdocter.repository.SearchRequestToPharmacyRepository;
 import com.dpdocter.request.OrderDrugsRequest;
@@ -77,6 +79,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private SearchRequestToPharmacyRepository searchRequestToPharmacyRepository;
+	
+	@Autowired
+	private OrderDrugRepository orderDrugRepository;
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -261,19 +266,29 @@ public class PharmacyServiceImpl implements PharmacyService {
 	}*/
 
 	@Override
+	@Transactional
 	public Boolean orderDrugs(OrderDrugsRequest request) {
 		
-		 //* TODO : when patient is request for order than send notification to
-		 //* pharmacy. Pharmacy Id we will get in request
-		 
+		 OrderDrugCollection orderDrugCollection = null;
+		 Boolean status = false;
 		try {
-			pushNotificationServices.notifyUser(request.getLocaleId(), null, RoleEnum.PHARMIST, "Keep my order ready");
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid input - request cannot be null");
+			}
+			orderDrugCollection =  new OrderDrugCollection();
+			BeanUtil.map(request, orderDrugCollection);
+			orderDrugRepository.save(orderDrugCollection);
+			UserSearchRequest userSearchRequest =  new UserSearchRequest();
+			userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
+			pushNotificationServices.notifyUser(request.getLocaleId(), userSearchRequest, RoleEnum.PHARMIST, "Keep my order ready");
+			status = true;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While ordering drugs");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While ordering drugs");
 		}
-		return null;
+		return status;
 	}
 
 	/*private void addPharmacyResponseInCollection(PharmacyResponse request, String uniqueResponseId) {
