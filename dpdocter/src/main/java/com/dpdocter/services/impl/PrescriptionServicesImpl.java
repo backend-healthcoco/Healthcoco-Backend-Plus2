@@ -3610,11 +3610,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		JasperReportResponse response = null;
-		
+
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
-		
+
 		if (!isLabPrint) {
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
@@ -3628,18 +3628,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 									: "";
 							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
 							String genericName = "";
-							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null
+									&& !drug.getGenericNames().isEmpty()) {
 								for (GenericCode genericCode : drug.getGenericNames()) {
 									if (DPDoctorUtils.anyStringEmpty(genericName))
 										genericName = genericCode.getName();
 									else
 										genericName = genericName + "+" + genericCode.getName();
 								}
-								genericName = "<br><font size='1'><i>" + genericName
-										+ "</i></font>";
+								genericName = "<br><font size='1'><i>" + genericName + "</i></font>";
 							}
-							drugName = (drugType + drugName) == "" ? "--"
-									: drugType + " " + drugName + genericName;
+							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
 											? prescriptionItem.getDuration().getValue() : "")
@@ -5073,13 +5072,61 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		JasperReportResponse response = null;
 
 		EyeTestJasperResponse eyResponse = new EyeTestJasperResponse();
-		if (prescriptionCollection.getLeftEyeTest() != null)
+		if (prescriptionCollection.getLeftEyeTest() != null) {
+
 			BeanUtil.map(prescriptionCollection.getLeftEyeTest(), eyResponse);
+			System.out.println(String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceCylinder()));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getLeftEyeTest().getDistanceSPH())
+					|| prescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+					|| prescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+				eyResponse.setDistanceSPH(String.format("%.2f",
+						Double.parseDouble(prescriptionCollection.getLeftEyeTest().getDistanceSPH())));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getLeftEyeTest().getNearSPH())
+					|| prescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
+					|| prescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+				eyResponse.setNearSPH(String.format("%.2f",
+						Double.parseDouble(prescriptionCollection.getLeftEyeTest().getNearSPH())));
+			eyResponse.setDistanceCylinder(
+					String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceCylinder()));
+			eyResponse.setDistanceBaseCurve(
+					String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceBaseCurve()));
+			eyResponse.setDistanceDiameter(
+					String.format("%.2f", prescriptionCollection.getLeftEyeTest().getDistanceDiameter()));
+			eyResponse
+					.setNearCylinder(String.format("%.2f", prescriptionCollection.getLeftEyeTest().getNearCylinder()));
+			eyResponse.setNearBaseCurve(
+					String.format("%.2f", prescriptionCollection.getLeftEyeTest().getNearBaseCurve()));
+			eyResponse
+					.setNearDiameter(String.format("%.2f", prescriptionCollection.getLeftEyeTest().getNearDiameter()));
+		}
 		parameters.put("leftEyeTest", eyResponse);
 
 		eyResponse = new EyeTestJasperResponse();
-		if (prescriptionCollection.getRightEyeTest() != null)
+		if (prescriptionCollection.getRightEyeTest() != null) {
 			BeanUtil.map(prescriptionCollection.getRightEyeTest(), eyResponse);
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getRightEyeTest().getDistanceSPH())
+					|| prescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+					|| prescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+				eyResponse.setDistanceSPH(String.format("%.2f",
+						Double.parseDouble(prescriptionCollection.getRightEyeTest().getDistanceSPH())));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getRightEyeTest().getNearSPH())
+					|| prescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
+					|| prescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+				eyResponse.setNearSPH(String.format("%.2f",
+						Double.parseDouble(prescriptionCollection.getRightEyeTest().getNearSPH())));
+			eyResponse.setDistanceCylinder(
+					String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceCylinder()));
+			eyResponse.setDistanceBaseCurve(
+					String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceBaseCurve()));
+			eyResponse.setDistanceDiameter(
+					String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceDiameter()));
+			eyResponse
+					.setNearCylinder(String.format("%.2f", prescriptionCollection.getRightEyeTest().getNearCylinder()));
+			eyResponse.setNearBaseCurve(
+					String.format("%.2f", prescriptionCollection.getRightEyeTest().getNearBaseCurve()));
+			eyResponse
+					.setNearDiameter(String.format("%.2f", prescriptionCollection.getRightEyeTest().getNearDiameter()));
+		}
 		parameters.put("rightEyeTest", eyResponse);
 
 		if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getType())

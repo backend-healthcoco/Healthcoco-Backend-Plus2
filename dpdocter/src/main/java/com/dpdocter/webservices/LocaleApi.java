@@ -179,26 +179,27 @@ public class LocaleApi {
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
-	public Response<UserSearchRequest> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file, @FormDataParam("data") FormDataBodyPart data) {
+	public Response<UserSearchRequest> addUserRequestInQueue(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
 		Response<UserSearchRequest> response = null;
 		UserSearchRequest status = null;
 		try {
-			
+
 			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-			//System.out.println(data.toString());
+			// System.out.println(data.toString());
 			UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
-			//System.out.println(request);
+			// System.out.println(request);
 			ImageURLResponse imageURLResponse = null;
 			if (file != null) {
 				imageURLResponse = localeService.addRXImageMultipart(file);
-				//System.out.println(imageURLResponse);
-				if (request != null){
+				// System.out.println(imageURLResponse);
+				if (request != null) {
 					PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
 					prescriptionRequest.setPrescriptionURL(imageURLResponse.getImageUrl());
 					request.setPrescriptionRequest(prescriptionRequest);
 				}
 			}
-			
+
 			if (request == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
@@ -246,25 +247,28 @@ public class LocaleApi {
 		return response;
 
 	}
-	
+
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_FOR_ORDER)
-	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@QueryParam("userId") String userId, @QueryParam("uniqueRequestId") String uniqueRequestId,
-			@QueryParam("replyType") String replyType,@QueryParam("page") int page, @QueryParam("size") int size , @QueryParam("lat") Double latitude, @QueryParam("long") Double longitude) {
+	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@QueryParam("userId") String userId,
+			@QueryParam("uniqueRequestId") String uniqueRequestId, @QueryParam("replyType") String replyType,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("lat") Double latitude,
+			@QueryParam("long") Double longitude) {
 		Response<SearchRequestToPharmacyResponse> response = null;
 		List<SearchRequestToPharmacyResponse> list = null;
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
 
-		list = pharmacyService.getPharmacyListbyOrderHistory(userId, uniqueRequestId, replyType, page, size,latitude,longitude);
+		list = pharmacyService.getPharmacyListbyOrderHistory(userId, uniqueRequestId, replyType, page, size, latitude,
+				longitude);
 
 		response = new Response<SearchRequestToPharmacyResponse>();
 		response.setDataList(list);
 		return response;
 
 	}
-	
+
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_COUNT_FOR_ORDER)
 	public Response<Integer> getPharmaciesCountForOrder(@QueryParam("uniqueRequestId") String uniqueRequestId,
@@ -282,41 +286,46 @@ public class LocaleApi {
 		return response;
 
 	}
-	
+
 	@POST
 	@Path(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE, notes = PathProxy.LocaleUrls.UPLOAD_RX_IMAGE)
 	public Response<ImageURLResponse> addLocaleImageMultipart(@FormDataParam("file") FormDataBodyPart file) {
-		/*data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		LocaleImageAddEditRequest request = data.getValueAs(LocaleImageAddEditRequest.class);*/
+		/*
+		 * data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		 * LocaleImageAddEditRequest request =
+		 * data.getValueAs(LocaleImageAddEditRequest.class);
+		 */
 		ImageURLResponse imageURLResponse = null;
 		Response<ImageURLResponse> response = null;
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		
+
 		imageURLResponse = localeService.addRXImageMultipart(file);
 		response = new Response<ImageURLResponse>();
 		response.setData(imageURLResponse);
 		return response;
-	}		
+	}
 
 	@GET
 	@Path(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
 	@ApiOperation(value = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION, notes = PathProxy.LocaleUrls.ADD_EDIT_RECOMMENDATION)
-	public Response<Locale> addEditRecommedation(@QueryParam("localeId")String localeId,@QueryParam("patientId")String patientId,@QueryParam("type")RecommendationType type){
+	public Response<Locale> addEditRecommedation(@QueryParam("localeId") String localeId,
+			@QueryParam("patientId") String patientId, @QueryParam("type") RecommendationType type) {
 		Locale locale = null;
-		Response<Locale> response =  null;
-		if (DPDoctorUtils.anyStringEmpty(localeId,patientId) || type == null) {
+		Response<Locale> response = null;
+		if (DPDoctorUtils.anyStringEmpty(localeId, patientId) || type == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		
+
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
 		response = new Response<>();
 		response.setData(locale);
 		return response;
 	}
+
 	
 	@POST
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
@@ -341,4 +350,5 @@ public class LocaleApi {
 	}
 	
 	
+
 }
