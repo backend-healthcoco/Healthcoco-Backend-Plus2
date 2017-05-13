@@ -22,6 +22,7 @@ import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.enums.RecommendationType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
@@ -314,6 +315,28 @@ public class LocaleApi {
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
 		response = new Response<>();
 		response.setData(locale);
+		return response;
+	}
+	
+	@POST
+	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
+	public Response<Boolean> orderDrug(OrderDrugsRequest request) {
+		Response<Boolean> response = null;
+		Boolean status = false;
+		try {
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput ,"Request cannot be null");
+			}
+			status = pharmacyService.orderDrugs(request);
+			response = new Response<Boolean>();
+			response.setData(status);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn(e);
+			e.printStackTrace();
+		}
 		return response;
 	}
 	

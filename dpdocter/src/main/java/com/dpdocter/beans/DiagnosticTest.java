@@ -3,40 +3,46 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.TestSampleType;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DiagnosticTest extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String testName;
+	private String testName;
 
-    private String explanation;
+	private String explanation;
 
-    private String locationId;
+	private Double cost;
 
-    private String hospitalId;
+	private String sampleType;
 
-    private Boolean discarded = false;
+	private String locationId;
 
-    private String code;
+	private String hospitalId;
 
-    public String getId() {
-	return id;
-    }
+	private Boolean discarded = false;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String code;
 
-    public String getTestName() {
-	return testName;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getExplanation() {
+	public String getTestName() {
+		return testName;
+	}
+
+	public void setTestName(String testName) {
+		this.testName = testName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -45,28 +51,28 @@ public class DiagnosticTest extends GenericCollection {
 	}
 
 	public String getLocationId() {
-	return locationId;
-    }
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getCode() {
 		return code;
@@ -74,6 +80,22 @@ public class DiagnosticTest extends GenericCollection {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Double getCost() {
+		return cost;
+	}
+
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+
+	public String getSampleType() {
+		return sampleType;
+	}
+
+	public void setSampleType(String sampleType) {
+		this.sampleType = sampleType;
 	}
 
 	@Override

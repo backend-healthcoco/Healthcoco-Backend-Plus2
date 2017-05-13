@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
@@ -34,5 +35,7 @@ public interface SignUpService {
     boolean unlockPatientBasedOn80PercentMatch(String name, String mobileNumber);
 
     boolean checkMobileNumberExistForPatient(String mobileNumber);
+
+	CollectionBoy signupCollectionBoys(CollectionBoy collectionBoy);
 
 }

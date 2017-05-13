@@ -34,6 +34,8 @@ public interface PathProxy {
 		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
 
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
+		
+		public static final String SIGNUP_COLLECTION_BOY = "/collectionBoy";
 
 	}
 
@@ -1094,7 +1096,7 @@ public interface PathProxy {
 		public static final String GET_PHARMCIES_COUNT_FOR_ORDER = "/getPharmaciesCountForOrder";
 		public static final String UPLOAD_RX_IMAGE = "/uploadRXImage";
 		public static final String ADD_EDIT_RECOMMENDATION = "/addEditRecommendation";
-
+		public static final String ORDER_DRUG = "/orderDrugs";
 	}
 
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";

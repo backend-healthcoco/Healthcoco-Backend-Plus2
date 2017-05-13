@@ -7,32 +7,36 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.DoctorStats;
 import com.dpdocter.beans.GeocodedLocation;
+import com.dpdocter.beans.LabTestPickup;
+import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
-import com.dpdocter.collections.DoctorProfileViewCollection;
+import com.dpdocter.collections.CRNCollection;
+import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.CRNRepository;
+import com.dpdocter.repository.LabTestPickupRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.services.LocationServices;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
+
+import common.util.web.DPDoctorUtils;
 
 @Service
 public class LocationServiceImpl implements LocationServices {
@@ -48,9 +52,15 @@ public class LocationServiceImpl implements LocationServices {
 	@Autowired
 	private RecommendationsRepository recommendationsRepository;
 
+	@Autowired
+	private LabTestPickupRepository labTestPickupRepository;
+
+	@Autowired
+	private CRNRepository crnRepository;
+
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
-	
+
 	@Autowired
 	MongoTemplate mongoTemplate;
 
@@ -159,59 +169,120 @@ public class LocationServiceImpl implements LocationServices {
 	@Transactional
 	public Boolean setDefaultLab(String locationId, String defaultLabId) {
 		Boolean status = false;
-		/*try {
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			if (locationCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "location not found");
-			}
-			locationCollection.setDefaultParentLabId(new ObjectId(defaultLabId));
-			status = true;
-		} catch (Exception e) {
-			// TODO: handle exception
-			logger.warn(e);
-			e.printStackTrace();
-		}*/
+		/*
+		 * try { LocationCollection locationCollection =
+		 * locationRepository.findOne(new ObjectId(locationId)); if
+		 * (locationCollection == null) { throw new
+		 * BusinessException(ServiceError.NoRecord, "location not found"); }
+		 * locationCollection.setDefaultParentLabId(new ObjectId(defaultLabId));
+		 * status = true; } catch (Exception e) { // TODO: handle exception
+		 * logger.warn(e); e.printStackTrace(); }
+		 */
 		return status;
 	}
-	
-	public List<Location> getAssociatedLabs(String locationId, Boolean isAssociated){
-		
+
+	public List<Location> getAssociatedLabs(String locationId, Boolean isAssociated) {
+
 		List<Location> response = null;
-		
-		/*try {
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-			if (locationCollection == null) {
-				throw new BusinessException(ServiceError.NoRecord, "location not found");
-			}
-			List<ObjectId> associatedLabs = locationCollection.getAssociatedLabs();
-			Criteria criteria = new Criteria("isParent").in(false);
-			if (isAssociated.equals(true)) {
-				criteria.and("_id").in(associatedLabs);
-			} else if (isAssociated.equals(false)) {
-				criteria.and("_id").nin(associatedLabs);
-			}
-			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(Sort.Direction.DESC, "createdTime"));
-			AggregationResults<Location> results = mongoTemplate.aggregate(aggregation, LocationCollection.class,
-					Location.class);
-			response = new ArrayList<Location>();
-			response = results.getMappedResults();
-			for(Location location : response)
-			{
-				if(associatedLabs.contains(new ObjectId(location.getId())))
-				{
-					
+
+		/*
+		 * try { LocationCollection locationCollection =
+		 * locationRepository.findOne(new ObjectId(locationId)); if
+		 * (locationCollection == null) { throw new
+		 * BusinessException(ServiceError.NoRecord, "location not found"); }
+		 * List<ObjectId> associatedLabs =
+		 * locationCollection.getAssociatedLabs(); Criteria criteria = new
+		 * Criteria("isParent").in(false); if (isAssociated.equals(true)) {
+		 * criteria.and("_id").in(associatedLabs); } else if
+		 * (isAssociated.equals(false)) {
+		 * criteria.and("_id").nin(associatedLabs); } Aggregation aggregation =
+		 * Aggregation.newAggregation(Aggregation.match(criteria),
+		 * Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+		 * AggregationResults<Location> results =
+		 * mongoTemplate.aggregate(aggregation, LocationCollection.class,
+		 * Location.class); response = new ArrayList<Location>(); response =
+		 * results.getMappedResults(); for(Location location : response) {
+		 * if(associatedLabs.contains(new ObjectId(location.getId()))) {
+		 * 
+		 * } } } catch (Exception e) { // TODO: handle exception logger.warn(e);
+		 * e.printStackTrace(); }
+		 */
+		return response;
+
+	}
+
+	@Override
+	@Transactional
+	public LabTestPickup addEditLabTestPickupRequest(AddEditLabTestPickupRequest request) {
+		LabTestPickup response = null;
+		LabTestPickupCollection labTestPickupCollection = null;
+		String requestId = null;
+		try {
+
+			if (request.getId() != null) {
+				labTestPickupCollection = labTestPickupRepository.findOne(new ObjectId(request.getId()));
+				if (labTestPickupCollection == null) {
+					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
+				BeanUtil.map(request, labTestPickupCollection);
+				labTestPickupCollection.setLabTestSamples(request.getLabTestSamples());
+				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+			} else {
+				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
+				request.setDaughterLabCRN(saveCRN(request.getDaughterLabLocationId(), requestId, 5));
+				request.setParentLabCRN(saveCRN(request.getParentLabLocationId(), requestId, 5));
+				for (LabTestSample labTestSample : request.getLabTestSamples()) {
+					labTestSample.setSampleId(UniqueIdInitial.LAB_PICKUP_SAMPLE + DPDoctorUtils.generateRandomId());
+				}
+				labTestPickupCollection = new LabTestPickupCollection();
+				BeanUtil.map(request, labTestPickupCollection);
+				labTestPickupCollection.setRequestId(requestId);
+				labTestPickupCollection.setLabTestSamples(request.getLabTestSamples());
+				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+
 			}
+			response = new LabTestPickup();
+			BeanUtil.map(labTestPickupCollection, response);
 		} catch (Exception e) {
-			// TODO: handle exception
+			// TODO Auto-generated catch block
 			logger.warn(e);
 			e.printStackTrace();
-		}*/
+		}
 		return response;
-		
 	}
-	
-	
+
+	private String saveCRN(String locationId, String requestId, Integer length) {
+		CRNCollection crnCollection = new CRNCollection();
+		String crnNumber = DPDoctorUtils.randomString(length);
+		crnCollection.setCrnNumber(crnNumber);
+		crnCollection.setLocationId(new ObjectId(locationId));
+		crnCollection.setRequestId(requestId);
+		crnCollection.setCreatedAt(System.currentTimeMillis());
+		crnCollection.setIsUsed(false);
+		crnCollection = crnRepository.save(crnCollection);
+		return crnNumber;
+	}
+
+	@Override
+	@Transactional
+	public Boolean verifyCRN(String locationId, String crn, String requestId) {
+		boolean status = false;
+		CRNCollection crnCollection = crnRepository.getbylocationIdandCRN(new ObjectId(locationId), crn, requestId);
+		if (crnCollection == null) {
+			throw new BusinessException(ServiceError.NoRecord, "CRN not found");
+		} else {
+			if (crnCollection.getIsUsed().equals(Boolean.TRUE)) {
+				throw new BusinessException(ServiceError.NotAcceptable, "CRN already used");
+			}
+			else
+			{
+				crnCollection.setIsUsed(true);
+				crnCollection.setUsedAt(System.currentTimeMillis());
+				crnRepository.save(crnCollection);
+				status = true;
+			}
+		}
+		return status;
+	}
 
 }

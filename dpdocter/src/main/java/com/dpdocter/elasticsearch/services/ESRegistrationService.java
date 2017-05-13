@@ -2,6 +2,7 @@ package com.dpdocter.elasticsearch.services;
 
 import com.dpdocter.elasticsearch.beans.AdvancedSearch;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
+import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
@@ -21,5 +22,7 @@ public interface ESRegistrationService {
 	void addEditReference(ESReferenceDocument esReferenceDocument);
 	
 	void activateUser(String userId);
+
+	boolean addCollectionBoy(ESCollectionBoyDocument request);
 
 }

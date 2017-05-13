@@ -15,26 +15,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
+import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
+import com.dpdocter.elasticsearch.document.ESCollectionBoyDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
@@ -49,8 +58,11 @@ import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.ForgotPasswordService;
 import com.dpdocter.services.GenerateUniqueUserNameService;
+import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.tokenstore.CustomPasswordEncoder;
+import com.mongodb.DuplicateKeyException;
 
 import common.util.web.DPDoctorUtils;
 
@@ -79,6 +91,15 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Autowired
     private TokenRepository tokenRepository;
+    
+    @Autowired
+    private CustomPasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private CollectionBoyRepository collectionBoyRepository;
+    
+    @Autowired
+    private SMSServices smsServices;
 
     @Value(value = "${mail.signup.subject.activation}")
     private String signupSubject;
@@ -606,5 +627,99 @@ public class SignUpServiceImpl implements SignUpService {
 	return users;
 
     }
+    
+    @Override
+    @Transactional
+    public CollectionBoy signupCollectionBoys(CollectionBoy collectionBoy) {
+		CollectionBoy response = null;
+		ESCollectionBoyDocument esCollectionBoyDocument = null;
+		try {
+			//String localePassword = DPDoctorUtils.randomString(8);
+			// System.out.println(localePassword);
+			UserCollection userCollection = new UserCollection();
+			userCollection.setUserName(UniqueIdInitial.COLLECTION_BOYS.getInitial() + collectionBoy.getMobileNumber());
+			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
+			userCollection.setIsVerified(true);
+			userCollection.setIsActive(true);
+			userCollection.setFirstName(collectionBoy.getName());
+			userCollection.setCreatedTime(new Date());
+			userCollection.setMobileNumber(collectionBoy.getMobileNumber());
+			userCollection.setUserState(UserState.COLLECTION_BOY);
+			userCollection.setSalt(DPDoctorUtils.generateSalt());
+			String salt = new String(userCollection.getSalt());
+			//char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(localePassword.toCharArray());
+			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getMobileNumber().toCharArray());
+			String password = new String(sha3Password);
+			password = passwordEncoder.encodePassword(password, salt);
+			userCollection.setPassword(password.toCharArray());
+			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+			userCollection = userRepository.save(userCollection);
+
+			CollectionBoyCollection collectionBoyCollection = new CollectionBoyCollection();
+			BeanUtil.map(collectionBoy, collectionBoyCollection);
+			//localeCollection.setLocaleUId(UniqueIdInitial.PHARMACY.getInitial() + DPDoctorUtils.generateRandomId());
+
+			/*if (collectionBoyCollection.getAddress() != null) {
+				Address address = collectionBoyCollection.getAddress();
+				List<GeocodedLocation> geocodedLocations = locationServices
+						.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+								? address.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ? address.getLocality() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCity()) ? address.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getState()) ? address.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCountry()) ? address.getCountry() + ", "
+										: "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode()) ? address.getPostalCode()
+										: ""));
+
+				if (geocodedLocations != null && !geocodedLocations.isEmpty())
+					BeanUtil.map(geocodedLocations.get(0), collectionBoyCollection);
+			}*/
+
+			collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
+			if (collectionBoyCollection != null) {
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setType("LOCALE_SIGNUP");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(userCollection.getId());
+				if (userCollection != null)
+					smsDetail.setUserName(collectionBoyCollection.getName());
+				SMS sms = new SMS();
+				sms.setSmsText("Hi ," + collectionBoyCollection.getName()
+						+ " your registration with Healthcoco is completed. Please use provided contact number for login. Your password is "
+						+ collectionBoy.getMobileNumber());
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(collectionBoyCollection.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+				response = new CollectionBoy();
+				BeanUtil.map(collectionBoyCollection, response);
+			}
+			esCollectionBoyDocument = new ESCollectionBoyDocument();
+			BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
+			transnationalService.addResource(collectionBoyCollection.getId(), Resource.COLLECTION_BOY, false);
+			esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
+		} catch (DuplicateKeyException de) {
+			logger.error(de);
+			throw new BusinessException(ServiceError.Unknown, "Mobile number already registerd. Please login");
+		} catch (BusinessException be) {
+			logger.warn(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while contacting Healthcoco");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while contacting Healthcoco");
+		}
+		return response;
+	}
+
 
 }
