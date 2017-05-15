@@ -130,7 +130,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummary.setCreatedTime(new Date());
 				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
-				dischargeSummary.setDischargeId(
+				dischargeSummary.setUniqueEmrId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
 				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
@@ -478,11 +478,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		String pattern = "dd/MM/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		Boolean show = false;
-		
+
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
-		
+
 		if (dischargeSummaryCollection.getPrescriptions() != null) {
 
 			int no = 0;
@@ -498,19 +498,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
 									: "";
 							String genericName = "";
-							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null && !drug.getGenericNames().isEmpty()) {
+							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null
+									&& !drug.getGenericNames().isEmpty()) {
 								for (GenericCode genericCode : drug.getGenericNames()) {
 									if (DPDoctorUtils.anyStringEmpty(genericName))
 										genericName = genericCode.getName();
 									else
 										genericName = genericName + "+" + genericCode.getName();
 								}
-								genericName = "<br><font size='1'><i>" + genericName
-										+ "</i></font>";
+								genericName = "<br><font size='1'><i>" + genericName + "</i></font>";
 							}
 							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
-							drugName = (drugType + drugName) == "" ? "--"
-									: drugType + " " + drugName + genericName;
+							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
 							String durationValue = prescriptionItem.getDuration() != null
 									? (prescriptionItem.getDuration().getValue() != null
 											? prescriptionItem.getDuration().getValue() : "")
@@ -605,9 +604,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showBabyWeight", show);
 		show = false;
 
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getComplaints())) {
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getComplaint())) {
 			show = true;
-			parameters.put("complaints", dischargeSummaryCollection.getComplaints());
+			parameters.put("complaints", dischargeSummaryCollection.getComplaint());
 		}
 		parameters.put("showcompl", show);
 		show = false;
@@ -654,9 +653,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showEcg", show);
 		show = false;
 
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getGeneralExamination())) {
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getGeneralExam())) {
 			show = true;
-			parameters.put("generalExam", dischargeSummaryCollection.getGeneralExamination());
+			parameters.put("generalExam", dischargeSummaryCollection.getGeneralExam());
 		}
 		parameters.put("showGExam", show);
 		show = false;
@@ -673,9 +672,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showXD", show);
 		show = false;
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getHistoryOfPresentComplaints())) {
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaintHistory())) {
 			show = true;
-			parameters.put("historyOfPresentComplaints", dischargeSummaryCollection.getHistoryOfPresentComplaints());
+			parameters.put("historyOfPresentComplaints", dischargeSummaryCollection.getPresentComplaintHistory());
 		}
 		parameters.put("showHPC", show);
 		show = false;
@@ -734,9 +733,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showTG", show);
 		show = false;
 
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSystemicExamination())) {
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSystemExam())) {
 			show = true;
-			parameters.put("systemExam", dischargeSummaryCollection.getSystemicExamination());
+			parameters.put("systemExam", dischargeSummaryCollection.getSystemExam());
 		}
 		parameters.put("showSExam", show);
 		show = false;
@@ -775,9 +774,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showPersonalHistory", show);
 
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaints())) {
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaint())) {
 			show = true;
-			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaints());
+			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaint());
 		}
 		parameters.put("showpresentComplaints", show);
 		show = false;
@@ -799,12 +798,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
 				patient,
-				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getDischargeId() != null
-						? dischargeSummaryCollection.getDischargeId() : "--"),
+				"<b>DIS-ID: </b>" + (dischargeSummaryCollection.getUniqueEmrId() != null
+						? dischargeSummaryCollection.getUniqueEmrId() : "--"),
 				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
 		patientVisitService.generatePrintSetup(parameters, printSettings, dischargeSummaryCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "DISCHARGE-SUMMARY-"
-				+ dischargeSummaryCollection.getDischargeId() + new Date().getTime();
+				+ dischargeSummaryCollection.getUniqueEmrId() + new Date().getTime();
 
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")

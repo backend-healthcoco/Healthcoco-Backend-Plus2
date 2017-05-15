@@ -20,13 +20,13 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String pastHistory;
 	private String familyHistory;
 	private String personalHistory;
-	private String complaints;
-	private String presentComplaints;
-	private String historyOfPresentComplaints;
+	private String complaint;
+	private String presentComplaint;
+	private String presentComplaintHistory;
 	private String menstrualHistory;
 	private String obstetricHistory;
-	private String generalExamination;
-	private String systemicExamination;
+	private String generalExam;
+	private String systemExam;
 	private String observation;
 	private String investigation;
 	private String pa;
@@ -37,7 +37,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String operationNotes;
 	private String treatmentsGiven;
 	private ReviewDates nextReview;
-	private String dischargeId;
+	private String uniqueEmrId;
 	private Date admissionDate;
 	private Date dischargeDate;
 	private String labourNotes;
@@ -170,22 +170,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 		this.obstetricHistory = obstetricHistory;
 	}
 
-	public String getGeneralExamination() {
-		return generalExamination;
-	}
-
-	public void setGeneralExamination(String generalExamination) {
-		this.generalExamination = generalExamination;
-	}
-
-	public String getSystemicExamination() {
-		return systemicExamination;
-	}
-
-	public void setSystemicExamination(String systemicExamination) {
-		this.systemicExamination = systemicExamination;
-	}
-
 	public String getObservation() {
 		return observation;
 	}
@@ -250,14 +234,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 		this.nextReview = nextReview;
 	}
 
-	public String getDischargeId() {
-		return dischargeId;
-	}
-
-	public void setDischargeId(String dischargeId) {
-		this.dischargeId = dischargeId;
-	}
-
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
@@ -302,30 +278,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 		return conditionsAtDischarge;
 	}
 
-	public String getComplaints() {
-		return complaints;
-	}
-
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
-	}
-
-	public String getPresentComplaints() {
-		return presentComplaints;
-	}
-
-	public void setPresentComplaints(String presentComplaints) {
-		this.presentComplaints = presentComplaints;
-	}
-
-	public String getHistoryOfPresentComplaints() {
-		return historyOfPresentComplaints;
-	}
-
-	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
-		this.historyOfPresentComplaints = historyOfPresentComplaints;
-	}
-
 	public String getTreatmentsGiven() {
 		return treatmentsGiven;
 	}
@@ -361,5 +313,72 @@ public class DischargeSummaryResponse extends GenericCollection {
 	public void setPs(String ps) {
 		this.ps = ps;
 	}
+
+	public String getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
+	}
+
+	public String getPresentComplaint() {
+		return presentComplaint;
+	}
+
+	public void setPresentComplaint(String presentComplaint) {
+		this.presentComplaint = presentComplaint;
+	}
+
+	public String getPresentComplaintHistory() {
+		return presentComplaintHistory;
+	}
+
+	public void setPresentComplaintHistory(String presentComplaintHistory) {
+		this.presentComplaintHistory = presentComplaintHistory;
+	}
+
+	public String getGeneralExam() {
+		return generalExam;
+	}
+
+	public void setGeneralExam(String generalExam) {
+		this.generalExam = generalExam;
+	}
+
+	public String getSystemExam() {
+		return systemExam;
+	}
+
+	public void setSystemExam(String systemExam) {
+		this.systemExam = systemExam;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	@Override
+	public String toString() {
+		return "DischargeSummaryResponse [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", prescriptions=" + prescriptions
+				+ ", diagnosis=" + diagnosis + ", pastHistory=" + pastHistory + ", familyHistory=" + familyHistory
+				+ ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", presentComplaint="
+				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", generalExam=" + generalExam
+				+ ", systemExam=" + systemExam + ", observation=" + observation + ", investigation=" + investigation
+				+ ", pa=" + pa + ", ps=" + ps + ", pv=" + pv + ", echo=" + echo + ", xRayDetails=" + xRayDetails
+				+ ", operationNotes=" + operationNotes + ", treatmentsGiven=" + treatmentsGiven + ", nextReview="
+				+ nextReview + ", uniqueEmrId=" + uniqueEmrId + ", admissionDate=" + admissionDate + ", dischargeDate="
+				+ dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight=" + babyWeight + ", babyNotes="
+				+ babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge + ", summary=" + summary
+				+ ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG + ", ecgDetails=" + ecgDetails
+				+ ", holter=" + holter + "]";
+	}
+	
 
 }

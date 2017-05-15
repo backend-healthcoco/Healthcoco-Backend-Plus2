@@ -25,6 +25,18 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private PrescriptionAndAdvice prescriptions;
 	@Field
+	private String complaint;
+	@Field
+	private String presentComplaint;
+	@Field
+	private String presentComplaintHistory;
+	@Field
+	private String generalExam;
+	@Field
+	private String systemExam;
+	@Field
+	private String uniqueEmrId;
+	@Field
 	private String diagnosis;
 	@Field
 	private String pastHistory;
@@ -33,19 +45,9 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private String personalHistory;
 	@Field
-	private String complaints;
-	@Field
-	private String presentComplaints;
-	@Field
-	private String historyOfPresentComplaints;
-	@Field
 	private String menstrualHistory;
 	@Field
 	private String obstetricHistory;
-	@Field
-	private String generalExamination;
-	@Field
-	private String systemicExamination;
 	@Field
 	private String observation;
 	@Field
@@ -66,8 +68,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String treatmentsGiven;
 	@Field
 	private ReviewDates nextReview;
-	@Field
-	private String dischargeId;
 	@Field
 	private Date admissionDate;
 	@Field
@@ -163,8 +163,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	
-
 	public PrescriptionAndAdvice getPrescriptions() {
 		return prescriptions;
 	}
@@ -205,30 +203,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.personalHistory = personalHistory;
 	}
 
-	public String getComplaints() {
-		return complaints;
-	}
-
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
-	}
-
-	public String getPresentComplaints() {
-		return presentComplaints;
-	}
-
-	public void setPresentComplaints(String presentComplaints) {
-		this.presentComplaints = presentComplaints;
-	}
-
-	public String getHistoryOfPresentComplaints() {
-		return historyOfPresentComplaints;
-	}
-
-	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
-		this.historyOfPresentComplaints = historyOfPresentComplaints;
-	}
-
 	public String getMenstrualHistory() {
 		return menstrualHistory;
 	}
@@ -243,22 +217,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setObstetricHistory(String obstetricHistory) {
 		this.obstetricHistory = obstetricHistory;
-	}
-
-	public String getGeneralExamination() {
-		return generalExamination;
-	}
-
-	public void setGeneralExamination(String generalExamination) {
-		this.generalExamination = generalExamination;
-	}
-
-	public String getSystemicExamination() {
-		return systemicExamination;
-	}
-
-	public void setSystemicExamination(String systemicExamination) {
-		this.systemicExamination = systemicExamination;
 	}
 
 	public String getObservation() {
@@ -333,14 +291,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.nextReview = nextReview;
 	}
 
-	public String getDischargeId() {
-		return dischargeId;
-	}
-
-	public void setDischargeId(String dischargeId) {
-		this.dischargeId = dischargeId;
-	}
-
 	public Date getAdmissionDate() {
 		return admissionDate;
 	}
@@ -403,6 +353,54 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setPs(String ps) {
 		this.ps = ps;
+	}
+
+	public String getComplaint() {
+		return complaint;
+	}
+
+	public void setComplaint(String complaint) {
+		this.complaint = complaint;
+	}
+
+	public String getPresentComplaint() {
+		return presentComplaint;
+	}
+
+	public void setPresentComplaint(String presentComplaint) {
+		this.presentComplaint = presentComplaint;
+	}
+
+	public String getPresentComplaintHistory() {
+		return presentComplaintHistory;
+	}
+
+	public void setPresentComplaintHistory(String presentComplaintHistory) {
+		this.presentComplaintHistory = presentComplaintHistory;
+	}
+
+	public String getGeneralExam() {
+		return generalExam;
+	}
+
+	public void setGeneralExam(String generalExam) {
+		this.generalExam = generalExam;
+	}
+
+	public String getSystemExam() {
+		return systemExam;
+	}
+
+	public void setSystemExam(String systemExam) {
+		this.systemExam = systemExam;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 
 }
