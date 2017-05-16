@@ -19,9 +19,11 @@ import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.UserSearchRequest;
+import com.dpdocter.services.TransactionalManagementService;
 
 @Service
 public class ESLocaleServiceImpl implements ESLocaleService {
@@ -32,6 +34,10 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
+	
+	@Autowired
+	private TransactionalManagementService transnationalService;
+
 
 	@Override
 	public boolean addLocale(ESUserLocaleDocument request) {
@@ -40,8 +46,8 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 			if(request.getAddress() != null  && request.getAddress().getLatitude() != null && request.getAddress().getLongitude() != null)request.setGeoPoint(new GeoPoint(request.getAddress().getLatitude(), request.getAddress().getLongitude()));
 			esUserLocaleRepository.save(request);
 			response = true;
-			// transnationalService.addResource(new ObjectId(request.getId()),
-			// Resource.COMPLAINT, true);
+		transnationalService.addResource(new ObjectId(request.getId()),
+			Resource.PHARMACY, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving User Locale");
