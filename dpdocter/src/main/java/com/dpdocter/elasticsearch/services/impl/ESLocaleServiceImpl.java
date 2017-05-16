@@ -37,7 +37,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	public boolean addLocale(ESUserLocaleDocument request) {
 		boolean response = false;
 		try {
-			if(request.getAddress() != null ||( request.getAddress().getLatitude() != null && request.getAddress().getLongitude() != null))request.setGeoPoint(new GeoPoint(request.getAddress().getLatitude(), request.getAddress().getLongitude()));
+			if(request.getAddress() != null  && request.getAddress().getLatitude() != null && request.getAddress().getLongitude() != null)request.setGeoPoint(new GeoPoint(request.getAddress().getLatitude(), request.getAddress().getLongitude()));
 			esUserLocaleRepository.save(request);
 			response = true;
 			// transnationalService.addResource(new ObjectId(request.getId()),
