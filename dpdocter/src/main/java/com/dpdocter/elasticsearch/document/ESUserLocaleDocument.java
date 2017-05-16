@@ -46,7 +46,7 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.String)
 	private Boolean isActive = false;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Boolean)
 	private Boolean isVerified = false;
 
 	@Field(type = FieldType.String)
