@@ -364,7 +364,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	@Scheduled(fixedDelay = 1800000)
+	@Scheduled(fixedDelay = 18000)
 	@Override
 	@Transactional
 	public void checkResources() {
@@ -756,15 +756,15 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
-	
+
 	@Scheduled(cron = "0 30 23 * * *", zone = "IST")
 	@Transactional
-	public void clearAppLinkDetails(){
-		List<AppLinkDetailsCollection> appLinkDetailsCollections=appLinkDetailsRepository.findAll();
-		for(AppLinkDetailsCollection appLinkDetailsCollection:appLinkDetailsCollections){
+	public void clearAppLinkDetails() {
+		List<AppLinkDetailsCollection> appLinkDetailsCollections = appLinkDetailsRepository.findAll();
+		for (AppLinkDetailsCollection appLinkDetailsCollection : appLinkDetailsCollections) {
 			appLinkDetailsCollection.setCount(0);
 		}
-		appLinkDetailsRepository.save(appLinkDetailsCollections);		
+		appLinkDetailsRepository.save(appLinkDetailsCollections);
 	}
 
 	@Scheduled(cron = "0 0/30 12 * * SUN", zone = "IST")
@@ -773,52 +773,59 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	public void updateActivePrescription() {
 		try {
 			List<PrescriptionCollection> prescriptionCollections = prescriptionRepository.findActiveAndDrugExistRx();
-			for(PrescriptionCollection prescriptionCollection : prescriptionCollections){
+			for (PrescriptionCollection prescriptionCollection : prescriptionCollections) {
 				Boolean isActive = false;
-				for(PrescriptionItem prescriptionItem : prescriptionCollection.getItems()){
-					if(prescriptionItem.getDuration() != null && !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue()) && prescriptionItem.getDuration().getDurationUnit() != null){
+				for (PrescriptionItem prescriptionItem : prescriptionCollection.getItems()) {
+					if (prescriptionItem.getDuration() != null
+							&& !DPDoctorUtils.anyStringEmpty(prescriptionItem.getDuration().getValue())
+							&& prescriptionItem.getDuration().getDurationUnit() != null) {
 						int noOfDays = 0;
 						Calendar cal = Calendar.getInstance();
 						Date createdTime = prescriptionCollection.getCreatedTime();
 						cal.setTime(createdTime);
-						
-						switch(prescriptionItem.getDuration().getDurationUnit().getUnit()){
-						
-						case "time(s)": break;
-						case "year(s)": {						
-							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+
+						switch (prescriptionItem.getDuration().getDurationUnit().getUnit()) {
+
+						case "time(s)":
+							break;
+						case "year(s)": {
+							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue()));
 							long diff = cal.getTime().getTime() - new Date().getTime();
 							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break; 
+							break;
 						}
-						case "month(s)": {						
-							cal.add(Calendar.MONTH, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+						case "month(s)": {
+							cal.add(Calendar.MONTH, Integer.parseInt(prescriptionItem.getDuration().getValue()));
 							long diff = cal.getTime().getTime() - new Date().getTime();
 							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break; 
+							break;
 						}
-						case "week(s)": {				
+						case "week(s)": {
 							noOfDays = Integer.parseInt(prescriptionItem.getDuration().getValue()) * 7;
-							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue()));
 							long diff = cal.getTime().getTime() - new Date().getTime();
 							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break; 
+							break;
 						}
-						case "day(s)": {						
-							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
+						case "day(s)": {
+							cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue()));
 							long diff = cal.getTime().getTime() - new Date().getTime();
 							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break; 
+							break;
 						}
-						case "hour(s)" : {						
-//							cal.add(Calendar.YEAR, Integer.parseInt(prescriptionItem.getDuration().getValue())); 						
-//							long diff = cal.getTime().getTime() - new Date().getTime();
-//							noOfDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-							break; 
-						 }
+						case "hour(s)": {
+							// cal.add(Calendar.YEAR,
+							// Integer.parseInt(prescriptionItem.getDuration().getValue()));
+							// long diff = cal.getTime().getTime() - new
+							// Date().getTime();
+							// noOfDays = (int) TimeUnit.DAYS.convert(diff,
+							// TimeUnit.MILLISECONDS);
+							break;
 						}
-						if(noOfDays > 0)isActive = true;
-					}		
+						}
+						if (noOfDays > 0)
+							isActive = true;
+					}
 				}
 				prescriptionCollection.setIsActive(isActive);
 				prescriptionRepository.save(prescriptionCollection);
