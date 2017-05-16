@@ -43,7 +43,7 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.String)
 	private String thumbnailUrl;
 
-	@Field(type = FieldType.String)
+	@Field(type = FieldType.Boolean)
 	private Boolean isActive = false;
 
 	@Field(type = FieldType.Boolean)
