@@ -737,12 +737,7 @@ public class BillingServiceImpl implements BillingService {
 	public DoctorPatientReceipt deleteReceipt(String receiptId, Boolean discarded) {
 		DoctorPatientReceipt response = null;
 		try {
-			Update update = new Update();
-			update.set("discarded", discarded);
-			update.set("updateTime", new Date());
-			DoctorPatientReceiptCollection doctorPatientReceiptCollection = mongoTemplate.findAndModify(
-					new Query(new Criteria("id").is(new ObjectId(receiptId))), update,
-					DoctorPatientReceiptCollection.class);
+			DoctorPatientReceiptCollection doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
 
 			 if(doctorPatientReceiptCollection.getReceiptType().name().equalsIgnoreCase(ReceiptType.INVOICE.name())){
 				 DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository.findOne(doctorPatientReceiptCollection.getInvoiceId());
@@ -768,7 +763,7 @@ public class BillingServiceImpl implements BillingService {
 				 doctorPatientDueAmountRepository.save(amountCollection);
 				 
 				 doctorPatientReceiptCollection.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount());
-				 doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
+				 
 			}else{
 				List<DoctorPatientReceiptCollection> patientReceiptCollections = doctorPatientReceiptRepository.findAllByAdvanceId(doctorPatientReceiptCollection.getId());
 				
@@ -794,6 +789,9 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientReceiptRepository.save(receiptCollection);
 					}
 			}
+			 doctorPatientReceiptCollection.setUpdatedTime(new Date());
+			 doctorPatientReceiptCollection.setDiscarded(discarded);
+			 doctorPatientReceiptRepository.save(doctorPatientReceiptCollection); 
 			if (doctorPatientReceiptCollection != null) {
 				response = new DoctorPatientReceipt();
 				BeanUtil.map(doctorPatientReceiptCollection, response);
@@ -813,7 +811,7 @@ public class BillingServiceImpl implements BillingService {
 		Double response = 0.0;
 		try {
 			Criteria criteria = new Criteria("patientId").is(new ObjectId(patientId)).and("locationId")
-					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
+					.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)).and("discarded").is(false);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
@@ -1189,7 +1187,7 @@ public class BillingServiceImpl implements BillingService {
 
 			DoctorPatientReceipt doctorPatientReceipt = mongoTemplate
 					.aggregate(
-							Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.newAggregation(Aggregation.match(criteria.and("discarded").is(false)),
 									Aggregation.group("patientId").sum("remainingAdvanceAmount")
 											.as("remainingAdvanceAmount")),
 							DoctorPatientReceiptCollection.class, DoctorPatientReceipt.class)
