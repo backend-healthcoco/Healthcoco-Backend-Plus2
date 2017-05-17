@@ -329,16 +329,16 @@ public class LocaleApi {
 	
 	@POST
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
-	public Response<Boolean> orderDrug(OrderDrugsRequest request) {
-		Response<Boolean> response = null;
-		Boolean status = false;
+	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
+		Response<OrderDrugsRequest> response = null;
+		OrderDrugsRequest status = null;
 		try {
 			if(request == null)
 			{
 				throw new BusinessException(ServiceError.InvalidInput ,"Request cannot be null");
 			}
 			status = pharmacyService.orderDrugs(request);
-			response = new Response<Boolean>();
+			response = new Response<OrderDrugsRequest>();
 			response.setData(status);
 
 		} catch (Exception e) {

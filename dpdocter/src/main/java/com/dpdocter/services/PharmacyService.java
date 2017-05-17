@@ -14,7 +14,7 @@ public interface PharmacyService {
 
 	/*Boolean addResponseInQueue(PharmacyResponse request);*/
 
-	Boolean orderDrugs(OrderDrugsRequest request);
+	OrderDrugsRequest orderDrugs(OrderDrugsRequest request);
 
 	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size);
 

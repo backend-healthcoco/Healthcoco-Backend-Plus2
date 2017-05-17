@@ -3158,9 +3158,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("PID").is(PID);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("localPatientName").regex("^" + searchTerm, "i"),
+				criteria = criteria.orOperator(new Criteria("localPatientName").regex("^" + searchTerm),
 						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
 			}
+			
 
 			criteria.and("discarded").is(discarded);
 			if (size > 0) {
