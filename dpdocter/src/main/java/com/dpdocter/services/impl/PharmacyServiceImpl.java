@@ -80,10 +80,10 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private SearchRequestToPharmacyRepository searchRequestToPharmacyRepository;
-	
+
 	@Autowired
 	private OrderDrugRepository orderDrugRepository;
-	
+
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -111,12 +111,25 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	private UserSearchRequest addSearchRequestInCollection(UserSearchRequest request) {
 		UserSearchRequest response = null;
-		SearchRequestFromUserCollection searchRequestFromUserCollection = new SearchRequestFromUserCollection();
-		BeanUtil.map(request, searchRequestFromUserCollection);
-		searchRequestFromUserCollection.setCreatedTime(new Date());
-		searchRequestFromUserCollection = searchRequestFromUserRepository.save(searchRequestFromUserCollection);
-		response = new UserSearchRequest();
-		BeanUtil.map(searchRequestFromUserCollection, response); 
+		try {
+			SearchRequestFromUserCollection searchRequestFromUserCollection = new SearchRequestFromUserCollection();
+			BeanUtil.map(request, searchRequestFromUserCollection);
+			searchRequestFromUserCollection.setCreatedTime(new Date());
+			if (request.getPrescriptionRequest() != null) {
+				searchRequestFromUserCollection.setPrescriptionRequest(request.getPrescriptionRequest());
+			} else {
+				throw new BusinessException(ServiceError.Unknown, "No prescription found ");
+			}
+			searchRequestFromUserCollection = searchRequestFromUserRepository.save(searchRequestFromUserCollection);
+			response = new UserSearchRequest();
+			BeanUtil.map(searchRequestFromUserCollection, response);
+		} catch (
+
+		Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While adding request");
+			throw new BusinessException(ServiceError.Unknown, " Error Occurred While adding request");
+		}
 		return response;
 
 	}
@@ -126,167 +139,167 @@ public class PharmacyServiceImpl implements PharmacyService {
 		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonSQS sqs = new AmazonSQSClient(credentials);
 		sqs.setRegion(Region.getRegion(Regions.US_WEST_2));
-		/*String searchPharmacyRequestQueueURL = "";
-
-		GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest(searchPharmacyRequestQueue);
-		System.out.println(getQueueUrlRequest);
-		if (getQueueUrlRequest != null) {
-			searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-		}
-		if (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {*/
-			CreateQueueRequest createQueueRequest = new CreateQueueRequest(searchPharmacyRequestQueue);
-			String searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
-		//}
-		//CreateQueueRequest createQueueRequest = new CreateQueueRequest(searchPharmacyRequestQueue);
-		//String searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
+		/*
+		 * String searchPharmacyRequestQueueURL = "";
+		 * 
+		 * GetQueueUrlRequest getQueueUrlRequest = new
+		 * GetQueueUrlRequest(searchPharmacyRequestQueue);
+		 * System.out.println(getQueueUrlRequest); if (getQueueUrlRequest !=
+		 * null) { searchPharmacyRequestQueueURL =
+		 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); } if
+		 * (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
+		 */
+		CreateQueueRequest createQueueRequest = new CreateQueueRequest(searchPharmacyRequestQueue);
+		String searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
+		// }
+		// CreateQueueRequest createQueueRequest = new
+		// CreateQueueRequest(searchPharmacyRequestQueue);
+		// String searchPharmacyRequestQueueURL =
+		// sqs.createQueue(createQueueRequest).getQueueUrl();
 		String uniqueRequestId = UniqueIdInitial.PHARMACY_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
 		request.setUniqueRequestId(uniqueRequestId);
-		/*SendMessageRequest sendMessageRequest = new SendMessageRequ
-		MessageAttributeValue messageAttributeValue = new MessageAttributeValue();
-		messageAttributeValue.setStringValue(uniqueRequestId);
-		messageAttributeValue.setDataType("String");
-		sendMessageRequest.addMessageAttributesEntry("uniqueRequestId", messageAttributeValue);*/
-		String messageBody = Jackson.toJsonString(request) ;
-		//sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
+		/*
+		 * SendMessageRequest sendMessageRequest = new SendMessageRequ
+		 * MessageAttributeValue messageAttributeValue = new
+		 * MessageAttributeValue();
+		 * messageAttributeValue.setStringValue(uniqueRequestId);
+		 * messageAttributeValue.setDataType("String");
+		 * sendMessageRequest.addMessageAttributesEntry("uniqueRequestId",
+		 * messageAttributeValue);
+		 */
+		String messageBody = Jackson.toJsonString(request);
+		// sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
 		sqs.sendMessage(new SendMessageRequest(searchPharmacyRequestQueueURL, messageBody));
 	}
 
-	/*@Scheduled(fixedDelay = 9000)
-	@Transactional
-	private void retrieveUserReuqest() {
-		
-		 * TODO : get data from queue, generate uniqueResponseId. if pharmacyId
-		 * is present then retrieve particular pharmacy and send notification to
-		 * pharmacy with prescription request & uniqueRequestId and add in
-		 * collection. If pharmacyId is null then search pharmacy using latLong
-		 * || location approx 30km and send notification to pharmacy with
-		 * presciption request & uniqueRequestId and then add in collection
-		 * After sending request to pharmacy remove that particular request from
-		 * queue
-		 
-		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-		AmazonSQS sqs = new AmazonSQSClient(credentials);
-		try {
-			sqs.setRegion(Region.getRegion(Regions.US_WEST_2));
-			String searchPharmacyRequestQueueURL = "";
-
-			AmazonSQS client = new AmazonSQSClient();
-			GetQueueUrlRequest request = new GetQueueUrlRequest().withQueueName(
-			        "MyQueue").withQueueOwnerAWSAccountId("12345678910");
-			GetQueueUrlResult response = client.getQueueUrl(request);
-			
-			GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest(searchPharmacyRequestQueue);
-			
-			System.out.println(getQueueUrlRequest);
-			if (getQueueUrlRequest != null) {
-				searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-			}
-			//if (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
-				CreateQueueRequest createQueueRequest = new CreateQueueRequest(searchPharmacyRequestQueue);
-				searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
-			//}
-
-			ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(searchPharmacyRequestQueue);
-			receiveMessageRequest.setMaxNumberOfMessages(10);
-			receiveMessageRequest.setWaitTimeSeconds(20);
-			List<Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
-			for (Message message : messages) {
-				System.out.println("  Message");
-				System.out.println("    MessageId:     " + message.getMessageId());
-				System.out.println("    ReceiptHandle: " + message.getReceiptHandle());
-				System.out.println("    MD5OfBody:     " + message.getMD5OfBody());
-				System.out.println("    Body:          " + message.getBody());
-				for (Entry<String, String> entry : message.getAttributes().entrySet()) {
-					System.out.println("  Attribute");
-					System.out.println("    Name:  " + entry.getKey());
-					System.out.println("    Value: " + entry.getValue());
-				}
-
-				UserSearchRequest userSearchRequest = Jackson.fromJsonString(message.getBody(),
-						UserSearchRequest.class);
-				if (DPDoctorUtils.anyStringEmpty(userSearchRequest.getLocaleId())) {
-					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-							.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(userSearchRequest.getLatitude())
-									.lon(userSearchRequest.getLongitude()).distance("30km"))
-							.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true));
-					List<ESUserLocaleDocument> esUserLocaleDocuments = elasticsearchTemplate
-							.queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-									.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC))
-									.build(), ESUserLocaleDocument.class);
-					for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
-						pushNotificationServices.notifyUser(esUserLocaleDocument.getId(), userSearchRequest,
-								RoleEnum.PHARMIST, "You have received request to search Drugs");
-						SearchRequestToPharmacyCollection searchRequestToPharmacy = new SearchRequestToPharmacyCollection();
-						BeanUtil.map(userSearchRequest, searchRequestToPharmacy);
-						String uniqueResponseId = UniqueIdInitial.PHARMACY_RESPONSE.getInitial()
-								+ DPDoctorUtils.generateRandomId();
-						searchRequestToPharmacy.setUniqueResponseId(uniqueResponseId);
-						searchRequestToPharmacyRepository.save(searchRequestToPharmacy);
-					}
-				} else {
-					pushNotificationServices.notifyUser(userSearchRequest.getLocaleId(), userSearchRequest,
-							RoleEnum.PHARMIST, "You have received request to search Drugs");
-					SearchRequestToPharmacyCollection searchRequestToPharmacy = new SearchRequestToPharmacyCollection();
-					BeanUtil.map(userSearchRequest, searchRequestToPharmacy);
-					String uniqueResponseId = UniqueIdInitial.PHARMACY_RESPONSE.getInitial()
-							+ DPDoctorUtils.generateRandomId();
-					searchRequestToPharmacy.setUniqueResponseId(uniqueResponseId);
-					searchRequestToPharmacyRepository.save(searchRequestToPharmacy);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Saving Prescription");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
-		}
-	}
-
-	@Override
-	@Transactional
-	public Boolean addResponseInQueue(PharmacyResponse request) {
-		
-		 * TODO : Whenever pharmacy response is received check replyType if
-		 * replyType = NO, update it in collection else if replyType = YES add
-		 * in response queue, update reply in collection & send notification to
-		 * patient data to be send in notification is : uniqueRequestId,
-		 * pharmacyId, uniqueResponseId(other details if required) After sending
-		 * request to patient remove that particular request from queue
-		 
-		Boolean response = false;
-		String uniqueResponseId = null;
-		try {
-			if (request.getReplyType().equals(ReplyType.YES)) {
-				uniqueResponseId = addPharmacyResponseInQueue(request);
-			}
-			addPharmacyResponseInCollection(request, uniqueResponseId);
-			response = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While adding Search Request In Queue");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While adding  Search Request In Queue");
-		}
-
-		return response;
-	}*/
+	/*
+	 * @Scheduled(fixedDelay = 9000)
+	 * 
+	 * @Transactional private void retrieveUserReuqest() {
+	 * 
+	 * TODO : get data from queue, generate uniqueResponseId. if pharmacyId is
+	 * present then retrieve particular pharmacy and send notification to
+	 * pharmacy with prescription request & uniqueRequestId and add in
+	 * collection. If pharmacyId is null then search pharmacy using latLong ||
+	 * location approx 30km and send notification to pharmacy with presciption
+	 * request & uniqueRequestId and then add in collection After sending
+	 * request to pharmacy remove that particular request from queue
+	 * 
+	 * AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY,
+	 * AWS_SECRET_KEY); AmazonSQS sqs = new AmazonSQSClient(credentials); try {
+	 * sqs.setRegion(Region.getRegion(Regions.US_WEST_2)); String
+	 * searchPharmacyRequestQueueURL = "";
+	 * 
+	 * AmazonSQS client = new AmazonSQSClient(); GetQueueUrlRequest request =
+	 * new GetQueueUrlRequest().withQueueName(
+	 * "MyQueue").withQueueOwnerAWSAccountId("12345678910"); GetQueueUrlResult
+	 * response = client.getQueueUrl(request);
+	 * 
+	 * GetQueueUrlRequest getQueueUrlRequest = new
+	 * GetQueueUrlRequest(searchPharmacyRequestQueue);
+	 * 
+	 * System.out.println(getQueueUrlRequest); if (getQueueUrlRequest != null) {
+	 * searchPharmacyRequestQueueURL =
+	 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); } //if
+	 * (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
+	 * CreateQueueRequest createQueueRequest = new
+	 * CreateQueueRequest(searchPharmacyRequestQueue);
+	 * searchPharmacyRequestQueueURL =
+	 * sqs.createQueue(createQueueRequest).getQueueUrl(); //}
+	 * 
+	 * ReceiveMessageRequest receiveMessageRequest = new
+	 * ReceiveMessageRequest(searchPharmacyRequestQueue);
+	 * receiveMessageRequest.setMaxNumberOfMessages(10);
+	 * receiveMessageRequest.setWaitTimeSeconds(20); List<Message> messages =
+	 * sqs.receiveMessage(receiveMessageRequest).getMessages(); for (Message
+	 * message : messages) { System.out.println("  Message");
+	 * System.out.println("    MessageId:     " + message.getMessageId());
+	 * System.out.println("    ReceiptHandle: " + message.getReceiptHandle());
+	 * System.out.println("    MD5OfBody:     " + message.getMD5OfBody());
+	 * System.out.println("    Body:          " + message.getBody()); for
+	 * (Entry<String, String> entry : message.getAttributes().entrySet()) {
+	 * System.out.println("  Attribute"); System.out.println("    Name:  " +
+	 * entry.getKey()); System.out.println("    Value: " + entry.getValue()); }
+	 * 
+	 * UserSearchRequest userSearchRequest =
+	 * Jackson.fromJsonString(message.getBody(), UserSearchRequest.class); if
+	 * (DPDoctorUtils.anyStringEmpty(userSearchRequest.getLocaleId())) {
+	 * BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+	 * .filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(userSearchRequest.
+	 * getLatitude()) .lon(userSearchRequest.getLongitude()).distance("30km"))
+	 * .must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true));
+	 * List<ESUserLocaleDocument> esUserLocaleDocuments = elasticsearchTemplate
+	 * .queryForList(new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+	 * .withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.
+	 * DESC)) .build(), ESUserLocaleDocument.class); for (ESUserLocaleDocument
+	 * esUserLocaleDocument : esUserLocaleDocuments) {
+	 * pushNotificationServices.notifyUser(esUserLocaleDocument.getId(),
+	 * userSearchRequest, RoleEnum.PHARMIST,
+	 * "You have received request to search Drugs");
+	 * SearchRequestToPharmacyCollection searchRequestToPharmacy = new
+	 * SearchRequestToPharmacyCollection(); BeanUtil.map(userSearchRequest,
+	 * searchRequestToPharmacy); String uniqueResponseId =
+	 * UniqueIdInitial.PHARMACY_RESPONSE.getInitial() +
+	 * DPDoctorUtils.generateRandomId();
+	 * searchRequestToPharmacy.setUniqueResponseId(uniqueResponseId);
+	 * searchRequestToPharmacyRepository.save(searchRequestToPharmacy); } } else
+	 * { pushNotificationServices.notifyUser(userSearchRequest.getLocaleId(),
+	 * userSearchRequest, RoleEnum.PHARMIST,
+	 * "You have received request to search Drugs");
+	 * SearchRequestToPharmacyCollection searchRequestToPharmacy = new
+	 * SearchRequestToPharmacyCollection(); BeanUtil.map(userSearchRequest,
+	 * searchRequestToPharmacy); String uniqueResponseId =
+	 * UniqueIdInitial.PHARMACY_RESPONSE.getInitial() +
+	 * DPDoctorUtils.generateRandomId();
+	 * searchRequestToPharmacy.setUniqueResponseId(uniqueResponseId);
+	 * searchRequestToPharmacyRepository.save(searchRequestToPharmacy); } } }
+	 * catch (Exception e) { e.printStackTrace(); logger.error(e +
+	 * " Error Occurred While Saving Prescription"); throw new
+	 * BusinessException(ServiceError.Unknown,
+	 * "Error Occurred While Saving Prescription"); } }
+	 * 
+	 * @Override
+	 * 
+	 * @Transactional public Boolean addResponseInQueue(PharmacyResponse
+	 * request) {
+	 * 
+	 * TODO : Whenever pharmacy response is received check replyType if
+	 * replyType = NO, update it in collection else if replyType = YES add in
+	 * response queue, update reply in collection & send notification to patient
+	 * data to be send in notification is : uniqueRequestId, pharmacyId,
+	 * uniqueResponseId(other details if required) After sending request to
+	 * patient remove that particular request from queue
+	 * 
+	 * Boolean response = false; String uniqueResponseId = null; try { if
+	 * (request.getReplyType().equals(ReplyType.YES)) { uniqueResponseId =
+	 * addPharmacyResponseInQueue(request); }
+	 * addPharmacyResponseInCollection(request, uniqueResponseId); response =
+	 * true; } catch (Exception e) { e.printStackTrace(); logger.error(e +
+	 * " Error Occurred While adding Search Request In Queue"); throw new
+	 * BusinessException(ServiceError.Unknown,
+	 * "Error Occurred While adding  Search Request In Queue"); }
+	 * 
+	 * return response; }
+	 */
 
 	@Override
 	@Transactional
 	public OrderDrugsRequest orderDrugs(OrderDrugsRequest request) {
-		OrderDrugsRequest response=null;
-		 OrderDrugCollection orderDrugCollection = null;
-		 
+		OrderDrugsRequest response = null;
+		OrderDrugCollection orderDrugCollection = null;
+
 		try {
-			if(request == null)
-			{
+			if (request == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input - request cannot be null");
 			}
-			orderDrugCollection =  new OrderDrugCollection();
+			orderDrugCollection = new OrderDrugCollection();
 			BeanUtil.map(request, orderDrugCollection);
 			orderDrugRepository.save(orderDrugCollection);
-			UserSearchRequest userSearchRequest =  new UserSearchRequest();
+			UserSearchRequest userSearchRequest = new UserSearchRequest();
 			userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
-			pushNotificationServices.notifyUser(request.getLocaleId(), userSearchRequest, RoleEnum.PHARMIST, "Keep my order ready");
-			response=new OrderDrugsRequest();
+			pushNotificationServices.notifyUser(request.getLocaleId(), userSearchRequest, RoleEnum.PHARMIST,
+					"Keep my order ready");
+			response = new OrderDrugsRequest();
 			BeanUtil.map(request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -296,124 +309,121 @@ public class PharmacyServiceImpl implements PharmacyService {
 		return null;
 	}
 
-	/*private void addPharmacyResponseInCollection(PharmacyResponse request, String uniqueResponseId) {
-		SearchRequestToPharmacyCollection searchRequestToPharmacyCollection = searchRequestToPharmacyRepository
-				.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
-						new ObjectId(request.getUserId()));
-		if (searchRequestToPharmacyCollection == null) {
-			throw new BusinessException(ServiceError.NoRecord, "Request not found");
-		}
-		searchRequestToPharmacyCollection.setUniqueResponseId(uniqueResponseId);
-		;
-		searchRequestToPharmacyCollection.setReplyType(request.getReplyType().getReplyType());
-		searchRequestToPharmacyCollection.setUpdatedTime(new Date());
-		searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollection);
-
-	}
-
-	private String addPharmacyResponseInQueue(PharmacyResponse request) {
-		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-		AmazonSQS sqs = new AmazonSQSClient(credentials);
-		sqs.setRegion(Region.getRegion(Regions.US_WEST_2));
-		String searchPharmacyRequestQueueURL = null;
-
-		GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest().withQueueName(pharmacyResponseQueue);
-		
-		if(response != null && response.getQueueUrl() != null && !response.getQueueUrl().isEmpty())
-		{
-			searchPharmacyRequestQueueURL = response.getQueueUrl();
-			//searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-		}
-		GetQueueUrlResult response = sqs.getQueueUrl(getQueueUrlRequest);
-		System.out.println(response);
-		if(response != null && response.getQueueUrl() != null && !response.getQueueUrl().isEmpty())
-		{
-			searchPharmacyRequestQueueURL = response.getQueueUrl();
-			//searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-		}
-		if (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
-			CreateQueueRequest createQueueRequest = new CreateQueueRequest(pharmacyResponseQueue);
-			searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
-		}
-		String uniqueResponseId = UniqueIdInitial.PHARMACY_RESPONSE.getInitial() + DPDoctorUtils.generateRandomId();
-		request.setUniqueRequestId(uniqueResponseId);
-		String messageBody = Jackson.toJsonString(request) ;
-		//sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
-		sqs.sendMessage(new SendMessageRequest(searchPharmacyRequestQueueURL, messageBody));
-		SendMessageRequest sendMessageRequest = new SendMessageRequest();
-		MessageAttributeValue messageAttributeValue = new MessageAttributeValue();
-		messageAttributeValue.setStringValue(uniqueResponseId);
-		messageAttributeValue.setDataType("String");
-		sendMessageRequest.addMessageAttributesEntry("uniqueResponseId", messageAttributeValue);
-		sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
-		sqs.sendMessage(sendMessageRequest);
-		return uniqueResponseId;
-	}
-
-	@Scheduled(fixedDelay = 900000)
-	@Transactional
-	public void retrievePharmacyResponse() {
-		
-		 * TODO : get data from queue, generate uniqueResponseId. if pharmacyId
-		 * is present then retrieve particular pharmacy and send notification to
-		 * pharmacy with prescription request & uniqueRequestId and add in
-		 * collection. If pharmacyId is null then search pharmacy using latLong
-		 * || location approx 30km and send notification to pharmacy with
-		 * presciption request & uniqueRequestId and then add in collection
-		 * After sending request to pharmacy remove that particular request from
-		 * queue
-		 
-		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
-		AmazonSQS sqs = new AmazonSQSClient(credentials);
-		try {
-			sqs.setRegion(Region.getRegion(Regions.US_WEST_2));
-			String searchPharmacyRequestQueueURL = "";
-			
-			GetQueueUrlRequest getQueueUrlRequest = new GetQueueUrlRequest(pharmacyResponseQueue);
-			System.out.println(getQueueUrlRequest);
-			if (getQueueUrlRequest != null) {
-				searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-			}
-			searchPharmacyRequestQueueURL = sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl();
-			if (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
-				CreateQueueRequest createQueueRequest = new CreateQueueRequest(pharmacyResponseQueue);
-				searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
-			}
-			ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(pharmacyResponseQueue);
-			receiveMessageRequest.setMaxNumberOfMessages(10);
-			receiveMessageRequest.setWaitTimeSeconds(20);
-			List<Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
-			for (Message message : messages) {
-				System.out.println("  Message");
-				System.out.println("    MessageId:     " + message.getMessageId());
-				System.out.println("    ReceiptHandle: " + message.getReceiptHandle());
-				System.out.println("    MD5OfBody:     " + message.getMD5OfBody());
-				System.out.println("    Body:          " + message.getBody());
-				for (Entry<String, String> entry : message.getAttributes().entrySet()) {
-					System.out.println("  Attribute");
-					System.out.println("    Name:  " + entry.getKey());
-					System.out.println("    Value: " + entry.getValue());
-				}
-
-				PharmacyResponse pharmacyResponse = Jackson.fromJsonString(message.getBody(), PharmacyResponse.class);
-				UserSearchRequest userSearchRequest = new UserSearchRequest();
-				BeanUtil.map(pharmacyResponse, userSearchRequest);
-
-				if (userSearchRequest.getUserId() == null) {
-					pushNotificationServices.notifyUser(userSearchRequest.getUserId(), userSearchRequest,
-							RoleEnum.PATIENT, "You got new response for your medicine request");
-				}
-				
-				String messageReceiptHandle =messages.get(0).getReceiptHandle(); 
-				sqs.deleteMessage(new DeleteMessageRequest(pharmacyResponseQueue, messageReceiptHandle));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error Occurred While Saving Prescription");
-			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Prescription");
-		}
-	}
-*/
+	/*
+	 * private void addPharmacyResponseInCollection(PharmacyResponse request,
+	 * String uniqueResponseId) { SearchRequestToPharmacyCollection
+	 * searchRequestToPharmacyCollection = searchRequestToPharmacyRepository
+	 * .findByRequestIdandPharmacyId(request.getUniqueRequestId(), new
+	 * ObjectId(request.getLocaleId()), new ObjectId(request.getUserId())); if
+	 * (searchRequestToPharmacyCollection == null) { throw new
+	 * BusinessException(ServiceError.NoRecord, "Request not found"); }
+	 * searchRequestToPharmacyCollection.setUniqueResponseId(uniqueResponseId);
+	 * ; searchRequestToPharmacyCollection.setReplyType(request.getReplyType().
+	 * getReplyType()); searchRequestToPharmacyCollection.setUpdatedTime(new
+	 * Date());
+	 * searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollection)
+	 * ;
+	 * 
+	 * }
+	 * 
+	 * private String addPharmacyResponseInQueue(PharmacyResponse request) {
+	 * AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY,
+	 * AWS_SECRET_KEY); AmazonSQS sqs = new AmazonSQSClient(credentials);
+	 * sqs.setRegion(Region.getRegion(Regions.US_WEST_2)); String
+	 * searchPharmacyRequestQueueURL = null;
+	 * 
+	 * GetQueueUrlRequest getQueueUrlRequest = new
+	 * GetQueueUrlRequest().withQueueName(pharmacyResponseQueue);
+	 * 
+	 * if(response != null && response.getQueueUrl() != null &&
+	 * !response.getQueueUrl().isEmpty()) { searchPharmacyRequestQueueURL =
+	 * response.getQueueUrl(); //searchPharmacyRequestQueueURL =
+	 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); } GetQueueUrlResult
+	 * response = sqs.getQueueUrl(getQueueUrlRequest);
+	 * System.out.println(response); if(response != null &&
+	 * response.getQueueUrl() != null && !response.getQueueUrl().isEmpty()) {
+	 * searchPharmacyRequestQueueURL = response.getQueueUrl();
+	 * //searchPharmacyRequestQueueURL =
+	 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); } if
+	 * (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
+	 * CreateQueueRequest createQueueRequest = new
+	 * CreateQueueRequest(pharmacyResponseQueue); searchPharmacyRequestQueueURL
+	 * = sqs.createQueue(createQueueRequest).getQueueUrl(); } String
+	 * uniqueResponseId = UniqueIdInitial.PHARMACY_RESPONSE.getInitial() +
+	 * DPDoctorUtils.generateRandomId();
+	 * request.setUniqueRequestId(uniqueResponseId); String messageBody =
+	 * Jackson.toJsonString(request) ;
+	 * //sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
+	 * sqs.sendMessage(new SendMessageRequest(searchPharmacyRequestQueueURL,
+	 * messageBody)); SendMessageRequest sendMessageRequest = new
+	 * SendMessageRequest(); MessageAttributeValue messageAttributeValue = new
+	 * MessageAttributeValue();
+	 * messageAttributeValue.setStringValue(uniqueResponseId);
+	 * messageAttributeValue.setDataType("String");
+	 * sendMessageRequest.addMessageAttributesEntry("uniqueResponseId",
+	 * messageAttributeValue);
+	 * sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
+	 * sqs.sendMessage(sendMessageRequest); return uniqueResponseId; }
+	 * 
+	 * @Scheduled(fixedDelay = 900000)
+	 * 
+	 * @Transactional public void retrievePharmacyResponse() {
+	 * 
+	 * TODO : get data from queue, generate uniqueResponseId. if pharmacyId is
+	 * present then retrieve particular pharmacy and send notification to
+	 * pharmacy with prescription request & uniqueRequestId and add in
+	 * collection. If pharmacyId is null then search pharmacy using latLong ||
+	 * location approx 30km and send notification to pharmacy with presciption
+	 * request & uniqueRequestId and then add in collection After sending
+	 * request to pharmacy remove that particular request from queue
+	 * 
+	 * AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY,
+	 * AWS_SECRET_KEY); AmazonSQS sqs = new AmazonSQSClient(credentials); try {
+	 * sqs.setRegion(Region.getRegion(Regions.US_WEST_2)); String
+	 * searchPharmacyRequestQueueURL = "";
+	 * 
+	 * GetQueueUrlRequest getQueueUrlRequest = new
+	 * GetQueueUrlRequest(pharmacyResponseQueue);
+	 * System.out.println(getQueueUrlRequest); if (getQueueUrlRequest != null) {
+	 * searchPharmacyRequestQueueURL =
+	 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); }
+	 * searchPharmacyRequestQueueURL =
+	 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); if
+	 * (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
+	 * CreateQueueRequest createQueueRequest = new
+	 * CreateQueueRequest(pharmacyResponseQueue); searchPharmacyRequestQueueURL
+	 * = sqs.createQueue(createQueueRequest).getQueueUrl(); }
+	 * ReceiveMessageRequest receiveMessageRequest = new
+	 * ReceiveMessageRequest(pharmacyResponseQueue);
+	 * receiveMessageRequest.setMaxNumberOfMessages(10);
+	 * receiveMessageRequest.setWaitTimeSeconds(20); List<Message> messages =
+	 * sqs.receiveMessage(receiveMessageRequest).getMessages(); for (Message
+	 * message : messages) { System.out.println("  Message");
+	 * System.out.println("    MessageId:     " + message.getMessageId());
+	 * System.out.println("    ReceiptHandle: " + message.getReceiptHandle());
+	 * System.out.println("    MD5OfBody:     " + message.getMD5OfBody());
+	 * System.out.println("    Body:          " + message.getBody()); for
+	 * (Entry<String, String> entry : message.getAttributes().entrySet()) {
+	 * System.out.println("  Attribute"); System.out.println("    Name:  " +
+	 * entry.getKey()); System.out.println("    Value: " + entry.getValue()); }
+	 * 
+	 * PharmacyResponse pharmacyResponse =
+	 * Jackson.fromJsonString(message.getBody(), PharmacyResponse.class);
+	 * UserSearchRequest userSearchRequest = new UserSearchRequest();
+	 * BeanUtil.map(pharmacyResponse, userSearchRequest);
+	 * 
+	 * if (userSearchRequest.getUserId() == null) {
+	 * pushNotificationServices.notifyUser(userSearchRequest.getUserId(),
+	 * userSearchRequest, RoleEnum.PATIENT,
+	 * "You got new response for your medicine request"); }
+	 * 
+	 * String messageReceiptHandle =messages.get(0).getReceiptHandle();
+	 * sqs.deleteMessage(new DeleteMessageRequest(pharmacyResponseQueue,
+	 * messageReceiptHandle)); } } catch (Exception e) { e.printStackTrace();
+	 * logger.error(e + " Error Occurred While Saving Prescription"); throw new
+	 * BusinessException(ServiceError.Unknown,
+	 * "Error Occurred While Saving Prescription"); } }
+	 */
 	/*
 	 * AWSCredentials credentials = new
 	 * BasicAWSCredentials("AKIAIHOF7FWQ2ZPMKKHQ",
@@ -455,20 +465,25 @@ public class PharmacyServiceImpl implements PharmacyService {
 	 * 
 	 * Delete Queue sqs.deleteQueue(new DeleteQueueRequest(myQueueUrl));
 	 */
-	
+
 	@Override
 	@Transactional
-	public List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId,int page, int size)
-	{
+	public List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size) {
 		List<SearchRequestFromUserResponse> response = null;
 		// String searchTerm = null;
 		Criteria criteria = new Criteria();
 		try {
-			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = new Criteria().orOperator(new Criteria("localeName").regex("^" + searchTerm, "i"),
-						(new Criteria("contactNumber").regex("^" + searchTerm, "i")));*/
-			/*if (!DPDoctorUtils.anyStringEmpty(contactState))
-				criteria = criteria.and("contactStateType").is(LocaleContactStateType.valueOf(contactState));*/
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(searchTerm)) criteria = new
+			 * Criteria().orOperator(new Criteria("localeName").regex("^" +
+			 * searchTerm, "i"), (new Criteria("contactNumber").regex("^" +
+			 * searchTerm, "i")));
+			 */
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(contactState)) criteria =
+			 * criteria.and("contactStateType").is(LocaleContactStateType.
+			 * valueOf(contactState));
+			 */
 			criteria.and("userId").is(new ObjectId(userId));
 			Aggregation aggregation = null;
 
@@ -482,51 +497,61 @@ public class PharmacyServiceImpl implements PharmacyService {
 			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
 			response = aggregationResults.getMappedResults();
-			for(SearchRequestFromUserResponse searchRequestFromUserResponse : response)
-			{
-				int countForYes = getPharmacyListCountbyOrderHistory(searchRequestFromUserResponse.getUniqueRequestId(), ReplyType.YES.toString());
-				int countForNo = getPharmacyListCountbyOrderHistory(searchRequestFromUserResponse.getUniqueRequestId(), ReplyType.NO.toString());
+			for (SearchRequestFromUserResponse searchRequestFromUserResponse : response) {
+				int countForYes = getPharmacyListCountbyOrderHistory(searchRequestFromUserResponse.getUniqueRequestId(),
+						ReplyType.YES.toString());
+				int countForNo = getPharmacyListCountbyOrderHistory(searchRequestFromUserResponse.getUniqueRequestId(),
+						ReplyType.NO.toString());
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
 			}
-			
+
 		} catch (Exception e) {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown,
-					"Error while getting locale List " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting locale List " + e.getMessage());
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId, String replyType,int page, int size , Double latitude , Double longitude){
+	public List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
+			String replyType, int page, int size, Double latitude, Double longitude) {
 		List<SearchRequestToPharmacyResponse> response = null;
 		// String searchTerm = null;
 		Criteria criteria = new Criteria();
 		try {
-			/*if (!DPDoctorUtils.anyStringEmpty(searchTerm))
-				criteria = new Criteria().orOperator(new Criteria("localeName").regex("^" + searchTerm, "i"),
-						(new Criteria("contactNumber").regex("^" + searchTerm, "i")));*/
-			/*if (!DPDoctorUtils.anyStringEmpty(contactState))
-				criteria = criteria.and("contactStateType").is(LocaleContactStateType.valueOf(contactState));*/
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(searchTerm)) criteria = new
+			 * Criteria().orOperator(new Criteria("localeName").regex("^" +
+			 * searchTerm, "i"), (new Criteria("contactNumber").regex("^" +
+			 * searchTerm, "i")));
+			 */
+			/*
+			 * if (!DPDoctorUtils.anyStringEmpty(contactState)) criteria =
+			 * criteria.and("contactStateType").is(LocaleContactStateType.
+			 * valueOf(contactState));
+			 */
 			criteria.and("userId").is(new ObjectId(userId));
 			criteria.and("uniqueRequestId").is(uniqueRequestId);
-			
+
 			if (!DPDoctorUtils.anyStringEmpty(replyType))
 				criteria = criteria.and("replyType").is(replyType);
 			Aggregation aggregation = null;
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("locale_cl", "localeId", "_id", "locale"), Aggregation.unwind("locale"), Aggregation.skip((page) * size),
-						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("locale_cl", "localeId", "_id", "locale"), Aggregation.unwind("locale"),
+						Aggregation.skip((page) * size), Aggregation.limit(size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("locale_cl", "localeId", "_id", "locale"), Aggregation.unwind("locale"),
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("locale_cl", "localeId", "_id", "locale"), Aggregation.unwind("locale"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
-			AggregationResults<SearchRequestToPharmacyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					SearchRequestToPharmacyCollection.class, SearchRequestToPharmacyResponse.class);
+			AggregationResults<SearchRequestToPharmacyResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, SearchRequestToPharmacyCollection.class, SearchRequestToPharmacyResponse.class);
 			response = aggregationResults.getMappedResults();
 			if (latitude != null && longitude != null) {
 				for (SearchRequestToPharmacyResponse pharmacyResponse : response) {
@@ -542,17 +567,14 @@ public class PharmacyServiceImpl implements PharmacyService {
 		} catch (Exception e) {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown,
-					"Error while getting locale List " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting locale List " + e.getMessage());
 		}
 		return response;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId,String replyType)
-	{
+	public Integer getPharmacyListCountbyOrderHistory(String uniqueRequestId, String replyType) {
 		Integer response = 0;
 		// String searchTerm = null;
 		try {
@@ -560,11 +582,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 		} catch (Exception e) {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown,
-					"Error while getting locale List " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting locale List " + e.getMessage());
 		}
 		return response;
 	}
-	
 
 }
