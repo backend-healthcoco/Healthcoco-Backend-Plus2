@@ -43,7 +43,6 @@ public class DoctorPatientReceiptCollection extends GenericCollection {
 	@Field
 	private List<AdvanceReceiptIdWithAmount> advanceReceiptIdWithAmounts; // For
 																			// ReceiptType=ADVANCE
-
 	@Field
 	private ObjectId invoiceId; // For ReceiptType=INVOICE
 
