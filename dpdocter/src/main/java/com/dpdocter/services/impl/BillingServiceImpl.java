@@ -386,31 +386,34 @@ public class BillingServiceImpl implements BillingService {
 			 doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 			 
 			 List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
-			 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
-				 doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() + receiptCollection.getAmountPaid() + receiptCollection.getUsedAdvanceAmount());
+			 if(doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()){
+				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
+					 doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() + receiptCollection.getAmountPaid() + receiptCollection.getUsedAdvanceAmount());
+					 
+					if(receiptCollection.getAdvanceReceiptIdWithAmounts() != null && !receiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty())
+					 for(AdvanceReceiptIdWithAmount receiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
+						 DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository.findOne(receiptIdWithAmount.getReceiptId());
+						 patientReceiptCollection.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount() + receiptIdWithAmount.getUsedAdvanceAmount());
+						 patientReceiptCollection.setUpdatedTime(new Date());
+						 doctorPatientReceiptRepository.save(patientReceiptCollection);
+					 }
+					 DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(receiptCollection.getId());
+					 patientLedgerCollection.setDiscarded(discarded);
+					 patientLedgerCollection.setUpdatedTime(new Date());
+					 doctorPatientLedgerRepository.save(patientLedgerCollection);
+					 
+					 receiptCollection.setUpdatedTime(new Date());
+					 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+					 receiptCollection.setDiscarded(discarded);
+				}
 				 
-				 for(AdvanceReceiptIdWithAmount receiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
-					 DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository.findOne(receiptIdWithAmount.getReceiptId());
-					 patientReceiptCollection.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount() + receiptIdWithAmount.getUsedAdvanceAmount());
-					 patientReceiptCollection.setUpdatedTime(new Date());
-					 doctorPatientReceiptRepository.save(patientReceiptCollection);
+				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
+					 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+					 receiptCollection.setUpdatedTime(new Date());
 				 }
-				 DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(receiptCollection.getId());
-				 patientLedgerCollection.setDiscarded(discarded);
-				 patientLedgerCollection.setUpdatedTime(new Date());
-				 doctorPatientLedgerRepository.save(patientLedgerCollection);
 				 
-				 receiptCollection.setUpdatedTime(new Date());
-				 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-				 receiptCollection.setDiscarded(discarded);
-			}
-			 
-			 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
-				 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-				 receiptCollection.setUpdatedTime(new Date());
+				 doctorPatientReceiptRepository.save(doPatientReceiptCollections);	 
 			 }
-			 
-			 doctorPatientReceiptRepository.save(doPatientReceiptCollections);
 			 doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.save(doctorPatientInvoiceCollection);
 			 
 			 DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
@@ -747,12 +750,13 @@ public class BillingServiceImpl implements BillingService {
 				 receiptInvoiceCollection.setUpdatedTime(new Date());
 				 doctorPatientInvoiceRepository.save(receiptInvoiceCollection);
 				 
-				 for(AdvanceReceiptIdWithAmount receiptIdWithAmount : doctorPatientReceiptCollection.getAdvanceReceiptIdWithAmounts()){
-					 DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository.findOne(receiptIdWithAmount.getReceiptId());
-					 patientReceiptCollection.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount() + receiptIdWithAmount.getUsedAdvanceAmount());
-					 patientReceiptCollection.setUpdatedTime(new Date());
-					 doctorPatientReceiptRepository.save(patientReceiptCollection);
-				 }
+				 if(doctorPatientReceiptCollection.getAdvanceReceiptIdWithAmounts() != null && !doctorPatientReceiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty())
+					 for(AdvanceReceiptIdWithAmount receiptIdWithAmount : doctorPatientReceiptCollection.getAdvanceReceiptIdWithAmounts()){
+						 DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository.findOne(receiptIdWithAmount.getReceiptId());
+						 patientReceiptCollection.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount() + receiptIdWithAmount.getUsedAdvanceAmount());
+						 patientReceiptCollection.setUpdatedTime(new Date());
+						 doctorPatientReceiptRepository.save(patientReceiptCollection);
+					 }
 				 DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(doctorPatientReceiptCollection.getId());
 				 patientLedgerCollection.setDiscarded(discarded);
 				 patientLedgerCollection.setUpdatedTime(new Date());
@@ -767,26 +771,28 @@ public class BillingServiceImpl implements BillingService {
 				 doctorPatientReceiptRepository.save(doctorPatientReceiptCollection);
 			}else{
 				List<DoctorPatientReceiptCollection> patientReceiptCollections = doctorPatientReceiptRepository.findAllByAdvanceId(doctorPatientReceiptCollection.getId());
-				for(DoctorPatientReceiptCollection receiptCollection : patientReceiptCollections){
-					List<AdvanceReceiptIdWithAmount> removeCollections = new ArrayList<AdvanceReceiptIdWithAmount>();
-					Double usedAdvanceAmt = 0.0;
-					for(AdvanceReceiptIdWithAmount advanceReceiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
-						if(advanceReceiptIdWithAmount.getReceiptId().toString().equalsIgnoreCase(doctorPatientReceiptCollection.getId().toString())){
-							usedAdvanceAmt = usedAdvanceAmt + advanceReceiptIdWithAmount.getUsedAdvanceAmount();
-							removeCollections.add(advanceReceiptIdWithAmount);
-						}
-					}
-					receiptCollection.getAdvanceReceiptIdWithAmounts().remove(removeCollections);
-					receiptCollection.setUpdatedTime(new Date());
 				
-					DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository.findOne(receiptCollection.getInvoiceId());
-					receiptInvoiceCollection.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount() + usedAdvanceAmt);
-					receiptInvoiceCollection.setUpdatedTime(new Date());
-					doctorPatientInvoiceRepository.save(receiptInvoiceCollection);
-					 
-					receiptCollection.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount());
-					doctorPatientReceiptRepository.save(receiptCollection);
-				}
+				if(patientReceiptCollections!= null && !patientReceiptCollections.isEmpty())
+					for(DoctorPatientReceiptCollection receiptCollection : patientReceiptCollections){
+						List<AdvanceReceiptIdWithAmount> removeCollections = new ArrayList<AdvanceReceiptIdWithAmount>();
+						Double usedAdvanceAmt = 0.0;
+						for(AdvanceReceiptIdWithAmount advanceReceiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
+							if(advanceReceiptIdWithAmount.getReceiptId().toString().equalsIgnoreCase(doctorPatientReceiptCollection.getId().toString())){
+								usedAdvanceAmt = usedAdvanceAmt + advanceReceiptIdWithAmount.getUsedAdvanceAmount();
+								removeCollections.add(advanceReceiptIdWithAmount);
+							}
+						}
+						receiptCollection.getAdvanceReceiptIdWithAmounts().remove(removeCollections);
+						receiptCollection.setUpdatedTime(new Date());
+					
+						DoctorPatientInvoiceCollection receiptInvoiceCollection = doctorPatientInvoiceRepository.findOne(receiptCollection.getInvoiceId());
+						receiptInvoiceCollection.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount() + usedAdvanceAmt);
+						receiptInvoiceCollection.setUpdatedTime(new Date());
+						doctorPatientInvoiceRepository.save(receiptInvoiceCollection);
+						 
+						receiptCollection.setBalanceAmount(receiptInvoiceCollection.getBalanceAmount());
+						doctorPatientReceiptRepository.save(receiptCollection);
+					}
 			}
 			if (doctorPatientReceiptCollection != null) {
 				response = new DoctorPatientReceipt();
