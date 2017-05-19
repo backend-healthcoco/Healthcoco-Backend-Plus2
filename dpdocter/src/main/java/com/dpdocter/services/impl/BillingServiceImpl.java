@@ -18,7 +18,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
@@ -55,7 +54,6 @@ import com.dpdocter.request.DoctorPatientInvoiceAndReceiptRequest;
 import com.dpdocter.request.DoctorPatientReceiptRequest;
 import com.dpdocter.response.AmountResponse;
 import com.dpdocter.response.DoctorPatientInvoiceAndReceiptResponse;
-import com.dpdocter.response.DoctorPatientInvoiceResponse;
 import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.response.DoctorPatientReceiptAddEditResponse;
 import com.dpdocter.response.InvoiceItemResponse;
@@ -385,14 +383,14 @@ public class BillingServiceImpl implements BillingService {
 			 doctorPatientInvoiceCollection.setDiscarded(discarded);
 			 doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 			 
-//			 Double balance
+			 Double advanceAmount = 0.0;
 			 List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
 			 if(doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()){
 				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
-					 doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount() + receiptCollection.getAmountPaid() + receiptCollection.getUsedAdvanceAmount());
 					 
 					if(receiptCollection.getAdvanceReceiptIdWithAmounts() != null && !receiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty())
-					 for(AdvanceReceiptIdWithAmount receiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
+						advanceAmount = advanceAmount + receiptCollection.getUsedAdvanceAmount();
+						for(AdvanceReceiptIdWithAmount receiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
 						 DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository.findOne(receiptIdWithAmount.getReceiptId());
 						 patientReceiptCollection.setRemainingAdvanceAmount(patientReceiptCollection.getRemainingAdvanceAmount() + receiptIdWithAmount.getUsedAdvanceAmount());
 						 patientReceiptCollection.setUpdatedTime(new Date());
@@ -424,7 +422,7 @@ public class BillingServiceImpl implements BillingService {
 			 
 			 DoctorPatientDueAmountCollection amountCollection = doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(), doctorPatientInvoiceCollection.getHospitalId());
 			 amountCollection.setUpdatedTime(new Date());
-			 amountCollection.setDueAmount(amountCollection.getDueAmount() - doctorPatientInvoiceCollection.getGrandTotal());
+			 amountCollection.setDueAmount(amountCollection.getDueAmount() - doctorPatientInvoiceCollection.getGrandTotal() - advanceAmount);
 			 doctorPatientDueAmountRepository.save(amountCollection);
 			 
 			 if (doctorPatientInvoiceCollection != null) {
