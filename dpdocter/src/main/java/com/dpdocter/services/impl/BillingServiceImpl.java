@@ -404,14 +404,14 @@ public class BillingServiceImpl implements BillingService {
 					 doctorPatientLedgerRepository.save(patientLedgerCollection);
 					 
 					 receiptCollection.setUpdatedTime(new Date());
-					 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+//					 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					 receiptCollection.setDiscarded(discarded);
 				}
 				 
-				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
-					 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
-					 receiptCollection.setUpdatedTime(new Date());
-				 }
+//				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
+//					 receiptCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
+//					 receiptCollection.setUpdatedTime(new Date());
+//				 }
 				 
 				 doctorPatientReceiptRepository.save(doPatientReceiptCollections);	 
 			 }
@@ -424,7 +424,7 @@ public class BillingServiceImpl implements BillingService {
 			 
 			 DoctorPatientDueAmountCollection amountCollection = doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(), doctorPatientInvoiceCollection.getHospitalId());
 			 amountCollection.setUpdatedTime(new Date());
-			 amountCollection.setDueAmount(amountCollection.getDueAmount() + doctorPatientInvoiceCollection.getBalanceAmount());
+			 amountCollection.setDueAmount(amountCollection.getDueAmount() - doctorPatientInvoiceCollection.getGrandTotal());
 			 doctorPatientDueAmountRepository.save(amountCollection);
 			 
 			 if (doctorPatientInvoiceCollection != null) {
