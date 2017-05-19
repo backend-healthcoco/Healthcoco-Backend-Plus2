@@ -2374,6 +2374,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		return band;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void createEyePrescription(JasperDesign jasperDesign, Map<String, Object> parameters,
 			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) {
 
@@ -2771,6 +2772,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 					.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addEyePrescriptionItem(String value, int xPoint, int dataWidth, boolean isBold,
 			HorizontalTextAlignEnum horzontalAlignEnum, VerticalTextAlignEnum verticalAlignEnum, int titleFontSize,
 			JRDesignBand band, int titleWidth, int rectangleXPoint, int rectangleDataWidth) {
@@ -2797,6 +2799,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.addElement(jrDesignTextField);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addEyePrescription(String value, int xPoint, int dataWidth, boolean isBold,
 			HorizontalTextAlignEnum horzontalAlignEnum, VerticalTextAlignEnum verticalAlignEnum, int titleFontSize,
 			JRDesignBand band, int titleWidth, int rectangleXPoint, int rectangleDataWidth) {
@@ -3186,7 +3189,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{title}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{time}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
