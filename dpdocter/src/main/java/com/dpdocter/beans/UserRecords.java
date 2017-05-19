@@ -18,7 +18,25 @@ public class UserRecords extends GenericCollection {
 
 	private String explanation;
 
-	private String userId;
+	private String patientId;
+
+	private String doctorId;
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
 	private Boolean isVisible = true;
 
@@ -72,16 +90,6 @@ public class UserRecords extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	
-
 	public Boolean getIsVisible() {
 		return isVisible;
 	}
@@ -98,5 +106,4 @@ public class UserRecords extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	
 }

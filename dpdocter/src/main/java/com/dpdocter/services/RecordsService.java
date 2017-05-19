@@ -72,8 +72,8 @@ public interface RecordsService {
 
 	UserRecords getUserRecordById(String recordId);
 
-	List<UserRecords> getUserRecordsByuserId(String userId, int page, int size, String updatedTime, Boolean discarded,
-			Boolean isDoctor);
+	List<UserRecords> getUserRecordsByuserId(String patientId,String doctorId, int page, int size, String updatedTime,
+			Boolean discarded);
 
 	UserAllowanceDetails getUserRecordAllowance(String userId, String mobileNumber);
 

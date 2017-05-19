@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -18,6 +17,7 @@ public class UserRecordsCollection extends GenericCollection {
 
 	@Field
 	private String uniqueEmrId;
+
 	@Field
 	private List<RecordsFile> recordsFiles;
 
@@ -27,11 +27,11 @@ public class UserRecordsCollection extends GenericCollection {
 	@Field
 	private String explanation;
 
-	@Indexed
-	private ObjectId userId;
+	@Field
+	private String patientId;
 
 	@Field
-	private Double fileSizeInMB = 0.0;
+	private String doctorId;
 
 	@Field
 	private Boolean isVisible = true;
@@ -71,20 +71,20 @@ public class UserRecordsCollection extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	public ObjectId getUserId() {
-		return userId;
+	public String getPatientId() {
+		return patientId;
 	}
 
-	public void setUserId(ObjectId userId) {
-		this.userId = userId;
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
-	public Double getFileSizeInMB() {
-		return fileSizeInMB;
+	public String getDoctorId() {
+		return doctorId;
 	}
 
-	public void setFileSizeInMB(Double fileSizeInMB) {
-		this.fileSizeInMB = fileSizeInMB;
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
 	}
 
 	public Boolean getIsVisible() {
@@ -110,7 +110,5 @@ public class UserRecordsCollection extends GenericCollection {
 	public void setRecordsFiles(List<RecordsFile> recordsFiles) {
 		this.recordsFiles = recordsFiles;
 	}
-
-	
 
 }

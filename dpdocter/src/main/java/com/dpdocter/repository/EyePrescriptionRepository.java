@@ -9,11 +9,11 @@ import com.dpdocter.collections.EyePrescriptionCollection;
 
 public interface EyePrescriptionRepository extends MongoRepository<EyePrescriptionCollection, ObjectId>{
 
-	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3}", count = true)
+	@Query(value = "{'patientId' : ?0, 'doctorId' : ?1, 'locationId' : ?2, 'hospitalId' : ?3,'discarded' : false}", count = true)
 	Integer countByPatientIdDoctorLocationHospital(ObjectId patientId, ObjectId doctorId, ObjectId locationId,
 			ObjectId hospitalId);
 
-	@Query(value = "{'patientId' : ?0}", count = true)
+	@Query(value = "{'patientId' : ?0,'discarded' : false}", count = true)
 	Integer countByPatientId(ObjectId patientId);
 	
 }

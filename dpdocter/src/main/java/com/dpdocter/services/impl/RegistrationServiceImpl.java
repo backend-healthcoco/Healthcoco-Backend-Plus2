@@ -408,7 +408,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				patientCollection.setRegistrationDate(new Date().getTime());
 
 			patientCollection.setCreatedTime(createdTime);
-			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(), patientCollection.getRegistrationDate()));
+			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
+					patientCollection.getRegistrationDate()));
 
 			// if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(request.getRole())){
 			List<ObjectId> consultantDoctorIds = new ArrayList<ObjectId>();
@@ -736,7 +737,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (!DPDoctorUtils.anyStringEmpty(patientCollection.getPID())) {
 					patientCollection.setPID(patientCollection.getPID());
 				} else {
-					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(), patientCollection.getRegistrationDate()));
+					patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
+							patientCollection.getRegistrationDate()));
 				}
 				if (!DPDoctorUtils.anyStringEmpty(request.getProfession())) {
 					patientCollection.setProfession(request.getProfession());
@@ -3157,10 +3159,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("PID").is(PID);
 
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("localPatientName").regex("^" + searchTerm),
+				criteria = criteria.orOperator(new Criteria("localPatientName").regex(searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
 			}
-			
 
 			criteria.and("discarded").is(discarded);
 			if (size > 0) {

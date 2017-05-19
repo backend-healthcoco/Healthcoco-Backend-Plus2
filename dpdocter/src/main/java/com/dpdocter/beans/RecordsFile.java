@@ -12,7 +12,7 @@ public class RecordsFile {
 
 	private String recordsType;
 
-	private Double fileSizeInMB;
+	private Double fileSizeInMB=0.0;
 
 	public String getFileId() {
 		return fileId;

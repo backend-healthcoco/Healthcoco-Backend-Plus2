@@ -1677,36 +1677,40 @@ public class RecordsServiceImpl implements RecordsService {
 		UserRecords response = null;
 		try {
 			Date createdTime = new Date();
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+			UserCollection userCollection = null;
+			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid User Id");
 			}
-			UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
-					.findByUserId(new ObjectId(request.getUserId()));
-			if (userAllowanceDetailsCollection == null) {
-				userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
-				Aggregation aggregation = Aggregation
-						.newAggregation(
-								Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
-								new CustomAggregationOperation(
-										new BasicDBObject("$redact",
-												new BasicDBObject("$cond",
-														new BasicDBObject()
-																.append("if",
-																		new BasicDBObject("$eq",
-																				Arrays.asList("$emailAddress",
-																						"$userName")))
-																.append("then", "$$PRUNE").append("else", "$$KEEP")))));
+			if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+				userAllowanceDetailsCollection = userAllowanceDetailsRepository
+						.findByUserId(new ObjectId(request.getPatientId()));
+				if (userAllowanceDetailsCollection == null) {
+					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
+					Aggregation aggregation = Aggregation.newAggregation(
+							Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
+							new CustomAggregationOperation(
+									new BasicDBObject("$redact",
+											new BasicDBObject("$cond",
+													new BasicDBObject()
+															.append("if",
+																	new BasicDBObject("$eq",
+																			Arrays.asList("$emailAddress",
+																					"$userName")))
+															.append("then", "$$PRUNE").append("else", "$$KEEP")))));
 
-				List<UserCollection> userCollections = mongoTemplate
-						.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
-				Collection<ObjectId> userIds = CollectionUtils.collect(userCollections,
-						new BeanToPropertyValueTransformer("id"));
-				userAllowanceDetailsCollection.setUserIds(new ArrayList<>(userIds));
-			}
+					List<UserCollection> userCollections = mongoTemplate
+							.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+					Collection<ObjectId> userIds = CollectionUtils.collect(userCollections,
+							new BeanToPropertyValueTransformer("id"));
+					userAllowanceDetailsCollection.setUserIds(new ArrayList<>(userIds));
+				}
 
-			if (userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() <= 0) {
-				throw new BusinessException(ServiceError.Unknown, "No Space left");
+				if (userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() <= 0) {
+					throw new BusinessException(ServiceError.Unknown, "No Space left");
+				}
 			}
 			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
@@ -1718,18 +1722,24 @@ public class RecordsServiceImpl implements RecordsService {
 			BeanUtil.map(request, userRecordsCollection);
 			RecordsFile recordsFile = null;
 			if (file != null) {
-				String path = "userRecords" + File.separator + request.getUserId();
+				String path = "userRecords" + File.separator + request.getPatientId();
 				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
 				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
 				String recordfileLabel = fileName;
-				Double fileSizeInMB = fileManager.saveRecord(file, recordPath,
-						userAllowanceDetailsCollection.getAvailableRecordsSizeInMB(), true);
+				Double fileSizeInMB = 0.0;
+				if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+					fileSizeInMB = fileManager.saveRecord(file, recordPath,
+							userAllowanceDetailsCollection.getAvailableRecordsSizeInMB(), true);
 
-				userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
-						userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() - fileSizeInMB);
-				userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+					userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
+							userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() - fileSizeInMB);
+					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+				} else {
+					fileSizeInMB = fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
+				}
+
 				recordsFile = new RecordsFile();
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
 				recordsFile.setFileSizeInMB(fileSizeInMB);
@@ -1808,23 +1818,28 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 
 	@Override
-	public List<UserRecords> getUserRecordsByuserId(String userId, int page, int size, String updatedTime,
-			Boolean discarded, Boolean isDoctor) {
+	public List<UserRecords> getUserRecordsByuserId(String patientId, String doctorId, int page, int size,
+			String updatedTime, Boolean discarded) {
 		List<UserRecords> response = null;
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
-			ObjectId userObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(userId))
-				userObjectId = new ObjectId(userId);
+			ObjectId patientObjectId = null;
+			ObjectId doctorObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("userId")
-					.is(userObjectId);
+					.is(patientObjectId);
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorObjectId = new ObjectId(doctorId);
+				criteria.and("doctorId").is(doctorObjectId);
+			} else {
+				criteria.and("doctorId").exists(false);
+			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
-			if (isDoctor)
-				criteria.and("isVisible").is(true);
 			Aggregation aggregation = null;
 
 			if (size > 0)

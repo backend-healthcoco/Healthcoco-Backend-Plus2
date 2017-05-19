@@ -404,7 +404,7 @@ public class RecordsApi {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		UserRecords request = data.getValueAs(UserRecords.class);
 
-		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId()) || file == null) {
+		if (request == null || file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
@@ -441,28 +441,27 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
-	public Response<UserRecords> getUserRecordsByuserId(@PathParam("userId") String userId,
+	public Response<UserRecords> getUserRecordsByuserId(@PathParam("patientId") String patientId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded,
-			@DefaultValue("false") @QueryParam("isDoctor") Boolean isDoctor) {
-		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
 			logger.warn("User Id Cannot Be Empty");
-			throw new BusinessException(ServiceError.InvalidInput, "User Id Cannot Be Empty");
-		} else if (isDoctor && DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
+		} else if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Doctor Id, locationId or HospitalId Cannot Be Empty");
 		}
 		Response<UserRecords> response = new Response<UserRecords>();
-		if (isDoctor) {
-			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, userId);
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
 			if (!isOTPVerified) {
 				return response;
 			}
 		}
-		List<UserRecords> records = recordsService.getUserRecordsByuserId(userId, page, size, updatedTime, discarded,
-				isDoctor);
+		List<UserRecords> records = recordsService.getUserRecordsByuserId(patientId, doctorId, page, size, updatedTime,
+				discarded);
 		response.setDataList(records);
 		return response;
 
