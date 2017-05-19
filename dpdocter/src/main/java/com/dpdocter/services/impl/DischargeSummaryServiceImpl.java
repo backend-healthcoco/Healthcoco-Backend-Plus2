@@ -22,25 +22,24 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.Drug;
-import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.PrescriptionAndAdvice;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
-import com.dpdocter.beans.PrescriptionItemAndAdvice;
-import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -48,13 +47,17 @@ import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
-import com.dpdocter.request.DrugAddEditRequest;
+import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.response.PrescriptionAddEditResponseDetails;
+import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
@@ -74,6 +77,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private DischargeSummaryRepository dischargeSummaryRepository;
 
 	@Autowired
+	private AppointmentService appointmentService;
+
+	@Autowired
+	private PatientVisitService patientTrackService;
+
+	@Autowired
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
@@ -81,6 +90,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private PrescriptionRepository prescriptionRepository;
 
 	@Autowired
 	private EmailTackService emailTackService;
@@ -121,11 +133,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 		DischargeSummaryResponse response = null;
 		try {
-			List<PrescriptionItemDetail> itemDetails = null;
-			PrescriptionItemAndAdvice itemAndAdvice = null;
-			DischargeSummaryCollection dischargeSummaryCollection = null;
-			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
 
+			Appointment appointment = null;
+			Prescription prescription = null;
+			DischargeSummaryCollection dischargeSummaryCollection = null;
+			PrescriptionAddEditResponseDetails addEditResponseDetails = null;
+			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
 			if (dischargeSummary.getId() == null) {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummary.setCreatedTime(new Date());
@@ -138,80 +151,56 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			if (dischargeSummaryCollection != null) {
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
-
 				if (dischargeSummary.getPrescriptions() != null) {
-					PrescriptionAndAdvice prescription = new PrescriptionAndAdvice();
-					BeanUtil.map(dischargeSummary.getPrescriptions(), prescription);
-					itemAndAdvice = new PrescriptionItemAndAdvice();
-					List<PrescriptionItem> items = null;
-					for (PrescriptionItem item : prescription.getItems()) {
-						PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-						if (item.getDrugId() != null) {
-							List<DrugDirection> directions = null;
-							if (item.getDirection() != null && !item.getDirection().isEmpty()) {
-								for (DrugDirection drugDirection : item.getDirection()) {
-									if (drugDirection != null && !DPDoctorUtils.anyStringEmpty(drugDirection.getId())) {
-										if (directions == null)
-											directions = new ArrayList<DrugDirection>();
-										directions.add(drugDirection);
-									}
-								}
-								item.setDirection(directions);
-							}
-							if (item.getDuration() != null && item.getDuration().getDurationUnit() != null) {
-								if (item.getDuration().getDurationUnit().getId() == null)
-									item.setDuration(null);
-							} else {
-								item.setDuration(null);
-							}
-							if (items == null) {
-								items = new ArrayList<PrescriptionItem>();
-								itemDetails = new ArrayList<PrescriptionItemDetail>();
-							}
-							BeanUtil.map(item, prescriptionItemDetail);
-							DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-							Drug drug = new Drug();
-
-							if (drugCollection != null) {
-								BeanUtil.map(drugCollection, drug);
-								DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
-								BeanUtil.map(drugCollection, drugAddEditRequest);
-								drugAddEditRequest.setDoctorId(doctor.getId().toString());
-								drugAddEditRequest.setHospitalId(dischargeSummary.getHospitalId());
-								drugAddEditRequest.setLocationId(dischargeSummary.getLocationId());
-								drugAddEditRequest.setDirection(item.getDirection());
-								drugAddEditRequest.setDuration(item.getDuration());
-								drugAddEditRequest.setDosage(item.getDosage());
-								drugAddEditRequest.setDosageTime(item.getDosageTime());
-								prescriptionServices.addFavouriteDrug(drugAddEditRequest);
-							}
-
-							prescriptionItemDetail.setDrug(drug);
-							items.add(item);
-							itemDetails.add(prescriptionItemDetail);
+					PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
+					BeanUtil.map(dischargeSummary.getPrescriptions(), request);
+					request.setHospitalId(dischargeSummary.getHospitalId());
+					request.setLocationId(dischargeSummary.getLocationId());
+					request.setDoctorId(dischargeSummary.getDoctorId());
+					request.setPatientId(dischargeSummary.getPatientId());
+					prescription = new Prescription();
+					if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+						addEditResponseDetails = prescriptionServices.addPrescriptionHandheld(request);
+						if (addEditResponseDetails != null) {
+							String visitId = patientTrackService.addRecord(addEditResponseDetails,
+									VisitedFor.PRESCRIPTION, addEditResponseDetails.getVisitId());
+							addEditResponseDetails.setVisitId(visitId);
 						}
+					} else {
+						addEditResponseDetails = prescriptionServices.editPrescription(request);
+						if (addEditResponseDetails != null) {
+							String visitId = patientTrackService.editRecord(addEditResponseDetails.getId(),
+									VisitedFor.PRESCRIPTION);
+							addEditResponseDetails.setVisitId(visitId);
+						}
+						BeanUtil.map(addEditResponseDetails, prescription);
 					}
-					itemAndAdvice.setItems(itemDetails);
-					prescription.setItems(items);
-					if (dischargeSummary.getPrescriptions().getAdvice() != null) {
-						prescription.setAdvice(dischargeSummaryCollection.getPrescriptions().getAdvice());
-						itemAndAdvice.setAdvice(dischargeSummaryCollection.getPrescriptions().getAdvice());
 
-					}
-					dischargeSummaryCollection.setPrescriptions(prescription);
+					dischargeSummaryCollection.setPrescriptionId(new ObjectId(addEditResponseDetails.getId()));
 				}
+				if (dischargeSummary.getAppointmentRequest() != null) {
+					appointment = addDischageSummaryAppointment(dischargeSummary.getAppointmentRequest());
+				}
+				if (appointment != null) {
 
+					dischargeSummaryCollection.setFromDate(appointment.getFromDate());
+					dischargeSummaryCollection.setTime(appointment.getTime());
+					dischargeSummaryCollection.setAppointmentId(appointment.getAppointmentId());
+
+				}
 				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
 				response = new DischargeSummaryResponse();
 
 				BeanUtil.map(dischargeSummaryCollection, response);
-				response.setPrescriptions(itemAndAdvice);
+				response.setPrescriptions(prescription);
 
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid  discharge summary Id  ");
 
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while adding  discharge summary : " + e.getCause().getMessage());
 			throw new BusinessException(ServiceError.Unknown,
@@ -283,23 +272,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				summaryResponse = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, summaryResponse);
 
-				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
-					if (dischargeSummaryCollection.getPrescriptions().getItems() != null
-							&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
-						for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
-							PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-							BeanUtil.map(item, prescriptionItemDetail);
-							if (item.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-								Drug drug = new Drug();
-								BeanUtil.map(drugCollection, drug);
-								prescriptionItemDetail.setDrug(drug);
-							}
-							items.add(prescriptionItemDetail);
-
-						}
-					summaryResponse.getPrescriptions().setItems(items);
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
+					summaryResponse.setPrescriptions(prescriptionServices
+							.getPrescriptionById(dischargeSummaryCollection.getPrescriptionId().toString()));
 				}
 				response.add(summaryResponse);
 
@@ -324,26 +299,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				response = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, response);
 
-				if (dischargeSummaryCollection.getPrescriptions() != null) {
-					List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 
-					if (dischargeSummaryCollection.getPrescriptions().getItems() != null
-							&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
-						for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
-							PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-
-							BeanUtil.map(item, prescriptionItemDetail);
-
-							if (item.getDrugId() != null) {
-								DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-								Drug drug = new Drug();
-								BeanUtil.map(drugCollection, drug);
-								prescriptionItemDetail.setDrug(drug);
-							}
-							items.add(prescriptionItemDetail);
-
-						}
-					response.getPrescriptions().setItems(items);
 				}
 
 			} else {
@@ -399,26 +356,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						dischargeSummaryRepository.save(dischargeSummaryCollection);
 						response = new DischargeSummaryResponse();
 						BeanUtil.map(dischargeSummaryCollection, response);
-						if (dischargeSummaryCollection.getPrescriptions() != null) {
-							List<PrescriptionItemDetail> items = new ArrayList<PrescriptionItemDetail>();
-
-							if (dischargeSummaryCollection.getPrescriptions().getItems() != null
-									&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
-								for (PrescriptionItem item : dischargeSummaryCollection.getPrescriptions().getItems()) {
-									PrescriptionItemDetail prescriptionItemDetail = new PrescriptionItemDetail();
-
-									BeanUtil.map(item, prescriptionItemDetail);
-
-									if (item.getDrugId() != null) {
-										DrugCollection drugCollection = drugRepository.findOne(item.getDrugId());
-										Drug drug = new Drug();
-										BeanUtil.map(drugCollection, drug);
-										prescriptionItemDetail.setDrug(drug);
-									}
-									items.add(prescriptionItemDetail);
-
-								}
-							response.getPrescriptions().setItems(items);
+						if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptionId())) {
+							prescriptionServices
+									.getPrescriptionById(dischargeSummaryCollection.getPrescriptionId().toString());
 						}
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
@@ -483,13 +423,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
 
-		if (dischargeSummaryCollection.getPrescriptions() != null) {
-
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
+			PrescriptionCollection prescription = prescriptionRepository
+					.findOne(dischargeSummaryCollection.getPrescriptionId());
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
-			if (dischargeSummaryCollection.getPrescriptions().getItems() != null
-					&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty()) {
-				for (PrescriptionItem prescriptionItem : dischargeSummaryCollection.getPrescriptions().getItems()) {
+			if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
+				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
 					show = true;
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
@@ -565,15 +505,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				parameters.put("showIntructions", showIntructions);
 				parameters.put("showDirection", showDirection);
 				parameters.put("showPrescription", show);
+				show = false;
+				if (!DPDoctorUtils.allStringsEmpty(prescription.getAdvice())) {
+					show = true;
+					parameters.put("advice", prescription.getAdvice());
+				}
+				parameters.put("showAdvice", show);
 			}
 		}
-
-		show = false;
-		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPrescriptions().getAdvice())) {
-			show = true;
-			parameters.put("advice", dischargeSummaryCollection.getPrescriptions().getAdvice());
-		}
-		parameters.put("showAdvice", show);
 
 		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
@@ -781,12 +720,16 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showpresentComplaints", show);
 		show = false;
 
-		if (dischargeSummaryCollection.getNextReview() != null) {
+		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			show = true;
-			parameters.put("fromDate", "<b>From :</b>"
-					+ simpleDateFormat.format(dischargeSummaryCollection.getNextReview().getFromDate()));
-			parameters.put("toDate",
-					"<b>To:</b>" + simpleDateFormat.format(dischargeSummaryCollection.getNextReview().getToDate()));
+			parameters.put("fromDate",
+					"<b>on Date :</b>" + simpleDateFormat.format(dischargeSummaryCollection.getFromDate()));
+			parameters.put("time",
+					"<b>Timing :</b>"
+							+ DPDoctorUtils.convertIntoTime(
+									Double.parseDouble(dischargeSummaryCollection.getTime().getFromTime().toString()))
+							+ " - " + DPDoctorUtils.convertIntoTime(
+									Double.parseDouble(dischargeSummaryCollection.getTime().getToTime().toString())));
 		}
 		parameters.put("showNextReview", show);
 		show = false;
@@ -935,6 +878,17 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 
+	}
+
+	private Appointment addDischageSummaryAppointment(AppointmentRequest appointment) {
+		Appointment response = null;
+		if (appointment.getAppointmentId() == null) {
+			response = appointmentService.addAppointment(appointment);
+		} else {
+			response = new Appointment();
+			BeanUtil.map(appointment, response);
+		}
+		return response;
 	}
 
 }

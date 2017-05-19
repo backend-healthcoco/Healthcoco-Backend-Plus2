@@ -647,16 +647,31 @@ public class DPDoctorUtils {
 				DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
 	}
-	
+
 	public static String randomString(int length) {
 		final String GENERATOR_STRING = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		SecureRandom rnd = new SecureRandom();
 		StringBuilder sb = new StringBuilder(length);
-		for (int i = 0; i < length; i++)
-		{
+		for (int i = 0; i < length; i++) {
 			sb.append(GENERATOR_STRING.charAt(rnd.nextInt(GENERATOR_STRING.length())));
 		}
 		return sb.toString();
+	}
+
+	public static String convertIntoTime(Double time) {
+
+		if (time > 1139) {
+			time = time - 1440;
+		}
+
+		if (time >= 0 && time < 720) {
+			return String.format("%.2f", time / 60).replace('.', ':') + " AM";
+		}
+		if (time >= 720 && time < 1440) {
+			return String.format("%.2f", time / 60).replace('.', ':') + " PM";
+		}
+		return null;
+
 	}
 
 }

@@ -7,8 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.PrescriptionAndAdvice;
-import com.dpdocter.beans.ReviewDates;
+import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "discharge_summary_cl")
 public class DischargeSummaryCollection extends GenericCollection {
@@ -23,7 +22,10 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
-	private PrescriptionAndAdvice prescriptions;
+	private ObjectId prescriptionId;
+
+	@Field
+	private String appointmentId;
 	@Field
 	private String complaint;
 	@Field
@@ -67,7 +69,10 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private String treatmentsGiven;
 	@Field
-	private ReviewDates nextReview;
+	private WorkingHours time;
+	@Field
+	private Date fromDate;
+
 	@Field
 	private Date admissionDate;
 	@Field
@@ -163,14 +168,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public PrescriptionAndAdvice getPrescriptions() {
-		return prescriptions;
-	}
-
-	public void setPrescriptions(PrescriptionAndAdvice prescriptions) {
-		this.prescriptions = prescriptions;
-	}
-
 	public String getDiagnosis() {
 		return diagnosis;
 	}
@@ -189,6 +186,38 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public String getFamilyHistory() {
 		return familyHistory;
+	}
+
+	public ObjectId getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(ObjectId prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
 	}
 
 	public void setFamilyHistory(String familyHistory) {
@@ -281,14 +310,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setTreatmentsGiven(String treatmentsGiven) {
 		this.treatmentsGiven = treatmentsGiven;
-	}
-
-	public ReviewDates getNextReview() {
-		return nextReview;
-	}
-
-	public void setNextReview(ReviewDates nextReview) {
-		this.nextReview = nextReview;
 	}
 
 	public Date getAdmissionDate() {

@@ -6,129 +6,131 @@ import java.util.List;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddEditResponseDetails extends GenericCollection {
-    private String id;
+	private String id;
 
-    private String uniqueEmrId;
+	private String uniqueEmrId;
 
-    private String name;
+	private String name;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private List<PrescriptionItemDetail> items;
+	private List<PrescriptionItemDetail> items;
 
-    private String patientId;
+	private String patientId;
 
-    private String prescriptionCode;
+	private String prescriptionCode;
 
-    private Boolean discarded;
+	private Boolean discarded;
 
-    private String visitId;
+	private String visitId;
 
-    private List<TestAndRecordDataResponse> diagnosticTests;
+	private List<TestAndRecordDataResponse> diagnosticTests;
 
-    private String advice;
-    
-    private String appointmentId;
+	private String advice;
+
+	private String appointmentId;
 
 	private WorkingHours time;
 
 	private Date fromDate;
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public List<PrescriptionItemDetail> getItems() {
-	return items;
-    }
+	public List<PrescriptionItemDetail> getItems() {
+		return items;
+	}
 
-    public void setItems(List<PrescriptionItemDetail> items) {
-	this.items = items;
-    }
+	public void setItems(List<PrescriptionItemDetail> items) {
+		this.items = items;
+	}
 
-    public String getPatientId() {
-	return patientId;
-    }
+	public String getPatientId() {
+		return patientId;
+	}
 
-    public void setPatientId(String patientId) {
-	this.patientId = patientId;
-    }
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
 
-    public String getPrescriptionCode() {
-	return prescriptionCode;
-    }
+	public String getPrescriptionCode() {
+		return prescriptionCode;
+	}
 
-    public void setPrescriptionCode(String prescriptionCode) {
-	this.prescriptionCode = prescriptionCode;
-    }
+	public void setPrescriptionCode(String prescriptionCode) {
+		this.prescriptionCode = prescriptionCode;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public String getVisitId() {
-	return visitId;
-    }
+	public String getVisitId() {
+		return visitId;
+	}
 
-    public void setVisitId(String visitId) {
-	this.visitId = visitId;
-    }
+	public void setVisitId(String visitId) {
+		this.visitId = visitId;
+	}
 
-    public String getAdvice() {
-	return advice;
-    }
+	public String getAdvice() {
+		return advice;
+	}
 
-    public void setAdvice(String advice) {
-	this.advice = advice;
-    }
+	public void setAdvice(String advice) {
+		this.advice = advice;
+	}
 
-    public String getUniqueEmrId() {
+	public String getUniqueEmrId() {
 		return uniqueEmrId;
 	}
 

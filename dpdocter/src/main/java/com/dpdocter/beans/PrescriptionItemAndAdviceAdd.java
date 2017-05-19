@@ -4,6 +4,8 @@ import java.util.List;
 
 public class PrescriptionItemAndAdviceAdd {
 
+	private String id;
+
 	private List<PrescriptionAddItem> items;
 
 	private String advice;
@@ -22,6 +24,14 @@ public class PrescriptionItemAndAdviceAdd {
 
 	public void setAdvice(String advice) {
 		this.advice = advice;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }

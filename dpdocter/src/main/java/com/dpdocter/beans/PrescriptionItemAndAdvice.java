@@ -4,6 +4,10 @@ import java.util.List;
 
 public class PrescriptionItemAndAdvice {
 
+	private String prescriptionId;
+
+	private String visitId;
+
 	private List<PrescriptionItemDetail> items;
 
 	private String advice;

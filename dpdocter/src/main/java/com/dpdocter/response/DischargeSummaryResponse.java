@@ -2,8 +2,8 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
-import com.dpdocter.beans.PrescriptionItemAndAdvice;
-import com.dpdocter.beans.ReviewDates;
+import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -15,7 +15,8 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String doctorId;
 	private String locationId;
 	private String hospitalId;
-	private PrescriptionItemAndAdvice prescriptions;
+	private Prescription prescriptions;
+	private String appointmentId;
 	private String diagnosis;
 	private String pastHistory;
 	private String familyHistory;
@@ -36,7 +37,8 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String xRayDetails;
 	private String operationNotes;
 	private String treatmentsGiven;
-	private ReviewDates nextReview;
+	private WorkingHours time;
+	private Date fromDate;
 	private String uniqueEmrId;
 	private Date admissionDate;
 	private Date dischargeDate;
@@ -114,11 +116,11 @@ public class DischargeSummaryResponse extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public PrescriptionItemAndAdvice getPrescriptions() {
+	public Prescription getPrescriptions() {
 		return prescriptions;
 	}
 
-	public void setPrescriptions(PrescriptionItemAndAdvice prescriptions) {
+	public void setPrescriptions(Prescription prescriptions) {
 		this.prescriptions = prescriptions;
 	}
 
@@ -224,14 +226,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setOperationNotes(String operationNotes) {
 		this.operationNotes = operationNotes;
-	}
-
-	public ReviewDates getNextReview() {
-		return nextReview;
-	}
-
-	public void setNextReview(ReviewDates nextReview) {
-		this.nextReview = nextReview;
 	}
 
 	public Date getAdmissionDate() {
@@ -373,12 +367,35 @@ public class DischargeSummaryResponse extends GenericCollection {
 				+ ", systemExam=" + systemExam + ", observation=" + observation + ", investigation=" + investigation
 				+ ", pa=" + pa + ", ps=" + ps + ", pv=" + pv + ", echo=" + echo + ", xRayDetails=" + xRayDetails
 				+ ", operationNotes=" + operationNotes + ", treatmentsGiven=" + treatmentsGiven + ", nextReview="
-				+ nextReview + ", uniqueEmrId=" + uniqueEmrId + ", admissionDate=" + admissionDate + ", dischargeDate="
+				+ ", uniqueEmrId=" + uniqueEmrId + ", admissionDate=" + admissionDate + ", dischargeDate="
 				+ dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight=" + babyWeight + ", babyNotes="
 				+ babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge + ", summary=" + summary
 				+ ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG + ", ecgDetails=" + ecgDetails
 				+ ", holter=" + holter + "]";
 	}
-	
+
+	public String getAppointmentId() {
+		return appointmentId;
+	}
+
+	public void setAppointmentId(String appointmentId) {
+		this.appointmentId = appointmentId;
+	}
+
+	public WorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(WorkingHours time) {
+		this.time = time;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
 
 }
