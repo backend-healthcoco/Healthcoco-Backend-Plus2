@@ -47,6 +47,8 @@ public class DoctorProfile extends GenericCollection {
 
 	private List<String> specialities;
 
+	private List<String> parentSpecialities;
+
 	private List<Achievement> achievements;
 
 	private String professionalStatement;
@@ -271,22 +273,6 @@ public class DoctorProfile extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	@Override
-	public String toString() {
-		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title
-				+ ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
-				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
-				+ thumbnailUrl + ", dob=" + dob + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
-				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
-				+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
-				+ education + ", specialities=" + specialities + ", achievements=" + achievements
-				+ ", professionalStatement=" + professionalStatement + ", registrationDetails=" + registrationDetails
-				+ ", experienceDetails=" + experienceDetails + ", professionalMemberships=" + professionalMemberships
-				+ ", clinicProfile=" + clinicProfile + ", regularCheckUpMonths=" + regularCheckUpMonths
-				+ ", isGetDiscardedEMR=" + isGetDiscardedEMR + ", metaTitle=" + metaTitle + ", metaDesccription="
-				+ metaDesccription + ", metaKeyword=" + metaKeyword + ", slugUrl=" + slugUrl + "]";
-	}
-
 	public String getCountryCode() {
 		return countryCode;
 	}
@@ -343,4 +329,28 @@ public class DoctorProfile extends GenericCollection {
 		this.slugUrl = slugUrl;
 	}
 
+	public List<String> getParentSpecialities() {
+		return parentSpecialities;
+	}
+
+	public void setParentSpecialities(List<String> parentSpecialities) {
+		this.parentSpecialities = parentSpecialities;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorProfile [id=" + id + ", userId=" + userId + ", doctorId=" + doctorId + ", title=" + title
+				+ ", firstName=" + firstName + ", emailAddress=" + emailAddress + ", countryCode=" + countryCode
+				+ ", mobileNumber=" + mobileNumber + ", gender=" + gender + ", imageUrl=" + imageUrl + ", thumbnailUrl="
+				+ thumbnailUrl + ", dob=" + dob + ", colorCode=" + colorCode + ", coverImageUrl=" + coverImageUrl
+				+ ", coverThumbnailImageUrl=" + coverThumbnailImageUrl + ", additionalNumbers=" + additionalNumbers
+				+ ", otherEmailAddresses=" + otherEmailAddresses + ", experience=" + experience + ", education="
+				+ education + ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities
+				+ ", achievements=" + achievements + ", professionalStatement=" + professionalStatement
+				+ ", registrationDetails=" + registrationDetails + ", experienceDetails=" + experienceDetails
+				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile
+				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", isGetDiscardedEMR=" + isGetDiscardedEMR
+				+ ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription + ", metaKeyword=" + metaKeyword
+				+ ", slugUrl=" + slugUrl + "]";
+	}
 }

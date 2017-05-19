@@ -571,10 +571,16 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
 			doctorProfile.setClinicProfile(clinicProfile);
 			// set specialities using speciality ids
-			if (doctorCollection.getSpecialities() != null) {
-				specialities = (List<String>) CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+			if (doctorCollection.getSpecialities() != null) {				
+				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository.findAll(doctorCollection.getSpecialities()); 
+				specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 						new BeanToPropertyValueTransformer("superSpeciality"));
+				
+				if(isMobileApp){
+					List<String> parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
+							new BeanToPropertyValueTransformer("speciality"));
+					doctorProfile.setParentSpecialities(parentSpecialities);
+				}
 			}
 			doctorProfile.setSpecialities(specialities);
 
