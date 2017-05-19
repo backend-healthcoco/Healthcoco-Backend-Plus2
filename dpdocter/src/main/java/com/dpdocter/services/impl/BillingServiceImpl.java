@@ -385,6 +385,7 @@ public class BillingServiceImpl implements BillingService {
 			 doctorPatientInvoiceCollection.setDiscarded(discarded);
 			 doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 			 
+//			 Double balance
 			 List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
 			 if(doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()){
 				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
@@ -542,7 +543,7 @@ public class BillingServiceImpl implements BillingService {
 								.getUsedAdvanceAmount()
 								+ (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection
-								.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
+								.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
@@ -553,7 +554,7 @@ public class BillingServiceImpl implements BillingService {
 								.getUsedAdvanceAmount()
 								+ (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 						doctorPatientReceiptCollection
-								.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
+								.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
@@ -954,7 +955,7 @@ public class BillingServiceImpl implements BillingService {
 						.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount()
 								+ (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 				doctorPatientReceiptCollection
-						.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
+						.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
 				doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()
 						- (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 						- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
@@ -964,7 +965,7 @@ public class BillingServiceImpl implements BillingService {
 						.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount()
 								+ (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
 				doctorPatientReceiptCollection
-						.setUsedAdvanceAmount(doctorPatientInvoiceCollection.getUsedAdvanceAmount());
+						.setUsedAdvanceAmount(request.getUsedAdvanceAmount());
 				doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount()
 						- (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 						- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
