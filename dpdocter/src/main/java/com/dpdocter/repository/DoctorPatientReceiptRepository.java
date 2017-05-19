@@ -28,6 +28,6 @@ public interface DoctorPatientReceiptRepository extends MongoRepository<DoctorPa
 	@Query("{'advanceReceiptIdWithAmounts.receiptId': ?0}")
 	List<DoctorPatientReceiptCollection> findAllByAdvanceId(ObjectId advanceReceiptId);
 
-	@Query("{'invoiceId': ?0}")
-	List<DoctorPatientReceiptCollection> findByInvoiceId(ObjectId invoiceId);
+	@Query("{'invoiceId': ?0, 'discarded' : ?1}")
+	List<DoctorPatientReceiptCollection> findByInvoiceId(ObjectId invoiceId, boolean discarded);
 }

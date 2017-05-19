@@ -384,7 +384,7 @@ public class BillingServiceImpl implements BillingService {
 			 doctorPatientInvoiceCollection.setUpdatedTime(new Date());
 			 
 			 Double advanceAmount = 0.0;
-			 List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId());
+			 List<DoctorPatientReceiptCollection> doPatientReceiptCollections = doctorPatientReceiptRepository.findByInvoiceId(doctorPatientInvoiceCollection.getId(), false);
 			 if(doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()){
 				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
 					 
@@ -422,7 +422,7 @@ public class BillingServiceImpl implements BillingService {
 			 
 			 DoctorPatientDueAmountCollection amountCollection = doctorPatientDueAmountRepository.find(doctorPatientInvoiceCollection.getPatientId(), doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(), doctorPatientInvoiceCollection.getHospitalId());
 			 amountCollection.setUpdatedTime(new Date());
-			 amountCollection.setDueAmount(amountCollection.getDueAmount() - doctorPatientInvoiceCollection.getGrandTotal() - advanceAmount);
+			 amountCollection.setDueAmount(amountCollection.getDueAmount() - doctorPatientInvoiceCollection.getBalanceAmount() - advanceAmount);
 			 doctorPatientDueAmountRepository.save(amountCollection);
 			 
 			 if (doctorPatientInvoiceCollection != null) {
