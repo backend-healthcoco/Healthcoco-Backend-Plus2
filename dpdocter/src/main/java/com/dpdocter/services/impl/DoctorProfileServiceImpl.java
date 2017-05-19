@@ -296,10 +296,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 					} else
 						doctorCollection.setSpecialities(null);
-						assignDefaultUIPermissions(request.getDoctorId());
 				} else {
 					doctorCollection.setSpecialities(null);
-					assignDefaultUIPermissions(request.getDoctorId());
 				}
 				doctorRepository.save(doctorCollection);
 				BeanUtil.map(doctorCollection, response);
@@ -314,14 +312,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
-	private void assignDefaultUIPermissions(String doctorId)
-	{
-		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
-		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
-		dynamicUICollection.setUiPermissions(uiPermissions);
-		dynamicUIRepository.save(dynamicUICollection);
-	}
+
 
 	private void removeOldSpecialityPermissions(Collection<ObjectId> specialityIds,
 			Collection<ObjectId> oldSpecialities, String doctorId) {
@@ -1064,12 +1055,10 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 						} else {
 							doctorCollection.setSpecialities(null);
-							assignDefaultUIPermissions(request.getDoctorId());
 							specialitiesresponse = null;
 						}
 					} else {
 						doctorCollection.setSpecialities(null);
-						assignDefaultUIPermissions(request.getDoctorId());
 						specialitiesresponse = null;
 					}
 				} else {

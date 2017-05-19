@@ -564,6 +564,11 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			 */
 
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				
+				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
+					speciality = "GYNAECOLOGIST";
+				}
+				
 				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
 						.findByQueryAnnotation(speciality);
 				if (esSpecialityDocuments != null) {
