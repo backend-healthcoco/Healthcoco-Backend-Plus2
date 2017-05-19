@@ -173,8 +173,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									VisitedFor.PRESCRIPTION);
 							addEditResponseDetails.setVisitId(visitId);
 						}
-						BeanUtil.map(addEditResponseDetails, prescription);
+						
 					}
+					BeanUtil.map(addEditResponseDetails, prescription);
 
 					dischargeSummaryCollection.setPrescriptionId(new ObjectId(addEditResponseDetails.getId()));
 				}
