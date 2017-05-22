@@ -301,6 +301,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				BeanUtil.map(dischargeSummaryCollection, response);
 
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
+					response.setPrescriptions(prescriptionServices
+							.getPrescriptionById(dischargeSummaryCollection.getPrescriptionId().toString()));
 
 				}
 
