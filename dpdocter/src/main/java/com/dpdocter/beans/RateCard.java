@@ -1,0 +1,58 @@
+package com.dpdocter.beans;
+
+public class RateCard {
+
+	private String id;
+	private String locationId;
+	private String hospitalId;
+	private String name;
+	private Boolean discarded = false;
+	private Boolean isDefault = false;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	@Override
+	public String toString() {
+		return "RateCard [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", name=" + name
+				+ ", discarded=" + discarded + "]";
+	}
+
+}
