@@ -1126,6 +1126,19 @@ public interface PathProxy {
 	public interface LabUrls {
 		public static final String GET_CLINICS_WITH_REPORTS_COUNT = "/getClinicWithReportCount/{doctorId}/{locationId}/{hospitalId}";
 		public static final String GET_REPORTS_FOR_SPECIFIC_DOCTOR = "/getReports/{doctorId}/{locationId}/{hospitalId}";
+		public static final String ADD_EDIT_PICKUP_REQUEST = "/addEditPickupRequest";
+		public static final String GET_COLLECTION_BOY_LIST = "/getCollectionBoys";
+		public static final String GET_CB_LIST_BY_PARENT_LAB = "/getCBListByParentLab";
+		public static final String GET_DAUGHTER_LAB_LIST_BY_CB = "/getDaughterListByCB";
+		public static final String CB_LAB_ASSOCIATION = "/cbLabAssociation";
+		public static final String ADD_EDIT_COLLECTION_BOY = "/addEditCollectionBoy";
+		public static final String DISCARD_COLLECTIONe_BOY = "/discardCollectionBoy";
+		public static final String VERIFY_CRN = "/verifyCRN";
+		public static final String GET_RATE_CARDS = "/getRateCards";
+		public static final String GET_RATE_CARD_TEST = "/getRateCardTests";
+		public static final String ADD_EDIT_RATE_CARD = "/addEditRateCards";
+		public static final String ADD_EDIT_RATE_CARD_TESTS	= "addEditRateCardTests";
+		
 	}
 
 }
