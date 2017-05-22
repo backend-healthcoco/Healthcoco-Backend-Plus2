@@ -41,6 +41,9 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	@Query(value = "{'locationId':?0, 'hospitalId':?1, 'registrationDate' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
 	Integer findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, DateTime start, DateTime end);
+	
+	@Query(value = "{'locationId':?0, 'hospitalId':?1, 'registrationDate' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
+	Integer findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, Long start, Long end);
 
 	@Query("{'doctorId':?0,'locationId': ?1, 'discarded':'true','hospitalId':?2}")
 	List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId,ObjectId hospitalId);

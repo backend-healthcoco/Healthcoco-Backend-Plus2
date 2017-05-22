@@ -429,7 +429,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 						true);
 				patientCollection.setImageUrl(imageURLResponse.getImageUrl());
 				patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
-
 			}
 
 			ReferencesCollection referencesCollection = null;
@@ -1313,10 +1312,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long startTimeinMillis = start.getMillis();
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long endTimeinMillis = end.getMillis();
 			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
-					start, end);
+					startTimeinMillis, endTimeinMillis);
 			if (patientCount == null)
 				patientSize = 0;
 			LocationCollection location = locationRepository.findOne(locationObjectId);
