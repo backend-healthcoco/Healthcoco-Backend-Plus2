@@ -20,6 +20,8 @@ public class LabTestPickup extends GenericCollection {
 	private Integer numberOfSamplesRequested;
 	private Integer numberOfSamplesPicked;
 	private String requestId;
+	private Boolean isCompleted ;
+	private String collectionBoyId;
 
 	public String getId() {
 		return id;
@@ -141,6 +143,22 @@ public class LabTestPickup extends GenericCollection {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public Boolean getIsCompleted() {
+		return isCompleted;
+	}
+
+	public void setIsCompleted(Boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
+
+	public String getCollectionBoyId() {
+		return collectionBoyId;
+	}
+
+	public void setCollectionBoyId(String collectionBoyId) {
+		this.collectionBoyId = collectionBoyId;
 	}
 
 }

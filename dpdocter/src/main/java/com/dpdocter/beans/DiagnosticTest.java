@@ -14,8 +14,6 @@ public class DiagnosticTest extends GenericCollection {
 
 	private String explanation;
 
-	private Double cost;
-
 	private String sampleType;
 
 	private String locationId;
@@ -80,14 +78,6 @@ public class DiagnosticTest extends GenericCollection {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public Double getCost() {
-		return cost;
-	}
-
-	public void setCost(Double cost) {
-		this.cost = cost;
 	}
 
 	public String getSampleType() {

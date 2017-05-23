@@ -2,7 +2,6 @@ package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -28,6 +27,10 @@ public class CollectionBoyCollection extends GenericCollection {
 	private Address address;
 	@Field
 	private String mobileNumber;
+	@Field
+	private Boolean discarded;
+	@Field
+	private Boolean isAvailable;
 
 	public ObjectId getId() {
 		return id;
@@ -93,11 +96,27 @@ public class CollectionBoyCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
+
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
 	@Override
 	public String toString() {
 		return "CollectionBoyCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", name=" + name + ", age=" + age + ", gender=" + gender + ", address=" + address + ", mobileNumber="
-				+ mobileNumber + "]";
+				+ mobileNumber + ", discarded=" + discarded + "]";
 	}
 
 }

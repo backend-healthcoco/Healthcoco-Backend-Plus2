@@ -1,6 +1,8 @@
 package com.dpdocter.beans;
 
-public class CollectionBoy {
+import com.dpdocter.collections.GenericCollection;
+
+public class CollectionBoy extends GenericCollection{
 
 	private String id;
 	private String locationId;
@@ -12,6 +14,8 @@ public class CollectionBoy {
 	private String mobileNumber;
 	private String password;
 	private String profileImageURL;
+	private Boolean discarded = false;
+	private Boolean isAvailable = false;
 
 	public String getId() {
 		return id;
@@ -93,11 +97,28 @@ public class CollectionBoy {
 		this.profileImageURL = profileImageURL;
 	}
 
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
+
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
+	}
+
 	@Override
 	public String toString() {
 		return "CollectionBoy [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", name="
 				+ name + ", age=" + age + ", gender=" + gender + ", address=" + address + ", mobileNumber="
-				+ mobileNumber + ", password=" + password + ", profileImageURL=" + profileImageURL + "]";
+				+ mobileNumber + ", password=" + password + ", profileImageURL=" + profileImageURL + ", discarded="
+				+ discarded + "]";
 	}
 
 }

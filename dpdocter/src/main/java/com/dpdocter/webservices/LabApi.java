@@ -17,13 +17,17 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
+import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.LabTestPickup;
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Records;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
+import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LabService;
 import com.dpdocter.services.LocationServices;
 
@@ -130,14 +134,14 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_RATE_CARD_TEST)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST)
-	public Response<RateCardTestAssociation> getRateCardTests(@QueryParam("rateCardId") String rateCardId,
+	public Response<RateCardTestAssociationLookupResponse> getRateCardTests(@QueryParam("rateCardId") String rateCardId,
 			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("searchTerm") String searchTerm) {
 		if (rateCardId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<RateCardTestAssociation> response = new Response<RateCardTestAssociation>();
+		Response<RateCardTestAssociationLookupResponse> response = new Response<RateCardTestAssociationLookupResponse>();
 		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, rateCardId, labId));
 
 		return response;
@@ -183,6 +187,82 @@ public class LabApi {
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(locationServices.verifyCRN(locationId, crn, requestId));
 
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.DISCARD_COLLECTION_BOY)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.DISCARD_COLLECTION_BOY, notes = PathProxy.LabUrls.DISCARD_COLLECTION_BOY)
+	public Response<CollectionBoy> discardCB(@QueryParam("collectionBoyId") String collectionBoyId,
+			@QueryParam("discarded") Boolean discarded) {
+		if (collectionBoyId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<CollectionBoy> response = new Response<CollectionBoy>();
+		response.setData(locationServices.discardCB(collectionBoyId, discarded));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.CHANGE_AVAILABILITY_OF_CB)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.CHANGE_AVAILABILITY_OF_CB, notes = PathProxy.LabUrls.CHANGE_AVAILABILITY_OF_CB)
+	public Response<CollectionBoy> changeCBAvailabilty(@QueryParam("collectionBoyId") String collectionBoyId,
+			@QueryParam("isAvailable") Boolean isAvailable) {
+		if (collectionBoyId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<CollectionBoy> response = new Response<CollectionBoy>();
+		response.setData(locationServices.changeAvailability(collectionBoyId, isAvailable));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.GET_PICKUP_REQUEST_BY_ID)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUP_REQUEST_BY_ID, notes = PathProxy.LabUrls.GET_PICKUP_REQUEST_BY_ID)
+	public Response<LabTestPickup> getPickupRequestById(@QueryParam("id") String id,
+			@QueryParam("requestId") String requestId) {
+		if (id == null && requestId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<LabTestPickup> response = new Response<LabTestPickup>();
+		if (id != null) {
+			response.setData(locationServices.getLabTestPickupById(id));
+		} else if (requestId != null) {
+			response.setData(locationServices.getLabTestPickupByRequestId(requestId));
+		}
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION)
+	@POST
+	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD, notes = PathProxy.LabUrls.ADD_EDIT_RATE_CARD)
+	public Response<Location> addEditRateCard(List<CollectionBoyLabAssociation> collectionBoyLabAssociations) {
+		if (collectionBoyLabAssociations == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Location> response = new Response<Location>();
+		response.setDataList(locationServices.addCollectionBoyAssociatedLabs(collectionBoyLabAssociations));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.GET_CB_LAB_ASSOCIATION)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_CB_LAB_ASSOCIATION, notes = PathProxy.LabUrls.GET_CB_LAB_ASSOCIATION)
+	public Response<Location> getCBLabAssociation(@QueryParam("parentLabId") String parentLabId,
+			@QueryParam("daughterLabId") String daughterLabId, @QueryParam("collectionBoyId") String collectionBoyId ,  @QueryParam("size") int size , @QueryParam("page") int page) {
+		if (collectionBoyId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Location> response = new Response<Location>();
+		response.setDataList(locationServices.getCBAssociatedLabs(parentLabId, daughterLabId, collectionBoyId, size, page));
 		return response;
 	}
 

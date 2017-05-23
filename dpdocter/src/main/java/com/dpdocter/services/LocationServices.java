@@ -9,6 +9,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 
 public interface LocationServices {
@@ -30,9 +31,9 @@ public interface LocationServices {
 
 	RateCardTestAssociation addEditRateCardTestAssociation(RateCardTestAssociation request);
 
-	Location addCollectionBoyAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations);
+	List<Location> addCollectionBoyAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations);
 
-	List<RateCardTestAssociation> getRateCardTests(int page, int size, String searchTerm, String rateCardId,
+	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm, String rateCardId,
 			String labId);
 
 	RateCard addEditRateCard(RateCard request);
@@ -40,5 +41,15 @@ public interface LocationServices {
 	List<RateCard> getRateCards(int page, int size, String searchTerm, String locationId);
 
 	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size, int page);
+
+	List<LabTestPickup> getRequestForCB(String collectionBoyId, int size, int page);
+
+	LabTestPickup getLabTestPickupByRequestId(String requestId);
+
+	LabTestPickup getLabTestPickupById(String id);
+
+	CollectionBoy discardCB(String collectionBoyId, Boolean discarded);
+
+	CollectionBoy changeAvailability(String collectionBoyId, Boolean isAvailable);
 
 }
