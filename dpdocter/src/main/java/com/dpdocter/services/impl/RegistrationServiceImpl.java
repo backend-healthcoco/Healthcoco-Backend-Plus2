@@ -2310,7 +2310,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Override
 	@Transactional
 	public List<ClinicDoctorResponse> getUsers(int page, int size, String locationId, String hospitalId,
-			String updatedTime, String role, Boolean active) {
+			String updatedTime, String role, Boolean active, String userState) {
 		List<ClinicDoctorResponse> response = null;
 		try {
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
@@ -2319,11 +2319,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("locationId").is(new ObjectId(locationId));
 			if (active)
 				criteria.and("isActivate").is(active);
+			if (!DPDoctorUtils.anyStringEmpty(userState)) {
+				if (userState.equalsIgnoreCase("COMPLETED")) {
+					criteria.and("user.userState").is("USERSTATECOMPLETE");
+				} else {
+					criteria.and("user.userState").is(userState);
+				}
+			}
 
 			if (size > 0)
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 								Aggregation.unwind("location"),
 								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
 								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
@@ -2331,17 +2337,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.lookup("user_role_cl", "doctorId", "userId", "userRoleCollection"),
 								Aggregation.unwind("userRoleCollection"),
 								Aggregation.match(
-										new Criteria("userRoleCollection.locationId").is(new ObjectId(locationId))),
+										criteria.and("userRoleCollection.locationId").is(new ObjectId(locationId))),
 								Aggregation.skip((page) * size), Aggregation.limit(size)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
 			else
-				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
-						Aggregation.match(criteria), Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
-						Aggregation.unwind("user"), Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
-						Aggregation.unwind("doctor")), DoctorClinicProfileCollection.class,
-						DoctorClinicProfileLookupResponse.class).getMappedResults();
+				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+								Aggregation.unwind("location"),
+								Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+								Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
+						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
+						.getMappedResults();
 
 			if (doctorClinicProfileLookupResponses != null) {
 				response = new ArrayList<ClinicDoctorResponse>();

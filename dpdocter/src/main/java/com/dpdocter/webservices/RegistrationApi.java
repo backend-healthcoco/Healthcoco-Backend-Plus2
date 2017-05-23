@@ -698,13 +698,13 @@ public class RegistrationApi {
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role,
-			@DefaultValue("false") @QueryParam(value = "active") Boolean active) {
+			@DefaultValue("false") @QueryParam(value = "active") Boolean active, @QueryParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, locationId, hospitalId,
-				updatedTime, role, active);
+				updatedTime, role, active,userState);
 		Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 		response.setDataList(professionResponse);
 		return response;
