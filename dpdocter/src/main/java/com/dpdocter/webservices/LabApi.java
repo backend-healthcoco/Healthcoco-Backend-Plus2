@@ -43,7 +43,7 @@ public class LabApi {
 
 	@Autowired
 	private LabService labService;
-	
+
 	@Autowired
 	private LocationServices locationServices;
 
@@ -96,11 +96,12 @@ public class LabApi {
 
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB, notes = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB)
-	public Response<CollectionBoy> getCBListByParentLab(@QueryParam("locationId") String locationId , @QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<CollectionBoy> getCBListByParentLab(@QueryParam("locationId") String locationId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -110,12 +111,12 @@ public class LabApi {
 
 		return response;
 	}
-	
 
 	@Path(value = PathProxy.LabUrls.GET_RATE_CARDS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARDS, notes = PathProxy.LabUrls.GET_RATE_CARDS)
-	public Response<RateCard> getRateCards(@QueryParam("locationId") String locationId , @QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+	public Response<RateCard> getRateCards(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -125,11 +126,13 @@ public class LabApi {
 
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.LabUrls.GET_RATE_CARD_TEST)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST)
-	public Response<RateCardTestAssociation> getRateCardTests(@QueryParam("rateCardId") String rateCardId , @QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("labId") String labId, @QueryParam("searchTerm") String searchTerm) {
+	public Response<RateCardTestAssociation> getRateCardTests(@QueryParam("rateCardId") String rateCardId,
+			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
 		if (rateCardId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -139,7 +142,7 @@ public class LabApi {
 
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD)
 	@POST
 	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD, notes = PathProxy.LabUrls.ADD_EDIT_RATE_CARD)
@@ -150,22 +153,37 @@ public class LabApi {
 		}
 		Response<RateCard> response = new Response<RateCard>();
 		response.setData(locationServices.addEditRateCard(request));
+
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD_TESTS)
 	@POST
 	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD_TESTS, notes = PathProxy.LabUrls.ADD_EDIT_RATE_CARD_TESTS)
-	public Response<RateCardTestAssociation> addEditRateCardTests(RateCardTestAssociation request) {
+	public Response<RateCardTestAssociation> addEditRateCardTest(RateCardTestAssociation request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardTestAssociation> response = new Response<RateCardTestAssociation>();
 		response.setData(locationServices.addEditRateCardTestAssociation(request));
+
 		return response;
 	}
-	
-	
+
+	@Path(value = PathProxy.LabUrls.VERIFY_CRN)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.VERIFY_CRN, notes = PathProxy.LabUrls.VERIFY_CRN)
+	public Response<Boolean> getRateCardTests(@QueryParam("locationId") String locationId,
+			@QueryParam("requestId") String requestId, @QueryParam("crn") String crn) {
+		if (crn == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(locationServices.verifyCRN(locationId, crn, requestId));
+
+		return response;
+	}
 
 }

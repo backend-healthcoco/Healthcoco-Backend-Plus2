@@ -24,6 +24,7 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -45,6 +46,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.TokenRepository;
@@ -97,6 +99,9 @@ public class SignUpServiceImpl implements SignUpService {
     
     @Autowired
     private CollectionBoyRepository collectionBoyRepository;
+    
+    @Autowired
+    private LocationRepository locationRepository;
     
     @Autowired
     private SMSServices smsServices;
@@ -648,7 +653,7 @@ public class SignUpServiceImpl implements SignUpService {
 			userCollection.setSalt(DPDoctorUtils.generateSalt());
 			String salt = new String(userCollection.getSalt());
 			//char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(localePassword.toCharArray());
-			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getMobileNumber().toCharArray());
+			char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(collectionBoy.getPassword().toCharArray());
 			String password = new String(sha3Password);
 			password = passwordEncoder.encodePassword(password, salt);
 			userCollection.setPassword(password.toCharArray());
@@ -688,7 +693,7 @@ public class SignUpServiceImpl implements SignUpService {
 				SMS sms = new SMS();
 				sms.setSmsText("Hi ," + collectionBoyCollection.getName()
 						+ " your registration with Healthcoco is completed. Please use provided contact number for login. Your password is "
-						+ collectionBoy.getMobileNumber());
+						+ collectionBoy.getPassword());
 
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(collectionBoyCollection.getMobileNumber());

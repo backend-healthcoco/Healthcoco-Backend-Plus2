@@ -289,7 +289,7 @@ public class SignUpApi {
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	public Response<CollectionBoy> adminSignup(CollectionBoy request) {
-		if (request == null ) {
+		if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
 			logger.warn("Request send  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
 		}

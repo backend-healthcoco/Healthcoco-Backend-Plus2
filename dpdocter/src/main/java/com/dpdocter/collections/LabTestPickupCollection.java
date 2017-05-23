@@ -17,8 +17,6 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Field
 	private String daughterLabCRN;
 	@Field
-	private String parentLabCRN;
-	@Field
 	private Long pickupTime;
 	@Field
 	private Long deliveryTime;
@@ -55,14 +53,6 @@ public class LabTestPickupCollection extends GenericCollection {
 
 	public void setDaughterLabCRN(String daughterLabCRN) {
 		this.daughterLabCRN = daughterLabCRN;
-	}
-
-	public String getParentLabCRN() {
-		return parentLabCRN;
-	}
-
-	public void setParentLabCRN(String parentLabCRN) {
-		this.parentLabCRN = parentLabCRN;
 	}
 
 	public Long getPickupTime() {
@@ -155,10 +145,10 @@ public class LabTestPickupCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "LabTestPickupCollection [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN="
-				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSamples="
-				+ labTestSamples + ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId="
-				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
+		return "LabTestPickupCollection [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime=" + pickupTime
+				+ ", deliveryTime=" + deliveryTime + ", labTestSamples=" + labTestSamples + ", status=" + status
+				+ ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
+				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + "]";
 	}

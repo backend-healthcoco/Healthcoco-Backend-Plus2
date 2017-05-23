@@ -1,16 +1,17 @@
 package com.dpdocter.beans;
 
-import java.util.List;
-
 public class CollectionBoy {
 
 	private String id;
+	private String locationId;
+	private String hospitalId;
 	private String name;
 	private Age age;
 	private String gender;
 	private Address address;
 	private String mobileNumber;
-	private List<String> assignedLabs;
+	private String password;
+	private String profileImageURL;
 
 	public String getId() {
 		return id;
@@ -60,18 +61,43 @@ public class CollectionBoy {
 		this.name = name;
 	}
 
-	public List<String> getAssignedLabs() {
-		return assignedLabs;
+	public String getLocationId() {
+		return locationId;
 	}
 
-	public void setAssignedLabs(List<String> assignedLabs) {
-		this.assignedLabs = assignedLabs;
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getProfileImageURL() {
+		return profileImageURL;
+	}
+
+	public void setProfileImageURL(String profileImageURL) {
+		this.profileImageURL = profileImageURL;
 	}
 
 	@Override
 	public String toString() {
-		return "CollectionBoy [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", address="
-				+ address + ", mobileNumber=" + mobileNumber + "]";
+		return "CollectionBoy [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", name="
+				+ name + ", age=" + age + ", gender=" + gender + ", address=" + address + ", mobileNumber="
+				+ mobileNumber + ", password=" + password + ", profileImageURL=" + profileImageURL + "]";
 	}
 
 }

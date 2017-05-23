@@ -46,6 +46,7 @@ import com.dpdocter.repository.RateCardTestAssociationRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.LabAssociationLookupResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LocationServices;
@@ -228,7 +229,6 @@ public class LocationServiceImpl implements LocationServices {
 			} else {
 				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
 				request.setDaughterLabCRN(saveCRN(request.getDaughterLabLocationId(), requestId, 5));
-				request.setParentLabCRN(saveCRN(request.getParentLabLocationId(), requestId, 5));
 				for (LabTestSample labTestSample : request.getLabTestSamples()) {
 					labTestSample.setSampleId(UniqueIdInitial.LAB_PICKUP_SAMPLE + DPDoctorUtils.generateRandomId());
 				}
@@ -351,26 +351,38 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Override
 	@Transactional
-	public Location getAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations) {
-		Location response = null;
-		CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = null;
+	public List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size, int page) {
+		List<Location> locations = null;
+		List<CBLabAssociationLookupResponse> lookupResponses = null;
 		try {
-			for (CollectionBoyLabAssociation collectionBoyLabAssociation : collectionBoyLabAssociations) {
-				if(DPDoctorUtils.anyStringEmpty(collectionBoyLabAssociation.getCollectionBoyId(),collectionBoyLabAssociation.getParentLabId(),collectionBoyLabAssociation.getDaughterLabId()))
-				{
-					throw new BusinessException(ServiceError.InvalidInput , "Invalid Input - Parent & Daughter Lab ID cannot be null");
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(parentLabId)) {
+			criteria.and("parentLabId").is(new ObjectId(parentLabId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(daughterLabId)) {
+				criteria.and("daughterLabId").is(new ObjectId(daughterLabId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(collectionBoyId)) {
+				criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
+			}
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<CBLabAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					CollectionBoyLabAssociationCollection.class, CBLabAssociationLookupResponse.class);
+			lookupResponses = aggregationResults.getMappedResults();
+			if (lookupResponses != null) {
+				locations = new ArrayList<Location>();
+				for (CBLabAssociationLookupResponse lookupResponse : lookupResponses) {
+					locations.add(lookupResponse.getLocation());
 				}
-				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository.findbyParentIdandDaughterId( new ObjectId(collectionBoyLabAssociation.getCollectionBoyId()),
-						new ObjectId(collectionBoyLabAssociation.getParentLabId()), new ObjectId(collectionBoyLabAssociation.getDaughterLabId()));
-				if (collectionBoyLabAssociationCollection == null) {
-					collectionBoyLabAssociationCollection = new CollectionBoyLabAssociationCollection();
-				}
-				else
-				{
-					collectionBoyLabAssociationCollection.setId(String.valueOf(collectionBoyLabAssociationCollection.getId()));
-				}
-				BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
-				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository.save(collectionBoyLabAssociationCollection);
 			}
 			
 		} catch (Exception e) {
@@ -378,7 +390,7 @@ public class LocationServiceImpl implements LocationServices {
 			e.printStackTrace();
 			logger.warn(e);
 		}
-		return response;
+		return locations;
 	}
 	
 	@Override
@@ -551,7 +563,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			
 			for(RateCardTestAssociationLookupResponse lookupResponse : rateCardTestAssociationLookupResponses){
-				
+			//	lookupResponse.
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -8,7 +8,6 @@ public class AddEditLabTestPickupRequest {
 
 	private String id;
 	private String daughterLabCRN;
-	private String parentLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
 	private List<LabTestSample> labTestSamples;
@@ -35,14 +34,6 @@ public class AddEditLabTestPickupRequest {
 
 	public void setDaughterLabCRN(String daughterLabCRN) {
 		this.daughterLabCRN = daughterLabCRN;
-	}
-
-	public String getParentLabCRN() {
-		return parentLabCRN;
-	}
-
-	public void setParentLabCRN(String parentLabCRN) {
-		this.parentLabCRN = parentLabCRN;
 	}
 
 	public Long getPickupTime() {
@@ -135,10 +126,10 @@ public class AddEditLabTestPickupRequest {
 
 	@Override
 	public String toString() {
-		return "AddEditLabTestPickupRequest [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN="
-				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSamples="
-				+ labTestSamples + ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId="
-				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
+		return "AddEditLabTestPickupRequest [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime="
+				+ pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSamples=" + labTestSamples + ", status="
+				+ status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
+				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + "]";
 	}

@@ -1,7 +1,5 @@
 package com.dpdocter.collections;
 
-import java.util.List;
-
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -17,6 +15,10 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
+	@Field
 	private String name;
 	@Field
 	private Age age;
@@ -25,10 +27,7 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Field
 	private Address address;
 	@Field
-	@Indexed(unique = true)
 	private String mobileNumber;
-	@Field
-	private List<ObjectId> assignedLabs;
 
 	public ObjectId getId() {
 		return id;
@@ -78,18 +77,27 @@ public class CollectionBoyCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
-	public List<ObjectId> getAssignedLabs() {
-		return assignedLabs;
+	public ObjectId getLocationId() {
+		return locationId;
 	}
 
-	public void setAssignedLabs(List<ObjectId> assignedLabs) {
-		this.assignedLabs = assignedLabs;
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	@Override
 	public String toString() {
-		return "CollectionBoyCollection [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender
-				+ ", address=" + address + ", mobileNumber=" + mobileNumber + ", assignedLabs=" + assignedLabs + "]";
+		return "CollectionBoyCollection [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", name=" + name + ", age=" + age + ", gender=" + gender + ", address=" + address + ", mobileNumber="
+				+ mobileNumber + "]";
 	}
 
 }

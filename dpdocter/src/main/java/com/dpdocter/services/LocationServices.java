@@ -26,8 +26,6 @@ public interface LocationServices {
 
 	List<CollectionBoy> getCollectionBoyList(int size, int page, String locationId, String searchTerm);
 
-	Location getAssociatedLabs(List<CollectionBoyLabAssociation> collectionBoyLabAssociations);
-
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent);
 
 	RateCardTestAssociation addEditRateCardTestAssociation(RateCardTestAssociation request);
@@ -40,5 +38,7 @@ public interface LocationServices {
 	RateCard addEditRateCard(RateCard request);
 
 	List<RateCard> getRateCards(int page, int size, String searchTerm, String locationId);
+
+	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size, int page);
 
 }
