@@ -195,7 +195,7 @@ public class LocaleApi {
 				// System.out.println(imageURLResponse);
 				if (request != null) {
 					PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
-					prescriptionRequest.setPrescriptionURL(imageURLResponse.getImageUrl());
+					prescriptionRequest.setPrescriptionURL(imageURLResponse);
 					request.setPrescriptionRequest(prescriptionRequest);
 				}
 			}
