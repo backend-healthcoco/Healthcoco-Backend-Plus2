@@ -77,20 +77,38 @@ public class UserRecordsCollection extends GenericCollection {
 		this.explanation = explanation;
 	}
 
-	public String getPatientId() {
+	
+
+	public ObjectId getPatientId() {
 		return patientId;
 	}
 
-	public void setPatientId(String patientId) {
+	public void setPatientId(ObjectId patientId) {
 		this.patientId = patientId;
 	}
 
-	public String getDoctorId() {
+	public ObjectId getDoctorId() {
 		return doctorId;
 	}
 
-	public void setDoctorId(String doctorId) {
+	public void setDoctorId(ObjectId doctorId) {
 		this.doctorId = doctorId;
+	}
+
+	public ObjectId getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
+
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
 	}
 
 	public Boolean getIsVisible() {
