@@ -446,22 +446,20 @@ public class RecordsApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId) || DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 			logger.warn("User Id Cannot Be Empty");
-			throw new BusinessException(ServiceError.InvalidInput, "Patient Id Cannot Be Empty");
-		} else if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
-					"Doctor Id, locationId or HospitalId Cannot Be Empty");
+					"Patient Id or LocationId,doctorId,hospitalId Cannot Be Empty");
 		}
 		Response<UserRecords> response = new Response<UserRecords>();
-		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+		if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
 			if (!isOTPVerified) {
 				return response;
 			}
 		}
-		List<UserRecords> records = recordsService.getUserRecordsByuserId(patientId, doctorId, page, size, updatedTime,
-				discarded);
+		List<UserRecords> records = recordsService.getUserRecordsByuserId(patientId, doctorId, locationId, hospitalId,
+				page, size, updatedTime, discarded);
 		response.setDataList(records);
 		return response;
 

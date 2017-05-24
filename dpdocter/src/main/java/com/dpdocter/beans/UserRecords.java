@@ -21,6 +21,27 @@ public class UserRecords extends GenericCollection {
 	private String patientId;
 
 	private String doctorId;
+	
+	private String locationId;
+	
+	private String hospitalId;
+	
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
 	public String getPatientId() {
 		return patientId;

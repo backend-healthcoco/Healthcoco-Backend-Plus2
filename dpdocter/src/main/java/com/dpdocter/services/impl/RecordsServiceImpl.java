@@ -1818,8 +1818,8 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 
 	@Override
-	public List<UserRecords> getUserRecordsByuserId(String patientId, String doctorId, int page, int size,
-			String updatedTime, Boolean discarded) {
+	public List<UserRecords> getUserRecordsByuserId(String patientId, String doctorId, String locationId,
+			String hospitalId, int page, int size, String updatedTime, Boolean discarded) {
 		List<UserRecords> response = null;
 		try {
 			long createdTimeStamp = Long.parseLong(updatedTime);
@@ -1831,11 +1831,13 @@ public class RecordsServiceImpl implements RecordsService {
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("userId")
 					.is(patientObjectId);
-			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);
-				criteria.and("doctorId").is(doctorObjectId);
+				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
+						.and("hospitalId").is(new ObjectId(hospitalId));
+
 			} else {
-				criteria.and("doctorId").exists(false);
+				criteria.and("doctorId").exists(false).and("locationId").exists(false).and("hospitalId").exists(false);
 			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);

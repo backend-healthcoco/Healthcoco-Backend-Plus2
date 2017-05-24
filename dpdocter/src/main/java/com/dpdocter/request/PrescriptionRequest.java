@@ -2,11 +2,13 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.response.ImageURLResponse;
+
 public class PrescriptionRequest {
 
 	private String prescriptionId;
 	
-	private String prescriptionURL;
+	private ImageURLResponse prescriptionURL;
 	
 	private List<DrugRequest> drugs;
 
@@ -18,11 +20,13 @@ public class PrescriptionRequest {
 		this.prescriptionId = prescriptionId;
 	}
 
-	public String getPrescriptionURL() {
+	
+
+	public ImageURLResponse getPrescriptionURL() {
 		return prescriptionURL;
 	}
 
-	public void setPrescriptionURL(String prescriptionURL) {
+	public void setPrescriptionURL(ImageURLResponse prescriptionURL) {
 		this.prescriptionURL = prescriptionURL;
 	}
 

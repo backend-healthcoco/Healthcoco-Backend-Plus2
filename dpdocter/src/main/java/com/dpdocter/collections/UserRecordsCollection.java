@@ -28,10 +28,16 @@ public class UserRecordsCollection extends GenericCollection {
 	private String explanation;
 
 	@Field
-	private String patientId;
+	private ObjectId patientId;
 
 	@Field
-	private String doctorId;
+	private ObjectId doctorId;
+
+	@Field
+	private ObjectId locationId;
+
+	@Field
+	private ObjectId hospitalId;
 
 	@Field
 	private Boolean isVisible = true;
