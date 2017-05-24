@@ -388,7 +388,7 @@ public class BillingServiceImpl implements BillingService {
 			 if(doPatientReceiptCollections != null && !doPatientReceiptCollections.isEmpty()){
 				 for(DoctorPatientReceiptCollection receiptCollection : doPatientReceiptCollections){
 					 
-					if(receiptCollection.getAdvanceReceiptIdWithAmounts() != null && !receiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty())
+					if(receiptCollection.getAdvanceReceiptIdWithAmounts() != null && !receiptCollection.getAdvanceReceiptIdWithAmounts().isEmpty()){
 						advanceAmount = advanceAmount + receiptCollection.getUsedAdvanceAmount();
 						for(AdvanceReceiptIdWithAmount receiptIdWithAmount : receiptCollection.getAdvanceReceiptIdWithAmounts()){
 						 DoctorPatientReceiptCollection patientReceiptCollection = doctorPatientReceiptRepository.findOne(receiptIdWithAmount.getReceiptId());
@@ -396,6 +396,7 @@ public class BillingServiceImpl implements BillingService {
 						 patientReceiptCollection.setUpdatedTime(new Date());
 						 doctorPatientReceiptRepository.save(patientReceiptCollection);
 					 }
+					}
 					 DoctorPatientLedgerCollection patientLedgerCollection = doctorPatientLedgerRepository.findByReceiptId(receiptCollection.getId());
 					 patientLedgerCollection.setDiscarded(discarded);
 					 patientLedgerCollection.setUpdatedTime(new Date());
