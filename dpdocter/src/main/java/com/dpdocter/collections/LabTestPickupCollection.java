@@ -3,6 +3,7 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.elasticsearch.common.collect.HppcMaps.Object;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -21,7 +22,7 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Field
 	private Long deliveryTime;
 	@Field
-	private List<LabTestSample> labTestSamples;
+	private List<ObjectId> labTestSampleIds;
 	@Field
 	private String status;
 	@Field
@@ -107,12 +108,12 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.parentLabLocationId = parentLabLocationId;
 	}
 
-	public List<LabTestSample> getLabTestSamples() {
-		return labTestSamples;
+	 public List<ObjectId> getLabTestSampleIds() {
+		return labTestSampleIds;
 	}
 
-	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
-		this.labTestSamples = labTestSamples;
+	public void setLabTestSampleIds(List<ObjectId> labTestSampleIds) {
+		this.labTestSampleIds = labTestSampleIds;
 	}
 
 	public String getRequestId() {
@@ -166,11 +167,12 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Override
 	public String toString() {
 		return "LabTestPickupCollection [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime=" + pickupTime
-				+ ", deliveryTime=" + deliveryTime + ", labTestSamples=" + labTestSamples + ", status=" + status
+				+ ", deliveryTime=" + deliveryTime + ", labTestSampleIds=" + labTestSampleIds + ", status=" + status
 				+ ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
-				+ numberOfSamplesPicked + ", requestId=" + requestId + "]";
+				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted
+				+ ", collectionBoyId=" + collectionBoyId + "]";
 	}
 
 }

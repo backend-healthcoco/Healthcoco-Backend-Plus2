@@ -7,6 +7,7 @@ import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
+import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
@@ -51,5 +52,9 @@ public interface LocationServices {
 	CollectionBoy discardCB(String collectionBoyId, Boolean discarded);
 
 	CollectionBoy changeAvailability(String collectionBoyId, Boolean isAvailable);
+
+	RateCardLabAssociation addEditRateCardAssociatedLab(RateCardLabAssociation rateCardLabAssociation);
+
+	RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId, String parentLabId);
 
 }

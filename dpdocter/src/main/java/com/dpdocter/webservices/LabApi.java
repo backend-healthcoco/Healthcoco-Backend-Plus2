@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -240,7 +241,7 @@ public class LabApi {
 	
 	@Path(value = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION)
 	@POST
-	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD, notes = PathProxy.LabUrls.ADD_EDIT_RATE_CARD)
+	@ApiOperation(value = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION, notes = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION)
 	public Response<Location> addEditRateCard(List<CollectionBoyLabAssociation> collectionBoyLabAssociations) {
 		if (collectionBoyLabAssociations == null) {
 			logger.warn("Invalid Input");
@@ -265,5 +266,22 @@ public class LabApi {
 		response.setDataList(locationServices.getCBAssociatedLabs(parentLabId, daughterLabId, collectionBoyId, size, page));
 		return response;
 	}
+	
+	
+	@Path(value = PathProxy.LabUrls.GET_ASSOCIATED_LABS)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_ASSOCIATED_LABS, notes = PathProxy.LabUrls.GET_ASSOCIATED_LABS)
+	public Response<Location> getAssociateLabs(@QueryParam("LocationId") String locationId,
+			@QueryParam("isParent") @DefaultValue("true") Boolean isParent) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<Location> response = new Response<Location>();
+		response.setDataList(locationServices.getAssociatedLabs(locationId, isParent));
+		return response;
+	}
+	
+	
 
 }

@@ -23,15 +23,18 @@ import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
+import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
+import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RateCardCollection;
+import com.dpdocter.collections.RateCardLabAssociationCollection;
 import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.UserCollection;
@@ -42,8 +45,11 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
+import com.dpdocter.repository.LabAssociationRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
+import com.dpdocter.repository.LabTestSampleRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.RateCardLabAssociationRepository;
 import com.dpdocter.repository.RateCardRepository;
 import com.dpdocter.repository.RateCardTestAssociationRepository;
 import com.dpdocter.repository.RecommendationsRepository;
@@ -92,6 +98,15 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Autowired
 	private CollectionBoyRepository collectionBoyRepository;
+	
+	@Autowired
+	private RateCardLabAssociationRepository rateCardLabAssociationRepository;
+	
+	@Autowired
+	private LabAssociationRepository labAssociationRepository;
+	
+	@Autowired
+	private LabTestSampleRepository labTestSampleRepository;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
@@ -331,6 +346,7 @@ public class LocationServiceImpl implements LocationServices {
 	@Transactional
 	public LabTestPickup addEditLabTestPickupRequest(AddEditLabTestPickupRequest request) {
 		LabTestPickup response = null;
+		List<ObjectId> labTestSampleIds = new ArrayList<ObjectId>();
 		LabTestPickupCollection labTestPickupCollection = null;
 		String requestId = null;
 		try {
@@ -341,18 +357,38 @@ public class LocationServiceImpl implements LocationServices {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
 				BeanUtil.map(request, labTestPickupCollection);
-				labTestPickupCollection.setLabTestSamples(request.getLabTestSamples());
+				for (LabTestSample labTestSample : request.getLabTestSamples()) {
+					
+					if(labTestSample.getId() != null)
+					{
+						labTestSampleIds.add(new ObjectId(labTestSample.getId()));
+					}
+					else
+					{
+						labTestSample.setSampleId(UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
+						LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
+						BeanUtil.map(labTestSample, labTestSampleCollection);
+						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
+						labTestSampleIds.add(labTestSampleCollection.getId());
+					}
+					
+				} 
+				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			} else {
 				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
 				request.setDaughterLabCRN(saveCRN(request.getDaughterLabLocationId(), requestId, 5));
 				for (LabTestSample labTestSample : request.getLabTestSamples()) {
-					labTestSample.setSampleId(UniqueIdInitial.LAB_PICKUP_SAMPLE + DPDoctorUtils.generateRandomId());
-				}
+					labTestSample.setSampleId(UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
+					LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
+					BeanUtil.map(labTestSample, labTestSampleCollection);
+					labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
+					labTestSampleIds.add(labTestSampleCollection.getId());
+				} 
 				labTestPickupCollection = new LabTestPickupCollection();
 				BeanUtil.map(request, labTestPickupCollection);
 				labTestPickupCollection.setRequestId(requestId);
-				labTestPickupCollection.setLabTestSamples(request.getLabTestSamples());
+				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 
 			}
@@ -454,7 +490,7 @@ public class LocationServiceImpl implements LocationServices {
 					collectionBoyLabAssociationCollection = new CollectionBoyLabAssociationCollection();
 				} else {
 					collectionBoyLabAssociationCollection
-							.setId(String.valueOf(collectionBoyLabAssociationCollection.getId()));
+							.setId(collectionBoyLabAssociationCollection.getId());
 				}
 				BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
@@ -724,6 +760,53 @@ public class LocationServiceImpl implements LocationServices {
 			throw new BusinessException(ServiceError.Unknown, "Error Getting rate cards");
 		}
 		return rateCardTests;
+	}
+	
+	@Override
+	@Transactional
+	public RateCardLabAssociation addEditRateCardAssociatedLab(RateCardLabAssociation rateCardLabAssociation) {
+		RateCardLabAssociation response = null;
+		RateCardLabAssociationCollection rateCardLabAssociationCollection = null;
+		try{
+			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocationAndRateCard(new ObjectId(rateCardLabAssociation.getLocationId()), new ObjectId(rateCardLabAssociation.getRateCardId()));
+		if (rateCardLabAssociationCollection == null) {
+			rateCardLabAssociationCollection = new RateCardLabAssociationCollection();
+		} else {
+			rateCardLabAssociationCollection.setId(rateCardLabAssociationCollection.getId());
+		}
+		BeanUtil.map(rateCardLabAssociation, rateCardLabAssociationCollection);
+		rateCardLabAssociationCollection = rateCardLabAssociationRepository
+				.save(rateCardLabAssociationCollection);
+		response = new RateCardLabAssociation();
+		BeanUtil.map(rateCardLabAssociation, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn(e);
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId , String parentLabId) {
+		RateCardLabAssociation response = null;
+		RateCardLabAssociationCollection rateCardLabAssociationCollection = null;
+		RateCardCollection rateCardCollection = null;
+		try{
+			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocation(new ObjectId(daughterLabId ));
+		if (rateCardLabAssociationCollection != null) {
+			rateCardCollection = rateCardRepository.findOne(rateCardLabAssociationCollection.getId());
+		}
+		else
+		{
+			rateCardCollection = rateCardRepository.getDefaultRateCard(new ObjectId(parentLabId));
+		}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.warn(e);
+		}
+		return response;
 	}
 
 }

@@ -49,6 +49,14 @@ public class RateCard {
 		this.hospitalId = hospitalId;
 	}
 
+	public Boolean getIsDefault() {
+		return isDefault;
+	}
+
+	public void setIsDefault(Boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
 	@Override
 	public String toString() {
 		return "RateCard [id=" + id + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", name=" + name

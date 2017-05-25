@@ -1,5 +1,6 @@
 package com.dpdocter.collections;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,45 +9,45 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class CollectionBoyLabAssociationCollection extends GenericCollection {
 
 	@Id
-	private String id;
+	private ObjectId id;
 	@Field
-	private String collectionBoyId;
+	private ObjectId collectionBoyId;
 	@Field
-	private String parentLabId;
+	private ObjectId parentLabId;
 	@Field
-	private String daughterLabId;
+	private ObjectId daughterLabId;
 	@Field
 	private Boolean isActive;
 
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
 
-	public String getCollectionBoyId() {
+	public ObjectId getCollectionBoyId() {
 		return collectionBoyId;
 	}
 
-	public void setCollectionBoyId(String collectionBoyId) {
+	public void setCollectionBoyId(ObjectId collectionBoyId) {
 		this.collectionBoyId = collectionBoyId;
 	}
 
-	public String getParentLabId() {
+	public ObjectId getParentLabId() {
 		return parentLabId;
 	}
 
-	public void setParentLabId(String parentLabId) {
+	public void setParentLabId(ObjectId parentLabId) {
 		this.parentLabId = parentLabId;
 	}
 
-	public String getDaughterLabId() {
+	public ObjectId getDaughterLabId() {
 		return daughterLabId;
 	}
 
-	public void setDaughterLabId(String daughterLabId) {
+	public void setDaughterLabId(ObjectId daughterLabId) {
 		this.daughterLabId = daughterLabId;
 	}
 
@@ -56,6 +57,12 @@ public class CollectionBoyLabAssociationCollection extends GenericCollection {
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	@Override
+	public String toString() {
+		return "CollectionBoyLabAssociationCollection [id=" + id + ", collectionBoyId=" + collectionBoyId
+				+ ", parentLabId=" + parentLabId + ", daughterLabId=" + daughterLabId + ", isActive=" + isActive + "]";
 	}
 
 }

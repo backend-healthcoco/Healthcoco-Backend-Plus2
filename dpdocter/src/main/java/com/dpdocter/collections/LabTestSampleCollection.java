@@ -1,18 +1,21 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
 import java.util.List;
 
-import com.dpdocter.collections.GenericCollection;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.dpdocter.enums.TestSampleType;
 
-public class LabTestSample extends GenericCollection{
+@Document(collection = "lab_test_sample_cl")
+public class LabTestSampleCollection extends GenericCollection {
 
-	private String id;
+	private ObjectId id;
 	private String patientName;
 	private Integer age;
 	private String Gender;
 	private TestSampleType sampleType;
-	private List<String> labTestIds;
+	private List<ObjectId> labTestId;
 	private Boolean isUrgent;
 	private Long urgentTime;
 	private Boolean isCollected = false;
@@ -21,21 +24,12 @@ public class LabTestSample extends GenericCollection{
 	private String status;
 	private String sampleId;
 
-	
-	public String getId() {
+	public ObjectId getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public List<String> getLabTestIds() {
-		return labTestIds;
-	}
-
-	public void setLabTestIds(List<String> labTestIds) {
-		this.labTestIds = labTestIds;
 	}
 
 	public String getPatientName() {
@@ -70,6 +64,14 @@ public class LabTestSample extends GenericCollection{
 		this.sampleType = sampleType;
 	}
 
+	public List<ObjectId> getLabTestId() {
+		return labTestId;
+	}
+
+	public void setLabTestId(List<ObjectId> labTestId) {
+		this.labTestId = labTestId;
+	}
+
 	public Boolean getIsUrgent() {
 		return isUrgent;
 	}
@@ -84,6 +86,14 @@ public class LabTestSample extends GenericCollection{
 
 	public void setUrgentTime(Long urgentTime) {
 		this.urgentTime = urgentTime;
+	}
+
+	public Boolean getIsCollected() {
+		return isCollected;
+	}
+
+	public void setIsCollected(Boolean isCollected) {
+		this.isCollected = isCollected;
 	}
 
 	public Boolean getIsHardCopyRequired() {
@@ -116,22 +126,6 @@ public class LabTestSample extends GenericCollection{
 
 	public void setSampleId(String sampleId) {
 		this.sampleId = sampleId;
-	}
-
-	public Boolean getIsCollected() {
-		return isCollected;
-	}
-
-	public void setIsCollected(Boolean isCollected) {
-		this.isCollected = isCollected;
-	}
-
-	@Override
-	public String toString() {
-		return "LabTestSample [patientName=" + patientName + ", age=" + age + ", Gender=" + Gender + ", sampleType="
-				+ sampleType + ", labTestIds=" + labTestIds + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime
-				+ ", isCollected=" + isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven="
-				+ isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId + "]";
 	}
 
 }
