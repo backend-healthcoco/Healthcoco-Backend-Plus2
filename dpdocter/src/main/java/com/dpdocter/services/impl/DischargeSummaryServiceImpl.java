@@ -47,6 +47,7 @@ import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
@@ -56,6 +57,7 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
+import com.dpdocter.response.PatientVisitLookupResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.DischargeSummaryService;
@@ -80,7 +82,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private AppointmentService appointmentService;
 
 	@Autowired
-	private PatientVisitService patientTrackService;
+	private PatientVisitRepository patientVisitRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -142,7 +144,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummary.getId() == null) {
 				dischargeSummaryCollection = new DischargeSummaryCollection();
 				dischargeSummary.setCreatedTime(new Date());
-				dischargeSummaryCollection.setCreatedBy(doctor.getFirstName());
+				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
@@ -162,18 +164,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 						addEditResponseDetails = prescriptionServices.addPrescriptionHandheld(request);
 						if (addEditResponseDetails != null) {
-							String visitId = patientTrackService.addRecord(addEditResponseDetails,
+							String visitId = patientVisitService.addRecord(addEditResponseDetails,
 									VisitedFor.PRESCRIPTION, addEditResponseDetails.getVisitId());
 							addEditResponseDetails.setVisitId(visitId);
 						}
 					} else {
 						addEditResponseDetails = prescriptionServices.editPrescription(request);
 						if (addEditResponseDetails != null) {
-							String visitId = patientTrackService.editRecord(addEditResponseDetails.getId(),
+							String visitId = patientVisitService.editRecord(addEditResponseDetails.getId(),
 									VisitedFor.PRESCRIPTION);
 							addEditResponseDetails.setVisitId(visitId);
 						}
-						
+
 					}
 					BeanUtil.map(addEditResponseDetails, prescription);
 
@@ -433,8 +435,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			Boolean showIntructions = false, showDirection = false;
 			if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
-					show = true;
+					
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
+						show = true;
 						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
 						if (drug != null) {
 							String drugType = drug.getDrugType() != null
@@ -892,6 +895,27 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			BeanUtil.map(appointment, response);
 		}
 		return response;
+	}
+
+	@Override
+	public DischargeSummaryResponse addMultiVisit(List<String> visitIds) {
+		DischargeSummaryResponse response = null;
+		PatientVisitLookupResponse patientVisitLookupResponse=null;
+				try {
+					List<ObjectId> visitObjectIds=new  ArrayList<ObjectId>();
+					for(String visitId:visitIds){
+						visitObjectIds.add(new ObjectId(visitId));
+						
+					}
+				//	List<PatientVisitCollection> patientVisitCollections=patientVisitRepository.findByIds(visitObjectIds);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return null;
 	}
 
 }

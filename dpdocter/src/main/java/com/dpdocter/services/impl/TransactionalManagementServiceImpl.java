@@ -364,7 +364,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	@Value("${send.sms}")
 	private Boolean sendSMS;
 
-	@Scheduled(fixedDelay = 18000)
+	@Scheduled(fixedDelay = 1800000)
 	@Override
 	@Transactional
 	public void checkResources() {

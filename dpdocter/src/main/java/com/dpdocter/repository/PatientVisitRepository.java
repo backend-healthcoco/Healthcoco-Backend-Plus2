@@ -65,5 +65,8 @@ public interface PatientVisitRepository extends MongoRepository<PatientVisitColl
 
     @Query(value = "{'patientId': ?0, 'visitedFor': {$in : ?1}, 'discarded': ?2}", count = true)
     Integer getVisitCount(ObjectId patientId, List<VisitedFor> visitedFors, boolean discarded);
+    
+    @Query("{'id' : {$in:?0}}")
+    PatientVisitCollection findByIds(ObjectId id);
 
 }

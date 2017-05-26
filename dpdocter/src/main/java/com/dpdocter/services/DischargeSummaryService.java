@@ -2,6 +2,8 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import javax.ws.rs.MatrixParam;
+
 import org.bson.types.ObjectId;
 
 import com.dpdocter.request.DischargeSummaryRequest;
@@ -28,5 +30,6 @@ public interface DischargeSummaryService {
 
 	void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
+	DischargeSummaryResponse addMultiVisit( List<String> visitIds );
 
 }

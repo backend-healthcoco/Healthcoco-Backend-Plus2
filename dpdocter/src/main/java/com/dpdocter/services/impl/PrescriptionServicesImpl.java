@@ -5104,16 +5104,18 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		eyResponse = new EyeTestJasperResponse();
 		if (prescriptionCollection.getRightEyeTest() != null) {
 			BeanUtil.map(prescriptionCollection.getRightEyeTest(), eyResponse);
-			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getRightEyeTest().getDistanceSPH())
-					|| prescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
-					|| prescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
-				eyResponse.setDistanceSPH(String.format("%.2f",
-						Double.parseDouble(prescriptionCollection.getRightEyeTest().getDistanceSPH())));
-			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getRightEyeTest().getNearSPH())
-					|| prescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
-					|| prescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
-				eyResponse.setNearSPH(String.format("%.2f",
-						Double.parseDouble(prescriptionCollection.getRightEyeTest().getNearSPH())));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getRightEyeTest().getDistanceSPH())) {
+				if (prescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+						|| prescriptionCollection.getRightEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+					eyResponse.setDistanceSPH(String.format("%.2f",
+							Double.parseDouble(prescriptionCollection.getRightEyeTest().getDistanceSPH())));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getRightEyeTest().getNearSPH())) {
+				if (prescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase("plain")
+						|| prescriptionCollection.getRightEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+					eyResponse.setNearSPH(String.format("%.2f",
+							Double.parseDouble(prescriptionCollection.getRightEyeTest().getNearSPH())));
+			}
 			eyResponse.setDistanceCylinder(
 					String.format("%.2f", prescriptionCollection.getRightEyeTest().getDistanceCylinder()));
 			eyResponse.setDistanceBaseCurve(

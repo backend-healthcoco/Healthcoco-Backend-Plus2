@@ -1419,7 +1419,7 @@ public class BillingServiceImpl implements BillingService {
 				+ doctorPatientReceiptCollection.getModeOfPayment() + "&nbsp;&nbsp;&nbsp;On Date:-"
 				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
-		parameters.put("paid", "RS.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
+		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
 		parameters.put("name", doctor.getTitle().toUpperCase() + " " + doctor.getFirstName());
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),

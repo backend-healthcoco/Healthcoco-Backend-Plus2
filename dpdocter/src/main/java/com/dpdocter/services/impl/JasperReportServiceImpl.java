@@ -3179,11 +3179,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(10);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
 
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{time}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{title}"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
