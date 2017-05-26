@@ -1143,6 +1143,7 @@ public interface PathProxy {
 		public static final String ADD_EDIT_RATE_CARD_TESTS	= "/addEditRateCardTests";
 		public static final String GET_COLLECTION_BOY_REQUEST_LIST = "/getCollectionBoyRequestList";
 		public static final String GET_ASSOCIATED_LABS = "/getAssociatedLabs";
+		public static final String GET_CLINICS_AND_LABS = "/clinics";
 	
 		
 	}

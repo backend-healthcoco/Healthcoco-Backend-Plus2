@@ -57,4 +57,7 @@ public interface LocationServices {
 
 	RateCardLabAssociation getRateCardAssociatedLab(String daughterLabId, String parentLabId);
 
+	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
+			String searchTerm);
+
 }

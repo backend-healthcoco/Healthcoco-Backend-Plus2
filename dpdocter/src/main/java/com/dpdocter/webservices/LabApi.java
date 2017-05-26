@@ -271,7 +271,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_ASSOCIATED_LABS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_ASSOCIATED_LABS, notes = PathProxy.LabUrls.GET_ASSOCIATED_LABS)
-	public Response<Location> getAssociateLabs(@QueryParam("LocationId") String locationId,
+	public Response<Location> getAssociateLabs(@QueryParam("locationId") String locationId,
 			@QueryParam("isParent") @DefaultValue("true") Boolean isParent) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
@@ -279,6 +279,22 @@ public class LabApi {
 		}
 		Response<Location> response = new Response<Location>();
 		response.setDataList(locationServices.getAssociatedLabs(locationId, isParent));
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_CLINICS_AND_LABS, notes = PathProxy.LabUrls.GET_CLINICS_AND_LABS)
+	public Response<Location> getClinics(@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
+			@QueryParam(value = "hospitalId") String hospitalId,
+			@QueryParam(value = "isClinic")  Boolean isClinic,
+			@QueryParam(value = "isLab")  Boolean isLab, @QueryParam(value = "isParent") Boolean isParent,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+
+		List<Location> locations = locationServices.getClinics(page, size, hospitalId, isClinic, isLab, isParent, searchTerm);
+
+		Response<Location> response = new Response<Location>();
+		response.setDataList(locations);
 		return response;
 	}
 	

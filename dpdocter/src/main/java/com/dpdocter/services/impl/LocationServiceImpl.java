@@ -808,5 +808,57 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab,
+			Boolean isParent, String searchTerm) {
+		List<Location> response = null;
+		try {
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+
+				criteria = criteria.andOperator(new Criteria("hospitalId").is(new ObjectId(hospitalId)));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("locationName").regex("^" + searchTerm, "i"),
+						new Criteria("locationName").regex("^" + searchTerm));
+			}
+			
+			if(isClinic != null) {
+				criteria.and("isClinic").is(isClinic);
+			}
+			
+			if(isLab != null) {
+				criteria.and("isLab").is(isLab);
+			}
+			if(isParent != null) {
+				criteria.and("isParent").is(isParent);
+			}
+			
+			
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.skip((page) * size), Aggregation.limit(size),
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+			} else {
+				aggregation = Aggregation.newAggregation( Aggregation.match(criteria),
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+			}
+
+			AggregationResults<Location> results = mongoTemplate.aggregate(aggregation, LocationCollection.class,
+					Location.class);
+			response = results.getMappedResults();
+			
+		} catch (Exception e) {
+			logger.error("Error while getting doctors " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting doctors " + e.getMessage());
+		}
+		return response;
+	}
 
 }
