@@ -451,12 +451,7 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Patient Id  Cannot Be Empty");
 		}
 		Response<UserRecords> response = new Response<UserRecords>();
-		if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
-			boolean isOTPVerified = otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId);
-			if (!isOTPVerified) {
-				return response;
-			}
-		}
+
 		List<UserRecords> records = recordsService.getUserRecordsByuserId(patientId, doctorId, locationId, hospitalId,
 				page, size, updatedTime, discarded);
 		response.setDataList(records);

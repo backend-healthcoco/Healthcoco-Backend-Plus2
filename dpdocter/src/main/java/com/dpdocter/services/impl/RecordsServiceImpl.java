@@ -1832,7 +1832,7 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
+			Criteria criteria = new Criteria("createdTime").gt(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);
