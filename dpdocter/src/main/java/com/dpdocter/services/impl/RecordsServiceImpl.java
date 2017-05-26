@@ -1679,10 +1679,13 @@ public class RecordsServiceImpl implements RecordsService {
 			Date createdTime = new Date();
 			UserCollection userCollection = null;
 			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			if (userCollection == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid User Id");
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid User Id");
+				}
+			} else {
+				userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 			}
 			if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 				userAllowanceDetailsCollection = userAllowanceDetailsRepository
@@ -1829,7 +1832,7 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("userId")
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp)).and("patientId")
 					.is(patientObjectId);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);

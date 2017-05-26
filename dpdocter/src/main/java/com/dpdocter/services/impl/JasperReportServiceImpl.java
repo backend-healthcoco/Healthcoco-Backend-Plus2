@@ -3374,6 +3374,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{treatmentGiven}", 18, contentFontSize - 1, false);
 		}
 		show = (Boolean) parameters.get("showPrescription");
+		if(show){
+			show = (Boolean) parameters.get("showPrescriptionItems");
+			
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{PRESCRIPTION}", 18, contentFontSize - 1, true);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize - 1,
@@ -3385,6 +3388,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
+		}
 		}
 		show = (Boolean) parameters.get("showcondition");
 		if (show) {

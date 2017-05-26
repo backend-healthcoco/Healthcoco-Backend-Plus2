@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -155,5 +156,23 @@ public class DischargeSummaryAPI {
 		response.setData(true);
 		return response;
 	}
+	
+	/*@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
+	public Response<DischargeSummaryResponse> addMultiVisit(@MatrixParam("visitIds") List<String> visitIds ) {
+
+		if(visitIds==null||visitIds.isEmpty()){
+			logger.warn(
+					"Invalid Input Visit Ids  Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Invalid Input Visit Ids  Cannot Be Empty");
+			
+		}
+
+		Response<DischargeSummaryResponse> response = new Response<DischargeSummaryResponse>();
+		
+		return response;
+	}*/
 
 }

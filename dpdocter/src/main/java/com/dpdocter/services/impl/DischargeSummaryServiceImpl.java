@@ -433,9 +433,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					.findOne(dischargeSummaryCollection.getPrescriptionId());
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
-			if (prescription.getItems() != null && !prescription.getItems().isEmpty()) {
+			if (prescription.getItems() != null && !prescription.getItems().isEmpty())
 				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
-					
+
 					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
 						show = true;
 						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
@@ -506,20 +506,20 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					}
 				}
 
-				parameters.put("prescriptionItems", prescriptionItems);
-
-				parameters.put("showIntructions", showIntructions);
-				parameters.put("showDirection", showDirection);
-				parameters.put("showPrescription", show);
-				show = false;
-				if (!DPDoctorUtils.allStringsEmpty(prescription.getAdvice())) {
-					show = true;
-					parameters.put("advice", prescription.getAdvice());
-				}
-				parameters.put("showAdvice", show);
+			parameters.put("prescriptionItems", prescriptionItems);
+			parameters.put("showIntructions", showIntructions);
+			parameters.put("showDirection", showDirection);
+			parameters.put("showPrescriptionItems", show);
+			show = false;
+			if (!DPDoctorUtils.allStringsEmpty(prescription.getAdvice())) {
+				show = true;
+				parameters.put("advice", prescription.getAdvice());
 			}
-		}
+			parameters.put("showAdvice", show);
+			show = true;
 
+		}
+		parameters.put("showPrescription", show);
 		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
 			show = true;
@@ -900,14 +900,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Override
 	public DischargeSummaryResponse addMultiVisit(List<String> visitIds) {
 		DischargeSummaryResponse response = null;
-		PatientVisitLookupResponse patientVisitLookupResponse=null;
-				try {
-					List<ObjectId> visitObjectIds=new  ArrayList<ObjectId>();
-					for(String visitId:visitIds){
-						visitObjectIds.add(new ObjectId(visitId));
-						
-					}
-				//	List<PatientVisitCollection> patientVisitCollections=patientVisitRepository.findByIds(visitObjectIds);
+		PatientVisitLookupResponse patientVisitLookupResponse = null;
+		try {
+			List<ObjectId> visitObjectIds = new ArrayList<ObjectId>();
+			for (String visitId : visitIds) {
+				visitObjectIds.add(new ObjectId(visitId));
+
+			}
+			// List<PatientVisitCollection>
+			// patientVisitCollections=patientVisitRepository.findByIds(visitObjectIds);
 
 		} catch (Exception e) {
 			e.printStackTrace();
