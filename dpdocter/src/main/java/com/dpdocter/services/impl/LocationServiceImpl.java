@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -25,18 +24,19 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
+import com.dpdocter.beans.Specimen;
 import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.LabAssociationCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
-import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.RateCardCollection;
 import com.dpdocter.collections.RateCardLabAssociationCollection;
 import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
+import com.dpdocter.collections.SpecimenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -467,6 +467,41 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public Integer getCBCount(int size, int page, String locationId, String searchTerm)
+	{
+		Integer count = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("mobileNumber").regex("^" + searchTerm, "i"),
+						new Criteria("mobileNumber").regex("^" + searchTerm),
+						new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm));
+			}
+
+			criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
+					CollectionBoyCollection.class, CollectionBoy.class);
+			count = aggregationResults.getMappedResults().size();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Collection Boys");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Collection Boys");
+		}
+		return count;
+	}
 
 	@Override
 	@Transactional
@@ -859,6 +894,36 @@ public class LocationServiceImpl implements LocationServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while getting doctors " + e.getMessage());
 		}
 		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<Specimen> getSpecimenList(int page, int size , String searchTerm) {
+		List<Specimen> specimens = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("specimen").regex("^" + searchTerm, "i"),
+						new Criteria("specimen").regex("^" + searchTerm));
+			}
+			
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<Specimen> aggregationResults = mongoTemplate.aggregate(aggregation,
+					SpecimenCollection.class, Specimen.class);
+			specimens = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Specimens");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Specimens");
+		}
+		return specimens;
 	}
 
 }

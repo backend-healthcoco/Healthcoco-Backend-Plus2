@@ -9,6 +9,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
+import com.dpdocter.beans.Specimen;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
@@ -59,5 +60,9 @@ public interface LocationServices {
 
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
 			String searchTerm);
+
+	Integer getCBCount(int size, int page, String locationId, String searchTerm);
+
+	List<Specimen> getSpecimenList(int page, int size, String searchTerm);
 
 }

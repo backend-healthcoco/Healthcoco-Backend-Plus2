@@ -24,6 +24,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.Specimen;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
@@ -105,14 +106,15 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB, notes = PathProxy.LabUrls.GET_CB_LIST_BY_PARENT_LAB)
-	public Response<CollectionBoy> getCBListByParentLab(@QueryParam("locationId") String locationId,
+	public Response<Object> getCBListByParentLab(@QueryParam("locationId") String locationId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<CollectionBoy> response = new Response<CollectionBoy>();
+		Response<Object> response = new Response<Object>();
 		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
+		response.setData(locationServices.getCBCount(size, page, locationId, searchTerm));
 
 		return response;
 	}
@@ -298,6 +300,22 @@ public class LabApi {
 		return response;
 	}
 	
-	
+	@Path(PathProxy.LabUrls.GET_SPECIMEN_LIST)
+	@GET
+	public Response<Specimen> getSpecimen(@QueryParam("page") int page ,@QueryParam("size") int size , @QueryParam("searchTerm") String searchTerm) {
+		List<Specimen> specimens = null;
+		Response<Specimen> response = null;
+
+		try {
+			specimens = locationServices.getSpecimenList(page, size,searchTerm);
+			response = new Response<Specimen>();
+			response.setDataList(specimens);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 }

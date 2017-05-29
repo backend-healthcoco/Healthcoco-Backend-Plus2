@@ -70,6 +70,8 @@ public class LocaleCollection extends GenericCollection {
 	private String localeType = LocaleType.PHARMACY.getType();
 	@Field
 	private Boolean isPasswordVerified = false;
+	@Field 
+	private Boolean isVerified;
 
 	public ObjectId getId() {
 		return id;
@@ -285,6 +287,14 @@ public class LocaleCollection extends GenericCollection {
 
 	public void setCallingNumber(String callingNumber) {
 		this.callingNumber = callingNumber;
+	}
+
+	public Boolean getIsVerified() {
+		return isVerified;
+	}
+
+	public void setIsVerified(Boolean isVerified) {
+		this.isVerified = isVerified;
 	}
 
 	@Override

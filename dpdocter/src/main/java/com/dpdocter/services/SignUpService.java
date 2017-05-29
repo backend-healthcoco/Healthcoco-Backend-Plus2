@@ -38,4 +38,6 @@ public interface SignUpService {
 
 	CollectionBoy signupCollectionBoys(CollectionBoy collectionBoy);
 
+	String verifyLocale(String tokenId);
+
 }

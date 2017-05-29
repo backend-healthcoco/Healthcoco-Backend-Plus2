@@ -14,7 +14,7 @@ public class DiagnosticTest extends GenericCollection {
 
 	private String explanation;
 
-	private String sampleType;
+	private String specimenId;
 
 	private String locationId;
 
@@ -80,18 +80,19 @@ public class DiagnosticTest extends GenericCollection {
 		this.code = code;
 	}
 
-	public String getSampleType() {
-		return sampleType;
+	public String getSpecimenId() {
+		return specimenId;
 	}
 
-	public void setSampleType(String sampleType) {
-		this.sampleType = sampleType;
+	public void setSpecimenId(String specimenId) {
+		this.specimenId = specimenId;
 	}
 
 	@Override
 	public String toString() {
-		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", code=" + code + "]";
+		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", specimenId="
+				+ specimenId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", code=" + code + "]";
 	}
 
 }
