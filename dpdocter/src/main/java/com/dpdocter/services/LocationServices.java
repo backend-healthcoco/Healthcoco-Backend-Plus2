@@ -65,4 +65,6 @@ public interface LocationServices {
 
 	List<Specimen> getSpecimenList(int page, int size, String searchTerm);
 
+	Integer getRateCardCount(int page, int size, String searchTerm, String locationId);
+
 }

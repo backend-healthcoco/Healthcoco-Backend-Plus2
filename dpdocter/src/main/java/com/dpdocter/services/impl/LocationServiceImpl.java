@@ -704,6 +704,38 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return rateCards;
 	}
+	
+	@Override
+	@Transactional
+	public Integer getRateCardCount(int page, int size, String searchTerm, String locationId)
+	{
+		Integer count = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm));
+			}
+			criteria.and("locationId").is(new ObjectId(locationId));
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<RateCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+					RateCardCollection.class, RateCard.class);
+			count = aggregationResults.getMappedResults().size();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting rate cards");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting rate cards");
+		}
+		return count;
+	}
 
 	@Override
 	@Transactional
@@ -752,7 +784,10 @@ public class LocationServiceImpl implements LocationServices {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
-						Aggregation.unwind("diagnosticTest"), Aggregation.match(criteria),
+						Aggregation.unwind("diagnosticTest"),
+						/*Aggregation.lookup("specimen_cl", "diagnosticTest.specimenId", "_id", "specimen"),
+						Aggregation.unwind("specimen"),*/
+						Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else

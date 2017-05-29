@@ -122,14 +122,15 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_RATE_CARDS)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARDS, notes = PathProxy.LabUrls.GET_RATE_CARDS)
-	public Response<RateCard> getRateCards(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
+	public Response<Object> getRateCards(@QueryParam("locationId") String locationId, @QueryParam("page") int page,
 			@QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<RateCard> response = new Response<RateCard>();
+		Response<Object> response = new Response<Object>();
 		response.setDataList(locationServices.getRateCards(page, size, searchTerm, locationId));
+		response.setData(locationServices.getRateCardCount(page, size, searchTerm, locationId));
 
 		return response;
 	}
