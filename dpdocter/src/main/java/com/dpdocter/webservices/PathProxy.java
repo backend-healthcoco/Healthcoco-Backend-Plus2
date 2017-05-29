@@ -34,7 +34,7 @@ public interface PathProxy {
 		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
 
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
-		
+
 		public static final String SIGNUP_COLLECTION_BOY = "/collectionBoy";
 
 	}
@@ -174,6 +174,8 @@ public interface PathProxy {
 		public static final String DOWNLOAD_CONSENT_FORM = "/consentForm/download/{consentFormId}/";
 
 		public static final String EMAIL_CONSENT_FORM = "/consentForm/{consentFormId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+
+		public static final String UPDATE_PID = "/update/pid";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -1114,11 +1116,13 @@ public interface PathProxy {
 
 	public interface DischargeSummaryUrls {
 		public static final String GET_DISCHARGE_SUMMARY = "/getDischargeSummery";
+		public static final String GET_DISCHARGE_SUMMARY_BY_VISIT = "/byVisit";
 		public static final String ADD_DISCHARGE_SUMMARY = "/add";
 		public static final String VIEW_DISCHARGE_SUMMARY = "/view/{dischargeSummeryId}";
 		public static final String DELETE_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DOWNLOAD_DISCHARGE_SUMMARY = "/download/{dischargeSummeryId}/";
 		public static final String EMAIL_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
+		public static final String UPDATE_DISCHARGE_SUMMARY_DATA = "/updateData";
 	}
 
 	public static final String LAB_BASE_URL = BASE_URL + "/lab";
@@ -1140,13 +1144,14 @@ public interface PathProxy {
 		public static final String GET_RATE_CARDS = "/getRateCards";
 		public static final String GET_RATE_CARD_TEST = "/getRateCardTests";
 		public static final String ADD_EDIT_RATE_CARD = "/addEditRateCards";
-		public static final String ADD_EDIT_RATE_CARD_TESTS	= "/addEditRateCardTests";
+		public static final String ADD_EDIT_RATE_CARD_TESTS = "/addEditRateCardTests";
 		public static final String GET_COLLECTION_BOY_REQUEST_LIST = "/getCollectionBoyRequestList";
 		public static final String GET_ASSOCIATED_LABS = "/getAssociatedLabs";
 		public static final String GET_CLINICS_AND_LABS = "/clinics";
 		public static final String GET_SPECIMEN_LIST = "/getSpecimens";
 	
 		
+
 	}
 
 }

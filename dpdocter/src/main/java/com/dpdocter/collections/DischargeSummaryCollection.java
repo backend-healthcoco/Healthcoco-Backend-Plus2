@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.PrescriptionAndAdvice;
 import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "discharge_summary_cl")
@@ -23,7 +24,20 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private ObjectId hospitalId;
 	@Field
 	private ObjectId prescriptionId;
-
+	@Field
+	private String complaints;
+	@Field
+	private String presentComplaints;
+	@Field
+	private PrescriptionAndAdvice prescriptions;
+	@Field
+	private String historyOfPresentComplaints;
+	@Field
+	private String generalExamination;
+	@Field
+	private String systemicExamination;
+	@Field
+	private String dischargeId;
 	@Field
 	private String appointmentId;
 	@Field
@@ -72,7 +86,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private WorkingHours time;
 	@Field
 	private Date fromDate;
-
 	@Field
 	private Date admissionDate;
 	@Field
@@ -95,6 +108,34 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String ecgDetails;
 	@Field
 	private String holter;
+
+	public PrescriptionAndAdvice getPrescriptions() {
+		return prescriptions;
+	}
+
+	public String getComplaints() {
+		return complaints;
+	}
+
+	public String getPresentComplaints() {
+		return presentComplaints;
+	}
+
+	public String getHistoryOfPresentComplaints() {
+		return historyOfPresentComplaints;
+	}
+
+	public String getGeneralExamination() {
+		return generalExamination;
+	}
+
+	public String getSystemicExamination() {
+		return systemicExamination;
+	}
+
+	public String getDischargeId() {
+		return dischargeId;
+	}
 
 	public String getIndicationOfUSG() {
 		return indicationOfUSG;

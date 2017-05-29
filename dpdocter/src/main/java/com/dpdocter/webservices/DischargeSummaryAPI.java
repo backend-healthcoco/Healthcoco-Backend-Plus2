@@ -156,23 +156,31 @@ public class DischargeSummaryAPI {
 		response.setData(true);
 		return response;
 	}
-	
-	/*@Path(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
+
+	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
 	@GET
-	@ApiOperation(value = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY, notes = PathProxy.DischargeSummaryUrls.EMAIL_DISCHARGE_SUMMARY)
-	public Response<DischargeSummaryResponse> addMultiVisit(@MatrixParam("visitIds") List<String> visitIds ) {
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_BY_VISIT)
+	public Response<DischargeSummaryResponse> addMultiVisit(@MatrixParam("visitIds") List<String> visitIds) {
 
-		if(visitIds==null||visitIds.isEmpty()){
-			logger.warn(
-					"Invalid Input Visit Ids  Cannot Be Empty");
-			throw new BusinessException(ServiceError.InvalidInput,
-					"Invalid Input Visit Ids  Cannot Be Empty");
-			
+		if (visitIds == null || visitIds.isEmpty()) {
+			logger.warn("Invalid Input Visit Ids  Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input Visit Ids  Cannot Be Empty");
+
 		}
-
 		Response<DischargeSummaryResponse> response = new Response<DischargeSummaryResponse>();
-		
+		response.setData(dischargeSummaryService.addMultiVisit(visitIds));
 		return response;
-	}*/
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA, notes = PathProxy.DischargeSummaryUrls.UPDATE_DISCHARGE_SUMMARY_DATA)
+	public Response<Integer> updateData() {
+
+		Response<Integer> response = new Response<Integer>();
+		response.setData(dischargeSummaryService.upadateDischargeSummaryData());
+
+		return response;
+	}
 
 }

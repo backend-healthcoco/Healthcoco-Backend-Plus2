@@ -31,5 +31,7 @@ public interface DischargeSummaryService {
 	void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
 	DischargeSummaryResponse addMultiVisit( List<String> visitIds );
+	
+	public Integer upadateDischargeSummaryData();
 
 }

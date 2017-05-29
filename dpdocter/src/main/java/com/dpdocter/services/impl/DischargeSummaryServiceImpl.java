@@ -23,16 +23,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
@@ -47,7 +51,6 @@ import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
-import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
@@ -57,9 +60,9 @@ import com.dpdocter.request.PrescriptionAddEditRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.response.MailResponse;
-import com.dpdocter.response.PatientVisitLookupResponse;
 import com.dpdocter.response.PrescriptionAddEditResponseDetails;
 import com.dpdocter.services.AppointmentService;
+import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DischargeSummaryService;
 import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
@@ -79,10 +82,10 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private DischargeSummaryRepository dischargeSummaryRepository;
 
 	@Autowired
-	private AppointmentService appointmentService;
+	private ClinicalNotesService clinicalNotesService;
 
 	@Autowired
-	private PatientVisitRepository patientVisitRepository;
+	private AppointmentService appointmentService;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -900,15 +903,211 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	@Override
 	public DischargeSummaryResponse addMultiVisit(List<String> visitIds) {
 		DischargeSummaryResponse response = null;
-		PatientVisitLookupResponse patientVisitLookupResponse = null;
 		try {
 			List<ObjectId> visitObjectIds = new ArrayList<ObjectId>();
 			for (String visitId : visitIds) {
 				visitObjectIds.add(new ObjectId(visitId));
+			}
+			Criteria criteria = new Criteria("patientId").exists(true).and("locationId").exists(true).and("hospitalId")
+					.exists(true).and("doctorId").exists(true).and("_id").in(visitObjectIds);
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<PatientVisitLookupBean> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientVisitCollection.class, PatientVisitLookupBean.class);
+			List<PatientVisitLookupBean> patientVisitLookupBeans = aggregationResults.getMappedResults();
+			if (patientVisitLookupBeans != null && !patientVisitLookupBeans.isEmpty()) {
+				for (PatientVisitLookupBean patientVisitlookupBean : patientVisitLookupBeans) {
+					response = new DischargeSummaryResponse();
+
+					if (patientVisitlookupBean.getPrescriptionId() != null) {
+						List<Prescription> prescriptions = prescriptionServices.getPrescriptionsByIds(
+								patientVisitlookupBean.getPrescriptionId(), patientVisitlookupBean.getId());
+
+						if (response.getPrescriptions() == null && prescriptions != null) {
+							response.setPrescriptions(new Prescription());
+							response.getPrescriptions().setAdvice(prescriptions.get(0).getAdvice());
+							response.getPrescriptions().setItems(prescriptions.get(0).getItems());
+
+						} else if (prescriptions != null) {
+
+							response.getPrescriptions().setAdvice("," + prescriptions.get(0).getAdvice());
+							response.getPrescriptions().setItems(prescriptions.get(0).getItems());
+
+						}
+
+					}
+
+					if (patientVisitlookupBean.getClinicalNotesId() != null) {
+
+						for (ObjectId clinicalNotesId : patientVisitlookupBean.getClinicalNotesId()) {
+							ClinicalNotes clinicalNote = clinicalNotesService.getNotesById(clinicalNotesId.toString(),
+									patientVisitlookupBean.getId());
+							String pattern = "dd/MM/yyyy";
+							SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+							String date = simpleDateFormat.format(patientVisitlookupBean.getVisitedTime());
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getDiagnosis(), clinicalNote.getDiagnosis())) {
+
+								response.setDiagnosis(",<br>" + date + ":-" + clinicalNote.getDiagnosis());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getDiagnosis())) {
+
+								response.setDiagnosis(date + ":-" + clinicalNote.getDiagnosis());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getComplaint(), clinicalNote.getComplaint())) {
+
+								response.setComplaint(",<br>" + date + ":-" + clinicalNote.getComplaint());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getComplaint())) {
+								response.setComplaint(date + ":-" + clinicalNote.getComplaint());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getObservation(),
+									clinicalNote.getObservation())) {
+								response.setObservation(",<br>" + date + ":-" + clinicalNote.getObservation());
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getObservation())) {
+								response.setObservation(date + ":-" + clinicalNote.getObservation());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getInvestigation(),
+									clinicalNote.getInvestigation())) {
+								response.setInvestigation(",<br>" + date + ":-" + clinicalNote.getInvestigation());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getInvestigation())) {
+								response.setInvestigation(date + ":-" + clinicalNote.getInvestigation());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getSystemExam(), clinicalNote.getSystemExam())) {
+								response.setSystemExam(",<br>" + date + ":-" + clinicalNote.getSystemExam());
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getSystemExam())) {
+								response.setSystemExam(date + ":-" + clinicalNote.getSystemExam());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getGeneralExam(),
+									clinicalNote.getGeneralExam())) {
+								response.setGeneralExam(",<br>" + date + ":-" + clinicalNote.getGeneralExam());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getGeneralExam())) {
+								response.setGeneralExam(date + ":-" + clinicalNote.getGeneralExam());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getPresentComplaint(),
+									clinicalNote.getPresentComplaint())) {
+								response.setPresentComplaint(
+										",<br>" + date + ":-" + clinicalNote.getPresentComplaint());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getPresentComplaint())) {
+								response.setPresentComplaint(date + ":-" + clinicalNote.getPresentComplaint());
+
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getPresentComplaintHistory(),
+									clinicalNote.getPresentComplaintHistory())) {
+								response.setPresentComplaintHistory(
+										",<br>" + date + ":-" + clinicalNote.getPresentComplaintHistory());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getPresentComplaintHistory())) {
+								response.setPresentComplaintHistory(
+										date + ":-" + clinicalNote.getPresentComplaintHistory());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getEcgDetails(), clinicalNote.getEcgDetails())) {
+
+								response.setEcgDetails(",<br>" + date + ":-" + clinicalNote.getEcgDetails());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getEcgDetails())) {
+								response.setEcgDetails(date + ":-" + clinicalNote.getEcgDetails());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getEcho(), clinicalNote.getEcho())) {
+
+								response.setEcho(",<br>" + date + ":-" + clinicalNote.getEcho());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getEcho())) {
+								response.setEcho(date + ":-" + clinicalNote.getEcho());
+							}
+							if (!DPDoctorUtils.anyStringEmpty(response.getxRayDetails(),
+									clinicalNote.getxRayDetails())) {
+								response.setxRayDetails(",<br>" + date + ":-" + clinicalNote.getxRayDetails());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getxRayDetails())) {
+
+								response.setxRayDetails(date + ":-" + clinicalNote.getxRayDetails());
+
+							}
+							if (!DPDoctorUtils.anyStringEmpty(response.getHolter(), clinicalNote.getHolter())) {
+
+								response.setHolter(",<br>" + date + ":-" + clinicalNote.getHolter());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getHolter())) {
+								response.setHolter(date + ":-" + clinicalNote.getHolter());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getPv(), clinicalNote.getPv())) {
+								response.setPv(",<br>" + date + ":-" + clinicalNote.getPv());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getPv())) {
+								response.setPv(date + ":-" + clinicalNote.getPv());
+							}
+							if (!DPDoctorUtils.anyStringEmpty(response.getPa(), clinicalNote.getPa())) {
+								response.setPa(",<br>" + date + ":-" + clinicalNote.getPa());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getPa())) {
+								response.setPa(date + ":-" + clinicalNote.getPa());
+							}
+							if (!DPDoctorUtils.anyStringEmpty(response.getPs(), clinicalNote.getPs())) {
+								response.setPs(",<br>" + date + ":-" + clinicalNote.getPs());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getPs())) {
+
+								response.setPs(date + ":-" + clinicalNote.getPs());
+
+							}
+							if (!DPDoctorUtils.anyStringEmpty(response.getMenstrualHistory(),
+									clinicalNote.getMenstrualHistory())) {
+								response.setMenstrualHistory(
+										",<br>" + date + ":-" + clinicalNote.getMenstrualHistory());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getMenstrualHistory())) {
+								response.setMenstrualHistory(date + ":-" + clinicalNote.getMenstrualHistory());
+							}
+							if (!DPDoctorUtils.anyStringEmpty(response.getObstetricHistory(),
+									clinicalNote.getObstetricHistory())) {
+								response.setObstetricHistory(
+										",<br>" + date + ":-" + clinicalNote.getObstetricHistory());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getObstetricHistory())) {
+								response.setObstetricHistory(date + ":-" + clinicalNote.getObstetricHistory());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getIndicationOfUSG(),
+									clinicalNote.getIndicationOfUSG())) {
+								response.setIndicationOfUSG(",<br>" + date + ":-" + clinicalNote.getIndicationOfUSG());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getIndicationOfUSG())) {
+								response.setIndicationOfUSG(date + ":-" + clinicalNote.getIndicationOfUSG());
+							}
+
+						}
+						for (int index = 0; index < response.getPrescriptions().getItems().size(); index++) {
+							for (int ptr = index + 1; ptr < response.getPrescriptions().getItems().size(); ptr++) {
+								if (response.getPrescriptions().getItems().get(index).toString()
+										.equals(response.getPrescriptions().getItems().get(ptr).toString())) {
+									response.getPrescriptions().getItems().remove(ptr);
+								}
+							}
+
+						}
+					}
+
+				}
+
+			} else {
+
+				throw new BusinessException(ServiceError.InvalidInput, "visit not found for ids");
 
 			}
-			// List<PatientVisitCollection>
-			// patientVisitCollections=patientVisitRepository.findByIds(visitObjectIds);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -916,7 +1115,63 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
 		}
-		return null;
+		return response;
+	}
+
+	public Integer upadateDischargeSummaryData() {
+		Integer response = 0;
+		try {
+			List<DischargeSummaryCollection> dischargeSummaryCollections = dischargeSummaryRepository.findAll();
+			for (DischargeSummaryCollection dischargeSummaryCollection : dischargeSummaryCollections) {
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getComplaints())) {
+					dischargeSummaryCollection.setComplaint(dischargeSummaryCollection.getComplaints());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeId())) {
+					dischargeSummaryCollection.setUniqueEmrId(dischargeSummaryCollection.getDischargeId());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getGeneralExamination())) {
+					dischargeSummaryCollection.setGeneralExam(dischargeSummaryCollection.getGeneralExamination());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getSystemicExamination())) {
+					dischargeSummaryCollection.setSystemExam(dischargeSummaryCollection.getSystemicExamination());
+				}
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getHistoryOfPresentComplaints())) {
+					dischargeSummaryCollection
+							.setPresentComplaintHistory(dischargeSummaryCollection.getHistoryOfPresentComplaints());
+				}
+				if (dischargeSummaryCollection.getPrescriptions() != null) {
+					if ((dischargeSummaryCollection.getPrescriptions().getItems() != null
+							&& !dischargeSummaryCollection.getPrescriptions().getItems().isEmpty())
+							|| (dischargeSummaryCollection.getPrescriptions().getAdvice() != null
+									&& !dischargeSummaryCollection.getPrescriptions().getAdvice().isEmpty())) {
+						PrescriptionAddEditRequest addEditRequest = new PrescriptionAddEditRequest();
+
+						BeanUtil.map(dischargeSummaryCollection.getPrescriptions(), addEditRequest);
+						addEditRequest.setHospitalId(dischargeSummaryCollection.getHospitalId().toString());
+						addEditRequest.setLocationId(dischargeSummaryCollection.getLocationId().toString());
+						addEditRequest.setDoctorId(dischargeSummaryCollection.getDoctorId().toString());
+						addEditRequest.setPatientId(dischargeSummaryCollection.getPatientId().toString());
+						PrescriptionAddEditResponseDetails addEditResponseDetails = prescriptionServices
+								.addPrescriptionHandheld(addEditRequest);
+						dischargeSummaryCollection.setPrescriptionId(new ObjectId(addEditResponseDetails.getId()));
+						if (addEditResponseDetails != null) {
+							String visitId = patientVisitService.addRecord(addEditResponseDetails,
+									VisitedFor.PRESCRIPTION, addEditResponseDetails.getVisitId());
+							addEditResponseDetails.setVisitId(visitId);
+						}
+					}
+				}
+			}
+
+			dischargeSummaryCollections = dischargeSummaryRepository.save(dischargeSummaryCollections);
+			response = dischargeSummaryCollections.size();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+
+		}
+		return response;
 	}
 
 }
