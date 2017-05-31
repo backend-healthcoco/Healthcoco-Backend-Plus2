@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.aop.NoLogging;
 import com.dpdocter.beans.Hospital;
 import com.dpdocter.beans.LoginResponse;
 import com.dpdocter.beans.RegisteredPatientDetails;

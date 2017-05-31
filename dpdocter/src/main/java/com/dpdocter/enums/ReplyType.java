@@ -2,8 +2,8 @@ package com.dpdocter.enums;
 
 public enum ReplyType {
 
-	YES("YES"), NO("NO"), REQUESTED("REQUESTED");
-	
+	YES("YES"), NO("NO"), REQUESTED("REQUESTED"), ACCEPTED("ACCEPTED"), DECLINED("DECLINED");
+
 	private String replyType;
 
 	public String getReplyType() {

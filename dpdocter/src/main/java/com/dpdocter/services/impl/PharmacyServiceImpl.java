@@ -294,9 +294,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 			}
 			orderDrugCollection = new OrderDrugCollection();
 			BeanUtil.map(request, orderDrugCollection);
+			orderDrugCollection.setCreatedTime(new Date());
 			orderDrugRepository.save(orderDrugCollection);
 			UserSearchRequest userSearchRequest = new UserSearchRequest();
 			userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
+			userSearchRequest.setUniqueRequestId(request.getUniqueResponseId());
 			pushNotificationServices.notifyUser(request.getLocaleId(), userSearchRequest, RoleEnum.PHARMIST,
 					"Keep my order ready");
 			response = new OrderDrugsRequest();
