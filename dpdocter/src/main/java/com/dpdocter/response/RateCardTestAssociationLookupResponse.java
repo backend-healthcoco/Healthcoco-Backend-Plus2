@@ -19,8 +19,7 @@ public class RateCardTestAssociationLookupResponse {
 	private String category;
 	private String labId;
 	private DiagnosticTest diagnosticTest;
-	private Specimen specimen;
-
+	
 	public String getId() {
 		return id;
 	}
@@ -101,20 +100,12 @@ public class RateCardTestAssociationLookupResponse {
 		this.diagnosticTest = diagnosticTest;
 	}
 
-	public Specimen getSpecimen() {
-		return specimen;
-	}
-
-	public void setSpecimen(Specimen specimen) {
-		this.specimen = specimen;
-	}
-
 	@Override
 	public String toString() {
 		return "RateCardTestAssociationLookupResponse [id=" + id + ", locationId=" + locationId + ", hospitalId="
 				+ hospitalId + ", diagnosticTestId=" + diagnosticTestId + ", rateCardId=" + rateCardId
 				+ ", turnaroundTime=" + turnaroundTime + ", cost=" + cost + ", category=" + category + ", labId="
-				+ labId + ", diagnosticTest=" + diagnosticTest + ", specimen=" + specimen + "]";
+				+ labId + ", diagnosticTest=" + diagnosticTest + "]";
 	}
 
 }

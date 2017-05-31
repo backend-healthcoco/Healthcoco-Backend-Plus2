@@ -8,6 +8,7 @@ public class RateCard {
 	private String name;
 	private Boolean discarded = false;
 	private Boolean isDefault = false;
+	private Boolean isForPatient = false;
 
 	public String getId() {
 		return id;
@@ -55,6 +56,14 @@ public class RateCard {
 
 	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
+	}
+
+	public Boolean getIsForPatient() {
+		return isForPatient;
+	}
+
+	public void setIsForPatient(Boolean isForPatient) {
+		this.isForPatient = isForPatient;
 	}
 
 	@Override

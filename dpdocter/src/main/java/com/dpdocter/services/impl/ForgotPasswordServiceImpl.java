@@ -20,6 +20,7 @@ import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
+import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.OTPRepository;
@@ -77,49 +78,60 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Value(value = "${forgot.password.link}")
     private String forgotPasswordLink;
 
-    @Override
-    @Transactional
-    public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
-	try {
-	    UserCollection userCollection = null;
-	    ForgotPasswordResponse response = null;
+	@Override
+	@Transactional
+	public ForgotPasswordResponse forgotPasswordForDoctor(ForgotUsernamePasswordRequest request) {
+		try {
+			UserCollection userCollection = null;
+			ForgotPasswordResponse response = null;
 
-	    if (request.getUsername() == null)
-		request.setUsername(request.getEmailAddress());
+			if (request.getUsername() == null)
+				request.setUsername(request.getEmailAddress());
 
-	    Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
-		Query query = new Query(); query.addCriteria(criteria);
-		List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
-		if(userCollections != null && !userCollections.isEmpty())userCollection = userCollections.get(0);
+			Criteria criteria = new Criteria("userName").regex(request.getUsername(), "i");
+			Query query = new Query();
+			query.addCriteria(criteria);
+			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
+			if (userCollections != null && !userCollections.isEmpty())
+				userCollection = userCollections.get(0);
 
-	    if (userCollection != null) {
-		if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
-		    TokenCollection tokenCollection = new TokenCollection();
-		    tokenCollection.setResourceId(userCollection.getId());
-		    tokenCollection.setCreatedTime(new Date());
-		    tokenCollection = tokenRepository.save(tokenCollection);
+			if (userCollection != null) {
+				if (userCollection.getUserState() == UserState.USERSTATECOMPLETE) {
+					if (userCollection.getEmailAddress().trim().equals(request.getEmailAddress().trim())) {
+						TokenCollection tokenCollection = new TokenCollection();
+						tokenCollection.setResourceId(userCollection.getId());
+						tokenCollection.setCreatedTime(new Date());
+						tokenCollection = tokenRepository.save(tokenCollection);
 
-		    String body = mailBodyGenerator.generateForgotPasswordEmailBody(userCollection.getTitle()+" "+userCollection.getFirstName(), tokenCollection.getId());
-		    mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
-		    response = new ForgotPasswordResponse(userCollection.getUserName(), userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
-		} else {
-		    logger.warn("Email address is empty.");
-		    throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
+						String body = mailBodyGenerator.generateForgotPasswordEmailBody(
+								userCollection.getTitle() + " " + userCollection.getFirstName(),
+								tokenCollection.getId());
+						mailService.sendEmail(userCollection.getEmailAddress(), forgotUsernamePasswordSub, body, null);
+						response = new ForgotPasswordResponse(userCollection.getUserName(),
+								userCollection.getMobileNumber(), userCollection.getEmailAddress(), RoleEnum.DOCTOR);
+					} else {
+						logger.warn("Email address is empty.");
+						throw new BusinessException(ServiceError.InvalidInput, "Email address is empty.");
+					}
+				} else {
+					logger.warn("User is not activated");
+					throw new BusinessException(ServiceError.Unknown, "User is not activated");
+				}
+			} else {
+				logger.warn("No account present with email address, please sign up");
+				throw new BusinessException(ServiceError.Unknown,
+						"No account present with email address, please sign up");
+			}
+			return response;
+		} catch (BusinessException be) {
+			logger.error(be + "No account present with email address, please sign up");
+			throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
-	    } else {
-		logger.warn("No account present with email address, please sign up");
-		throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
-	    }
-	    return response;
-	} catch (BusinessException be) {
-	    logger.error(be + "No account present with email address, please sign up");
-	    throw new BusinessException(ServiceError.Unknown, "No account present with email address, please sign up");
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    logger.error(e);
-	    throw new BusinessException(ServiceError.Unknown, e.getMessage());
 	}
-    }
 
     @Override
     @Transactional
@@ -255,6 +267,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		if (userCollection == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
+		}
+		if(!(userCollection.getUserState() == UserState.USERSTATECOMPLETE) ||  !(userCollection.getUserState() == UserState.NOTACTIVATED) )
+		{
+			return "User is not verified";
 		}
 		char[] salt = DPDoctorUtils.generateSalt();
 	    userCollection.setSalt(salt);

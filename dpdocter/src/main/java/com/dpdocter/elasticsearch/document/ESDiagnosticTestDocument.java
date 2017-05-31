@@ -10,47 +10,50 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "diagnostictests_in", type = "diagnostictests")
 public class ESDiagnosticTestDocument {
 
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Field(type = FieldType.String)
-    private String testName;
+	@Field(type = FieldType.String)
+	private String testName;
 
-    @Field(type = FieldType.String)
-    private String explanation;
+	@Field(type = FieldType.String)
+	private String explanation;
 
-    @Field(type = FieldType.String)
-    private String locationId;
+	@Field(type = FieldType.String)
+	private String locationId;
 
-    @Field(type = FieldType.String)
-    private String hospitalId;
+	@Field(type = FieldType.String)
+	private String hospitalId;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean discarded = false;
+	@Field(type = FieldType.String)
+	private String specimen;
 
-    @Field(type = FieldType.Date)
-    private Date updatedTime = new Date();
+	@Field(type = FieldType.Boolean)
+	private Boolean discarded = false;
 
-    @Field(type = FieldType.String)
-    private String code;
+	@Field(type = FieldType.Date)
+	private Date updatedTime = new Date();
 
-    public String getId() {
-	return id;
-    }
+	@Field(type = FieldType.String)
+	private String code;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getTestName() {
-	return testName;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setTestName(String testName) {
-	this.testName = testName;
-    }
+	public String getTestName() {
+		return testName;
+	}
 
-    public String getExplanation() {
+	public void setTestName(String testName) {
+		this.testName = testName;
+	}
+
+	public String getExplanation() {
 		return explanation;
 	}
 
@@ -59,50 +62,58 @@ public class ESDiagnosticTestDocument {
 	}
 
 	public String getLocationId() {
-	return locationId;
-    }
+		return locationId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
-    public Date getUpdatedTime() {
-	return updatedTime;
-    }
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
 
-    public void setUpdatedTime(Date updatedTime) {
-	this.updatedTime = updatedTime;
-    }
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
 
-    public String getCode() {
-	return code;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public void setCode(String code) {
-	this.code = code;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getSpecimen() {
+		return specimen;
+	}
+
+	public void setSpecimen(String specimen) {
+		this.specimen = specimen;
+	}
 
 	@Override
 	public String toString() {
 		return "ESDiagnosticTestDocument [id=" + id + ", testName=" + testName + ", explanation=" + explanation
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", updatedTime=" + updatedTime + ", code=" + code + "]";
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", specimen=" + specimen
+				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + ", code=" + code + "]";
 	}
 
 }

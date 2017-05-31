@@ -20,6 +20,8 @@ public class RateCardCollection extends GenericCollection {
 	private Boolean discarded = false;
 	@Field
 	private Boolean isDefault = false;
+	@Field
+	private Boolean isForPatient = false;
 
 	public ObjectId getId() {
 		return id;
@@ -67,6 +69,14 @@ public class RateCardCollection extends GenericCollection {
 
 	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
+	}
+
+	public Boolean getIsForPatient() {
+		return isForPatient;
+	}
+
+	public void setIsForPatient(Boolean isForPatient) {
+		this.isForPatient = isForPatient;
 	}
 
 	@Override

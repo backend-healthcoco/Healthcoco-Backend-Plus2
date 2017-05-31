@@ -36,4 +36,7 @@ public interface ESPrescriptionService {
 
 	public List<ESAdvicesDocument> searchAdvices(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String disease, String searchTerm);
+
+	Integer getDiagnosticTestCount(String range, int page, int size, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded, String searchTerm);
 }

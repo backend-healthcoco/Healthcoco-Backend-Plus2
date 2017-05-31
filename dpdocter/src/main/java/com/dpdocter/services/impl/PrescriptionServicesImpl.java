@@ -3336,6 +3336,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				diagnosticTestCollection.setUpdatedTime(new Date());
 			}
 			diagnosticTestCollection = diagnosticTestRepository.save(diagnosticTestCollection);
+			transnationalService.addResource(diagnosticTestCollection.getId(), Resource.DIAGNOSTICTEST,
+					false);
+			ESDiagnosticTestDocument diagnosticTestDocument = new ESDiagnosticTestDocument();
+			BeanUtil.map(diagnosticTestCollection, diagnosticTestDocument);
+			esPrescriptionService.addEditDiagnosticTest(diagnosticTestDocument);
 			response = new DiagnosticTest();
 			BeanUtil.map(diagnosticTestCollection, response);
 		} catch (Exception e) {

@@ -85,7 +85,7 @@ public class ESPrescriptionApi {
 	@Path(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
 	@GET
 	@ApiOperation(value = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST, notes = PathProxy.SolrPrescriptionUrls.SEARCH_DIAGNOSTIC_TEST)
-	public Response<ESDiagnosticTestDocument> searchDiagnosticTest(@PathParam("range") String range,
+	public Response<Object> searchDiagnosticTest(@PathParam("range") String range,
 			@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
@@ -97,8 +97,9 @@ public class ESPrescriptionApi {
 		}
 		List<ESDiagnosticTestDocument> diagnosticTests = esPrescriptionService.searchDiagnosticTest(range, page, size,
 				locationId, hospitalId, updatedTime, discarded, searchTerm);
-		Response<ESDiagnosticTestDocument> response = new Response<ESDiagnosticTestDocument>();
+		Response<Object> response = new Response<Object>();
 		response.setDataList(diagnosticTests);
+		response.setData(esPrescriptionService.getDiagnosticTestCount(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm));
 		return response;
 	}
 
