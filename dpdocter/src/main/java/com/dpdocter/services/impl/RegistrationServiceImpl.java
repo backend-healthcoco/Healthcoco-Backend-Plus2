@@ -2315,10 +2315,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(locationId))
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria.and("locationId").is(new ObjectId(locationId));
-			if (active)
+			}
+			if (active) {
 				criteria.and("isActivate").is(active);
+			}
 			if (!DPDoctorUtils.anyStringEmpty(userState)) {
 				if (userState.equalsIgnoreCase("COMPLETED")) {
 					criteria.and("user.userState").is("USERSTATECOMPLETE");
@@ -2327,7 +2329,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				}
 			}
 
-			if (size > 0)
+			if (size > 0) {
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 								Aggregation.unwind("location"),
@@ -2341,7 +2343,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.skip((page) * size), Aggregation.limit(size)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
-			else
+			} else {
 				doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 								Aggregation.unwind("location"),
@@ -2350,6 +2352,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 								Aggregation.unwind("doctor"), Aggregation.match(criteria)),
 						DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
 						.getMappedResults();
+			}
 
 			if (doctorClinicProfileLookupResponses != null) {
 				response = new ArrayList<ClinicDoctorResponse>();
@@ -3475,6 +3478,33 @@ public class RegistrationServiceImpl implements RegistrationService {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
+	}
+
+	@Override
+	public Integer updateRegisterPID(long createdTime) {
+		String PID = "";
+		List<PatientCollection> patientCollections = patientRepository.findbyRegistrationDate(new Date(createdTime),
+				new Sort(Sort.Direction.ASC, "createdTime"));
+
+		// find all location Collection---- for loop---find patient by above
+		// query---
+		// for loop on patient collection
+		//
+		// if(pid != null && pid==patientcollection.getPID)generatePID
+		// pid = patientcollection.getPID
+
+		for (PatientCollection patientCollection : patientCollections) {
+
+			if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId(), patientCollection.getHospitalId()))
+				patientCollection.setRegistrationDate(patientCollection.getCreatedTime().getTime());
+			PID = patientIdGenerator(patientCollection.getLocationId().toString(),
+					patientCollection.getHospitalId().toString(), patientCollection.getRegistrationDate());
+			patientCollection.setPID(PID);
+
+		}
+		patientCollections = patientRepository.save(patientCollections);
+
+		return patientCollections.size();
 	}
 
 }
