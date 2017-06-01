@@ -698,13 +698,14 @@ public class RegistrationApi {
 			@QueryParam(value = "size") int size,
 			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
 			@QueryParam(value = "role") String role,
-			@DefaultValue("false") @QueryParam(value = "active") Boolean active, @QueryParam(value = "userState") String userState) {
+			@DefaultValue("false") @QueryParam(value = "active") Boolean active,
+			@QueryParam(value = "userState") String userState) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
 		}
 		List<ClinicDoctorResponse> professionResponse = registrationService.getUsers(page, size, locationId, hospitalId,
-				updatedTime, role, active,userState);
+				updatedTime, role, active, userState);
 		Response<ClinicDoctorResponse> response = new Response<ClinicDoctorResponse>();
 		response.setDataList(professionResponse);
 		return response;
@@ -924,7 +925,7 @@ public class RegistrationApi {
 		if (file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		if (file == null||request == null) {
+		if (file == null || request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
@@ -993,6 +994,16 @@ public class RegistrationApi {
 
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.UPDATE_PID)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.UPDATE_PID, notes = PathProxy.RegistrationUrls.UPDATE_PID)
+	public Response<Integer> updateRegisterPID(@QueryParam(value = "createdTime") long createdTime) {
+
+		Response<Integer> response = new Response<Integer>();
+		response.setData(registrationService.updateRegisterPID(createdTime));
 		return response;
 	}
 
