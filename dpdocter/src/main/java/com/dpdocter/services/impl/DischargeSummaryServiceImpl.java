@@ -304,11 +304,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummaryCollection != null) {
 				response = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, response);
+				Prescription prescription = new Prescription();
 
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
-					response.setPrescriptions(prescriptionServices
-							.getPrescriptionById(dischargeSummaryCollection.getPrescriptionId().toString()));
+					prescription = prescriptionServices
+							.getPrescriptionById(dischargeSummaryCollection.getPrescriptionId().toString());
 
+					if (prescription.getItems() == null) {
+						prescription.setItems(new ArrayList<PrescriptionItemDetail>());
+					}
 				}
 
 			} else {

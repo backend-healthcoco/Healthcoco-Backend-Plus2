@@ -41,12 +41,13 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	@Query(value = "{'locationId':?0, 'hospitalId':?1, 'registrationDate' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
 	Integer findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, DateTime start, DateTime end);
-	
+
 	@Query(value = "{'locationId':?0, 'hospitalId':?1, 'registrationDate' : {'$gt' : ?2, '$lte' : ?3}}", count = true)
 	Integer findTodaysRegisteredPatient(ObjectId locationId, ObjectId hospitalId, Long start, Long end);
 
 	@Query("{'doctorId':?0,'locationId': ?1, 'discarded':'true','hospitalId':?2}")
-	List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId,ObjectId hospitalId);
+	List<PatientCollection> findByDoctorIdLocationIdAndHospitalId(ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId);
 
 	@Query("{'userId': {'$in': ?0}, 'doctorId':?1,'locationId': ?2,'hospitalId': ?3, 'updatedTime': {'$gt': ?4}, 'discarded':{'$in': ?5}}")
 	List<PatientCollection> findByUserIdDoctorIdLocationIdHospitalId(Collection<ObjectId> patientIds, ObjectId doctorId,
@@ -101,4 +102,7 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	@Query("{'PID':?0}")
 	PatientCollection getByPID(String PID);
+
+	@Query("{'createdTime':{'$gte': ?0}}")
+	List<PatientCollection> findbyRegistrationDate(Date createdTime, Sort sort);
 }
