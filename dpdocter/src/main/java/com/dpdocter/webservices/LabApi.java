@@ -245,7 +245,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION)
 	@POST
 	@ApiOperation(value = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION, notes = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION)
-	public Response<Location> addEditRateCard(List<CollectionBoyLabAssociation> collectionBoyLabAssociations) {
+	public Response<Location> addEditCBLabAssociation(List<CollectionBoyLabAssociation> collectionBoyLabAssociations) {
 		if (collectionBoyLabAssociations == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
@@ -303,6 +303,7 @@ public class LabApi {
 	
 	@Path(PathProxy.LabUrls.GET_SPECIMEN_LIST)
 	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_SPECIMEN_LIST, notes = PathProxy.LabUrls.GET_SPECIMEN_LIST)
 	public Response<Specimen> getSpecimen(@QueryParam("page") int page ,@QueryParam("size") int size , @QueryParam("searchTerm") String searchTerm) {
 		List<Specimen> specimens = null;
 		Response<Specimen> response = null;
@@ -319,6 +320,29 @@ public class LabApi {
 		return response;
 	}
 	
+	@Path(PathProxy.LabUrls.EDIT_COLLECTION_BOY)
+	@POST
+	@ApiOperation(value = PathProxy.LabUrls.EDIT_COLLECTION_BOY, notes = PathProxy.LabUrls.EDIT_COLLECTION_BOY)
+	public Response<CollectionBoy> editCollectionBoy(CollectionBoy request) {
+		
+		Response<CollectionBoy> response = null;
+		CollectionBoy collectionBoy = null;
+		try {
+			if(request.getId() == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput ,"Id is null");
+			}
+			collectionBoy = locationServices.editCollectionBoy(request);
+			response = new Response<CollectionBoy>();
+			response.setData(collectionBoy);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 	
-
+	
+	
 }

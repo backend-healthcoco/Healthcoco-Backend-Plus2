@@ -69,4 +69,6 @@ public interface LocationServices {
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm);
 
+	CollectionBoy editCollectionBoy(CollectionBoy collectionBoy);
+
 }

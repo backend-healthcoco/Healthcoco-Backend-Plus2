@@ -758,6 +758,7 @@ public class SignUpServiceImpl implements SignUpService {
 				smsServices.sendSMS(smsTrackDetail, true);
 				response = new CollectionBoy();
 				BeanUtil.map(collectionBoyCollection, response);
+				response.setPassword(null);
 			}
 			esCollectionBoyDocument = new ESCollectionBoyDocument();
 			BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);

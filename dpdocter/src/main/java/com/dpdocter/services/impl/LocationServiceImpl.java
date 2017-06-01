@@ -523,11 +523,13 @@ public class LocationServiceImpl implements LocationServices {
 								new ObjectId(collectionBoyLabAssociation.getDaughterLabId()));
 				if (collectionBoyLabAssociationCollection == null) {
 					collectionBoyLabAssociationCollection = new CollectionBoyLabAssociationCollection();
+					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				} else {
+					ObjectId oldId = collectionBoyLabAssociationCollection.getId();
+					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 					collectionBoyLabAssociationCollection
-							.setId(collectionBoyLabAssociationCollection.getId());
+							.setId(oldId);
 				}
-				BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 						.save(collectionBoyLabAssociationCollection);
 			}
@@ -964,5 +966,26 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return specimens;
 	}
+	
+	@Override
+	@Transactional
+	public CollectionBoy editCollectionBoy(CollectionBoy collectionBoy)
+	{
+		CollectionBoy response = null;
+		CollectionBoyCollection collectionBoyCollection = collectionBoyRepository.findOne(new ObjectId(collectionBoy.getId()));
+		if(collectionBoyCollection != null)
+		{
+			collectionBoyCollection.setAddress(collectionBoy.getAddress());
+			collectionBoyCollection.setAge(collectionBoy.getAge());
+			collectionBoyCollection.setGender(collectionBoy.getGender());
+			collectionBoyCollection.setMobileNumber(collectionBoy.getMobileNumber());
+			collectionBoyCollection.setName(collectionBoy.getName());
+			collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
+			response = new CollectionBoy();
+			BeanUtil.map(collectionBoyCollection, response);
+			response.setPassword(null);
+		}
+		return response;
+ 	}
 
 }
