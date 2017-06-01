@@ -5,9 +5,7 @@ import java.util.Date;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DischargeSummaryResponse extends GenericCollection {
 
 	private String id;
