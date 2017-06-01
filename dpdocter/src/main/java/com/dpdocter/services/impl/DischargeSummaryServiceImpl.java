@@ -304,7 +304,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummaryCollection != null) {
 				response = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, response);
-				Prescription prescription = new Prescription();
+				Prescription prescription =null;
 
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 					prescription = prescriptionServices
@@ -314,6 +314,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						prescription.setItems(new ArrayList<PrescriptionItemDetail>());
 					}
 				}
+				else{
+					prescription=new Prescription();
+					if (prescription.getItems() == null) {
+						prescription.setItems(new ArrayList<PrescriptionItemDetail>());
+					}
+				}
+				response.setPrescriptions(prescription);
 
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid discharge summaryId ");

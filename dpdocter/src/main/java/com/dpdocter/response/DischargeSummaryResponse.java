@@ -2,10 +2,13 @@ package com.dpdocter.response;
 
 import java.util.Date;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DischargeSummaryResponse extends GenericCollection {
 
 	private String id;
