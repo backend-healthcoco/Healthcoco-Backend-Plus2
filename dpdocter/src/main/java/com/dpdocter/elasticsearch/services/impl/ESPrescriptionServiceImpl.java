@@ -484,6 +484,22 @@ public class ESPrescriptionServiceImpl implements ESPrescriptionService {
 		}
 		return response;
 	}
+	
+	@Override
+	public Integer getDiagnosticTestCount(String range, int page, int size, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm)
+	{
+		Integer count = null;
+		try {
+			count = searchDiagnosticTest(range, page, size, locationId, hospitalId, updatedTime, discarded, searchTerm)
+					.size();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Getting DiagnosticTests count");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting DiagnosticTests count");
+		}
+		return count;
+	}
 
 	private List<ESDiagnosticTestDocument> getGlobalDiagnosticTests(int page, int size, String updatedTime,
 			Boolean discarded, String searchTerm) {

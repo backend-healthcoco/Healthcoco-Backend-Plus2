@@ -606,7 +606,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<Location> getAssociatedLabs(String locationId, Boolean isParent) {
+	public List<Location> getAssociatedLabs(String locationId, Boolean isParent , String searchTerm) {
 
 		List<LabAssociationLookupResponse> lookupResponses = null;
 		List<Location> locations = null;
@@ -618,18 +618,22 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			Criteria criteria = new Criteria();
 			criteria.and("isActive").is(Boolean.TRUE);
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("location.locationName").regex("^" + searchTerm));
+			}
 			Aggregation aggregation = null;
 			if (isParent) {
 				criteria.and("parentLabId").is(locationObjectId);
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+						Aggregation.unwind("location"),Aggregation.match(criteria),
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			} else {
 				criteria.and("daughterLabId").is(locationObjectId);
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
+						Aggregation.unwind("location"), Aggregation.match(criteria),
+						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 			}
 			AggregationResults<LabAssociationLookupResponse> results = mongoTemplate.aggregate(aggregation,

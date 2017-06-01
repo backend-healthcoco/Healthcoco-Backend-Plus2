@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.TestSampleType;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DiagnosticTest extends GenericCollection {
@@ -14,7 +13,7 @@ public class DiagnosticTest extends GenericCollection {
 
 	private String explanation;
 
-	private String specimenId;
+	private String specimen;
 
 	private String locationId;
 
@@ -80,18 +79,18 @@ public class DiagnosticTest extends GenericCollection {
 		this.code = code;
 	}
 
-	public String getSpecimenId() {
-		return specimenId;
+	public String getSpecimen() {
+		return specimen;
 	}
 
-	public void setSpecimenId(String specimenId) {
-		this.specimenId = specimenId;
+	public void setSpecimen(String specimen) {
+		this.specimen = specimen;
 	}
 
 	@Override
 	public String toString() {
-		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", specimenId="
-				+ specimenId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", specimen="
+				+ specimen + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", code=" + code + "]";
 	}
 

@@ -42,5 +42,6 @@ public interface UserRepository extends MongoRepository<UserCollection, ObjectId
 
     @Query("{'id' : ?0, 'signedUp' : ?1}")
 	public UserCollection findByIdAndNotSignedUp(ObjectId userId, Boolean signedUp);
+    
 
 }

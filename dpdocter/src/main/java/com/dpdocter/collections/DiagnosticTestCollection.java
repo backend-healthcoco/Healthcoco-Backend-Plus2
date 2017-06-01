@@ -20,10 +20,7 @@ public class DiagnosticTestCollection extends GenericCollection {
 	private String explanation;
 
 	@Field
-	private Double cost;
-
-	@Field
-	private String sampleType;
+	private String specimen;
 
 	@Field
 	private ObjectId locationId;
@@ -93,26 +90,18 @@ public class DiagnosticTestCollection extends GenericCollection {
 		this.code = code;
 	}
 
-	public Double getCost() {
-		return cost;
+	public String getSpecimen() {
+		return specimen;
 	}
 
-	public void setCost(Double cost) {
-		this.cost = cost;
-	}
-
-	public String getSampleType() {
-		return sampleType;
-	}
-
-	public void setSampleType(String sampleType) {
-		this.sampleType = sampleType;
+	public void setSpecimen(String specimen) {
+		this.specimen = specimen;
 	}
 
 	@Override
 	public String toString() {
 		return "DiagnosticTestCollection [id=" + id + ", testName=" + testName + ", explanation=" + explanation
-				+ ", cost=" + cost + ", sampleType=" + sampleType + ", locationId=" + locationId + ", hospitalId="
-				+ hospitalId + ", discarded=" + discarded + ", code=" + code + "]";
+				+ ", specimen=" + specimen + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", discarded=" + discarded + ", code=" + code + "]";
 	}
 }
