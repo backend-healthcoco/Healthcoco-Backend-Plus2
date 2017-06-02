@@ -14,7 +14,7 @@ public class OrderDrugCollection extends GenericCollection {
 	@Field
 	private ObjectId localeId;
 	@Field
-	private ObjectId patientId;
+	private ObjectId userId;
 	@Field
 	private String uniqueRequestId;
 	@Field
@@ -34,16 +34,16 @@ public class OrderDrugCollection extends GenericCollection {
 		return localeId;
 	}
 
+	public ObjectId getUserId() {
+		return userId;
+	}
+
+	public void setUserId(ObjectId userId) {
+		this.userId = userId;
+	}
+
 	public void setLocaleId(ObjectId localeId) {
 		this.localeId = localeId;
-	}
-
-	public ObjectId getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(ObjectId patientId) {
-		this.patientId = patientId;
 	}
 
 	public String getUniqueRequestId() {
@@ -64,8 +64,8 @@ public class OrderDrugCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", patientId=" + patientId
-				+ ", uniqueRequestId=" + uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + "]";
+		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", patientId=" + ", uniqueRequestId="
+				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + "]";
 	}
 
 	public ReplyType getReplyType() {

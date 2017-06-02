@@ -4,7 +4,7 @@ public class OrderDrugsRequest {
 
 	private String localeId;
 	
-	private String patientId;
+	private String userId;
 	
 	private String uniqueRequestId;
 
@@ -19,12 +19,13 @@ public class OrderDrugsRequest {
 		this.localeId = localeId;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getUniqueRequestId() {
@@ -45,7 +46,7 @@ public class OrderDrugsRequest {
 
 	@Override
 	public String toString() {
-		return "OrderDrugsRequest [localeId=" + localeId + ", patientId=" + patientId + ", uniqueRequestId="
+		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + "]";
 	}
 
