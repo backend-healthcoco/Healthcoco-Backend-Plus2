@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -39,6 +41,12 @@ public class TreatmentServicesCollection extends GenericCollection {
 
 	@Field
 	private String treatmentCode;
+
+	@Field
+	private String category;
+
+	@Field
+	private List<String> fieldsRequired;
 
 	public ObjectId getId() {
 		return id;
@@ -96,13 +104,6 @@ public class TreatmentServicesCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "ProductsAndServicesCollection [id=" + id + ", name=" + name + ", speciality=" + speciality
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", discarded=" + discarded + "]";
-	}
-
 	public long getRankingCount() {
 		return rankingCount;
 	}
@@ -125,6 +126,30 @@ public class TreatmentServicesCollection extends GenericCollection {
 
 	public void setTreatmentCode(String treatmentCode) {
 		this.treatmentCode = treatmentCode;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public List<String> getFieldsRequired() {
+		return fieldsRequired;
+	}
+
+	public void setFieldsRequired(List<String> fieldsRequired) {
+		this.fieldsRequired = fieldsRequired;
+	}
+
+	@Override
+	public String toString() {
+		return "TreatmentServicesCollection [id=" + id + ", name=" + name + ", speciality=" + speciality
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", discarded=" + discarded + ", rankingCount=" + rankingCount + ", cost=" + cost + ", treatmentCode="
+				+ treatmentCode + ", category=" + category + ", fieldsRequired=" + fieldsRequired + "]";
 	}
 
 }

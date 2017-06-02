@@ -5,13 +5,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.crypto.dom.DOMCryptoContext;
-
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.springframework.aop.DynamicIntroductionAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;

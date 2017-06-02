@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
@@ -27,6 +28,8 @@ public class TreatmentRequest {
 
 	private List<TreatmentService> treatmentServices;
 	
+	private List<TreatmentFields> treatmentFields;
+
 	public TreatmentService getTreatmentService() {
 		return treatmentService;
 	}
@@ -99,11 +102,19 @@ public class TreatmentRequest {
 		this.treatmentServices = treatmentServices;
 	}
 
+	public List<TreatmentFields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
 	@Override
 	public String toString() {
 		return "TreatmentRequest [treatmentService=" + treatmentService + ", treatmentServiceId=" + treatmentServiceId
 				+ ", status=" + status + ", cost=" + cost + ", note=" + note + ", discount=" + discount + ", finalCost="
-				+ finalCost + ", quantity=" + quantity + ", treatmentServices=" + treatmentServices + "]";
+				+ finalCost + ", quantity=" + quantity + ", treatmentServices=" + treatmentServices
+				+ ", treatmentFields=" + treatmentFields + "]";
 	}
-
 }

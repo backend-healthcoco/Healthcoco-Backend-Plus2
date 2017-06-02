@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -22,6 +24,7 @@ public class Treatment extends GenericCollection {
 
 	private Quantity quantity;
 
+	private List<TreatmentFields> treatmentFields;
 	
 	public ObjectId getTreatmentServiceId() {
 		return treatmentServiceId;
@@ -63,10 +66,12 @@ public class Treatment extends GenericCollection {
 		this.quantity = quantity;
 	}
 
-	@Override
-	public String toString() {
-		return "Treatment [treatmentServiceId=" + treatmentServiceId + ", status=" + status + ", cost=" + cost
-				+ ", note=" + note + ", quantity=" + quantity + "]";
+	public Discount getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Discount discount) {
+		this.discount = discount;
 	}
 
 	public double getFinalCost() {
@@ -77,12 +82,18 @@ public class Treatment extends GenericCollection {
 		this.finalCost = finalCost;
 	}
 
-	public Discount getDiscount() {
-		return discount;
+	public List<TreatmentFields> getTreatmentFields() {
+		return treatmentFields;
 	}
 
-	public void setDiscount(Discount discount) {
-		this.discount = discount;
+	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
 	}
 
+	@Override
+	public String toString() {
+		return "Treatment [treatmentServiceId=" + treatmentServiceId + ", status=" + status + ", cost=" + cost
+				+ ", note=" + note + ", discount=" + discount + ", finalCost=" + finalCost + ", quantity=" + quantity
+				+ ", treatmentFields=" + treatmentFields + "]";
+	}
 }

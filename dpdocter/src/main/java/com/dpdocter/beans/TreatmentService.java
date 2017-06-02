@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
@@ -25,6 +27,10 @@ public class TreatmentService extends GenericCollection {
 	private String treatmentCode;
 
 	private long rankingCount = 0;
+
+	private String category;
+
+	private List<String> fieldsRequired;
 
 	public String getId() {
 		return id;
@@ -82,13 +88,6 @@ public class TreatmentService extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "ProductAndService [id=" + id + ", name=" + name + ", speciality=" + speciality + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", discarded=" + discarded
-				+ "]";
-	}
-
 	public double getCost() {
 		return cost;
 	}
@@ -111,6 +110,30 @@ public class TreatmentService extends GenericCollection {
 
 	public void setRankingCount(long rankingCount) {
 		this.rankingCount = rankingCount;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public List<String> getFieldsRequired() {
+		return fieldsRequired;
+	}
+
+	public void setFieldsRequired(List<String> fieldsRequired) {
+		this.fieldsRequired = fieldsRequired;
+	}
+
+	@Override
+	public String toString() {
+		return "TreatmentService [id=" + id + ", name=" + name + ", speciality=" + speciality + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", discarded=" + discarded
+				+ ", cost=" + cost + ", treatmentCode=" + treatmentCode + ", rankingCount=" + rankingCount
+				+ ", category=" + category + ", fieldsRequired=" + fieldsRequired + "]";
 	}
 
 }

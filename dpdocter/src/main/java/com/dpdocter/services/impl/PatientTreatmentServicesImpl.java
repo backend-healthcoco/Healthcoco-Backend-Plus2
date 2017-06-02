@@ -30,16 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.OPDReports;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
-import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -58,7 +55,6 @@ import com.dpdocter.enums.PatientTreatmentStatus;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
-import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -379,6 +375,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
 						treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
 						treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
+						treatmentService.setCost(treatmentRequest.getCost());
 						addFavouritesToService(treatmentService);
 					}
 					treatments.add(treatment);
@@ -1081,6 +1078,44 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			response = getCustomServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 			break;
 		}
+		
+		case SERVICEBYSPECIALITY: {
+			response = getServicesBySpeciality(doctorId, locationId, hospitalId, updatedTime, discarded);
+			break;
+		}
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<?> getServicesBySpeciality(String doctorId, String locationId, String hospitalId, String updatedTime,
+			Boolean discarded) {
+		List<TreatmentService> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(0, 0, doctorId, locationId, hospitalId,
+							updatedTime, discarded, "category", null, specialities, null),
+					TreatmentServicesCollection.class, TreatmentService.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Treatment Services");
 		}
 		return response;
 	}
@@ -1566,10 +1601,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					treatmentServicesCollection.setLocationId(new ObjectId(request.getLocationId()));
 					treatmentServicesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					treatmentServicesCollection.setRankingCount(treatmentServicesCollection.getRankingCount() + 1);
-					treatmentServicesCollection.setUpdatedTime(new Date());
 				}
+				
 				treatmentServicesCollection.setUpdatedTime(new Date());
-
+				treatmentServicesCollection.setCost(request.getCost());
+				
 				treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
 			}
 

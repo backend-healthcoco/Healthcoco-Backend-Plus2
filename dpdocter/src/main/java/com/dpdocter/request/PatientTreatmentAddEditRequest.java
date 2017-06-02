@@ -38,7 +38,6 @@ public class PatientTreatmentAddEditRequest {
 	
 	private AppointmentRequest appointmentRequest;
 
-
 	public String getAppointmentId() {
 		return appointmentId;
 	}

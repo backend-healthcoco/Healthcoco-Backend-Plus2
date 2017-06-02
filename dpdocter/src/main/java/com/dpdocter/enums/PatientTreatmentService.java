@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum PatientTreatmentService {
 
-	SERVICE("SERVICE"), SERVICECOST("SERVICECOST");
+	SERVICE("SERVICE"), SERVICECOST("SERVICECOST"), SERVICEBYSPECIALITY("SERVICEBYSPECIALITY");
 	
 	private String type;
 

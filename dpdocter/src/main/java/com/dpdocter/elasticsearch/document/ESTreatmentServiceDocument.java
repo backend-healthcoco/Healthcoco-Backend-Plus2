@@ -1,11 +1,13 @@
 package com.dpdocter.elasticsearch.document;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.MultiField;
 
 @Document(indexName = "treatment_services_in", type = "treatment_services")
 public class ESTreatmentServiceDocument {
@@ -39,6 +41,12 @@ public class ESTreatmentServiceDocument {
 
 	@Field(type = FieldType.String)
 	private String treatmentCode;
+
+	@Field(type = FieldType.String)
+	private String category;
+
+	@MultiField(mainField = @Field(type = FieldType.String))
+	private List<String> fieldsRequired;
 
 	public double getCost() {
 		return cost;
@@ -119,14 +127,6 @@ public class ESTreatmentServiceDocument {
 		return discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "ESTreatmentServiceDocument [id=" + id + ", name=" + name + ", speciality=" + speciality
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + ", cost=" + cost + ", treatmentCode="
-				+ treatmentCode + ", rankingCount=" + rankingCount + "]";
-	}
-
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
@@ -149,5 +149,30 @@ public class ESTreatmentServiceDocument {
 	@Override
 	public int hashCode() {
 		return this.treatmentCode.hashCode();
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public List<String> getFieldsRequired() {
+		return fieldsRequired;
+	}
+
+	public void setFieldsRequired(List<String> fieldsRequired) {
+		this.fieldsRequired = fieldsRequired;
+	}
+
+	@Override
+	public String toString() {
+		return "ESTreatmentServiceDocument [id=" + id + ", name=" + name + ", speciality=" + speciality
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", discarded=" + discarded + ", updatedTime=" + updatedTime + ", cost=" + cost + ", treatmentCode="
+				+ treatmentCode + ", category=" + category + ", fieldsRequired=" + fieldsRequired + ", rankingCount="
+				+ rankingCount + "]";
 	}
 }
