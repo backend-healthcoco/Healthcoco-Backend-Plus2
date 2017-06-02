@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.dpdocter.beans.AdvanceReceiptIdWithAmount;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DoctorPatientInvoice;
 import com.dpdocter.beans.DoctorPatientLedger;
 import com.dpdocter.beans.DoctorPatientReceipt;
@@ -1334,6 +1335,12 @@ public class BillingServiceImpl implements BillingService {
 					doctorPatientInvoiceCollection.getDoctorId(), doctorPatientInvoiceCollection.getLocationId(),
 					doctorPatientInvoiceCollection.getHospitalId(), ComponentType.ALL.getType());
 
+			if(printSettings == null){
+				printSettings = new PrintSettingsCollection();
+				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+				BeanUtil.map(defaultPrintSettings, printSettings);
+			}
+			
 			patientVisitService.generatePatientDetails(
 					(printSettings != null && printSettings.getHeaderSetup() != null
 							? printSettings.getHeaderSetup().getPatientDetails() : null),
@@ -1425,6 +1432,12 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
 				doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType());
 
+		if(printSettings == null){
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),

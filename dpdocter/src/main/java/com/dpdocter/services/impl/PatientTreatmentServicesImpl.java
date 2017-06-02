@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
@@ -1467,6 +1468,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
 
+			if(printSettings == null){
+				printSettings = new PrintSettingsCollection();
+				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+				BeanUtil.map(defaultPrintSettings, printSettings);
+			}
+			
 			if (historyCollection != null) {
 				parameters.put("showHistory", true);
 				patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);

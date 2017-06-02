@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientVisitLookupBean;
@@ -442,6 +443,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
 
+		if(printSettings == null){
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+		
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 			PrescriptionCollection prescription = prescriptionRepository
 					.findOne(dischargeSummaryCollection.getPrescriptionId());

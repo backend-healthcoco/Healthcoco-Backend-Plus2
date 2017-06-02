@@ -37,6 +37,7 @@ import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalNotesJasperDetails;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Drug;
@@ -51,6 +52,7 @@ import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
@@ -1018,6 +1020,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
 				patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType());
+		
+		if(printSettings == null){
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
 		List<DBObject> prescriptions = null;
 		if (!showUSG) {
 			if (patientVisitLookupResponse.getPrescriptionId() != null) {

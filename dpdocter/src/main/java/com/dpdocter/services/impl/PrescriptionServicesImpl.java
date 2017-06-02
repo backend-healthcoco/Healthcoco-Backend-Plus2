@@ -55,6 +55,7 @@ import com.dpdocter.beans.Advice;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.Code;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
 import com.dpdocter.beans.DrugDirection;
@@ -3620,6 +3621,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 
+		if(printSettings == null){
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
 		if (!isLabPrint) {
 			int no = 0;
 			Boolean showIntructions = false, showDirection = false;
@@ -5172,7 +5178,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
-
+		if(printSettings == null){
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
 		patientVisitService.generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),

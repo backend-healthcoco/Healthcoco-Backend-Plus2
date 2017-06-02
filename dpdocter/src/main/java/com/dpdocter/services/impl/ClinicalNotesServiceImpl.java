@@ -38,6 +38,7 @@ import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.ClinicalnoteLookupBean;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.ECGDetails;
@@ -4202,6 +4203,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
+		
+		if(printSettings == null){
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
 		parameters.put("observations", clinicalNotesCollection.getObservation());
 		parameters.put("notes", clinicalNotesCollection.getNote());
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());

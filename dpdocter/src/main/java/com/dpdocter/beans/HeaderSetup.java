@@ -12,7 +12,7 @@ public class HeaderSetup {
 
     private String logoType;
 
-    private PatientDetails patientDetails;
+    private PatientDetails patientDetails = new PatientDetails();
 
     private List<PrintSettingsText> topLeftText;
 
