@@ -22,10 +22,10 @@ public interface UserRepository extends MongoRepository<UserCollection, ObjectId
     @Query("{'emailAddress' : {$regex : '^?0$', $options : 'i'}}")
     public List<UserCollection> findByEmailAddressIgnoreCase(String emailAddress);
 
-    @Query("{'firstName':?0,'emailAddress':?1,'mobileNumber':?2,'userState'='USERSTATECOMPLETE'}")
+    @Query("{'firstName':?0,'emailAddress':?1,'mobileNumber':?2,'userState':'USERSTATECOMPLETE'}")
     public UserCollection checkPatient(String firstName, String emailAddress, String mobileNumber);
 
-    @Query("{'mobileNumber':?0,'userState'='USERSTATECOMPLETE'}")
+    @Query("{'mobileNumber':?0,'userState':'USERSTATECOMPLETE'}")
     public List<UserCollection> findByMobileNumber(String mobileNumber);
 
     @Query("{'userName': ?0, 'emailAddress':?1}")
