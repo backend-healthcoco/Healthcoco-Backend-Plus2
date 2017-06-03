@@ -130,7 +130,9 @@ public class LoginServiceImpl implements LoginService {
 			}
 			List<UserRoleLookupResponse> userRoleLookupResponses = mongoTemplate.aggregate(
 					Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(userCollection.getId())),
-							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"), Aggregation.unwind("roleCollection")), UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
+							Aggregation.lookup("role_cl", "roleId", "_id", "roleCollection"),
+							Aggregation.unwind("roleCollection")),
+					UserRoleCollection.class, UserRoleLookupResponse.class).getMappedResults();
 
 			for (UserRoleLookupResponse userRoleLookupResponse : userRoleLookupResponses) {
 				RoleCollection roleCollection = userRoleLookupResponse.getRoleCollection();
@@ -155,15 +157,22 @@ public class LoginServiceImpl implements LoginService {
 
 					userCollection.setLastSession(new Date());
 					userCollection = userRepository.save(userCollection);
-					
-					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
-							Aggregation.newAggregation(Aggregation.match(new Criteria("doctorId").is(userCollection.getId()).and("isActivate").is(true)),
-									Aggregation.lookup("location_cl", "locationId", "_id", "location"), Aggregation.unwind("location"),
-									Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id", "hospital"), Aggregation.unwind("hospital")), 
-							DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+
+					List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(
+											Aggregation.match(new Criteria("doctorId").is(userCollection.getId())
+													.and("isActivate").is(true)),
+											Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+											Aggregation.unwind("location"),
+											Aggregation.lookup("hospital_cl", "$location.hospitalId", "_id",
+													"hospital"),
+											Aggregation.unwind("hospital")),
+									DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class)
+							.getMappedResults();
 					if (doctorClinicProfileLookupResponses == null || doctorClinicProfileLookupResponses.isEmpty()) {
 						logger.warn("None of your clinic is active");
-						//user.setUserState(UserState.NOTACTIVATED);
+						// user.setUserState(UserState.NOTACTIVATED);
 						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
 					}
 					if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
@@ -184,37 +193,43 @@ public class LoginServiceImpl implements LoginService {
 
 							Boolean isStaff = false;
 							for (UserRoleLookupResponse otherRoleCollection : userRoleLookupResponses) {
-								if((otherRoleCollection.getHospitalId() == null && 
-										otherRoleCollection.getLocationId() == null) ||
-										(otherRoleCollection.getHospitalId().toString().equalsIgnoreCase(hospitalCollection.getId().toString()) &&
-										otherRoleCollection.getLocationId().toString().equalsIgnoreCase(locationCollection.getId().toString()))){
+								if ((otherRoleCollection.getHospitalId() == null
+										&& otherRoleCollection.getLocationId() == null)
+										|| (otherRoleCollection.getHospitalId().toString()
+												.equalsIgnoreCase(hospitalCollection.getId().toString())
+												&& otherRoleCollection.getLocationId().toString()
+														.equalsIgnoreCase(locationCollection.getId().toString()))) {
 									if (isMobileApp && doctorClinicProfileLookupResponses.size() == 1
-											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-													|| otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
+											&& !(otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+													|| otherRoleCollection.getRoleCollection().getRole()
+															.equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
 													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-															|| otherRoleCollection.getRoleCollection().getRole()
+													|| otherRoleCollection.getRoleCollection().getRole()
 															.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 										logger.warn("You are staff member so please login from website.");
 										throw new BusinessException(ServiceError.NotAuthorized,
 												"You are staff member so please login from website.");
-									} else if (isMobileApp
-											&& !(otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
-													|| otherRoleCollection.getRoleCollection().getRole().equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
-													|| otherRoleCollection.getRoleCollection().getRole()
-															.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
-													|| otherRoleCollection.getRoleCollection().getRole()
-															.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
-															|| otherRoleCollection.getRoleCollection().getRole()
-															.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
+									} else if (isMobileApp && !(otherRoleCollection.getRoleCollection().getRole()
+											.equalsIgnoreCase(RoleEnum.DOCTOR.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.CONSULTANT_DOCTOR.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole())
+											|| otherRoleCollection.getRoleCollection().getRole()
+													.equalsIgnoreCase(RoleEnum.SUPER_ADMIN.getRole()))) {
 										isStaff = true;
 									}
 
 									if (otherRoleCollection != null) {
 										AccessControl accessControl = accessControlServices.getAccessControls(
-												otherRoleCollection.getRoleCollection().getId(), otherRoleCollection.getRoleCollection().getLocationId(),
+												otherRoleCollection.getRoleCollection().getId(),
+												otherRoleCollection.getRoleCollection().getLocationId(),
 												otherRoleCollection.getRoleCollection().getHospitalId());
 
 										Role role = new Role();
@@ -252,7 +267,7 @@ public class LoginServiceImpl implements LoginService {
 
 					} else {
 						logger.warn("None of your clinic is active");
-						//user.setUserState(UserState.NOTACTIVATED);
+						// user.setUserState(UserState.NOTACTIVATED);
 						throw new BusinessException(ServiceError.NotAuthorized, "None of your clinic is active");
 					}
 				}
@@ -294,7 +309,8 @@ public class LoginServiceImpl implements LoginService {
 	public List<RegisteredPatientDetails> loginPatient(LoginPatientRequest request) {
 		List<RegisteredPatientDetails> response = null;
 		try {
-			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber());
+			Criteria criteria = new Criteria("mobileNumber").is(request.getMobileNumber()).and("userState")
+					.is("USERSTATECOMPLETE");
 			Query query = new Query();
 			query.addCriteria(criteria);
 			List<UserCollection> userCollections = mongoTemplate.find(query, UserCollection.class);
