@@ -174,7 +174,7 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESTreatmentServiceDocument> response = null;
 		try {
-			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, 0, doctorId, locationId, hospitalId,
+			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
 					updatedTime, discarded, "rankingCount", searchTerm, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {

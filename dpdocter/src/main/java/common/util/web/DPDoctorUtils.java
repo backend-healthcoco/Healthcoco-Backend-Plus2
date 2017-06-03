@@ -294,9 +294,16 @@ public class DPDoctorUtils {
 						.withSort(SortBuilders.fieldSort("updatedTime").order(SortOrder.DESC)).build();
 		} else {
 			if (sortBy.equalsIgnoreCase("rankingCount")) {
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(0, 50))
-						.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
+				if(size > 0){
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(new PageRequest(page, size))
+							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
+				}else{
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(new PageRequest(0, 50))
+							.withSort(SortBuilders.fieldSort(sortBy).order(SortOrder.DESC)).build();
+				}
+				
 			} else {
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -497,6 +504,11 @@ public class DPDoctorUtils {
 
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
+		
+		if(sortBy.equalsIgnoreCase("category")){
+			criteria.and("category").exists(true);
+		}
+		
 		Aggregation aggregation = null;
 		if (anyStringEmpty(sortBy)) {
 			if (size > 0)

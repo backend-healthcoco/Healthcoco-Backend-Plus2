@@ -1,8 +1,11 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Quantity;
 import com.dpdocter.beans.Tax;
+import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.enums.InvoiceItemType;
 import com.dpdocter.enums.PatientTreatmentStatus;
 
@@ -29,6 +32,8 @@ public class InvoiceItemResponse {
 	private Tax tax;
 
 	private Double finalCost = 0.0;
+
+	private List<TreatmentFields> treatmentFields;
 
 	public String getItemId() {
 		return itemId;
@@ -118,10 +123,20 @@ public class InvoiceItemResponse {
 		this.finalCost = finalCost;
 	}
 
+	public List<TreatmentFields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
 	@Override
 	public String toString() {
 		return "InvoiceItemResponse [itemId=" + itemId + ", doctorId=" + doctorId + ", doctorName=" + doctorName
 				+ ", name=" + name + ", type=" + type + ", quantity=" + quantity + ", status=" + status + ", cost="
-				+ cost + ", discount=" + discount + ", tax=" + tax + ", finalCost=" + finalCost + "]";
-	}	
+				+ cost + ", discount=" + discount + ", tax=" + tax + ", finalCost=" + finalCost + ", treatmentFields="
+				+ treatmentFields + "]";
+	}
+
 }

@@ -1085,8 +1085,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (eyePrescriptionCollection.getLeftEyeTest() != null) {
 
 					BeanUtil.map(eyePrescriptionCollection.getLeftEyeTest(), eyResponse);
-					System.out.println(
-							String.format("%.2f", eyePrescriptionCollection.getLeftEyeTest().getDistanceCylinder()));
 					if (!DPDoctorUtils.anyStringEmpty(eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH())
 							|| eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
 							|| eyePrescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
@@ -1368,7 +1366,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	public void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
 			ObjectId doctorId) {
-		parameters.put("printSettingsId", printSettings != null ? printSettings.getId().toString() : "");
+		parameters.put("printSettingsId", (printSettings != null && printSettings.getId() != null) ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
 		Integer contentFontSize = 10;

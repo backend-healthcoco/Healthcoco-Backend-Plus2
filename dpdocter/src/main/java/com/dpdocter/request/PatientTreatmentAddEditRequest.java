@@ -142,21 +142,12 @@ public class PatientTreatmentAddEditRequest {
 		this.totalCost = totalCost;
 	}
 
-
-
 	public String getVisitId() {
 		return visitId;
 	}
 
 	public void setVisitId(String visitId) {
 		this.visitId = visitId;
-	}
-
-	@Override
-	public String toString() {
-		return "PatientTreatmentAddEditRequest [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
-				+ ", totalCost=" + totalCost + "]";
 	}
 
 	public AppointmentRequest getAppointmentRequest() {
@@ -166,4 +157,15 @@ public class PatientTreatmentAddEditRequest {
 	public void setAppointmentRequest(AppointmentRequest appointmentRequest) {
 		this.appointmentRequest = appointmentRequest;
 	}
+
+	@Override
+	public String toString() {
+		return "PatientTreatmentAddEditRequest [id=" + id + ", treatments=" + treatments + ", patientId=" + patientId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
+				+ ", uniqueEmrId=" + uniqueEmrId + ", visitId=" + visitId + ", totalCost=" + totalCost
+				+ ", totalDiscount=" + totalDiscount + ", appointmentId=" + appointmentId + ", time=" + time
+				+ ", fromDate=" + fromDate + ", grandTotal=" + grandTotal + ", appointmentRequest=" + appointmentRequest
+				+ "]";
+	}
+
 }

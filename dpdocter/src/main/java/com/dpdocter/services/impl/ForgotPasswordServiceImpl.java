@@ -195,7 +195,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	return flag;
     }
 
-    @Override
+//    @Override
     @Transactional
     public ForgotPasswordResponse getEmailAndMobNumberOfPatient(String username) {
 	try {
@@ -268,7 +268,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		if (userCollection == null) {
 		    return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
 		}
-		if(!(userCollection.getUserState() == UserState.USERSTATECOMPLETE) ||  !(userCollection.getUserState() == UserState.NOTACTIVATED) )
+		if(!(userCollection.getUserState() == UserState.USERSTATECOMPLETE) &&  !(userCollection.getUserState() == UserState.NOTACTIVATED) )
 		{
 			return "User is not verified";
 		}
