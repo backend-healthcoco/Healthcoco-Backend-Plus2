@@ -2018,6 +2018,7 @@ public class RecordsServiceImpl implements RecordsService {
 	@Override
 	public Records deleteRecordsFile(String recordId, List<String> fileIds) {
 		Records response = null;
+		double fileSizeINMB = 0;
 		try {
 			RecordsCollection recordsCollection = recordsRepository.findOne(new ObjectId(recordId));
 			if (recordsCollection == null) {
@@ -2028,11 +2029,23 @@ public class RecordsServiceImpl implements RecordsService {
 			for (int index = 0; recordsCollection.getFiles().size() > index; index++) {
 				for (String fileId : fileIds) {
 					if (recordsCollection.getFiles().get(index).getFileId().equals(fileId)) {
+						fileSizeINMB = fileSizeINMB + recordsCollection.getFiles().get(index).getFileSizeInMB();
 						recordsCollection.getFiles().remove(index);
+
 					}
 
 				}
 			}
+			if (DPDoctorUtils.anyStringEmpty(recordsCollection.getDoctorId())) {
+				UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
+						.findByUserId(recordsCollection.getPatientId());
+
+				userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
+						userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() + fileSizeINMB);
+				userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+
+			}
+
 			recordsCollection = recordsRepository.save(recordsCollection);
 			response = new Records();
 			BeanUtil.map(recordsCollection, response);

@@ -505,9 +505,6 @@ public class DPDoctorUtils {
 		if (specialities != null && !specialities.isEmpty())
 			criteria.and("speciality").in(specialities);
 		
-		if(sortBy.equalsIgnoreCase("category")){
-			criteria.and("category").exists(true);
-		}
 		
 		Aggregation aggregation = null;
 		if (anyStringEmpty(sortBy)) {
@@ -519,6 +516,11 @@ public class DPDoctorUtils {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 		} else {
+			
+			if(sortBy.equalsIgnoreCase("category")){
+				criteria.and("category").exists(true);
+			}
+			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.ASC, sortBy)), Aggregation.skip((page) * size),
