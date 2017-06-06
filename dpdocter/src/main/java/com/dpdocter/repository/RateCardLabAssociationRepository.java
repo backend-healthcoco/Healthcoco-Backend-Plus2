@@ -8,11 +8,11 @@ import com.dpdocter.collections.RateCardLabAssociationCollection;
 
 public interface RateCardLabAssociationRepository extends MongoRepository<RateCardLabAssociationCollection, ObjectId>{
 
-	@Query("{'locationId': ?0,'rateCardId': ?1}")
-	public RateCardLabAssociationCollection getByLocationAndRateCard(ObjectId locationId, ObjectId rateCardId);
+	@Query("{'daughterLabId': ?0 , 'parentLabId' : ?1,'rateCardId': ?2}")
+	public RateCardLabAssociationCollection getByLocationAndRateCard(ObjectId daughterLabId, ObjectId parentLabId, ObjectId rateCardId);
 	
 	
-	@Query("{'locationId': ?0}")
-	public RateCardLabAssociationCollection getByLocation(ObjectId locationId);
+	@Query("{'daughterLabId': ?0 , 'parentLabId' : ?1}")
+	public RateCardLabAssociationCollection getByLocation(ObjectId daughterLabId , ObjectId parentLabId);
 	
 }

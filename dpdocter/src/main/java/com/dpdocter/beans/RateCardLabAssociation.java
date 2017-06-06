@@ -5,7 +5,8 @@ import com.dpdocter.collections.GenericCollection;
 public class RateCardLabAssociation extends GenericCollection {
 
 	private String id;
-	private String locationId;
+	private String daughterLabId;
+	private String parentLabId;
 	private String rateCardId;
 	private Boolean discarded = false;
 
@@ -17,12 +18,20 @@ public class RateCardLabAssociation extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getLocationId() {
-		return locationId;
+	public String getDaughterLabId() {
+		return daughterLabId;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setDaughterLabId(String daughterLabId) {
+		this.daughterLabId = daughterLabId;
+	}
+
+	public String getParentLabId() {
+		return parentLabId;
+	}
+
+	public void setParentLabId(String parentLabId) {
+		this.parentLabId = parentLabId;
 	}
 
 	public String getRateCardId() {
@@ -43,8 +52,8 @@ public class RateCardLabAssociation extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "RateCardLabAssociation [id=" + id + ", locationId=" + locationId + ", rateCardId=" + rateCardId
-				+ ", discarded=" + discarded + "]";
+		return "RateCardLabAssociation [id=" + id + ", duaghterLabId=" + daughterLabId + ", parentLabId=" + parentLabId
+				+ ", rateCardId=" + rateCardId + ", discarded=" + discarded + "]";
 	}
 
 }

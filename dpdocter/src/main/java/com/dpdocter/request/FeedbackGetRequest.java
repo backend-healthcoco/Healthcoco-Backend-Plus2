@@ -1,7 +1,5 @@
 package com.dpdocter.request;
 
-import com.dpdocter.enums.FeedbackType;
-
 public class FeedbackGetRequest {
 
 	private String doctorId;

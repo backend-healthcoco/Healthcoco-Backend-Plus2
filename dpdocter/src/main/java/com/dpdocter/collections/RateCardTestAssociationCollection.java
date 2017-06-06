@@ -11,9 +11,9 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	@Indexed
+	@Field
 	private ObjectId locationId;
-	@Indexed
+	@Field
 	private ObjectId hospitalId;
 	@Field
 	private ObjectId diagnosticTestId;

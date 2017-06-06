@@ -9,7 +9,7 @@ public class RateCardTestAssociation {
 	private String rateCardId;
 	private Integer turnaroundTime;
 	private Double cost;
-	private String category;
+	private String category = "NORMAL";
 	private String labId;
 	private Boolean isAvailable =true;
 

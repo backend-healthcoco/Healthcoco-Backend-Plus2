@@ -5,7 +5,8 @@ import org.bson.types.ObjectId;
 public class RateCardLabAssociationCollection extends GenericCollection {
 
 	private ObjectId id;
-	private ObjectId locationId;
+	private ObjectId daughterLabId;
+	private ObjectId parentLabId;
 	private ObjectId rateCardId;
 	private Boolean discarded = false;
 
@@ -17,12 +18,20 @@ public class RateCardLabAssociationCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public ObjectId getLocationId() {
-		return locationId;
+	public ObjectId getDaughterLabId() {
+		return daughterLabId;
 	}
 
-	public void setLocationId(ObjectId locationId) {
-		this.locationId = locationId;
+	public void setDaughterLabId(ObjectId daughterLabId) {
+		this.daughterLabId = daughterLabId;
+	}
+
+	public ObjectId getParentLabId() {
+		return parentLabId;
+	}
+
+	public void setParentLabId(ObjectId parentLabId) {
+		this.parentLabId = parentLabId;
 	}
 
 	public ObjectId getRateCardId() {
@@ -43,8 +52,8 @@ public class RateCardLabAssociationCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "RateCardLabAssociationCollection [id=" + id + ", locationId=" + locationId + ", rateCardId="
-				+ rateCardId + ", discarded=" + discarded + "]";
+		return "RateCardLabAssociationCollection [id=" + id + ", daughterLabId=" + daughterLabId + ", parentLabId="
+				+ parentLabId + ", rateCardId=" + rateCardId + ", discarded=" + discarded + "]";
 	}
 
 }

@@ -1143,6 +1143,7 @@ public interface PathProxy {
 		public static final String VERIFY_CRN = "/verifyCRN";
 		public static final String GET_RATE_CARDS = "/getRateCards";
 		public static final String GET_RATE_CARD_TEST = "/getRateCardTests";
+		public static final String GET_RATE_CARD_TEST_BY_DL = "/getRateCardTestsForDaughterLab";
 		public static final String ADD_EDIT_RATE_CARD = "/addEditRateCards";
 		public static final String ADD_EDIT_RATE_CARD_TESTS = "/addEditRateCardTests";
 		public static final String GET_COLLECTION_BOY_REQUEST_LIST = "/getCollectionBoyRequestList";
@@ -1150,6 +1151,7 @@ public interface PathProxy {
 		public static final String GET_CLINICS_AND_LABS = "/clinics";
 		public static final String GET_SPECIMEN_LIST = "/getSpecimens";
 		public static final String EDIT_COLLECTION_BOY = "/editCollectionBoy";
+		public static final String ADD_EDIT_LAB_RATE_CARD_ASSOCIAITION = "/addEditLabRateCardAssociations";
 	
 
 	}

@@ -71,4 +71,9 @@ public interface LocationServices {
 
 	CollectionBoy editCollectionBoy(CollectionBoy collectionBoy);
 
+	Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request);
+
+	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
+			String daughterLabId, String parentLabId, String labId);
+
 }

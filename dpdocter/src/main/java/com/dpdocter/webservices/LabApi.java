@@ -22,6 +22,7 @@ import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
+import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Specimen;
@@ -150,6 +151,22 @@ public class LabApi {
 
 		return response;
 	}
+	
+	@Path(value = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL)
+	public Response<RateCardTestAssociationLookupResponse> getRateCardTests(@QueryParam("daughterLabId") String daughterLabId,@QueryParam("parentLabId") String parentLabId,
+			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (daughterLabId == null || parentLabId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<RateCardTestAssociationLookupResponse> response = new Response<RateCardTestAssociationLookupResponse>();
+		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, daughterLabId,parentLabId, labId));
+
+		return response;
+	}
 
 	@Path(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD)
 	@POST
@@ -168,12 +185,12 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD_TESTS)
 	@POST
 	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_RATE_CARD_TESTS, notes = PathProxy.LabUrls.ADD_EDIT_RATE_CARD_TESTS)
-	public Response<RateCardTestAssociation> addEditRateCardTest(RateCardTestAssociation request) {
+	public Response<Boolean> addEditRateCardTest(List<RateCardTestAssociation> request) {
 		if (request == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<RateCardTestAssociation> response = new Response<RateCardTestAssociation>();
+		Response<Boolean> response = new Response<Boolean>();
 		response.setData(locationServices.addEditRateCardTestAssociation(request));
 
 		return response;
@@ -182,7 +199,7 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.VERIFY_CRN)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.VERIFY_CRN, notes = PathProxy.LabUrls.VERIFY_CRN)
-	public Response<Boolean> getRateCardTests(@QueryParam("locationId") String locationId,
+	public Response<Boolean> verifyCRN(@QueryParam("locationId") String locationId,
 			@QueryParam("requestId") String requestId, @QueryParam("crn") String crn) {
 		if (crn == null) {
 			logger.warn("Invalid Input");
@@ -342,6 +359,32 @@ public class LabApi {
 		}
 		return response;
 	}
+	
+	
+	@Path(PathProxy.LabUrls.ADD_EDIT_LAB_RATE_CARD_ASSOCIAITION)
+	@POST
+	@ApiOperation(value = PathProxy.LabUrls.ADD_EDIT_LAB_RATE_CARD_ASSOCIAITION, notes = PathProxy.LabUrls.ADD_EDIT_LAB_RATE_CARD_ASSOCIAITION)
+	public Response<RateCardLabAssociation> editRateCardLabAssociation(RateCardLabAssociation request) {
+		
+		Response<RateCardLabAssociation> response = null;
+		RateCardLabAssociation rateCardLabAssociation = null;
+		try {
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput ,"Invalid Input");
+			}
+			rateCardLabAssociation = locationServices.addEditRateCardAssociatedLab(request);
+			response = new Response<RateCardLabAssociation>();
+			response.setData(rateCardLabAssociation);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
 	
 	
 	
