@@ -29,99 +29,114 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = PathProxy.FORGOT_PASSWORD_BASE_URL, description = "Endpoint for forgot password")
 public class ForgotPasswordApi {
 
-    private static Logger logger = Logger.getLogger(ForgotPasswordApi.class.getName());
+	private static Logger logger = Logger.getLogger(ForgotPasswordApi.class.getName());
 
-    @Autowired
-    private ForgotPasswordService forgotPasswordService;
+	@Autowired
+	private ForgotPasswordService forgotPasswordService;
 
-    @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
-    public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
+	@Produces(MediaType.APPLICATION_JSON)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_DOCTOR)
+	public Response<String> forgotPassword(ForgotUsernamePasswordRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getEmailAddress())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		forgotPasswordService.forgotPasswordForDoctor(request);
+		Response<String> response = new Response<String>();
+		response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
+		return response;
 	}
-	forgotPasswordService.forgotPasswordForDoctor(request);
-	Response<String> response = new Response<String>();
-	response.setData("RESET YOUR PASSWORD FROM EMAIL ADDRESS");
-	return response;
-    }
 
-    @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
-    @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
-    public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
-	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+	@Produces(MediaType.APPLICATION_JSON)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.FORGOT_PASSWORD_PATIENT)
+	public Response<Boolean> forgotPasswordForPatient(ForgotUsernamePasswordRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(flag);
+		return response;
 	}
-	boolean flag = forgotPasswordService.forgotPasswordForPatient(request);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(flag);
-	return response;
-    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
-    @POST
-    @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
-    public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	Boolean isReset = forgotPasswordService.resetPasswordPatient(request);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(isReset);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
-    @POST
-    @ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
-    public Response<String> resetPassword(ResetPasswordRequest request) {
-    	if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-    	}
-	String string = forgotPasswordService.resetPassword(request);
-	Response<String> response = new Response<String>();
-	response.setData(string);
-	return response;
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
-    @GET
-    @ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
-    public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
-	if (DPDoctorUtils.anyStringEmpty(userId)) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PATIENT)
+	public Response<Boolean> resetPasswordPatient(ResetPasswordRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Boolean isReset = forgotPasswordService.resetPasswordPatient(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(isReset);
+		return response;
 	}
-	String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
-	Response<String> response = new Response<String>();
-	response.setData(string);
-	return response;
-    }
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
-    @POST
-    @ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME, notes = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
-    public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
-	if (request == null) {
-	    logger.warn("Invalid Input");
-	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD)
+	public Response<String> resetPassword(ResetPasswordRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = forgotPasswordService.resetPassword(request);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
 	}
-	boolean flag = forgotPasswordService.forgotUsername(request);
-	Response<Boolean> response = new Response<Boolean>();
-	response.setData(flag);
-	return response;
-    }
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
+	@GET
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED, notes = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)
+	public Response<String> checkLinkIsAlreadyUsed(@PathParam(value = "userId") String userId) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = forgotPasswordService.checkLinkIsAlreadyUsed(userId);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME, notes = PathProxy.ForgotPasswordUrls.FORGOT_USERNAME)
+	public Response<Boolean> forgotUsername(ForgotUsernamePasswordRequest request) {
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		boolean flag = forgotPasswordService.forgotUsername(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(flag);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_PHARMACY)
+	public Response<String> resetPasswordPharmacy(ResetPasswordRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = forgotPasswordService.resetPasswordPharmacy(request);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
+	}
 
 }

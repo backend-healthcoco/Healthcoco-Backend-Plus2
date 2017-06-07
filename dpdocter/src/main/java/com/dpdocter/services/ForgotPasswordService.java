@@ -22,5 +22,7 @@ public interface ForgotPasswordService {
     Boolean resetPasswordPatient(ResetPasswordRequest request);
 
 	boolean isLinkValid(Date createdTime);
+	
+	String resetPasswordPharmacy(ResetPasswordRequest request);
 
 }

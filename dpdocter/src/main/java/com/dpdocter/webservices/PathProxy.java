@@ -304,7 +304,9 @@ public interface PathProxy {
 
 		public static final String RESET_PASSWORD_PATIENT = "/resetPasswordPatient";
 
-		public static final String RESET_PASSWORD = "/resetPassword";
+		public static final String RESET_PASSWORD = "/resetPassword";		
+		
+		public static final String RESET_PASSWORD_PHARMACY = "/resetPasswordPharmacy";
 
 		public static final String FORGOT_USERNAME = "/forgot-username";
 	}
