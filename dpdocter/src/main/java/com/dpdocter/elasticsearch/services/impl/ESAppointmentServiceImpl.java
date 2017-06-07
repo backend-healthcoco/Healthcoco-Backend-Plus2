@@ -652,7 +652,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					days.set(i, days.get(i).toLowerCase());
 				}
 
-				if (maxTime != 0 || minTime != 0) {
+			
 					if (maxTime == 0) {
 						maxTime = 1439;
 					}
@@ -671,12 +671,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
 													.lt(minTime)))),
 									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
-				} else {
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-							boolQuery().must(QueryBuilders.termsQuery("workingSchedules.workingDay", days))));
-				}
+				
 			} else {
-				if (maxTime != 0 || minTime != 0) {
+				
 					if (maxTime == 0) {
 						maxTime = 1439;
 					}
@@ -695,7 +692,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
 													.lt(minTime)))))));
 				}
-			}
+			
 			// if (minTime != 0 || maxTime != 0) {
 			// if (maxTime == 0) {
 			// maxTime = 1439;

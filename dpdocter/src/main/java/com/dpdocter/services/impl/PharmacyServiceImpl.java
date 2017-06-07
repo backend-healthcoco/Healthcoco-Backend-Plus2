@@ -4,7 +4,6 @@ package com.dpdocter.services.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -299,8 +298,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 			UserSearchRequest userSearchRequest = new UserSearchRequest();
 			userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
 			userSearchRequest.setUniqueRequestId(request.getUniqueResponseId());
-			pushNotificationServices.notifyUser(request.getLocaleId(), userSearchRequest, RoleEnum.PHARMIST,
-					"Keep my order ready");
+			pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
+					request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 			response = new OrderDrugsRequest();
 			BeanUtil.map(request, response);
 		} catch (Exception e) {
@@ -308,7 +307,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			logger.error(e + " Error Occurred While ordering drugs");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While ordering drugs");
 		}
-		return null;
+		return response;
 	}
 
 	/*

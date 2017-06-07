@@ -12,12 +12,13 @@ public interface PushNotificationServices {
 
 	UserDevice addDevice(UserDevice request);
 
-	void notifyUser(String userId, String message, String componentType, String componentTypeId, List<UserDeviceCollection> userDeviceCollections);
+	void notifyUser(String userId, String message, String componentType, String componentTypeId,
+			List<UserDeviceCollection> userDeviceCollections);
 
 	void broadcastNotification(BroadcastNotificationRequest request);
-	
+
 	void readNotification(String deviceId, Integer count);
 
-	void notifyUser(String id, UserSearchRequest userSearchRequest, RoleEnum role, String message);
+	public void notifyPharmacy(String id, String requestId, String responseId, RoleEnum role, String message);
 
 }

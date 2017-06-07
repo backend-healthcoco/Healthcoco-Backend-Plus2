@@ -6,25 +6,47 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class Notification {
 
 	private String title;
-	
+
 	private String text;
-	
+
 	private String img;
-	
+
 	private String notificationType;
-	
+
 	private String xi;
-	
+
 	private String ri;
-	
+
 	private String pi;
-	
+
 	private String di;
 
 	private String ai;
 
 	private String ci;
-	
+
+	private String req;
+
+	private String res;
+
+	private String uri;
+
+	public String getReq() {
+		return req;
+	}
+
+	public void setReq(String req) {
+		this.req = req;
+	}
+
+	public String getRes() {
+		return res;
+	}
+
+	public void setRes(String res) {
+		this.res = res;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -105,10 +127,19 @@ public class Notification {
 		this.ci = ci;
 	}
 
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
 	@Override
 	public String toString() {
 		return "Notification [title=" + title + ", text=" + text + ", img=" + img + ", notificationType="
 				+ notificationType + ", xi=" + xi + ", ri=" + ri + ", pi=" + pi + ", di=" + di + ", ai=" + ai + ", ci="
-				+ ci + "]";
+				+ ci + ", uri=" + uri + "]";
 	}
+
 }

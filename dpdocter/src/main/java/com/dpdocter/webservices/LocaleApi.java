@@ -326,16 +326,14 @@ public class LocaleApi {
 		return response;
 	}
 
-	
 	@POST
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
 	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
 		Response<OrderDrugsRequest> response = null;
 		OrderDrugsRequest status = null;
 		try {
-			if(request == null)
-			{
-				throw new BusinessException(ServiceError.InvalidInput ,"Request cannot be null");
+			if (request == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
 			}
 			status = pharmacyService.orderDrugs(request);
 			response = new Response<OrderDrugsRequest>();
@@ -348,7 +346,5 @@ public class LocaleApi {
 		}
 		return response;
 	}
-	
-	
 
 }

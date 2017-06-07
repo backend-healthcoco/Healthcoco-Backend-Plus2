@@ -2160,10 +2160,8 @@ public class HistoryServicesImpl implements HistoryServices {
 					mailAttachments.add(mailResponse.getMailAttachment());
 					break;
 				case REPORT:
-					mailResponse = recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId,
-							null);
-					for (MailAttachment attachment : mailResponse.getMailAttachments())
-						mailAttachments.add(attachment);
+					mailResponse = recordsService.getRecordMailData(mailData.getId(), doctorId, locationId, hospitalId);
+					mailAttachments.add(mailResponse.getMailAttachment());
 					break;
 				}
 			}

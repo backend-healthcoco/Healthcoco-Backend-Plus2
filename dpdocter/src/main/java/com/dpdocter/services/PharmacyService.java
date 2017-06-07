@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.UserSearchRequest;
-import com.dpdocter.response.PharmacyResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 
@@ -14,7 +13,7 @@ public interface PharmacyService {
 
 	/*Boolean addResponseInQueue(PharmacyResponse request);*/
 
-	OrderDrugsRequest orderDrugs(OrderDrugsRequest request);
+	OrderDrugsRequest  orderDrugs(OrderDrugsRequest request);
 
 	List<SearchRequestFromUserResponse> getPatientOrderHistoryList(String userId, int page, int size);
 

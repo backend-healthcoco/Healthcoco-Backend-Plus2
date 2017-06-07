@@ -23,4 +23,6 @@ public interface UserDeviceRepository extends MongoRepository<UserDeviceCollecti
 	@Query("{'role': ?0, 'deviceType': ?1}")
 	List<UserDeviceCollection> findByRoleAndType(String role, String type);
 
+	@Query("{'localeId': ?0}")
+	List<UserDeviceCollection> findByLocaleId(ObjectId objectId);
 }
