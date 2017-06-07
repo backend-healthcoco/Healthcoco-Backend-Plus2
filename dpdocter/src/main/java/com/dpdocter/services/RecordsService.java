@@ -32,11 +32,10 @@ public interface RecordsService {
 
 	Records getRecordById(String recordId);
 
-	void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId,
-			String emailAddress, List<String> fileIds);
+	public void emailRecordToPatient(String recordId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 
-	MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId,
-			List<String> fileIds);
+	public MailResponse getRecordMailData(String recordId, String doctorId, String locationId, String hospitalId);
 
 	Tags addEditTag(Tags tags);
 
@@ -46,7 +45,7 @@ public interface RecordsService {
 
 	String getPatientEmailAddress(String patientId);
 
-	FileDownloadResponse getRecordFile(String recordId, String fileId);
+	FileDownloadResponse getRecordFile(String recordId);
 
 	Records deleteRecord(String recordId, Boolean discarded);
 
@@ -72,16 +71,12 @@ public interface RecordsService {
 
 	UserRecords getUserRecordById(String recordId);
 
-	List<UserRecords> getUserRecordsByuserId(String patientId,String doctorId,String locationId,String hospitalId,int page, int size, String updatedTime,
-			Boolean discarded);
+	List<UserRecords> getUserRecordsByuserId(String patientId, String doctorId, String locationId, String hospitalId,
+			int page, int size, String updatedTime, Boolean discarded);
 
 	UserAllowanceDetails getUserRecordAllowance(String userId, String mobileNumber);
 
 	UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible);
-
-	public Integer updateRecords();
-
-	public Records deleteRecordsFile(String recordId, List<String> fileIds);
 
 	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds);
 }

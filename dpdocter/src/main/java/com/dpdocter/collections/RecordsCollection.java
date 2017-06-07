@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.enums.RecordsState;
 
 @Document(collection = "records_cl")
@@ -82,9 +81,6 @@ public class RecordsCollection extends GenericCollection {
 
 	@Field
 	private List<String> messages;
-
-	@Field
-	private List<RecordsFile> files;
 
 	public ObjectId getId() {
 		return id;
@@ -273,14 +269,6 @@ public class RecordsCollection extends GenericCollection {
 				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
 				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
 				+ ", messages=" + messages + "]";
-	}
-
-	public List<RecordsFile> getFiles() {
-		return files;
-	}
-
-	public void setFiles(List<RecordsFile> files) {
-		this.files = files;
 	}
 
 }

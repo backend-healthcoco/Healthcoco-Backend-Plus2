@@ -655,9 +655,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		Records records = recordsService.addRecord(request.getRecord());
 
 		if (records != null) {
-			for (RecordsFile recordsFile : records.getFiles()) {
-				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
-			}
+			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 
 			if (patientVisitCollection.getVisitedFor() != null) {
 				if (!patientVisitCollection.getVisitedFor().contains(VisitedFor.REPORTS))
@@ -946,12 +944,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						for (RecordsCollection record : patientVisitLookupResponse.getRecords()) {
 							MailResponse mailResponse = recordsService.getRecordMailData(record.getId().toString(),
 									record.getDoctorId().toString(), record.getLocationId().toString(),
-									record.getHospitalId().toString(), null);
-							if (mailResponse.getMailAttachments() != null
-									&& !mailResponse.getMailAttachments().isEmpty()) {
-								for (MailAttachment attachment : mailResponse.getMailAttachments())
-									mailAttachments.add(attachment);
-							}
+									record.getHospitalId().toString());
+							if (mailResponse.getMailAttachment() != null)
+								mailAttachments.add(mailResponse.getMailAttachment());
 						}
 					}
 					UserCollection doctorUser = patientVisitLookupResponse.getDoctor();
@@ -1020,8 +1015,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				patientVisitLookupResponse.getDoctorId(), patientVisitLookupResponse.getLocationId(),
 				patientVisitLookupResponse.getHospitalId(), ComponentType.ALL.getType());
-		
-		if(printSettings == null){
+
+		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
@@ -1366,7 +1361,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	@Override
 	public void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings,
 			ObjectId doctorId) {
-		parameters.put("printSettingsId", (printSettings != null && printSettings.getId() != null) ? printSettings.getId().toString() : "");
+		parameters.put("printSettingsId",
+				(printSettings != null && printSettings.getId() != null) ? printSettings.getId().toString() : "");
 		String headerLeftText = "", headerRightText = "", footerBottomText = "", logoURL = "";
 		int headerLeftTextLength = 0, headerRightTextLength = 0;
 		Integer contentFontSize = 10;

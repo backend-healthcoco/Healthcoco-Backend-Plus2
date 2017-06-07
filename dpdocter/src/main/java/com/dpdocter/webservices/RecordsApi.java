@@ -87,9 +87,7 @@ public class RecordsApi {
 			Records visitRecord = new Records();
 			BeanUtil.map(records, visitRecord);
 			visitRecord.setPrescriptionId(null);
-			for (RecordsFile recordsFile : records.getFiles()) {
-				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
-			}
+			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 			String visitId = patientTrackService.addRecord(visitRecord, VisitedFor.REPORTS, request.getVisitId());
 			records.setVisitId(visitId);
 		}
@@ -236,7 +234,7 @@ public class RecordsApi {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress, fileIds);
+		recordsService.emailRecordToPatient(recordId, doctorId, locationId, hospitalId, emailAddress);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;
@@ -297,10 +295,7 @@ public class RecordsApi {
 		request.setId(recordId);
 		Records records = recordsService.editRecord(request);
 		if (records != null) {
-			for (RecordsFile recordsFile : records.getFiles()) {
-				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
-			}
-
+			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 			String visitId = patientTrackService.editRecord(records.getId(), VisitedFor.REPORTS);
 			records.setVisitId(visitId);
 		}
@@ -347,9 +342,7 @@ public class RecordsApi {
 
 		// patient track
 		if (records != null) {
-			for (RecordsFile recordsFile : records.getFiles()) {
-				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
-			}
+			records.setRecordsUrl(getFinalImageURL(records.getRecordsUrl()));
 			String visitId = patientTrackService.addRecord(records, VisitedFor.REPORTS, request.getVisitId());
 			records.setVisitId(visitId);
 		}
@@ -489,32 +482,6 @@ public class RecordsApi {
 		}
 		UserRecords records = recordsService.deleteUserRecord(recordId, discarded, isVisible);
 		Response<UserRecords> response = new Response<UserRecords>();
-		response.setData(records);
-		return response;
-	}
-
-	@Path(value = PathProxy.RecordsUrls.UPDATE_RECORDS_DATA)
-	@GET
-	@ApiOperation(value = PathProxy.RecordsUrls.UPDATE_RECORDS_DATA, notes = PathProxy.RecordsUrls.UPDATE_RECORDS_DATA)
-	public Response<Integer> updateRecords() {
-		Integer record = recordsService.updateRecords();
-		Response<Integer> response = new Response<Integer>();
-		response.setData(record);
-		return response;
-
-	}
-
-	@Path(value = PathProxy.RecordsUrls.DELETE_RECORDS_FILE)
-	@DELETE
-	@ApiOperation(value = PathProxy.RecordsUrls.DELETE_RECORDS_FILE, notes = PathProxy.RecordsUrls.DELETE_RECORDS_FILE)
-	public Response<Records> deleteRecordFile(@PathParam("recordId") String recordId,
-			@MatrixParam("fileIds") List<String> fileIds) {
-		if (DPDoctorUtils.anyStringEmpty(recordId)) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-		Records records = recordsService.deleteRecordsFile(recordId, fileIds);
-		Response<Records> response = new Response<Records>();
 		response.setData(records);
 		return response;
 	}
