@@ -137,6 +137,21 @@ public class SignUpApi {
 	}
 
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.SignUpUrls.VERIFY_LOCALE)
+	@GET
+	@ApiOperation(value = PathProxy.SignUpUrls.VERIFY_LOCALE, notes = PathProxy.SignUpUrls.VERIFY_LOCALE)
+	public Response<String> verifyLocale(@PathParam(value = "tokenId") String tokenId) {
+		if (tokenId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = signUpService.verifyLocale(tokenId);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
+	}
+
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE, notes = PathProxy.SignUpUrls.PATIENT_PROFILE_PIC_CHANGE)
@@ -284,7 +299,7 @@ public class SignUpApi {
 		response.setData(clinicContactUsService.submitClinicContactUSInfo(clinicContactUs));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)

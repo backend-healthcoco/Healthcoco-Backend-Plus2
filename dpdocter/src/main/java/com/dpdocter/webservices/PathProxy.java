@@ -31,6 +31,8 @@ public interface PathProxy {
 
 		public static final String VERIFY_UNLOCK_PATIENT = "/patient/verifyorunlock";
 
+		public static final String VERIFY_LOCALE = "/locale/verify/{tokenId}";
+
 		public static final String SUBMIT_DOCTOR_CONTACT = "/submitDoctorContact";
 
 		public static final String SUBMIT_CLINIC_CONTACT = "/submitClinicContact";
@@ -304,8 +306,8 @@ public interface PathProxy {
 
 		public static final String RESET_PASSWORD_PATIENT = "/resetPasswordPatient";
 
-		public static final String RESET_PASSWORD = "/resetPassword";		
-		
+		public static final String RESET_PASSWORD = "/resetPassword";
+
 		public static final String RESET_PASSWORD_PHARMACY = "/resetPasswordPharmacy";
 
 		public static final String FORGOT_USERNAME = "/forgot-username";
@@ -1154,7 +1156,6 @@ public interface PathProxy {
 		public static final String GET_SPECIMEN_LIST = "/getSpecimens";
 		public static final String EDIT_COLLECTION_BOY = "/editCollectionBoy";
 		public static final String ADD_EDIT_LAB_RATE_CARD_ASSOCIAITION = "/addEditLabRateCardAssociations";
-	
 
 	}
 

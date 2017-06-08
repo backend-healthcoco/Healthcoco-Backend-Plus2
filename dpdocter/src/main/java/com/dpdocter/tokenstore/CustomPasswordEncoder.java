@@ -3,10 +3,9 @@ package com.dpdocter.tokenstore;
 import java.io.UnsupportedEncodingException;
 
 import org.springframework.security.authentication.encoding.BaseDigestPasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import common.util.web.DPDoctorUtils;
-@Component
+
 public class CustomPasswordEncoder extends BaseDigestPasswordEncoder {
 
 	@Override
@@ -21,12 +20,15 @@ public class CustomPasswordEncoder extends BaseDigestPasswordEncoder {
 		}
 		return String.valueOf(pass);
 	}
-
+	
 	@Override
 	public boolean isPasswordValid(String encPass, String rawPass, Object salt) {
 		// TODO Auto-generated method stub
 		String pass1 = "" + encPass;
+		
 		String pass2 = encodePassword(rawPass, salt);
+		System.out.println(pass1);
+		System.out.println(pass2);
 		return match( pass1, pass2);
 	}
 

@@ -381,7 +381,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		try {
 			TokenCollection tokenCollection = tokenRepository.findOne(new ObjectId(request.getUserId()));
 			if (tokenCollection == null)
-				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
+				return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
 			else if (tokenCollection.getIsUsed())
 				return "Your password has already been reset.";
 			else {
@@ -389,7 +389,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					return "Your reset password link has expired.";
 				UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 				if (userCollection == null) {
-					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the email that we sent you.";
+					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
 				}
 				if (!(userCollection.getUserState() == UserState.PHARMACY)) {
 					return "User is not verified";
@@ -401,14 +401,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				userCollection.setPassword(password.toCharArray());
 				// userCollection.setIsTempPassword(false);
 				userRepository.save(userCollection);
-
 				tokenCollection.setIsUsed(true);
 				tokenRepository.save(tokenCollection);
 
 				return "You have successfully changed your password.";
 			}
 		} catch (IllegalArgumentException argumentException) {
-			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification email that we sent you.";
+			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification SMS that we sent you.";
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
