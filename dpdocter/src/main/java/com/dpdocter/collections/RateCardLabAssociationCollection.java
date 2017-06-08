@@ -50,10 +50,5 @@ public class RateCardLabAssociationCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "RateCardLabAssociationCollection [id=" + id + ", daughterLabId=" + daughterLabId + ", parentLabId="
-				+ parentLabId + ", rateCardId=" + rateCardId + ", discarded=" + discarded + "]";
-	}
 
 }

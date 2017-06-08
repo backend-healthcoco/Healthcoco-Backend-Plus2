@@ -1156,6 +1156,9 @@ public interface PathProxy {
 		public static final String GET_SPECIMEN_LIST = "/getSpecimens";
 		public static final String EDIT_COLLECTION_BOY = "/editCollectionBoy";
 		public static final String ADD_EDIT_LAB_RATE_CARD_ASSOCIAITION = "/addEditLabRateCardAssociations";
+		public static final String GET_DL_RATE_CARD = "/getDLRateCard";
+		public static final String GET_PICKUPS_FOR_CB= "/getPickupsForCB";
+		public static final String GET_PICKUPS_FOR_DL= "/getPickupsForDL";
 
 	}
 

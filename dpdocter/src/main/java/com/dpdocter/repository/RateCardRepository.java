@@ -10,5 +10,4 @@ public interface RateCardRepository extends MongoRepository<RateCardCollection, 
 
 	@Query("{'locationId': ?0 , 'isDefault': true}")
 	public RateCardCollection getDefaultRateCard(ObjectId locationId);
-	
 }
