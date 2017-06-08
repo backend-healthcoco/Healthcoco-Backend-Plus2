@@ -203,7 +203,7 @@ public class SignUpServiceImpl implements SignUpService {
 	    	return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification SMS that we sent you.";
 	    } else if(tokenCollection.getIsUsed()){
 	    	return "Your verification link has already been used."+
-	    			" Please contact support@healthcoco.com for completing your email verification";
+	    			" Please contact support@healthcoco.com for completing your SMS verification";
 	    }
 	    else {
 	    if (!forgotPasswordService.isLinkValid(tokenCollection.getCreatedTime()))
@@ -216,9 +216,7 @@ public class SignUpServiceImpl implements SignUpService {
 		UserCollection userCollection = userRepository.findOne(tokenCollection.getResourceId());
 		LocaleCollection localeCollection = localeRepository.findByMobileNumber(userCollection.getMobileNumber());
 		userCollection.setIsVerified(true);
-		userCollection.setUserState(UserState.NOTACTIVATED);
 		userRepository.save(userCollection);
-
 		localeCollection.setIsVerified(true);
 		localeRepository.save(localeCollection);
 		tokenCollection.setIsUsed(true);
