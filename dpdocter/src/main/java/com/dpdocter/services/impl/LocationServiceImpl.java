@@ -991,7 +991,7 @@ public class LocationServiceImpl implements LocationServices {
 		ObjectId oldId = null;
 		RateCardLabAssociationCollection rateCardLabAssociationCollection = null;
 		try{
-			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocationAndRateCard(new ObjectId(rateCardLabAssociation.getDaughterLabId()),new ObjectId(rateCardLabAssociation.getParentLabId()), new ObjectId(rateCardLabAssociation.getRateCardId()));
+			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocation(new ObjectId(rateCardLabAssociation.getDaughterLabId()),new ObjectId(rateCardLabAssociation.getParentLabId()));
 		if (rateCardLabAssociationCollection == null) {
 			rateCardLabAssociationCollection = new RateCardLabAssociationCollection();
 		} else {
