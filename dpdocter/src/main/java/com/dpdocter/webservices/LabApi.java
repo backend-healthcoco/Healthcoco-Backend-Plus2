@@ -403,4 +403,42 @@ public class LabApi {
 		return response;
 	}
 	
+	
+	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_CB, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
+	public Response<LabTestPickup> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickup> labTestPickups = null;
+		Response<LabTestPickup> response = null;
+
+		try {
+			labTestPickups = locationServices.getRequestForCB(collectionBoyId, size, page);
+			response = new Response<LabTestPickup>();
+			response.setDataList(labTestPickups);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_DL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
+	public Response<LabTestPickup> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickup> labTestPickups = null;
+		Response<LabTestPickup> response = null;
+
+		try {
+			labTestPickups = locationServices.getRequestForDL(daughterLabId, size, page);
+			response = new Response<LabTestPickup>();
+			response.setDataList(labTestPickups);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 }
