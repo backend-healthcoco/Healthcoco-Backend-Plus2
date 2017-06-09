@@ -157,13 +157,13 @@ public class LabApi {
 	@ApiOperation(value = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL, notes = PathProxy.LabUrls.GET_RATE_CARD_TEST_BY_DL)
 	public Response<RateCardTestAssociationLookupResponse> getRateCardTests(@QueryParam("daughterLabId") String daughterLabId,@QueryParam("parentLabId") String parentLabId,
 			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("searchTerm") String searchTerm,@QueryParam("specimen") String specimen) {
 		if (daughterLabId == null || parentLabId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<RateCardTestAssociationLookupResponse> response = new Response<RateCardTestAssociationLookupResponse>();
-		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, daughterLabId,parentLabId, labId));
+		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, daughterLabId,parentLabId, labId,specimen));
 
 		return response;
 	}
@@ -384,8 +384,61 @@ public class LabApi {
 		return response;
 	}
 	
+	@Path(PathProxy.LabUrls.GET_DL_RATE_CARD)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_DL_RATE_CARD, notes = PathProxy.LabUrls.GET_DL_RATE_CARD)
+	public Response<RateCard> getDLRateCard(@QueryParam("parentLabId") String parentLabId, @QueryParam("daughterLabId") String daughterLabId) {
+		RateCard rateCard = null;
+		Response<RateCard> response = null;
+
+		try {
+			rateCard = locationServices.getDLRateCard(daughterLabId, parentLabId);
+			response = new Response<RateCard>();
+			response.setData(rateCard);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 	
 	
+	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_CB, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
+	public Response<LabTestPickup> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickup> labTestPickups = null;
+		Response<LabTestPickup> response = null;
+
+		try {
+			labTestPickups = locationServices.getRequestForCB(collectionBoyId, size, page);
+			response = new Response<LabTestPickup>();
+			response.setDataList(labTestPickups);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 	
-	
+	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_DL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
+	public Response<LabTestPickup> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickup> labTestPickups = null;
+		Response<LabTestPickup> response = null;
+
+		try {
+			labTestPickups = locationServices.getRequestForDL(daughterLabId, size, page);
+			response = new Response<LabTestPickup>();
+			response.setDataList(labTestPickups);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
 }

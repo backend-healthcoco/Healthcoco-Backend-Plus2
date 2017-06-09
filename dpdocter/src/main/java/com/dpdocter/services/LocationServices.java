@@ -73,7 +73,14 @@ public interface LocationServices {
 
 	Boolean addEditRateCardTestAssociation(List<RateCardTestAssociation> request);
 
-	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
+/*	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId);
+*/
+	List<LabTestPickup> getRequestForDL(String daughterLabId, int size, int page);
+
+	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
+			String daughterLabId, String parentLabId, String labId, String specimen);
+
+	RateCard getDLRateCard(String daughterLabId, String parentLabId);
 
 }

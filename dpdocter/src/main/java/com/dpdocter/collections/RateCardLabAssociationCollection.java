@@ -1,7 +1,9 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "rate_card_lab_association_cl")
 public class RateCardLabAssociationCollection extends GenericCollection {
 
 	private ObjectId id;
@@ -50,10 +52,5 @@ public class RateCardLabAssociationCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	@Override
-	public String toString() {
-		return "RateCardLabAssociationCollection [id=" + id + ", daughterLabId=" + daughterLabId + ", parentLabId="
-				+ parentLabId + ", rateCardId=" + rateCardId + ", discarded=" + discarded + "]";
-	}
 
 }

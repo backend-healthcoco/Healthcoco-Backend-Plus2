@@ -28,9 +28,9 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Field
 	private ObjectId doctorId;
 	@Field
-	private String daughterLabLocationId;
+	private ObjectId daughterLabLocationId;
 	@Field
-	private String parentLabLocationId;
+	private ObjectId parentLabLocationId;
 	@Field
 	private Boolean discarded = false;
 	@Field
@@ -92,23 +92,23 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public String getDaughterLabLocationId() {
+	public ObjectId getDaughterLabLocationId() {
 		return daughterLabLocationId;
 	}
 
-	public void setDaughterLabLocationId(String daughterLabLocationId) {
+	public void setDaughterLabLocationId(ObjectId daughterLabLocationId) {
 		this.daughterLabLocationId = daughterLabLocationId;
 	}
 
-	public String getParentLabLocationId() {
+	public ObjectId getParentLabLocationId() {
 		return parentLabLocationId;
 	}
 
-	public void setParentLabLocationId(String parentLabLocationId) {
+	public void setParentLabLocationId(ObjectId parentLabLocationId) {
 		this.parentLabLocationId = parentLabLocationId;
 	}
 
-	 public List<ObjectId> getLabTestSampleIds() {
+	public List<ObjectId> getLabTestSampleIds() {
 		return labTestSampleIds;
 	}
 

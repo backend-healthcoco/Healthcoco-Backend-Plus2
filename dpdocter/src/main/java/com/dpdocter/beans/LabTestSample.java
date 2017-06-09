@@ -5,13 +5,13 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.TestSampleType;
 
-public class LabTestSample extends GenericCollection{
+public class LabTestSample extends GenericCollection {
 
 	private String id;
 	private String patientName;
 	private Integer age;
 	private String Gender;
-	private TestSampleType sampleType;
+	private String sampleType;
 	private List<String> labTestIds;
 	private Boolean isUrgent;
 	private Long urgentTime;
@@ -21,7 +21,6 @@ public class LabTestSample extends GenericCollection{
 	private String status;
 	private String sampleId;
 
-	
 	public String getId() {
 		return id;
 	}
@@ -62,11 +61,11 @@ public class LabTestSample extends GenericCollection{
 		Gender = gender;
 	}
 
-	public TestSampleType getSampleType() {
+	public String getSampleType() {
 		return sampleType;
 	}
 
-	public void setSampleType(TestSampleType sampleType) {
+	public void setSampleType(String sampleType) {
 		this.sampleType = sampleType;
 	}
 

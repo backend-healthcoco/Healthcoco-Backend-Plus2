@@ -341,6 +341,37 @@ public class LocationServiceImpl implements LocationServices {
 		return response; 
 		
 	}
+	
+	@Override
+	@Transactional
+	public List<LabTestPickup> getRequestForDL(String daughterLabId , int size , int page) {
+		
+		List<LabTestPickup> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+
+			criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
+			criteria.and("isCompleted").is(false);
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<LabTestPickup> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabTestPickupCollection.class, LabTestPickup.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Collection Boys Pickup Request");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Collection Boys Pickup Request");
+		}
+		return response; 
+		
+	}
 
 	@Override
 	@Transactional
@@ -389,9 +420,16 @@ public class LocationServiceImpl implements LocationServices {
 				BeanUtil.map(request, labTestPickupCollection);
 				labTestPickupCollection.setRequestId(requestId);
 				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
+				CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository.findbyParentIdandDaughterId(new ObjectId(request.getParentLabLocationId()), new ObjectId(request.getDaughterLabLocationId()));
+				if(collectionBoyLabAssociationCollection != null)
+				{
+					labTestPickupCollection.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
+				}
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 
 			}
+			
+			
 			response = new LabTestPickup();
 			BeanUtil.map(labTestPickupCollection, response);
 		} catch (Exception e) {
@@ -847,7 +885,7 @@ public class LocationServiceImpl implements LocationServices {
 	@Override
 	@Transactional
 	public List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm, String daughterLabId, String parentLabId,
-			String labId) {
+			String labId , String specimen) {
 		List<RateCardTestAssociationLookupResponse> rateCardTests = null;
 		RateCardTestAssociationLookupResponse rateCardTestAssociation = null;
 		List<RateCardTestAssociationLookupResponse> specialRateCardsTests = null;
@@ -890,6 +928,10 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("diagnosticTest.testName").regex("^" + searchTerm));
 			}
 			criteria.and("rateCardId").is(rateCardId);
+			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
+				criteria = criteria.orOperator(new Criteria("diagnosticTest.specimen").regex("^" + specimen, "i"),
+						new Criteria("diagnosticTest.specimen").regex("^" + specimen));
+			}
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
@@ -949,7 +991,7 @@ public class LocationServiceImpl implements LocationServices {
 		ObjectId oldId = null;
 		RateCardLabAssociationCollection rateCardLabAssociationCollection = null;
 		try{
-			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocationAndRateCard(new ObjectId(rateCardLabAssociation.getDaughterLabId()),new ObjectId(rateCardLabAssociation.getParentLabId()), new ObjectId(rateCardLabAssociation.getRateCardId()));
+			rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocation(new ObjectId(rateCardLabAssociation.getDaughterLabId()),new ObjectId(rateCardLabAssociation.getParentLabId()));
 		if (rateCardLabAssociationCollection == null) {
 			rateCardLabAssociationCollection = new RateCardLabAssociationCollection();
 		} else {
@@ -1100,6 +1142,28 @@ public class LocationServiceImpl implements LocationServices {
 	public RateCardTestAssociation addEditRateCardTestAssociation(RateCardTestAssociation request) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	
+	@Override
+	@Transactional
+	public RateCard getDLRateCard(String daughterLabId , String parentLabId)
+	{
+		RateCard response = null;
+		RateCardCollection rateCardCollection = null;
+		RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
+		if(rateCardLabAssociationCollection != null && rateCardLabAssociationCollection.getDiscarded() ==false)
+		{
+			rateCardCollection = rateCardRepository.findOne(rateCardLabAssociationCollection.getRateCardId());
+		}
+		
+		if(rateCardCollection != null)
+		{
+			response = new RateCard();
+			BeanUtil.map(rateCardCollection, response);
+		}
+		return response;
+		
 	}
 
 
