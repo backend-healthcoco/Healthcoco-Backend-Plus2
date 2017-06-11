@@ -83,4 +83,6 @@ public interface LocationServices {
 
 	RateCard getDLRateCard(String daughterLabId, String parentLabId);
 
+	List<LabTestPickup> getRequestForPL(String parentLabId, int size, int page);
+
 }

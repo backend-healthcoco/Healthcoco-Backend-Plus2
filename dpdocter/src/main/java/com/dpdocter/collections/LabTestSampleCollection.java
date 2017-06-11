@@ -3,25 +3,41 @@ package com.dpdocter.collections;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.enums.TestSampleType;
 
 @Document(collection = "lab_test_sample_cl")
 public class LabTestSampleCollection extends GenericCollection {
 
+	@Id
 	private ObjectId id;
+	@Field
 	private String patientName;
+	@Field
 	private Integer age;
+	@Field
 	private String Gender;
-	private TestSampleType sampleType;
-	private List<ObjectId> labTestId;
+	@Field
+	private String sampleType;
+	@Field
+	private List<RateCardTestAssociation> RateCardTestAssociation;
+	@Field
 	private Boolean isUrgent;
+	@Field
 	private Long urgentTime;
+	@Field
 	private Boolean isCollected = false;
+	@Field
 	private Boolean isHardCopyRequired;
+	@Field
 	private Boolean isHardCopyGiven;
+	@Field
 	private String status;
+	@Field
 	private String sampleId;
 
 	public ObjectId getId() {
@@ -56,20 +72,20 @@ public class LabTestSampleCollection extends GenericCollection {
 		Gender = gender;
 	}
 
-	public TestSampleType getSampleType() {
+	public String getSampleType() {
 		return sampleType;
 	}
 
-	public void setSampleType(TestSampleType sampleType) {
+	public void setSampleType(String sampleType) {
 		this.sampleType = sampleType;
 	}
 
-	public List<ObjectId> getLabTestId() {
-		return labTestId;
+	public List<ObjectId> getLabTestIds() {
+		return labTestIds;
 	}
 
-	public void setLabTestId(List<ObjectId> labTestId) {
-		this.labTestId = labTestId;
+	public void setLabTestIds(List<ObjectId> labTestIds) {
+		this.labTestIds = labTestIds;
 	}
 
 	public Boolean getIsUrgent() {

@@ -12,7 +12,7 @@ public class LabTestSample extends GenericCollection {
 	private Integer age;
 	private String Gender;
 	private String sampleType;
-	private List<String> labTestIds;
+	private List<RateCardTestAssociation> RateCardTestAssociation;
 	private Boolean isUrgent;
 	private Long urgentTime;
 	private Boolean isCollected = false;
@@ -29,12 +29,12 @@ public class LabTestSample extends GenericCollection {
 		this.id = id;
 	}
 
-	public List<String> getLabTestIds() {
-		return labTestIds;
+	public List<RateCardTestAssociation> getRateCardTestAssociation() {
+		return RateCardTestAssociation;
 	}
 
-	public void setLabTestIds(List<String> labTestIds) {
-		this.labTestIds = labTestIds;
+	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
+		RateCardTestAssociation = rateCardTestAssociation;
 	}
 
 	public String getPatientName() {
@@ -127,10 +127,11 @@ public class LabTestSample extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "LabTestSample [patientName=" + patientName + ", age=" + age + ", Gender=" + Gender + ", sampleType="
-				+ sampleType + ", labTestIds=" + labTestIds + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime
-				+ ", isCollected=" + isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven="
-				+ isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId + "]";
+		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", age=" + age + ", Gender=" + Gender
+				+ ", sampleType=" + sampleType + ", RateCardTestAssociation=" + RateCardTestAssociation + ", isUrgent="
+				+ isUrgent + ", urgentTime=" + urgentTime + ", isCollected=" + isCollected + ", isHardCopyRequired="
+				+ isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId="
+				+ sampleId + "]";
 	}
 
 }
