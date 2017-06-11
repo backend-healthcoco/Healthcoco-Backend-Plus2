@@ -314,8 +314,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 											.lon(Double.parseDouble(longitude)).distance("30km"))
 									.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm))
-									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true))
-									.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
+									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
 							esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
 									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
