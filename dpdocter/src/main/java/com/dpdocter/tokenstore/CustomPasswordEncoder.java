@@ -3,9 +3,10 @@ package com.dpdocter.tokenstore;
 import java.io.UnsupportedEncodingException;
 
 import org.springframework.security.authentication.encoding.BaseDigestPasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import common.util.web.DPDoctorUtils;
-
+@Component
 public class CustomPasswordEncoder extends BaseDigestPasswordEncoder {
 
 	@Override
