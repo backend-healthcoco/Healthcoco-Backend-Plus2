@@ -1167,7 +1167,8 @@ public interface PathProxy {
 
 	public interface InventoryUrls {
 		public static final String ADD_INVENTORY_ITEM = "/addInventoryItem";
-		public static final String GET_INVENTORY_ITEM = "";
+		public static final String GET_INVENTORY_ITEMS = "/getInventoryItemList";
+		public static final String GET_MANUFACTURERS = "/getManufacturerList";
 
 	}
 }

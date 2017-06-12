@@ -11,9 +11,9 @@ public class InventoryItem extends GenericCollection {
 	private String name;
 	private String type;
 	private String code;
-	private Long StockingUnit;
+	private Long stockingUnit;
 	private String manufacturer;
-	private boolean isSaveManufacturer;
+	private Boolean saveManufacturer;
 	private String resourceId;
 	private String locationId;
 	private String hospitalId;
@@ -52,11 +52,11 @@ public class InventoryItem extends GenericCollection {
 	}
 
 	public Long getStockingUnit() {
-		return StockingUnit;
+		return stockingUnit;
 	}
 
 	public void setStockingUnit(Long stockingUnit) {
-		StockingUnit = stockingUnit;
+		this.stockingUnit = stockingUnit;
 	}
 
 	public String getManufacturer() {
@@ -67,12 +67,12 @@ public class InventoryItem extends GenericCollection {
 		this.manufacturer = manufacturer;
 	}
 
-	public boolean isSaveManufacturer() {
-		return isSaveManufacturer;
+	public Boolean getSaveManufacturer() {
+		return saveManufacturer;
 	}
 
-	public void setSaveManufacturer(boolean isSaveManufacturer) {
-		this.isSaveManufacturer = isSaveManufacturer;
+	public void setSaveManufacturer(Boolean saveManufacturer) {
+		this.saveManufacturer = saveManufacturer;
 	}
 
 	public String getResourceId() {
@@ -109,8 +109,8 @@ public class InventoryItem extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "InventoryItem [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", StockingUnit="
-				+ StockingUnit + ", manufacturer=" + manufacturer + ", isSaveManufacturer=" + isSaveManufacturer
+		return "InventoryItem [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", stockingUnit="
+				+ stockingUnit + ", manufacturer=" + manufacturer + ", saveManufacturer=" + saveManufacturer
 				+ ", resourceId=" + resourceId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", discarded=" + discarded + "]";
 	}

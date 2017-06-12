@@ -1,80 +1,109 @@
-package com.dpdocter.beans;
+package com.dpdocter.collections;
 
-import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import common.util.web.JacksonUtil;
+@Document(collection = "inventory_batch_cl")
+public class InventoryBatchCollection extends GenericCollection {
 
-public class InventoryBatch extends GenericCollection {
-
-	
-	private String id;
+	@Id
+	private ObjectId id;
+	@Field
 	private Long batchName;
+	@Field
 	private Long noOfItems;
+	@Field
 	private Long noOfItemsLeft;
+	@Field
 	private Long retailPrice;
+	@Field
 	private Long costPrice;
-	private String locationId;
-	private String hospitalId;
-	private Boolean discarded = false;
-	public String getId() {
+	@Field
+	private ObjectId locationId;
+	@Field
+	private ObjectId hospitalId;
+	@Field
+	private Boolean discarded;
+
+	public ObjectId getId() {
 		return id;
 	}
-	public void setId(String id) {
+
+	public void setId(ObjectId id) {
 		this.id = id;
 	}
+
 	public Long getBatchName() {
 		return batchName;
 	}
+
 	public void setBatchName(Long batchName) {
 		this.batchName = batchName;
 	}
+
 	public Long getNoOfItems() {
 		return noOfItems;
 	}
+
 	public void setNoOfItems(Long noOfItems) {
 		this.noOfItems = noOfItems;
 	}
+
 	public Long getNoOfItemsLeft() {
 		return noOfItemsLeft;
 	}
+
 	public void setNoOfItemsLeft(Long noOfItemsLeft) {
 		this.noOfItemsLeft = noOfItemsLeft;
 	}
+
 	public Long getRetailPrice() {
 		return retailPrice;
 	}
+
 	public void setRetailPrice(Long retailPrice) {
 		this.retailPrice = retailPrice;
 	}
+
 	public Long getCostPrice() {
 		return costPrice;
 	}
+
 	public void setCostPrice(Long costPrice) {
 		this.costPrice = costPrice;
 	}
-	public String getLocationId() {
+
+	public ObjectId getLocationId() {
 		return locationId;
 	}
-	public void setLocationId(String locationId) {
+
+	public void setLocationId(ObjectId locationId) {
 		this.locationId = locationId;
 	}
-	public String getHospitalId() {
+
+	public ObjectId getHospitalId() {
 		return hospitalId;
 	}
-	public void setHospitalId(String hospitalId) {
+
+	public void setHospitalId(ObjectId hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-	public Boolean isDiscarded() {
+
+	public Boolean getDiscarded() {
 		return discarded;
 	}
+
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
 	}
+
 	@Override
 	public String toString() {
-		return "InventoryBatch [id=" + id + ", batchName=" + batchName + ", noOfItems=" + noOfItems + ", noOfItemsLeft="
-				+ noOfItemsLeft + ", retailPrice=" + retailPrice + ", costPrice=" + costPrice + "]";
+		return "InventoryBatchCollection [id=" + id + ", batchName=" + batchName + ", noOfItems=" + noOfItems
+				+ ", noOfItemsLeft=" + noOfItemsLeft + ", retailPrice=" + retailPrice + ", costPrice=" + costPrice
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + "]";
 	}
-	
+
 }

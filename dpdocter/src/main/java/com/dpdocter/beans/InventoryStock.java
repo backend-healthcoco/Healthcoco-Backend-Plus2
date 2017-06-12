@@ -1,9 +1,6 @@
 package com.dpdocter.beans;
 
-import com.amazonaws.util.json.Jackson;
 import com.dpdocter.collections.GenericCollection;
-
-import common.util.web.JacksonUtil;
 
 public class InventoryStock extends GenericCollection {
 
@@ -17,6 +14,7 @@ public class InventoryStock extends GenericCollection {
 	private String stockType;
 	private String locationId;
 	private String hospitalId;
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -96,6 +94,14 @@ public class InventoryStock extends GenericCollection {
 
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
 	}
 
 	@Override

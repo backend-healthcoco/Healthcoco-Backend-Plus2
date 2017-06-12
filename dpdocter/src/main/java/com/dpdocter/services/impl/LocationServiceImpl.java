@@ -458,6 +458,7 @@ public class LocationServiceImpl implements LocationServices {
 					labTestPickupCollection.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
+				labTestPickupCollection.setIsCompleted(false);
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 
 			}
