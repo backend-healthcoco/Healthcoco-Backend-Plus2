@@ -391,7 +391,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (userCollection == null) {
 					return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the SMS that we sent you.";
 				}
-				if (!(userCollection.getUserState() == UserState.PHARMACY)) {
+				if (!(userCollection.getIsVerified())) {
 					return "User is not verified";
 				}
 				char[] salt = DPDoctorUtils.generateSalt();
