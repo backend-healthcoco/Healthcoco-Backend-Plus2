@@ -394,9 +394,10 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (!(userCollection.getIsVerified())) {
 					return "User is not verified";
 				}
-				char[] salt = DPDoctorUtils.generateSalt();
-				userCollection.setSalt(salt);
-				String password = new String(request.getPassword());
+				userCollection.setSalt(DPDoctorUtils.generateSalt());
+				String salt = new String(userCollection.getSalt());
+				char[] sha3Password = DPDoctorUtils.getSHA3SecurePassword(request.getPassword());
+				String password = new String(sha3Password);
 				password = passwordEncoder.encodePassword(password, salt);
 				userCollection.setPassword(password.toCharArray());
 				// userCollection.setIsTempPassword(false);
