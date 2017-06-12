@@ -372,6 +372,37 @@ public class LocationServiceImpl implements LocationServices {
 		return response; 
 		
 	}
+	
+	@Override
+	@Transactional
+	public List<LabTestPickup> getRequestForPL(String parentLabId , int size , int page) {
+		
+		List<LabTestPickup> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+
+			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
+			criteria.and("isCompleted").is(false);
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<LabTestPickup> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabTestPickupCollection.class, LabTestPickup.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Collection Boys Pickup Request");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Collection Boys Pickup Request");
+		}
+		return response; 
+		
+	}
 
 	@Override
 	@Transactional
@@ -429,9 +460,20 @@ public class LocationServiceImpl implements LocationServices {
 
 			}
 			
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+
+			criteria.and("id").in(labTestSampleIds);
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<LabTestSample> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabTestSampleCollection.class, LabTestSample.class);
+			List<LabTestSample> labTestSamples = aggregationResults.getMappedResults();
 			
 			response = new LabTestPickup();
 			BeanUtil.map(labTestPickupCollection, response);
+			response.setLabTestSamples(labTestSamples);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.warn(e);
@@ -929,9 +971,9 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardId").is(rateCardId);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
-				criteria = criteria.orOperator(new Criteria("diagnosticTest.specimen").regex("^" + specimen, "i"),
-						new Criteria("diagnosticTest.specimen").regex("^" + specimen));
-			}
+				criteria = criteria.andOperator( new Criteria().orOperator(new Criteria("diagnosticTest.specimen").regex("^" + specimen, "i"),
+						new Criteria("diagnosticTest.specimen").regex("^" + specimen)));
+			}   
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(

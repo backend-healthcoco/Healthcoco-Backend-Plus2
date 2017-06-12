@@ -29,7 +29,6 @@ import com.dpdocter.beans.Specimen;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
-import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LabService;
 import com.dpdocter.services.LocationServices;
@@ -441,4 +440,24 @@ public class LabApi {
 		}
 		return response;
 	}
+	
+	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_PL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
+	public Response<LabTestPickup> getPickUpForPL(@QueryParam("parentLabId") String parentLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickup> labTestPickups = null;
+		Response<LabTestPickup> response = null;
+
+		try {
+			labTestPickups = locationServices.getRequestForPL(parentLabId, size, page);
+			response = new Response<LabTestPickup>();
+			response.setDataList(labTestPickups);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 }
