@@ -1,22 +1,19 @@
 package com.dpdocter.response;
 
-import java.util.List;
-
 import com.dpdocter.beans.PatientVisit;
-import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.collections.GenericCollection;
 
 public class RecordsLookupResponse extends GenericCollection {
-
-	public List<RecordsFile> getFiles() {
-		return files;
-	}
 
 	private String id;
 
 	private String uniqueEmrId;
 
-	private List<RecordsFile> files;
+	private String recordsUrl;
+
+	private String recordsPath;
+
+	private String recordsLabel;
 
 	private String recordsType;
 
@@ -66,6 +63,30 @@ public class RecordsLookupResponse extends GenericCollection {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getRecordsUrl() {
+		return recordsUrl;
+	}
+
+	public void setRecordsUrl(String recordsUrl) {
+		this.recordsUrl = recordsUrl;
+	}
+
+	public String getRecordsPath() {
+		return recordsPath;
+	}
+
+	public void setRecordsPath(String recordsPath) {
+		this.recordsPath = recordsPath;
+	}
+
+	public String getRecordsLabel() {
+		return recordsLabel;
+	}
+
+	public void setRecordsLabel(String recordsLabel) {
+		this.recordsLabel = recordsLabel;
 	}
 
 	public String getRecordsType() {
@@ -204,24 +225,17 @@ public class RecordsLookupResponse extends GenericCollection {
 		this.patientVisit = patientVisit;
 	}
 
-	public List<RecordsFile> getFiless() {
-		return files;
-	}
-
-	public void setFiles(List<RecordsFile> files) {
-		this.files = files;
-	}
-
 	@Override
 	public String toString() {
-		return "RecordsLookupResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", files=" + files
-				+ ", recordsType=" + recordsType + ", explanation=" + explanation + ", patientId=" + patientId
-				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation
-				+ ", prescriptionId=" + prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId
-				+ ", prescribedByLocationId=" + prescribedByLocationId + ", prescribedByHospitalId="
-				+ prescribedByHospitalId + ", diagnosticTestId=" + diagnosticTestId + ", isFeedbackAvailable="
-				+ isFeedbackAvailable + ", recordsState=" + recordsState + ", patientVisit=" + patientVisit + "]";
+		return "RecordsLookupResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", recordsUrl=" + recordsUrl
+				+ ", recordsPath=" + recordsPath + ", recordsLabel=" + recordsLabel + ", recordsType=" + recordsType
+				+ ", explanation=" + explanation + ", patientId=" + patientId + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", inHistory=" + inHistory + ", uploadedByLocation=" + uploadedByLocation + ", prescriptionId="
+				+ prescriptionId + ", prescribedByDoctorId=" + prescribedByDoctorId + ", prescribedByLocationId="
+				+ prescribedByLocationId + ", prescribedByHospitalId=" + prescribedByHospitalId + ", diagnosticTestId="
+				+ diagnosticTestId + ", isFeedbackAvailable=" + isFeedbackAvailable + ", recordsState=" + recordsState
+				+ ", patientVisit=" + patientVisit + "]";
 	}
 
 }
