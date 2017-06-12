@@ -20,7 +20,7 @@ public class LabTestPickup extends GenericCollection {
 	private Integer numberOfSamplesRequested;
 	private Integer numberOfSamplesPicked;
 	private String requestId;
-	private Boolean isCompleted ;
+	private Boolean isCompleted = false;
 	private String collectionBoyId;
 
 	public String getId() {

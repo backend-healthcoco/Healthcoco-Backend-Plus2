@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -456,6 +457,7 @@ public class LocationServiceImpl implements LocationServices {
 				{
 					labTestPickupCollection.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
 				}
+				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 
 			}
