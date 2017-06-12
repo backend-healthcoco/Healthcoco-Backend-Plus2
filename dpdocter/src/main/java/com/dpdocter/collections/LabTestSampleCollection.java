@@ -80,12 +80,12 @@ public class LabTestSampleCollection extends GenericCollection {
 		this.sampleType = sampleType;
 	}
 
-	public List<ObjectId> getLabTestIds() {
-		return labTestIds;
+	public List<RateCardTestAssociation> getRateCardTestAssociation() {
+		return RateCardTestAssociation;
 	}
 
-	public void setLabTestIds(List<ObjectId> labTestIds) {
-		this.labTestIds = labTestIds;
+	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
+		RateCardTestAssociation = rateCardTestAssociation;
 	}
 
 	public Boolean getIsUrgent() {

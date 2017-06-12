@@ -19,6 +19,10 @@ public class VitalSigns {
 
 	private String spo2;
 
+	private String bmi;
+
+	private String bsa;
+
 	public String getPulse() {
 		return pulse;
 	}
@@ -73,6 +77,22 @@ public class VitalSigns {
 
 	public void setSpo2(String spo2) {
 		this.spo2 = spo2;
+	}
+
+	public String getBmi() {
+		return bmi;
+	}
+
+	public void setBmi(String bmi) {
+		this.bmi = bmi;
+	}
+
+	public String getBsa() {
+		return bsa;
+	}
+
+	public void setBsa(String bsa) {
+		this.bsa = bsa;
 	}
 
 	@Override

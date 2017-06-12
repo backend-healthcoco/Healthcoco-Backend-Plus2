@@ -971,9 +971,9 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("rateCardId").is(rateCardId);
 			if (!DPDoctorUtils.anyStringEmpty(specimen)) {
-				criteria = criteria.orOperator(new Criteria("diagnosticTest.specimen").regex("^" + specimen, "i"),
-						new Criteria("diagnosticTest.specimen").regex("^" + specimen));
-			}
+				criteria = criteria.andOperator( new Criteria().orOperator(new Criteria("diagnosticTest.specimen").regex("^" + specimen, "i"),
+						new Criteria("diagnosticTest.specimen").regex("^" + specimen)));
+			}   
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
