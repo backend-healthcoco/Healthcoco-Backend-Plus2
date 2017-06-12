@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.RateCardTestAssociation;
-import com.dpdocter.enums.TestSampleType;
 
 @Document(collection = "lab_test_sample_cl")
 public class LabTestSampleCollection extends GenericCollection {
@@ -20,11 +19,11 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Field
 	private Integer age;
 	@Field
-	private String Gender;
+	private String gender;
 	@Field
 	private String sampleType;
 	@Field
-	private List<RateCardTestAssociation> RateCardTestAssociation;
+	private List<RateCardTestAssociation> rateCardTestAssociation;
 	@Field
 	private Boolean isUrgent;
 	@Field
@@ -65,11 +64,11 @@ public class LabTestSampleCollection extends GenericCollection {
 	}
 
 	public String getGender() {
-		return Gender;
+		return gender;
 	}
 
 	public void setGender(String gender) {
-		Gender = gender;
+		this.gender = gender;
 	}
 
 	public String getSampleType() {
@@ -81,11 +80,11 @@ public class LabTestSampleCollection extends GenericCollection {
 	}
 
 	public List<RateCardTestAssociation> getRateCardTestAssociation() {
-		return RateCardTestAssociation;
+		return rateCardTestAssociation;
 	}
 
 	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
-		RateCardTestAssociation = rateCardTestAssociation;
+		this.rateCardTestAssociation = rateCardTestAssociation;
 	}
 
 	public Boolean getIsUrgent() {
@@ -142,6 +141,15 @@ public class LabTestSampleCollection extends GenericCollection {
 
 	public void setSampleId(String sampleId) {
 		this.sampleId = sampleId;
+	}
+
+	@Override
+	public String toString() {
+		return "LabTestSampleCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
+				+ gender + ", sampleType=" + sampleType + ", rateCardTestAssociation=" + rateCardTestAssociation
+				+ ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected=" + isCollected
+				+ ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven + ", status="
+				+ status + ", sampleId=" + sampleId + "]";
 	}
 
 }

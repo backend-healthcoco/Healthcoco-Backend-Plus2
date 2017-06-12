@@ -11,7 +11,8 @@ public class RateCardTestAssociation {
 	private Double cost;
 	private String category = "NORMAL";
 	private String labId;
-	private Boolean isAvailable =true;
+	private Boolean isAvailable = true;
+	private DiagnosticTest diagnosticTest;
 
 	public String getId() {
 		return id;
@@ -91,6 +92,14 @@ public class RateCardTestAssociation {
 
 	public void setIsAvailable(Boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public DiagnosticTest getDiagnosticTest() {
+		return diagnosticTest;
+	}
+
+	public void setDiagnosticTest(DiagnosticTest diagnosticTest) {
+		this.diagnosticTest = diagnosticTest;
 	}
 
 	@Override

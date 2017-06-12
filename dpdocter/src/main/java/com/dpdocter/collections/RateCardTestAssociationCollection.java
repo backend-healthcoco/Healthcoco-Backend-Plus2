@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DiagnosticTest;
+
 @Document(collection = "rate_card_test_association_cl")
 public class RateCardTestAssociationCollection extends GenericCollection {
 
@@ -27,6 +29,8 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 	private String category;
 	@Field
 	private ObjectId labId;
+	@Field
+	private DiagnosticTest diagnosticTest;
 
 	public ObjectId getId() {
 		return id;
@@ -100,6 +104,14 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 		this.labId = labId;
 	}
 
+	public DiagnosticTest getDiagnosticTest() {
+		return diagnosticTest;
+	}
+
+	public void setDiagnosticTest(DiagnosticTest diagnosticTest) {
+		this.diagnosticTest = diagnosticTest;
+	}
+
 	@Override
 	public String toString() {
 		return "RateCardTestAssociationCollection [id=" + id + ", locationId=" + locationId + ", hospitalId="
@@ -107,5 +119,5 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 				+ ", turnaroundTime=" + turnaroundTime + ", cost=" + cost + ", category=" + category + ", labId="
 				+ labId + "]";
 	}
-	
+
 }
