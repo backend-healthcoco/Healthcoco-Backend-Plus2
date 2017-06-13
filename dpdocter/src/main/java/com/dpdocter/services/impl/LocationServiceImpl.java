@@ -317,6 +317,7 @@ public class LocationServiceImpl implements LocationServices {
 	public List<LabTestPickup> getRequestForCB(String collectionBoyId , int size , int page) {
 		
 		List<LabTestPickup> response = null;
+		List<LabTestSample> labTestSamples = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -334,6 +335,19 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<LabTestPickup> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickup.class);
 			response = aggregationResults.getMappedResults();
+			
+			for (LabTestPickup labTestPickup : response) {
+				
+				aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria().and("id").in(labTestPickup.getLabTestSampleIds())),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<LabTestSample> labAggregationResults = mongoTemplate.aggregate(aggregation,
+					LabTestSampleCollection.class, LabTestSample.class);
+			labTestSamples = labAggregationResults.getMappedResults();
+			labTestPickup.setLabTestSamples(labTestSamples);
+				
+			}
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys Pickup Request");
@@ -348,6 +362,7 @@ public class LocationServiceImpl implements LocationServices {
 	public List<LabTestPickup> getRequestForDL(String daughterLabId , int size , int page) {
 		
 		List<LabTestPickup> response = null;
+		List<LabTestSample> labTestSamples = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -357,6 +372,7 @@ public class LocationServiceImpl implements LocationServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
@@ -365,6 +381,17 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<LabTestPickup> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickup.class);
 			response = aggregationResults.getMappedResults();
+			
+			for (LabTestPickup labTestPickup : response) {
+
+				aggregation = Aggregation.newAggregation(
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<LabTestSample> labAggregationResults = mongoTemplate.aggregate(aggregation,
+						LabTestSampleCollection.class, LabTestSample.class);
+				labTestSamples = labAggregationResults.getMappedResults();
+				labTestPickup.setLabTestSamples(labTestSamples);
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys Pickup Request");
@@ -379,6 +406,7 @@ public class LocationServiceImpl implements LocationServices {
 	public List<LabTestPickup> getRequestForPL(String parentLabId , int size , int page) {
 		
 		List<LabTestPickup> response = null;
+		List<LabTestSample> labTestSamples = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -396,6 +424,15 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<LabTestPickup> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickup.class);
 			response = aggregationResults.getMappedResults();
+			for (LabTestPickup labTestPickup : response) {
+
+				aggregation = Aggregation.newAggregation(
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<LabTestSample> labAggregationResults = mongoTemplate.aggregate(aggregation,
+						LabTestSampleCollection.class, LabTestSample.class);
+				labTestSamples = labAggregationResults.getMappedResults();
+				labTestPickup.setLabTestSamples(labTestSamples);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Collection Boys Pickup Request");

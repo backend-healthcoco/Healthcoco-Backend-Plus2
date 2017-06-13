@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import com.dpdocter.collections.GenericCollection;
 
 public class LabTestPickup extends GenericCollection {
@@ -11,6 +13,7 @@ public class LabTestPickup extends GenericCollection {
 	private String parentLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
+	private List<String> labTestSampleIds;
 	private List<LabTestSample> labTestSamples;
 	private String status;
 	private String doctorId;
@@ -159,6 +162,14 @@ public class LabTestPickup extends GenericCollection {
 
 	public void setCollectionBoyId(String collectionBoyId) {
 		this.collectionBoyId = collectionBoyId;
+	}
+
+	public List<String> getLabTestSampleIds() {
+		return labTestSampleIds;
+	}
+
+	public void setLabTestSampleIds(List<String> labTestSampleIds) {
+		this.labTestSampleIds = labTestSampleIds;
 	}
 
 }
