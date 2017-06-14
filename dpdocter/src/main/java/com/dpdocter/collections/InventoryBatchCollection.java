@@ -11,7 +11,7 @@ public class InventoryBatchCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private Long batchName;
+	private String batchName;
 	@Field
 	private Long noOfItems;
 	@Field
@@ -35,11 +35,11 @@ public class InventoryBatchCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public Long getBatchName() {
+	public String getBatchName() {
 		return batchName;
 	}
 
-	public void setBatchName(Long batchName) {
+	public void setBatchName(String batchName) {
 		this.batchName = batchName;
 	}
 

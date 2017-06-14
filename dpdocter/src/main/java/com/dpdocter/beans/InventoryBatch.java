@@ -9,7 +9,7 @@ public class InventoryBatch extends GenericCollection {
 
 	
 	private String id;
-	private Long batchName;
+	private String batchName;
 	private Long noOfItems;
 	private Long noOfItemsLeft;
 	private Long retailPrice;
@@ -23,10 +23,10 @@ public class InventoryBatch extends GenericCollection {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public Long getBatchName() {
+	public String getBatchName() {
 		return batchName;
 	}
-	public void setBatchName(Long batchName) {
+	public void setBatchName(String batchName) {
 		this.batchName = batchName;
 	}
 	public Long getNoOfItems() {

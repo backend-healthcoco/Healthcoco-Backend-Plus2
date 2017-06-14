@@ -1168,7 +1168,17 @@ public interface PathProxy {
 	public interface InventoryUrls {
 		public static final String ADD_INVENTORY_ITEM = "/addInventoryItem";
 		public static final String GET_INVENTORY_ITEMS = "/getInventoryItemList";
+		public static final String GET_INVENTORY_ITEM_BY_ID = "/getInventoryItem/{id}";
 		public static final String GET_MANUFACTURERS = "/getManufacturerList";
+		public static final String ADD_INVENTORY_STOCK = "/addInventoryStock";
+		public static final String GET_INVENTORY_STOCKS = "/getInventoryStocks";
+		public static final String ADD_INVENTORY_BATCH = "/addInventoryBatch";
+		public static final String GET_INVENTORY_BATCHES = "/getInventoryBatches";
+		public static final String DISCARD_INVENTORY_ITEM = "/discardInventoryItem/{id}";
+		public static final String DISCARD_MANUFACTURER = "/discardManufacturer/{id}";
+		public static final String DISCARD_INVENTORY_STOCK = "/discardInventoryStock/{id}";
+		public static final String DISCARD_INVENTORY_BATCH = "/discardInventoryBatch/{id}";
+		
 
 	}
 }

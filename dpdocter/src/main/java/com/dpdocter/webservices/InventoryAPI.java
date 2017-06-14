@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -14,10 +15,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
+import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
 
 import common.util.web.DPDoctorUtils;
@@ -62,6 +66,56 @@ public class InventoryAPI {
 		return response;
 	}
 	
+	@POST
+	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_STOCK, notes = PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
+	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_STOCK)
+	public Response<InventoryStock> addInventoryStock(InventoryStock request)
+	{
+		Response<InventoryStock> response = new Response<>();
+		InventoryStock inventoryStock = null;
+		try {
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventoryStock = inventoryService.addInventoryStock(request);
+			if(inventoryStock != null)
+			{
+				response.setData(inventoryStock);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while adding inventory stock");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@POST
+	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH, notes = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
+	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
+	public Response<InventoryBatch> addInventoryBatch(InventoryBatch request)
+	{
+		Response<InventoryBatch> response = new Response<>();
+		InventoryBatch inventoryBatch = null;
+		try {
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventoryBatch = inventoryService.addInventoryBatch(request);
+			if(inventoryBatch != null)
+			{
+				response.setData(inventoryBatch);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while adding inventory batch");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
@@ -78,6 +132,31 @@ public class InventoryAPI {
 			if(inventoryItems != null)
 			{
 				response.setDataList(inventoryItems);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while getting inventory item");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@GET
+	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
+	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
+	public Response<InventoryItem> getInventoryItemById(@PathParam("id") String id)
+	{
+		Response<InventoryItem> response = new Response<>();
+		InventoryItem inventoryItem = null;
+		try {
+			if(DPDoctorUtils.anyStringEmpty(id))
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventoryItem = inventoryService.getInventoryItem(id);
+			if(inventoryItem != null)
+			{
+				response.setData(inventoryItem);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -112,4 +191,54 @@ public class InventoryAPI {
 		return response;
 	}
 	
+	
+	@GET
+	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS, notes = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
+	@Path(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
+	public Response<InventoryStockLookupResponse> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	{
+		Response<InventoryStockLookupResponse> response = new Response<>();
+		List<InventoryStockLookupResponse> inventoryStocks = null;
+		try {
+			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventoryStocks = inventoryService.getInventoryStockList(locationId, hospitalId, searchTerm, page, size);
+			if(inventoryStocks != null)
+			{
+				response.setDataList(inventoryStocks);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while getting inventory stocks");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@GET
+	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
+	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
+	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page ,@QueryParam("size") int size  )
+	{
+		Response<InventoryBatch> response = new Response<>();
+		List<InventoryBatch> inventoryBatches = null;
+		try {
+			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			inventoryBatches = inventoryService.getInventoryBatchList(locationId, hospitalId, searchTerm, page, size);
+			if(inventoryBatches != null)
+			{
+				response.setDataList(inventoryBatches);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while getting inventory item");
+			e.printStackTrace();
+		}
+		return response;
+	}
 }
