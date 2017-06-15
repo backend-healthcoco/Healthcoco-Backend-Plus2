@@ -1521,6 +1521,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				&& !DPDoctorUtils.anyStringEmpty(patientCard.getBloodGroup())) {
 			patientDetailList.add("<b>Blood Group: </b>" + patientCard.getBloodGroup());
 		}
+		if (patientDetails.getShowCity() && patientCard != null && !DPDoctorUtils
+				.anyStringEmpty(patientCard.getAddress() != null ? patientCard.getAddress().getCity() : null)) {
+			patientDetailList.add("<b>City: </b>" + patientCard.getAddress().getCity());
+		}
 		if (patientDetails.getShowReferedBy() && patientCard != null && patientCard.getReferredBy() != null) {
 			ReferencesCollection referencesCollection = referenceRepository.findOne(patientCard.getReferredBy());
 			if (referencesCollection != null && !DPDoctorUtils.allStringsEmpty(referencesCollection.getReference()))

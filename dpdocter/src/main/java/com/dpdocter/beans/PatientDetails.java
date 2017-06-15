@@ -22,10 +22,20 @@ public class PatientDetails {
     private Boolean showBloodGroup = true;
 
     private Boolean showResourceId = true;
+    
+    private Boolean showCity = true;
 
     private PrintSettingsText style;
 
-    public Boolean getShowName() {
+    public Boolean getShowCity() {
+		return showCity;
+	}
+
+	public void setShowCity(Boolean showCity) {
+		this.showCity = showCity;
+	}
+
+	public Boolean getShowName() {
 	return showName;
     }
 
