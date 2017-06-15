@@ -17,9 +17,11 @@ public class InventoryItemCollection extends GenericCollection {
 	@Field
 	private String code;
 	@Field
-	private Long stockingUnit;
+	private String stockingUnit;
 	@Field
 	private String manufacturer;
+	@Field
+	private Long reOrderLevel;
 	@Field
 	private ObjectId resourceId;
 	@Field
@@ -61,11 +63,11 @@ public class InventoryItemCollection extends GenericCollection {
 		this.code = code;
 	}
 
-	public Long getStockingUnit() {
+	public String getStockingUnit() {
 		return stockingUnit;
 	}
 
-	public void setStockingUnit(Long stockingUnit) {
+	public void setStockingUnit(String stockingUnit) {
 		this.stockingUnit = stockingUnit;
 	}
 

@@ -21,6 +21,8 @@ public class InventoryBatchCollection extends GenericCollection {
 	@Field
 	private Long costPrice;
 	@Field
+	private ObjectId itemId;
+	@Field
 	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;

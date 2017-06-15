@@ -1,11 +1,11 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
+import java.util.List;
+
+import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import common.util.web.JacksonUtil;
-
-public class InventoryItem extends GenericCollection {
+public class InventoryItemLookupResposne extends GenericCollection {
 
 	private String id;
 	private String name;
@@ -14,11 +14,11 @@ public class InventoryItem extends GenericCollection {
 	private String stockingUnit;
 	private Long reOrderLevel;
 	private String manufacturer;
-	private Boolean saveManufacturer;
 	private String resourceId;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
+	private List<InventoryBatch> inventoryBatchs;
 
 	public String getId() {
 		return id;
@@ -60,20 +60,20 @@ public class InventoryItem extends GenericCollection {
 		this.stockingUnit = stockingUnit;
 	}
 
+	public Long getReOrderLevel() {
+		return reOrderLevel;
+	}
+
+	public void setReOrderLevel(Long reOrderLevel) {
+		this.reOrderLevel = reOrderLevel;
+	}
+
 	public String getManufacturer() {
 		return manufacturer;
 	}
 
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
-	}
-
-	public Boolean getSaveManufacturer() {
-		return saveManufacturer;
-	}
-
-	public void setSaveManufacturer(Boolean saveManufacturer) {
-		this.saveManufacturer = saveManufacturer;
 	}
 
 	public String getResourceId() {
@@ -108,20 +108,20 @@ public class InventoryItem extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Long getReOrderLevel() {
-		return reOrderLevel;
+	public List<InventoryBatch> getInventoryBatchs() {
+		return inventoryBatchs;
 	}
 
-	public void setReOrderLevel(Long reOrderLevel) {
-		this.reOrderLevel = reOrderLevel;
+	public void setInventoryBatchs(List<InventoryBatch> inventoryBatchs) {
+		this.inventoryBatchs = inventoryBatchs;
 	}
 
 	@Override
 	public String toString() {
-		return "InventoryItem [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", stockingUnit="
-				+ stockingUnit + ", manufacturer=" + manufacturer + ", saveManufacturer=" + saveManufacturer
+		return "InventoryItemLookupResposne [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code
+				+ ", stockingUnit=" + stockingUnit + ", reOrderLevel=" + reOrderLevel + ", manufacturer=" + manufacturer
 				+ ", resourceId=" + resourceId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + "]";
+				+ ", discarded=" + discarded + ", inventoryBatchs=" + inventoryBatchs + "]";
 	}
 
 }

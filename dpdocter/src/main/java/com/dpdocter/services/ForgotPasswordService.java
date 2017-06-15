@@ -25,4 +25,6 @@ public interface ForgotPasswordService {
 	
 	String resetPasswordPharmacy(ResetPasswordRequest request);
 
+	String resetPasswordCB(ResetPasswordRequest request);
+
 }

@@ -415,4 +415,27 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
+	
+	@Override
+	public String resetPasswordCB(ResetPasswordRequest request) {
+		UserCollection userCollection = null;
+		try {
+				userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+				userCollection.setSalt(DPDoctorUtils.generateSalt());
+				String salt = new String(userCollection.getSalt());
+				char[] sha3Password = request.getPassword();
+				String password = new String(sha3Password);
+				password = passwordEncoder.encodePassword(password, salt);
+				userCollection.setPassword(password.toCharArray());
+				// userCollection.setIsTempPassword(false);
+				userRepository.save(userCollection);
+				return "You have successfully changed your password.";
+		} catch (IllegalArgumentException argumentException) {
+			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification SMS that we sent you.";
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
 }

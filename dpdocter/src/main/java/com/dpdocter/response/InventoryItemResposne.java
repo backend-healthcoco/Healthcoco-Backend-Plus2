@@ -1,11 +1,8 @@
-package com.dpdocter.beans;
+package com.dpdocter.response;
 
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import common.util.web.JacksonUtil;
-
-public class InventoryItem extends GenericCollection {
+public class InventoryItemResposne extends GenericCollection {
 
 	private String id;
 	private String name;
@@ -14,11 +11,11 @@ public class InventoryItem extends GenericCollection {
 	private String stockingUnit;
 	private Long reOrderLevel;
 	private String manufacturer;
-	private Boolean saveManufacturer;
 	private String resourceId;
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
+	private Long totalStock = 0l;
 
 	public String getId() {
 		return id;
@@ -60,20 +57,20 @@ public class InventoryItem extends GenericCollection {
 		this.stockingUnit = stockingUnit;
 	}
 
+	public Long getReOrderLevel() {
+		return reOrderLevel;
+	}
+
+	public void setReOrderLevel(Long reOrderLevel) {
+		this.reOrderLevel = reOrderLevel;
+	}
+
 	public String getManufacturer() {
 		return manufacturer;
 	}
 
 	public void setManufacturer(String manufacturer) {
 		this.manufacturer = manufacturer;
-	}
-
-	public Boolean getSaveManufacturer() {
-		return saveManufacturer;
-	}
-
-	public void setSaveManufacturer(Boolean saveManufacturer) {
-		this.saveManufacturer = saveManufacturer;
 	}
 
 	public String getResourceId() {
@@ -108,20 +105,13 @@ public class InventoryItem extends GenericCollection {
 		this.discarded = discarded;
 	}
 
-	public Long getReOrderLevel() {
-		return reOrderLevel;
+	public Long getTotalStock() {
+		return totalStock;
 	}
 
-	public void setReOrderLevel(Long reOrderLevel) {
-		this.reOrderLevel = reOrderLevel;
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
 	}
-
-	@Override
-	public String toString() {
-		return "InventoryItem [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code + ", stockingUnit="
-				+ stockingUnit + ", manufacturer=" + manufacturer + ", saveManufacturer=" + saveManufacturer
-				+ ", resourceId=" + resourceId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + "]";
-	}
+	
 
 }
