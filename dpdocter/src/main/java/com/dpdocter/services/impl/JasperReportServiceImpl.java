@@ -633,7 +633,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(1);
 
-		if (parameters.get("headerHtml") != null) {
+		if (parameters.get("headerHtml") != null && !String.valueOf(parameters.get("headerHtml")).trim().isEmpty()) {
 			param = new JRDesignDatasetParameter();
 			param.setName("headerHtml");
 			param.setExpression(new JRDesignExpression("$P{headerHtml}"));
@@ -654,7 +654,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			htmlComponent.setScaleType(ScaleImageEnum.REAL_SIZE);
 			band.addElement(reportElement);
 			band.setHeight(40);
-
 		} else {
 			band.setPrintWhenExpression(new JRDesignExpression(
 					"!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
@@ -720,6 +719,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			StandardTable table = new StandardTable();
 			table.addColumn(column);
 			table.setDatasetRun(dsr);
+			
 			JRDesignComponentElement reportElement = new JRDesignComponentElement();
 			reportElement.setComponentKey(
 					new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "table"));
