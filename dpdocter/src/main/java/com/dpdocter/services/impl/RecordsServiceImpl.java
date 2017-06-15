@@ -1399,6 +1399,7 @@ public class RecordsServiceImpl implements RecordsService {
 					recordsCollection.setPrescribedByLocationId(prescriptionCollection.getLocationId());
 					recordsCollection.setPrescribedByHospitalId(prescriptionCollection.getHospitalId());
 				}
+				recordsCollection = recordsRepository.save(recordsCollection);
 
 				if (prescriptionCollection != null && (prescriptionCollection.getDiagnosticTests() != null
 						|| !prescriptionCollection.getDiagnosticTests().isEmpty())) {
@@ -1455,7 +1456,6 @@ public class RecordsServiceImpl implements RecordsService {
 						recordsCollection.getPatientId());
 			}
 
-			recordsCollection = recordsRepository.save(recordsCollection);
 			Records records = new Records();
 			BeanUtil.map(recordsCollection, records);
 

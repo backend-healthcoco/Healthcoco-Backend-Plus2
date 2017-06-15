@@ -397,7 +397,7 @@ public class RecordsApi {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 		UserRecords request = data.getValueAs(UserRecords.class);
 
-		if (request == null || file == null) {
+		if (request == null && file == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
