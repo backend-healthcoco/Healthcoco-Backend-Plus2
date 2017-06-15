@@ -21,6 +21,7 @@ import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
 
@@ -145,10 +146,10 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
-	public Response<InventoryItem> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<InventoryItemLookupResposne> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") int page ,@QueryParam("size") int size  )
 	{
-		Response<InventoryItem> response = new Response<>();
-		List<InventoryItem> inventoryItems = null;
+		Response<InventoryItemLookupResposne> response = new Response<>();
+		List<InventoryItemLookupResposne> inventoryItems = null;
 		try {
 			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
 			{

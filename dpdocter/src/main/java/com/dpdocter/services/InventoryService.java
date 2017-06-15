@@ -6,13 +6,14 @@ import com.dpdocter.beans.InventoryBatch;
 import com.dpdocter.beans.InventoryItem;
 import com.dpdocter.beans.InventoryStock;
 import com.dpdocter.beans.Manufacturer;
+import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 
 public interface InventoryService {
 
 	InventoryItem addItem(InventoryItem inventoryItem);
 
-	List<InventoryItem> getInventoryItemList(String locationId, String hospitalId, String type, String searchTerm,
+	List<InventoryItemLookupResposne> getInventoryItemList(String locationId, String hospitalId, String type, String searchTerm,
 			int page, int size);
 
 	List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, int page, int size);

@@ -12,7 +12,7 @@ public class InventoryItem extends GenericCollection {
 	private String type;
 	private String code;
 	private String stockingUnit;
-	private Long reOrderLevel;
+	private Long reOrderLevel = 0l;
 	private String manufacturer;
 	private Boolean saveManufacturer;
 	private String resourceId;

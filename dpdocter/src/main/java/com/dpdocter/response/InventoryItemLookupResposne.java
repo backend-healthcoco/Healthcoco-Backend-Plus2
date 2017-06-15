@@ -12,7 +12,7 @@ public class InventoryItemLookupResposne extends GenericCollection {
 	private String type;
 	private String code;
 	private String stockingUnit;
-	private Long reOrderLevel;
+	private Long reOrderLevel = 0l;
 	private String manufacturer;
 	private String resourceId;
 	private String locationId;

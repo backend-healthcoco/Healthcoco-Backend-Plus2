@@ -29,6 +29,7 @@ import com.dpdocter.repository.InventoryBatchRepository;
 import com.dpdocter.repository.InventoryItemRepository;
 import com.dpdocter.repository.InventoryStockRepository;
 import com.dpdocter.repository.ManufacturerRepository;
+import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.InventoryStockLookupResponse;
 import com.dpdocter.services.InventoryService;
 
@@ -134,9 +135,10 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	@Transactional
-	public List<InventoryItem> getInventoryItemList(String locationId, String hospitalId, String type,
+	public List<InventoryItemLookupResposne> getInventoryItemList(String locationId, String hospitalId, String type,
 			String searchTerm, int page, int size) {
-		List<InventoryItem> response = null;
+		List<InventoryItemLookupResposne> response = null;
+		List<InventoryBatch> inventoryBatchs = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -149,7 +151,7 @@ public class InventoryServiceImpl implements InventoryService {
 			criteria.and("locationId").is(new ObjectId(locationId));
 			criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			if (!DPDoctorUtils.anyStringEmpty(type)) {
-				criteria.and("type").is(new ObjectId(type));
+				criteria.and("type").is(type);
 			}
 
 			if (size > 0)
@@ -159,9 +161,21 @@ public class InventoryServiceImpl implements InventoryService {
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			AggregationResults<InventoryItem> aggregationResults = mongoTemplate.aggregate(aggregation,
-					InventoryItemCollection.class, InventoryItem.class);
+			AggregationResults<InventoryItemLookupResposne> aggregationResults = mongoTemplate.aggregate(aggregation,
+					InventoryItemCollection.class, InventoryItemLookupResposne.class);
 			response = aggregationResults.getMappedResults();
+			if (response != null) {
+				for (InventoryItemLookupResposne inventoryItem : response) {
+					aggregation = Aggregation.newAggregation(
+							Aggregation.match(new Criteria().and("itemId").is(inventoryItem.getId())),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
+							InventoryBatchCollection.class, InventoryBatch.class);
+					inventoryBatchs = batchAggregationResults.getMappedResults();
+					inventoryItem.setInventoryBatchs(inventoryBatchs);
+				}
+
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Inventory items");
