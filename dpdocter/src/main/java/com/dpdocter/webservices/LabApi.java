@@ -20,6 +20,7 @@ import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.LabTestPickup;
+import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
@@ -406,13 +407,13 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_CB, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
-	public Response<LabTestPickup> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId, @QueryParam("size") int size , @QueryParam("page") int page) {
-		List<LabTestPickup> labTestPickups = null;
-		Response<LabTestPickup> response = null;
+	public Response<LabTestPickupLookupResponse> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickupLookupResponse> labTestPickups = null;
+		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
 			labTestPickups = locationServices.getRequestForCB(collectionBoyId, size, page);
-			response = new Response<LabTestPickup>();
+			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -425,13 +426,13 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_DL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
-	public Response<LabTestPickup> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
-		List<LabTestPickup> labTestPickups = null;
-		Response<LabTestPickup> response = null;
+	public Response<LabTestPickupLookupResponse> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickupLookupResponse> labTestPickups = null;
+		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
 			labTestPickups = locationServices.getRequestForDL(daughterLabId, size, page);
-			response = new Response<LabTestPickup>();
+			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -444,13 +445,13 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_PL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
-	public Response<LabTestPickup> getPickUpForPL(@QueryParam("parentLabId") String parentLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
-		List<LabTestPickup> labTestPickups = null;
-		Response<LabTestPickup> response = null;
+	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+		List<LabTestPickupLookupResponse> labTestPickups = null;
+		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
 			labTestPickups = locationServices.getRequestForPL(parentLabId, size, page);
-			response = new Response<LabTestPickup>();
+			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {
 			// TODO: handle exception

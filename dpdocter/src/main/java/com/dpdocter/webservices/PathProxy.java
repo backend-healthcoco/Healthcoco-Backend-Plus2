@@ -1178,7 +1178,7 @@ public interface PathProxy {
 		public static final String DISCARD_MANUFACTURER = "/discardManufacturer/{id}";
 		public static final String DISCARD_INVENTORY_STOCK = "/discardInventoryStock/{id}";
 		public static final String DISCARD_INVENTORY_BATCH = "/discardInventoryBatch/{id}";
-		
+		public static final String ADD_MANUFACTURER = "/addManufacturer";
 
 	}
 }

@@ -88,6 +88,31 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
+	public Manufacturer addManufacturer(Manufacturer manufacturer) {
+
+		Manufacturer response = null;
+		try {
+			
+			ManufacturerCollection manufacturerCollection = new ManufacturerCollection();
+			BeanUtil.map(manufacturer, manufacturerCollection);
+			manufacturerCollection.setCreatedTime(new Date());
+			manufacturerCollection = manufacturerRepository.save(manufacturerCollection);
+			if (manufacturerCollection != null) {
+				response = new Manufacturer();
+				BeanUtil.map(manufacturerCollection, response);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn("Error while adding inventory item");
+			e.printStackTrace();
+
+		}
+		return response;
+
+	}
+	
+	@Override
+	@Transactional
 	public InventoryItem getInventoryItem(String id) {
 		InventoryItem response = null;
 		try {

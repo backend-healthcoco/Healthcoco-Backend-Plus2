@@ -92,6 +92,32 @@ public class InventoryAPI {
 	}
 	
 	@POST
+	@ApiOperation(value = PathProxy.InventoryUrls.ADD_MANUFACTURER, notes = PathProxy.InventoryUrls.ADD_MANUFACTURER)
+	@Path(PathProxy.InventoryUrls.ADD_MANUFACTURER)
+	public Response<Manufacturer> addManufacturer(Manufacturer request)
+	{
+		Response<Manufacturer> response = new Response<>();
+		Manufacturer manufacturer = null;
+		try {
+			if(request == null)
+			{
+				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
+			}
+			manufacturer = inventoryService.addManufacturer(request);
+			if(manufacturer != null)
+			{
+				response.setData(manufacturer);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			LOGGER.warn("Error while adding manufacturer");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
+	@POST
 	@ApiOperation(value = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH, notes = PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
 	@Path(PathProxy.InventoryUrls.ADD_INVENTORY_BATCH)
 	public Response<InventoryBatch> addInventoryBatch(InventoryBatch request)

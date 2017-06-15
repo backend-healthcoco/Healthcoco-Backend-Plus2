@@ -3,7 +3,7 @@ package com.dpdocter.enums;
 public enum VitalSignPermissions {
 
 	PULSE("PULSE"), BREATHING("BREATHING"), BLOODPRESSURE("BLOODPRESSURE"), HEIGHT("HEIGHT"), TEMPERATURE("TEMPERATURE"), WEIGHT(
-			"WEIGHT"), SPO2("SPO2");
+			"WEIGHT"), SPO2("SPO2") , BMI("BMI") , BSA("BSA");
 
 	private String permission;
 

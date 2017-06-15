@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
+import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
@@ -44,7 +45,7 @@ public interface LocationServices {
 
 	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size, int page);
 
-	List<LabTestPickup> getRequestForCB(String collectionBoyId, int size, int page);
+	List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, int size, int page);
 
 	LabTestPickup getLabTestPickupByRequestId(String requestId);
 
@@ -76,12 +77,12 @@ public interface LocationServices {
 /*	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId);
 */
-	List<LabTestPickup> getRequestForDL(String daughterLabId, int size, int page);
+	List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, int size, int page);
 
 	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen);
 
 	RateCard getDLRateCard(String daughterLabId, String parentLabId);
 
-	List<LabTestPickup> getRequestForPL(String parentLabId, int size, int page);
+	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page);
 }

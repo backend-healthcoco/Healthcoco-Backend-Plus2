@@ -35,4 +35,6 @@ public interface InventoryService {
 
 	InventoryBatch addInventoryBatch(InventoryBatch inventoryBatch);
 
+	Manufacturer addManufacturer(Manufacturer manufacturer);
+
 }
