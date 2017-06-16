@@ -1464,7 +1464,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private JRBand createPageFooter(int columnWidth, Integer contentFontSize) throws JRException {
 		band = new JRDesignBand();
-		band.setHeight(60);
+		band.setHeight(80);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerSignature}.isEmpty()"));
@@ -1492,7 +1492,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
 		jrDesignTextField.setX(0);
 		jrDesignTextField.setY(27);
-		jrDesignTextField.setHeight(26);
+		jrDesignTextField.setHeight(40);
 		jrDesignTextField.setWidth(columnWidth);
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
