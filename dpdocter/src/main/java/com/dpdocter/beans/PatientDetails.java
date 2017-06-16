@@ -23,7 +23,7 @@ public class PatientDetails {
 
     private Boolean showResourceId = true;
     
-    private Boolean showCity = true;
+    private Boolean showCity = false;
 
     private PrintSettingsText style;
 
