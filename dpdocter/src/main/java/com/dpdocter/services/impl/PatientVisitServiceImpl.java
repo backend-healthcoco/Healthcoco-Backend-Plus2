@@ -1375,7 +1375,6 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				parameters.put("headerHtml", printSettings.getHeaderSetup().getHeaderHtml());
 				if (printSettings.getHeaderSetup().getTopLeftText() != null)
 					for (PrintSettingsText str : printSettings.getHeaderSetup().getTopLeftText()) {
-
 						boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 						boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
 						if (!DPDoctorUtils.anyStringEmpty(str.getText())) {

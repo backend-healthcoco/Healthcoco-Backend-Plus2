@@ -655,22 +655,30 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(reportElement);
 			band.setHeight(40);
 		} else {
-			band.setPrintWhenExpression(new JRDesignExpression(
-					"!$P{logoURL}.isEmpty() && !$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
+			band.setPrintWhenExpression(
+					new JRDesignExpression("!$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
 
 			param = new JRDesignDatasetParameter();
 			param.setName("logoURL");
-			param.setExpression(new JRDesignExpression("$P{logoURL}"));
+			if (parameters.get("logoURL") != null && !String.valueOf(parameters.get("logoURL")).trim().isEmpty()) {
+				param.setExpression(new JRDesignExpression("$P{logoURL}"));
+			}
 			dsr.addParameter(param);
 
 			param = new JRDesignDatasetParameter();
 			param.setName("headerLeftText");
-			param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
+			if (parameters.get("headerLeftText") != null
+					&& !String.valueOf(parameters.get("headerLeftText")).trim().isEmpty()) {
+				param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
+			}
 			dsr.addParameter(param);
 
 			param = new JRDesignDatasetParameter();
 			param.setName("headerRightText");
-			param.setExpression(new JRDesignExpression("$P{headerRightText}"));
+			if (parameters.get("headerRightText") != null
+					&& !String.valueOf(parameters.get("headerRightText")).trim().isEmpty()) {
+				param.setExpression(new JRDesignExpression("$P{headerRightText}"));
+			}
 			dsr.addParameter(param);
 
 			DesignCell columnHeader = new DesignCell();
@@ -719,7 +727,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			StandardTable table = new StandardTable();
 			table.addColumn(column);
 			table.setDatasetRun(dsr);
-			
+
 			JRDesignComponentElement reportElement = new JRDesignComponentElement();
 			reportElement.setComponentKey(
 					new ComponentKey("http://jasperreports.sourceforge.net/jasperreports/components", "jr", "table"));
@@ -1456,7 +1464,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 	private JRBand createPageFooter(int columnWidth, Integer contentFontSize) throws JRException {
 		band = new JRDesignBand();
-		band.setHeight(54);
+		band.setHeight(60);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerSignature}.isEmpty()"));
@@ -3179,7 +3187,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band = new JRDesignBand();
 		band.setHeight(10);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
 
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(20);
@@ -3306,6 +3313,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Echo}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{echo}", 18, contentFontSize - 1, false);
 		}
+
+		/*show = (Boolean) parameters.get("showProcedureNote");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{ProcedureNote}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{procedureNote}", 18, contentFontSize - 1, false);
+		}*/
 		show = (Boolean) parameters.get("showXD");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{XRayDetails}", 18, contentFontSize - 1, true);
@@ -3374,21 +3387,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{treatmentGiven}", 18, contentFontSize - 1, false);
 		}
 		show = (Boolean) parameters.get("showPrescription");
-		if(show){
+		if (show) {
 			show = (Boolean) parameters.get("showPrescriptionItems");
-			
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{PRESCRIPTION}", 18, contentFontSize - 1, true);
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize - 1,
-					columnWidth, pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
 
-		}
+			if (show) {
+				addDischargeitems(jasperDesign, columnWidth, "$P{PRESCRIPTION}", 18, contentFontSize - 1, true);
+				((JRDesignSection) jasperDesign.getDetailSection()).addBand(addDrugs(parameters, contentFontSize - 1,
+						columnWidth, pageWidth, pageHeight, "$P{prescriptionItems}", normalStyle));
 
-		show = (Boolean) parameters.get("showAdvice");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
-		}
+			}
+
+			show = (Boolean) parameters.get("showAdvice");
+			if (show) {
+				addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
+				addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
+			}
 		}
 		show = (Boolean) parameters.get("showcondition");
 		if (show) {
