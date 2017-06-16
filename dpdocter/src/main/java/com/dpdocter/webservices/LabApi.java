@@ -244,13 +244,13 @@ public class LabApi {
 	@Path(value = PathProxy.LabUrls.GET_PICKUP_REQUEST_BY_ID)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUP_REQUEST_BY_ID, notes = PathProxy.LabUrls.GET_PICKUP_REQUEST_BY_ID)
-	public Response<LabTestPickup> getPickupRequestById(@QueryParam("id") String id,
+	public Response<LabTestPickupLookupResponse> getPickupRequestById(@QueryParam("id") String id,
 			@QueryParam("requestId") String requestId) {
 		if (id == null && requestId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		Response<LabTestPickup> response = new Response<LabTestPickup>();
+		Response<LabTestPickupLookupResponse> response = new Response<LabTestPickupLookupResponse>();
 		if (id != null) {
 			response.setData(locationServices.getLabTestPickupById(id));
 		} else if (requestId != null) {

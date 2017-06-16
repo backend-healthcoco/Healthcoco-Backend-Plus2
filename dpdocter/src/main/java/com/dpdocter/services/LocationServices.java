@@ -47,9 +47,9 @@ public interface LocationServices {
 
 	List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, int size, int page);
 
-	LabTestPickup getLabTestPickupByRequestId(String requestId);
+	LabTestPickupLookupResponse getLabTestPickupByRequestId(String requestId);
 
-	LabTestPickup getLabTestPickupById(String id);
+	LabTestPickupLookupResponse getLabTestPickupById(String id);
 
 	CollectionBoy discardCB(String collectionBoyId, Boolean discarded);
 

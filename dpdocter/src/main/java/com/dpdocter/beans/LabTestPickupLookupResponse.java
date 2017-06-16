@@ -178,4 +178,16 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 		this.daughterLab = daughterLab;
 	}
 
+	@Override
+	public String toString() {
+		return "LabTestPickupLookupResponse [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN="
+				+ parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
+				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
+				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
+				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
+				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
+				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId + ", parentLab="
+				+ parentLab + ", daughterLab=" + daughterLab + "]";
+	}
+
 }
