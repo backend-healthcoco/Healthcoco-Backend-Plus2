@@ -30,6 +30,8 @@ public class InventoryItemCollection extends GenericCollection {
 	private ObjectId hospitalId;
 	@Field
 	private Boolean discarded;
+	@Field
+	private Long retailPrice;
 
 	public ObjectId getId() {
 		return id;
@@ -117,6 +119,14 @@ public class InventoryItemCollection extends GenericCollection {
 
 	public void setReOrderLevel(Long reOrderLevel) {
 		this.reOrderLevel = reOrderLevel;
+	}
+
+	public Long getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
 	}
 
 	@Override

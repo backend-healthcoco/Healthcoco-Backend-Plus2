@@ -15,6 +15,7 @@ public class InventoryStock extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
+	private Long totalPrice;
 
 	public String getId() {
 		return id;
@@ -102,6 +103,14 @@ public class InventoryStock extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Long getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Long totalPrice) {
+		this.totalPrice = totalPrice;
 	}
 
 	@Override

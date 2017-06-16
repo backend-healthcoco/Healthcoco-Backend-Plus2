@@ -473,8 +473,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
-					.must(QueryBuilders.matchQuery("isClinic", true))
-					.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
+					.must(QueryBuilders.matchQuery("isClinic", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
@@ -717,6 +716,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+			System.out.println(searchQuery);
 			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 
 			if (esDoctorDocuments != null) {

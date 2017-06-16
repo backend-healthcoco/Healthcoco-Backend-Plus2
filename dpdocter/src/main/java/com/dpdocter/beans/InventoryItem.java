@@ -19,6 +19,7 @@ public class InventoryItem extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
+	private Long retailPrice;
 
 	public String getId() {
 		return id;
@@ -114,6 +115,14 @@ public class InventoryItem extends GenericCollection {
 
 	public void setReOrderLevel(Long reOrderLevel) {
 		this.reOrderLevel = reOrderLevel;
+	}
+
+	public Long getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
 	}
 
 	@Override
