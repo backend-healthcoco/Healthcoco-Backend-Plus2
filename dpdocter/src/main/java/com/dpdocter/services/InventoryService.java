@@ -38,4 +38,8 @@ public interface InventoryService {
 
 	Manufacturer addManufacturer(Manufacturer manufacturer);
 
+	Integer getInventoryStockListCount(String locationId, String hospitalId, String searchTerm);
+
+	Integer getInventoryItemListCount(String locationId, String hospitalId, String type, String searchTerm);
+
 }

@@ -134,6 +134,15 @@ public class InventoryServiceImpl implements InventoryService {
 					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
 							InventoryBatchCollection.class, InventoryBatch.class);
 					inventoryBatchs = batchAggregationResults.getMappedResults();
+					if(inventoryBatchs != null)
+					{
+						Long totalStock = 0l;
+						for (InventoryBatch inventoryBatch : inventoryBatchs) {
+							totalStock += inventoryBatch.getNoOfItemsLeft();
+						}
+						response.setTotalStock(totalStock);
+					}
+					
 					response.setInventoryBatchs(inventoryBatchs);
 			
 
@@ -198,6 +207,54 @@ public class InventoryServiceImpl implements InventoryService {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public Integer getInventoryItemListCount(String locationId, String hospitalId, String type,
+			String searchTerm) {
+		List<InventoryItemLookupResposne> response = null;
+		List<InventoryBatch> inventoryBatchs = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("code").regex("^" + searchTerm, "i"),
+						new Criteria("code").regex("^" + searchTerm), new Criteria("name").regex("^" + searchTerm, "i"),
+						new Criteria("name").regex("^" + searchTerm));
+			}
+
+			criteria.and("locationId").is(new ObjectId(locationId));
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria.and("type").is(type);
+			}
+
+			
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<InventoryItemLookupResposne> aggregationResults = mongoTemplate.aggregate(aggregation,
+					InventoryItemCollection.class, InventoryItemLookupResposne.class);
+			response = aggregationResults.getMappedResults();
+			if (response != null) {
+				for (InventoryItemLookupResposne inventoryItem : response) {
+					aggregation = Aggregation.newAggregation(
+							Aggregation.match(new Criteria().and("itemId").is(inventoryItem.getId())),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
+							InventoryBatchCollection.class, InventoryBatch.class);
+					inventoryBatchs = batchAggregationResults.getMappedResults();
+					inventoryItem.setInventoryBatchs(inventoryBatchs);
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Inventory items");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Inventory items");
+		}
+		return response.size();
+	}
+
+	
 	@Override
 	@Transactional
 	public List<Manufacturer> getManufacturerList(String locationId, String hospitalId, String searchTerm, int page,
@@ -332,6 +389,10 @@ public class InventoryServiceImpl implements InventoryService {
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("inventory_item_cl", "itemId", "_id", "inventoryItem"),
+						Aggregation.unwind("inventoryItem"),
+						Aggregation.lookup("inventory_batch_cl", "batchId", "_id", "inventoryBatch"),
+						Aggregation.unwind("inventoryBatch"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<InventoryStockLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					InventoryStockCollection.class, InventoryStockLookupResponse.class);
@@ -343,6 +404,41 @@ public class InventoryServiceImpl implements InventoryService {
 		}
 		return response;
 	}
+	
+	@Override
+	@Transactional
+	public Integer getInventoryStockListCount(String locationId, String hospitalId, String searchTerm)
+	{
+		List<InventoryStockLookupResponse> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("inventoryItem.name").regex("^" + searchTerm, "i"),
+						new Criteria("inventoryItem.name").regex("^" + searchTerm),new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
+						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm));
+			}
+
+			criteria.and("locationId").is(new ObjectId(locationId));
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("inventory_item_cl", "itemId", "_id", "inventoryItem"),
+						Aggregation.unwind("inventoryItem"),
+						Aggregation.lookup("inventory_batch_cl", "batchId", "_id", "inventoryBatch"),
+						Aggregation.unwind("inventoryBatch"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<InventoryStockLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					InventoryStockCollection.class, InventoryStockLookupResponse.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Inventory");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Inventory Stock");
+		}
+		return response.size();
+	}
+	
 	
 	@Override
 	@Transactional

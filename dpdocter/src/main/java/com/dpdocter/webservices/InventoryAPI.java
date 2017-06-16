@@ -146,9 +146,9 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEMS)
-	public Response<InventoryItemLookupResposne> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryItem(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("type") String type , @QueryParam("page") int page ,@QueryParam("size") int size  )
 	{
-		Response<InventoryItemLookupResposne> response = new Response<>();
+		Response<Object> response = new Response<>();
 		List<InventoryItemLookupResposne> inventoryItems = null;
 		try {
 			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
@@ -160,6 +160,7 @@ public class InventoryAPI {
 			{
 				response.setDataList(inventoryItems);
 			}
+			response.setData(inventoryService.getInventoryItemListCount(locationId, hospitalId, type, searchTerm));
 		} catch (Exception e) {
 			// TODO: handle exception
 			LOGGER.warn("Error while getting inventory item");
@@ -222,9 +223,9 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS, notes = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
-	public Response<InventoryStockLookupResponse> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("page") int page ,@QueryParam("size") int size  )
 	{
-		Response<InventoryStockLookupResponse> response = new Response<>();
+		Response<Object> response = new Response<>();
 		List<InventoryStockLookupResponse> inventoryStocks = null;
 		try {
 			if(DPDoctorUtils.anyStringEmpty(hospitalId,locationId))
@@ -236,6 +237,7 @@ public class InventoryAPI {
 			{
 				response.setDataList(inventoryStocks);
 			}
+			response.setData(inventoryService.getInventoryStockListCount(locationId, hospitalId, searchTerm));
 		} catch (Exception e) {
 			// TODO: handle exception
 			LOGGER.warn("Error while getting inventory stocks");

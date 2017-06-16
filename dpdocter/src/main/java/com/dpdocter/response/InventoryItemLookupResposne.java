@@ -13,6 +13,7 @@ public class InventoryItemLookupResposne extends GenericCollection {
 	private String code;
 	private String stockingUnit;
 	private Long reOrderLevel = 0l;
+	private Long totalStock = 0l;
 	private String manufacturer;
 	private String resourceId;
 	private String locationId;
@@ -114,6 +115,14 @@ public class InventoryItemLookupResposne extends GenericCollection {
 
 	public void setInventoryBatchs(List<InventoryBatch> inventoryBatchs) {
 		this.inventoryBatchs = inventoryBatchs;
+	}
+
+	public Long getTotalStock() {
+		return totalStock;
+	}
+
+	public void setTotalStock(Long totalStock) {
+		this.totalStock = totalStock;
 	}
 
 	@Override

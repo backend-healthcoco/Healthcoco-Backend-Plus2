@@ -115,7 +115,7 @@ public class LabApi {
 		}
 		Response<Object> response = new Response<Object>();
 		response.setDataList(locationServices.getCollectionBoyList(size, page, locationId, searchTerm));
-		response.setData(locationServices.getCBCount(size, page, locationId, searchTerm));
+		response.setData(locationServices.getCBCount(locationId, searchTerm));
 
 		return response;
 	}
@@ -131,7 +131,7 @@ public class LabApi {
 		}
 		Response<Object> response = new Response<Object>();
 		response.setDataList(locationServices.getRateCards(page, size, searchTerm, locationId));
-		response.setData(locationServices.getRateCardCount(page, size, searchTerm, locationId));
+		response.setData(locationServices.getRateCardCount(searchTerm, locationId));
 
 		return response;
 	}

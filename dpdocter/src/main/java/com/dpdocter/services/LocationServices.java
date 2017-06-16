@@ -62,11 +62,11 @@ public interface LocationServices {
 	List<Location> getClinics(int page, int size, String hospitalId, Boolean isClinic, Boolean isLab, Boolean isParent,
 			String searchTerm);
 
-	Integer getCBCount(int size, int page, String locationId, String searchTerm);
+	//Integer getCBCount(int size, int page, String locationId, String searchTerm);
 
 	List<Specimen> getSpecimenList(int page, int size, String searchTerm);
 
-	Integer getRateCardCount(int page, int size, String searchTerm, String locationId);
+	Integer getRateCardCount(String searchTerm, String locationId);
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm);
 
@@ -85,4 +85,6 @@ public interface LocationServices {
 	RateCard getDLRateCard(String daughterLabId, String parentLabId);
 
 	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page);
+
+	Integer getCBCount(String locationId, String searchTerm);
 }

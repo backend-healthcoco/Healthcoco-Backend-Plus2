@@ -641,7 +641,7 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Override
 	@Transactional
-	public Integer getCBCount(int size, int page, String locationId, String searchTerm)
+	public Integer getCBCount( String locationId, String searchTerm)
 	{
 		Integer count = null;
 		try {
@@ -656,12 +656,7 @@ public class LocationServiceImpl implements LocationServices {
 
 			criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoy.class);
@@ -885,7 +880,7 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Override
 	@Transactional
-	public Integer getRateCardCount(int page, int size, String searchTerm, String locationId)
+	public Integer getRateCardCount(String searchTerm, String locationId)
 	{
 		Integer count = null;
 		try {
@@ -897,12 +892,8 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+			
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<RateCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					RateCardCollection.class, RateCard.class);
