@@ -111,6 +111,14 @@ public class InventoryItemCollection extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public Long getReOrderLevel() {
+		return reOrderLevel;
+	}
+
+	public void setReOrderLevel(Long reOrderLevel) {
+		this.reOrderLevel = reOrderLevel;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryItemCollection [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code
