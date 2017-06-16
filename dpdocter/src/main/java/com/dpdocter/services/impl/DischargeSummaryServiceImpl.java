@@ -305,7 +305,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (dischargeSummaryCollection != null) {
 				response = new DischargeSummaryResponse();
 				BeanUtil.map(dischargeSummaryCollection, response);
-				Prescription prescription =null;
+				Prescription prescription = null;
 
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 					prescription = prescriptionServices
@@ -314,9 +314,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					if (prescription.getItems() == null) {
 						prescription.setItems(new ArrayList<PrescriptionItemDetail>());
 					}
-				}
-				else{
-					prescription=new Prescription();
+				} else {
+					prescription = new Prescription();
 					if (prescription.getItems() == null) {
 						prescription.setItems(new ArrayList<PrescriptionItemDetail>());
 					}
@@ -443,12 +442,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.getDoctorId(), dischargeSummaryCollection.getLocationId(),
 				dischargeSummaryCollection.getHospitalId(), ComponentType.ALL.getType());
 
-		if(printSettings == null){
+		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
-		
+
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 			PrescriptionCollection prescription = prescriptionRepository
 					.findOne(dischargeSummaryCollection.getPrescriptionId());
@@ -739,7 +738,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("pesonalHistory", dischargeSummaryCollection.getPersonalHistory());
 		}
 		parameters.put("showPersonalHistory", show);
-
+		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getPresentComplaint())) {
 			show = true;
 			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaint());
