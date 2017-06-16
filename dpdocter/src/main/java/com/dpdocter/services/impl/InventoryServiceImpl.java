@@ -114,16 +114,30 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
-	public InventoryItem getInventoryItem(String id) {
-		InventoryItem response = null;
+	public InventoryItemLookupResposne getInventoryItem(String id) {
+		InventoryItemLookupResposne response = null;
+		List<InventoryBatch> inventoryBatchs = null;
+		Aggregation aggregation = null;
 		try {
 			InventoryItemCollection inventoryItemCollection = inventoryItemRepository.findOne(new ObjectId(id));
 			if(inventoryItemCollection == null)
 			{
 				throw new BusinessException(ServiceError.NoRecord , "Record not found");
 			}
-			response = new InventoryItem();
+			response = new InventoryItemLookupResposne();
 			BeanUtil.map(inventoryItemCollection, response);
+			if (response != null) {
+				
+					aggregation = Aggregation.newAggregation(
+							Aggregation.match(new Criteria().and("itemId").is(response.getId())),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
+							InventoryBatchCollection.class, InventoryBatch.class);
+					inventoryBatchs = batchAggregationResults.getMappedResults();
+					response.setInventoryBatchs(inventoryBatchs);
+			
+
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting Inventory item");

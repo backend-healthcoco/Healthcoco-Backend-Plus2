@@ -23,7 +23,7 @@ public interface InventoryService {
 
 	InventoryStock addInventoryStock(InventoryStock inventoryStock);
 
-	InventoryItem getInventoryItem(String id);
+	InventoryItemLookupResposne getInventoryItem(String id);
 
 	InventoryStock discardInventoryStock(String id, Boolean discarded);
 

@@ -171,10 +171,10 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID, notes = PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_ITEM_BY_ID)
-	public Response<InventoryItem> getInventoryItemById(@PathParam("id") String id)
+	public Response<InventoryItemLookupResposne> getInventoryItemById(@PathParam("id") String id)
 	{
-		Response<InventoryItem> response = new Response<>();
-		InventoryItem inventoryItem = null;
+		Response<InventoryItemLookupResposne> response = new Response<>();
+		InventoryItemLookupResposne inventoryItem = null;
 		try {
 			if(DPDoctorUtils.anyStringEmpty(id))
 			{
