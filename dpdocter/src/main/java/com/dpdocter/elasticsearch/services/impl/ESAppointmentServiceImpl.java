@@ -481,8 +481,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
-					.must(QueryBuilders.matchQuery("isClinic", true))
-					.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
+					.must(QueryBuilders.matchQuery("isClinic", true));
 			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 				ESCityDocument esCityDocument = esCityRepository.findByName(city);
 				if (esCityDocument != null) {
