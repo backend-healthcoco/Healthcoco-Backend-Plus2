@@ -2095,10 +2095,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			clinicalNote
 					.setDiagrams(
 							sortDiagrams(
-									mongoTemplate.aggregate(
-											Aggregation.newAggregation(Aggregation.match(
-													new Criteria("id").in(clinicalNotesCollection.getDiagrams()))),
-											DiagramsCollection.class, Diagram.class).getMappedResults(),
+									mongoTemplate
+											.aggregate(
+													Aggregation.newAggregation(Aggregation.match(new Criteria("id")
+															.in(clinicalNotesCollection.getDiagrams()))),
+													DiagramsCollection.class, Diagram.class)
+											.getMappedResults(),
 									clinicalNotesCollection.getDiagrams()));
 
 		PatientVisitCollection patientVisitCollection = patientVisitRepository
@@ -4193,18 +4195,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private JasperReportResponse createJasper(ClinicalNotesCollection clinicalNotesCollection,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 
-
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP,
 			Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
-
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
-		
-		if(printSettings == null){
+
+		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
@@ -4233,11 +4233,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("echo", clinicalNotesCollection.getEcho());
 		parameters.put("holter", clinicalNotesCollection.getHolter());
 
-		if (clinicalNotesCollection.getLmp()!= null && (!isCustomPDF || showLMP))
+		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
-		if (clinicalNotesCollection.getEdd()!= null && (!isCustomPDF || showEDD))
+		if (clinicalNotesCollection.getEdd() != null && (!isCustomPDF || showEDD))
 			parameters.put("edd", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getEdd()));
-		if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0 || clinicalNotesCollection.getNoOfFemaleChildren()>0)) {
+		if ((!isCustomPDF || showNoOfChildren) && (clinicalNotesCollection.getNoOfMaleChildren() > 0
+				|| clinicalNotesCollection.getNoOfFemaleChildren() > 0)) {
 			parameters.put("noOfChildren", clinicalNotesCollection.getNoOfMaleChildren() + "|"
 					+ clinicalNotesCollection.getNoOfFemaleChildren());
 		}
@@ -4323,6 +4324,33 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					vitalSigns = vitalSigns + ",  " + spo2;
 				else
 					vitalSigns = spo2;
+			}
+			String height = clinicalNotesCollection.getVitalSigns().getHeight();
+			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(height)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + height;
+				else
+					vitalSigns = spo2;
+			}
+
+			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
+			bmi = (bmi != null && !bmi.isEmpty() ? "BMI: " + bmi + " " + VitalSignsUnit.BMI.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bmi;
+				else
+					vitalSigns = bmi;
+			}
+
+			String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
+			bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa + " " + VitalSignsUnit.BSA.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bsa;
+				else
+					vitalSigns = bsa;
 			}
 
 			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
