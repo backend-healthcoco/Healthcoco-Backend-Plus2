@@ -902,39 +902,34 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			
-			 if (request.getProcedureNote() != null &&
-			  !request.getProcedureNote().isEmpty() &&
-			 request.getGlobalProcedureNotes() != null) { Set<String>
-			  customProcedureNotes = compareGlobalElements( new
-			  HashSet<>(splitCSV(request.getProcedureNote())), new
-			  HashSet<>(splitCSV(request.getGlobalProcedureNotes()))); for
-			  (String customProcedureNote : customProcedureNotes) {
-			  
-			  ProcedureNote procedureNote = new ProcedureNote();
-			  procedureNote.setProcedureNote(customProcedureNote);
-			  ProcedureNoteCollection procedureNoteCollection = new
-			  ProcedureNoteCollection(); BeanUtil.map(procedureNote,
-			  procedureNoteCollection); procedureNoteCollection.setDoctorId(new
-			  ObjectId(request.getDoctorId()));
-			  procedureNoteCollection.setLocationId(new
-			  ObjectId(request.getLocationId()));
-			  procedureNoteCollection.setHospitalId(new
-			  ObjectId(request.getHospitalId()));
-			  procedureNoteCollection.setCreatedBy(createdBy);
-			  procedureNoteCollection.setCreatedTime(createdTime);
-			  procedureNoteCollection.setId(null); procedureNoteCollection =
-			  procedureNoteRepository.save(procedureNoteCollection);
-			  transactionalManagementService.addResource(
-			  procedureNoteCollection.getId(), Resource.PROCEDURE_NOTE, false);
-			  ESProcedureNoteDocument esProcedureNoteDocument = new
-			  ESProcedureNoteDocument(); BeanUtil.map(procedureNoteCollection,
-			  esProcedureNoteDocument);
-			  esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
-			  // noteIds.add(notesCollection.getId());
-			  
-			  } }
-			 
+			if (request.getProcedureNote() != null && !request.getProcedureNote().isEmpty()
+					&& request.getGlobalProcedureNotes() != null) {
+				Set<String> customProcedureNotes = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getProcedureNote())),
+						new HashSet<>(splitCSV(request.getGlobalProcedureNotes())));
+				for (String customProcedureNote : customProcedureNotes) {
+
+					ProcedureNote procedureNote = new ProcedureNote();
+					procedureNote.setProcedureNote(customProcedureNote);
+					ProcedureNoteCollection procedureNoteCollection = new ProcedureNoteCollection();
+					BeanUtil.map(procedureNote, procedureNoteCollection);
+					procedureNoteCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					procedureNoteCollection.setLocationId(new ObjectId(request.getLocationId()));
+					procedureNoteCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					procedureNoteCollection.setCreatedBy(createdBy);
+					procedureNoteCollection.setCreatedTime(createdTime);
+					procedureNoteCollection.setId(null);
+					procedureNoteCollection = procedureNoteRepository.save(procedureNoteCollection);
+					transactionalManagementService.addResource(procedureNoteCollection.getId(), Resource.PROCEDURE_NOTE,
+							false);
+					ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
+					BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
+					esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+
 			//
 			// clinicalNotesCollection.setComplaints(complaintIds);
 			// clinicalNotesCollection.setInvestigations(investigationIds);
@@ -4383,33 +4378,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					vitalSigns = vitalSigns + ",  " + spo2;
 				else
 					vitalSigns = spo2;
-			}
-			String height = clinicalNotesCollection.getVitalSigns().getHeight();
-			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
-					: "");
-			if (!DPDoctorUtils.allStringsEmpty(height)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + height;
-				else
-					vitalSigns = spo2;
-			}
-
-			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
-			bmi = (bmi != null && !bmi.isEmpty() ? "BMI: " + bmi + " " + VitalSignsUnit.BMI.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + bmi;
-				else
-					vitalSigns = bmi;
-			}
-
-			String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
-			bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa + " " + VitalSignsUnit.BSA.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-					vitalSigns = vitalSigns + ",  " + bsa;
-				else
-					vitalSigns = bsa;
 			}
 
 			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
