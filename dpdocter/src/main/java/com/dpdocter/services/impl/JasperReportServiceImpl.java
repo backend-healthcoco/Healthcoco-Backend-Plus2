@@ -403,7 +403,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				0);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{PocedureNote}", "$P{procedureNote}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$P{procedureNote}", fieldWidth, false, 0);
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		dsr.setDatasetName("dataset1");
@@ -656,8 +656,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(reportElement);
 			band.setHeight(40);
 		} else {
-			band.setPrintWhenExpression(
-					new JRDesignExpression("!$P{headerLeftText}.isEmpty() && !$P{headerRightText}.isEmpty()"));
 
 			param = new JRDesignDatasetParameter();
 			param.setName("logoURL");
