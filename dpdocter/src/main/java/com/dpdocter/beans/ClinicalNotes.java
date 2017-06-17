@@ -35,6 +35,8 @@ public class ClinicalNotes extends GenericCollection {
 	private String complaint;
 
 	private String presentComplaint;
+	
+	private String procedureNote;
 
 	private String presentComplaintHistory;
 
@@ -425,5 +427,13 @@ public class ClinicalNotes extends GenericCollection {
 				+ ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest + ", time=" + time
 				+ ", fromDate=" + fromDate + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
 				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
 	}
 }

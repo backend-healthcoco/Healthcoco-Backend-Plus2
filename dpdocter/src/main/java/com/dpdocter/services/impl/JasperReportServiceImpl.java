@@ -403,6 +403,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				0);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$P{diagnosis}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$P{notes}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PocedureNote}", "$P{procedureNote}", fieldWidth, false, 0);
 
 		JRDesignDatasetRun dsr = new JRDesignDatasetRun();
 		dsr.setDatasetName("dataset1");
@@ -826,6 +827,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				0);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{ProcedureNote}", "$F{procedureNote}", fieldWidth, false, 0);
 
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_subreport-A4.jasper");
@@ -3314,11 +3316,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{echo}", 18, contentFontSize - 1, false);
 		}
 
-		/*show = (Boolean) parameters.get("showProcedureNote");
+		show = (Boolean) parameters.get("showProcedureNote");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{ProcedureNote}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{procedureNote}", 18, contentFontSize - 1, false);
-		}*/
+		}
 		show = (Boolean) parameters.get("showXD");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{XRayDetails}", 18, contentFontSize - 1, true);

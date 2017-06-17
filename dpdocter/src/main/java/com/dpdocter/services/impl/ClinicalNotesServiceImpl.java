@@ -57,6 +57,7 @@ import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.XRayDetails;
@@ -87,6 +88,7 @@ import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PresentComplaintCollection;
 import com.dpdocter.collections.PresentComplaintHistoryCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.SystemExamCollection;
 import com.dpdocter.collections.UserCollection;
@@ -108,6 +110,7 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
@@ -147,6 +150,7 @@ import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PresentComplaintHistoryRepository;
 import com.dpdocter.repository.PresentComplaintRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.SystemExamRepository;
@@ -298,6 +302,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private HolterRepository holterRepository;
 
 	@Autowired
+	private ProcedureNoteRepository procedureNoteRepository;
+
+	@Autowired
 	private AppointmentRepository appointmentRepository;
 
 	@Value(value = "${image.path}")
@@ -361,9 +368,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					for (String customComplaint : customComplaints) {
 						Complaint complaint = new Complaint();
 						complaint.setComplaint(customComplaint);
-
 						ComplaintCollection complaintCollection = new ComplaintCollection();
-
 						BeanUtil.map(complaint, complaintCollection);
 						complaintCollection.setDoctorId(new ObjectId(request.getDoctorId()));
 						complaintCollection.setLocationId(new ObjectId(request.getLocationId()));
@@ -896,6 +901,40 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
+
+			
+			 if (request.getProcedureNote() != null &&
+			  !request.getProcedureNote().isEmpty() &&
+			 request.getGlobalProcedureNotes() != null) { Set<String>
+			  customProcedureNotes = compareGlobalElements( new
+			  HashSet<>(splitCSV(request.getProcedureNote())), new
+			  HashSet<>(splitCSV(request.getGlobalProcedureNotes()))); for
+			  (String customProcedureNote : customProcedureNotes) {
+			  
+			  ProcedureNote procedureNote = new ProcedureNote();
+			  procedureNote.setProcedureNote(customProcedureNote);
+			  ProcedureNoteCollection procedureNoteCollection = new
+			  ProcedureNoteCollection(); BeanUtil.map(procedureNote,
+			  procedureNoteCollection); procedureNoteCollection.setDoctorId(new
+			  ObjectId(request.getDoctorId()));
+			  procedureNoteCollection.setLocationId(new
+			  ObjectId(request.getLocationId()));
+			  procedureNoteCollection.setHospitalId(new
+			  ObjectId(request.getHospitalId()));
+			  procedureNoteCollection.setCreatedBy(createdBy);
+			  procedureNoteCollection.setCreatedTime(createdTime);
+			  procedureNoteCollection.setId(null); procedureNoteCollection =
+			  procedureNoteRepository.save(procedureNoteCollection);
+			  transactionalManagementService.addResource(
+			  procedureNoteCollection.getId(), Resource.PROCEDURE_NOTE, false);
+			  ESProcedureNoteDocument esProcedureNoteDocument = new
+			  ESProcedureNoteDocument(); BeanUtil.map(procedureNoteCollection,
+			  esProcedureNoteDocument);
+			  esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
+			  // noteIds.add(notesCollection.getId());
+			  
+			  } }
+			 
 			//
 			// clinicalNotesCollection.setComplaints(complaintIds);
 			// clinicalNotesCollection.setInvestigations(investigationIds);
@@ -3410,6 +3449,25 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
+		case PROCEDURE_NOTE: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalProcedureNote(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomProcedureNote(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalPrecedureNote(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+
 		}
 		return response;
 	}
@@ -4232,6 +4290,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("xRayDetails", clinicalNotesCollection.getxRayDetails());
 		parameters.put("echo", clinicalNotesCollection.getEcho());
 		parameters.put("holter", clinicalNotesCollection.getHolter());
+		parameters.put("procedureNote", clinicalNotesCollection.getProcedureNote());
 
 		if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 			parameters.put("lmp", new SimpleDateFormat("dd-MM-yyyy").format(clinicalNotesCollection.getLmp()));
@@ -5972,6 +6031,42 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return holter;
 	}
 
+	@Override
+	@Transactional
+	public ProcedureNote addEditProcedureNote(ProcedureNote precedureNote) {
+		try {
+			ProcedureNoteCollection procedureNoteCollection = new ProcedureNoteCollection();
+			BeanUtil.map(precedureNote, procedureNoteCollection);
+			if (DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getId())) {
+				procedureNoteCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(procedureNoteCollection.getDoctorId());
+					if (userCollection != null) {
+						procedureNoteCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					procedureNoteCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				ProcedureNoteCollection oldProcedureNoteCollection = procedureNoteRepository
+						.findOne(procedureNoteCollection.getId());
+				procedureNoteCollection.setCreatedBy(oldProcedureNoteCollection.getCreatedBy());
+				procedureNoteCollection.setCreatedTime(oldProcedureNoteCollection.getCreatedTime());
+				procedureNoteCollection.setDiscarded(oldProcedureNoteCollection.getDiscarded());
+			}
+			procedureNoteCollection = procedureNoteRepository.save(procedureNoteCollection);
+
+			BeanUtil.map(procedureNoteCollection, precedureNote);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return precedureNote;
+	}
+
 	@SuppressWarnings("unchecked")
 	private List<PA> getCustomGlobalPA(int page, int size, String doctorId, String locationId, String hospitalId,
 			String updatedTime, Boolean discarded) {
@@ -6049,6 +6144,90 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting P/A");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ProcedureNote> getCustomGlobalPrecedureNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<ProcedureNote> response = new ArrayList<ProcedureNote>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<ProcedureNote> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					ProcedureNoteCollection.class, ProcedureNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ProcedureNote> getGlobalProcedureNote(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<ProcedureNote> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<ProcedureNote> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					ProcedureNoteCollection.class, ProcedureNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<ProcedureNote> getCustomProcedureNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<ProcedureNote> response = null;
+		try {
+			AggregationResults<ProcedureNote> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							ProcedureNoteCollection.class, ProcedureNote.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
 		}
 		return response;
 	}
@@ -6255,6 +6434,49 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				logger.warn("Holter not found!");
 				throw new BusinessException(ServiceError.NoRecord, "Holter not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+
+	@Override
+	public ProcedureNote deleteProcedureNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		ProcedureNote response = null;
+		try {
+			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findOne(new ObjectId(id));
+			if (procedureNoteCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(procedureNoteCollection.getDoctorId(),
+						procedureNoteCollection.getHospitalId(), procedureNoteCollection.getLocationId())) {
+					if (procedureNoteCollection.getDoctorId().toString().equals(doctorId)
+							&& procedureNoteCollection.getHospitalId().toString().equals(hospitalId)
+							&& procedureNoteCollection.getLocationId().toString().equals(locationId)) {
+
+						procedureNoteCollection.setDiscarded(discarded);
+						procedureNoteCollection.setUpdatedTime(new Date());
+						procedureNoteRepository.save(procedureNoteCollection);
+						response = new ProcedureNote();
+						BeanUtil.map(procedureNoteCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					procedureNoteCollection.setDiscarded(discarded);
+					procedureNoteCollection.setUpdatedTime(new Date());
+					procedureNoteRepository.save(procedureNoteCollection);
+					response = new ProcedureNote();
+					BeanUtil.map(procedureNoteCollection, response);
+				}
+			} else {
+				logger.warn("Holter not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Procedure Note not found!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -108,6 +108,16 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String ecgDetails;
 	@Field
 	private String holter;
+	@Field
+	private String procedureNote;
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
+	}
 
 	public PrescriptionAndAdvice getPrescriptions() {
 		return prescriptions;
@@ -133,7 +143,7 @@ public class DischargeSummaryCollection extends GenericCollection {
 		return systemicExamination;
 	}
 
-	public String getDischargeId() {
+	public String setUniqueEmrId() {
 		return dischargeId;
 	}
 

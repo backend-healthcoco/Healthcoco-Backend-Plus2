@@ -723,6 +723,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			show = true;
 			parameters.put("ps", dischargeSummaryCollection.getPs());
 		}
+
 		parameters.put("showPS", show);
 		show = false;
 
@@ -744,6 +745,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("presentComplaints", dischargeSummaryCollection.getPresentComplaint());
 		}
 		parameters.put("showpresentComplaints", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getProcedureNote())) {
+			show = true;
+			parameters.put("procedureNote", dischargeSummaryCollection.getProcedureNote());
+		}
+		parameters.put("showProcedureNote", show);
 		show = false;
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
@@ -1104,6 +1112,16 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getIndicationOfUSG())) {
 								response.setIndicationOfUSG(date + ":-" + clinicalNote.getIndicationOfUSG());
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(response.getProcedureNote(),
+									clinicalNote.getProcedureNote())) {
+
+								response.setDiagnosis(",<br>" + date + ":-" + clinicalNote.getDiagnosis());
+
+							} else if (!DPDoctorUtils.anyStringEmpty(clinicalNote.getProcedureNote())) {
+
+								response.setDiagnosis(date + ":-" + clinicalNote.getDiagnosis());
 							}
 
 						}

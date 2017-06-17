@@ -41,6 +41,7 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
@@ -64,6 +65,7 @@ import com.dpdocter.elasticsearch.repository.ESPSRepository;
 import com.dpdocter.elasticsearch.repository.ESPVRepository;
 import com.dpdocter.elasticsearch.repository.ESPresentComplaintHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESPresentComplaintRepository;
+import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESProvisionalDiagnosisRepository;
 import com.dpdocter.elasticsearch.repository.ESSystemExamRepository;
 import com.dpdocter.elasticsearch.repository.ESXRayDetailsRepository;
@@ -132,16 +134,16 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	@Autowired
 	private ESPVRepository espvRepository;
-	
+
 	@Autowired
 	private ESXRayDetailsRepository esxRayDetailsRepository;
-	
+
 	@Autowired
 	private ESECGDetailsRepository esecgDetailsRepository;
-	
+
 	@Autowired
 	private ESEchoRepository esEchoRepository;
-	
+
 	@Autowired
 	private ESHolterRepository esholterRepository;
 
@@ -150,6 +152,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	@Autowired
 	private ESDoctorRepository esDoctorRepository;
+
+	@Autowired
+	private ESProcedureNoteRepository esProcedureNoteRepository;
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
@@ -626,10 +631,10 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	@Override
-	public List<ESECGDetailsDocument> searchECGDetails(String range, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public List<ESECGDetailsDocument> searchECGDetails(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 
@@ -637,17 +642,19 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			response = getGlobalECGDetails(page, size, doctorId, updatedTime, discarded, searchTerm);
 			break;
 		case CUSTOM:
-			response = getCustomECGDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomECGDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		case BOTH:
-			response = getCustomGlobalECGDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomGlobalECGDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		default:
 			break;
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<ESEchoDocument> searchEcho(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
@@ -661,14 +668,15 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			response = getCustomEcho(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 			break;
 		case BOTH:
-			response = getCustomGlobalEcho(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomGlobalEcho(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		default:
 			break;
 		}
 		return response;
 	}
-	
+
 	@Override
 	public List<ESHolterDocument> searchHolter(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
@@ -679,20 +687,22 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			response = getGlobalHolter(page, size, doctorId, updatedTime, discarded, searchTerm);
 			break;
 		case CUSTOM:
-			response = getCustomHolter(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomHolter(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		case BOTH:
-			response = getCustomGlobalHolter(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomGlobalHolter(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		default:
 			break;
 		}
 		return response;
 	}
-	
+
 	@Override
-	public List<ESXRayDetailsDocument> searchXRayDetails(String range, int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	public List<ESXRayDetailsDocument> searchXRayDetails(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		switch (Range.valueOf(range.toUpperCase())) {
 
@@ -700,10 +710,12 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			response = getGlobalXRayDetails(page, size, doctorId, updatedTime, discarded, searchTerm);
 			break;
 		case CUSTOM:
-			response = getCustomXRayDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomXRayDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		case BOTH:
-			response = getCustomGlobalXRayDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			response = getCustomGlobalXRayDetails(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
 			break;
 		default:
 			break;
@@ -862,9 +874,9 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				boolQueryBuilder
-						.must(QueryBuilders.orQuery(
-								QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
-								QueryBuilders.termQuery("locationId", locationId)))
+						.must(QueryBuilders
+								.orQuery(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("locationId")),
+										QueryBuilders.termQuery("locationId", locationId)))
 						.must(QueryBuilders.orQuery(
 								QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("hospitalId")),
 								QueryBuilders.termQuery("hospitalId", hospitalId)));
@@ -2482,6 +2494,25 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
+	private List<ESProcedureNoteDocument> getCustomProcedureNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESProcedureNoteDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESProcedureNoteDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "procedureNote");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting ProcedureNote Document");
+		}
+		return response;
+	}
+
 	@Override
 	public boolean addIndicationOfUSG(ESIndicationOfUSGDocument request) {
 		boolean response = false;
@@ -2692,6 +2723,53 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	}
 
+	@SuppressWarnings("unchecked")
+	private List<ESProcedureNoteDocument> getCustomGlobalProcedureNote(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESProcedureNoteDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PROCEDURE_NOTE, page, size,
+					doctorId, locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null,
+					null, "procedureNote");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+
+	}
+
 	/**
 	 * 
 	 * @param page
@@ -2800,7 +2878,6 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * End of functionality to add PS
 	 */
 
-	
 	@Override
 	public boolean addXRayDetails(ESXRayDetailsDocument request) {
 		boolean response = false;
@@ -2815,7 +2892,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public boolean addECGDetails(ESECGDetailsDocument request) {
 		boolean response = false;
@@ -2830,7 +2907,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public boolean addEcho(ESEchoDocument request) {
 		boolean response = false;
@@ -2845,7 +2922,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public boolean addHolter(ESHolterDocument request) {
 		boolean response = false;
@@ -2860,8 +2937,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 
 	}
-	
-	
+
 	/**
 	 * End of functionality to add PS
 	 */
@@ -2983,6 +3059,51 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
+	private List<ESProcedureNoteDocument> getGlobalProcedureNote(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESProcedureNoteDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PROCEDURE_NOTE, page, size, updatedTime,
+					discarded, null, searchTerm, specialities, null, null, "procedureNote");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESProcedureNoteDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+
 	/**
 	 * 
 	 * @param page
@@ -3013,7 +3134,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * 
 	 * @param page
@@ -3031,8 +3152,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private List<ESXRayDetailsDocument> getCustomGlobalXRayDetails(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	private List<ESXRayDetailsDocument> getCustomGlobalXRayDetails(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3065,7 +3186,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			}
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.XRAY, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "xRayDetail");
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"xRayDetail");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESXRayDetailsDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3087,8 +3209,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESXRayDetailsDocument> getGlobalXRayDetails(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private List<ESXRayDetailsDocument> getGlobalXRayDetails(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3143,8 +3265,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESXRayDetailsDocument> getCustomXRayDetails(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private List<ESXRayDetailsDocument> getCustomXRayDetails(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESXRayDetailsDocument> response = null;
 		try {
 			if (doctorId == null)
@@ -3161,7 +3283,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * 
 	 * @param page
@@ -3235,8 +3357,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESEchoDocument> getGlobalEcho(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private List<ESEchoDocument> getGlobalEcho(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		List<ESEchoDocument> response = null;
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3291,8 +3413,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESEchoDocument> getCustomEcho(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private List<ESEchoDocument> getCustomEcho(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESEchoDocument> response = null;
 		try {
 			if (doctorId == null)
@@ -3309,7 +3431,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * 
 	 * @param page
@@ -3361,7 +3483,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			}
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.HOLTER, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "holter");
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"holter");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESHolterDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3383,8 +3506,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESHolterDocument> getGlobalHolter(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private List<ESHolterDocument> getGlobalHolter(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		List<ESHolterDocument> response = null;
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3416,8 +3539,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 				}
 			}
 
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.HOLTER, page, size, updatedTime, discarded,
-					null, searchTerm, specialities, null, null, "holter");
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.HOLTER, page, size, updatedTime,
+					discarded, null, searchTerm, specialities, null, null, "holter");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESHolterDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3439,8 +3562,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESHolterDocument> getCustomHolter(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private List<ESHolterDocument> getCustomHolter(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESHolterDocument> response = null;
 		try {
 			if (doctorId == null)
@@ -3457,7 +3580,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * 
 	 * @param page
@@ -3509,7 +3632,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			}
 
 			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ECG, page, size, doctorId,
-					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null, "ecgDetail");
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"ecgDetail");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESECGDetailsDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3531,8 +3655,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private List<ESECGDetailsDocument> getGlobalECGDetails(int page, int size, String doctorId, String updatedTime, Boolean discarded,
-			String searchTerm) {
+	private List<ESECGDetailsDocument> getGlobalECGDetails(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		try {
 			List<ESDoctorDocument> doctorCollections = null;
@@ -3587,8 +3711,8 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	 * @param searchTerm
 	 * @return
 	 */
-	private List<ESECGDetailsDocument> getCustomECGDetails(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded, String searchTerm) {
+	private List<ESECGDetailsDocument> getCustomECGDetails(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESECGDetailsDocument> response = null;
 		try {
 			if (doctorId == null)
@@ -3602,6 +3726,44 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting ECG details");
+		}
+		return response;
+	}
+
+	@Override
+	public boolean addProcedureNote(ESProcedureNoteDocument request) {
+		boolean response = false;
+		try {
+			esProcedureNoteRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PROCEDURE_NOTE, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving P/V");
+		}
+		return response;
+
+	}
+
+	@Override
+	public List<ESProcedureNoteDocument> searchProcedureNote(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESProcedureNoteDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalProcedureNote(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomProcedureNote(page, size, doctorId, locationId, hospitalId, updatedTime, discarded,
+					searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalProcedureNote(page, size, doctorId, locationId, hospitalId, updatedTime,
+					discarded, searchTerm);
+			break;
+		default:
+			break;
 		}
 		return response;
 	}

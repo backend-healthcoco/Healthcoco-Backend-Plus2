@@ -51,7 +51,7 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String holter;
 	private WorkingHours time;
 	private Date fromDate;
-	
+	private String procedureNote;
 
 	public WorkingHours getTime() {
 		return time;
@@ -385,19 +385,26 @@ public class DischargeSummaryRequest extends GenericCollection {
 	public String toString() {
 		return "DischargeSummaryRequest [id=" + id + ", patientId=" + patientId + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", prescriptions=" + prescriptions
-				+", diagnosis=" + diagnosis + ", pastHistory=" + pastHistory
-				+ ", familyHistory=" + familyHistory + ", personalHistory=" + personalHistory + ", complaint="
-				+ complaint + ", presentComplaint=" + presentComplaint + ", presentComplaintHistory="
-				+ presentComplaintHistory + ", menstrualHistory=" + menstrualHistory + ", obstetricHistory="
-				+ obstetricHistory + ", generalExam=" + generalExam + ", systemExam=" + systemExam + ", observation="
-				+ observation + ", investigation=" + investigation + ", pa=" + pa + ", ps=" + ps + ", pv=" + pv
-				+ ", echo=" + echo + ", xRayDetails=" + xRayDetails + ", operationNotes=" + operationNotes
-				+ ", treatmentsGiven=" + treatmentsGiven + ", appointmentRequest=" + appointmentRequest
-				+ ", uniqueEmrId=" + uniqueEmrId + ", admissionDate=" + admissionDate + ", dischargeDate="
-				+ dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight=" + babyWeight + ", babyNotes="
-				+ babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge + ", summary=" + summary
-				+ ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG + ", ecgDetails=" + ecgDetails
-				+ ", holter=" + holter + "]";
+				+ ", diagnosis=" + diagnosis + ", pastHistory=" + pastHistory + ", familyHistory=" + familyHistory
+				+ ", personalHistory=" + personalHistory + ", complaint=" + complaint + ", presentComplaint="
+				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
+				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", generalExam=" + generalExam
+				+ ", systemExam=" + systemExam + ", observation=" + observation + ", investigation=" + investigation
+				+ ", pa=" + pa + ", ps=" + ps + ", pv=" + pv + ", echo=" + echo + ", xRayDetails=" + xRayDetails
+				+ ", operationNotes=" + operationNotes + ", treatmentsGiven=" + treatmentsGiven
+				+ ", appointmentRequest=" + appointmentRequest + ", uniqueEmrId=" + uniqueEmrId + ", admissionDate="
+				+ admissionDate + ", dischargeDate=" + dischargeDate + ", labourNotes=" + labourNotes + ", babyWeight="
+				+ babyWeight + ", babyNotes=" + babyNotes + ", conditionsAtDischarge=" + conditionsAtDischarge
+				+ ", summary=" + summary + ", discarded=" + discarded + ", indicationOfUSG=" + indicationOfUSG
+				+ ", ecgDetails=" + ecgDetails + ", holter=" + holter + "]";
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
 	}
 
 }

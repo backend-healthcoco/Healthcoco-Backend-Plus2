@@ -23,6 +23,7 @@ import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.XRayDetails;
@@ -31,52 +32,58 @@ import com.dpdocter.request.ClinicalNotesEditRequest;
 import com.dpdocter.response.MailResponse;
 
 public interface ClinicalNotesService {
-    ClinicalNotes addNotes(ClinicalNotesAddRequest request,Boolean isAppointmentAdd);
+	ClinicalNotes addNotes(ClinicalNotesAddRequest request, Boolean isAppointmentAdd);
 
-    ClinicalNotes getNotesById(String id, ObjectId visitId);
+	ClinicalNotes getNotesById(String id, ObjectId visitId);
 
-    ClinicalNotes editNotes(ClinicalNotesEditRequest request);
+	ClinicalNotes editNotes(ClinicalNotesEditRequest request);
 
-    ClinicalNotes deleteNote(String id, Boolean discarded);
+	ClinicalNotes deleteNote(String id, Boolean discarded);
 
-    Complaint addEditComplaint(Complaint complaint);
+	Complaint addEditComplaint(Complaint complaint);
 
-    Observation addEditObservation(Observation observation);
+	Observation addEditObservation(Observation observation);
 
-    Investigation addEditInvestigation(Investigation investigation);
+	Investigation addEditInvestigation(Investigation investigation);
 
-    Diagnoses addEditDiagnosis(Diagnoses diagnosis);
+	Diagnoses addEditDiagnosis(Diagnoses diagnosis);
 
-    Notes addEditNotes(Notes notes);
+	Notes addEditNotes(Notes notes);
 
-    Diagram addEditDiagram(Diagram diagram);
+	Diagram addEditDiagram(Diagram diagram);
 
-    Complaint deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	Complaint deleteComplaint(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Observation deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	Observation deleteObservation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Investigation deleteInvestigation(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	Investigation deleteInvestigation(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
 
-    Diagnoses deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	Diagnoses deleteDiagnosis(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Notes deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	Notes deleteNotes(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	Diagram deleteDiagram(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
-    Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId, boolean isOTPVerified);
+	Integer getClinicalNotesCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified);
 
-    List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId, String hospitalId, String updatedTime,
-	    Boolean discarded, String searchTerm);
+	List<?> getClinicalItems(String type, String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
-    void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId, String emailAddress);
+	void emailClinicalNotes(String clinicalNotesId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
 
-    MailResponse getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId, String hospitalId);
+	MailResponse getClinicalNotesMailData(String clinicalNotesId, String doctorId, String locationId,
+			String hospitalId);
 
-    List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
+	List<ClinicalNotes> getClinicalNotes(String patientId, int page, int size, String updatedTime, Boolean discarded);
 
-	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,	String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
+	List<ClinicalNotes> getClinicalNotes(int page, int size, String doctorId, String locationId, String hospitalId,
+			String patientId, String updatedTime, Boolean isOTPVerified, Boolean discarded, Boolean inHistory);
 
-	String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren);
+	String getClinicalNotesFile(String clinicalNotesId, Boolean showPH, Boolean showPLH, Boolean showFH, Boolean showDA,
+			Boolean showUSG, Boolean isCustomPDF, Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren);
 
 	Boolean updateQuery();
 
@@ -112,7 +119,7 @@ public interface ClinicalNotesService {
 
 	MenstrualHistory deleteMenstrualHistory(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
-	
+
 	IndicationOfUSG deleteIndicationOfUSG(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
@@ -125,9 +132,9 @@ public interface ClinicalNotesService {
 	PV deletePV(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
 	PV addEditPV(PV pv);
-	
+
 	PS addEditPS(PS ps);
-	
+
 	PS deletePS(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
 	ECGDetails addEditECGDetails(ECGDetails ecgDetails);
@@ -145,6 +152,10 @@ public interface ClinicalNotesService {
 	Echo deleteEcho(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
 
 	Holter deleteHolter(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
-	
+
+	ProcedureNote addEditProcedureNote(ProcedureNote precedureNote);
+
+	ProcedureNote deleteProcedureNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
 
 }

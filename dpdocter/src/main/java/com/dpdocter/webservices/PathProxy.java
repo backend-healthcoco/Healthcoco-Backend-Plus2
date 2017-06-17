@@ -237,6 +237,8 @@ public interface PathProxy {
 
 		public static final String ADD_HOLTER = "/holter/add";
 
+		public static final String ADD_PROCEDURE_NOTE = "/procedureNote/add";
+
 		public static final String DELETE_COMPLAINT = "/complaint/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_OBSERVATION = "/observation/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
@@ -286,6 +288,8 @@ public interface PathProxy {
 		public static final String DELETE_ECHO = "/echo/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_HOLTER = "/holter/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+
+		public static final String DELETE_PROCEDURE_NOTE = "/procedureNote/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
 

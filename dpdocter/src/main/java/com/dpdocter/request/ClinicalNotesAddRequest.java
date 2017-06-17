@@ -5,18 +5,27 @@ import java.util.List;
 
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
+import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.GeneralExam;
+import com.dpdocter.beans.Holter;
+import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.PA;
+import com.dpdocter.beans.PS;
+import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.beans.XRayDetails;
 
 public class ClinicalNotesAddRequest {
 	private String id;
@@ -56,6 +65,8 @@ public class ClinicalNotesAddRequest {
 	private String pa;
 
 	private String ps;
+
+	private String procedureNote;
 
 	private String ecgDetails;
 
@@ -108,7 +119,21 @@ public class ClinicalNotesAddRequest {
 	private List<MenstrualHistory> menstrualHistories;
 
 	private List<ObstetricHistory> obstetricHistories;
-	
+
+	private List<ProcedureNote> procedureNotes;
+
+	private List<IndicationOfUSG> indicationOfUSGs;
+
+	private List<PV> pvs;
+
+	private List<ECGDetails> ecgDetailssecgDetails;
+
+	private List<XRayDetails> XrayDetailss;
+
+	private List<Echo> echos;
+
+	private List<Holter> holters;
+
 	private String globalDiagnoses;
 
 	private String globalNotes;
@@ -149,14 +174,16 @@ public class ClinicalNotesAddRequest {
 
 	private String globalHolters;
 
+	private String globalProcedureNotes;
+
 	private Date lmp;
-	
+
 	private Date edd;
-	
+
 	private int noOfFemaleChildren;
-	
+
 	private int noOfMaleChildren;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -404,7 +431,7 @@ public class ClinicalNotesAddRequest {
 	public void setHolter(String holter) {
 		this.holter = holter;
 	}
-	
+
 	public String getEcgDetails() {
 		return ecgDetails;
 	}
@@ -707,6 +734,78 @@ public class ClinicalNotesAddRequest {
 
 	public void setNoOfMaleChildren(int noOfMaleChildren) {
 		this.noOfMaleChildren = noOfMaleChildren;
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
+	}
+
+	public List<ProcedureNote> getProcedureNotes() {
+		return procedureNotes;
+	}
+
+	public void setProcedureNotes(List<ProcedureNote> procedureNotes) {
+		this.procedureNotes = procedureNotes;
+	}
+
+	public List<IndicationOfUSG> getIndicationOfUSGs() {
+		return indicationOfUSGs;
+	}
+
+	public void setIndicationOfUSGs(List<IndicationOfUSG> indicationOfUSGs) {
+		this.indicationOfUSGs = indicationOfUSGs;
+	}
+
+	public List<PV> getPvs() {
+		return pvs;
+	}
+
+	public void setPvs(List<PV> pvs) {
+		this.pvs = pvs;
+	}
+
+	public List<ECGDetails> getEcgDetailssecgDetails() {
+		return ecgDetailssecgDetails;
+	}
+
+	public void setEcgDetailssecgDetails(List<ECGDetails> ecgDetailssecgDetails) {
+		this.ecgDetailssecgDetails = ecgDetailssecgDetails;
+	}
+
+	public List<XRayDetails> getXrayDetailss() {
+		return XrayDetailss;
+	}
+
+	public void setXrayDetailss(List<XRayDetails> xrayDetailss) {
+		XrayDetailss = xrayDetailss;
+	}
+
+	public List<Echo> getEchos() {
+		return echos;
+	}
+
+	public void setEchos(List<Echo> echos) {
+		this.echos = echos;
+	}
+
+	public List<Holter> getHolters() {
+		return holters;
+	}
+
+	public void setHolters(List<Holter> holters) {
+		this.holters = holters;
+	}
+
+	public String getGlobalProcedureNotes() {
+		return globalProcedureNotes;
+	}
+
+	public void setGlobalProcedureNotes(String globalProcedureNotes) {
+		this.globalProcedureNotes = globalProcedureNotes;
 	}
 
 	@Override

@@ -1641,6 +1641,33 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							else
 								vitalSigns = spo2;
 						}
+						String height = clinicalNotesCollection.getVitalSigns().getHeight();
+						height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+								: "");
+						if (!DPDoctorUtils.allStringsEmpty(height)) {
+							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+								vitalSigns = vitalSigns + ",  " + height;
+							else
+								vitalSigns = spo2;
+						}
+
+						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
+						bmi = (bmi != null && !bmi.isEmpty() ? "BMI: " + bmi + " " + VitalSignsUnit.BMI.getUnit() : "");
+						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+								vitalSigns = vitalSigns + ",  " + bmi;
+							else
+								vitalSigns = bmi;
+						}
+
+						String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
+						bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa + " " + VitalSignsUnit.BSA.getUnit() : "");
+						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+								vitalSigns = vitalSigns + ",  " + bsa;
+							else
+								vitalSigns = bsa;
+						}
 						clinicalNotesJasperDetails
 								.setVitalSigns(vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 					}
@@ -1669,6 +1696,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setxRayDetails(clinicalNotesCollection.getxRayDetails());
 					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
 					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
+					clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
 
 					if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 						clinicalNotesJasperDetails

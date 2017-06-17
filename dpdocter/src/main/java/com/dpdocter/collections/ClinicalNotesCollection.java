@@ -147,6 +147,17 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private int noOfMaleChildren;
 	
+	@Field
+	private String procedureNote;
+	
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

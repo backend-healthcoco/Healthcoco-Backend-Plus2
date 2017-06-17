@@ -52,6 +52,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String indicationOfUSG;
 	private String ecgDetails;
 	private String holter;
+	private String procedureNote;
 
 	public String getIndicationOfUSG() {
 		return indicationOfUSG;
@@ -397,6 +398,14 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setFromDate(Date fromDate) {
 		this.fromDate = fromDate;
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
 	}
 
 }

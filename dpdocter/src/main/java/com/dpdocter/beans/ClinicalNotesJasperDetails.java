@@ -58,6 +58,8 @@ public class ClinicalNotesJasperDetails {
 	
 	private String noOfChildren;
 	
+	private String procedureNote;
+	
     public String getComplaints() {
 	return complaints;
     }
@@ -269,5 +271,13 @@ public class ClinicalNotesJasperDetails {
 				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
 				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
 				+ ", noOfChildren=" + noOfChildren + "]";
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
 	}
 }
