@@ -1161,8 +1161,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getComplaints())) {
 					dischargeSummaryCollection.setComplaint(dischargeSummaryCollection.getComplaints());
 				}
-				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getUniqueEmrId())) {
-					dischargeSummaryCollection.setUniqueEmrId(dischargeSummaryCollection.getUniqueEmrId());
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeId())) {
+					dischargeSummaryCollection.setUniqueEmrId(dischargeSummaryCollection.getDischargeId());
 				}
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getGeneralExamination())) {
 					dischargeSummaryCollection.setGeneralExam(dischargeSummaryCollection.getGeneralExamination());

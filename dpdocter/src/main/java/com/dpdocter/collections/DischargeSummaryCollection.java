@@ -42,6 +42,10 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String appointmentId;
 	@Field
 	private String complaint;
+	public String getDischargeId() {
+		return dischargeId;
+	}
+
 	@Field
 	private String presentComplaint;
 	@Field
