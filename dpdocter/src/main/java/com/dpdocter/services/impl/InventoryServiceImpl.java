@@ -299,47 +299,57 @@ public class InventoryServiceImpl implements InventoryService {
 
 			InventoryStockCollection inventoryStockCollection = new InventoryStockCollection();
 			if (inventoryStock.getStockType() != null && inventoryStock.getStockType().equalsIgnoreCase("ADDED")) {
-				if (inventoryStock.getBatchId() == null) {
-					if (inventoryStock.getInventoryBatch() != null) {
-						inventoryBatchCollection = new InventoryBatchCollection();
-						inventoryBatchCollection.setBatchName(inventoryStock.getInventoryBatch().getBatchName());
-						inventoryBatchCollection.setCostPrice(inventoryStock.getInventoryBatch().getCostPrice());
-						inventoryBatchCollection.setNoOfItems(inventoryStock.getInventoryBatch().getNoOfItems());
-						inventoryBatchCollection.setNoOfItemsLeft(inventoryStock.getInventoryBatch().getNoOfItems());
-						inventoryBatchCollection.setRetailPrice(inventoryStock.getInventoryBatch().getRetailPrice());
-						inventoryBatchCollection.setLocationId(new ObjectId(inventoryStock.getLocationId()));
-						inventoryBatchCollection.setHospitalId(new ObjectId(inventoryStock.getHospitalId()));
-						inventoryBatchCollection.setCreatedTime(new Date());
+				if (inventoryStock.getInventoryBatch() != null) {
+					if (inventoryStock.getInventoryBatch().getId() != null) {
+						
+						inventoryBatchCollection = inventoryBatchRepository
+								.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
+						inventoryBatchCollection
+								.setNoOfItems(inventoryBatchCollection.getNoOfItems() + inventoryStock.getQuantity());
+						inventoryBatchCollection.setNoOfItemsLeft(
+								inventoryBatchCollection.getNoOfItemsLeft() + inventoryStock.getQuantity());
 						inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
+						
 					} else {
 						inventoryBatchCollection = new InventoryBatchCollection();
-						inventoryBatchCollection.setBatchName("NO NAME");
+						inventoryBatchCollection.setItemId(new ObjectId(inventoryStock.getItemId()));
+						inventoryBatchCollection.setBatchName(inventoryStock.getInventoryBatch().getBatchName());
+						inventoryBatchCollection.setCostPrice(inventoryStock.getInventoryBatch().getCostPrice());
 						inventoryBatchCollection.setNoOfItems(inventoryStock.getQuantity());
 						inventoryBatchCollection.setNoOfItemsLeft(inventoryStock.getQuantity());
+						inventoryBatchCollection.setRetailPrice(inventoryStock.getInventoryBatch().getRetailPrice());
 						inventoryBatchCollection.setLocationId(new ObjectId(inventoryStock.getLocationId()));
 						inventoryBatchCollection.setHospitalId(new ObjectId(inventoryStock.getHospitalId()));
 						inventoryBatchCollection.setCreatedTime(new Date());
 						inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
 					}
 				} else {
-					inventoryBatchCollection = inventoryBatchRepository
-							.findOne(new ObjectId(inventoryStock.getBatchId()));
-					inventoryBatchCollection
-							.setNoOfItems(inventoryBatchCollection.getNoOfItems() + inventoryStock.getQuantity());
-					inventoryBatchCollection.setNoOfItemsLeft(
-							inventoryBatchCollection.getNoOfItemsLeft() + inventoryStock.getQuantity());
+					inventoryBatchCollection = new InventoryBatchCollection();
+					inventoryBatchCollection.setItemId(new ObjectId(inventoryStock.getItemId()));
+					inventoryBatchCollection.setBatchName("NO NAME");
+					inventoryBatchCollection.setNoOfItems(inventoryStock.getQuantity());
+					inventoryBatchCollection.setNoOfItemsLeft(inventoryStock.getQuantity());
+					inventoryBatchCollection.setLocationId(new ObjectId(inventoryStock.getLocationId()));
+					inventoryBatchCollection.setHospitalId(new ObjectId(inventoryStock.getHospitalId()));
+					inventoryBatchCollection.setCreatedTime(new Date());
 					inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
 				}
 			}
 
 			else if (inventoryStock.getStockType() != null
 					&& inventoryStock.getStockType().equalsIgnoreCase("CONSUMED")) {
-				if (inventoryStock.getBatchId() == null) {
+				if (inventoryStock.getInventoryBatch() == null) {
 					throw new BusinessException(ServiceError.InvalidInput,
 							"Batch cannot be null while consuming items");
 				}
+				else if(inventoryStock.getInventoryBatch().getId() == null)
+				{
+					throw new BusinessException(ServiceError.InvalidInput,
+							"Batch cannot be null while consuming items");
+				}
+				
 
-				inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(inventoryStock.getBatchId()));
+				inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
 				inventoryBatchCollection
 						.setNoOfItems(inventoryBatchCollection.getNoOfItems() - inventoryStock.getQuantity());
 				inventoryBatchCollection

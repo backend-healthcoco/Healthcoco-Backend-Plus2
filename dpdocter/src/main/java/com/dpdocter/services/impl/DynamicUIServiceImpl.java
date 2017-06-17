@@ -157,6 +157,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			prescriptionPermission.add(OpthoPermissionEnums.OPTHO_RX.getPermissions());
 			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
 			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
+			tabPermission.add(OpthoPermissionEnums.LENS_PRESCRIPTION.getPermissions());
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));

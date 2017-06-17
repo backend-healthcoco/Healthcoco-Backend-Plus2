@@ -28,6 +28,8 @@ public class InventoryBatchCollection extends GenericCollection {
 	private ObjectId hospitalId;
 	@Field
 	private Boolean discarded;
+	@Field
+	private Long expiryDate;
 
 	public ObjectId getId() {
 		return id;
@@ -99,6 +101,22 @@ public class InventoryBatchCollection extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public ObjectId getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(ObjectId itemId) {
+		this.itemId = itemId;
+	}
+
+	public Long getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Long expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 
 	@Override

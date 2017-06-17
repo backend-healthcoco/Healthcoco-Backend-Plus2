@@ -7,6 +7,7 @@ public class InventoryBatch extends GenericCollection {
 	private String id;
 	private String itemId;
 	private String batchName;
+	private Long expiryDate;
 	private Long noOfItems;
 	private Long noOfItemsLeft;
 	private Long retailPrice;
@@ -97,6 +98,14 @@ public class InventoryBatch extends GenericCollection {
 
 	public Boolean getDiscarded() {
 		return discarded;
+	}
+
+	public Long getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Long expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 
 	@Override
