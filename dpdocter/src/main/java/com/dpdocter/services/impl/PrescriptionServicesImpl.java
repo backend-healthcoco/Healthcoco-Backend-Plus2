@@ -3620,7 +3620,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
 
-		if(printSettings == null){
+		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
@@ -5085,17 +5085,17 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		if (prescriptionCollection.getLeftEyeTest() != null) {
 
 			BeanUtil.map(prescriptionCollection.getLeftEyeTest(), eyResponse);
-			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getLeftEyeTest().getDistanceSPH())
-					|| prescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
-					|| prescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain")) {
-				eyResponse.setDistanceSPH(String.format("%.2f",
-						Double.parseDouble(prescriptionCollection.getLeftEyeTest().getDistanceSPH())));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getLeftEyeTest().getDistanceSPH())) {
+				if (prescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase("plain")
+						|| prescriptionCollection.getLeftEyeTest().getDistanceSPH().equalsIgnoreCase(" plain"))
+					eyResponse.setDistanceSPH(String.format("%.2f",
+							Double.parseDouble(prescriptionCollection.getLeftEyeTest().getDistanceSPH())));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getLeftEyeTest().getNearSPH())
-					|| prescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
-					|| prescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain")) {
-				eyResponse.setNearSPH(String.format("%.2f",
-						Double.parseDouble(prescriptionCollection.getLeftEyeTest().getNearSPH())));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionCollection.getLeftEyeTest().getNearSPH())) {
+				if (prescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase("plain")
+						|| prescriptionCollection.getLeftEyeTest().getNearSPH().equalsIgnoreCase(" plain"))
+					eyResponse.setNearSPH(String.format("%.2f",
+							Double.parseDouble(prescriptionCollection.getLeftEyeTest().getNearSPH())));
 			}
 			if (prescriptionCollection.getLeftEyeTest().getDistanceCylinder() != null) {
 				eyResponse.setDistanceCylinder(
@@ -5202,7 +5202,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
 				prescriptionCollection.getHospitalId(), ComponentType.ALL.getType());
-		if(printSettings == null){
+		if (printSettings == null) {
 			printSettings = new PrintSettingsCollection();
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
