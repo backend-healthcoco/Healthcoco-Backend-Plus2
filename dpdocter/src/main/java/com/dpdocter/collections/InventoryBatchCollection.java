@@ -13,9 +13,9 @@ public class InventoryBatchCollection extends GenericCollection {
 	@Field
 	private String batchName;
 	@Field
-	private Long noOfItems;
+	private Long noOfItems = 0l;
 	@Field
-	private Long noOfItemsLeft;
+	private Long noOfItemsLeft = 0l;
 	@Field
 	private Long retailPrice;
 	@Field

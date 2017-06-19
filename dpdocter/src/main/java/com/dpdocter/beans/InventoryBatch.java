@@ -24,12 +24,28 @@ public class InventoryBatch extends GenericCollection {
 		this.id = id;
 	}
 
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
 	public String getBatchName() {
 		return batchName;
 	}
 
 	public void setBatchName(String batchName) {
 		this.batchName = batchName;
+	}
+
+	public Long getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Long expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 
 	public Long getNoOfItems() {
@@ -80,32 +96,12 @@ public class InventoryBatch extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public Boolean isDiscarded() {
+	public Boolean getDiscarded() {
 		return discarded;
 	}
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
-	}
-
-	public String getItemId() {
-		return itemId;
-	}
-
-	public void setItemId(String itemId) {
-		this.itemId = itemId;
-	}
-
-	public Boolean getDiscarded() {
-		return discarded;
-	}
-
-	public Long getExpiryDate() {
-		return expiryDate;
-	}
-
-	public void setExpiryDate(Long expiryDate) {
-		this.expiryDate = expiryDate;
 	}
 
 	@Override

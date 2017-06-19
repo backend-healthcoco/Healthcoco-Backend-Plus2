@@ -129,7 +129,7 @@ public class InventoryServiceImpl implements InventoryService {
 			if (response != null) {
 				
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria().and("itemId").is(response.getId())),
+							Aggregation.match(new Criteria().and("itemId").is(new ObjectId(response.getId()))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
 							InventoryBatchCollection.class, InventoryBatch.class);
@@ -190,12 +190,22 @@ public class InventoryServiceImpl implements InventoryService {
 			if (response != null) {
 				for (InventoryItemLookupResposne inventoryItem : response) {
 					aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria().and("itemId").is(inventoryItem.getId())),
+							Aggregation.match(new Criteria().and("itemId").is(new ObjectId(inventoryItem.getId()))),
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
 							InventoryBatchCollection.class, InventoryBatch.class);
+					System.out.println(aggregation);
 					inventoryBatchs = batchAggregationResults.getMappedResults();
+					System.out.println(inventoryBatchs);
 					inventoryItem.setInventoryBatchs(inventoryBatchs);
+					if(inventoryBatchs != null)
+					{
+						Long totalStock = 0l;
+						for (InventoryBatch inventoryBatch : inventoryBatchs) {
+							totalStock += inventoryBatch.getNoOfItemsLeft();
+						}
+						inventoryItem.setTotalStock(totalStock);
+					}
 				}
 
 			}

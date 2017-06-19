@@ -19,6 +19,7 @@ public class InventoryItemLookupResposne extends GenericCollection {
 	private String locationId;
 	private String hospitalId;
 	private Boolean discarded = false;
+	private Long retailPrice;
 	private List<InventoryBatch> inventoryBatchs;
 
 	public String getId() {
@@ -125,12 +126,21 @@ public class InventoryItemLookupResposne extends GenericCollection {
 		this.totalStock = totalStock;
 	}
 
+	public Long getRetailPrice() {
+		return retailPrice;
+	}
+
+	public void setRetailPrice(Long retailPrice) {
+		this.retailPrice = retailPrice;
+	}
+
 	@Override
 	public String toString() {
 		return "InventoryItemLookupResposne [id=" + id + ", name=" + name + ", type=" + type + ", code=" + code
-				+ ", stockingUnit=" + stockingUnit + ", reOrderLevel=" + reOrderLevel + ", manufacturer=" + manufacturer
-				+ ", resourceId=" + resourceId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", discarded=" + discarded + ", inventoryBatchs=" + inventoryBatchs + "]";
+				+ ", stockingUnit=" + stockingUnit + ", reOrderLevel=" + reOrderLevel + ", totalStock=" + totalStock
+				+ ", manufacturer=" + manufacturer + ", resourceId=" + resourceId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", retailPrice=" + retailPrice
+				+ ", inventoryBatchs=" + inventoryBatchs + "]";
 	}
 
 }
