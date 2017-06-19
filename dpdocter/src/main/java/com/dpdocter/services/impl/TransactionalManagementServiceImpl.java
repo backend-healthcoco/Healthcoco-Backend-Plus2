@@ -69,6 +69,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PresentComplaintCollection;
 import com.dpdocter.collections.PresentComplaintHistoryCollection;
+import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.SMSTrackDetail;
@@ -106,6 +107,7 @@ import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
@@ -163,6 +165,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PresentComplaintHistoryRepository;
 import com.dpdocter.repository.PresentComplaintRepository;
+import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.SMSTrackRepository;
@@ -300,6 +303,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private EchoRepository echoRepository;
+
+	@Autowired
+
+	private ProcedureNoteRepository procedureNoteRepository;
 
 	@Autowired
 	private ECGDetailsRepository ecgDetailsRepository;
@@ -481,6 +488,10 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 						case PHARMACY:
 							checkPharmacy(transactionalCollection.getResourceId());
+							break;
+
+						case PROCEDURE_NOTE:
+							checkProcedureNote(transactionalCollection.getResourceId());
 							break;
 
 						default:
@@ -1324,6 +1335,21 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESEchoDocument esEchoDocument = new ESEchoDocument();
 				BeanUtil.map(echoCollection, esEchoDocument);
 				esClinicalNotesService.addEcho(esEchoDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void checkProcedureNote(ObjectId resourceId) {
+		try {
+
+			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findOne(resourceId);
+			if (procedureNoteCollection != null) {
+				ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
+				BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
+				esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
