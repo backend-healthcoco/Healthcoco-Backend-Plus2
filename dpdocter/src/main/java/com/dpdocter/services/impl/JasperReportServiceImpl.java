@@ -655,28 +655,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(reportElement);
 			band.setHeight(40);
 		} else {
-
+			band.setPrintWhenExpression(new JRDesignExpression(
+					"!$P{logoURL}.isEmpty() || !$P{headerLeftText}.isEmpty() || !$P{headerRightText}.isEmpty()"));
 			param = new JRDesignDatasetParameter();
 			param.setName("logoURL");
-			if (parameters.get("logoURL") != null && !String.valueOf(parameters.get("logoURL")).trim().isEmpty()) {
-				param.setExpression(new JRDesignExpression("$P{logoURL}"));
-			}
+
+			param.setExpression(new JRDesignExpression("$P{logoURL}"));
+
 			dsr.addParameter(param);
 
 			param = new JRDesignDatasetParameter();
 			param.setName("headerLeftText");
-			if (parameters.get("headerLeftText") != null
-					&& !String.valueOf(parameters.get("headerLeftText")).trim().isEmpty()) {
-				param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
-			}
+			param.setExpression(new JRDesignExpression("$P{headerLeftText}"));
 			dsr.addParameter(param);
 
 			param = new JRDesignDatasetParameter();
 			param.setName("headerRightText");
-			if (parameters.get("headerRightText") != null
-					&& !String.valueOf(parameters.get("headerRightText")).trim().isEmpty()) {
-				param.setExpression(new JRDesignExpression("$P{headerRightText}"));
-			}
+			param.setExpression(new JRDesignExpression("$P{headerRightText}"));
 			dsr.addParameter(param);
 
 			DesignCell columnHeader = new DesignCell();
@@ -824,7 +819,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 				0);
 		addItems(jasperDesign, columnWidth, "$P{Diagnosis}", "$F{diagnosis}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{Notes}", "$F{notes}", fieldWidth, false, 0);
-		
 
 		JasperCompileManager.compileReportToFile(jasperDesign,
 				JASPER_TEMPLATES_RESOURCE + "new/mongo-clinical-notes_subreport-A4.jasper");
