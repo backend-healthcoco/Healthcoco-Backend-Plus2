@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.Location;
@@ -27,12 +28,18 @@ import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.Specimen;
+import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.request.LabReportsAddRequest;
+import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
+import com.dpdocter.services.LabReportsService;
 import com.dpdocter.services.LabService;
 import com.dpdocter.services.LocationServices;
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -53,6 +60,9 @@ public class LabApi {
 
 	@Autowired
 	private LocationServices locationServices;
+	
+	@Autowired
+	private LabReportsService labReportsService;
 
 	@Path(value = PathProxy.LabUrls.GET_CLINICS_WITH_REPORTS_COUNT)
 	@GET
@@ -461,4 +471,50 @@ public class LabApi {
 		return response;
 	}
 	
+	@POST
+	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS, notes = PathProxy.LabUrls.UPLOAD_REPORTS)
+	public Response<LabReports> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		LabReportsAddRequest request = data.getValueAs(LabReportsAddRequest.class);
+
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		LabReports labReports = labReportsService.addLabReports(file, request);
+
+		Response<LabReports> response = new Response<LabReports>();
+		response.setData(labReports);
+		return response;
+	}
+
+	@GET
+	@Path(value = PathProxy.LabUrls.GET_REPORTS)
+	@ApiOperation(value = PathProxy.LabUrls.GET_REPORTS, notes = PathProxy.LabUrls.GET_REPORTS)
+	public Response<LabReports> getLabReports(@QueryParam("requestId") String requestId,
+			@QueryParam("labTestSampleId") String labTestSampleId, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") int page, @QueryParam("size") int size) {
+
+		List<LabReports> labReports = null;
+		try {
+
+			if (DPDoctorUtils.anyStringEmpty(requestId, labTestSampleId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+
+			labReports = labReportsService.getLabReports(labTestSampleId, requestId, searchTerm, page, size);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error("error while getting lab reports");
+		}
+
+		Response<LabReports> response = new Response<LabReports>();
+		response.setDataList(labReports);
+		return response;
+	}
+
 }

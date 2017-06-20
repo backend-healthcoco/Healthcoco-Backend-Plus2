@@ -1164,6 +1164,9 @@ public interface PathProxy {
 		public static final String GET_PICKUPS_FOR_CB = "/getPickupsForCB";
 		public static final String GET_PICKUPS_FOR_DL = "/getPickupsForDL";
 		public static final String GET_PICKUPS_FOR_PL = "/getPickupsForPL";
+		public static final String UPLOAD_REPORTS = "/uploadReports";
+		public static final String GET_REPORTS = "/getReports";
+		
 
 	}
 

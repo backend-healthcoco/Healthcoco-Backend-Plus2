@@ -194,9 +194,7 @@ public class InventoryServiceImpl implements InventoryService {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 					AggregationResults<InventoryBatch> batchAggregationResults = mongoTemplate.aggregate(aggregation,
 							InventoryBatchCollection.class, InventoryBatch.class);
-					System.out.println(aggregation);
 					inventoryBatchs = batchAggregationResults.getMappedResults();
-					System.out.println(inventoryBatchs);
 					inventoryItem.setInventoryBatchs(inventoryBatchs);
 					if(inventoryBatchs != null)
 					{
@@ -370,7 +368,7 @@ public class InventoryServiceImpl implements InventoryService {
 			inventoryStock.setBatchId(inventoryBatchCollection.getId().toString());
 			BeanUtil.map(inventoryStock, inventoryStockCollection);
 			inventoryStockCollection = inventoryStockRepository.save(inventoryStockCollection);
-
+			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);
 
 		} catch (Exception e) {

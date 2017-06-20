@@ -512,7 +512,10 @@ public class LocationServiceImpl implements LocationServices {
 					
 					if(labTestSample.getId() != null)
 					{
-						labTestSampleIds.add(new ObjectId(labTestSample.getId()));
+						LabTestSampleCollection labTestSampleCollection = labTestSampleRepository.findOne(new ObjectId(labTestSample.getId()));
+						BeanUtil.map(labTestSample, labTestSampleCollection);
+						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
+						labTestSampleIds.add(labTestSampleCollection.getId());
 					}
 					else
 					{
@@ -547,6 +550,7 @@ public class LocationServiceImpl implements LocationServices {
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection.setIsCompleted(false);
+				labTestPickupCollection.setStatus(request.getStatus());
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 
 			}

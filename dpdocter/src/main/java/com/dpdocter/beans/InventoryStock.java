@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
+import common.util.web.JacksonUtil;
+
 public class InventoryStock extends GenericCollection {
 
 	private String id;
@@ -120,4 +122,12 @@ public class InventoryStock extends GenericCollection {
 				+ ", stockType=" + stockType + ", locationId=" + locationId + ", hospitalId=" + hospitalId + "]";
 	}
 
+	
+	public static void main(String[] args) {
+		InventoryStock inventoryStock =  new InventoryStock();
+		InventoryBatch inventoryBatch = new InventoryBatch();
+		inventoryStock.setInventoryBatch(inventoryBatch);
+		System.out.println(JacksonUtil.obj2Json(inventoryStock));
+	}
+	
 }
