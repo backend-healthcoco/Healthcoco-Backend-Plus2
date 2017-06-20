@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "procedureNote_in", type = "procedureNote")
+@Document(indexName = "procedure_note_in", type = "procedure_note")
 public class ESProcedureNoteDocument {
 
 	@Id

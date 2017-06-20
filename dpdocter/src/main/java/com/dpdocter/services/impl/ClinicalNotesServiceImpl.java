@@ -3454,7 +3454,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomProcedureNote(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalPrecedureNote(page, size, doctorId, locationId, hospitalId, updatedTime,
+				response = getCustomGlobalProcedureNote(page, size, doctorId, locationId, hospitalId, updatedTime,
 						discarded);
 				break;
 			default:
@@ -6117,29 +6117,29 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<ProcedureNote> getCustomGlobalPrecedureNote(int page, int size, String doctorId, String locationId,
+	private List<ProcedureNote> getCustomGlobalProcedureNote(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<ProcedureNote> response = new ArrayList<ProcedureNote>();
-		try {
-			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-			if (doctorCollection == null) {
-				logger.warn("No Doctor Found");
-				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-			}
-			Collection<String> specialities = null;
-			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-				specialities = CollectionUtils.collect(
-						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-						new BeanToPropertyValueTransformer("speciality"));
-				specialities.add(null);
-				specialities.add("ALL");
-			}
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
 
-			AggregationResults<ProcedureNote> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-							updatedTime, discarded, null, null, specialities, null),
-					ProcedureNoteCollection.class, ProcedureNote.class);
-			response = results.getMappedResults();
+				AggregationResults<ProcedureNote> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						ProcedureNoteCollection.class, ProcedureNote.class);
+				response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
