@@ -73,6 +73,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 			BeanUtil.map(request, labReportsCollection);
 			labReportsCollection.getLabReports().add(imageURLResponse);
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
+			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
 
 		} catch (Exception e) {

@@ -325,6 +325,7 @@ public class InventoryServiceImpl implements InventoryService {
 						inventoryBatchCollection.setCostPrice(inventoryStock.getInventoryBatch().getCostPrice());
 						inventoryBatchCollection.setNoOfItems(inventoryStock.getQuantity());
 						inventoryBatchCollection.setNoOfItemsLeft(inventoryStock.getQuantity());
+						inventoryBatchCollection.setExpiryDate(inventoryStock.getInventoryBatch().getExpiryDate());
 						inventoryBatchCollection.setRetailPrice(inventoryStock.getInventoryBatch().getRetailPrice());
 						inventoryBatchCollection.setLocationId(new ObjectId(inventoryStock.getLocationId()));
 						inventoryBatchCollection.setHospitalId(new ObjectId(inventoryStock.getHospitalId()));
