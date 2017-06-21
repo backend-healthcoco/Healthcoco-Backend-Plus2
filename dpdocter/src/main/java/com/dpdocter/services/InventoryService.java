@@ -31,9 +31,6 @@ public interface InventoryService {
 
 	InventoryItem discardInventoryItem(String id, Boolean discarded);
 
-	List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String searchTerm, int page,
-			int size);
-
 	InventoryBatch addInventoryBatch(InventoryBatch inventoryBatch);
 
 	Manufacturer addManufacturer(Manufacturer manufacturer);
@@ -41,5 +38,8 @@ public interface InventoryService {
 	Integer getInventoryStockListCount(String locationId, String hospitalId, String searchTerm);
 
 	Integer getInventoryItemListCount(String locationId, String hospitalId, String type, String searchTerm);
+
+	List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String itemId, String searchTerm,
+			int page, int size);
 
 }

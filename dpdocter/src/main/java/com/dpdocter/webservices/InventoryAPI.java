@@ -249,7 +249,7 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES, notes = PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_BATCHES)
-	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<InventoryBatch> getInventoryBatches(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("itemId") String itemId ,@QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page ,@QueryParam("size") int size  )
 	{
 		Response<InventoryBatch> response = new Response<>();
 		List<InventoryBatch> inventoryBatches = null;
@@ -258,7 +258,7 @@ public class InventoryAPI {
 			{
 				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
 			}
-			inventoryBatches = inventoryService.getInventoryBatchList(locationId, hospitalId, searchTerm, page, size);
+			inventoryBatches = inventoryService.getInventoryBatchList(locationId, hospitalId,itemId, searchTerm, page, size);
 			if(inventoryBatches != null)
 			{
 				response.setDataList(inventoryBatches);

@@ -479,7 +479,7 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
-	public List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String searchTerm, int page,
+	public List<InventoryBatch> getInventoryBatchList(String locationId, String hospitalId, String itemId , String searchTerm, int page,
 			int size) {
 		List<InventoryBatch> response = null;
 		try {
@@ -488,6 +488,10 @@ public class InventoryServiceImpl implements InventoryService {
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("batchName").regex("^" + searchTerm, "i"),
 						new Criteria("batchName").regex("^" + searchTerm));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(itemId)) {
+				criteria = criteria.and("itemId").is(new ObjectId(itemId));
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
