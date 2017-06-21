@@ -740,7 +740,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			notification.setReq(requestId);
 			notification.setRes(responseId);
 
-			notification.setNotificationType(ComponentType.USER_REQUEST.getType());
+			notification.setNotificationType(ComponentType.USER_ORDER.getType());
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 			Result result = sender.send(messageObj, pushToken, 1);
