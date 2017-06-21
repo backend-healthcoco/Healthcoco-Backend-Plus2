@@ -146,7 +146,7 @@ public class ESUserLocaleDocument {
 	private Boolean isPasswordVerified = false;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isOpen;
+	private Boolean isAcceptRequest;
 
 	@Transient
 	private Double distance;
@@ -499,12 +499,12 @@ public class ESUserLocaleDocument {
 		this.userId = userId;
 	}
 
-	public Boolean getIsOpen() {
-		return isOpen;
+	public Boolean getIsAcceptRequest() {
+		return isAcceptRequest;
 	}
 
-	public void setIsOpen(Boolean isOpen) {
-		this.isOpen = isOpen;
+	public void setIsAcceptRequest(Boolean isAcceptRequest) {
+		this.isAcceptRequest = isAcceptRequest;
 	}
 
 	@Override
@@ -525,6 +525,8 @@ public class ESUserLocaleDocument {
 				+ ", noOfLocaleRecommendation=" + noOfLocaleRecommendation + ", isHomeDeliveryAvailable="
 				+ isHomeDeliveryAvailable + ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo="
 				+ paymentInfo + ", localeType=" + localeType + ", isPasswordVerified=" + isPasswordVerified
-				+ ", isOpen=" + isOpen + ", distance=" + distance + "]";
+				+ ", isAcceptRequest=" + isAcceptRequest + ", distance=" + distance + "]";
 	}
+
+	
 }

@@ -70,8 +70,11 @@ public class LocaleCollection extends GenericCollection {
 	private String localeType = LocaleType.PHARMACY.getType();
 	@Field
 	private Boolean isPasswordVerified = false;
-	@Field 
+	@Field
 	private Boolean isVerified;
+
+	@Field
+	private Boolean isAcceptRequest;
 
 	public ObjectId getId() {
 		return id;
@@ -295,6 +298,14 @@ public class LocaleCollection extends GenericCollection {
 
 	public void setIsVerified(Boolean isVerified) {
 		this.isVerified = isVerified;
+	}
+
+	public Boolean getIsAcceptRequest() {
+		return isAcceptRequest;
+	}
+
+	public void setIsAcceptRequest(Boolean isAcceptRequest) {
+		this.isAcceptRequest = isAcceptRequest;
 	}
 
 	@Override

@@ -37,6 +37,7 @@ public class Locale extends GenericCollection {
 	private String localeType = LocaleType.PHARMACY.getType();
 	private Boolean isPasswordVerified = false;
 	private Boolean isLocaleRecommended;
+	private Boolean isAcceptRequest;
 
 	public String getId() {
 		return id;
@@ -285,6 +286,14 @@ public class Locale extends GenericCollection {
 				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", localeType="
 				+ localeType + ", isPasswordVerified=" + isPasswordVerified + ", isLocaleRecommended="
 				+ isLocaleRecommended + "]";
+	}
+
+	public Boolean getIsAcceptRequest() {
+		return isAcceptRequest;
+	}
+
+	public void setIsAcceptRequest(Boolean isAcceptRequest) {
+		this.isAcceptRequest = isAcceptRequest;
 	}
 
 }

@@ -707,9 +707,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 								.equalsIgnoreCase(DeviceType.ANDROID.getType())) {
 
 							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, ComponentType.USER_REQUEST.getType(),
+									userDeviceCollection.getPushToken(), message, ComponentType.USER_ORDER.getType(),
 									requestId, responseId, role.getRole());
-
 						}
 					}
 				}

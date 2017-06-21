@@ -10,6 +10,8 @@ public class OrderDrugsRequest {
 
 	private String uniqueResponseId;
 	
+	
+	
 
 	public String getLocaleId() {
 		return localeId;
