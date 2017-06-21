@@ -360,7 +360,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 				inventoryBatchCollection = inventoryBatchRepository.findOne(new ObjectId(inventoryStock.getInventoryBatch().getId()));
 				inventoryBatchCollection
-						.setNoOfItems(inventoryBatchCollection.getNoOfItems() - inventoryStock.getQuantity());
+						.setNoOfItems(inventoryBatchCollection.getNoOfItems());
 				inventoryBatchCollection
 						.setNoOfItemsLeft(inventoryBatchCollection.getNoOfItemsLeft() - inventoryStock.getQuantity());
 				inventoryBatchCollection = inventoryBatchRepository.save(inventoryBatchCollection);
