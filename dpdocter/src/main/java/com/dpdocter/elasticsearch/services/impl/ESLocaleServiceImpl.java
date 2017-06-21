@@ -34,20 +34,21 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
-	
+
 	@Autowired
 	private TransactionalManagementService transnationalService;
-
 
 	@Override
 	public boolean addLocale(ESUserLocaleDocument request) {
 		boolean response = false;
 		try {
-			if(request.getAddress() != null  && request.getAddress().getLatitude() != null && request.getAddress().getLongitude() != null)request.setGeoPoint(new GeoPoint(request.getAddress().getLatitude(), request.getAddress().getLongitude()));
+			if (request.getAddress() != null && request.getAddress().getLatitude() != null
+					&& request.getAddress().getLongitude() != null)
+				request.setGeoPoint(
+						new GeoPoint(request.getAddress().getLatitude(), request.getAddress().getLongitude()));
 			esUserLocaleRepository.save(request);
 			response = true;
-		transnationalService.addResource(new ObjectId(request.getId()),
-			Resource.PHARMACY, true);
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PHARMACY, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving User Locale");
@@ -56,7 +57,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 	}
 
 	@Override
-	public List<ESUserLocaleDocument> getLocale(UserSearchRequest userSearchRequest , Integer distance) {
+	public List<ESUserLocaleDocument> getLocale(UserSearchRequest userSearchRequest, Integer distance) {
 		BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 				.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(userSearchRequest.getLatitude())
 						.lon(userSearchRequest.getLongitude()).distance(distance + "km"))
@@ -68,8 +69,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 				ESUserLocaleDocument.class);
 		return esUserLocaleDocuments;
 	}
-	
-	
+
 	@Override
 	public Boolean updateStatus(String localeId, Boolean isOpen) {
 		Boolean response = false;
@@ -78,7 +78,7 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		} else {
 			response = true;
-			esUserLocale.setIsOpen(isOpen);
+			esUserLocale.setIsAcceptRequest(isOpen);
 			esUserLocale = esUserLocaleRepository.save(esUserLocale);
 		}
 		return response;
