@@ -302,13 +302,13 @@ public class LabApi {
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_ASSOCIATED_LABS, notes = PathProxy.LabUrls.GET_ASSOCIATED_LABS)
 	public Response<Location> getAssociateLabs(@QueryParam("locationId") String locationId,
-			@QueryParam("isParent") @DefaultValue("true") Boolean isParent, @QueryParam("searchTerm") String searchTerm) {
+			@QueryParam("isParent") @DefaultValue("true") Boolean isParent, @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
 		if (locationId == null) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		Response<Location> response = new Response<Location>();
-		response.setDataList(locationServices.getAssociatedLabs(locationId, isParent , searchTerm));
+		response.setDataList(locationServices.getAssociatedLabs(locationId, isParent, searchTerm, page, size));
 		return response;
 	}
 	

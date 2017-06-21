@@ -68,7 +68,7 @@ public interface LocationServices {
 
 	Integer getRateCardCount(String searchTerm, String locationId);
 
-	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm);
+	//List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm);
 
 	CollectionBoy editCollectionBoy(CollectionBoy collectionBoy);
 
@@ -87,4 +87,6 @@ public interface LocationServices {
 	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page);
 
 	Integer getCBCount(String locationId, String searchTerm);
+
+	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 }

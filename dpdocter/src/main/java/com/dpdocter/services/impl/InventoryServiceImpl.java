@@ -166,9 +166,10 @@ public class InventoryServiceImpl implements InventoryService {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("code").regex("^" + searchTerm, "i"),
-						new Criteria("code").regex("^" + searchTerm), new Criteria("name").regex("^" + searchTerm, "i"),
-						new Criteria("name").regex("^" + searchTerm));
+				String search = searchTerm.replaceAll("\\+", " ");
+				criteria = criteria.orOperator(new Criteria("code").regex("^" + search, "i"),
+						new Criteria("code").regex("^" + search), new Criteria("name").regex("^" + search, "i"),
+						new Criteria("name").regex("^" + search));
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));

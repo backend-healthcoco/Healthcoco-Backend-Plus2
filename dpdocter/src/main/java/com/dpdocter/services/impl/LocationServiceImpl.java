@@ -779,7 +779,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<Location> getAssociatedLabs(String locationId, Boolean isParent , String searchTerm) {
+	public List<Location> getAssociatedLabs(String locationId, Boolean isParent , String searchTerm , int page , int size) {
 
 		List<LabAssociationLookupResponse> lookupResponses = null;
 		List<Location> locations = null;
@@ -796,18 +796,41 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("location.locationName").regex("^" + searchTerm));
 			}
 			Aggregation aggregation = null;
-			if (isParent) {
-				criteria.and("parentLabId").is(locationObjectId);
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-						Aggregation.unwind("location"),Aggregation.match(criteria),
-						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+			
+			if (size > 0) {
+				if (isParent) {
+					criteria.and("parentLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.limit(size));
 
+				} else {
+					criteria.and("daughterLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.limit(size));
+
+				}
 			} else {
-				criteria.and("daughterLabId").is(locationObjectId);
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.match(criteria),
-						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+				if (isParent) {
+					criteria.and("parentLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
+				} else {
+					criteria.and("daughterLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+				}
 			}
 			AggregationResults<LabAssociationLookupResponse> results = mongoTemplate.aggregate(aggregation,
 					LabAssociationCollection.class, LabAssociationLookupResponse.class);
