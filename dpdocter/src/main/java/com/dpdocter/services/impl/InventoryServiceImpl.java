@@ -322,12 +322,19 @@ public class InventoryServiceImpl implements InventoryService {
 					} else {
 						inventoryBatchCollection = new InventoryBatchCollection();
 						inventoryBatchCollection.setItemId(new ObjectId(inventoryStock.getItemId()));
-						inventoryBatchCollection.setBatchName(inventoryStock.getInventoryBatch().getBatchName());
-						inventoryBatchCollection.setCostPrice(inventoryStock.getInventoryBatch().getCostPrice());
+						if(inventoryStock.getInventoryBatch().getBatchName() != null)
+						{
+							inventoryBatchCollection.setBatchName(inventoryStock.getInventoryBatch().getBatchName());
+						}
+						else
+						{
+							inventoryBatchCollection.setBatchName("NO NAME");
+						}
+						inventoryBatchCollection.setCostPrice(inventoryStock.getCostPrice());
 						inventoryBatchCollection.setNoOfItems(inventoryStock.getQuantity());
 						inventoryBatchCollection.setNoOfItemsLeft(inventoryStock.getQuantity());
 						inventoryBatchCollection.setExpiryDate(inventoryStock.getInventoryBatch().getExpiryDate());
-						inventoryBatchCollection.setRetailPrice(inventoryStock.getInventoryBatch().getRetailPrice());
+						inventoryBatchCollection.setRetailPrice(inventoryStock.getRetailPrice());
 						inventoryBatchCollection.setLocationId(new ObjectId(inventoryStock.getLocationId()));
 						inventoryBatchCollection.setHospitalId(new ObjectId(inventoryStock.getHospitalId()));
 						inventoryBatchCollection.setCreatedTime(new Date());
@@ -337,6 +344,8 @@ public class InventoryServiceImpl implements InventoryService {
 					inventoryBatchCollection = new InventoryBatchCollection();
 					inventoryBatchCollection.setItemId(new ObjectId(inventoryStock.getItemId()));
 					inventoryBatchCollection.setBatchName("NO NAME");
+					inventoryBatchCollection.setCostPrice(inventoryStock.getCostPrice());
+					inventoryBatchCollection.setRetailPrice(inventoryStock.getRetailPrice());
 					inventoryBatchCollection.setNoOfItems(inventoryStock.getQuantity());
 					inventoryBatchCollection.setNoOfItemsLeft(inventoryStock.getQuantity());
 					inventoryBatchCollection.setLocationId(new ObjectId(inventoryStock.getLocationId()));
