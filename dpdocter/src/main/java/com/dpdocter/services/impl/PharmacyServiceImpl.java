@@ -288,15 +288,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 		OrderDrugCollection orderDrugCollection = null;
 
 		try {
-			if (request == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid input - request cannot be null");
-			}
-			SearchRequestToPharmacyCollection requestToPharmacyCollection = searchRequestToPharmacyRepository
-					.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
-							new ObjectId(request.getUserId()));
-			if (requestToPharmacyCollection.getReplyType().toString().equals(ReplyType.YES.toString())) {
-				requestToPharmacyCollection.setReplyType(ReplyType.PICKUP_REQUESTED.toString());
-				requestToPharmacyCollection = searchRequestToPharmacyRepository.save(requestToPharmacyCollection);
+			orderDrugCollection = orderDrugRepository.findByRequestIdandPharmacyId(request.getUniqueRequestId(),
+					new ObjectId(request.getLocaleId()), new ObjectId(request.getUserId()));
+			if (orderDrugCollection == null) {
 				orderDrugCollection = new OrderDrugCollection();
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
@@ -309,7 +303,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 				response = new OrderDrugsRequest();
 				BeanUtil.map(request, response);
 			} else {
-				throw new BusinessException(ServiceError.InvalidInput, "cannot Order Drug");
+				throw new BusinessException(ServiceError.InvalidInput, "already requested");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

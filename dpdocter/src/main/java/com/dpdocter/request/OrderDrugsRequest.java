@@ -12,9 +12,6 @@ public class OrderDrugsRequest {
 
 	private String uniqueResponseId;
 
-	private ReplyType replyType ;
-	
-
 	public String getLocaleId() {
 		return localeId;
 	}
@@ -51,14 +48,6 @@ public class OrderDrugsRequest {
 	public String toString() {
 		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
 				+ ", uniqueResponseId=" + uniqueResponseId + "]";
-	}
-
-	public ReplyType getReplyType() {
-		return replyType;
-	}
-
-	public void setReplyType(ReplyType replyType) {
-		this.replyType = replyType;
 	}
 
 }
