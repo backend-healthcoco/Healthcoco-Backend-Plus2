@@ -20,7 +20,7 @@ public class OrderDrugCollection extends GenericCollection {
 	@Field
 	private String uniqueResponseId;
 	@Field
-	private ReplyType replyType = ReplyType.REQUESTED;
+	private ReplyType replyType = ReplyType.PICKUP_REQUESTED;
 
 	public ObjectId getId() {
 		return id;
