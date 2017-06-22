@@ -1,16 +1,18 @@
 package com.dpdocter.request;
 
+import com.dpdocter.enums.ReplyType;
+
 public class OrderDrugsRequest {
 
 	private String localeId;
-	
+
 	private String userId;
-	
+
 	private String uniqueRequestId;
 
 	private String uniqueResponseId;
-	
-	
+
+	private ReplyType replyType ;
 	
 
 	public String getLocaleId() {
@@ -21,7 +23,6 @@ public class OrderDrugsRequest {
 		this.localeId = localeId;
 	}
 
-	
 	public String getUserId() {
 		return userId;
 	}
@@ -48,8 +49,16 @@ public class OrderDrugsRequest {
 
 	@Override
 	public String toString() {
-		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + "]";
+		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
+				+ ", uniqueResponseId=" + uniqueResponseId + "]";
+	}
+
+	public ReplyType getReplyType() {
+		return replyType;
+	}
+
+	public void setReplyType(ReplyType replyType) {
+		this.replyType = replyType;
 	}
 
 }

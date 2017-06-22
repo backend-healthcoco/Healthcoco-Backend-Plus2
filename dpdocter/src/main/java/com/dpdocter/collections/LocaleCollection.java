@@ -74,7 +74,7 @@ public class LocaleCollection extends GenericCollection {
 	private Boolean isVerified;
 
 	@Field
-	private Boolean isAcceptRequest;
+	private Boolean isAcceptRequest=true;
 
 	public ObjectId getId() {
 		return id;

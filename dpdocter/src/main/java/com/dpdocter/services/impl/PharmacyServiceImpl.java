@@ -291,17 +291,26 @@ public class PharmacyServiceImpl implements PharmacyService {
 			if (request == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input - request cannot be null");
 			}
-			orderDrugCollection = new OrderDrugCollection();
-			BeanUtil.map(request, orderDrugCollection);
-			orderDrugCollection.setCreatedTime(new Date());
-			orderDrugRepository.save(orderDrugCollection);
-			UserSearchRequest userSearchRequest = new UserSearchRequest();
-			userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
-			userSearchRequest.setUniqueRequestId(request.getUniqueResponseId());
-			pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
-					request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
-			response = new OrderDrugsRequest();
-			BeanUtil.map(request, response);
+			SearchRequestToPharmacyCollection requestToPharmacyCollection = searchRequestToPharmacyRepository
+					.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
+							new ObjectId(request.getUserId()));
+			if (requestToPharmacyCollection.getReplyType().toString().equals(ReplyType.YES.toString())) {
+				requestToPharmacyCollection.setReplyType(ReplyType.PICKUP_REQUESTED.toString());
+				requestToPharmacyCollection = searchRequestToPharmacyRepository.save(requestToPharmacyCollection);
+				orderDrugCollection = new OrderDrugCollection();
+				BeanUtil.map(request, orderDrugCollection);
+				orderDrugCollection.setCreatedTime(new Date());
+				orderDrugRepository.save(orderDrugCollection);
+				UserSearchRequest userSearchRequest = new UserSearchRequest();
+				userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
+				userSearchRequest.setUniqueRequestId(request.getUniqueResponseId());
+				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
+						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
+				response = new OrderDrugsRequest();
+				BeanUtil.map(request, response);
+			} else {
+				throw new BusinessException(ServiceError.InvalidInput, "cannot Order Drug");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While ordering drugs");

@@ -332,7 +332,8 @@ public class LocaleApi {
 		Response<OrderDrugsRequest> response = null;
 		OrderDrugsRequest status = null;
 		try {
-			if (request == null) {
+			if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId())
+					|| DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
 			}
 			status = pharmacyService.orderDrugs(request);

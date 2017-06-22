@@ -2,7 +2,7 @@ package com.dpdocter.enums;
 
 public enum ReplyType {
 
-	YES("YES"), NO("NO"), REQUESTED("REQUESTED"), ACCEPTED("ACCEPTED"), DECLINED("DECLINED");
+	YES("YES"), NO("NO"), PICKUP_REQUESTED("PICKUP_REQUESTED"), ACCEPTED("ACCEPTED"), DECLINED("DECLINED"),;
 
 	private String replyType;
 

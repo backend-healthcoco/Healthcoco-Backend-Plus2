@@ -146,7 +146,7 @@ public class ESUserLocaleDocument {
 	private Boolean isPasswordVerified = false;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isAcceptRequest;
+	private Boolean isAcceptRequest=true;
 
 	@Transient
 	private Double distance;
