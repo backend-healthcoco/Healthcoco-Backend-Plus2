@@ -18,7 +18,7 @@
 <security:authentication-manager>
      <security:authentication-provider>
          <security:user-service>
-              <security:user name="healthcoco@16" password="1GWLF9ORMK9B8QFV" authorities="ROLE_USER" />
+              <security:user name="healthcoco@25" password="6AE8GSW1D7AER3DF" authorities="ROLE_USER" />
          </security:user-service>
      </security:authentication-provider>
 </security:authentication-manager>
