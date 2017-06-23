@@ -21,6 +21,11 @@ public class SearchRequestToPharmacyResponse {
 	private String uniqueResponseId;
 	
 	private Double distance;
+	
+	private Boolean  isAlreadyRequested=false;
+
+
+	
 
 	public String getId() {
 		return id;
@@ -100,5 +105,15 @@ public class SearchRequestToPharmacyResponse {
 				+ uniqueRequestId + ", replyType=" + replyType + ", localeId=" + localeId + ", locale=" + locale
 				+ ", discount=" + discount + ", uniqueResponseId=" + uniqueResponseId + "]";
 	}
+
+	public Boolean getIsAlreadyRequested() {
+		return isAlreadyRequested;
+	}
+
+	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
+		this.isAlreadyRequested = isAlreadyRequested;
+	}
+
+
 
 }

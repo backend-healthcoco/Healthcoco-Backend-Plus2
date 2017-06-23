@@ -8,28 +8,31 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.Discount;
 
 @Document(collection = "search_request_to_pharmacy_cl")
-public class SearchRequestToPharmacyCollection extends GenericCollection{
+public class SearchRequestToPharmacyCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	
+
 	@Field
 	private ObjectId userId;
-	
+
 	@Field
 	private String uniqueRequestId;
-	
+
 	@Field
 	private String replyType;
-	
+
 	@Field
 	private ObjectId localeId;
-	
+
 	@Field
 	private Discount discount;
-	
+
 	@Field
 	private String uniqueResponseId;
+
+	@Field
+	private Boolean isAlreadyRequested=false;
 
 	public ObjectId getId() {
 		return id;
@@ -87,11 +90,12 @@ public class SearchRequestToPharmacyCollection extends GenericCollection{
 		this.uniqueResponseId = uniqueResponseId;
 	}
 
-	@Override
-	public String toString() {
-		return "SearchRequestToPharmacyCollection [id=" + id + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", replyType=" + replyType + ", localeId=" + localeId + ", discount=" + discount
-				+ ", uniqueResponseId=" + uniqueResponseId + "]";
+	public Boolean getIsAlreadyRequested() {
+		return isAlreadyRequested;
+	}
+
+	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
+		this.isAlreadyRequested = isAlreadyRequested;
 	}
 
 }

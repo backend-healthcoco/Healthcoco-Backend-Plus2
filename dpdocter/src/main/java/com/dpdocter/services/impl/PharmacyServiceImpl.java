@@ -288,9 +288,13 @@ public class PharmacyServiceImpl implements PharmacyService {
 		OrderDrugCollection orderDrugCollection = null;
 
 		try {
-			orderDrugCollection = orderDrugRepository.findByRequestIdandPharmacyId(request.getUniqueRequestId(),
-					new ObjectId(request.getLocaleId()), new ObjectId(request.getUserId()));
-			if (orderDrugCollection == null) {
+
+			SearchRequestToPharmacyCollection requestToPharmacyCollection = searchRequestToPharmacyRepository
+					.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
+							new ObjectId(request.getUserId()));
+			if (!requestToPharmacyCollection.getIsAlreadyRequested()) {
+				requestToPharmacyCollection.setIsAlreadyRequested(true);
+				searchRequestToPharmacyRepository.save(requestToPharmacyCollection);
 				orderDrugCollection = new OrderDrugCollection();
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
