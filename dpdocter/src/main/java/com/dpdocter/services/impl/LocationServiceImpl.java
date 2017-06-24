@@ -370,8 +370,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -411,8 +414,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -477,8 +483,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -518,8 +527,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -584,8 +596,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -625,8 +640,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -1475,25 +1493,21 @@ public class LocationServiceImpl implements LocationServices {
 			BeanUtil.map(rateCardCollection, response);
 		}
 		return response;
-		
+
 	}
-	
-	public List<LabTestPickupLookupResponse> getLabReports(String locationId, Boolean isParent, Long from ,Long to , String searchTerm, int page , int size )
-	{
+
+	public List<LabTestPickupLookupResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
+			String searchTerm, int page, int size) {
 		List<LabTestPickupLookupResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 
-			if(isParent == false)
-			{
+			if (isParent == false) {
 				criteria.and("daughterLabLocationId").is(new ObjectId(locationId));
-			}
-			else
-			{
+			} else {
 				criteria.and("parentLabLocationId").is(new ObjectId(locationId));
 			}
-			
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -1518,8 +1532,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -1559,8 +1576,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
 												.append("daughterLabLocationId",
 														new BasicDBObject("$first", "$daughterLabLocationId"))
+												.append("labTestSampleIds",
+														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
-														new BasicDBObject("$push", "$parentLabLocationId"))
+														new BasicDBObject("$first", "$parentLabLocationId"))
+												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -1587,5 +1607,5 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
-	
+
 }
