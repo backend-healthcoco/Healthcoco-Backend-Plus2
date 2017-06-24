@@ -315,6 +315,8 @@ public interface PathProxy {
 		public static final String RESET_PASSWORD_PHARMACY = "/resetPasswordPharmacy";
 
 		public static final String FORGOT_USERNAME = "/forgot-username";
+		
+		public static final String RESET_PASSWORD_CB = "/resetPasswordCB";
 	}
 
 	public static final String RECORDS_BASE_URL = BASE_URL + "/records";

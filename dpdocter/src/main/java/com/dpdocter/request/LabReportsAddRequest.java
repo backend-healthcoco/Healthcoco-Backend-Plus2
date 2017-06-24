@@ -2,19 +2,17 @@ package com.dpdocter.request;
 
 import com.dpdocter.collections.GenericCollection;
 
+import common.util.web.JacksonUtil;
+
 public class LabReportsAddRequest extends GenericCollection {
 
 	private String requestId;
-
-	private String doctorId;
 
 	private String locationId;
 
 	private String hospitalId;
 
 	private Boolean discarded = false;
-
-	private String uploadedByDoctorId;
 
 	private String uploadedByLocationId;
 
@@ -30,14 +28,6 @@ public class LabReportsAddRequest extends GenericCollection {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
 	}
 
 	public String getLocationId() {
@@ -62,14 +52,6 @@ public class LabReportsAddRequest extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
-	}
-
-	public String getUploadedByDoctorId() {
-		return uploadedByDoctorId;
-	}
-
-	public void setUploadedByDoctorId(String uploadedByDoctorId) {
-		this.uploadedByDoctorId = uploadedByDoctorId;
 	}
 
 	public String getUploadedByLocationId() {

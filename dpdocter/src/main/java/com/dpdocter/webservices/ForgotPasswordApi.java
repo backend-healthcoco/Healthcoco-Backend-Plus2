@@ -93,6 +93,21 @@ public class ForgotPasswordApi {
 		response.setData(string);
 		return response;
 	}
+	
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
+	@POST
+	@ApiOperation(value = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB, notes = PathProxy.ForgotPasswordUrls.RESET_PASSWORD_CB)
+	public Response<String> resetPasswordCB(ResetPasswordRequest request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		String string = forgotPasswordService.resetPasswordCB(request);
+		Response<String> response = new Response<String>();
+		response.setData(string);
+		return response;
+	}
 
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.ForgotPasswordUrls.CHECK_LINK_IS_ALREADY_USED)

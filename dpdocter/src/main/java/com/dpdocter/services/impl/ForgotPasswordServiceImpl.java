@@ -420,14 +420,13 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	public String resetPasswordCB(ResetPasswordRequest request) {
 		UserCollection userCollection = null;
 		try {
-				userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+				userCollection = userRepository.findAdminByMobileNumber(request.getMobileNumber(), UserState.COLLECTION_BOY.getState());
 				userCollection.setSalt(DPDoctorUtils.generateSalt());
 				String salt = new String(userCollection.getSalt());
 				char[] sha3Password = request.getPassword();
 				String password = new String(sha3Password);
 				password = passwordEncoder.encodePassword(password, salt);
 				userCollection.setPassword(password.toCharArray());
-				// userCollection.setIsTempPassword(false);
 				userRepository.save(userCollection);
 				return "You have successfully changed your password.";
 		} catch (IllegalArgumentException argumentException) {

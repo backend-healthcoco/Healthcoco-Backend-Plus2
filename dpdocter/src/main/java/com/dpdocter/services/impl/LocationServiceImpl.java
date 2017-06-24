@@ -1351,7 +1351,7 @@ public class LocationServiceImpl implements LocationServices {
 			BeanUtil.map(rateCardCollection, response);
 		}
 		return response;
-
+		
 	}
-
+	
 }
