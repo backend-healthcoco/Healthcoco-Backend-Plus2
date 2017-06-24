@@ -137,7 +137,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 		AWSCredentials credentials = new BasicAWSCredentials(AWS_KEY, AWS_SECRET_KEY);
 		AmazonSQS sqs = new AmazonSQSClient(credentials);
-		sqs.setRegion(Region.getRegion(Regions.US_WEST_2));
+		sqs.setRegion(Region.getRegion(Regions.US_EAST_1));
 		/*
 		 * String searchPharmacyRequestQueueURL = "";
 		 * 
