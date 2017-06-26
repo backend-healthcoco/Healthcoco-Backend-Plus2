@@ -45,7 +45,7 @@ public interface LocationServices {
 
 	List<Location> getCBAssociatedLabs(String parentLabId, String daughterLabId, String collectionBoyId, int size, int page);
 
-	List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, int size, int page);
+	//List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, int size, int page);
 
 	LabTestPickupLookupResponse getLabTestPickupByRequestId(String requestId);
 
@@ -77,16 +77,28 @@ public interface LocationServices {
 /*	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId);
 */
-	List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, int size, int page);
+	//List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, int size, int page);
 
 	List<RateCardTestAssociationLookupResponse> getRateCardTests(int page, int size, String searchTerm,
 			String daughterLabId, String parentLabId, String labId, String specimen);
 
 	RateCard getDLRateCard(String daughterLabId, String parentLabId);
 
-	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page);
+	//List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page);
 
 	Integer getCBCount(String locationId, String searchTerm);
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
+
+	List<LabTestPickupLookupResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
+			String searchTerm, int page, int size);
+
+	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, Long from, Long to, String searchTerm,
+			int size, int page);
+
+	List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, Long from, Long to, String searchTerm,
+			int size, int page);
+
+	List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, Long from, Long to, String searchTerm,
+			int size, int page);
 }

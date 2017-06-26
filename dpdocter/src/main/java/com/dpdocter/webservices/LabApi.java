@@ -417,12 +417,12 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_CB, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_CB)
-	public Response<LabTestPickupLookupResponse> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId, @QueryParam("size") int size , @QueryParam("page") int page) {
+	public Response<LabTestPickupLookupResponse> getPickUpForCB(@QueryParam("collectionBoyId") String collectionBoyId,@QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size , @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
-			labTestPickups = locationServices.getRequestForCB(collectionBoyId, size, page);
+			labTestPickups = locationServices.getRequestForCB(collectionBoyId, from, to, searchTerm, size, page);
 			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {
@@ -436,12 +436,12 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_DL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_DL)
-	public Response<LabTestPickupLookupResponse> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+	public Response<LabTestPickupLookupResponse> getPickUpForDL(@QueryParam("daughterLabId") String daughterLabId,@QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size , @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
-			labTestPickups = locationServices.getRequestForDL(daughterLabId, size, page);
+			labTestPickups = locationServices.getRequestForDL(daughterLabId, from, to, searchTerm, size, page);
 			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {
@@ -455,12 +455,12 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_PL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
-	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId, @QueryParam("size") int size , @QueryParam("page") int page) {
+	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId,@QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size , @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
-			labTestPickups = locationServices.getRequestForPL(parentLabId, size, page);
+			labTestPickups = locationServices.getRequestForPL(parentLabId, from, to, searchTerm, size, page);
 			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {
@@ -492,8 +492,8 @@ public class LabApi {
 	}
 
 	@GET
-	@Path(value = PathProxy.LabUrls.GET_REPORTS)
-	@ApiOperation(value = PathProxy.LabUrls.GET_REPORTS, notes = PathProxy.LabUrls.GET_REPORTS)
+	@Path(value = PathProxy.LabUrls.GET_REPORTS_FOR_SAMPLES)
+	@ApiOperation(value = PathProxy.LabUrls.GET_REPORTS_FOR_SAMPLES, notes = PathProxy.LabUrls.GET_REPORTS_FOR_SAMPLES)
 	public Response<LabReports> getLabReports(@QueryParam("requestId") String requestId,
 			@QueryParam("labTestSampleId") String labTestSampleId, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("page") int page, @QueryParam("size") int size) {
@@ -514,6 +514,32 @@ public class LabApi {
 
 		Response<LabReports> response = new Response<LabReports>();
 		response.setDataList(labReports);
+		return response;
+	}
+	
+	@GET
+	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS)
+	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS, notes = PathProxy.LabUrls.GET_LAB_REPORTS)
+	public Response<LabTestPickupLookupResponse> getLabReports(@QueryParam("locationId") String locationId,
+			@QueryParam("isParent") Boolean isParent, @QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm,
+			@QueryParam("page") int page, @QueryParam("size") int size) {
+
+		List<LabTestPickupLookupResponse> labTestPickupLookupResponses = null;
+		try {
+
+			if (DPDoctorUtils.anyStringEmpty(locationId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+
+			labTestPickupLookupResponses = locationServices.getLabReports(locationId, isParent, from, to, searchTerm, page, size);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			logger.error("error while getting lab reports");
+		}
+
+		Response<LabTestPickupLookupResponse> response = new Response<LabTestPickupLookupResponse>();
+		response.setDataList(labTestPickupLookupResponses);
 		return response;
 	}
 

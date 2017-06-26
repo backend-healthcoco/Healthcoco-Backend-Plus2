@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -337,7 +338,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, int size, int page) {
+	public List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId,Long from, Long to, String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
 		try {
@@ -346,6 +347,13 @@ public class LocationServiceImpl implements LocationServices {
 
 			criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
 			criteria.and("isCompleted").is(false);
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("parentLab.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+			}
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -449,7 +457,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, int size, int page) {
+	public List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId,Long from, Long to, String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
 		List<LabTestSample> labTestSamples = null;
@@ -562,7 +570,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, int size, int page) {
+	public List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId,Long from, Long to, String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
 		List<LabTestSample> labTestSamples = null;
@@ -1496,6 +1504,8 @@ public class LocationServiceImpl implements LocationServices {
 
 	}
 
+	@Override
+	@Transactional
 	public List<LabTestPickupLookupResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
 			String searchTerm, int page, int size) {
 		List<LabTestPickupLookupResponse> response = null;
@@ -1508,7 +1518,18 @@ public class LocationServiceImpl implements LocationServices {
 			} else {
 				criteria.and("parentLabLocationId").is(new ObjectId(locationId));
 			}
-
+			if(from != null && to != null)
+			{
+				DateTime fromDate = new DateTime(from);
+				DateTime toDate = new DateTime(to);
+				criteria.and("createdTime").lte(toDate).gte(fromDate);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("parentLab.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
 						Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
