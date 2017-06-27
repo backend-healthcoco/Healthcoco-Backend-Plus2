@@ -50,6 +50,8 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 	private String obstetricHistory;
 
 	private String indicationOfUSG;
+	
+	private String procedureNote;
 
 	private String pv;
 
@@ -407,6 +409,14 @@ public class ClinicalnoteLookupBean extends GenericCollection {
 
 	public void setAppointmentRequest(Appointment appointmentRequest) {
 		this.appointmentRequest = appointmentRequest;
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
 	}
 
 }

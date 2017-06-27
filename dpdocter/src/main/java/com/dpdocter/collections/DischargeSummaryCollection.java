@@ -42,10 +42,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String appointmentId;
 	@Field
 	private String complaint;
-	public String getDischargeId() {
-		return dischargeId;
-	}
-
 	@Field
 	private String presentComplaint;
 	@Field
@@ -477,6 +473,10 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setUniqueEmrId(String uniqueEmrId) {
 		this.uniqueEmrId = uniqueEmrId;
+	}
+
+	public String getDischargeId() {
+		return dischargeId;
 	}
 
 }

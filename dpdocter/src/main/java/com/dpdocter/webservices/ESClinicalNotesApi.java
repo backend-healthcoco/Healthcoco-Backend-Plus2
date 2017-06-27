@@ -34,6 +34,7 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
@@ -511,6 +512,25 @@ public class ESClinicalNotesApi {
 		List<ESHolterDocument> espsDocuments = esClinicalNotesService.searchHolter(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		Response<ESHolterDocument> response = new Response<ESHolterDocument>();
 		response.setDataList(espsDocuments);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROCEDURE_NOTE)
+	@GET
+	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PROCEDURE_NOTE, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PROCEDURE_NOTE)
+	public Response<ESProcedureNoteDocument> searchProcedureNote(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESProcedureNoteDocument> esProcedureNoteDocuments = esClinicalNotesService.searchProcedureNote(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESProcedureNoteDocument> response = new Response<ESProcedureNoteDocument>();
+		response.setDataList(esProcedureNoteDocuments);
 		return response;
 	}
 

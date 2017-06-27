@@ -6,6 +6,9 @@ import javax.ws.rs.MatrixParam;
 
 import org.bson.types.ObjectId;
 
+import com.dpdocter.beans.BabyNote;
+import com.dpdocter.beans.LabourNote;
+import com.dpdocter.beans.OperationNote;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 
@@ -30,8 +33,23 @@ public interface DischargeSummaryService {
 
 	void emailDischargeSummary(String dischargeSummeryId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
-	DischargeSummaryResponse addMultiVisit( List<String> visitIds );
-	
+
+	DischargeSummaryResponse addMultiVisit(List<String> visitIds);
+
 	public Integer upadateDischargeSummaryData();
+
+	public LabourNote addEditLabourNote(LabourNote labourNote);
+
+	public LabourNote deleteLabourNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	public BabyNote addEditBabyNote(BabyNote babyNote);
+
+	public BabyNote deleteBabyNote(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+	
+	public OperationNote deleteOperationNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+	
+	public OperationNote addEditOperationNote(OperationNote operationNote);
 
 }

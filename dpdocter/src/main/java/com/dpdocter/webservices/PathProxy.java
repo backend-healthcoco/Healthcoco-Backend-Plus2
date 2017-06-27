@@ -769,6 +769,8 @@ public interface PathProxy {
 		public static final String SEARCH_ECHO = "echo/{range}";
 
 		public static final String SEARCH_HOLTER = "holter/{range}";
+		
+		public static final String SEARCH_PROCEDURE_NOTE = "procedureNote/{range}";
 
 	}
 

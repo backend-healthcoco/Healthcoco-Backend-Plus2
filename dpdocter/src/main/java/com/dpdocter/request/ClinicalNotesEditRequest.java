@@ -13,6 +13,7 @@ import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.VitalSigns;
@@ -64,6 +65,8 @@ public class ClinicalNotesEditRequest {
 	private String echo;
 
 	private String holter;
+	
+	private String procedureNote;
 
 	private String doctorId;
 
@@ -109,6 +112,40 @@ public class ClinicalNotesEditRequest {
 
 	private List<ObstetricHistory> obstetricHistories;
 	
+	private List<ProcedureNote> procedureNotes;
+	
+	public Date getLmp() {
+		return lmp;
+	}
+
+	public Date getEdd() {
+		return edd;
+	}
+
+	public int getNoOfFemaleChildren() {
+		return noOfFemaleChildren;
+	}
+
+	public int getNoOfMaleChildren() {
+		return noOfMaleChildren;
+	}
+
+	public void setLmp(Date lmp) {
+		this.lmp = lmp;
+	}
+
+	public void setEdd(Date edd) {
+		this.edd = edd;
+	}
+
+	public void setNoOfFemaleChildren(int noOfFemaleChildren) {
+		this.noOfFemaleChildren = noOfFemaleChildren;
+	}
+
+	public void setNoOfMaleChildren(int noOfMaleChildren) {
+		this.noOfMaleChildren = noOfMaleChildren;
+	}
+
 	private String globalDiagnoses;
 
 	private String globalNotes;
@@ -147,7 +184,33 @@ public class ClinicalNotesEditRequest {
 
 	private String globalEchoes;
 
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public List<ProcedureNote> getProcedureNotes() {
+		return procedureNotes;
+	}
+
+	public String getGlobalProcedureNotes() {
+		return globalProcedureNotes;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
+	}
+
+	public void setProcedureNotes(List<ProcedureNote> procedureNotes) {
+		this.procedureNotes = procedureNotes;
+	}
+
+	public void setGlobalProcedureNotes(String globalProcedureNotes) {
+		this.globalProcedureNotes = globalProcedureNotes;
+	}
+
 	private String globalHolters;
+	
+	private String globalProcedureNotes;
 
 	private Date lmp;
 	

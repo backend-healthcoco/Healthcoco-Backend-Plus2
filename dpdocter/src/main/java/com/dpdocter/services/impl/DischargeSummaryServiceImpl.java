@@ -23,19 +23,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
+import com.dpdocter.beans.BabyNote;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.OperationNote;
 import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
+import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LabourNoteCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PrescriptionCollection;
@@ -48,9 +54,12 @@ import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.OperationNoteRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -111,6 +120,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private LocationRepository locationRepository;
+
+	@Autowired
+	private LabourNoteRepository labourNoteRepository;
+
+	@Autowired
+	private BabyNoteRepository babyNoteRepository;
+
+	@Autowired
+	private OperationNoteRepository operationNoteRepository;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
@@ -1205,6 +1223,239 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public LabourNote addEditLabourNote(LabourNote labourNote) {
+		try {
+			LabourNoteCollection labourNoteCollection = new LabourNoteCollection();
+			BeanUtil.map(labourNote, labourNoteCollection);
+			if (DPDoctorUtils.anyStringEmpty(labourNote.getId())) {
+				labourNoteCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(labourNoteCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(labourNoteCollection.getDoctorId());
+					if (userCollection != null) {
+						labourNoteCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					labourNoteCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				LabourNoteCollection oldLabourNoteCollection = labourNoteRepository
+						.findOne(labourNoteCollection.getId());
+				labourNoteCollection.setCreatedBy(oldLabourNoteCollection.getCreatedBy());
+				labourNoteCollection.setCreatedTime(oldLabourNoteCollection.getCreatedTime());
+				labourNoteCollection.setDiscarded(oldLabourNoteCollection.getDiscarded());
+			}
+			labourNoteCollection = labourNoteRepository.save(labourNoteCollection);
+
+			BeanUtil.map(labourNoteCollection, labourNote);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return labourNote;
+	}
+
+	@Override
+	public LabourNote deleteLabourNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		LabourNote response = null;
+		try {
+			LabourNoteCollection labourNoteCollection = labourNoteRepository.findOne(new ObjectId(id));
+			if (labourNoteCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(labourNoteCollection.getDoctorId(),
+						labourNoteCollection.getHospitalId(), labourNoteCollection.getLocationId())) {
+					if (labourNoteCollection.getDoctorId().toString().equals(doctorId)
+							&& labourNoteCollection.getHospitalId().toString().equals(hospitalId)
+							&& labourNoteCollection.getLocationId().toString().equals(locationId)) {
+
+						labourNoteCollection.setDiscarded(discarded);
+						labourNoteCollection.setUpdatedTime(new Date());
+						labourNoteRepository.save(labourNoteCollection);
+						response = new LabourNote();
+						BeanUtil.map(labourNoteCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					labourNoteCollection.setDiscarded(discarded);
+					labourNoteCollection.setUpdatedTime(new Date());
+					labourNoteRepository.save(labourNoteCollection);
+					response = new LabourNote();
+					BeanUtil.map(labourNoteCollection, response);
+				}
+			} else {
+				logger.warn("Labour Note not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Labour Note not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public BabyNote addEditBabyNote(BabyNote babyNote) {
+		try {
+			BabyNoteCollection babyNoteCollection = new BabyNoteCollection();
+			BeanUtil.map(babyNote, babyNoteCollection);
+			if (DPDoctorUtils.anyStringEmpty(babyNote.getId())) {
+				babyNoteCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(babyNoteCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(babyNoteCollection.getDoctorId());
+					if (userCollection != null) {
+						babyNoteCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					babyNoteCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				BabyNoteCollection oldBabyNoteCollection = babyNoteRepository.findOne(babyNoteCollection.getId());
+				babyNoteCollection.setCreatedBy(oldBabyNoteCollection.getCreatedBy());
+				babyNoteCollection.setCreatedTime(oldBabyNoteCollection.getCreatedTime());
+				babyNoteCollection.setDiscarded(oldBabyNoteCollection.getDiscarded());
+			}
+			babyNoteCollection = babyNoteRepository.save(babyNoteCollection);
+
+			BeanUtil.map(babyNoteCollection, babyNote);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return babyNote;
+	}
+
+	@Override
+	public BabyNote deleteBabyNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		BabyNote response = null;
+		try {
+			BabyNoteCollection babyNoteCollection = babyNoteRepository.findOne(new ObjectId(id));
+			if (babyNoteCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(babyNoteCollection.getDoctorId(), babyNoteCollection.getHospitalId(),
+						babyNoteCollection.getLocationId())) {
+					if (babyNoteCollection.getDoctorId().toString().equals(doctorId)
+							&& babyNoteCollection.getHospitalId().toString().equals(hospitalId)
+							&& babyNoteCollection.getLocationId().toString().equals(locationId)) {
+
+						babyNoteCollection.setDiscarded(discarded);
+						babyNoteCollection.setUpdatedTime(new Date());
+						babyNoteRepository.save(babyNoteCollection);
+						response = new BabyNote();
+						BeanUtil.map(babyNoteCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					babyNoteCollection.setDiscarded(discarded);
+					babyNoteCollection.setUpdatedTime(new Date());
+					babyNoteRepository.save(babyNoteCollection);
+					response = new BabyNote();
+					BeanUtil.map(babyNoteCollection, response);
+				}
+			} else {
+				logger.warn("Baby Note  not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Baby Note not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public OperationNote addEditOperationNote(OperationNote operationNote) {
+		try {
+			OperationNoteCollection operationNoteCollection = new OperationNoteCollection();
+			BeanUtil.map(operationNote, operationNoteCollection);
+			if (DPDoctorUtils.anyStringEmpty(operationNote.getId())) {
+				operationNoteCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(operationNoteCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(operationNoteCollection.getDoctorId());
+					if (userCollection != null) {
+						operationNoteCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					operationNoteCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				OperationNoteCollection oldoperationNoteCollection = operationNoteRepository
+						.findOne(operationNoteCollection.getId());
+				operationNoteCollection.setCreatedBy(oldoperationNoteCollection.getCreatedBy());
+				operationNoteCollection.setCreatedTime(oldoperationNoteCollection.getCreatedTime());
+				operationNoteCollection.setDiscarded(oldoperationNoteCollection.getDiscarded());
+			}
+			operationNoteCollection = operationNoteRepository.save(operationNoteCollection);
+
+			BeanUtil.map(operationNoteCollection, operationNote);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return operationNote;
+	}
+
+	@Override
+	public OperationNote deleteOperationNote(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		OperationNote response = null;
+		try {
+			OperationNoteCollection operationNoteCollection = operationNoteRepository.findOne(new ObjectId(id));
+			if (operationNoteCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(operationNoteCollection.getDoctorId(),
+						operationNoteCollection.getHospitalId(), operationNoteCollection.getLocationId())) {
+					if (operationNoteCollection.getDoctorId().toString().equals(doctorId)
+							&& operationNoteCollection.getHospitalId().toString().equals(hospitalId)
+							&& operationNoteCollection.getLocationId().toString().equals(locationId)) {
+
+						operationNoteCollection.setDiscarded(discarded);
+						operationNoteCollection.setUpdatedTime(new Date());
+						operationNoteRepository.save(operationNoteCollection);
+						response = new OperationNote();
+						BeanUtil.map(operationNoteCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					operationNoteCollection.setDiscarded(discarded);
+					operationNoteCollection.setUpdatedTime(new Date());
+					operationNoteRepository.save(operationNoteCollection);
+					response = new OperationNote();
+					BeanUtil.map(operationNoteCollection, response);
+				}
+			} else {
+				logger.warn("Operation Note  not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Operation Note not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}
