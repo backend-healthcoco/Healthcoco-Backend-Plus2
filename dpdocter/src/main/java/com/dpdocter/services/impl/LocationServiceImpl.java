@@ -1516,7 +1516,7 @@ public class LocationServiceImpl implements LocationServices {
 			Criteria criteria = new Criteria();
 
 			ObjectId locationObjectId = new ObjectId(locationId);
-			criteria.and("isCollected").is(true);
+			//criteria.and("isCollected").is(true);
 			if(from != null && to != null)
 			{
 				DateTime fromDate = new DateTime(from);
@@ -1530,7 +1530,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			if (size > 0) {
 				if (isParent) {
-					criteria.and("parentLabId").is(locationObjectId);
+					criteria.and("parentLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
@@ -1538,7 +1538,7 @@ public class LocationServiceImpl implements LocationServices {
 							Aggregation.limit(size));
 
 				} else {
-					criteria.and("daughterLabId").is(locationObjectId);
+					criteria.and("daughterLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
@@ -1548,14 +1548,14 @@ public class LocationServiceImpl implements LocationServices {
 				}
 			} else {
 				if (isParent) {
-					criteria.and("parentLabId").is(locationObjectId);
+					criteria.and("parentLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
 
 				} else {
-					criteria.and("daughterLabId").is(locationObjectId);
+					criteria.and("daughterLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
@@ -1565,6 +1565,7 @@ public class LocationServiceImpl implements LocationServices {
 			}
 			AggregationResults<LabTestSampleLookUpResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestSampleCollection.class, LabTestSampleLookUpResponse.class);
+			System.out.println(aggregation);
 			response = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
