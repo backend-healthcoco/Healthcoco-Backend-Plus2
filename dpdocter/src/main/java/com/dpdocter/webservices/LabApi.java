@@ -22,6 +22,7 @@ import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
+import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
@@ -34,6 +35,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
+import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LabReportsService;
 import com.dpdocter.services.LabService;
@@ -520,26 +522,26 @@ public class LabApi {
 	@GET
 	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS)
 	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS, notes = PathProxy.LabUrls.GET_LAB_REPORTS)
-	public Response<LabTestPickupLookupResponse> getLabReports(@QueryParam("locationId") String locationId,
+	public Response<LabTestSampleLookUpResponse> getLabReports(@QueryParam("locationId") String locationId,
 			@QueryParam("isParent") Boolean isParent, @QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm,
 			@QueryParam("page") int page, @QueryParam("size") int size) {
 
-		List<LabTestPickupLookupResponse> labTestPickupLookupResponses = null;
+		List<LabTestSampleLookUpResponse> labTestSamples = null;
 		try {
 
 			if (DPDoctorUtils.anyStringEmpty(locationId)) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 
-			labTestPickupLookupResponses = locationServices.getLabReports(locationId, isParent, from, to, searchTerm, page, size);
+			labTestSamples = locationServices.getLabReports(locationId, isParent, from, to, searchTerm, page, size);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 			logger.error("error while getting lab reports");
 		}
 
-		Response<LabTestPickupLookupResponse> response = new Response<LabTestPickupLookupResponse>();
-		response.setDataList(labTestPickupLookupResponses);
+		Response<LabTestSampleLookUpResponse> response = new Response<LabTestSampleLookUpResponse>();
+		response.setDataList(labTestSamples);
 		return response;
 	}
 

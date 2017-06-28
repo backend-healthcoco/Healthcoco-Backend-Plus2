@@ -286,5 +286,19 @@ public class ContactsApi {
 	} else
 	    return null;
     }
+    
+    /*@Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
+    @POST
+    @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
+    public Response<PatientGroupAddEditRequest> sendSMSToGroup(@QueryParam("groupId") String groupId , @QueryParam("message") String message) {
+    	if (DPDoctorUtils.anyStringEmpty(groupId)) {
+    	    logger.warn("Invalid Input");
+    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+	    }
+		PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
+		Response<PatientGroupAddEditRequest> response = new Response<PatientGroupAddEditRequest>();
+		response.setData(groups);
+	return response;
+    }*/
 
 }

@@ -1,53 +1,35 @@
-package com.dpdocter.collections;
+package com.dpdocter.response;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
+import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardTestAssociation;
+import com.dpdocter.collections.GenericCollection;
 
-@Document(collection = "lab_test_sample_cl")
-public class LabTestSampleCollection extends GenericCollection {
+public class LabTestSampleLookUpResponse extends GenericCollection {
 
-	@Id
-	private ObjectId id;
-	@Field
+	private String id;
 	private String patientName;
-	@Field
 	private Integer age;
-	@Field
 	private String gender;
-	@Field
 	private String sampleType;
-	@Field
+	private String daughterLabLocationId;
+	private String parentLabLocationId;
 	private List<RateCardTestAssociation> rateCardTestAssociation;
-	@Field
 	private Boolean isUrgent;
-	@Field
 	private Long urgentTime;
-	@Field
 	private Boolean isCollected = false;
-	@Field
 	private Boolean isHardCopyRequired;
-	@Field
 	private Boolean isHardCopyGiven;
-	@Field
 	private String status;
-	@Field
 	private String sampleId;
-	@Field
-	private ObjectId daughterLabLocationId;
-	@Field
-	private ObjectId parentLabLocationId;
+	private Location location;
 
-	public ObjectId getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(ObjectId id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -81,6 +63,22 @@ public class LabTestSampleCollection extends GenericCollection {
 
 	public void setSampleType(String sampleType) {
 		this.sampleType = sampleType;
+	}
+
+	public String getDaughterLabLocationId() {
+		return daughterLabLocationId;
+	}
+
+	public void setDaughterLabLocationId(String daughterLabLocationId) {
+		this.daughterLabLocationId = daughterLabLocationId;
+	}
+
+	public String getParentLabLocationId() {
+		return parentLabLocationId;
+	}
+
+	public void setParentLabLocationId(String parentLabLocationId) {
+		this.parentLabLocationId = parentLabLocationId;
 	}
 
 	public List<RateCardTestAssociation> getRateCardTestAssociation() {
@@ -147,30 +145,22 @@ public class LabTestSampleCollection extends GenericCollection {
 		this.sampleId = sampleId;
 	}
 
-	public ObjectId getDaughterLabLocationId() {
-		return daughterLabLocationId;
+	public Location getLocation() {
+		return location;
 	}
 
-	public void setDaughterLabLocationId(ObjectId daughterLabLocationId) {
-		this.daughterLabLocationId = daughterLabLocationId;
-	}
-
-	public ObjectId getParentLabLocationId() {
-		return parentLabLocationId;
-	}
-
-	public void setParentLabLocationId(ObjectId parentLabLocationId) {
-		this.parentLabLocationId = parentLabLocationId;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 
 	@Override
 	public String toString() {
-		return "LabTestSampleCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
-				+ gender + ", sampleType=" + sampleType + ", rateCardTestAssociation=" + rateCardTestAssociation
-				+ ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected=" + isCollected
-				+ ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven + ", status="
-				+ status + ", sampleId=" + sampleId + ", daughterLabLocationId=" + daughterLabLocationId
-				+ ", parentLabLocationId=" + parentLabLocationId + "]";
+		return "LabTestSampleLookUpResponse [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
+				+ gender + ", sampleType=" + sampleType + ", daughterLabLocationId=" + daughterLabLocationId
+				+ ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
+				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
+				+ isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven
+				+ ", status=" + status + ", sampleId=" + sampleId + ", location=" + location + "]";
 	}
 
 }

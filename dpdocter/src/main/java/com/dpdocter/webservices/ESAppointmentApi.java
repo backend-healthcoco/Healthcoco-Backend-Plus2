@@ -86,6 +86,18 @@ public class ESAppointmentApi {
 		return response;
     }
     
+    @Path(value = PathProxy.SolrAppointmentUrls.SEND_SMS_TO_DOCTOR)
+    @GET
+    @ApiOperation(value = PathProxy.SolrAppointmentUrls.SEND_SMS_TO_DOCTOR, notes = PathProxy.SolrAppointmentUrls.SEND_SMS_TO_DOCTOR)
+    public Response<Boolean> sendSMStoDoctor() {
+
+		Boolean status = solrAppointmentService.sendSMSToDoctors();	
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(status);
+		return response;
+    }
+    
+    
     @Path(value = PathProxy.SolrAppointmentUrls.GET_LABS)
     @GET
     @ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)

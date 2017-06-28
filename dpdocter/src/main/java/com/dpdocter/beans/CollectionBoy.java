@@ -2,11 +2,12 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class CollectionBoy extends GenericCollection{
+public class CollectionBoy extends GenericCollection {
 
 	private String id;
 	private String locationId;
 	private String hospitalId;
+	private String userId;
 	private String name;
 	private Age age;
 	private String gender;
@@ -111,6 +112,14 @@ public class CollectionBoy extends GenericCollection{
 
 	public void setIsAvailable(Boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	@Override

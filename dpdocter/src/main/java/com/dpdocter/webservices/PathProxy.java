@@ -75,6 +75,8 @@ public interface PathProxy {
 		public static final String EXPORT_CONTACTS = "/exportContacts";
 
 		public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
+		
+		public static final String SEND_SMS_TO_GROUP = "/group/sms";
 
 	}
 
@@ -937,6 +939,8 @@ public interface PathProxy {
 		public static final String GET_LABS = "/labs";
 
 		public static final String ADD_SPECIALITY = "/addSpecialization";
+		
+		public static final String SEND_SMS_TO_DOCTOR = "/smsToDoctor";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";

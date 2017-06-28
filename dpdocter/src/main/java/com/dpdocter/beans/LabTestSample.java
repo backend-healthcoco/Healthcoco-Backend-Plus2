@@ -12,6 +12,8 @@ public class LabTestSample extends GenericCollection {
 	private Integer age;
 	private String gender;
 	private String sampleType;
+	private String daughterLabLocationId;
+	private String parentLabLocationId;
 	private List<RateCardTestAssociation> rateCardTestAssociation;
 	private Boolean isUrgent;
 	private Long urgentTime;
@@ -125,13 +127,30 @@ public class LabTestSample extends GenericCollection {
 		this.isCollected = isCollected;
 	}
 
+	public String getDaughterLabLocationId() {
+		return daughterLabLocationId;
+	}
+
+	public void setDaughterLabLocationId(String daughterLabLocationId) {
+		this.daughterLabLocationId = daughterLabLocationId;
+	}
+
+	public String getParentLabLocationId() {
+		return parentLabLocationId;
+	}
+
+	public void setParentLabLocationId(String parentLabLocationId) {
+		this.parentLabLocationId = parentLabLocationId;
+	}
+
 	@Override
 	public String toString() {
-		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", age=" + age + ", Gender=" + gender
-				+ ", sampleType=" + sampleType + ", RateCardTestAssociation=" + rateCardTestAssociation + ", isUrgent="
-				+ isUrgent + ", urgentTime=" + urgentTime + ", isCollected=" + isCollected + ", isHardCopyRequired="
-				+ isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId="
-				+ sampleId + "]";
+		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender=" + gender
+				+ ", sampleType=" + sampleType + ", daughterLabLocationId=" + daughterLabLocationId
+				+ ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
+				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
+				+ isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven
+				+ ", status=" + status + ", sampleId=" + sampleId + "]";
 	}
 
 }

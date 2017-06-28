@@ -305,7 +305,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			Boolean isAppointmentAdd) {
 		PatientTreatmentResponse response;
 		PatientTreatmentCollection patientTreatmentCollection = new PatientTreatmentCollection();
-		;
 		Appointment appointment = null;
 		try {
 			if (request.getAppointmentRequest() != null && isAppointmentAdd) {
@@ -540,6 +539,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Fields.field("treatments.discount", "$treatments.discount"),
 							Fields.field("treatments.finalCost", "$treatments.finalCost"),
 							Fields.field("treatments.quantity", "$treatments.quantity"),
+							Fields.field("treatments.treatmentServices", "$treatments.treatmentServices"),
+							Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 							Fields.field("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
 					.newAggregation(
@@ -622,6 +623,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
+					Fields.field("treatments.treatmentServices", "$treatments.treatmentServices"),
+					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("treatments.quantity", "$treatments.quantity")));
 
 			Aggregation aggregation = Aggregation
@@ -723,6 +726,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
+					Fields.field("treatments.treatmentServices", "$treatments.treatmentServices"),
+					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("treatments.quantity", "$treatments.quantity"),
 					Fields.field("appointmentRequest", "$appointmentRequest")));
 			if (size > 0)
@@ -877,6 +882,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
 					Fields.field("treatments.quantity", "$treatments.quantity"),
+					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("appointmentRequest", "$appointmentRequest")));
 			if (size > 0)
 				aggregation = Aggregation
@@ -970,6 +976,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 		} catch (Exception e) {
 			logger.error("Error while getting patient treatments", e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting patient treatments");
 		}
 		return response;

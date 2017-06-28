@@ -62,6 +62,7 @@ import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
 import com.dpdocter.response.LabAssociationLookupResponse;
+import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LocationServices;
 import com.google.maps.GeoApiContext;
@@ -719,6 +720,7 @@ public class LocationServiceImpl implements LocationServices {
 								UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
 						LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
 						BeanUtil.map(labTestSample, labTestSampleCollection);
+						labTestSampleCollection.setCreatedTime(new Date());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						labTestSampleIds.add(labTestSampleCollection.getId());
 					}
@@ -1506,18 +1508,15 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<LabTestPickupLookupResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
+	public List<LabTestSampleLookUpResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
 			String searchTerm, int page, int size) {
-		List<LabTestPickupLookupResponse> response = null;
+		List<LabTestSampleLookUpResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 
-			if (isParent == false) {
-				criteria.and("daughterLabLocationId").is(new ObjectId(locationId));
-			} else {
-				criteria.and("parentLabLocationId").is(new ObjectId(locationId));
-			}
+			ObjectId locationObjectId = new ObjectId(locationId);
+			criteria.and("isCollected").is(true);
 			if(from != null && to != null)
 			{
 				DateTime fromDate = new DateTime(from);
@@ -1525,106 +1524,53 @@ public class LocationServiceImpl implements LocationServices {
 				criteria.and("createdTime").lte(toDate).gte(fromDate);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("parentLab.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
+				criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("location.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
 						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
 			}
-			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
-						Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
-						Aggregation.unwind("labTestSamples"),
+			if (size > 0) {
+				if (isParent) {
+					criteria.and("parentLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.limit(size));
 
-						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
-						Aggregation.unwind("daughterLab"),
-						Aggregation
-								.lookup("location_cl", "parentLabLocationId", "_id",
-										"parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						new CustomAggregationOperation(
-								new BasicDBObject("$group",
-										new BasicDBObject("_id", "$_id")
-												.append("daughterLabCRN",
-														new BasicDBObject("$first", "$daughterLabCRN"))
-												.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
-												.append("parentLabCRN", new BasicDBObject("$first", "$parentLabCRN"))
-												.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
-												.append("status", new BasicDBObject("$first", "$status"))
-												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-												.append("daughterLabLocationId",
-														new BasicDBObject("$first", "$daughterLabLocationId"))
-												.append("labTestSampleIds",
-														new BasicDBObject("$push", "$labTestSampleIds"))
-												.append("parentLabLocationId",
-														new BasicDBObject("$first", "$parentLabLocationId"))
-												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
-												.append("discarded", new BasicDBObject("$first", "$discarded"))
-												.append("numberOfSamplesRequested",
-														new BasicDBObject("$first", "$numberOfSamplesRequested"))
-												.append("numberOfSamplesPicked",
-														new BasicDBObject("$first", "$numberOfSamplesPicked"))
-												.append("requestId", new BasicDBObject("$first", "$requestId"))
-												.append("isCompleted", new BasicDBObject("$first", "$isCompleted"))
-												.append("collectionBoyId",
-														new BasicDBObject("$first", "$collectionBoyId"))
-												.append("parentLab", new BasicDBObject("$first", "$parentLab"))
-												.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
-												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
-						Aggregation.limit(size));
-			else
-				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
-						Aggregation.lookup("lab_test_sample_cl", "labTestSampleIds", "_id", "labTestSamples"),
-						Aggregation.unwind("labTestSamples"),
+				} else {
+					criteria.and("daughterLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.limit(size));
 
-						Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
-						Aggregation.unwind("daughterLab"),
-						Aggregation
-								.lookup("location_cl", "parentLabLocationId", "_id",
-										"parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.match(criteria),
-						new CustomAggregationOperation(
-								new BasicDBObject("$group",
-										new BasicDBObject("_id", "$_id")
-												.append("daughterLabCRN",
-														new BasicDBObject("$first", "$daughterLabCRN"))
-												.append("pickupTime", new BasicDBObject("$first", "$pickupTime"))
-												.append("parentLabCRN", new BasicDBObject("$first", "$parentLabCRN"))
-												.append("deliveryTime", new BasicDBObject("$first", "$deliveryTime"))
-												.append("status", new BasicDBObject("$first", "$status"))
-												.append("doctorId", new BasicDBObject("$first", "$doctorId"))
-												.append("daughterLabLocationId",
-														new BasicDBObject("$first", "$daughterLabLocationId"))
-												.append("labTestSampleIds",
-														new BasicDBObject("$push", "$labTestSampleIds"))
-												.append("parentLabLocationId",
-														new BasicDBObject("$first", "$parentLabLocationId"))
-												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
-												.append("discarded", new BasicDBObject("$first", "$discarded"))
-												.append("numberOfSamplesRequested",
-														new BasicDBObject("$first", "$numberOfSamplesRequested"))
-												.append("numberOfSamplesPicked",
-														new BasicDBObject("$first", "$numberOfSamplesPicked"))
-												.append("requestId", new BasicDBObject("$first", "$requestId"))
-												.append("isCompleted", new BasicDBObject("$first", "$isCompleted"))
-												.append("collectionBoyId",
-														new BasicDBObject("$first", "$collectionBoyId"))
-												.append("parentLab", new BasicDBObject("$first", "$parentLab"))
-												.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
-												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
+				}
+			} else {
+				if (isParent) {
+					criteria.and("parentLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+				} else {
+					criteria.and("daughterLabId").is(locationObjectId);
+					aggregation = Aggregation.newAggregation(
+							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+
+				}
+			}
+			AggregationResults<LabTestSampleLookUpResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabTestSampleCollection.class, LabTestSampleLookUpResponse.class);
 			response = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error Getting Collection Boys Pickup Request");
-			throw new BusinessException(ServiceError.Unknown, "Error Getting Collection Boys Pickup Request");
+			logger.error(e + " Error Getting lab reports");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting lab reports");
 		}
 		return response;
 	}

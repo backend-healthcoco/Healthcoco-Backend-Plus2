@@ -21,4 +21,6 @@ public interface ESAppointmentService {
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days);
 
+	Boolean sendSMSToDoctors();
+
 }

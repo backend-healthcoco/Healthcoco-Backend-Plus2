@@ -18,6 +18,8 @@ public class CollectionBoyCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
+	private ObjectId userId;
+	@Field
 	private String name;
 	@Field
 	private Age age;
@@ -110,6 +112,14 @@ public class CollectionBoyCollection extends GenericCollection {
 
 	public void setIsAvailable(Boolean isAvailable) {
 		this.isAvailable = isAvailable;
+	}
+
+	public ObjectId getUserId() {
+		return userId;
+	}
+
+	public void setUserId(ObjectId userId) {
+		this.userId = userId;
 	}
 
 	@Override

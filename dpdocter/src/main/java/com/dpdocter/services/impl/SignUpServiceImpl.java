@@ -721,6 +721,7 @@ public class SignUpServiceImpl implements SignUpService {
 
 			CollectionBoyCollection collectionBoyCollection = new CollectionBoyCollection();
 			BeanUtil.map(collectionBoy, collectionBoyCollection);
+			collectionBoyCollection.setUserId(userCollection.getId());
 			// localeCollection.setLocaleUId(UniqueIdInitial.PHARMACY.getInitial()
 			// + DPDoctorUtils.generateRandomId());
 

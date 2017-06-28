@@ -303,7 +303,7 @@ public class SignUpApi {
 	@Path(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
-	public Response<CollectionBoy> adminSignup(CollectionBoy request) {
+	public Response<CollectionBoy> collectionBoySignup(CollectionBoy request) {
 		if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
 			logger.warn("Request send  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");

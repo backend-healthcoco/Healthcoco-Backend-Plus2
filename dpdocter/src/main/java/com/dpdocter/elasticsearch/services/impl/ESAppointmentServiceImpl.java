@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
+import org.bson.types.ObjectId;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -26,8 +28,13 @@ import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.LocaleImage;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
@@ -50,9 +57,13 @@ import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 import com.dpdocter.enums.AppointmentResponseType;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.response.PatientGroupLookupResponse;
+import com.dpdocter.services.SMSServices;
+import com.google.common.collect.Lists;
 
 import common.util.web.DPDoctorUtils;
 
@@ -87,6 +98,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 	@Autowired
 	TransportClient transportClient;
+	
+	@Autowired
+	private SMSServices smsServices;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -1090,5 +1104,51 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					"Error While Getting Doctor Details From ES : " + e.getMessage());
 		}
 		return esUserLocaleDocuments;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean sendSMSToDoctors() {
+		List<ESDoctorDocument> esDoctorDocuments = null;
+		Boolean status = false;
+		Set<String> mobileNumberSet = new HashSet<String>();
+		List<String> mobileNumbers = null;
+		try {
+			esDoctorDocuments = Lists.newArrayList(esDoctorRepository.findAll());
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			smsTrackDetail.setType("DOCTOR's DAY SMS");
+			String message = "Its Doctors day! And we prescribe you a day full of Happiness for all the silent struggles that you put in. Thank you "
+					+ "from " + "Healthcoco " + "Stay healthy, Stay happy!";
+			for (ESDoctorDocument esDoctorDocument : esDoctorDocuments) {
+				mobileNumberSet.add(esDoctorDocument.getMobileNumber());
+			}
+			if (mobileNumberSet != null) {
+				mobileNumbers = new ArrayList<String>(mobileNumberSet);
+			}
+			if (mobileNumbers != null) {
+				for (String mobileNumber : mobileNumbers) {
+					SMSDetail smsDetail = new SMSDetail();
+					SMS sms = new SMS();
+					smsDetail.setUserName(mobileNumber);
+					SMSAddress smsAddress = new SMSAddress();
+					smsAddress.setRecipient(mobileNumber);
+					sms.setSmsAddress(smsAddress);
+					sms.setSmsText(message);
+					smsDetail.setSms(sms);
+					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+					smsDetails.add(smsDetail);
+					smsTrackDetail.setSmsDetails(smsDetails);
+					smsServices.sendSMS(smsTrackDetail, true);
+				}
+
+			}
+			status = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor Details From ES : " + e.getMessage());
+		}
+		return status;
 	}
 }

@@ -6,12 +6,14 @@ import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
+import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCard;
 import com.dpdocter.beans.RateCardLabAssociation;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Specimen;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
+import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 
@@ -90,7 +92,7 @@ public interface LocationServices {
 
 	List<Location> getAssociatedLabs(String locationId, Boolean isParent, String searchTerm, int page, int size);
 
-	List<LabTestPickupLookupResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
+	List<LabTestSampleLookUpResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
 			String searchTerm, int page, int size);
 
 	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, Long from, Long to, String searchTerm,
