@@ -16,14 +16,29 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.BabyNote;
+import com.dpdocter.beans.Diagnoses;
+import com.dpdocter.beans.Diagram;
+import com.dpdocter.beans.LabourNote;
+import com.dpdocter.beans.OperationNote;
+import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
+import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
+import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
+import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
+import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
+import com.dpdocter.enums.ClinicalItems;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.services.DischargeSummaryService;
+import com.dpdocter.services.TransactionalManagementService;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -41,6 +56,12 @@ public class DischargeSummaryAPI {
 
 	@Autowired
 	DischargeSummaryService dischargeSummaryService;
+
+	@Autowired
+	private TransactionalManagementService transactionalManagementService;
+
+	@Autowired
+	private ESDischargeSummaryService esDischargeSummaryService;
 
 	@Path(value = PathProxy.DischargeSummaryUrls.ADD_DISCHARGE_SUMMARY)
 	@POST
@@ -182,5 +203,164 @@ public class DischargeSummaryAPI {
 
 		return response;
 	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_LABOUR_NOTES)
+	public Response<LabourNote> addLabourNote(LabourNote request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getLabourNotes())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		LabourNote labourNote = dischargeSummaryService.addEditLabourNote(request);
+
+		transactionalManagementService.addResource(new ObjectId(labourNote.getId()), Resource.LABOUR_NOTES, false);
+		EsLabourNoteDocument esLabourNoteDocument = new EsLabourNoteDocument();
+		BeanUtil.map(labourNote, esLabourNoteDocument);
+		esDischargeSummaryService.addLabourNotes(esLabourNoteDocument);
+		Response<LabourNote> response = new Response<LabourNote>();
+		response.setData(labourNote);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_BABY_NOTES)
+	public Response<BabyNote> addBabyNote(BabyNote request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getBabyNotes())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		BabyNote babyNote = dischargeSummaryService.addEditBabyNote(request);
+		transactionalManagementService.addResource(new ObjectId(babyNote.getId()), Resource.BABY_NOTES, false);
+		ESBabyNoteDocument esBabyNoteDocument = new ESBabyNoteDocument();
+		BeanUtil.map(babyNote, esBabyNoteDocument);
+		esDischargeSummaryService.addBabyNote(esBabyNoteDocument);
+		Response<BabyNote> response = new Response<BabyNote>();
+		response.setData(babyNote);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
+	@POST
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES, notes = PathProxy.DischargeSummaryUrls.ADD_OPERATION_NOTES)
+	public Response<OperationNote> addOperationNote(OperationNote request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getOperationNotes())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		OperationNote operationNote = dischargeSummaryService.addEditOperationNote(request);
+		transactionalManagementService.addResource(new ObjectId(operationNote.getId()), Resource.OPERATION_NOTES,
+				false);
+		ESOperationNoteDocument esOperationNoteDocument = new ESOperationNoteDocument();
+		BeanUtil.map(operationNote, esOperationNoteDocument);
+		esDischargeSummaryService.addOperationNote(esOperationNoteDocument);
+		Response<OperationNote> response = new Response<OperationNote>();
+		response.setData(operationNote);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES)
+	@DELETE
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES, notes = PathProxy.DischargeSummaryUrls.DELETE_BABY_NOTES)
+	public Response<BabyNote> deleteBabyNote(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		BabyNote babyNote = dischargeSummaryService.deleteBabyNote(id, doctorId, locationId, hospitalId, discarded);
+		if (babyNote != null) {
+			transactionalManagementService.addResource(new ObjectId(babyNote.getId()), Resource.BABY_NOTES, false);
+			ESBabyNoteDocument esBabyNoteDocument = new ESBabyNoteDocument();
+			BeanUtil.map(babyNote, esBabyNoteDocument);
+			esDischargeSummaryService.addBabyNote(esBabyNoteDocument);
+		}
+		Response<BabyNote> response = new Response<BabyNote>();
+		response.setData(babyNote);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES)
+	@DELETE
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES, notes = PathProxy.DischargeSummaryUrls.DELETE_LABOUR_NOTES)
+	public Response<LabourNote> deleteLabourNote(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		LabourNote labourNote = dischargeSummaryService.deleteLabourNote(id, doctorId, locationId, hospitalId,
+				discarded);
+		if (labourNote != null) {
+			transactionalManagementService.addResource(new ObjectId(labourNote.getId()), Resource.LABOUR_NOTES, false);
+			EsLabourNoteDocument esLabourNoteDocument = new EsLabourNoteDocument();
+			BeanUtil.map(labourNote, esLabourNoteDocument);
+			esDischargeSummaryService.addLabourNotes(esLabourNoteDocument);
+		}
+		Response<LabourNote> response = new Response<LabourNote>();
+		response.setData(labourNote);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES)
+	@DELETE
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES, notes = PathProxy.DischargeSummaryUrls.DELETE_OPERAION_NOTES)
+	public Response<OperationNote> deleteOperationNote(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("OperationNote Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Diagnosis Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		OperationNote operationNote = dischargeSummaryService.deleteOperationNote(id, doctorId, locationId, hospitalId,
+				discarded);
+		if (operationNote != null) {
+			transactionalManagementService.addResource(new ObjectId(operationNote.getId()), Resource.OPERATION_NOTES,
+					false);
+			ESOperationNoteDocument esOperationNoteDocument = new ESOperationNoteDocument();
+			BeanUtil.map(operationNote, esOperationNoteDocument);
+			esDischargeSummaryService.addOperationNote(esOperationNoteDocument);
+		}
+		Response<OperationNote> response = new Response<OperationNote>();
+		response.setData(operationNote);
+		return response;
+	}
+
+	@Path(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
+	@GET
+	@ApiOperation(value = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS, notes = PathProxy.DischargeSummaryUrls.GET_DISCHARGE_SUMMARY_ITEMS)
+	public Response<Object> getDischargeSummaryItems(@PathParam("type") String type, @PathParam("range") String range,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
+
+		if (DPDoctorUtils.anyStringEmpty(type, range, doctorId)) {
+			logger.warn("Invalid Input.");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input.");
+		}
+		List<?> items = dischargeSummaryService.getDischargeSummaryItems(type, range, page, size, doctorId, locationId,
+				hospitalId, updatedTime, discarded, null);
+
+		Response<Object> response = new Response<Object>();
+		response.setDataList(items);
+		return response;
+	}
+	
 
 }

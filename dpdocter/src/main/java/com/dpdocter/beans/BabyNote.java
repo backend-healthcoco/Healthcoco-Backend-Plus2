@@ -2,11 +2,11 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class BabyNote extends GenericCollection{
-	
+public class BabyNote extends GenericCollection {
+
 	private String id;
 
-	private String labourNotes;
+	private String BabyNotes;
 
 	private String doctorId;
 
@@ -22,12 +22,16 @@ public class BabyNote extends GenericCollection{
 		return id;
 	}
 
-	public String getLabourNotes() {
-		return labourNotes;
+	public String getBabyNotes() {
+		return BabyNotes;
 	}
 
 	public String getDoctorId() {
 		return doctorId;
+	}
+
+	public void setBabyNotes(String babyNotes) {
+		BabyNotes = babyNotes;
 	}
 
 	public String getLocationId() {
@@ -50,10 +54,6 @@ public class BabyNote extends GenericCollection{
 		this.id = id;
 	}
 
-	public void setLabourNotes(String labourNotes) {
-		this.labourNotes = labourNotes;
-	}
-
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
@@ -73,7 +73,5 @@ public class BabyNote extends GenericCollection{
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
 	}
-	
-	
 
 }

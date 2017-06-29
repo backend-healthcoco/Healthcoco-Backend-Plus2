@@ -3,12 +3,15 @@ package com.dpdocter.services.impl;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -37,6 +40,7 @@ import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LabourNoteCollection;
@@ -48,7 +52,9 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.DischargeSummaryItem;
 import com.dpdocter.enums.LineSpace;
+import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VisitedFor;
 import com.dpdocter.exceptions.BusinessException;
@@ -56,6 +62,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -63,6 +70,7 @@ import com.dpdocter.repository.OperationNoteRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.DischargeSummaryRequest;
@@ -105,6 +113,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private SpecialityRepository specialityRepository;
 
 	@Autowired
 	private PrescriptionRepository prescriptionRepository;
@@ -117,6 +128,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private DrugRepository drugRepository;
+	
+	@Autowired
+	private DoctorRepository doctorRepository;
 
 	@Autowired
 	private LocationRepository locationRepository;
@@ -1459,5 +1473,331 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
+
+	@Override
+	public List<?> getDischargeSummaryItems(String type, String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<?> response = new ArrayList<Object>();
+
+		switch (DischargeSummaryItem.valueOf(type.toUpperCase())) {
+
+		case BABY_NOTES: {
+
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalBabyNote(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomBabyNote(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalBabyNote(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case LABOUR_NOTES: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalLabourNote(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomLabourNote(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalLabourNote(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case OPERATION_NOTES: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalOperationNote(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomOperationNote(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalOperationNote(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		}
+
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<BabyNote> getCustomGlobalBabyNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<BabyNote> response = new ArrayList<BabyNote>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<BabyNote> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					BabyNoteCollection.class, BabyNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Baby Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<BabyNote> getGlobalBabyNote(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<BabyNote> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<BabyNote> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					BabyNoteCollection.class, BabyNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Baby Note");
+		}
+		return response;
+	}
+
+	private List<BabyNote> getCustomBabyNote(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<BabyNote> response = null;
+		try {
+			AggregationResults<BabyNote> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							BabyNoteCollection.class, BabyNote.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Baby Note");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<OperationNote> getCustomGlobalOperationNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<OperationNote> response = new ArrayList<OperationNote>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<OperationNote> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					OperationNoteCollection.class, OperationNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Operation Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<OperationNote> getGlobalOperationNote(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<OperationNote> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<OperationNote> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					OperationNoteCollection.class, OperationNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Operation Note");
+		}
+		return response;
+	}
+
+	
+
+	
+	
+		
+
+	private List<OperationNote> getCustomOperationNote(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<OperationNote> response = null;
+		try {
+			AggregationResults<OperationNote> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							OperationNoteCollection.class, OperationNote.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Operation Note");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<LabourNote> getCustomGlobalLabourNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<LabourNote> response = new ArrayList<LabourNote>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<LabourNote> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					LabourNoteCollection.class, LabourNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Labour Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<LabourNote> getGlobalLabourNote(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<LabourNote> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<LabourNote> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					LabourNoteCollection.class, LabourNote.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Labour Note");
+		}
+		return response;
+	}
+
+	private List<LabourNote> getCustomLabourNote(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<LabourNote> response = null;
+		try {
+			AggregationResults<LabourNote> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							LabourNoteCollection.class, LabourNote.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Labour Note");
+		}
+		return response;
+	}
+
 
 }

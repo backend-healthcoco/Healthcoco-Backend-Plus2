@@ -26,7 +26,8 @@ public enum Resource {
 																																													"HOLTER"), PHARMACY(
 																																															"PHARMACY"), COLLECTION_BOY(
 																																																	"COLLECTION_BOY"), PROCEDURE_NOTE(
-																																																			"PROCEDURE_NOTE");
+																																																			"PROCEDURE_NOTE"), BABY_NOTES(
+																																																					"BABY_NOTES"),OPERATION_NOTES("OPERATION_NOTES"),LABOUR_NOTES("LABOUR_NOTES");
 
 	private String type;
 

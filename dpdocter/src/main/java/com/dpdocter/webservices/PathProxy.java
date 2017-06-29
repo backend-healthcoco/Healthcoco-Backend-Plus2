@@ -317,7 +317,7 @@ public interface PathProxy {
 		public static final String RESET_PASSWORD_PHARMACY = "/resetPasswordPharmacy";
 
 		public static final String FORGOT_USERNAME = "/forgot-username";
-		
+
 		public static final String RESET_PASSWORD_CB = "/resetPasswordCB";
 	}
 
@@ -771,7 +771,7 @@ public interface PathProxy {
 		public static final String SEARCH_ECHO = "echo/{range}";
 
 		public static final String SEARCH_HOLTER = "holter/{range}";
-		
+
 		public static final String SEARCH_PROCEDURE_NOTE = "procedureNote/{range}";
 
 	}
@@ -1139,6 +1139,23 @@ public interface PathProxy {
 		public static final String DOWNLOAD_DISCHARGE_SUMMARY = "/download/{dischargeSummeryId}/";
 		public static final String EMAIL_DISCHARGE_SUMMARY = "/{dischargeSummeryId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 		public static final String UPDATE_DISCHARGE_SUMMARY_DATA = "/updateData";
+		public static final String ADD_BABY_NOTES = "/babyNotes/add";
+		public static final String ADD_LABOUR_NOTES = "/loabourNotes/add";
+		public static final String ADD_OPERATION_NOTES = "/operationNotes/add";
+		public static final String DELETE_BABY_NOTES = "/babyNotes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_OPERAION_NOTES = "/operationNotes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_LABOUR_NOTES = "/labourNote/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
+	}
+
+	public static final String SOLR_DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/solr/dischargeSummary";
+
+	public interface SolrDischargeSummaryUrls {
+		public static final String SEARCH_LABOUR_NOTES = "searchLabourNotes/{range}";
+
+		public static final String SEARCH_OPERATION_NOTES = "searchOperationNotes/{range}";
+
+		public static final String SEARCH_BABY_NOTES = "searchBabyNotes/{range}";
 	}
 
 	public static final String LAB_BASE_URL = BASE_URL + "/lab";
@@ -1175,7 +1192,6 @@ public interface PathProxy {
 		public static final String GET_LAB_REPORTS = "/getLabReports";
 		public static final String UPLOAD_REPORTS = "/uploadReports";
 		public static final String GET_REPORTS_FOR_SAMPLES = "/getReportsForSample";
-		
 
 	}
 

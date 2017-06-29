@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.MatrixParam;
-
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.BabyNote;
@@ -46,10 +44,13 @@ public interface DischargeSummaryService {
 	public BabyNote addEditBabyNote(BabyNote babyNote);
 
 	public BabyNote deleteBabyNote(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
-	
+
 	public OperationNote deleteOperationNote(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
-	
+
 	public OperationNote addEditOperationNote(OperationNote operationNote);
+
+	public List<?> getDischargeSummaryItems(String type, String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }
