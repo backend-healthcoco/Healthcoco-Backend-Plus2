@@ -1117,7 +1117,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			esDoctorDocuments = Lists.newArrayList(esDoctorRepository.findAll());
 			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 			smsTrackDetail.setType("DOCTOR's DAY SMS");
-			String message = "Its Doctors day! And we prescribe you a day full of Happiness for all the silent struggles that you put in. Thank you "
+			String message = "Its Doctors day! And we prescribe you a day full of Happiness for all the silent efforts that you put in. Thank you "
 					+ "from " + "Healthcoco " + "Stay healthy, Stay happy!";
 			for (ESDoctorDocument esDoctorDocument : esDoctorDocuments) {
 				mobileNumberSet.add(esDoctorDocument.getMobileNumber());

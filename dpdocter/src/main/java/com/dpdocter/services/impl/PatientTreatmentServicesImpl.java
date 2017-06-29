@@ -501,6 +501,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			}
 		} catch (Exception e) {
 			logger.error("Error while deleting treatment", e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while deleting treatment");
 		}
 		return response;
@@ -539,7 +540,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							Fields.field("treatments.discount", "$treatments.discount"),
 							Fields.field("treatments.finalCost", "$treatments.finalCost"),
 							Fields.field("treatments.quantity", "$treatments.quantity"),
-							Fields.field("treatments.treatmentServices", "$treatments.treatmentServices"),
 							Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 							Fields.field("appointmentRequest", "$appointmentRequest")));
 			Aggregation aggregation = Aggregation
@@ -623,7 +623,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
-					Fields.field("treatments.treatmentServices", "$treatments.treatmentServices"),
 					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("treatments.quantity", "$treatments.quantity")));
 
@@ -726,7 +725,6 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					Fields.field("treatments.note", "$treatments.note"),
 					Fields.field("treatments.discount", "$treatments.discount"),
 					Fields.field("treatments.finalCost", "$treatments.finalCost"),
-					Fields.field("treatments.treatmentServices", "$treatments.treatmentServices"),
 					Fields.field("treatments.treatmentFields", "$treatments.treatmentFields"),
 					Fields.field("treatments.quantity", "$treatments.quantity"),
 					Fields.field("appointmentRequest", "$appointmentRequest")));
