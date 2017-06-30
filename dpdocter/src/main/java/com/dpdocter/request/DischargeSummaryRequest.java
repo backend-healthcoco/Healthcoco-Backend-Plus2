@@ -52,6 +52,9 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private WorkingHours time;
 	private Date fromDate;
 	private String procedureNote;
+	private String doctorIncharge;
+	
+	
 
 	public WorkingHours getTime() {
 		return time;
@@ -405,6 +408,14 @@ public class DischargeSummaryRequest extends GenericCollection {
 
 	public void setProcedureNote(String procedureNote) {
 		this.procedureNote = procedureNote;
+	}
+
+	public String getDoctorIncharge() {
+		return doctorIncharge;
+	}
+
+	public void setDoctorIncharge(String doctorIncharge) {
+		this.doctorIncharge = doctorIncharge;
 	}
 
 }

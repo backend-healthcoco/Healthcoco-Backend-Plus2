@@ -110,6 +110,17 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String holter;
 	@Field
 	private String procedureNote;
+	@Field
+	private String doctorIncharge;
+	
+
+	public String getDoctorIncharge() {
+		return doctorIncharge;
+	}
+
+	public void setDoctorIncharge(String doctorIncharge) {
+		this.doctorIncharge = doctorIncharge;
+	}
 
 	public String getProcedureNote() {
 		return procedureNote;

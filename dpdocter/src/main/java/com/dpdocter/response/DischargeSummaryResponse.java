@@ -53,6 +53,7 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String ecgDetails;
 	private String holter;
 	private String procedureNote;
+	private String doctorIncharge;
 
 	public String getIndicationOfUSG() {
 		return indicationOfUSG;
@@ -406,6 +407,14 @@ public class DischargeSummaryResponse extends GenericCollection {
 
 	public void setProcedureNote(String procedureNote) {
 		this.procedureNote = procedureNote;
+	}
+
+	public String getDoctorIncharge() {
+		return doctorIncharge;
+	}
+
+	public void setDoctorIncharge(String doctorIncharge) {
+		this.doctorIncharge = doctorIncharge;
 	}
 
 }
