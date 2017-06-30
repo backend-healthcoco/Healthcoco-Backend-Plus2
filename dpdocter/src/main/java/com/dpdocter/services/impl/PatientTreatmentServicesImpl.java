@@ -37,6 +37,7 @@ import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
+import com.dpdocter.beans.Video;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.HistoryCollection;
@@ -47,6 +48,7 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.TreatmentServicesCostCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.collections.VideoCollection;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.services.ESTreatmentService;
@@ -1677,6 +1679,23 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			logger.error(e + " Error Occurred While making Service Favourite");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While making Service Favourite");
 		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<TreatmentService> getListBySpeciality(String speciality)
+	{
+		List<TreatmentService> response = null;
+		Aggregation aggregation = null;
+		Criteria criteria = new Criteria().and("speciality").in(speciality);
+		criteria.and("category").exists(true);
+		aggregation = Aggregation.newAggregation(
+				Aggregation.match(criteria),
+				 Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		AggregationResults<TreatmentService> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCollection.class,
+				TreatmentService.class);
+		response = aggregationResults.getMappedResults();
 		return response;
 	}
 }

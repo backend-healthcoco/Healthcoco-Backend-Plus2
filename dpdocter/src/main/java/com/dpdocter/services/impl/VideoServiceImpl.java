@@ -1,0 +1,129 @@
+package com.dpdocter.services.impl;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.io.FilenameUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dpdocter.beans.LabReports;
+import com.dpdocter.beans.LabTestPickupLookupResponse;
+import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.UIPermissions;
+import com.dpdocter.beans.Video;
+import com.dpdocter.collections.DoctorCollection;
+import com.dpdocter.collections.LabReportsCollection;
+import com.dpdocter.collections.LabTestPickupCollection;
+import com.dpdocter.collections.LabTestSampleCollection;
+import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.collections.VideoCollection;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.SpecialityRepository;
+import com.dpdocter.repository.VideoRepository;
+import com.dpdocter.request.AddVideoRequest;
+import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.services.FileManager;
+import com.dpdocter.services.VideoService;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataBodyPart;
+
+public class VideoServiceImpl implements VideoService {
+
+	@Autowired
+	private VideoRepository videoRepository;
+
+	@Autowired
+	private FileManager fileManager;
+
+	@Autowired
+	private DoctorRepository doctorRepository;
+
+	@Autowired
+	private SpecialityRepository specialityRepository;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
+	
+	@Override
+	@Transactional
+	public Video addVideo(FormDataBodyPart file, AddVideoRequest request) {
+		Video response = null;
+		VideoCollection videoCollection = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			if (file != null) {
+				String path = "video" + File.separator + request.getSpeciality();
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
+				imageURLResponse = fileManager.saveImage(file, recordPath, false);
+			}
+			if (imageURLResponse != null) {
+				videoCollection = new VideoCollection();
+				BeanUtil.map(request, videoCollection);
+				videoCollection.setVideoUrl(imageURLResponse.getImageUrl());
+				videoCollection.setCreatedTime(new Date());
+			}
+
+			videoCollection = videoRepository.save(videoCollection);
+			response = new Video();
+			BeanUtil.map(videoCollection, response);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public List<Video> getVideos(String doctorId, String searchTerm, int page, int size) {
+		Aggregation aggregation = null;
+		List<String> specialities = null;
+		List<Video> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection != null) {
+				String speciality = null;
+
+				if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
+					specialities = new ArrayList<>();
+					for (ObjectId specialityId : doctorCollection.getSpecialities()) {
+						SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
+						if (specialityCollection != null) {
+							speciality = specialityCollection.getSpeciality();
+							specialities.add(speciality);
+						}
+					}
+				}
+			}
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("speciality").and("id").in(specialities)),
+					Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
+					Aggregation.unwind("daughterLab"),
+					Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
+					Aggregation.unwind("parentLab"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
+					Video.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+}

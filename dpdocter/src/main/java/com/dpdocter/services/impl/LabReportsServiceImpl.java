@@ -85,7 +85,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Override
 	@Transactional
-	public List<LabReports> getLabReports(String labTestSampleId, String requestId,
+	public List<LabReports> getLabReports(String labTestSampleId,
 			String searchTerm, int page, int size) {
 		List<LabReports> response = null;
 		try {
@@ -97,7 +97,6 @@ public class LabReportsServiceImpl implements LabReportsService{
 			}
 
 			criteria.and("labTestSampleId").is(new ObjectId(labTestSampleId));
-			criteria.and("requestId").is(new ObjectId(requestId));
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),

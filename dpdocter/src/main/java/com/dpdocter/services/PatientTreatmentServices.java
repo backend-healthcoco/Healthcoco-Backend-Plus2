@@ -61,4 +61,6 @@ public interface PatientTreatmentServices {
 	public TreatmentService addFavouritesToService(TreatmentService request);
 	
 	TreatmentService makeServiceFavourite(String serviceId, String doctorId, String locationId, String hospitalId);
+
+	List<TreatmentService> getListBySpeciality(String speciality);
 }

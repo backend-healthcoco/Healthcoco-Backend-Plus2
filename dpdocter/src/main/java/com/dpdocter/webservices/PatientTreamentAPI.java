@@ -401,4 +401,19 @@ public class PatientTreamentAPI {
 		response.setData(treatmentServiceResponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_SPECIALITY)
+	@GET
+	@ApiOperation(value = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_SPECIALITY, notes = PathProxy.PatientTreatmentURLs.GET_TREATMENT_SERVICES_BY_SPECIALITY)
+	public Response<TreatmentService> getServicesBySpeciality(@QueryParam("speciality") String speciality) {
+		if (DPDoctorUtils.anyStringEmpty(speciality)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<TreatmentService> treatmentServiceResponse = patientTreatmentServices.getListBySpeciality(speciality);
+		
+		Response<TreatmentService> response = new Response<TreatmentService>();
+		response.setDataList(treatmentServiceResponse);;
+		return response;
+	}
 }

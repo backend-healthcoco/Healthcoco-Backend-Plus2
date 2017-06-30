@@ -503,11 +503,11 @@ public class LabApi {
 		List<LabReports> labReports = null;
 		try {
 
-			if (DPDoctorUtils.anyStringEmpty(requestId, labTestSampleId)) {
+			if (DPDoctorUtils.anyStringEmpty(labTestSampleId)) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
 
-			labReports = labReportsService.getLabReports(labTestSampleId, requestId, searchTerm, page, size);
+			labReports = labReportsService.getLabReports(labTestSampleId, searchTerm, page, size);
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
