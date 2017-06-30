@@ -6,8 +6,6 @@ import common.util.web.JacksonUtil;
 
 public class LabReportsAddRequest extends GenericCollection {
 
-	private String requestId;
-
 	private String locationId;
 
 	private String hospitalId;
@@ -21,14 +19,6 @@ public class LabReportsAddRequest extends GenericCollection {
 	private String labTestSampleId;
 
 	private String recordsState;
-
-	public String getRequestId() {
-		return requestId;
-	}
-
-	public void setRequestId(String requestId) {
-		this.requestId = requestId;
-	}
 
 	public String getLocationId() {
 		return locationId;

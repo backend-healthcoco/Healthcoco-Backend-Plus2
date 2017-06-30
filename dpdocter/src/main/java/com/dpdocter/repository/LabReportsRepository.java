@@ -10,7 +10,7 @@ import com.dpdocter.collections.RateCardCollection;
 public interface LabReportsRepository extends MongoRepository<LabReportsCollection, ObjectId>{
 
 	
-	@Query("{'requestId': ?0 , 'labTestSampleId': ?1}")
-	public LabReportsCollection getByRequestIdandSAmpleId(ObjectId requestId,ObjectId labTestSampleId );
+	@Query("{'labTestSampleId': ?1}")
+	public LabReportsCollection getByRequestIdandSAmpleId(ObjectId labTestSampleId );
 	
 }

@@ -54,14 +54,14 @@ public class LabReportsServiceImpl implements LabReportsService{
 		ImageURLResponse imageURLResponse = null;
 		try {
 			if (file != null) {
-				String path = "lab-reports" + File.separator + request.getRequestId();
+				String path = "lab-reports";
 				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
 				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
 			}
-			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(new ObjectId(request.getRequestId()),
+			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
 					new ObjectId(request.getLabTestSampleId()));
 			if (labReportsCollection == null) {
 				labReportsCollection = new LabReportsCollection();
