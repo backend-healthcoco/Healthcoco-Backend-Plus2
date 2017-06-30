@@ -113,7 +113,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private SpecialityRepository specialityRepository;
 
@@ -128,7 +128,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private DrugRepository drugRepository;
-	
+
 	@Autowired
 	private DoctorRepository doctorRepository;
 
@@ -185,6 +185,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
 				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
+				if (DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getUniqueEmrId()))
+					dischargeSummaryCollection.setUniqueEmrId(
+							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			}
 
 			if (dischargeSummaryCollection != null) {
@@ -1594,9 +1597,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				specialities.add(null);
 			}
 
-			AggregationResults<BabyNote> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
-					BabyNoteCollection.class, BabyNote.class);
+			AggregationResults<BabyNote> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), BabyNoteCollection.class,
+					BabyNote.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -1691,14 +1694,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	
-
-	
-	
-		
-
-	private List<OperationNote> getCustomOperationNote(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<OperationNote> getCustomOperationNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<OperationNote> response = null;
 		try {
 			AggregationResults<OperationNote> results = mongoTemplate
@@ -1768,9 +1765,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				specialities.add(null);
 			}
 
-			AggregationResults<LabourNote> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
-					LabourNoteCollection.class, LabourNote.class);
+			AggregationResults<LabourNote> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), LabourNoteCollection.class,
+					LabourNote.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -1781,8 +1778,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		return response;
 	}
 
-	private List<LabourNote> getCustomLabourNote(int page, int size, String doctorId, String locationId, String hospitalId,
-			String updatedTime, Boolean discarded) {
+	private List<LabourNote> getCustomLabourNote(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
 		List<LabourNote> response = null;
 		try {
 			AggregationResults<LabourNote> results = mongoTemplate
@@ -1798,6 +1795,5 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		return response;
 	}
-
 
 }

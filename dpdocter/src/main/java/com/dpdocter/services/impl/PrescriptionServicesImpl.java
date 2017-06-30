@@ -685,6 +685,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		BeanUtil.map(request, templateCollection);
 		try {
 			TemplateCollection oldTemplate = templateRepository.findOne(new ObjectId(request.getId()));
+			if (oldTemplate == null) {
+				throw new BusinessException(ServiceError.Unknown, "Error Occurred cause Id not found");
+			}
 			templateCollection.setCreatedBy(oldTemplate.getCreatedBy());
 			templateCollection.setCreatedTime(oldTemplate.getCreatedTime());
 			templateCollection.setDiscarded(oldTemplate.getDiscarded());
@@ -715,7 +718,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			templateCollection = templateRepository.save(templateCollection);
 			template = new TemplateAddEditResponse();
 			BeanUtil.map(templateCollection, template);
-
 			if (template != null) {
 				response = new TemplateAddEditResponseDetails();
 				BeanUtil.map(template, response);
