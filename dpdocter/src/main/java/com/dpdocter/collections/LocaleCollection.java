@@ -70,8 +70,9 @@ public class LocaleCollection extends GenericCollection {
 	private String localeType = LocaleType.PHARMACY.getType();
 	@Field
 	private Boolean isPasswordVerified = false;
+
 	@Field
-	private Boolean isVerified;
+	private Boolean isVerified=false;
 
 	@Field
 	private Boolean isAcceptRequest=true;
