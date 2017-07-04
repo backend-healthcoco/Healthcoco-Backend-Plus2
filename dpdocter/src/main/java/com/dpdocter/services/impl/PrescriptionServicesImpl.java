@@ -79,6 +79,7 @@ import com.dpdocter.beans.TemplateAddItem;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -100,6 +101,7 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
@@ -5484,6 +5486,26 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public List<Drug> getAllCustomDrug()
+	{
+		List<Drug> response = null;
+		Aggregation aggregation = null;
+		Criteria criteria = new Criteria();
+		criteria.and("doctorId").exists(true);
+		criteria.and("hospitalId").exists(true);
+		criteria.and("locationId").exists(true);
+		aggregation = Aggregation.newAggregation(
+				Aggregation.match(criteria),
+				 Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		AggregationResults<Drug> aggregationResults = mongoTemplate.aggregate(aggregation, DrugCollection.class,
+				Drug.class);
+		response = aggregationResults.getMappedResults();
 		return response;
 	}
 

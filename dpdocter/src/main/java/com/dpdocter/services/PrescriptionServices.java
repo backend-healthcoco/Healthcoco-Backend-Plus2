@@ -190,5 +190,7 @@ public interface PrescriptionServices {
 	Boolean smsEyePrescription(String prescriptionId, String doctorId, String locationId, String hospitalId,
 			String mobileNumber, String type);
 
+	List<Drug> getAllCustomDrug();
+
 
 }

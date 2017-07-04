@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +29,12 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
+import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.enums.RoleEnum;
@@ -38,7 +42,9 @@ import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.LoginPatientRequest;
 import com.dpdocter.request.LoginRequest;
@@ -64,6 +70,12 @@ public class LoginServiceImpl implements LoginService {
 	@Autowired
 	private PatientRepository patientRepository;
 
+	@Autowired
+	private DoctorRepository doctorRepository;
+	
+	@Autowired
+	private SpecialityRepository specialityRepository;
+	
 	@Autowired
 	private OTPService otpService;
 
@@ -259,6 +271,21 @@ public class LoginServiceImpl implements LoginService {
 									hospitals.add(hospital);
 								}
 							}
+						}
+						
+						DoctorCollection doctorCollection = doctorRepository.findByUserId(userCollection.getId());
+						
+						if (doctorCollection.getSpecialities() != null) {
+							List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
+									.findAll(doctorCollection.getSpecialities());
+							List<String> specialities = (List<String>) CollectionUtils.collect(specialityCollections,
+									new BeanToPropertyValueTransformer("superSpeciality"));
+							user.setSpecialities(specialities);
+
+							List<String> parentSpecialities = (List<String>) CollectionUtils
+									.collect(specialityCollections, new BeanToPropertyValueTransformer("speciality"));
+							user.setParentSpecialities(parentSpecialities);
+
 						}
 						response = new LoginResponse();
 						user.setEmailAddress(user.getUserName());

@@ -516,6 +516,8 @@ public interface PathProxy {
 		public static final String SMS_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
+		
+		public static final String GET_CUSTOM_DRUGS = "/getCustomDrugs";
 
 	}
 
@@ -1158,6 +1160,15 @@ public interface PathProxy {
 		public static final String SEARCH_OPERATION_NOTES = "searchOperationNotes/{range}";
 
 		public static final String SEARCH_BABY_NOTES = "searchBabyNotes/{range}";
+	}
+	
+	public static final String VIDEO_BASE_URL = BASE_URL + "/video";
+
+	public interface VideoUrls {
+		public static final String ADD_VIDEO = "add";
+		
+		public static final String GET_VIDEO = "get";
+
 	}
 
 	public static final String LAB_BASE_URL = BASE_URL + "/lab";

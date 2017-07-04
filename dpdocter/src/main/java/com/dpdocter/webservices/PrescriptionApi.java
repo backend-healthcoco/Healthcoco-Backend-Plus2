@@ -1141,6 +1141,16 @@ public class PrescriptionApi {
 		response.setData(prescriptionDeleteResponse);
 		return response;
 	}
+	
+
+	@Path(value = PathProxy.PrescriptionUrls.GET_CUSTOM_DRUGS)
+	@GET
+	public Response<Drug> getCustomDrugs() {
+		List<Drug> drugs = prescriptionServices.getAllCustomDrug();
+		Response<Drug> response = new Response<Drug>();
+		response.setDataList(drugs);
+		return response;
+	}
 
 	
 
