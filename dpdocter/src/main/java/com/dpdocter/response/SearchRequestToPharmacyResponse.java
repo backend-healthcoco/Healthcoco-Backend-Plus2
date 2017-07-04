@@ -1,5 +1,6 @@
 package com.dpdocter.response;
 
+import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Locale;
 
 public class SearchRequestToPharmacyResponse {
@@ -13,19 +14,16 @@ public class SearchRequestToPharmacyResponse {
 	private String replyType;
 
 	private String localeId;
-	
+
 	private Locale locale;
 
-	private String discount;
+	private Discount discount;
 
 	private String uniqueResponseId;
-	
+
 	private Double distance;
-	
-	private Boolean  isAlreadyRequested=false;
 
-
-	
+	private Boolean isAlreadyRequested = false;
 
 	public String getId() {
 		return id;
@@ -67,11 +65,11 @@ public class SearchRequestToPharmacyResponse {
 		this.localeId = localeId;
 	}
 
-	public String getDiscount() {
+	public Discount getDiscount() {
 		return discount;
 	}
 
-	public void setDiscount(String discount) {
+	public void setDiscount(Discount discount) {
 		this.discount = discount;
 	}
 
@@ -113,7 +111,5 @@ public class SearchRequestToPharmacyResponse {
 	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
 		this.isAlreadyRequested = isAlreadyRequested;
 	}
-
-
 
 }
