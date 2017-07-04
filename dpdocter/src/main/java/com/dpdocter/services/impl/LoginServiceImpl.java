@@ -97,6 +97,7 @@ public class LoginServiceImpl implements LoginService {
 	/**
 	 * This method is used for login purpose.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public LoginResponse login(LoginRequest request, Boolean isMobileApp) {
