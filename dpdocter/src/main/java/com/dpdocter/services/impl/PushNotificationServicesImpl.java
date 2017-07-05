@@ -256,6 +256,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 				} else if (componentType.equalsIgnoreCase(ComponentType.CALENDAR_REMINDER.getType())) {
 					notification.setCi(componentTypeId);
 					notification.setNotificationType(componentType);
+				} else if (componentType.equalsIgnoreCase(ComponentType.USER_RECORD.getType())) {
+					notification.setCi(componentTypeId);
+					notification.setNotificationType(componentType);
 				}
 			}
 			String jsonOutput = mapper.writeValueAsString(notification);

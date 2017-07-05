@@ -501,4 +501,21 @@ public class RecordsApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RecordsUrls.SHARE_USER_RECORDS_WITH_PATIENT)
+	@GET
+	@ApiOperation(value = PathProxy.RecordsUrls.SHARE_USER_RECORDS_WITH_PATIENT, notes = PathProxy.RecordsUrls.SHARE_USER_RECORDS_WITH_PATIENT)
+	public Response<UserRecords> shareUserRecords(@PathParam("patientId") String patientId,
+			@PathParam("recordId") String recordId) {
+		if (DPDoctorUtils.anyStringEmpty(recordId) && DPDoctorUtils.anyStringEmpty(patientId)) {
+			logger.warn("Record Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Record Id  and userId Cannot Be Empty");
+		}
+
+		UserRecords record = recordsService.ShareUserRecordsFile(recordId, patientId);
+		Response<UserRecords> response = new Response<UserRecords>();
+		response.setData(record);
+		return response;
+
+	}
+
 }

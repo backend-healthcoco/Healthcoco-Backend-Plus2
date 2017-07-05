@@ -41,6 +41,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
@@ -90,7 +91,6 @@ import com.dpdocter.request.RecordsSmsRequest;
 import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.MailResponse;
-import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.RecordsLookupResponse;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.ClinicalNotesService;
@@ -211,7 +211,10 @@ public class RecordsServiceImpl implements RecordsService {
 	private String notApprovedRecordToDoctorSubject;
 
 	@Value(value = "${sms.add.record.to.patient}")
-	private String addecordSMSToPatient;
+	private String addrecordSMSToPatient;
+
+	@Value(value = "${sms.add.user.record.to.patient}")
+	private String addUserRecordSMSToPatient;
 
 	@Autowired
 	private SMSServices smsServices;
@@ -399,7 +402,7 @@ public class RecordsServiceImpl implements RecordsService {
 		SMS sms = new SMS();
 		if (DPDoctorUtils.anyStringEmpty(recordName))
 			recordName = "";
-		String message = addecordSMSToPatient;
+		String message = addrecordSMSToPatient;
 		sms.setSmsText(message.replace("{patientName}", patientName).replace("{reportName}", recordName)
 				.replace("{clinicName}", clinicName));
 
@@ -1568,7 +1571,8 @@ public class RecordsServiceImpl implements RecordsService {
 			Date createdTime = new Date();
 			UserCollection userCollection = null;
 			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
+					request.getLocationId())) {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid User Id");
@@ -1671,6 +1675,12 @@ public class RecordsServiceImpl implements RecordsService {
 					userRecordsCollection.setRecordsFiles(recordsFiles);
 
 				}
+			}
+			if (!DPDoctorUtils.allStringsEmpty(userRecordsCollection.getDoctorId(),
+					userRecordsCollection.getPatientId())) {
+				pushNotificationServices.notifyUser(userRecordsCollection.getPatientId().toString(),
+						"Dr." + userCollection.getFirstName() + "has shared record with you - Tap to view it!",
+						ComponentType.USER_RECORD.getType(), userRecordsCollection.getId().toString(), null);
 			}
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 			response = new UserRecords();
@@ -1904,6 +1914,76 @@ public class RecordsServiceImpl implements RecordsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
+	}
+
+	@Override
+	public UserRecords ShareUserRecordsFile(String recordId, String userId) {
+		UserRecords response = null;
+		try {
+			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
+			if (userRecordsCollection == null) {
+				logger.warn("User Record Not found.Check RecordId");
+				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
+			}
+			userRecordsCollection.setUpdatedTime(new Date());
+			userRecordsCollection.setPatientId(new ObjectId(userId));
+			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
+			response = new UserRecords();
+			BeanUtil.map(userRecordsCollection, response);
+			for (RecordsFile recordsFile : response.getRecordsFiles()) {
+				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			}
+
+			UserCollection doctor = userRepository.findOne(userRecordsCollection.getDoctorId());
+			if (doctor != null) {
+				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
+						userRecordsCollection.getPatientId(), userRecordsCollection.getDoctorId(),
+						userRecordsCollection.getLocationId(), userRecordsCollection.getHospitalId());
+				UserCollection patient = userRepository.findOne(userRecordsCollection.getPatientId());
+
+				pushNotificationServices.notifyUser(userRecordsCollection.getPatientId().toString(),
+						"Dr." + doctor.getFirstName() + "has shared record with you - Tap to view it!",
+						ComponentType.USER_RECORD.getType(), userRecordsCollection.getId().toString(), null);
+				sendUserRecordSmsToPatient(patientCollection.getLocalPatientName(), patient.getMobileNumber(),
+						userRecordsCollection.getRecordsLabel(), "Dr." + doctor.getFirstName(),
+						userRecordsCollection.getDoctorId(), userRecordsCollection.getLocationId(),
+						userRecordsCollection.getHospitalId(), userRecordsCollection.getPatientId());
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	private void sendUserRecordSmsToPatient(String patientName, String patientMobileNumber, String recordName,
+			String doctorName, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId patientId) {
+
+		SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+		smsTrackDetail.setDoctorId(doctorId);
+		smsTrackDetail.setHospitalId(hospitalId);
+		smsTrackDetail.setLocationId(locationId);
+		smsTrackDetail.setType(ComponentType.USER_RECORD.getType());
+		SMSDetail smsDetail = new SMSDetail();
+		smsDetail.setUserId(patientId);
+		smsDetail.setUserName(patientName);
+		SMS sms = new SMS();
+		if (DPDoctorUtils.anyStringEmpty(recordName))
+			recordName = "";
+		String message = addUserRecordSMSToPatient;
+		sms.setSmsText(message.replace("{patientName}", patientName).replace("{doctorName}", doctorName)
+				.replace("{reportName}", recordName));
+		SMSAddress smsAddress = new SMSAddress();
+		smsAddress.setRecipient(patientMobileNumber);
+		sms.setSmsAddress(smsAddress);
+		smsDetail.setSms(sms);
+		smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+		List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+		smsDetails.add(smsDetail);
+		smsTrackDetail.setSmsDetails(smsDetails);
+		smsServices.sendSMS(smsTrackDetail, true);
 	}
 
 }

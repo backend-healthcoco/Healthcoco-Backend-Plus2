@@ -79,4 +79,6 @@ public interface RecordsService {
 	UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible);
 
 	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds);
+	
+	UserRecords ShareUserRecordsFile(String recordId, String patientId);
 }

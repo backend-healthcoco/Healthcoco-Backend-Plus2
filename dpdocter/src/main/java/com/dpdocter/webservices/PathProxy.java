@@ -377,6 +377,8 @@ public interface PathProxy {
 		public static final String DELETE_USER_RECORDS_FILE = "user/file/{recordId}/delete";
 
 		public static final String UPDATE_RECORDS_DATA = "/updateData";
+		
+		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
 
 	}
 
