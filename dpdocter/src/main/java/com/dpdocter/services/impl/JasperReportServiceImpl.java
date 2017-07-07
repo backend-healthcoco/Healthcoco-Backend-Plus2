@@ -138,7 +138,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 	public JasperDesign createDesign(Map<String, Object> parameters, String pageSize, Integer contentFontSize,
 			Integer topMargin, Integer bottonMargin, Integer leftMargin, Integer rightMargin,
 			ComponentType componentType) throws JRException {
-
 		JasperDesign jasperDesign = null;
 		if (componentType.getType().equalsIgnoreCase(ComponentType.EYE_PRESCRIPTION.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-optho-prescription.jrxml");
@@ -3245,6 +3244,21 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Diagnosis}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{diagnosis}", 18, contentFontSize - 1, false);
 		}
+		show = (Boolean) parameters.get("showPH");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{pastHistory}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showfH");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{familyHistory}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showPersonalHistory");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{PersonalHistoryTitle}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{pesonalHistory}", 18, contentFontSize - 1, false);
+		}
 		show = (Boolean) parameters.get("showcompl");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Complaints}", 18, contentFontSize - 1, true);
@@ -3261,21 +3275,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{historyOfPresentComplaints}", 18, contentFontSize - 1,
 					false);
 		}
-		show = (Boolean) parameters.get("showPersonalHistory");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{PersonalHistoryTitle}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{pesonalHistory}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showPH");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{pastHistory}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showfH");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{FamilyHistoryTitle}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{familyHistory}", 18, contentFontSize - 1, false);
-		}
+
 		show = (Boolean) parameters.get("showMH");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{MenstrualHistory}", 18, contentFontSize - 1, true);
@@ -3286,57 +3286,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{ObstetricHistory}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{obstetricHistory}", 18, contentFontSize - 1, false);
 		}
-		show = (Boolean) parameters.get("showPA");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{PA}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{pa}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showPS");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{PS}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{ps}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showPV");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{PV}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{pv}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showecho");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{Echo}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{echo}", 18, contentFontSize - 1, false);
-		}
 
-		show = (Boolean) parameters.get("showProcedureNote");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{ProcedureNote}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{procedureNote}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showXD");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{XRayDetails}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{xRayDetails}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showEcg");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{EcgDetails}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{ecgDetails}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showINUSG");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{indicationOfUSG}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showholter");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{Holter}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{holter}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showLN");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{LabourNotes}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{labourNotes}", 18, contentFontSize - 1, false);
-		}
 		show = (Boolean) parameters.get("showSExam");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{SystemExam}", 18, contentFontSize - 1, true);
@@ -3359,6 +3309,32 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Investigations}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{investigation}", 18, contentFontSize - 1, false);
 		}
+		show = (Boolean) parameters.get("showINUSG");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{indicationOfUSG}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showPA");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{PA}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{pa}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showPS");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{PS}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{ps}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showPV");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{PV}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{pv}", 18, contentFontSize - 1, false);
+		}
+
+		show = (Boolean) parameters.get("showLN");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{LabourNotes}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{labourNotes}", 18, contentFontSize - 1, false);
+		}
 		show = (Boolean) parameters.get("showBabyNotes");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{BabyNotes}", 18, contentFontSize - 1, true);
@@ -3369,15 +3345,54 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{BabyWeight}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{babyWeight}", 18, contentFontSize - 1, false);
 		}
+		show = (Boolean) parameters.get("showEcg");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{EcgDetails}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{ecgDetails}", 18, contentFontSize - 1, false);
+		}
+
+		show = (Boolean) parameters.get("showecho");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Echo}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{echo}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showXD");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{XRayDetails}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{xRayDetails}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showholter");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Holter}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{holter}", 18, contentFontSize - 1, false);
+		}
+
+		show = (Boolean) parameters.get("showProcedureNote");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{ProcedureNote}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{procedureNote}", 18, contentFontSize - 1, false);
+		}
+
 		show = (Boolean) parameters.get("showON");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{OperationNotes}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{operationNotes}", 18, contentFontSize - 1, false);
 		}
+		show = (Boolean) parameters.get("showcondition");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Condition}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{condition}", 18, contentFontSize - 1, false);
+		}
 		show = (Boolean) parameters.get("showTG");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{TreatmentGiven}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{treatmentGiven}", 18, contentFontSize - 1, false);
+		}
+
+		show = (Boolean) parameters.get("showSum");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Summary}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{summary}", 18, contentFontSize - 1, false);
 		}
 		show = (Boolean) parameters.get("showPrescription");
 		if (show) {
@@ -3395,16 +3410,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 				addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
 				addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
 			}
-		}
-		show = (Boolean) parameters.get("showcondition");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{Condition}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{condition}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showSum");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{Summary}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{summary}", 18, contentFontSize - 1, false);
 		}
 		show = (Boolean) parameters.get("showNextReview");
 		if (show) {
