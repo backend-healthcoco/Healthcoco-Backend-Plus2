@@ -15,6 +15,8 @@ public class ConsentForm extends GenericCollection {
 	private String hospitalId;
 
 	private String formId;
+	
+	private String title;
 
 	private String patientId;
 
@@ -47,6 +49,16 @@ public class ConsentForm extends GenericCollection {
 	private String medicalHistory;
 
 	private Boolean discarded = false;
+	
+	
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;

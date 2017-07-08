@@ -28,7 +28,7 @@ public class ConsentFormCollection extends GenericCollection {
 
 	@Field
 	private String locationName;
-	
+
 	@Field
 	private String PID;
 
@@ -63,6 +63,9 @@ public class ConsentFormCollection extends GenericCollection {
 	private String declaration;
 
 	@Field
+	private String title;
+
+	@Field
 	private Date dateOfSign;
 
 	@Field
@@ -80,6 +83,14 @@ public class ConsentFormCollection extends GenericCollection {
 
 	public String getFormId() {
 		return formId;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public void setFormId(String formId) {
@@ -242,5 +253,4 @@ public class ConsentFormCollection extends GenericCollection {
 		this.locationName = locationName;
 	}
 
-	
 }

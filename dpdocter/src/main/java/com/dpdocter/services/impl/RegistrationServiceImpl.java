@@ -3269,11 +3269,17 @@ public class RegistrationServiceImpl implements RegistrationService {
 		parameters.put("showName", show);
 		show = false;
 
+		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getTitle())) {
+			consentFormItemJasperdetails.setGender(consentFormCollection.getTitle());
+			
+		}
+		
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getGender())) {
 			consentFormItemJasperdetails.setGender(consentFormCollection.getGender());
 			show = true;
 		}
 		parameters.put("showGender", show);
+
 		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getPID())) {
