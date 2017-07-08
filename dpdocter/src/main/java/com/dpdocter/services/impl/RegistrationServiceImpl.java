@@ -3121,29 +3121,37 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 
-			String path = "sign" + File.separator + request.getPatientId();
-			FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-			String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-			String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
-			String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-			ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
-			if (imageURLResponse != null) {
-				request.setSignImageURL(imagepath);
-				ConsentFormCollection consentFormCollection = new ConsentFormCollection();
-				BeanUtil.map(request, consentFormCollection);
-				consentFormCollection.setCreatedTime(createdTime);
-				consentFormCollection
-						.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
-				consentFormCollection.setCreatedBy(doctor.getFirstName());
-
-				consentFormCollection = consentFormRepository.save(consentFormCollection);
-				response = new ConsentForm();
-				BeanUtil.map(consentFormCollection, response);
-				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
-			} else {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid image");
+			if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+				String path = "sign" + File.separator + request.getPatientId();
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+				if (imageURLResponse != null) {
+					request.setSignImageURL(imagepath);
+				}
 			}
-		} catch (Exception e) {
+
+			ConsentFormCollection consentFormCollection = new ConsentFormCollection();
+			if (DPDoctorUtils.anyStringEmpty(request.getTitle())) {
+				request.setTitle("CONSENT FORM");
+			}
+			BeanUtil.map(request, consentFormCollection);
+			consentFormCollection.setCreatedTime(createdTime);
+			consentFormCollection
+					.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
+			consentFormCollection.setCreatedBy(doctor.getFirstName());
+
+			consentFormCollection = consentFormRepository.save(consentFormCollection);
+			response = new ConsentForm();
+			BeanUtil.map(consentFormCollection, response);
+			if (!DPDoctorUtils.anyStringEmpty(response.getSignImageURL()))
+				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
+
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Exception in add Consent Form ");
@@ -3189,7 +3197,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			response = results.getMappedResults();
 
 			for (ConsentForm consentForm : response) {
-				consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
+				if (!DPDoctorUtils.anyStringEmpty(consentForm.getSignImageURL()))
+					consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -3271,9 +3280,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getTitle())) {
 			consentFormItemJasperdetails.setGender(consentFormCollection.getTitle());
-			
+
 		}
-		
+
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getGender())) {
 			consentFormItemJasperdetails.setGender(consentFormCollection.getGender());
 			show = true;
