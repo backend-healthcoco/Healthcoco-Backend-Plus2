@@ -14,7 +14,7 @@ public class TreatmentResponse {
 
 	private String treatmentServiceId;
 	
-	private PatientTreatmentStatus status;
+	private String status;
 
 	private double cost = 0.0;
 
@@ -30,11 +30,11 @@ public class TreatmentResponse {
 
 	private List<TreatmentFields> treatmentFields;
 
-	public PatientTreatmentStatus getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(PatientTreatmentStatus status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

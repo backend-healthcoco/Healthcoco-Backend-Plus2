@@ -361,7 +361,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				for (TreatmentRequest treatmentRequest : request.getTreatments()) {
 
 					if (treatmentRequest.getStatus() == null) {
-						treatmentRequest.setStatus(PatientTreatmentStatus.NOT_STARTED);
+						treatmentRequest.setStatus("NOT_STARTED");
 					}
 					Treatment treatment = new Treatment();
 					TreatmentResponse treatmentResponse = new TreatmentResponse();
@@ -447,7 +447,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				if (treatmentObj.getTreatmentServiceId().toString()
 						.equalsIgnoreCase(treatment.getTreatmentServiceId().toString())) {
 					if (treatment.getStatus() == null)
-						treatmentObj.setStatus(PatientTreatmentStatus.NOT_STARTED);
+						treatmentObj.setStatus("NOT_STARTED");
 					else
 						treatmentObj.setStatus(treatment.getStatus());
 				}
@@ -1086,7 +1086,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			response = getCustomServicesCost(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 			break;
 		}
-		
+
 		case SERVICEBYSPECIALITY: {
 			response = getServicesBySpeciality(doctorId, locationId, hospitalId, updatedTime, discarded);
 			break;
@@ -1115,8 +1115,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			}
 
 			AggregationResults<TreatmentService> results = mongoTemplate.aggregate(
-					DPDoctorUtils.createCustomGlobalAggregation(0, 0, doctorId, locationId, hospitalId,
-							updatedTime, discarded, "category", null, specialities, null),
+					DPDoctorUtils.createCustomGlobalAggregation(0, 0, doctorId, locationId, hospitalId, updatedTime,
+							discarded, "category", null, specialities, null),
 					TreatmentServicesCollection.class, TreatmentService.class);
 			response = results.getMappedResults();
 
@@ -1412,7 +1412,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						.findOne(treatment.getTreatmentServiceId());
 				patientTreatments.setNo(++no);
 				if (treatment.getStatus() != null) {
-					String status = treatment.getStatus().getTreamentStatus().replaceAll("_", " ");
+					String status = treatment.getStatus().replaceAll("_", " ");
 					status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 					patientTreatments.setStatus(status);
 				} else {
@@ -1475,12 +1475,12 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(),
 					patientTreatmentCollection.getHospitalId(), ComponentType.ALL.getType());
 
-			if(printSettings == null){
+			if (printSettings == null) {
 				printSettings = new PrintSettingsCollection();
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 				BeanUtil.map(defaultPrintSettings, printSettings);
 			}
-			
+
 			if (historyCollection != null) {
 				parameters.put("showHistory", true);
 				patientVisitService.includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
@@ -1616,10 +1616,10 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					treatmentServicesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
 					treatmentServicesCollection.setRankingCount(treatmentServicesCollection.getRankingCount() + 1);
 				}
-				
+
 				treatmentServicesCollection.setUpdatedTime(new Date());
 				treatmentServicesCollection.setCost(request.getCost());
-				
+
 				treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
 			}
 
@@ -1681,20 +1681,18 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 		}
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public List<TreatmentService> getListBySpeciality(String speciality)
-	{
+	public List<TreatmentService> getListBySpeciality(String speciality) {
 		List<TreatmentService> response = null;
 		Aggregation aggregation = null;
 		Criteria criteria = new Criteria().and("speciality").in(speciality);
 		criteria.and("category").exists(true);
-		aggregation = Aggregation.newAggregation(
-				Aggregation.match(criteria),
-				 Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-		AggregationResults<TreatmentService> aggregationResults = mongoTemplate.aggregate(aggregation, TreatmentServicesCollection.class,
-				TreatmentService.class);
+		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		AggregationResults<TreatmentService> aggregationResults = mongoTemplate.aggregate(aggregation,
+				TreatmentServicesCollection.class, TreatmentService.class);
 		response = aggregationResults.getMappedResults();
 		return response;
 	}

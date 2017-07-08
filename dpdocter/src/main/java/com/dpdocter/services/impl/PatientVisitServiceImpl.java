@@ -1235,7 +1235,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									.findOne(treatment.getTreatmentServiceId());
 							patientTreatments.setNo(++no);
 							if (treatment.getStatus() != null) {
-								String status = treatment.getStatus().getTreamentStatus().replaceAll("_", " ");
+								String status = treatment.getStatus().replaceAll("_", " ");
 								status = status.substring(0, 1).toUpperCase() + status.substring(1).toLowerCase();
 								patientTreatments.setStatus(status);
 							} else {
@@ -1642,8 +1642,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 								vitalSigns = spo2;
 						}
 						String height = clinicalNotesCollection.getVitalSigns().getHeight();
-						height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
-								: "");
+						height = (height != null && !height.isEmpty()
+								? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit() : "");
 						if (!DPDoctorUtils.allStringsEmpty(height)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + height;

@@ -12,7 +12,7 @@ public class Treatment extends GenericCollection {
     
 	private ObjectId treatmentServiceId;
 
-	private PatientTreatmentStatus status;
+	private String status;
 
 	private double cost = 0.0;
 
@@ -34,11 +34,13 @@ public class Treatment extends GenericCollection {
 		this.treatmentServiceId = treatmentServiceId;
 	}
 
-	public PatientTreatmentStatus getStatus() {
+	
+
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(PatientTreatmentStatus status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
