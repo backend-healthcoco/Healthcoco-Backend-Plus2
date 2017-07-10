@@ -75,7 +75,7 @@ public interface PathProxy {
 		public static final String EXPORT_CONTACTS = "/exportContacts";
 
 		public static final String ADD_GROUP_TO_PATIENT = "/patient/addgroup";
-		
+
 		public static final String SEND_SMS_TO_GROUP = "/group/sms";
 
 	}
@@ -170,6 +170,8 @@ public interface PathProxy {
 		public static final String UPDATE_ROLE_COLLECTION_DATA = "updateRoleCollectionData";
 
 		public static final String ADD_CONSENT_FORM = "/consentForm/add";
+		
+		public static final String ADD_CONSENT_FORM_DATA = "/consentForm/add/data";
 
 		public static final String GET_CONSENT_FORM = "/consentForm";
 
@@ -377,7 +379,7 @@ public interface PathProxy {
 		public static final String DELETE_USER_RECORDS_FILE = "user/file/{recordId}/delete";
 
 		public static final String UPDATE_RECORDS_DATA = "/updateData";
-		
+
 		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
 
 	}
@@ -518,7 +520,7 @@ public interface PathProxy {
 		public static final String SMS_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{mobileNumber}/sms";
 
 		public static final String DELETE_EYE_PRESCRIPTION = "eye/{prescriptionId}/{doctorId}/{locationId}/{hospitalId}/{patientId}/delete";
-		
+
 		public static final String GET_CUSTOM_DRUGS = "/getCustomDrugs";
 
 	}
@@ -878,7 +880,7 @@ public interface PathProxy {
 		public static final String ADD_FAVOURITES_TO_TREATMENT_SERVICES = "favourites/addToTreatmentService";
 
 		public static final String ADD_TREATMENT_SERVICES_TO_DOCTOR = "/service/{serviceId}/{doctorId}/{locationId}/{hospitalId}/makeFavourite";
-		
+
 		public static final String GET_TREATMENT_SERVICES_BY_SPECIALITY = "/getServicesBySpeciality";
 
 	}
@@ -945,7 +947,7 @@ public interface PathProxy {
 		public static final String GET_LABS = "/labs";
 
 		public static final String ADD_SPECIALITY = "/addSpecialization";
-		
+
 		public static final String SEND_SMS_TO_DOCTOR = "/smsToDoctor";
 	}
 
@@ -1163,12 +1165,12 @@ public interface PathProxy {
 
 		public static final String SEARCH_BABY_NOTES = "searchBabyNotes/{range}";
 	}
-	
+
 	public static final String VIDEO_BASE_URL = BASE_URL + "/video";
 
 	public interface VideoUrls {
 		public static final String ADD_VIDEO = "add";
-		
+
 		public static final String GET_VIDEO = "get";
 
 	}
@@ -1226,6 +1228,13 @@ public interface PathProxy {
 		public static final String DISCARD_INVENTORY_STOCK = "/discardInventoryStock/{id}";
 		public static final String DISCARD_INVENTORY_BATCH = "/discardInventoryBatch/{id}";
 		public static final String ADD_MANUFACTURER = "/addManufacturer";
+
+	}
+
+	public static final String ANALYTIC_BASE_URL = BASE_URL + "/analytics";
+
+	public interface AnalyticUrls {
+		public static final String GET_PATIENT_ANALYTICS_DATA = "/patient/{doctorId}/{locationId}/{hospitalId}";
 
 	}
 }

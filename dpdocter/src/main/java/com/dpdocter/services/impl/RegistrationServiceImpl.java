@@ -3120,19 +3120,19 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Date createdTime = new Date();
 
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
-
-			if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
-				String path = "sign" + File.separator + request.getPatientId();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
-				String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-				ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
-				if (imageURLResponse != null) {
-					request.setSignImageURL(imagepath);
+			if (file != null) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+					String path = "sign" + File.separator + request.getPatientId();
+					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+					String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
+					if (imageURLResponse != null) {
+						request.setSignImageURL(imagepath);
+					}
 				}
-			}
-
+			}			
 			ConsentFormCollection consentFormCollection = new ConsentFormCollection();
 			if (DPDoctorUtils.anyStringEmpty(request.getTitle())) {
 				request.setTitle("CONSENT FORM");
@@ -3142,7 +3142,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			consentFormCollection
 					.setFormId(UniqueIdInitial.CONSENT_FORM.getInitial() + DPDoctorUtils.generateRandomId());
 			consentFormCollection.setCreatedBy(doctor.getFirstName());
-
 			consentFormCollection = consentFormRepository.save(consentFormCollection);
 			response = new ConsentForm();
 			BeanUtil.map(consentFormCollection, response);
@@ -3164,7 +3163,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			String hospitalId, String PID, String searchTerm, boolean discarded, long updatedTime) {
 		List<ConsentForm> response = null;
 		try {
-
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTime));
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -3177,17 +3175,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			if (!DPDoctorUtils.anyStringEmpty(PID))
 				criteria.and("PID").is(PID);
-
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("localPatientName").regex(searchTerm, "i"),
 						new Criteria("mobileNumber").regex("^" + searchTerm, "i"));
 			}
-
 			criteria.and("discarded").is(discarded);
 			if (size > 0) {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
 						Aggregation.limit(size), Aggregation.sort(Sort.Direction.DESC, "createdTime"));
-
 			} else {
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(Sort.Direction.DESC, "createdTime"));
@@ -3195,7 +3190,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 			AggregationResults<ConsentForm> results = mongoTemplate.aggregate(aggregation, ConsentFormCollection.class,
 					ConsentForm.class);
 			response = results.getMappedResults();
-
 			for (ConsentForm consentForm : response) {
 				if (!DPDoctorUtils.anyStringEmpty(consentForm.getSignImageURL()))
 					consentForm.setSignImageURL(getFinalImageURL(consentForm.getSignImageURL()));

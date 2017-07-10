@@ -940,6 +940,23 @@ public class RegistrationApi {
 		return response;
 	}
 
+	@POST
+	@Path(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA)
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA, notes = PathProxy.RegistrationUrls.ADD_CONSENT_FORM_DATA)
+	public Response<ConsentForm> addConsentForm(ConsentForm request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		if (DPDoctorUtils.anyStringEmpty(request.getPatientId(), request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		ConsentForm consentForm = registrationService.addConcentForm(null, request);
+		Response<ConsentForm> response = new Response<ConsentForm>();
+		response.setData(consentForm);
+		return response;
+	}
+
 	@Path(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.GET_CONSENT_FORM, notes = PathProxy.RegistrationUrls.GET_CONSENT_FORM)
