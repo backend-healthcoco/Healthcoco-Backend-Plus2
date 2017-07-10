@@ -2897,7 +2897,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		JRDesignBand band = new JRDesignBand();
 		band.setHeight(20);
 		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{title}"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{item}.getTitle()"));
 		jrDesignTextField.setX(1);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);

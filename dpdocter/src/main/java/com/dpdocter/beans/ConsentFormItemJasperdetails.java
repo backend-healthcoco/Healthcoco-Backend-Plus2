@@ -11,7 +11,7 @@ public class ConsentFormItemJasperdetails {
 	private String emailAddress = "--";
 	private String landLineNumber = "--";
 	private String address = "--";
-	private String title;
+	private String title="CONSENT FORM";
 	private String medicalHistory = "--";
 	private String declaration = "--";
 	private String signImageUrl = "--";

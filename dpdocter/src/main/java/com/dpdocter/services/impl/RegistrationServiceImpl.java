@@ -3273,7 +3273,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(consentFormCollection.getTitle())) {
-			consentFormItemJasperdetails.setGender(consentFormCollection.getTitle());
+			consentFormItemJasperdetails.setTitle(consentFormCollection.getTitle());
 
 		}
 

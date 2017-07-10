@@ -122,9 +122,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			searchRequestFromUserCollection = searchRequestFromUserRepository.save(searchRequestFromUserCollection);
 			response = new UserSearchRequest();
 			BeanUtil.map(searchRequestFromUserCollection, response);
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While adding request");
 			throw new BusinessException(ServiceError.Unknown, " Error Occurred While adding request");

@@ -163,7 +163,6 @@ public class AnalyticServiceImpl implements AnalyticService {
 				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 					criteria.and("$address.city").is(searchTerm);
 				}
-
 				criteria.and("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
@@ -187,7 +186,6 @@ public class AnalyticServiceImpl implements AnalyticService {
 							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 					break;
 				}
-
 				case WEEKLY: {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),

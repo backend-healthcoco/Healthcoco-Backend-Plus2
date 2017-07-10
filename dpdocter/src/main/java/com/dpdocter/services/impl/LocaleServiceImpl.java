@@ -28,6 +28,8 @@ import com.dpdocter.services.LocaleService;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+import common.util.web.DPDoctorUtils;
+
 @Service
 public class LocaleServiceImpl implements LocaleService {
 
@@ -147,6 +149,7 @@ public class LocaleServiceImpl implements LocaleService {
 			ImageURLResponse imageURLResponse = null;
 			Date createdTime = new Date();
 			if (file != null) {
+				if(DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())){
 				String path = "localeRX";
 				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
@@ -156,6 +159,7 @@ public class LocaleServiceImpl implements LocaleService {
 				//String recordLabel = fileName;
 				imageURLResponse =  new ImageURLResponse();
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
+				}
 			}
 			return imageURLResponse;
 		} catch (Exception e) {
