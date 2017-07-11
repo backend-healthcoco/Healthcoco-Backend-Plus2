@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.RecommendationsCollection;
@@ -35,18 +34,18 @@ public class LocaleServiceImpl implements LocaleService {
 
 	@Autowired
 	LocaleRepository localeRepository;
-	
+
 	@Autowired
 	UserRepository userRepository;
-	
+
 	@Autowired
 	RecommendationsRepository recommendationsRepository;
-	
+
 	@Autowired
 	FileManager fileManager;
 
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
-	
+
 	@Override
 	@Transactional
 	public Locale getLocaleDetails(String id) {
@@ -71,12 +70,11 @@ public class LocaleServiceImpl implements LocaleService {
 		}
 		response = new Locale();
 		BeanUtil.map(localeCollection, response);
-
 		return response;
 	}
-	
+
 	@Override
-	public Locale addEditRecommedation(String localeId, String patientId,RecommendationType type) {
+	public Locale addEditRecommedation(String localeId, String patientId, RecommendationType type) {
 		Locale response = null;
 
 		try {
@@ -92,27 +90,23 @@ public class LocaleServiceImpl implements LocaleService {
 			if (userCollection != null && localeCollection != null) {
 				recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
 						localeObjectId, patientObjectId);
-				
-				if(recommendationsCollection == null)
-				{
+
+				if (recommendationsCollection == null) {
 					recommendationsCollection = new RecommendationsCollection();
 					recommendationsCollection.setLocationId(localeObjectId);
 					recommendationsCollection.setPatientId(patientObjectId);
-					localeCollection
-							.setNoOfLocaleRecommendation(1);
-				}
-				else
-				{
+					localeCollection.setNoOfLocaleRecommendation(1);
+				} else {
 					switch (type) {
 					case LIKE:
 						localeCollection
-						.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() + 1);
+								.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() + 1);
 						recommendationsCollection.setDiscarded(false);
 						break;
-						
+
 					case UNLIKE:
 						localeCollection
-						.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() - 1);
+								.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() - 1);
 						recommendationsCollection.setDiscarded(true);
 						break;
 
@@ -126,7 +120,7 @@ public class LocaleServiceImpl implements LocaleService {
 				response = new Locale();
 				BeanUtil.map(localeCollection, response);
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
-			//	response.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
+				// response.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
 
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Error  location  not found");
@@ -139,32 +133,31 @@ public class LocaleServiceImpl implements LocaleService {
 
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
-	public ImageURLResponse  addRXImageMultipart(FormDataBodyPart file) {
+	public ImageURLResponse addRXImageMultipart(FormDataBodyPart file) {
 		try {
-			//Boolean response =false;
-			//LocaleImageCollection  localeImageCollection = null;
+			// Boolean response =false;
+			// LocaleImageCollection localeImageCollection = null;
 			ImageURLResponse imageURLResponse = null;
 			Date createdTime = new Date();
 			if (file != null) {
-				if(DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())){
-				String path = "localeRX";
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("."+fileExtension, "");
-				String recordPath = path + File.separator + fileName
-						+ createdTime.getTime() + "."+fileExtension;
-				//String recordLabel = fileName;
-				imageURLResponse =  new ImageURLResponse();
-				imageURLResponse = fileManager.saveImage(file, recordPath, true);
+				if (DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+					String path = "localeRX";
+					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+					String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+					// String recordLabel = fileName;
+					imageURLResponse = new ImageURLResponse();
+					imageURLResponse = fileManager.saveImage(file, recordPath, true);
 				}
 			}
 			return imageURLResponse;
 		} catch (Exception e) {
 			e.printStackTrace();
-			//logger.error(e);
+			// logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}

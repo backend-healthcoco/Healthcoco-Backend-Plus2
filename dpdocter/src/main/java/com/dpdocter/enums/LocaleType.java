@@ -1,7 +1,7 @@
 package com.dpdocter.enums;
 
 public enum LocaleType {
-	PHARMACY("PHARMACY"), SALOON("SALOON");
+	PHARMACY("PHARMACY"), SALOON("SALOON"),;
 
 	private String type;
 

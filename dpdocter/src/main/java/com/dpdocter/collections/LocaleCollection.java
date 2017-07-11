@@ -47,7 +47,11 @@ public class LocaleCollection extends GenericCollection {
 	@Field
 	private String localeEmailAddress;
 	@Field
-	private Boolean isTwentyFourSevenOpen;
+	private Boolean isTwentyFourSevenOpen=false;
+	@Field
+	private List<String> pharmacyType;
+	@Field
+	private Boolean isGenericMedicineAvailable=false;
 	@Field
 	private String localeUId;
 	@Field
@@ -76,10 +80,38 @@ public class LocaleCollection extends GenericCollection {
 
 	@Field
 	private Boolean isAcceptRequest=true;
+	
+	
+
+	public List<String> getPharmacyType() {
+		return pharmacyType;
+	}
+
+
+
+	public Boolean getIsGenericMedicineAvailable() {
+		return isGenericMedicineAvailable;
+	}
+
+
+
+	public void setPharmacyType(List<String> pharmacyType) {
+		this.pharmacyType = pharmacyType;
+	}
+
+
+
+	public void setIsGenericMedicineAvailable(Boolean isGenericMedicineAvailable) {
+		this.isGenericMedicineAvailable = isGenericMedicineAvailable;
+	}
+
+
 
 	public ObjectId getId() {
 		return id;
 	}
+	
+	
 
 	public void setId(ObjectId id) {
 		this.id = id;

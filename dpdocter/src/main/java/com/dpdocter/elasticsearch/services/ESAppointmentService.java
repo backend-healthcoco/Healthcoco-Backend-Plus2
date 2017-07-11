@@ -9,17 +9,21 @@ import com.dpdocter.elasticsearch.response.LabResponse;
 
 public interface ESAppointmentService {
 
-    List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude, String longitude, String speciality, String symptom,
-	    Boolean booking, Boolean calling, int minFee, int maxFee, int minTime, int maxTime, List<String> days, String gender,
-	    int minExperience, int maxExperience, String service);
+	List<ESDoctorDocument> getDoctors(int page, int size, String city, String location, String latitude,
+			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
+			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
+			int maxExperience, String service);
 
-    List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude, String searchTerm);
+	List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude,
+			String searchTerm);
 
-    List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl);
+	List<LabResponse> getLabs(int page, int size, String city, String location, String latitude, String longitude,
+			String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days,
+			Boolean onlineReports, Boolean homeService, Boolean nabl);
 
 	List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
-			long maxTime, List<String> days);
+			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable);
 
 	Boolean sendSMSToDoctors();
 

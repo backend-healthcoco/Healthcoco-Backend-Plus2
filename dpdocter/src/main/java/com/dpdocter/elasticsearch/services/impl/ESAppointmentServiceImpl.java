@@ -98,7 +98,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 	@Autowired
 	TransportClient transportClient;
-	
+
 	@Autowired
 	private SMSServices smsServices;
 
@@ -568,8 +568,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			 */
 
 			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
-				if(speciality.equalsIgnoreCase("GYNECOLOGIST"))
-				{
+				if (speciality.equalsIgnoreCase("GYNECOLOGIST")) {
 					speciality = "GYNAECOLOGIST";
 				}
 				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
@@ -665,47 +664,46 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					days.set(i, days.get(i).toLowerCase());
 				}
 
-			
-					if (maxTime == 0) {
-						maxTime = 1439;
-					}
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery().must(
-							QueryBuilders.andQuery(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
-
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
-											.lt(maxTime),
-
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-											.gt(minTime).lt(
-													maxTime),
-									QueryBuilders.andQuery(
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
-													.lt(1439),
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
-													.lt(minTime)))),
-									QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
-				
-			} else {
-				
-					if (maxTime == 0) {
-						maxTime = 1439;
-					}
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
-							boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
-
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
-											.lt(maxTime),
-
-									QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
-											.gt(minTime).lt(
-													maxTime),
-									QueryBuilders.andQuery(
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
-													.lt(1439),
-											QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
-													.lt(minTime)))))));
+				if (maxTime == 0) {
+					maxTime = 1439;
 				}
-			
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules", boolQuery()
+						.must(QueryBuilders.andQuery(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+										.lt(maxTime),
+
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+										.gt(minTime).lt(
+												maxTime),
+								QueryBuilders.andQuery(
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
+												.lt(1439),
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
+												.lt(minTime)))),
+								QueryBuilders.termsQuery("workingSchedules.workingDay", days)))));
+
+			} else {
+
+				if (maxTime == 0) {
+					maxTime = 1439;
+				}
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("workingSchedules",
+						boolQuery().must(nestedQuery("workingSchedules.workingHours", QueryBuilders.orQuery(
+
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(minTime)
+										.lt(maxTime),
+
+								QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime")
+										.gt(minTime).lt(
+												maxTime),
+								QueryBuilders.andQuery(
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").gt(maxTime)
+												.lt(1439),
+										QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gt(0)
+												.lt(minTime)))))));
+			}
+
 			// if (minTime != 0 || maxTime != 0) {
 			// if (maxTime == 0) {
 			// maxTime = 1439;
@@ -882,7 +880,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 																			"clinicWorkingSchedules.workingHours.fromTime")
 																	.gt(0).lt(minTime)))),
 											QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days)))));
-				}else {
+				} else {
 					boolQueryBuilder.must(QueryBuilders.nestedQuery("clinicWorkingSchedules",
 							boolQuery().must(QueryBuilders.termsQuery("clinicWorkingSchedules.workingDay", days))));
 				}
@@ -977,7 +975,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	@Override
 	public List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
-			long maxTime, List<String> days) {
+			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable) {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
 		try {
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -1003,12 +1001,22 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder
 						.must(QueryBuilders.matchPhrasePrefixQuery("isTwentyFourSevenOpen", isTwentyFourSevenOpen));
 			}
+			if (isGenericMedicineAvailable != null) {
+				boolQueryBuilder.must(
+						QueryBuilders.matchPhrasePrefixQuery("isGenericMedicineAvailable", isGenericMedicineAvailable));
+			}
+
 			if (days != null && !days.isEmpty()) {
 				for (int i = 0; i < days.size(); i++)
 					days.set(i, days.get(i).toLowerCase());
 
 				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules",
 						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
+			}
+			if (pharmacyType != null && !pharmacyType.isEmpty()) {
+				for (int i = 0; i < pharmacyType.size(); i++)
+					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
+
 			}
 
 			if (maxTime == 0) {
@@ -1105,7 +1113,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return esUserLocaleDocuments;
 	}
-	
+
 	@Override
 	@Transactional
 	public Boolean sendSMSToDoctors() {

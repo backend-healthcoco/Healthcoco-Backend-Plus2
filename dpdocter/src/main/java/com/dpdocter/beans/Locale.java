@@ -24,6 +24,8 @@ public class Locale extends GenericCollection {
 	private String websiteUrl;
 	private String localeEmailAddress;
 	private Boolean isTwentyFourSevenOpen = false;
+	private List<String> pharmacyType;
+	private Boolean isGenericMedicineAvailable = false;
 	private String localeUId;
 	private int openSince;
 	private UserState userState;
@@ -37,7 +39,23 @@ public class Locale extends GenericCollection {
 	private String localeType = LocaleType.PHARMACY.getType();
 	private Boolean isPasswordVerified = false;
 	private Boolean isLocaleRecommended;
-	private Boolean isAcceptRequest=true;
+	private Boolean isAcceptRequest = true;
+
+	public List<String> getPharmacyType() {
+		return pharmacyType;
+	}
+
+	public Boolean getIsGenericMedicineAvailable() {
+		return isGenericMedicineAvailable;
+	}
+
+	public void setPharmacyType(List<String> pharmacyType) {
+		this.pharmacyType = pharmacyType;
+	}
+
+	public void setIsGenericMedicineAvailable(Boolean isGenericMedicineAvailable) {
+		this.isGenericMedicineAvailable = isGenericMedicineAvailable;
+	}
 
 	public String getId() {
 		return id;

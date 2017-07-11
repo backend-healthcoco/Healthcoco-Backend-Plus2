@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.SearchType;
@@ -373,9 +374,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 						Fields.field("patient.registrationDate", "$registrationDate"),
 						Fields.field("patient.createdTime", "$createdTime"), Fields.field("groupName", "$group.name"),
 						Fields.field("groupId", "$group._id")));
-				if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-					criteria.and("$address.locality").regex("^" + searchTerm, "i");
-				}
+			
 
 				criteria.and("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));
@@ -400,7 +399,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 
 				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-						PatientCollection.class, PatientAnalyticResponse.class);
+						GroupCollection.class, PatientAnalyticResponse.class);
 				response = aggregationResults.getMappedResults();
 				break;
 			}

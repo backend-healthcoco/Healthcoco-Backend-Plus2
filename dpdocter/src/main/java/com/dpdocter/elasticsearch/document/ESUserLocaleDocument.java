@@ -18,7 +18,6 @@ import com.dpdocter.enums.LocaleType;
 
 @Document(indexName = "userlocale_in", type = "userlocale")
 public class ESUserLocaleDocument {
-
 	@Id
 	private String id;// This is localeId
 
@@ -75,6 +74,12 @@ public class ESUserLocaleDocument {
 
 	@Field(type = FieldType.String)
 	private String licenseNumber;
+	
+	@Field(type = FieldType.String)
+	private List<String> pharmacyType;
+	
+	@Field(type = FieldType.Boolean)
+	private Boolean isGenericMedicineAvailable = false;	
 
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<LocaleImage> localeImages;
@@ -147,6 +152,8 @@ public class ESUserLocaleDocument {
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isAcceptRequest=true;
+	
+	
 
 	@Transient
 	private Double distance;
@@ -505,6 +512,23 @@ public class ESUserLocaleDocument {
 
 	public void setIsAcceptRequest(Boolean isAcceptRequest) {
 		this.isAcceptRequest = isAcceptRequest;
+	}
+	
+
+	public List<String> getPharmacyType() {
+		return pharmacyType;
+	}
+
+	public Boolean getIsGenericMedicineAvailable() {
+		return isGenericMedicineAvailable;
+	}
+
+	public void setPharmacyType(List<String> pharmacyType) {
+		this.pharmacyType = pharmacyType;
+	}
+
+	public void setIsGenericMedicineAvailable(Boolean isGenericMedicineAvailable) {
+		this.isGenericMedicineAvailable = isGenericMedicineAvailable;
 	}
 
 	@Override
