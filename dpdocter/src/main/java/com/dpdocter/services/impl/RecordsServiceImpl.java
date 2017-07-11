@@ -1676,13 +1676,15 @@ public class RecordsServiceImpl implements RecordsService {
 
 				}
 			}
+
+			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
+
 			if (!DPDoctorUtils.allStringsEmpty(userRecordsCollection.getDoctorId(),
 					userRecordsCollection.getPatientId())) {
 				pushNotificationServices.notifyUser(userRecordsCollection.getPatientId().toString(),
 						"Dr." + userCollection.getFirstName() + "has shared record with you - Tap to view it!",
 						ComponentType.USER_RECORD.getType(), userRecordsCollection.getId().toString(), null);
 			}
-			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 			response = new UserRecords();
 			BeanUtil.map(userRecordsCollection, response);
 		} catch (BusinessException e) {
