@@ -25,27 +25,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
-import com.dpdocter.beans.LabTestPickupLookupResponse;
-import com.dpdocter.beans.LabTestSample;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
-import com.dpdocter.beans.SMS;
-import com.dpdocter.beans.SMSAddress;
-import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
-import com.dpdocter.collections.LabTestPickupCollection;
-import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
-import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.RoleEnum;
-import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -71,7 +62,6 @@ import com.dpdocter.services.FileManager;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
 
-import ar.com.fdvs.dj.output.MemoryReportWriter;
 import common.util.web.DPDoctorUtils;
 
 @Service
@@ -727,6 +717,7 @@ public class ContactsServiceImpl implements ContactsService {
 		List<PatientGroupLookupResponse> patientGroupLookupResponses = null;
 		Boolean status = false;
 		Aggregation aggregation = null;
+		List<String> mobileNumbers = null;
 		try {
 			String message = request.getMessage() + " -powered by Healthcoco";
 			Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
@@ -737,29 +728,20 @@ public class ContactsServiceImpl implements ContactsService {
 					PatientGroupCollection.class, PatientGroupLookupResponse.class);
 			patientGroupLookupResponses = aggregationResults.getMappedResults();
 			if (patientGroupLookupResponses != null) {
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setDoctorId(new ObjectId(request.getDoctorId()));
-				smsTrackDetail.setLocationId(new ObjectId(request.getLocationId()));
-				smsTrackDetail.setHospitalId(new ObjectId(request.getHospitalId()));
-				smsTrackDetail.setType("BULK SMS TO GROUP");
+				mobileNumbers = new ArrayList<>();
 				for (PatientGroupLookupResponse patientGroupLookupResponse : patientGroupLookupResponses) {
-					SMSDetail smsDetail = new SMSDetail();
-					smsDetail.setUserId(new ObjectId(patientGroupLookupResponse.getUser().getId()));
-					SMS sms = new SMS();
-					smsDetail.setUserName(patientGroupLookupResponse.getUser().getLocalPatientName());
-					SMSAddress smsAddress = new SMSAddress();
-					smsAddress.setRecipient(patientGroupLookupResponse.getUser().getMobileNumber());
-					sms.setSmsAddress(smsAddress);
-					sms.setSmsText(message);
-					smsDetail.setSms(sms);
-					smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-					List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-					smsDetails.add(smsDetail);
-					smsTrackDetail.setSmsDetails(smsDetails);
-					smsServices.sendSMS(smsTrackDetail, true);
+				
+					mobileNumbers.add(patientGroupLookupResponse.getUser().getMobileNumber());
+					
 				}
 				
 			}
+			
+			if(!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED"))
+			{
+				status = true;
+			}
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();

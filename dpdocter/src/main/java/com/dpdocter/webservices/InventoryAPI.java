@@ -223,7 +223,7 @@ public class InventoryAPI {
 	@GET
 	@ApiOperation(value = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS, notes = PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
 	@Path(PathProxy.InventoryUrls.GET_INVENTORY_STOCKS)
-	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId , @QueryParam("searchTerm") String searchTerm , @QueryParam("page") int page ,@QueryParam("size") int size  )
+	public Response<Object> getInventoryStock(@QueryParam("hospitalId") String hospitalId , @QueryParam("locationId") String locationId ,@QueryParam("itemId") String itemId,@QueryParam("stockType") String stockType, @QueryParam("searchTerm") String searchTerm , @QueryParam("page") int page ,@QueryParam("size") int size  )
 	{
 		Response<Object> response = new Response<>();
 		List<InventoryStockLookupResponse> inventoryStocks = null;
@@ -232,12 +232,12 @@ public class InventoryAPI {
 			{
 				throw new BusinessException(ServiceError.InvalidInput , "Invalid Input");
 			}
-			inventoryStocks = inventoryService.getInventoryStockList(locationId, hospitalId, searchTerm, page, size);
+			inventoryStocks = inventoryService.getInventoryStockList(locationId, hospitalId, itemId, stockType, searchTerm, page, size);
 			if(inventoryStocks != null)
 			{
 				response.setDataList(inventoryStocks);
 			}
-			response.setData(inventoryService.getInventoryStockListCount(locationId, hospitalId, searchTerm));
+			response.setData(inventoryService.getInventoryStockListCount(locationId, hospitalId, itemId, stockType, searchTerm));
 		} catch (Exception e) {
 			// TODO: handle exception
 			LOGGER.warn("Error while getting inventory stocks");

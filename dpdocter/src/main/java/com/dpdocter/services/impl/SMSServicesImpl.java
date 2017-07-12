@@ -16,7 +16,9 @@ import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,6 +26,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
@@ -635,5 +638,51 @@ public class SMSServicesImpl implements SMSServices {
 			throw new BusinessException(ServiceError.Unknown, "Error while Sending  Invalid location Id");
 		}
 		return response;
+	}
+	
+	@Override
+	public String getBulkSMSResponse(List<String> mobileNumbers, String message) {
+
+		StringBuffer response = new StringBuffer();
+		try {
+			Set<String> numbers= new HashSet<>(mobileNumbers);
+			List<String> numberlist = new ArrayList<String> (numbers);
+			String numberString = StringUtils.join(numberlist, ',');
+			// String password = new String(loginRequest.getPassword());
+			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey" + AUTH_KEY + "&mobiles="
+					+ numberString + "&message=" + message + "&sender="
+					+ SENDER_ID + "&route=" + ROUTE + "&country=" + COUNTRY_CODE;
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is POST
+			con.setRequestMethod("GET");
+
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return "Failed";
+		}
+
+		return response.toString();
+
 	}
 }

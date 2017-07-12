@@ -921,6 +921,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 			String dateTime, String clinicName, String clinicContactNum, String patientEmailAddress,
 			String patientMobileNumber, String doctorEmailAddress, String doctorMobileNumber,
 			DoctorFacility doctorFacility) throws MessagingException {
+		
+	/*	sendAppointmentEmailSmsNotification(true, request, appointmentCollection.getId().toString(),
+				appointmentId, doctorName, patientName, dateTime, clinicName, clinicContactNum,
+				patientCard.getEmailAddress(), patientCard.getUser().getMobileNumber(),
+				userCollection.getEmailAddress(), userCollection.getMobileNumber(),
+				(clinicProfileCollection != null) ? clinicProfileCollection.getFacility() : null);*/
 
 		if (isAddAppointment) {
 			if (request.getCreatedBy().equals(AppointmentCreatedBy.DOCTOR)) {

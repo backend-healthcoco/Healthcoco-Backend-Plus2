@@ -31,4 +31,6 @@ public interface SMSServices {
 
 	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) throws TwilioRestException;
 
+	String getBulkSMSResponse(List<String> mobileNumbers, String message);
+
 }

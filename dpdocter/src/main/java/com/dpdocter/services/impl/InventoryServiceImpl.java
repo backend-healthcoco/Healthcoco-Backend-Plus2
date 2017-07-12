@@ -393,7 +393,7 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
-	public List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String searchTerm, int page,
+	public List<InventoryStockLookupResponse> getInventoryStockList(String locationId, String hospitalId, String itemId, String stockType, String searchTerm, int page,
 			int size) {
 		List<InventoryStockLookupResponse> response = null;
 		try {
@@ -403,6 +403,17 @@ public class InventoryServiceImpl implements InventoryService {
 				criteria = criteria.orOperator(new Criteria("inventoryItem.name").regex("^" + searchTerm, "i"),
 						new Criteria("inventoryItem.name").regex("^" + searchTerm),new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
 						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm));
+			}
+			
+			if(itemId != null)
+			{
+				criteria.and("itemId").is(new ObjectId(itemId));
+			}
+
+			
+			if(stockType != null)
+			{
+				criteria.and("stockType").is(stockType);
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));
@@ -436,7 +447,8 @@ public class InventoryServiceImpl implements InventoryService {
 	
 	@Override
 	@Transactional
-	public Integer getInventoryStockListCount(String locationId, String hospitalId, String searchTerm)
+	public Integer getInventoryStockListCount(String locationId, String hospitalId, String itemId,
+			String stockType, String searchTerm)
 	{
 		List<InventoryStockLookupResponse> response = null;
 		try {
@@ -446,6 +458,17 @@ public class InventoryServiceImpl implements InventoryService {
 				criteria = criteria.orOperator(new Criteria("inventoryItem.name").regex("^" + searchTerm, "i"),
 						new Criteria("inventoryItem.name").regex("^" + searchTerm),new Criteria("inventoryBatch.batchName").regex("^" + searchTerm, "i"),
 						new Criteria("inventoryBatch.batchName").regex("^" + searchTerm));
+			}
+			
+			if(itemId != null)
+			{
+				criteria.and("itemId").is(new ObjectId(itemId));
+			}
+
+			
+			if(stockType != null)
+			{
+				criteria.and("stockType").is(stockType);
 			}
 
 			criteria.and("locationId").is(new ObjectId(locationId));

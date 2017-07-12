@@ -700,7 +700,7 @@ public class SignUpServiceImpl implements SignUpService {
 			// String localePassword = DPDoctorUtils.randomString(8);
 			// System.out.println(localePassword);
 			UserCollection userCollection = new UserCollection();
-			userCollection.setUserName(UniqueIdInitial.COLLECTION_BOYS.getInitial() + collectionBoy.getMobileNumber());
+			userCollection.setUserName(UniqueIdInitial.PHARMACY.getInitial() + collectionBoy.getMobileNumber());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
 			userCollection.setIsVerified(true);
 			userCollection.setIsActive(true);

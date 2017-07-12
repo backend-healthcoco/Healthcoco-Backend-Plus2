@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import common.util.web.JacksonUtil;
+
 public class AddVideoRequest {
 
 	private String name;
@@ -35,6 +37,11 @@ public class AddVideoRequest {
 	@Override
 	public String toString() {
 		return "AddVideoRequest [name=" + name + ", speciality=" + speciality + ", description=" + description + "]";
+	}
+	
+	public static void main(String[] args) {
+		AddVideoRequest request = new AddVideoRequest();
+		System.err.println(JacksonUtil.obj2Json(request));
 	}
 
 }

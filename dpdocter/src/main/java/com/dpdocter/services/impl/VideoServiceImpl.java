@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.LabReports;
@@ -38,6 +39,7 @@ import com.dpdocter.services.VideoService;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
+@Service
 public class VideoServiceImpl implements VideoService {
 
 	@Autowired
@@ -77,7 +79,6 @@ public class VideoServiceImpl implements VideoService {
 				videoCollection.setVideoUrl(imageURLResponse.getImageUrl());
 				videoCollection.setCreatedTime(new Date());
 			}
-
 			videoCollection = videoRepository.save(videoCollection);
 			response = new Video();
 			BeanUtil.map(videoCollection, response);
@@ -100,7 +101,7 @@ public class VideoServiceImpl implements VideoService {
 			if (doctorCollection != null) {
 				String speciality = null;
 
-				if (doctorCollection.getSpecialities() == null || doctorCollection.getSpecialities().isEmpty()) {
+				if (doctorCollection.getSpecialities() != null || !doctorCollection.getSpecialities().isEmpty()) {
 					specialities = new ArrayList<>();
 					for (ObjectId specialityId : doctorCollection.getSpecialities()) {
 						SpecialityCollection specialityCollection = specialityRepository.findOne(specialityId);
@@ -111,12 +112,10 @@ public class VideoServiceImpl implements VideoService {
 					}
 				}
 			}
+			
 			aggregation = Aggregation.newAggregation(
-					Aggregation.match(new Criteria("speciality").and("id").in(specialities)),
-					Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "daughterLab"),
-					Aggregation.unwind("daughterLab"),
-					Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "parentLab"),
-					Aggregation.unwind("parentLab"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.match(new Criteria().and("speciality").in(specialities))
+					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
 					Video.class);
 			response = aggregationResults.getMappedResults();
