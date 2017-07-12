@@ -319,8 +319,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 											.lon(Double.parseDouble(longitude)).distance("30km"))
 									.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm))
-									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true))
-									.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
+									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
 							esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
 									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
@@ -973,7 +972,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String location, String latitude,
+	public List<ESUserLocaleDocument> getPharmacies(int page, int size, String city, String localeName, String latitude,
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable) {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
@@ -988,8 +987,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					longitude = esCityDocument.getLongitude() + "";
 				}
 			}
-			if (!DPDoctorUtils.anyStringEmpty(location)) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", location));
+			if (!DPDoctorUtils.anyStringEmpty(localeName)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));

@@ -170,6 +170,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	public DischargeSummaryResponse addEditDischargeSummary(DischargeSummaryRequest dischargeSummary) {
 
 		DischargeSummaryResponse response = null;
+		DischargeSummaryCollection oldDischargeSummaryCollection = null;
 		try {
 
 			Appointment appointment = null;
@@ -184,14 +185,19 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummary.setUniqueEmrId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			} else {
-				dischargeSummaryCollection = dischargeSummaryRepository.findOne(new ObjectId(dischargeSummary.getId()));
-				if (DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getUniqueEmrId()))
-					dischargeSummaryCollection.setUniqueEmrId(
+				oldDischargeSummaryCollection = dischargeSummaryRepository
+						.findOne(new ObjectId(dischargeSummary.getId()));
+				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId()))
+					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 			}
 
 			if (dischargeSummaryCollection != null) {
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
+				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
+				dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
+				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
+				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
 				if (dischargeSummary.getPrescriptions() != null) {
 					PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
 					BeanUtil.map(dischargeSummary.getPrescriptions(), request);
@@ -440,7 +446,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DischargeSummaryCollection dischargeSummaryCollection = dischargeSummaryRepository
 					.findOne(new ObjectId(dischargeSummeryId));
 			if (dischargeSummaryCollection != null) {
-
 				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
 						dischargeSummaryCollection.getPatientId(), dischargeSummaryCollection.getLocationId(),
 						dischargeSummaryCollection.getHospitalId());

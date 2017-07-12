@@ -80,7 +80,7 @@ public class ESAppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
 	public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
-			@QueryParam("city") String city, @QueryParam("location") String location,
+			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("paymentType") String paymentType,@DefaultValue("false") @QueryParam("homeService") Boolean homeService,
 			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
@@ -88,7 +88,7 @@ public class ESAppointmentApi {
 			@MatrixParam("pharmacyType") List<String> pharmacyType,
 			@QueryParam("isGenericMedicineAvailable") Boolean isGenericMedicineAvailable) {
 
-		List<ESUserLocaleDocument> pharmacies = solrAppointmentService.getPharmacies(page, size, city, location,
+		List<ESUserLocaleDocument> pharmacies = solrAppointmentService.getPharmacies(page, size, city, localeName,
 				latitude, longitude, paymentType, homeService, isTwentyFourSevenOpen, minTime, maxTime, days,
 				pharmacyType, isGenericMedicineAvailable);
 
