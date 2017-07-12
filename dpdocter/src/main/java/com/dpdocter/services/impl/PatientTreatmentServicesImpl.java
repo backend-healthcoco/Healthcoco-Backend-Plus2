@@ -196,6 +196,7 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 					}
 					treatmentServicesCollection.setCost(treatmentService.getCost());
 					treatmentServicesCollection.setSpeciality(treatmentService.getSpeciality());
+					treatmentServicesCollection.setCategory(treatmentService.getCategory());
 					treatmentServicesCollection.setUpdatedTime(new Date());
 					treatmentServicesCollection = treatmentServicesRepository.save(treatmentServicesCollection);
 				} else {
