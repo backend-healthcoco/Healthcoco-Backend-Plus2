@@ -1042,7 +1042,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										.lt(maxTime)))))));
 			}
 
-			if (latitude != null && longitude != null)
+			if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude))
 				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 						.lon(Double.parseDouble(longitude)).distance("30km"));
 
