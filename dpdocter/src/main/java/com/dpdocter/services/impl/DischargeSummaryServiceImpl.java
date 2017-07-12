@@ -184,20 +184,23 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
-			} else {
-				oldDischargeSummaryCollection = dischargeSummaryRepository
-						.findOne(new ObjectId(dischargeSummary.getId()));
-				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId()))
-					oldDischargeSummaryCollection.setUniqueEmrId(
-							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
-			}
+			} 
 
 			if (dischargeSummaryCollection != null) {
+				
 				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
+				if(!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())){
+				oldDischargeSummaryCollection = dischargeSummaryRepository
+						.findOne(new ObjectId(dischargeSummary.getId()));
+				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())){
+					oldDischargeSummaryCollection.setUniqueEmrId(
+							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
+				}
 				dischargeSummaryCollection.setCreatedBy(oldDischargeSummaryCollection.getCreatedBy());
 				dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
 				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
+				}
 				if (dischargeSummary.getPrescriptions() != null) {
 					PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
 					BeanUtil.map(dischargeSummary.getPrescriptions(), request);
