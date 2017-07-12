@@ -184,15 +184,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
 						UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
-			} 
+			}
 
-			if (dischargeSummaryCollection != null) {
-				
-				BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
-				if(!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())){
+			BeanUtil.map(dischargeSummary, dischargeSummaryCollection);
+			if (!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())) {
 				oldDischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(dischargeSummary.getId()));
-				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())){
+				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())) {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
 				}
@@ -200,55 +198,51 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				dischargeSummaryCollection.setCreatedTime(oldDischargeSummaryCollection.getCreatedTime());
 				dischargeSummaryCollection.setDiscarded(oldDischargeSummaryCollection.getDiscarded());
 				dischargeSummaryCollection.setUniqueEmrId(oldDischargeSummaryCollection.getUniqueEmrId());
-				}
-				if (dischargeSummary.getPrescriptions() != null) {
-					PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
-					BeanUtil.map(dischargeSummary.getPrescriptions(), request);
-					request.setHospitalId(dischargeSummary.getHospitalId());
-					request.setLocationId(dischargeSummary.getLocationId());
-					request.setDoctorId(dischargeSummary.getDoctorId());
-					request.setPatientId(dischargeSummary.getPatientId());
-					prescription = new Prescription();
-					if (DPDoctorUtils.anyStringEmpty(request.getId())) {
-						addEditResponseDetails = prescriptionServices.addPrescriptionHandheld(request);
-						if (addEditResponseDetails != null) {
-							String visitId = patientVisitService.addRecord(addEditResponseDetails,
-									VisitedFor.PRESCRIPTION, addEditResponseDetails.getVisitId());
-							addEditResponseDetails.setVisitId(visitId);
-						}
-					} else {
-						addEditResponseDetails = prescriptionServices.editPrescription(request);
-						if (addEditResponseDetails != null) {
-							String visitId = patientVisitService.editRecord(addEditResponseDetails.getId(),
-									VisitedFor.PRESCRIPTION);
-							addEditResponseDetails.setVisitId(visitId);
-						}
-
+			}
+			if (dischargeSummary.getPrescriptions() != null) {
+				PrescriptionAddEditRequest request = new PrescriptionAddEditRequest();
+				BeanUtil.map(dischargeSummary.getPrescriptions(), request);
+				request.setHospitalId(dischargeSummary.getHospitalId());
+				request.setLocationId(dischargeSummary.getLocationId());
+				request.setDoctorId(dischargeSummary.getDoctorId());
+				request.setPatientId(dischargeSummary.getPatientId());
+				prescription = new Prescription();
+				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+					addEditResponseDetails = prescriptionServices.addPrescriptionHandheld(request);
+					if (addEditResponseDetails != null) {
+						String visitId = patientVisitService.addRecord(addEditResponseDetails, VisitedFor.PRESCRIPTION,
+								addEditResponseDetails.getVisitId());
+						addEditResponseDetails.setVisitId(visitId);
 					}
-					BeanUtil.map(addEditResponseDetails, prescription);
-
-					dischargeSummaryCollection.setPrescriptionId(new ObjectId(addEditResponseDetails.getId()));
-				}
-				if (dischargeSummary.getAppointmentRequest() != null) {
-					appointment = addDischageSummaryAppointment(dischargeSummary.getAppointmentRequest());
-				}
-				if (appointment != null) {
-
-					dischargeSummaryCollection.setFromDate(appointment.getFromDate());
-					dischargeSummaryCollection.setTime(appointment.getTime());
-					dischargeSummaryCollection.setAppointmentId(appointment.getAppointmentId());
+				} else {
+					addEditResponseDetails = prescriptionServices.editPrescription(request);
+					if (addEditResponseDetails != null) {
+						String visitId = patientVisitService.editRecord(addEditResponseDetails.getId(),
+								VisitedFor.PRESCRIPTION);
+						addEditResponseDetails.setVisitId(visitId);
+					}
 
 				}
-				dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
-				response = new DischargeSummaryResponse();
+				BeanUtil.map(addEditResponseDetails, prescription);
 
-				BeanUtil.map(dischargeSummaryCollection, response);
-				response.setPrescriptions(prescription);
+				dischargeSummaryCollection.setPrescriptionId(new ObjectId(addEditResponseDetails.getId()));
+			}
+			if (dischargeSummary.getAppointmentRequest() != null) {
+				appointment = addDischageSummaryAppointment(dischargeSummary.getAppointmentRequest());
+			}
+			if (appointment != null) {
 
-			} else {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid  discharge summary Id  ");
+				dischargeSummaryCollection.setFromDate(appointment.getFromDate());
+				dischargeSummaryCollection.setTime(appointment.getTime());
+				dischargeSummaryCollection.setAppointmentId(appointment.getAppointmentId());
 
 			}
+			dischargeSummaryCollection = dischargeSummaryRepository.save(dischargeSummaryCollection);
+			response = new DischargeSummaryResponse();
+
+			BeanUtil.map(dischargeSummaryCollection, response);
+			response.setPrescriptions(prescription);
+
 		} catch (
 
 		Exception e) {
