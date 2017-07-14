@@ -7,12 +7,9 @@
 	<br> City : ${city}
 	<br> Mobile number : ${mobileNumber}
 	<br> Email Address : ${emailAddress}
-	<br> Specialities :
-	<ul>
- 		#foreach( $speciality in $specialities )
-    		<li>$speciality</li>
- 		#end
-	</ul>
-	<br> Device Type : ${deviceType}
+	<br> Pharmacy Name : ${localeName}
+	<br> Address : ${address}
+	<br> License No. : ${licenseNo}
+		<br> Device Type : ${deviceType}
 </body>
 </html>

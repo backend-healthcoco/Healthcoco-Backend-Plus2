@@ -1103,9 +1103,9 @@ public interface PathProxy {
 
 		public static final String DOWNLOAD_RECEIPT = "/downloadReceipt/{receiptId}";
 
-		public static final String EMAIL_INVOICE = "/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";";
+		public static final String EMAIL_INVOICE = "/{invoiceId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
-		public static final String EMAIL_RECEIPT = "/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";";
+		public static final String EMAIL_RECEIPT = "/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";

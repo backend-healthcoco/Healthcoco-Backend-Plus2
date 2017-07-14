@@ -21,16 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.BabyNote;
-import com.dpdocter.beans.Diagnoses;
-import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.OperationNote;
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
-import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
-import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
