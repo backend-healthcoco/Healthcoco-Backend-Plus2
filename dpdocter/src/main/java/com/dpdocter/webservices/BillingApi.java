@@ -313,13 +313,37 @@ public class BillingApi {
 		response.setData(billingService.downloadInvoice(invoiceId));
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.BillingUrls.DOWNLOAD_RECEIPT)
 	@GET
 	@ApiOperation(value = PathProxy.BillingUrls.DOWNLOAD_RECEIPT, notes = PathProxy.BillingUrls.DOWNLOAD_RECEIPT)
 	public Response<String> downloadReceipt(@PathParam("receiptId") String receiptId) {
 		Response<String> response = new Response<String>();
 		response.setData(billingService.downloadReceipt(receiptId));
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.EMAIL_INVOICE)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.EMAIL_INVOICE, notes = PathProxy.BillingUrls.EMAIL_INVOICE)
+	public Response<Boolean> emailInvoice(@PathParam("invoiceId") String invoiceId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam(value = "emailAddress") String emailAddress) {
+		billingService.emailInvoice(invoiceId, doctorId, locationId, hospitalId, emailAddress);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
+	@Path(value = PathProxy.BillingUrls.EMAIL_RECEIPT)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.EMAIL_RECEIPT, notes = PathProxy.BillingUrls.EMAIL_RECEIPT)
+	public Response<Boolean> emailReceipt(@PathParam("receiptId") String receiptId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId, @PathParam(value = "emailAddress") String emailAddress) {
+		billingService.emailReceipt(receiptId, doctorId, locationId, hospitalId, emailAddress);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
 		return response;
 	}
 

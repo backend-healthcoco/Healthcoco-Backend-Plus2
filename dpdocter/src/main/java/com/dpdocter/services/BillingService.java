@@ -53,7 +53,14 @@ public interface BillingService {
 
 	int getReceiptCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, Boolean isOTPVerified);
-	
+
 	int getInvoiceCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, Boolean isOTPVerified);
+
+	public void emailReceipt(String receiptId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
+
+	public void emailInvoice(String invoiceId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
+
 }

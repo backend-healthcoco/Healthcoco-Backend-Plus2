@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,13 @@ import com.dpdocter.beans.DoctorPatientReceipt;
 import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
 import com.dpdocter.collections.DoctorPatientReceiptCollection;
+import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.EyePrescriptionCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
@@ -59,8 +64,12 @@ import com.dpdocter.response.DoctorPatientLedgerResponse;
 import com.dpdocter.response.DoctorPatientReceiptAddEditResponse;
 import com.dpdocter.response.InvoiceItemResponse;
 import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.BillingService;
+import com.dpdocter.services.EmailTackService;
 import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
 import com.mongodb.BasicDBObject;
 
@@ -87,6 +96,9 @@ public class BillingServiceImpl implements BillingService {
 	private PatientVisitService patientVisitService;
 
 	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
 	private PrintSettingsRepository printSettingsRepository;
 
 	@Autowired
@@ -94,6 +106,12 @@ public class BillingServiceImpl implements BillingService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+
+	@Autowired
+	private EmailTackService emailTackService;
+
+	@Autowired
+	private MailService mailService;
 
 	@Value(value = "${jasper.print.receipt.a4.fileName}")
 	private String receiptA4FileName;
@@ -1504,6 +1522,204 @@ public class BillingServiceImpl implements BillingService {
 				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
 
 		return response;
+	}
+
+	public void emailInvoice(String invoiceId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		DoctorPatientInvoiceCollection doctorPatientInvoiceCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(invoiceId));
+			if (doctorPatientInvoiceCollection != null) {
+				if (doctorPatientInvoiceCollection.getDoctorId() != null
+						&& doctorPatientInvoiceCollection.getHospitalId() != null
+						&& doctorPatientInvoiceCollection.getLocationId() != null) {
+					if (doctorPatientInvoiceCollection.getDoctorId().equals(doctorId)
+							&& doctorPatientInvoiceCollection.getHospitalId().equals(hospitalId)
+							&& doctorPatientInvoiceCollection.getLocationId().equals(locationId)) {
+
+						user = userRepository.findOne(doctorPatientInvoiceCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								doctorPatientInvoiceCollection.getPatientId(),
+								doctorPatientInvoiceCollection.getLocationId(),
+								doctorPatientInvoiceCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(doctorPatientInvoiceCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(doctorPatientInvoiceCollection.getHospitalId());
+						emailTrackCollection.setLocationId(doctorPatientInvoiceCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.INVOICE.getType());
+						emailTrackCollection.setSubject("Invoice");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(doctorPatientInvoiceCollection,
+								patient, user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse
+								.setMailRecordCreatedDate(sdf.format(doctorPatientInvoiceCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("Invoice Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								"Invoice Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Invoice not found.Please check invoiceId.");
+				throw new BusinessException(ServiceError.NoRecord, "Invoice not found.Please check invoiceId.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Invoice", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Invoice", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+	}
+
+	public void emailReceipt(String receiptId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		DoctorPatientReceiptCollection doctorPatientReceiptCollection = null;
+		MailAttachment mailAttachment = null;
+		PatientCollection patient = null;
+		UserCollection user = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			doctorPatientReceiptCollection = doctorPatientReceiptRepository.findOne(new ObjectId(receiptId));
+			if (doctorPatientReceiptCollection != null) {
+				if (doctorPatientReceiptCollection.getDoctorId() != null
+						&& doctorPatientReceiptCollection.getHospitalId() != null
+						&& doctorPatientReceiptCollection.getLocationId() != null) {
+					if (doctorPatientReceiptCollection.getDoctorId().equals(doctorId)
+							&& doctorPatientReceiptCollection.getHospitalId().equals(hospitalId)
+							&& doctorPatientReceiptCollection.getLocationId().equals(locationId)) {
+
+						user = userRepository.findOne(doctorPatientReceiptCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								doctorPatientReceiptCollection.getPatientId(),
+								doctorPatientReceiptCollection.getLocationId(),
+								doctorPatientReceiptCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(doctorPatientReceiptCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(doctorPatientReceiptCollection.getHospitalId());
+						emailTrackCollection.setLocationId(doctorPatientReceiptCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.RECEIPT.getType());
+						emailTrackCollection.setSubject("Receipt");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasperForReceipt(
+								doctorPatientReceiptCollection, patient, user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse
+								.setMailRecordCreatedDate(sdf.format(doctorPatientReceiptCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("Receipt Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								"Receipt Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Receipt not found.Please check invoiceId.");
+				throw new BusinessException(ServiceError.NoRecord, "Receipt not found.Please check invoiceId.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Receipt", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Receipt", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 	}
 
 }
