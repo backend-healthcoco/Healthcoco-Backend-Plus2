@@ -17,8 +17,19 @@ public class PatientAnalyticResponse {
 	private int count;
 
 	private String groupName;
+	
+	private String groupId;
 
 	private List<PatientAnalyticData> data;
+	
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 
 	private Date date;
 

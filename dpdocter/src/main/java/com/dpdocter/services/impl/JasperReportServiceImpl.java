@@ -1680,21 +1680,56 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.addStyle(normalStyle);
 		Boolean showInvoiceItemQuantity = (Boolean) parameters.get("showInvoiceItemQuantity"),
 				showDiscount = (Boolean) parameters.get("showDiscount"),
-				showStatus = (Boolean) parameters.get("showStatus");
+				showStatus = (Boolean) parameters.get("showStatus"), showTax = (Boolean) parameters.get("showTax");
 
-		int serviceWidth, quantityWidth = 0, otherFieldsWidth, statusWidth = 0, discountWidth = 0, xSpace = 0;
+		int serviceWidth, quantityWidth = 0, otherFieldsWidth, statusWidth = 0, discountWidth = 0, xSpace = 0,
+				taxWidth = 0;
 
-		if (showInvoiceItemQuantity && showDiscount && showStatus) {
+		if (showInvoiceItemQuantity && showDiscount && showStatus && showTax) {
+			serviceWidth = (24 * (columnWidth - 30)) / 100;
+			quantityWidth = (10 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (11 * (columnWidth - 30)) / 100;
+			statusWidth = (14 * (columnWidth - 30)) / 100;
+			discountWidth = (13 * (columnWidth - 30)) / 100;
+			taxWidth = (8 * (columnWidth - 30)) / 100;
+		} else if (showInvoiceItemQuantity && showStatus && showDiscount) {
 			serviceWidth = (25 * (columnWidth - 30)) / 100;
 			quantityWidth = (12 * (columnWidth - 30)) / 100;
 			otherFieldsWidth = (11 * (columnWidth - 30)) / 100;
 			statusWidth = (16 * (columnWidth - 30)) / 100;
 			discountWidth = (15 * (columnWidth - 30)) / 100;
+
+		} else if (showInvoiceItemQuantity && showDiscount && showTax) {
+			serviceWidth = (25 * (columnWidth - 30)) / 100;
+			quantityWidth = (14 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
+			discountWidth = (15 * (columnWidth - 30)) / 100;
+			taxWidth = (12 * (columnWidth - 30)) / 100;
+
+		} else if (showInvoiceItemQuantity && showStatus && showTax) {
+			serviceWidth = (25 * (columnWidth - 30)) / 100;
+			quantityWidth = (14 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
+			statusWidth = (16 * (columnWidth - 30)) / 100;
+			taxWidth = (12 * (columnWidth - 30)) / 100;
+
+		} else if (showDiscount && showStatus && showTax) {
+			serviceWidth = (25 * (columnWidth - 30)) / 100;
+			discountWidth = (14 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
+			statusWidth = (16 * (columnWidth - 30)) / 100;
+			taxWidth = (12 * (columnWidth - 30)) / 100;
+
 		} else if (showInvoiceItemQuantity && showStatus) {
 			serviceWidth = (30 * (columnWidth - 30)) / 100;
 			quantityWidth = (14 * (columnWidth - 30)) / 100;
 			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
 			statusWidth = (18 * (columnWidth - 30)) / 100;
+		} else if (showInvoiceItemQuantity && showTax) {
+			serviceWidth = (30 * (columnWidth - 30)) / 100;
+			quantityWidth = (14 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
+			taxWidth = (18 * (columnWidth - 30)) / 100;
 		} else if (showInvoiceItemQuantity && showDiscount) {
 			serviceWidth = (30 * (columnWidth - 30)) / 100;
 			quantityWidth = (14 * (columnWidth - 30)) / 100;
@@ -1705,6 +1740,20 @@ public class JasperReportServiceImpl implements JasperReportService {
 			otherFieldsWidth = (12 * (columnWidth - 30)) / 100;
 			statusWidth = (21 * (columnWidth - 30)) / 100;
 			discountWidth = (16 * (columnWidth - 30)) / 100;
+		} else if (showDiscount && showTax) {
+			serviceWidth = (30 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (12 * (columnWidth - 30)) / 100;
+			taxWidth = (18 * (columnWidth - 30)) / 100;
+			discountWidth = (19 * (columnWidth - 30)) / 100;
+		} else if (showTax && showStatus) {
+			serviceWidth = (30 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (12 * (columnWidth - 30)) / 100;
+			statusWidth = (19 * (columnWidth - 30)) / 100;
+			taxWidth = (18 * (columnWidth - 30)) / 100;
+		} else if (showTax) {
+			serviceWidth = (35 * (columnWidth - 30)) / 100;
+			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
+			taxWidth = (25 * (columnWidth - 30)) / 100;
 		} else if (showStatus) {
 			serviceWidth = (35 * (columnWidth - 30)) / 100;
 			otherFieldsWidth = (13 * (columnWidth - 30)) / 100;
@@ -1801,18 +1850,18 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			xSpace = xSpace + discountWidth;
 		}
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{Tax}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(4);
-		jrDesignTextField.setHeight(15);
-		jrDesignTextField.setWidth(otherFieldsWidth);
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		xSpace = xSpace + otherFieldsWidth;
-
+		if (showTax) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Tax}"));
+			jrDesignTextField.setX(xSpace);
+			jrDesignTextField.setY(4);
+			jrDesignTextField.setHeight(15);
+			jrDesignTextField.setWidth(taxWidth);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			xSpace = xSpace + otherFieldsWidth;
+		}
 		if (showStatus) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$P{Status}"));
@@ -1902,16 +1951,17 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			xSpace = xSpace + discountWidth;
 		}
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$F{tax}"));
-		jrDesignTextField.setX(xSpace);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(otherFieldsWidth);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-		xSpace = xSpace + otherFieldsWidth;
+		if (showTax) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$F{tax}"));
+			jrDesignTextField.setX(xSpace);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(taxWidth);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+			xSpace = xSpace + otherFieldsWidth;
+		}
 		if (showStatus) {
 			jrDesignTextField = new JRDesignTextField();
 			jrDesignTextField.setExpression(new JRDesignExpression("$F{status}"));
@@ -2865,24 +2915,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setFontSize(new Float(contentFontSize));
-		band.addElement(jrDesignTextField);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		band = new JRDesignBand();
-		band.setHeight(5);
-		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
-		band = new JRDesignBand();
-		band.setHeight(18);
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{name}"));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(0);
-		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setStretchWithOverflow(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
-		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 

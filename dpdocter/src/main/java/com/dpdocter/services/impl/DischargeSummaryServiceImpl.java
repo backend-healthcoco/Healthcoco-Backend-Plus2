@@ -178,8 +178,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DischargeSummaryCollection dischargeSummaryCollection = null;
 			PrescriptionAddEditResponseDetails addEditResponseDetails = null;
 			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
+			dischargeSummaryCollection = new DischargeSummaryCollection();
 			if (dischargeSummary.getId() == null) {
-				dischargeSummaryCollection = new DischargeSummaryCollection();
+				
 				dischargeSummary.setCreatedTime(new Date());
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
@@ -190,6 +191,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())) {
 				oldDischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(dischargeSummary.getId()));
+				
 				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())) {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());

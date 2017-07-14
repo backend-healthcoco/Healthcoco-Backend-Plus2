@@ -1318,7 +1318,7 @@ public class BillingServiceImpl implements BillingService {
 						showTax = true;
 					}
 				} else {
-					invoiceItemJasperDetail.setTax("");
+					invoiceItemJasperDetail.setTax("--");
 				}
 				invoiceItemJasperDetail.setCost(invoiceItem.getCost() + "");
 
@@ -1328,7 +1328,7 @@ public class BillingServiceImpl implements BillingService {
 					invoiceItemJasperDetail.setDiscount(
 							invoiceItem.getDiscount().getValue() + " " + invoiceItem.getDiscount().getUnit().getUnit());
 				} else {
-					invoiceItemJasperDetail.setDiscount("");
+					invoiceItemJasperDetail.setDiscount("--");
 				}
 
 				invoiceItemJasperDetail.setTotal(invoiceItem.getFinalCost() + "");
@@ -1461,7 +1461,6 @@ public class BillingServiceImpl implements BillingService {
 				+ simpleDateFormat.format(doctorPatientReceiptCollection.getReceivedDate());
 		parameters.put("content", content);
 		parameters.put("paid", "Rs.&nbsp;" + doctorPatientReceiptCollection.getAmountPaid());
-		parameters.put("name", doctor.getTitle().toUpperCase() + " " + doctor.getFirstName());
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				doctorPatientReceiptCollection.getDoctorId(), doctorPatientReceiptCollection.getLocationId(),
 				doctorPatientReceiptCollection.getHospitalId(), ComponentType.ALL.getType());
