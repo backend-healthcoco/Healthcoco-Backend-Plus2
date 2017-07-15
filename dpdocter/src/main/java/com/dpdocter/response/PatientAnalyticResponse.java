@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.PatientAnalyticData;
+import com.dpdocter.beans.WorkingHours;
 
 public class PatientAnalyticResponse {
 	private int day;

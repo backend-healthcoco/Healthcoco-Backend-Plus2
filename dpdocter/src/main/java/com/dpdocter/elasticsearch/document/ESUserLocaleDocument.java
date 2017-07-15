@@ -74,12 +74,12 @@ public class ESUserLocaleDocument {
 
 	@Field(type = FieldType.String)
 	private String licenseNumber;
-	
+
 	@Field(type = FieldType.String)
 	private List<String> pharmacyType;
-	
+
 	@Field(type = FieldType.Boolean)
-	private Boolean isGenericMedicineAvailable = false;	
+	private Boolean isGenericMedicineAvailable = false;
 
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<LocaleImage> localeImages;
@@ -138,8 +138,8 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isHomeDeliveryAvailable = false;
 
-	@Field(type = FieldType.Integer)
-	private int homeDeliveryRadius;
+	@Field(type = FieldType.Double)
+	private double homeDeliveryRadius;
 
 	@Field(type = FieldType.String)
 	private String paymentInfo;
@@ -151,9 +151,7 @@ public class ESUserLocaleDocument {
 	private Boolean isPasswordVerified = false;
 
 	@Field(type = FieldType.Boolean)
-	private Boolean isAcceptRequest=true;
-	
-	
+	private Boolean isAcceptRequest = true;
 
 	@Transient
 	private Double distance;
@@ -450,11 +448,13 @@ public class ESUserLocaleDocument {
 		this.isHomeDeliveryAvailable = isHomeDeliveryAvailable;
 	}
 
-	public int getHomeDeliveryRadius() {
+	
+
+	public double getHomeDeliveryRadius() {
 		return homeDeliveryRadius;
 	}
 
-	public void setHomeDeliveryRadius(int homeDeliveryRadius) {
+	public void setHomeDeliveryRadius(double homeDeliveryRadius) {
 		this.homeDeliveryRadius = homeDeliveryRadius;
 	}
 
@@ -513,7 +513,6 @@ public class ESUserLocaleDocument {
 	public void setIsAcceptRequest(Boolean isAcceptRequest) {
 		this.isAcceptRequest = isAcceptRequest;
 	}
-	
 
 	public List<String> getPharmacyType() {
 		return pharmacyType;
@@ -552,5 +551,4 @@ public class ESUserLocaleDocument {
 				+ ", isAcceptRequest=" + isAcceptRequest + ", distance=" + distance + "]";
 	}
 
-	
 }

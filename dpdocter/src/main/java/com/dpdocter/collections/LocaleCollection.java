@@ -47,11 +47,11 @@ public class LocaleCollection extends GenericCollection {
 	@Field
 	private String localeEmailAddress;
 	@Field
-	private Boolean isTwentyFourSevenOpen=false;
+	private Boolean isTwentyFourSevenOpen = false;
 	@Field
 	private List<String> pharmacyType;
 	@Field
-	private Boolean isGenericMedicineAvailable=false;
+	private Boolean isGenericMedicineAvailable = false;
 	@Field
 	private String localeUId;
 	@Field
@@ -67,7 +67,7 @@ public class LocaleCollection extends GenericCollection {
 	@Field
 	private Boolean isHomeDeliveryAvailable = false;
 	@Field
-	private int homeDeliveryRadius;
+	private double homeDeliveryRadius;
 	@Field
 	private String paymentInfo;
 	@Field
@@ -76,42 +76,30 @@ public class LocaleCollection extends GenericCollection {
 	private Boolean isPasswordVerified = false;
 
 	@Field
-	private Boolean isVerified=false;
+	private Boolean isVerified = false;
 
 	@Field
-	private Boolean isAcceptRequest=true;
-	
-	
+	private Boolean isAcceptRequest = true;
 
 	public List<String> getPharmacyType() {
 		return pharmacyType;
 	}
 
-
-
 	public Boolean getIsGenericMedicineAvailable() {
 		return isGenericMedicineAvailable;
 	}
-
-
 
 	public void setPharmacyType(List<String> pharmacyType) {
 		this.pharmacyType = pharmacyType;
 	}
 
-
-
 	public void setIsGenericMedicineAvailable(Boolean isGenericMedicineAvailable) {
 		this.isGenericMedicineAvailable = isGenericMedicineAvailable;
 	}
 
-
-
 	public ObjectId getId() {
 		return id;
 	}
-	
-	
 
 	public void setId(ObjectId id) {
 		this.id = id;
@@ -285,11 +273,11 @@ public class LocaleCollection extends GenericCollection {
 		this.isHomeDeliveryAvailable = isHomeDeliveryAvailable;
 	}
 
-	public int getHomeDeliveryRadius() {
+	public double getHomeDeliveryRadius() {
 		return homeDeliveryRadius;
 	}
 
-	public void setHomeDeliveryRadius(int homeDeliveryRadius) {
+	public void setHomeDeliveryRadius(double homeDeliveryRadius) {
 		this.homeDeliveryRadius = homeDeliveryRadius;
 	}
 

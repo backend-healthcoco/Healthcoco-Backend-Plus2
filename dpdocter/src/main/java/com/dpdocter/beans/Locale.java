@@ -34,7 +34,7 @@ public class Locale extends GenericCollection {
 	private long localeRankingCount = 0;
 	private long noOfLocaleRecommendation = 0;
 	private Boolean isHomeDeliveryAvailable = false;
-	private int homeDeliveryRadius;
+	private double homeDeliveryRadius;
 	private String paymentInfo;
 	private String localeType = LocaleType.PHARMACY.getType();
 	private Boolean isPasswordVerified = false;
@@ -241,11 +241,11 @@ public class Locale extends GenericCollection {
 		this.isHomeDeliveryAvailable = isHomeDeliveryAvailable;
 	}
 
-	public int getHomeDeliveryRadius() {
+	public double getHomeDeliveryRadius() {
 		return homeDeliveryRadius;
 	}
 
-	public void setHomeDeliveryRadius(int homeDeliveryRadius) {
+	public void setHomeDeliveryRadius(double homeDeliveryRadius) {
 		this.homeDeliveryRadius = homeDeliveryRadius;
 	}
 

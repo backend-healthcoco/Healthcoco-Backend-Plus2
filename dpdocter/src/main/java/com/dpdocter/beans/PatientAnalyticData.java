@@ -9,6 +9,7 @@ public class PatientAnalyticData {
 	private String PID;
 	private Long registrationDate;
 	private Date createdTime;
+	private WorkingHours visitedTime;
 
 	public String getId() {
 		return id;
@@ -56,6 +57,14 @@ public class PatientAnalyticData {
 
 	public void setCreatedTime(Date createdTime) {
 		this.createdTime = createdTime;
+	}
+
+	public WorkingHours getVisitedTime() {
+		return visitedTime;
+	}
+
+	public void setVisitedTime(WorkingHours visitedTime) {
+		this.visitedTime = visitedTime;
 	}
 
 }

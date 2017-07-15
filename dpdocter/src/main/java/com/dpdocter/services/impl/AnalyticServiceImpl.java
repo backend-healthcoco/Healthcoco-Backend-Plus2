@@ -46,10 +46,10 @@ public class AnalyticServiceImpl implements AnalyticService {
 		try {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
-				criteria=criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
+				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(fromDate)));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
-				criteria=criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
+				criteria = criteria.and("createdTime").lte(new Date(Long.parseLong(toDate)));
 			}
 			Aggregation aggregation = null;
 			switch (PatientAnalyticType.valueOf(queryType.toUpperCase())) {
@@ -60,9 +60,9 @@ public class AnalyticServiceImpl implements AnalyticService {
 						Fields.field("patient.PID", "$PID"), Fields.field("patient.firstName", "$user.firstName"),
 						Fields.field("patient.registrationDate", "$registrationDate"),
 						Fields.field("patient.createdTime", "$createdTime")));
-				
-				criteria=criteria.and("doctorId").is(new ObjectId(doctorId)).and("locationId").is(new ObjectId(locationId))
-						.and("hospitalId").is(new ObjectId(hospitalId));
+
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId)).and("locationId")
+						.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId));
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -384,7 +384,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				switch (SearchType.valueOf(searchType.toUpperCase())) {
 				case DAILY: {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
 							Aggregation.unwind("group"),
@@ -414,7 +414,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case WEEKLY: {
 
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
 							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
 							Aggregation.unwind("group"),
@@ -444,7 +444,7 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case MONTHLY: {
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.lookup("patient_cl", "patientId", "patientId", "patient"),
 							Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
 							Aggregation.unwind("group"),
 							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
@@ -472,8 +472,8 @@ public class AnalyticServiceImpl implements AnalyticService {
 				case YEARLY: {
 
 					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+							Aggregation.lookup("user_cl", "patientId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.lookup("patient_cl", "patientId", "patientId", "patient"),
 							Aggregation.unwind("patient"), Aggregation.lookup("group_cl", "groupId", "_id", "group"),
 							Aggregation.unwind("group"),
 							projectList.and("createdTime").extractDayOfMonth().as("day").and("createdTime")
@@ -509,11 +509,144 @@ public class AnalyticServiceImpl implements AnalyticService {
 				response = aggregationResults.getMappedResults();
 				break;
 			}
-			case TOP_10_VISITED:{
-				
-				
+			case TOP_10_VISITED: {
+				ProjectionOperation projectList = new ProjectionOperation(Fields.from(
+						Fields.field("patient.id", "$userId"),
+						Fields.field("patient.localPatientName", "$localPatientName"),
+						Fields.field("patient.PID", "$PID"), Fields.field("patient.firstName", "$user.firstName"),
+						Fields.field("patient.registrationDate", "$registrationDate"),
+						Fields.field("patient.createdTime", "$visit.createdTime"),
+						Fields.field("patient.visitedTime", "$visit.time"),
+						Fields.field("createdTime", "$visit.createdTime")));
+				criteria.and("patient.doctorId").is(new ObjectId(doctorId)).and("patient.locationId")
+						.is(new ObjectId(locationId)).and("patient.hospitalId").is(new ObjectId(hospitalId));
+				criteria.and("visit.doctorId").is(new ObjectId(doctorId)).and("visit.locationId")
+						.is(new ObjectId(locationId)).and("visit.hospitalId").is(new ObjectId(hospitalId));
+				switch (SearchType.valueOf(searchType.toUpperCase())) {
+				case DAILY: {
+					aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visit"),
+							Aggregation.unwind("visit"), Aggregation.match(criteria),
+							projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
+									.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
+									.and("visit.createdTime").extractWeek().as("week"),
+
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("day", "$day").append("month", "$month")
+													.append("year", "$year").append("groupId", "$groupId"))
+															.append("day", new BasicDBObject("$first", "$day"))
+															.append("city", new BasicDBObject("$first", "$city"))
+															.append("month", new BasicDBObject("$first", "$month"))
+															.append("year", new BasicDBObject("$first", "$year"))
+															.append("groupName",
+																	new BasicDBObject("$first", "$groupName"))
+															.append("groupId", new BasicDBObject("$first", "$groupId"))
+															.append("createdTime",
+																	new BasicDBObject("$first", "$createdTime"))
+															.append("data", new BasicDBObject("$push", "$patient"))
+															.append("count", new BasicDBObject("$size", "$patient")))),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					break;
+				}
+
+				case WEEKLY: {
+
+					aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visit"),
+							Aggregation.unwind("visit"), Aggregation.match(criteria),
+							projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
+									.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
+									.and("visit.createdTime").extractWeek().as("week"),
+
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("week", "$week").append("month", "$month")
+													.append("year", "$year").append("groupId", "$groupId"))
+															.append("day", new BasicDBObject("$first", "$day"))
+															.append("city", new BasicDBObject("$first", "$city"))
+															.append("month", new BasicDBObject("$first", "$month"))
+															.append("year", new BasicDBObject("$first", "$year"))
+															.append("groupName",
+																	new BasicDBObject("$first", "$groupName"))
+															.append("groupId", new BasicDBObject("$first", "$groupId"))
+															.append("createdTime",
+																	new BasicDBObject("$first", "$createdTime"))
+															.append("data", new BasicDBObject("$push", "$patient"))
+															.append("count", new BasicDBObject("$size", "$patient")))),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					break;
+				}
+
+				case MONTHLY: {
+					aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visit"),
+							Aggregation.unwind("visit"),
+							projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
+									.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
+									.and("visit.createdTime").extractWeek().as("week"),
+							Aggregation.match(criteria),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("month", "$month").append("year", "$year")
+													.append("groupId", "$groupId"))
+															.append("day", new BasicDBObject("$first", "$day"))
+															.append("city", new BasicDBObject("$first", "$city"))
+															.append("month", new BasicDBObject("$first", "$month"))
+															.append("year", new BasicDBObject("$first", "$year"))
+															.append("groupName",
+																	new BasicDBObject("$first", "$groupName"))
+															.append("groupId", new BasicDBObject("$first", "$groupId"))
+															.append("createdTime",
+																	new BasicDBObject("$first", "$createdTime"))
+															.append("data", new BasicDBObject("$push", "$patient"))
+															.append("count", new BasicDBObject("$size", "$patient")))),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+					break;
+				}
+				case YEARLY: {
+
+					aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+							Aggregation.unwind("user"),
+							Aggregation.lookup("patient_visit_cl", "patientId", "patientId", "visit"),
+							Aggregation.unwind("visit"), Aggregation.match(criteria),
+							projectList.and("visit.createdTime").extractDayOfMonth().as("day").and("visit.createdTime")
+									.extractMonth().as("month").and("visit.createdTime").extractYear().as("year")
+									.and("visit.createdTime").extractWeek()
+									.as("week"),
+							new CustomAggregationOperation(
+									new BasicDBObject("$group",
+											new BasicDBObject("_id",
+													new BasicDBObject("year", "$year").append("groupId", "$groupId"))
+															.append("day", new BasicDBObject("$first", "$day"))
+															.append("city", new BasicDBObject("$first", "$city"))
+															.append("month", new BasicDBObject("$first", "$month"))
+															.append("year", new BasicDBObject("$first", "$year"))
+															.append("createdTime",
+																	new BasicDBObject("$first", "$createdTime"))
+															.append("data", new BasicDBObject("$push", "$patient"))
+															.append("count", new BasicDBObject("$size", "$patient")))),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+					break;
+
+				}
+
+				default:
+					break;
+				}
+
+				AggregationResults<PatientAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						PatientCollection.class, PatientAnalyticResponse.class);
+				response = aggregationResults.getMappedResults();
+				break;
+
 			}
-				
+
 			case VISITED_PATIENT:
 			default:
 				break;
