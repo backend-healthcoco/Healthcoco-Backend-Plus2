@@ -378,6 +378,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 			inventoryStock.setBatchId(inventoryBatchCollection.getId().toString());
 			BeanUtil.map(inventoryStock, inventoryStockCollection);
+			inventoryStockCollection.setCreatedTime(new Date());
 			inventoryStockCollection = inventoryStockRepository.save(inventoryStockCollection);
 			response = new InventoryStock();
 			BeanUtil.map(inventoryStockCollection, response);

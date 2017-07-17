@@ -15,8 +15,6 @@ import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
-import com.dpdocter.beans.PA;
-import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
