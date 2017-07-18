@@ -44,7 +44,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class ESTreatmentServiceImpl implements ESTreatmentService {
-o
+
 	private static Logger logger = Logger.getLogger(ESTreatmentServiceImpl.class.getName());
 
 	@Autowired
