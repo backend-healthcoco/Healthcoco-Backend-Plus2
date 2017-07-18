@@ -44,7 +44,7 @@ import common.util.web.DPDoctorUtils;
 
 @Service
 public class ESTreatmentServiceImpl implements ESTreatmentService {
-
+o
 	private static Logger logger = Logger.getLogger(ESTreatmentServiceImpl.class.getName());
 
 	@Autowired
@@ -159,8 +159,8 @@ public class ESTreatmentServiceImpl implements ESTreatmentService {
 				}
 			}
 
-			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, 0, updatedTime,
-					discarded, null, searchTerm, specialities, null, null, "name");
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.TREATMENTSERVICE, page, size,
+					updatedTime, discarded, null, searchTerm, specialities, null, null, "name");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESTreatmentServiceDocument.class);
 		} catch (Exception e) {
 			e.printStackTrace();
