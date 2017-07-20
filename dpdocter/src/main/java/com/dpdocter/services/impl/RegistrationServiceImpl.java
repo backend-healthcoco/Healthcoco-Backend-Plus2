@@ -57,12 +57,14 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.GeocodedLocation;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -78,6 +80,7 @@ import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.FeedbackCollection;
+import com.dpdocter.collections.FormContentCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
@@ -116,6 +119,7 @@ import com.dpdocter.repository.ConsentFormRepository;
 import com.dpdocter.repository.DoctorClinicProfileRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.FeedbackRepository;
+import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
 import com.dpdocter.repository.PatientRepository;
@@ -265,6 +269,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private ConsentFormRepository consentFormRepository;
+
+	@Autowired
+	private FormContentRepository formContentRepository;
 
 	@Autowired
 	private JasperReportService jasperReportService;
@@ -3132,7 +3139,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						request.setSignImageURL(imagepath);
 					}
 				}
-			}			
+			}
 			ConsentFormCollection consentFormCollection = new ConsentFormCollection();
 			if (DPDoctorUtils.anyStringEmpty(request.getTitle())) {
 				request.setTitle("CONSENT FORM");
@@ -3514,6 +3521,122 @@ public class RegistrationServiceImpl implements RegistrationService {
 		patientCollections = patientRepository.save(patientCollections);
 
 		return patientCollections.size();
+	}
+
+	@Override
+	public FormContent addeditFromContent(FormContent request) {
+		FormContent reponse = null;
+		try {
+			FormContentCollection contentCollection = null;
+
+			contentCollection = new FormContentCollection();
+			BeanUtil.map(request, contentCollection);
+			UserCollection docter = userRepository.findOne(contentCollection.getDoctorId());
+			if (docter != null) {
+				if (DPDoctorUtils.anyStringEmpty(request.getId())) {
+					if (!DPDoctorUtils.anyStringEmpty(contentCollection.getTitle())) {
+						contentCollection.setTitle(contentCollection.getTitle().toUpperCase());
+					}
+					contentCollection.setCreatedTime(new Date());
+					contentCollection.setCreatedBy(docter.getTitle() + docter.getFirstName());
+				} else {
+					if (!DPDoctorUtils.anyStringEmpty(contentCollection.getTitle())) {
+						contentCollection.setTitle(contentCollection.getTitle().toUpperCase());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(contentCollection.getTitle())) {
+						contentCollection.setTitle(contentCollection.getTitle().toUpperCase());
+					}
+					contentCollection.setUpdatedTime(new Date());
+
+				}
+				contentCollection = formContentRepository.save(contentCollection);
+				reponse = new FormContent();
+				BeanUtil.map(contentCollection, reponse);
+			} else {
+				throw new BusinessException(ServiceError.NoRecord, "doctor not found by doctor Id");
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Form Content");
+			throw new BusinessException(ServiceError.Unknown, " Error Occurred While Saving Form Content");
+
+		}
+
+		return reponse;
+	}
+
+	@Override
+	public List<FormContent> getFormContents(int page, int size, String doctorId, String locationId, String hospitalId,
+			String type, String title, String updatedTime, boolean discarded) {
+		List<FormContent> reponse = null;
+		try {
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
+				criteria = criteria.and("createdTime").gte(new Date(Long.parseLong(updatedTime)));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(type)) {
+				criteria = criteria.and("type").is(type);
+			}
+
+			if (!DPDoctorUtils.anyStringEmpty(title)) {
+				criteria = criteria.and("title").regex("^" + title, "i");
+			}
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+			criteria = criteria.and("discarded").is(discarded);
+			Aggregation aggregation = null;
+			if (size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			} else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+			}
+			AggregationResults<FormContent> aggregationResults = mongoTemplate.aggregate(aggregation,
+					FormContentCollection.class, FormContent.class);
+			reponse = aggregationResults.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While listing  Form Content");
+			throw new BusinessException(ServiceError.Unknown, " Error Occurred While listing Form Content");
+		}
+		return reponse;
+	}
+
+	@Override
+	public FormContent deleteFormContent(String contentId, Boolean discarded) {
+		FormContent reponse = null;
+		try {
+			FormContentCollection contentCollection = formContentRepository.findOne(new ObjectId(contentId));
+			if (contentCollection != null) {
+				contentCollection.setDiscarded(discarded);
+				contentCollection.setUpdatedTime(new Date());
+				contentCollection = formContentRepository.save(contentCollection);
+				reponse = new FormContent();
+				BeanUtil.map(contentCollection, reponse);
+			} else {
+				logger.warn("Content not found. Please check content Id");
+				throw new BusinessException(ServiceError.NoRecord, "Content not found. Please check content Id");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While discarding  Form Content");
+			throw new BusinessException(ServiceError.Unknown, " Error Occurred While discarding Form Content");
+		}
+		return reponse;
 	}
 
 }

@@ -14,6 +14,7 @@ import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
+import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
@@ -145,4 +146,11 @@ public interface RegistrationService {
 			String emailAddress);
 
 	Integer updateRegisterPID(long createdTime);
+
+	public FormContent addeditFromContent(FormContent request);
+
+	public List<FormContent> getFormContents(int page, int size, String doctorId, String locationId, String hospitalId,
+			String type, String title, String updatedTime, boolean discarded);
+
+	public FormContent deleteFormContent(String contentId, Boolean discarded);
 }

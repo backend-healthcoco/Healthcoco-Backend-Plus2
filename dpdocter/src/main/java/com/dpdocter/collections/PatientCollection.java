@@ -230,8 +230,8 @@ public class PatientCollection extends GenericCollection {
 		return PID;
 	}
 
-	public void setPID(String pID) {
-		PID = pID;
+	public void setPID(String PID) {
+		this.PID = PID;
 	}
 
 	public ObjectId getLocationId() {

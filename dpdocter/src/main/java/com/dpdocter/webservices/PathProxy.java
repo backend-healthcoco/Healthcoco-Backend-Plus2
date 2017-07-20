@@ -182,6 +182,12 @@ public interface PathProxy {
 		public static final String EMAIL_CONSENT_FORM = "/consentForm/{consentFormId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 		public static final String UPDATE_PID = "/update/pid";
+
+		public static final String ADD_FORM_CONTENT = "/formContent/add";
+
+		public static final String GET_FORM_CONTENT = "/formContent/{doctorId}/{locationId}/{hospitalId}/";
+
+		public static final String DELETE_FORM_CONTENT = "/formContent/{contentId}/delete";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

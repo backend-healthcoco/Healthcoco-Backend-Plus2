@@ -32,6 +32,7 @@ import com.dpdocter.beans.ClinicSpecialization;
 import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
+import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
@@ -1021,6 +1022,54 @@ public class RegistrationApi {
 
 		Response<Integer> response = new Response<Integer>();
 		response.setData(registrationService.updateRegisterPID(createdTime));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.ADD_FORM_CONTENT)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_FORM_CONTENT, notes = PathProxy.RegistrationUrls.ADD_FORM_CONTENT)
+	public Response<FormContent> addEditFormContent(FormContent request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId())) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId,locationId and hospitalId could not have null value");
+
+		}
+		Response<FormContent> response = new Response<FormContent>();
+		response.setData(registrationService.addeditFromContent(request));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.GET_FORM_CONTENT)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_FORM_CONTENT, notes = PathProxy.RegistrationUrls.GET_FORM_CONTENT)
+	public Response<FormContent> getFormContents(@PathParam("doctorId") String doctorId,
+			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("type") String type,
+			@QueryParam("title") String title, @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("discarded") boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId,locationId and hospitalId could not have null value");
+
+		}
+		Response<FormContent> response = new Response<FormContent>();
+		response.setDataList(registrationService.getFormContents(page, size, doctorId, locationId, hospitalId, type,
+				title, updatedTime, discarded));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT)
+	@DELETE
+	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT, notes = PathProxy.RegistrationUrls.DELETE_FORM_CONTENT)
+	public Response<FormContent> deleteFormContents(@PathParam("contentId") String contentId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(contentId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Content Id could not null");
+
+		}
+		Response<FormContent> response = new Response<FormContent>();
+		response.setData(registrationService.deleteFormContent(contentId, discarded));
 		return response;
 	}
 
