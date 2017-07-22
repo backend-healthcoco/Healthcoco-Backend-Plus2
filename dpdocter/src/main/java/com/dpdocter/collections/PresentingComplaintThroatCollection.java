@@ -1,0 +1,82 @@
+package com.dpdocter.collections;
+
+public class PresentingComplaintThroatCollection extends GenericCollection {
+
+	private String id;
+
+	private String pcThroat;
+
+	private String doctorId;
+
+	private String locationId;
+
+	private String hospitalId;
+
+	private Boolean discarded = false;
+
+	private String speciality;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getPcThroat() {
+		return pcThroat;
+	}
+
+	public void setPcThroat(String pcThroat) {
+		this.pcThroat = pcThroat;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
+
+	public String getSpeciality() {
+		return speciality;
+	}
+
+	public void setSpeciality(String speciality) {
+		this.speciality = speciality;
+	}
+
+	@Override
+	public String toString() {
+		return "PresentingComplaintThroatCollection [id=" + id + ", pcThroat=" + pcThroat + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+				+ ", speciality=" + speciality + "]";
+	}
+
+}

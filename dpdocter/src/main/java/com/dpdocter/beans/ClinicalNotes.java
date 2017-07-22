@@ -35,7 +35,7 @@ public class ClinicalNotes extends GenericCollection {
 	private String complaint;
 
 	private String presentComplaint;
-	
+
 	private String procedureNote;
 
 	private String presentComplaintHistory;
@@ -59,6 +59,24 @@ public class ClinicalNotes extends GenericCollection {
 	private String echo;
 
 	private String holter;
+
+	private String pcNotes;
+
+	private String pcOralCavity;
+
+	private String pcThroat;
+
+	private String pcEars;
+
+	private String noseExam;
+
+	private String oralCavityThroatExam;
+
+	private String indirectLarygoscopyExam;
+
+	private String neckExam;
+
+	private String earsExam;
 
 	private String doctorId;
 
@@ -84,14 +102,14 @@ public class ClinicalNotes extends GenericCollection {
 
 	private Date fromDate;
 
-    private Date lmp;
-	
+	private Date lmp;
+
 	private Date edd;
-	
+
 	private int noOfFemaleChildren;
-	
+
 	private int noOfMaleChildren;
-	
+
 	public Appointment getAppointmentRequest() {
 		return appointmentRequest;
 	}
@@ -412,21 +430,97 @@ public class ClinicalNotes extends GenericCollection {
 		this.noOfMaleChildren = noOfMaleChildren;
 	}
 
+	public String getPcNotes() {
+		return pcNotes;
+	}
+
+	public void setPcNotes(String pcNotes) {
+		this.pcNotes = pcNotes;
+	}
+
+	public String getPcOralCavity() {
+		return pcOralCavity;
+	}
+
+	public void setPcOralCavity(String pcOralCavity) {
+		this.pcOralCavity = pcOralCavity;
+	}
+
+	public String getPcThroat() {
+		return pcThroat;
+	}
+
+	public void setPcThroat(String pcThroat) {
+		this.pcThroat = pcThroat;
+	}
+
+	public String getPcEars() {
+		return pcEars;
+	}
+
+	public void setPcEars(String pcEars) {
+		this.pcEars = pcEars;
+	}
+
+	public String getNoseExam() {
+		return noseExam;
+	}
+
+	public void setNoseExam(String noseExam) {
+		this.noseExam = noseExam;
+	}
+
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
+	}
+
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
+	}
+
+	public String getIndirectLarygoscopyExam() {
+		return indirectLarygoscopyExam;
+	}
+
+	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
+		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
+	}
+
+	public String getNeckExam() {
+		return neckExam;
+	}
+
+	public void setNeckExam(String neckExam) {
+		this.neckExam = neckExam;
+	}
+
+	public String getEarsExam() {
+		return earsExam;
+	}
+
+	public void setEarsExam(String earsExam) {
+		this.earsExam = earsExam;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
 				+ diagrams + ", note=" + note + ", observation=" + observation + ", investigation=" + investigation
 				+ ", diagnosis=" + diagnosis + ", provisionalDiagnosis=" + provisionalDiagnosis + ", generalExam="
 				+ generalExam + ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint="
-				+ presentComplaint + ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory="
-				+ menstrualHistory + ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG
-				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
-				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", doctorId=" + doctorId + ", locationId="
-				+ locationId + ", hospitalId=" + hospitalId + ", inHistory=" + inHistory + ", discarded=" + discarded
-				+ ", visitId=" + visitId + ", patientId=" + patientId + ", vitalSigns=" + vitalSigns
-				+ ", appointmentId=" + appointmentId + ", appointmentRequest=" + appointmentRequest + ", time=" + time
-				+ ", fromDate=" + fromDate + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
-				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
+				+ presentComplaint + ", procedureNote=" + procedureNote + ", presentComplaintHistory="
+				+ presentComplaintHistory + ", menstrualHistory=" + menstrualHistory + ", obstetricHistory="
+				+ obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv + ", pa=" + pa + ", ps=" + ps
+				+ ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter="
+				+ holter + ", pcNotes=" + pcNotes + ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat
+				+ ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
+				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
+				+ earsExam + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", inHistory=" + inHistory + ", discarded=" + discarded + ", visitId=" + visitId + ", patientId="
+				+ patientId + ", vitalSigns=" + vitalSigns + ", appointmentId=" + appointmentId
+				+ ", appointmentRequest=" + appointmentRequest + ", time=" + time + ", fromDate=" + fromDate + ", lmp="
+				+ lmp + ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren="
+				+ noOfMaleChildren + "]";
 	}
 
 	public String getProcedureNote() {

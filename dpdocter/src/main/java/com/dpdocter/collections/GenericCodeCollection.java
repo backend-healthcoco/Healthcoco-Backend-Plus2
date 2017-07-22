@@ -7,44 +7,55 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "generic_code_cl")
-public class GenericCodeCollection extends GenericCollection{
+public class GenericCodeCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Indexed(unique = true)
-    @Field
-    private String code;
-    
-    @Field
-    private String name;
+	@Indexed(unique = true)
+	@Field
+	private String code;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private String name;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	@Field
+	private String strength;
 
-    public String getCode() {
-	return code;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public void setCode(String code) {
-	this.code = code;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    @Override
-    public String toString() {
-	return "GenericCodeCollection [id=" + id + ", code=" + code + ", name=" + name + "]";
-    }
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getStrength() {
+		return strength;
+	}
+
+	public void setStrength(String strength) {
+		this.strength = strength;
+	}
+
+	@Override
+	public String toString() {
+		return "GenericCodeCollection [id=" + id + ", code=" + code + ", name=" + name + "]";
+	}
 }

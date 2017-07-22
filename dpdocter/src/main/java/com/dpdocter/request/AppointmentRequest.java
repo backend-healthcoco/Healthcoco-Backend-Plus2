@@ -6,6 +6,8 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentCreatedBy;
 import com.dpdocter.enums.AppointmentState;
 
+import common.util.web.JacksonUtil;
+
 public class AppointmentRequest {
 
 	private String appointmentId;

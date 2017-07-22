@@ -42,7 +42,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> diagrams;
 
- 	@Field
+	@Field
 	private String note;
 
 	@Field
@@ -65,7 +65,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	@Field
 	private String complaint;
-	
+
 	@Field
 	private String presentComplaint;
 
@@ -74,33 +74,60 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	@Field
 	private String menstrualHistory;
-	
+
 	@Field
 	private String obstetricHistory;
-	
+
 	@Field
 	private String indicationOfUSG;
-	
+
 	@Field
 	private String pv;
-	
+
 	@Field
 	private String pa;
-	
+
 	@Field
 	private String ps;
-	
+
 	@Field
 	private String ecgDetails;
-	
+
 	@Field
 	private String xRayDetails;
-	
+
 	@Field
 	private String echo;
-	
+
 	@Field
 	private String holter;
+
+	@Field
+	private String pcNotes;
+
+	@Field
+	private String pcOralCavity;
+
+	@Field
+	private String pcThroat;
+
+	@Field
+	private String pcEars;
+
+	@Field
+	private String noseExam;
+
+	@Field
+	private String oralCavityThroatExam;
+
+	@Field
+	private String indirectLarygoscopyExam;
+
+	@Field
+	private String neckExam;
+
+	@Field
+	private String earsExam;
 
 	@Field
 	private List<String> comments;
@@ -136,20 +163,20 @@ public class ClinicalNotesCollection extends GenericCollection {
 	private Date fromDate;
 
 	@Field
-    private Date lmp;
-	
+	private Date lmp;
+
 	@Field
 	private Date edd;
-	
+
 	@Field
 	private int noOfFemaleChildren;
-	
+
 	@Field
 	private int noOfMaleChildren;
-	
+
 	@Field
 	private String procedureNote;
-	
+
 	public String getProcedureNote() {
 		return procedureNote;
 	}
@@ -500,6 +527,78 @@ public class ClinicalNotesCollection extends GenericCollection {
 
 	public void setNoOfMaleChildren(int noOfMaleChildren) {
 		this.noOfMaleChildren = noOfMaleChildren;
+	}
+
+	public String getPcNotes() {
+		return pcNotes;
+	}
+
+	public void setPcNotes(String pcNotes) {
+		this.pcNotes = pcNotes;
+	}
+
+	public String getPcOralCavity() {
+		return pcOralCavity;
+	}
+
+	public void setPcOralCavity(String pcOralCavity) {
+		this.pcOralCavity = pcOralCavity;
+	}
+
+	public String getPcThroat() {
+		return pcThroat;
+	}
+
+	public void setPcThroat(String pcThroat) {
+		this.pcThroat = pcThroat;
+	}
+
+	public String getPcEars() {
+		return pcEars;
+	}
+
+	public void setPcEars(String pcEars) {
+		this.pcEars = pcEars;
+	}
+
+	public String getNoseExam() {
+		return noseExam;
+	}
+
+	public void setNoseExam(String noseExam) {
+		this.noseExam = noseExam;
+	}
+
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
+	}
+
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
+	}
+
+	public String getIndirectLarygoscopyExam() {
+		return indirectLarygoscopyExam;
+	}
+
+	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
+		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
+	}
+
+	public String getNeckExam() {
+		return neckExam;
+	}
+
+	public void setNeckExam(String neckExam) {
+		this.neckExam = neckExam;
+	}
+
+	public String getEarsExam() {
+		return earsExam;
+	}
+
+	public void setEarsExam(String earsExam) {
+		this.earsExam = earsExam;
 	}
 
 	@Override

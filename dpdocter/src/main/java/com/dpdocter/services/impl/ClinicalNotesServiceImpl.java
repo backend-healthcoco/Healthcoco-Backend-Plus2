@@ -57,6 +57,7 @@ import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.PresentingComplaintNotes;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
@@ -929,6 +930,34 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
+			
+			/*if (request.getPcNotes() != null && !request.getPcNotes().isEmpty()
+					&& request.getGlobalPCNotes() != null) {
+				Set<String> customPCNotes = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcNotes())),
+						new HashSet<>(splitCSV(request.getGlobalPCNotes())));
+				for (String customPCNote : customPCNotes) {
+
+					PresentingComplaintNotes presentingComplaintNotes = new PresentingComplaintNotes();
+					presentingComplaintNotes.setPcNotes(customPCNote);
+					ProcedureNoteCollection procedureNoteCollection = new ProcedureNoteCollection();
+					BeanUtil.map(procedureNote, procedureNoteCollection);
+					procedureNoteCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					procedureNoteCollection.setLocationId(new ObjectId(request.getLocationId()));
+					procedureNoteCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					procedureNoteCollection.setCreatedBy(createdBy);
+					procedureNoteCollection.setCreatedTime(createdTime);
+					procedureNoteCollection.setId(null);
+					procedureNoteCollection = procedureNoteRepository.save(procedureNoteCollection);
+					transactionalManagementService.addResource(procedureNoteCollection.getId(), Resource.PROCEDURE_NOTE,
+							false);
+					ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
+					BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
+					esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}*/
 
 			//
 			// clinicalNotesCollection.setComplaints(complaintIds);

@@ -6,18 +6,27 @@ import java.util.List;
 import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
+import com.dpdocter.beans.IndirectLarygoscopyExamination;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
+import com.dpdocter.beans.NeckExamination;
+import com.dpdocter.beans.NoseExamination;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.OralCavityAndThroatExamination;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.PresentingComplaintEars;
+import com.dpdocter.beans.PresentingComplaintNotes;
+import com.dpdocter.beans.PresentingComplaintOralCavity;
+import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
@@ -73,6 +82,24 @@ public class ClinicalNotesAddRequest {
 	private String echo;
 
 	private String holter;
+
+	private String pcNotes;
+
+	private String pcOralCavity;
+
+	private String pcThroat;
+
+	private String pcEars;
+
+	private String noseExam;
+
+	private String oralCavityThroatExam;
+
+	private String indirectLarygoscopyExam;
+
+	private String neckExam;
+
+	private String earsExam;
 
 	private String doctorId;
 
@@ -132,6 +159,24 @@ public class ClinicalNotesAddRequest {
 
 	private List<Holter> holters;
 
+	private List<PresentingComplaintNotes> presentingComplaintNotes;
+
+	private List<PresentingComplaintOralCavity> presentingComplaintOralCavities;
+
+	private List<PresentingComplaintThroat> presentingComplaintThroats;
+
+	private List<PresentingComplaintEars> presentingComplaintEars;
+
+	private List<NoseExamination> noseExaminations;
+
+	private List<OralCavityAndThroatExamination> oralCavityAndThroatExaminations;
+
+	private List<IndirectLarygoscopyExamination> indirectLarygoscopyExaminations;
+
+	private List<NeckExamination> neckExaminations;
+
+	private List<EarsExamination> earsExaminations;
+
 	private String globalDiagnoses;
 
 	private String globalNotes;
@@ -174,6 +219,24 @@ public class ClinicalNotesAddRequest {
 
 	private String globalProcedureNotes;
 
+	private String globalPCNotes;
+
+	private String globalPCOralCavity;
+
+	private String globalPCThroat;
+
+	private String globalPCEars;
+
+	private String globalNoseExam;
+
+	private String globalOralCavityThroatExam;
+
+	private String globalIndirectLarygoscopyExam;
+
+	private String globalNeckExam;
+
+	private String globalEarsExam;
+
 	private Date lmp;
 
 	private Date edd;
@@ -181,6 +244,150 @@ public class ClinicalNotesAddRequest {
 	private int noOfFemaleChildren;
 
 	private int noOfMaleChildren;
+
+	public String getPcNotes() {
+		return pcNotes;
+	}
+
+	public void setPcNotes(String pcNotes) {
+		this.pcNotes = pcNotes;
+	}
+
+	public String getPcOralCavity() {
+		return pcOralCavity;
+	}
+
+	public void setPcOralCavity(String pcOralCavity) {
+		this.pcOralCavity = pcOralCavity;
+	}
+
+	public String getPcThroat() {
+		return pcThroat;
+	}
+
+	public void setPcThroat(String pcThroat) {
+		this.pcThroat = pcThroat;
+	}
+
+	public String getPcEars() {
+		return pcEars;
+	}
+
+	public void setPcEars(String pcEars) {
+		this.pcEars = pcEars;
+	}
+
+	public String getNoseExam() {
+		return noseExam;
+	}
+
+	public void setNoseExam(String noseExam) {
+		this.noseExam = noseExam;
+	}
+
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
+	}
+
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
+	}
+
+	public String getIndirectLarygoscopyExam() {
+		return indirectLarygoscopyExam;
+	}
+
+	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
+		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
+	}
+
+	public String getNeckExam() {
+		return neckExam;
+	}
+
+	public void setNeckExam(String neckExam) {
+		this.neckExam = neckExam;
+	}
+
+	public String getEarsExam() {
+		return earsExam;
+	}
+
+	public void setEarsExam(String earsExam) {
+		this.earsExam = earsExam;
+	}
+
+	public String getGlobalPCNotes() {
+		return globalPCNotes;
+	}
+
+	public void setGlobalPCNotes(String globalPCNotes) {
+		this.globalPCNotes = globalPCNotes;
+	}
+
+	public String getGlobalPCOralCavity() {
+		return globalPCOralCavity;
+	}
+
+	public void setGlobalPCOralCavity(String globalPCOralCavity) {
+		this.globalPCOralCavity = globalPCOralCavity;
+	}
+
+	public String getGlobalPCThroat() {
+		return globalPCThroat;
+	}
+
+	public void setGlobalPCThroat(String globalPCThroat) {
+		this.globalPCThroat = globalPCThroat;
+	}
+
+	public String getGlobalPCEars() {
+		return globalPCEars;
+	}
+
+	public void setGlobalPCEars(String globalPCEars) {
+		this.globalPCEars = globalPCEars;
+	}
+
+	public String getGlobalNoseExam() {
+		return globalNoseExam;
+	}
+
+	public void setGlobalNoseExam(String globalNoseExam) {
+		this.globalNoseExam = globalNoseExam;
+	}
+
+	public String getGlobalOralCavityThroatExam() {
+		return globalOralCavityThroatExam;
+	}
+
+	public void setGlobalOralCavityThroatExam(String globalOralCavityThroatExam) {
+		this.globalOralCavityThroatExam = globalOralCavityThroatExam;
+	}
+
+	public String getGlobalIndirectLarygoscopyExam() {
+		return globalIndirectLarygoscopyExam;
+	}
+
+	public void setGlobalIndirectLarygoscopyExam(String globalIndirectLarygoscopyExam) {
+		this.globalIndirectLarygoscopyExam = globalIndirectLarygoscopyExam;
+	}
+
+	public String getGlobalNeckExam() {
+		return globalNeckExam;
+	}
+
+	public void setGlobalNeckExam(String globalNeckExam) {
+		this.globalNeckExam = globalNeckExam;
+	}
+
+	public String getGlobalEarsExam() {
+		return globalEarsExam;
+	}
+
+	public void setGlobalEarsExam(String globalEarsExam) {
+		this.globalEarsExam = globalEarsExam;
+	}
 
 	public String getId() {
 		return id;
@@ -806,6 +1013,82 @@ public class ClinicalNotesAddRequest {
 		this.globalProcedureNotes = globalProcedureNotes;
 	}
 
+	public List<PresentingComplaintNotes> getPresentingComplaintNotes() {
+		return presentingComplaintNotes;
+	}
+
+	public void setPresentingComplaintNotes(List<PresentingComplaintNotes> presentingComplaintNotes) {
+		this.presentingComplaintNotes = presentingComplaintNotes;
+	}
+
+	public List<PresentingComplaintOralCavity> getPresentingComplaintOralCavities() {
+		return presentingComplaintOralCavities;
+	}
+
+	public void setPresentingComplaintOralCavities(
+			List<PresentingComplaintOralCavity> presentingComplaintOralCavities) {
+		this.presentingComplaintOralCavities = presentingComplaintOralCavities;
+	}
+
+	public List<PresentingComplaintThroat> getPresentingComplaintThroats() {
+		return presentingComplaintThroats;
+	}
+
+	public void setPresentingComplaintThroats(List<PresentingComplaintThroat> presentingComplaintThroats) {
+		this.presentingComplaintThroats = presentingComplaintThroats;
+	}
+
+	public List<PresentingComplaintEars> getPresentingComplaintEars() {
+		return presentingComplaintEars;
+	}
+
+	public void setPresentingComplaintEars(List<PresentingComplaintEars> presentingComplaintEars) {
+		this.presentingComplaintEars = presentingComplaintEars;
+	}
+
+	public List<NoseExamination> getNoseExaminations() {
+		return noseExaminations;
+	}
+
+	public void setNoseExaminations(List<NoseExamination> noseExaminations) {
+		this.noseExaminations = noseExaminations;
+	}
+
+	public List<OralCavityAndThroatExamination> getOralCavityAndThroatExaminations() {
+		return oralCavityAndThroatExaminations;
+	}
+
+	public void setOralCavityAndThroatExaminations(
+			List<OralCavityAndThroatExamination> oralCavityAndThroatExaminations) {
+		this.oralCavityAndThroatExaminations = oralCavityAndThroatExaminations;
+	}
+
+	public List<IndirectLarygoscopyExamination> getIndirectLarygoscopyExaminations() {
+		return indirectLarygoscopyExaminations;
+	}
+
+	public void setIndirectLarygoscopyExaminations(
+			List<IndirectLarygoscopyExamination> indirectLarygoscopyExaminations) {
+		this.indirectLarygoscopyExaminations = indirectLarygoscopyExaminations;
+	}
+
+	public List<NeckExamination> getNeckExaminations() {
+		return neckExaminations;
+	}
+
+	public void setNeckExaminations(List<NeckExamination> neckExaminations) {
+		this.neckExaminations = neckExaminations;
+	}
+
+	public List<EarsExamination> getEarsExaminations() {
+		return earsExaminations;
+	}
+
+	public void setEarsExaminations(List<EarsExamination> earsExaminations) {
+		this.earsExaminations = earsExaminations;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "ClinicalNotesAddRequest [id=" + id + ", patientId=" + patientId + ", observation=" + observation
@@ -814,16 +1097,28 @@ public class ClinicalNotesAddRequest {
 				+ ", systemExam=" + systemExam + ", complaint=" + complaint + ", presentComplaint=" + presentComplaint
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
-				+ ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails
-				+ ", echo=" + echo + ", holter=" + holter + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", createdBy=" + createdBy + ", visitId=" + visitId + ", vitalSigns="
-				+ vitalSigns + ", appointmentRequest=" + appointmentRequest + ", appointmentId=" + appointmentId
-				+ ", time=" + time + ", fromDate=" + fromDate + ", diagnoses=" + diagnoses + ", notes=" + notes
-				+ ", complaints=" + complaints + ", observations=" + observations + ", investigations=" + investigations
-				+ ", provisionalDiagnoses=" + provisionalDiagnoses + ", presentComplaints=" + presentComplaints
-				+ ", presentComplaintHistories=" + presentComplaintHistories + ", generalExams=" + generalExams
-				+ ", systemExams=" + systemExams + ", menstrualHistories=" + menstrualHistories
-				+ ", obstetricHistories=" + obstetricHistories + ", globalDiagnoses=" + globalDiagnoses
+				+ ", pa=" + pa + ", ps=" + ps + ", procedureNote=" + procedureNote + ", ecgDetails=" + ecgDetails
+				+ ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter=" + holter + ", pcNotes=" + pcNotes
+				+ ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat + ", pcEars=" + pcEars + ", noseExam="
+				+ noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam + ", indirectLarygoscopyExam="
+				+ indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam=" + earsExam + ", doctorId="
+				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", createdBy=" + createdBy
+				+ ", visitId=" + visitId + ", vitalSigns=" + vitalSigns + ", appointmentRequest=" + appointmentRequest
+				+ ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate=" + fromDate + ", diagnoses="
+				+ diagnoses + ", notes=" + notes + ", complaints=" + complaints + ", observations=" + observations
+				+ ", investigations=" + investigations + ", provisionalDiagnoses=" + provisionalDiagnoses
+				+ ", presentComplaints=" + presentComplaints + ", presentComplaintHistories="
+				+ presentComplaintHistories + ", generalExams=" + generalExams + ", systemExams=" + systemExams
+				+ ", menstrualHistories=" + menstrualHistories + ", obstetricHistories=" + obstetricHistories
+				+ ", procedureNotes=" + procedureNotes + ", indicationOfUSGs=" + indicationOfUSGs + ", pvs=" + pvs
+				+ ", ecgDetailssecgDetails=" + ecgDetailssecgDetails + ", XrayDetailss=" + XrayDetailss + ", echos="
+				+ echos + ", holters=" + holters + ", presentingComplaintNotes=" + presentingComplaintNotes
+				+ ", presentingComplaintOralCavities=" + presentingComplaintOralCavities
+				+ ", presentingComplaintThroats=" + presentingComplaintThroats + ", presentingComplaintEars="
+				+ presentingComplaintEars + ", noseExaminations=" + noseExaminations
+				+ ", oralCavityAndThroatExaminations=" + oralCavityAndThroatExaminations
+				+ ", indirectLarygoscopyExaminations=" + indirectLarygoscopyExaminations + ", neckExaminations="
+				+ neckExaminations + ", earsExaminations=" + earsExaminations + ", globalDiagnoses=" + globalDiagnoses
 				+ ", globalNotes=" + globalNotes + ", globalComplaints=" + globalComplaints + ", globalObservations="
 				+ globalObservations + ", globalInvestigations=" + globalInvestigations
 				+ ", globalProvisionalDiagnoses=" + globalProvisionalDiagnoses + ", globalPresentComplaints="
@@ -833,8 +1128,13 @@ public class ClinicalNotesAddRequest {
 				+ globalObstetricHistories + ", globalIndicationOfUSGs=" + globalIndicationOfUSGs + ", globalPVs="
 				+ globalPVs + ", globalPAs=" + globalPAs + ", globalPSs=" + globalPSs + ", globalEcgDetails="
 				+ globalEcgDetails + ", globalXRayDetails=" + globalXRayDetails + ", globalEchoes=" + globalEchoes
-				+ ", globalHolters=" + globalHolters + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren="
-				+ noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
+				+ ", globalHolters=" + globalHolters + ", globalProcedureNotes=" + globalProcedureNotes
+				+ ", globalPCNotes=" + globalPCNotes + ", globalPCOralCavity=" + globalPCOralCavity
+				+ ", globalPCThroat=" + globalPCThroat + ", globalPCEars=" + globalPCEars + ", globalNoseExam="
+				+ globalNoseExam + ", globalOralCavityThroatExam=" + globalOralCavityThroatExam
+				+ ", globalIndirectLarygoscopyExam=" + globalIndirectLarygoscopyExam + ", globalNeckExam="
+				+ globalNeckExam + ", globalEarsExam=" + globalEarsExam + ", lmp=" + lmp + ", edd=" + edd
+				+ ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
 
 }
