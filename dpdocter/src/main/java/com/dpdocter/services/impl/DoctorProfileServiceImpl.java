@@ -562,11 +562,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			}
 
 			doctorProfile = new DoctorProfile();
+			if(userCollection!=null){
 			BeanUtil.map(userCollection, doctorProfile);
-			BeanUtil.map(doctorCollection, doctorProfile);
+			}
+			if(doctorCollection!=null){
+			BeanUtil.map(doctorCollection, doctorProfile);			
 
 			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
-			doctorProfile.setClinicProfile(clinicProfile);
+			
+			
 			// set specialities using speciality ids
 			if (doctorCollection.getSpecialities() != null) {				
 				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository.findAll(doctorCollection.getSpecialities()); 
@@ -579,6 +583,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 					doctorProfile.setParentSpecialities(parentSpecialities);
 				}
 			}
+			}
+			doctorProfile.setClinicProfile(clinicProfile);
 			doctorProfile.setSpecialities(specialities);
 
 			// set medical councils using medical councils ids
