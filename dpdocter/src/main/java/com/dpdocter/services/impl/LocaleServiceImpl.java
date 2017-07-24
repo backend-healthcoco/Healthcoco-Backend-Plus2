@@ -143,7 +143,7 @@ public class LocaleServiceImpl implements LocaleService {
 			ImageURLResponse imageURLResponse = null;
 			Date createdTime = new Date();
 			if (file != null) {
-				if (DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
 					String path = "localeRX";
 					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
 					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
