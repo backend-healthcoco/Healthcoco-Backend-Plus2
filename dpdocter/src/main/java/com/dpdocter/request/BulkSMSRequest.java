@@ -10,6 +10,8 @@ public class BulkSMSRequest {
 
 	private String groupId;
 
+	private String patientId;
+
 	private String message;
 
 	public String getLocationId() {
@@ -50,6 +52,14 @@ public class BulkSMSRequest {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	@Override

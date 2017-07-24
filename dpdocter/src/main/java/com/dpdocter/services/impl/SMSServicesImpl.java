@@ -95,6 +95,9 @@ public class SMSServicesImpl implements SMSServices {
 
 	@Value(value = "${DEFAULT_ROUTE}")
 	private String ROUTE;
+	
+	@Value(value = "${PROMOTIONAL_ROUTE}")
+	private String PROMOTIONAL_ROUTE;
 
 	@Value(value = "${DEFAULT_COUNTRY}")
 	private String COUNTRY_CODE;
@@ -651,7 +654,7 @@ public class SMSServicesImpl implements SMSServices {
 			// String password = new String(loginRequest.getPassword());
 			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey" + AUTH_KEY + "&mobiles="
 					+ numberString + "&message=" + message + "&sender="
-					+ SENDER_ID + "&route=" + ROUTE + "&country=" + COUNTRY_CODE;
+					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE;
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 

@@ -27,6 +27,7 @@ import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.enums.ContactsSearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.BulkSMSRequest;
 import com.dpdocter.request.ExportContactsRequest;
 import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
@@ -287,18 +288,19 @@ public class ContactsApi {
 	    return null;
     }
     
-    /*@Path(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
-    @POST
-    @ApiOperation(value = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT, notes = PathProxy.ContactsUrls.ADD_GROUP_TO_PATIENT)
-    public Response<PatientGroupAddEditRequest> sendSMSToGroup(@QueryParam("groupId") String groupId , @QueryParam("message") String message) {
-    	if (DPDoctorUtils.anyStringEmpty(groupId)) {
-    	    logger.warn("Invalid Input");
-    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	    }
-		PatientGroupAddEditRequest groups = contactsService.addGroupToPatient(request);
-		Response<PatientGroupAddEditRequest> response = new Response<PatientGroupAddEditRequest>();
-		response.setData(groups);
-	return response;
-    }*/
+	@Path(value = PathProxy.ContactsUrls.SEND_SMS_TO_GROUP)
+	@POST
+	@ApiOperation(value = PathProxy.ContactsUrls.SEND_SMS_TO_GROUP, notes = PathProxy.ContactsUrls.SEND_SMS_TO_GROUP)
+	public Response<Boolean> sendSMSToGroup(BulkSMSRequest request) {
+		Boolean status = null;
+		if (request == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		status = contactsService.sendSMSToGroup(request);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(status);
+		return response;
+	}
 
 }

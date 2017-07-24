@@ -29,6 +29,7 @@ import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.User;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
@@ -712,29 +713,55 @@ public class ContactsServiceImpl implements ContactsService {
 		return response;
 	}
 	
-	private Boolean sendSMSToGroup(BulkSMSRequest request)
+	@Override
+	@Transactional
+	public Boolean sendSMSToGroup(BulkSMSRequest request)
 	{
 		List<PatientGroupLookupResponse> patientGroupLookupResponses = null;
+		User user = null;
 		Boolean status = false;
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
 			String message = request.getMessage() + " -powered by Healthcoco";
-			Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
-			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
-					Aggregation.unwind("user"),Aggregation.match(criteria),
-					 Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<PatientGroupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
-					PatientGroupCollection.class, PatientGroupLookupResponse.class);
-			patientGroupLookupResponses = aggregationResults.getMappedResults();
-			if (patientGroupLookupResponses != null) {
-				mobileNumbers = new ArrayList<>();
-				for (PatientGroupLookupResponse patientGroupLookupResponse : patientGroupLookupResponses) {
-				
-					mobileNumbers.add(patientGroupLookupResponse.getUser().getMobileNumber());
-					
+			
+			if (request.getGroupId() != null) {
+				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<PatientGroupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						PatientGroupCollection.class, PatientGroupLookupResponse.class);
+				patientGroupLookupResponses = aggregationResults.getMappedResults();
+				if (patientGroupLookupResponses != null) {
+					mobileNumbers = new ArrayList<>();
+					for (PatientGroupLookupResponse patientGroupLookupResponse : patientGroupLookupResponses) {
+
+						mobileNumbers.add(patientGroupLookupResponse.getUser().getMobileNumber());
+
+					}
+
 				}
-				
+
+			}
+			else if (request.getPatientId() != null) {
+				Criteria criteria = new Criteria().and("id").is(new ObjectId(request.getPatientId()));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<User> aggregationResults = mongoTemplate.aggregate(aggregation, UserCollection.class,
+						User.class);
+				user = aggregationResults.getUniqueMappedResult();
+				if (user != null) {
+					mobileNumbers = new ArrayList<>();
+
+					mobileNumbers.add(user.getMobileNumber());
+
+				}
+			}
+			
+			if(mobileNumbers.size() > 500)
+			{
+				throw new BusinessException(ServiceError.NotAcceptable , "Cannot send more messages to more than 500 patients. Please select other group or create new one.");
 			}
 			
 			if(!smsServices.getBulkSMSResponse(mobileNumbers, message).equalsIgnoreCase("FAILED"))

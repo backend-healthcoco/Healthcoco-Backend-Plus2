@@ -88,6 +88,7 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PresentComplaintCollection;
 import com.dpdocter.collections.PresentComplaintHistoryCollection;
+import com.dpdocter.collections.PresentingComplaintNotesCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
@@ -940,16 +941,16 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 					PresentingComplaintNotes presentingComplaintNotes = new PresentingComplaintNotes();
 					presentingComplaintNotes.setPcNotes(customPCNote);
-					ProcedureNoteCollection procedureNoteCollection = new ProcedureNoteCollection();
-					BeanUtil.map(procedureNote, procedureNoteCollection);
-					procedureNoteCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-					procedureNoteCollection.setLocationId(new ObjectId(request.getLocationId()));
-					procedureNoteCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-					procedureNoteCollection.setCreatedBy(createdBy);
-					procedureNoteCollection.setCreatedTime(createdTime);
-					procedureNoteCollection.setId(null);
-					procedureNoteCollection = procedureNoteRepository.save(procedureNoteCollection);
-					transactionalManagementService.addResource(procedureNoteCollection.getId(), Resource.PROCEDURE_NOTE,
+					PresentingComplaintNotesCollection presentingComplaintNotesCollection = new PresentingComplaintNotesCollection();
+					BeanUtil.map(presentingComplaintNotes, presentingComplaintNotesCollection);
+					presentingComplaintNotesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintNotesCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintNotesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintNotesCollection.setCreatedBy(createdBy);
+					presentingComplaintNotesCollection.setCreatedTime(createdTime);
+					presentingComplaintNotesCollection.setId(null);
+					presentingComplaintNotesCollection = procedureNoteRepository.save(presentingComplaintNotesCollection);
+					transactionalManagementService.addResource(presentingComplaintNotesCollection.getId(), Resource.PROCEDURE_NOTE,
 							false);
 					ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
 					BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
