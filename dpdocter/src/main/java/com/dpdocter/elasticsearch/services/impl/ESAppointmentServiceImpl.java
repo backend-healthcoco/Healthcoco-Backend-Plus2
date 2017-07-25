@@ -330,12 +330,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				} else {
 					if (city != null && location != null)
 						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true,
-								true, new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (city != null)
-						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true, true,
+						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (location != null)
-						esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true, true,
+						esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 				}
 			} else {
@@ -344,8 +344,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 										.lon(Double.parseDouble(longitude)).distance("30km"))
-								.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true))
-								.must(QueryBuilders.matchPhrasePrefixQuery("isActive", true));
+								.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+
 						esDoctorDocuments = elasticsearchTemplate.queryForList(
 								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 										.withPageable(new PageRequest(0, 50 - response.size()))
@@ -355,13 +355,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				} else {
 					if (city != null && location != null)
-						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true, true,
+						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (city != null)
-						esDoctorDocuments = esDoctorRepository.findByCity(city, true, true,
+						esDoctorDocuments = esDoctorRepository.findByCity(city, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 					else if (location != null)
-						esDoctorDocuments = esDoctorRepository.findByLocation(location, true, true,
+						esDoctorDocuments = esDoctorRepository.findByLocation(location, true,
 								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
 				}
 			}

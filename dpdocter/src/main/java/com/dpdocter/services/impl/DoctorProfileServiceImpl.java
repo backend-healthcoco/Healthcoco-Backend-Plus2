@@ -146,7 +146,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	DoctorProfileViewRepository doctorProfileViewRepository;
-	
+
 	@Autowired
 	DynamicUIService dynamicUIService;
 
@@ -293,7 +293,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 					} else
 						doctorCollection.setSpecialities(null);
-						assignDefaultUIPermissions(request.getDoctorId());
+					assignDefaultUIPermissions(request.getDoctorId());
 				} else {
 					doctorCollection.setSpecialities(null);
 					assignDefaultUIPermissions(request.getDoctorId());
@@ -311,9 +311,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-	
-	private void assignDefaultUIPermissions(String doctorId)
-	{
+
+	private void assignDefaultUIPermissions(String doctorId) {
 		DynamicUICollection dynamicUICollection = dynamicUIRepository.findByDoctorId(new ObjectId(doctorId));
 		UIPermissions uiPermissions = dynamicUIService.getDefaultPermissions();
 		dynamicUICollection.setUiPermissions(uiPermissions);
@@ -520,7 +519,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Override
 	@Transactional
 	public DoctorProfile getDoctorProfile(String doctorId, String locationId, String hospitalId, String patientId,
-			Boolean isMobileApp , Boolean isSearched) {
+			Boolean isMobileApp, Boolean isSearched) {
 		DoctorProfile doctorProfile = null;
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
@@ -533,9 +532,8 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			Criteria criteria = new Criteria("doctorId").is(new ObjectId(doctorId));
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
-			
-			if(isSearched == false)
-			{
+
+			if (isSearched == false) {
 				criteria.and("isActivate").is(true);
 			}
 
@@ -562,48 +560,46 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 			}
 
 			doctorProfile = new DoctorProfile();
-			if(userCollection!=null){
+
 			BeanUtil.map(userCollection, doctorProfile);
-			}
-			if(doctorCollection!=null){
-			BeanUtil.map(doctorCollection, doctorProfile);			
+
+			BeanUtil.map(doctorCollection, doctorProfile);
 
 			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
-			
-			
 			// set specialities using speciality ids
-			if (doctorCollection.getSpecialities() != null) {				
-				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository.findAll(doctorCollection.getSpecialities()); 
+			if (doctorCollection.getSpecialities() != null) {
+				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
+						.findAll(doctorCollection.getSpecialities());
 				specialities = (List<String>) CollectionUtils.collect(specialityCollections,
 						new BeanToPropertyValueTransformer("superSpeciality"));
-				
-				if(isMobileApp){
+				if (isMobileApp) {
 					List<String> parentSpecialities = (List<String>) CollectionUtils.collect(specialityCollections,
 							new BeanToPropertyValueTransformer("speciality"));
 					doctorProfile.setParentSpecialities(parentSpecialities);
 				}
-			}
-			}
-			doctorProfile.setClinicProfile(clinicProfile);
-			doctorProfile.setSpecialities(specialities);
 
-			// set medical councils using medical councils ids
-			registrationDetails = new ArrayList<DoctorRegistrationDetail>();
-			if (doctorProfile.getRegistrationDetails() != null && !doctorProfile.getRegistrationDetails().isEmpty()) {
-				for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
-					DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
-					BeanUtil.map(registrationDetail, doctorRegistrationDetail);
-					registrationDetails.add(doctorRegistrationDetail);
+				doctorProfile.setClinicProfile(clinicProfile);
+				doctorProfile.setSpecialities(specialities);
+				// set medical councils using medical councils ids
+				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+				if (doctorProfile.getRegistrationDetails() != null
+						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+						registrationDetails.add(doctorRegistrationDetail);
+					}
 				}
-			}
-			doctorProfile.setRegistrationDetails(registrationDetails);
-			// set professional memberships using professional membership ids
-			if (doctorCollection.getProfessionalMemberships() != null
-					&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
-				professionalMemberships = (List<String>) CollectionUtils.collect(
-						(Collection<?>) professionalMembershipRepository
-								.findAll(doctorCollection.getProfessionalMemberships()),
-						new BeanToPropertyValueTransformer("membership"));
+				doctorProfile.setRegistrationDetails(registrationDetails);
+				// set professional memberships using professional membership
+				// ids
+				if (doctorCollection.getProfessionalMemberships() != null
+						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+					professionalMemberships = (List<String>) CollectionUtils.collect(
+							(Collection<?>) professionalMembershipRepository
+									.findAll(doctorCollection.getProfessionalMemberships()),
+							new BeanToPropertyValueTransformer("membership"));
+				}
 			}
 			doctorProfile.setProfessionalMemberships(professionalMemberships);
 
@@ -1358,16 +1354,15 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return status;
 
 	}
-	
+
 	@Override
 	@Transactional
-	public Boolean updateEMRSetting(String doctorId , Boolean discarded) {
+	public Boolean updateEMRSetting(String doctorId, Boolean discarded) {
 		Boolean status = false;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findOne(new ObjectId(doctorId));
-			if(doctorCollection == null)
-			{
-				throw new BusinessException(ServiceError.NoRecord , "Doctor not found");
+			if (doctorCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Doctor not found");
 			}
 			doctorCollection.setIsGetDiscardedEMR(discarded);
 			doctorRepository.save(doctorCollection);
@@ -1380,7 +1375,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return status;
 
 	}
-	
+
 	@Override
 	@Transactional
 	public AddEditSEORequest addEditSEO(AddEditSEORequest request) {
@@ -1403,8 +1398,5 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return response;
 	}
-
-	
-	
 
 }
