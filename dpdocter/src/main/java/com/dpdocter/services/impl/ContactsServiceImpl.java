@@ -764,7 +764,7 @@ public class ContactsServiceImpl implements ContactsService {
 				Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(request.getDoctorId()));
 				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
 				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
-				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
 						Aggregation.unwind("user"), Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
