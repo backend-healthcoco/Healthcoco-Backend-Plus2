@@ -1,14 +1,12 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "pc_oral_cavity_cl")
-public class PresentingComplaintOralCavityCollection extends GenericCollection {
+public class EarsExaminationCollection extends GenericCollection {
 
 	private ObjectId id;
 
-	private String pcOralCavity;
+	private String earsExam;
 
 	private ObjectId doctorId;
 
@@ -28,12 +26,12 @@ public class PresentingComplaintOralCavityCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getPcOralCavity() {
-		return pcOralCavity;
+	public String getEarsExam() {
+		return earsExam;
 	}
 
-	public void setPcOralCavity(String pcOralCavity) {
-		this.pcOralCavity = pcOralCavity;
+	public void setEarsExam(String earsExam) {
+		this.earsExam = earsExam;
 	}
 
 	public ObjectId getDoctorId() {
@@ -78,8 +76,8 @@ public class PresentingComplaintOralCavityCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "PresentingComplaintOralCavityCollection [id=" + id + ", pcOralCavity=" + pcOralCavity + ", doctorId="
-				+ doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
+		return "EarsExaminationCollection [id=" + id + ", earsExam=" + earsExam + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", speciality=" + speciality + "]";
 	}
 

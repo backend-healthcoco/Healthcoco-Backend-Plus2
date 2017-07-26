@@ -652,7 +652,7 @@ public class SMSServicesImpl implements SMSServices {
 			List<String> numberlist = new ArrayList<String> (numbers);
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
-			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey" + AUTH_KEY + "&mobiles="
+			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
 					+ numberString + "&message=" + message + "&sender="
 					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE;
 			URL obj = new URL(url);
@@ -663,7 +663,8 @@ public class SMSServicesImpl implements SMSServices {
 
 			// add request header
 			// con.setRequestProperty("User-Agent", USER_AGENT);
-
+			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
 			int responseCode = con.getResponseCode();
 			System.out.println("\nSending 'GET' request to URL : " + url);
 			System.out.println("Response Code : " + responseCode);
@@ -678,7 +679,7 @@ public class SMSServicesImpl implements SMSServices {
 
 			}
 			in.close();
-
+			System.out.println(response.toString());
 		} catch (Exception e) {
 
 			e.printStackTrace();

@@ -42,22 +42,30 @@ import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
+import com.dpdocter.beans.IndirectLarygoscopyExamination;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.MenstrualHistory;
+import com.dpdocter.beans.NeckExamination;
+import com.dpdocter.beans.NoseExamination;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.OralCavityAndThroatExamination;
 import com.dpdocter.beans.PA;
 import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
-import com.dpdocter.beans.PresentingComplaintNotes;
+import com.dpdocter.beans.PresentingComplaintEars;
+import com.dpdocter.beans.PresentingComplaintNose;
+import com.dpdocter.beans.PresentingComplaintOralCavity;
+import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
@@ -69,18 +77,23 @@ import com.dpdocter.collections.DiagnosisCollection;
 import com.dpdocter.collections.DiagramsCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.ECGDetailsCollection;
+import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
 import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HistoryCollection;
 import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.IndicationOfUSGCollection;
+import com.dpdocter.collections.IndirectLarygoscopyExaminationCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.MenstrualHistoryCollection;
+import com.dpdocter.collections.NeckExaminationCollection;
+import com.dpdocter.collections.NoseExaminationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.ObservationCollection;
 import com.dpdocter.collections.ObstetricHistoryCollection;
+import com.dpdocter.collections.OralCavityAndThroatExaminationCollection;
 import com.dpdocter.collections.PACollection;
 import com.dpdocter.collections.PSCollection;
 import com.dpdocter.collections.PVCollection;
@@ -88,7 +101,10 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientVisitCollection;
 import com.dpdocter.collections.PresentComplaintCollection;
 import com.dpdocter.collections.PresentComplaintHistoryCollection;
-import com.dpdocter.collections.PresentingComplaintNotesCollection;
+import com.dpdocter.collections.PresentingComplaintEarsCollection;
+import com.dpdocter.collections.PresentingComplaintNoseCollection;
+import com.dpdocter.collections.PresentingComplaintOralCavityCollection;
+import com.dpdocter.collections.PresentingComplaintThroatCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
@@ -133,17 +149,22 @@ import com.dpdocter.repository.DiagnosisRepository;
 import com.dpdocter.repository.DiagramsRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
+import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
+import com.dpdocter.repository.IndirectLarygoscopyExaminationRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MenstrualHistoryRepository;
+import com.dpdocter.repository.NeckExaminationRepository;
+import com.dpdocter.repository.NoseExaminationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.ObstetricHistoryRepository;
+import com.dpdocter.repository.OralCavityThroatExaminationRepository;
 import com.dpdocter.repository.PARepository;
 import com.dpdocter.repository.PSRepository;
 import com.dpdocter.repository.PVRepository;
@@ -151,6 +172,10 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PresentComplaintHistoryRepository;
 import com.dpdocter.repository.PresentComplaintRepository;
+import com.dpdocter.repository.PresentingComplaintEarsRepository;
+import com.dpdocter.repository.PresentingComplaintNotesRepository;
+import com.dpdocter.repository.PresentingComplaintOralCavityRepository;
+import com.dpdocter.repository.PresentingComplaintThroatRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
@@ -305,6 +330,33 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private ProcedureNoteRepository procedureNoteRepository;
+	
+	@Autowired
+	private PresentingComplaintNotesRepository presentingComplaintNotesRepository;
+	
+	@Autowired
+	private PresentingComplaintEarsRepository presentingComplaintEarsRepository;
+	
+	@Autowired
+	private PresentingComplaintOralCavityRepository presentingComplaintOralCavityRepository;
+	
+	@Autowired
+	private PresentingComplaintThroatRepository presentingComplaintThroatRepository;
+	
+	@Autowired
+	private NoseExaminationRepository noseExaminationRepository;
+	
+	@Autowired
+	private EarsExaminationRepository earsExaminationRepository;
+	
+	@Autowired
+	private NeckExaminationRepository neckExaminationRepository;
+	
+	@Autowired
+	private OralCavityThroatExaminationRepository oralCavityThroatExaminationRepository;
+	
+	@Autowired
+	private IndirectLarygoscopyExaminationRepository indirectLarygoscopyExaminationRepository;
 
 	@Autowired
 	private AppointmentRepository appointmentRepository;
@@ -3492,6 +3544,78 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
+		
+		case PC_NOSE: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalPCNOse(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomPCNose(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalPCNOse(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case PC_EARS: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalPCEars(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomPCEars(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalPCEars(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case PC_THROAT: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalPCThroat(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case PC_ORAL_CAVITY: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalPCOralCavity(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
 
 		}
 		return response;
@@ -6064,6 +6188,337 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return precedureNote;
 	}
+	
+	@Override
+	@Transactional
+	public PresentingComplaintNose addEditPCNose(PresentingComplaintNose presentingComplaintNotes) {
+		try {
+			PresentingComplaintNoseCollection presentingComplaintNotesCollection = new PresentingComplaintNoseCollection();
+			BeanUtil.map(presentingComplaintNotes, presentingComplaintNotesCollection);
+			if (DPDoctorUtils.anyStringEmpty(presentingComplaintNotesCollection.getId())) {
+				presentingComplaintNotesCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintNotesCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(presentingComplaintNotesCollection.getDoctorId());
+					if (userCollection != null) {
+						presentingComplaintNotesCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					presentingComplaintNotesCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				PresentingComplaintNoseCollection oldPresentingComplaintNotesCollection = presentingComplaintNotesRepository
+						.findOne(presentingComplaintNotesCollection.getId());
+				presentingComplaintNotesCollection.setCreatedBy(oldPresentingComplaintNotesCollection.getCreatedBy());
+				presentingComplaintNotesCollection.setCreatedTime(oldPresentingComplaintNotesCollection.getCreatedTime());
+				presentingComplaintNotesCollection.setDiscarded(oldPresentingComplaintNotesCollection.getDiscarded());
+			}
+			presentingComplaintNotesCollection = presentingComplaintNotesRepository.save(presentingComplaintNotesCollection);
+
+			BeanUtil.map(presentingComplaintNotesCollection, presentingComplaintNotes);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return presentingComplaintNotes;
+	}
+	
+	@Override
+	@Transactional
+	public EarsExamination addEditEarsExam(EarsExamination earsExamination) {
+		try {
+			EarsExaminationCollection earsExaminationCollection = new EarsExaminationCollection();
+			BeanUtil.map(earsExamination, earsExaminationCollection);
+			if (DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getId())) {
+				earsExaminationCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(earsExaminationCollection.getDoctorId());
+					if (userCollection != null) {
+						earsExaminationCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					earsExaminationCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				EarsExaminationCollection oldEarsExaminationCollection = earsExaminationRepository
+						.findOne(earsExaminationCollection.getId());
+				earsExaminationCollection.setCreatedBy(oldEarsExaminationCollection.getCreatedBy());
+				earsExaminationCollection.setCreatedTime(oldEarsExaminationCollection.getCreatedTime());
+				earsExaminationCollection.setDiscarded(oldEarsExaminationCollection.getDiscarded());
+			}
+			earsExaminationCollection = earsExaminationRepository.save(earsExaminationCollection);
+
+			BeanUtil.map(earsExaminationCollection, earsExamination);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return earsExamination;
+	}
+	
+	
+	@Override
+	@Transactional
+	public NeckExamination addEditNeckExam(NeckExamination neckExamination) {
+		try {
+			NeckExaminationCollection neckExaminationCollection = new NeckExaminationCollection();
+			BeanUtil.map(neckExamination , neckExaminationCollection);
+			if (DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getId())) {
+				neckExaminationCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(neckExaminationCollection.getDoctorId());
+					if (userCollection != null) {
+						neckExaminationCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					neckExaminationCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				NeckExaminationCollection oldNeckExaminationCollection = neckExaminationRepository
+						.findOne(neckExaminationCollection.getId());
+				neckExaminationCollection.setCreatedBy(oldNeckExaminationCollection.getCreatedBy());
+				neckExaminationCollection.setCreatedTime(oldNeckExaminationCollection.getCreatedTime());
+				neckExaminationCollection.setDiscarded(oldNeckExaminationCollection.getDiscarded());
+			}
+				neckExaminationCollection = neckExaminationRepository.save(neckExaminationCollection);
+
+			BeanUtil.map(neckExaminationCollection, neckExamination);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return neckExamination;
+	}
+	
+	
+	@Override
+	@Transactional
+	public NoseExamination addEditNoseExam(NoseExamination noseExamination) {
+		try {
+			NoseExaminationCollection noseExaminationCollection = new NoseExaminationCollection();
+			BeanUtil.map(noseExamination, noseExaminationCollection);
+			if (DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getId())) {
+				noseExaminationCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(noseExaminationCollection.getDoctorId());
+					if (userCollection != null) {
+						noseExaminationCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					noseExaminationCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				NoseExaminationCollection oldNoseExaminationCollection = noseExaminationRepository
+						.findOne(noseExaminationCollection.getId());
+				noseExaminationCollection.setCreatedBy(oldNoseExaminationCollection.getCreatedBy());
+				noseExaminationCollection.setCreatedTime(oldNoseExaminationCollection.getCreatedTime());
+				noseExaminationCollection.setDiscarded(oldNoseExaminationCollection.getDiscarded());
+			}
+			noseExaminationCollection = noseExaminationRepository.save(noseExaminationCollection);
+
+			BeanUtil.map(noseExaminationCollection, noseExamination);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return noseExamination;
+	}
+	
+	
+	@Override
+	@Transactional
+	public OralCavityAndThroatExamination addEditOralCavityThroatExam(OralCavityAndThroatExamination oralCavityAndThroatExamination) {
+		try {
+			OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = new OralCavityAndThroatExaminationCollection();
+			BeanUtil.map(oralCavityAndThroatExamination, oralCavityAndThroatExaminationCollection);
+			if (DPDoctorUtils.anyStringEmpty(oralCavityAndThroatExaminationCollection.getId())) {
+				oralCavityAndThroatExaminationCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(oralCavityAndThroatExaminationCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(oralCavityAndThroatExaminationCollection.getDoctorId());
+					if (userCollection != null) {
+						oralCavityAndThroatExaminationCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					oralCavityAndThroatExaminationCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				OralCavityAndThroatExaminationCollection oldOralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository
+						.findOne(oralCavityAndThroatExaminationCollection.getId());
+				oralCavityAndThroatExaminationCollection.setCreatedBy(oldOralCavityAndThroatExaminationCollection.getCreatedBy());
+				oralCavityAndThroatExaminationCollection.setCreatedTime(oldOralCavityAndThroatExaminationCollection.getCreatedTime());
+				oralCavityAndThroatExaminationCollection.setDiscarded(oldOralCavityAndThroatExaminationCollection.getDiscarded());
+			}
+			oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
+
+			BeanUtil.map(oralCavityAndThroatExaminationCollection, oralCavityAndThroatExamination);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return oralCavityAndThroatExamination;
+	}
+	
+	@Override
+	@Transactional
+	public IndirectLarygoscopyExamination addEditIndirectLarygoscopyExam(IndirectLarygoscopyExamination indirectLarygoscopyExamination) {
+		try {
+			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = new IndirectLarygoscopyExaminationCollection();
+			BeanUtil.map(indirectLarygoscopyExamination, indirectLarygoscopyExaminationCollection);
+			if (DPDoctorUtils.anyStringEmpty(indirectLarygoscopyExaminationCollection.getId())) {
+				indirectLarygoscopyExaminationCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(indirectLarygoscopyExamination.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(indirectLarygoscopyExaminationCollection.getDoctorId());
+					if (userCollection != null) {
+						indirectLarygoscopyExamination
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					indirectLarygoscopyExaminationCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				IndirectLarygoscopyExaminationCollection oldIndirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
+						.findOne(indirectLarygoscopyExaminationCollection.getId());
+				indirectLarygoscopyExaminationCollection.setCreatedBy(oldIndirectLarygoscopyExaminationCollection.getCreatedBy());
+				indirectLarygoscopyExaminationCollection.setCreatedTime(oldIndirectLarygoscopyExaminationCollection.getCreatedTime());
+				indirectLarygoscopyExaminationCollection.setDiscarded(oldIndirectLarygoscopyExaminationCollection.getDiscarded());
+			}
+			indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
+
+			BeanUtil.map(indirectLarygoscopyExaminationCollection, indirectLarygoscopyExamination);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return indirectLarygoscopyExamination;
+	}
+	
+	
+	@Override
+	@Transactional
+	public PresentingComplaintEars addEditPCEars(PresentingComplaintEars presentingComplaintEars) {
+		try {
+			PresentingComplaintEarsCollection presentingComplaintEarsCollection = new PresentingComplaintEarsCollection();
+			BeanUtil.map(presentingComplaintEars, presentingComplaintEarsCollection);
+			if (DPDoctorUtils.anyStringEmpty(presentingComplaintEarsCollection.getId())) {
+				presentingComplaintEarsCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintEarsCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(presentingComplaintEarsCollection.getDoctorId());
+					if (userCollection != null) {
+						presentingComplaintEarsCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					presentingComplaintEarsCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				PresentingComplaintEarsCollection oldPresentingComplaintEarCollection = presentingComplaintEarsRepository
+						.findOne(presentingComplaintEarsCollection.getId());
+				presentingComplaintEarsCollection.setCreatedBy(oldPresentingComplaintEarCollection.getCreatedBy());
+				presentingComplaintEarsCollection.setCreatedTime(oldPresentingComplaintEarCollection.getCreatedTime());
+				presentingComplaintEarsCollection.setDiscarded(oldPresentingComplaintEarCollection.getDiscarded());
+			}
+			presentingComplaintEarsCollection = presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
+
+			BeanUtil.map(presentingComplaintEarsCollection, presentingComplaintEars);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return presentingComplaintEars;
+	}
+	
+	
+
+	@Override
+	@Transactional
+	public PresentingComplaintThroat addEditPCThroat(PresentingComplaintThroat presentingComplaintThroat) {
+		try {
+			PresentingComplaintThroatCollection presentingComplaintThroatCollection = new PresentingComplaintThroatCollection();
+			BeanUtil.map(presentingComplaintThroat, presentingComplaintThroatCollection);
+			if (DPDoctorUtils.anyStringEmpty(presentingComplaintThroatCollection.getId())) {
+				presentingComplaintThroatCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintThroatCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(presentingComplaintThroatCollection.getDoctorId());
+					if (userCollection != null) {
+						presentingComplaintThroatCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					presentingComplaintThroatCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				PresentingComplaintThroatCollection oldPresentingComplaintThroatCollection = presentingComplaintThroatRepository
+						.findOne(presentingComplaintThroatCollection.getId());
+				presentingComplaintThroatCollection.setCreatedBy(oldPresentingComplaintThroatCollection.getCreatedBy());
+				presentingComplaintThroatCollection.setCreatedTime(oldPresentingComplaintThroatCollection.getCreatedTime());
+				presentingComplaintThroatCollection.setDiscarded(oldPresentingComplaintThroatCollection.getDiscarded());
+			}
+			presentingComplaintThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintThroatCollection);
+
+			BeanUtil.map(presentingComplaintThroatCollection, presentingComplaintThroat);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return presentingComplaintThroat;
+	}
+	
+	@Override
+	@Transactional
+	public PresentingComplaintOralCavity addEditPCOralCavity(PresentingComplaintOralCavity presentingComplaintOralCavity) {
+		try {
+			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = new PresentingComplaintOralCavityCollection();
+			BeanUtil.map(presentingComplaintOralCavity, presentingComplaintOralCavityCollection);
+			if (DPDoctorUtils.anyStringEmpty(presentingComplaintOralCavityCollection.getId())) {
+				presentingComplaintOralCavityCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintOralCavityCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(presentingComplaintOralCavityCollection.getDoctorId());
+					if (userCollection != null) {
+						presentingComplaintOralCavityCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					presentingComplaintOralCavityCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				PresentingComplaintOralCavityCollection oldPresentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
+						.findOne(presentingComplaintOralCavityCollection.getId());
+				presentingComplaintOralCavityCollection.setCreatedBy(oldPresentingComplaintOralCavityCollection.getCreatedBy());
+				presentingComplaintOralCavityCollection.setCreatedTime(oldPresentingComplaintOralCavityCollection.getCreatedTime());
+				presentingComplaintOralCavityCollection.setDiscarded(oldPresentingComplaintOralCavityCollection.getDiscarded());
+			}
+			presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
+
+			BeanUtil.map(presentingComplaintOralCavityCollection, presentingComplaintOralCavity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return presentingComplaintOralCavity;
+	}
+
 
 	@SuppressWarnings("unchecked")
 	private List<PA> getCustomGlobalPA(int page, int size, String doctorId, String locationId, String hospitalId,
@@ -6907,5 +7362,770 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return list;
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintNose> getCustomGlobalPCNOse(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintNose> response = new ArrayList<PresentingComplaintNose>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<PresentingComplaintNose> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintNose> getGlobalPCNOse(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<PresentingComplaintNose> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<PresentingComplaintNose> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<PresentingComplaintNose> getCustomPCNose(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintNose> response = null;
+		try {
+			AggregationResults<PresentingComplaintNose> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintEars> getCustomGlobalPCEars(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintEars> response = new ArrayList<PresentingComplaintEars>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<PresentingComplaintEars> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintEars> getGlobalPCEars(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<PresentingComplaintEars> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<PresentingComplaintEars> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<PresentingComplaintEars> getCustomPCEars(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintEars> response = null;
+		try {
+			AggregationResults<PresentingComplaintEars> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintThroat> getCustomGlobalPCThroat(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintThroat> response = new ArrayList<PresentingComplaintThroat>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<PresentingComplaintThroat> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintThroat> getGlobalPCThroat(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<PresentingComplaintThroat> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<PresentingComplaintThroat> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<PresentingComplaintThroat> getCustomPCThroat(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintThroat> response = null;
+		try {
+			AggregationResults<PresentingComplaintThroat> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintOralCavity> getCustomGlobalPCOralCavity(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintOralCavity> response = new ArrayList<PresentingComplaintOralCavity>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintOralCavity> getGlobalPCOralCavity(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<PresentingComplaintOralCavity> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<PresentingComplaintOralCavity> getCustomPCOralCavity(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintOralCavity> response = null;
+		try {
+			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<NoseExamination> getCustomGlobalNoseExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<NoseExamination> response = new ArrayList<NoseExamination>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<NoseExamination> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						NoseExaminationCollection.class, NoseExamination.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<NoseExamination> getGlobalNoseExam(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<NoseExamination> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<NoseExamination> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					NoseExaminationCollection.class, NoseExamination.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<NoseExamination> getCustomNoseExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<NoseExamination> response = null;
+		try {
+			AggregationResults<NoseExamination> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							NoseExaminationCollection.class, NoseExamination.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	private List<NeckExamination> getCustomGlobalNeckExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<NeckExamination> response = new ArrayList<NeckExamination>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<NeckExamination> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						NeckExaminationCollection.class, NeckExamination.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<NeckExamination> getGlobalNeckExam(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<NeckExamination> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<NeckExamination> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					NeckExaminationCollection.class, NeckExamination.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<NeckExamination> getCustomNeckExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<NeckExamination> response = null;
+		try {
+			AggregationResults<NeckExamination> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							NeckExaminationCollection.class, NeckExamination.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private List<EarsExamination> getCustomGlobalEarsExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<EarsExamination> response = new ArrayList<EarsExamination>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<EarsExamination> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						EarsExaminationCollection.class, EarsExamination.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<EarsExamination> getGlobalEarsExam(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<EarsExamination> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<EarsExamination> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					EarsExaminationCollection.class, EarsExamination.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<EarsExamination> getCustomEarsExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<EarsExamination> response = null;
+		try {
+			AggregationResults<EarsExamination> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							EarsExaminationCollection.class, EarsExamination.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private List<OralCavityAndThroatExamination> getCustomGlobalOralCavityAndThroatExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<OralCavityAndThroatExamination> response = new ArrayList<OralCavityAndThroatExamination>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<OralCavityAndThroatExamination> getGlobalOralCavityAndThroat(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<OralCavityAndThroatExamination> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<OralCavityAndThroatExamination> getCustomOralCavityAndThroatExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<OralCavityAndThroatExamination> response = null;
+		try {
+			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private List<IndirectLarygoscopyExamination> getCustomGlobalIndirectLarygoscopyExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<IndirectLarygoscopyExamination> response = new ArrayList<IndirectLarygoscopyExamination>();
+			try {
+				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+				if (doctorCollection == null) {
+					logger.warn("No Doctor Found");
+					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+				}
+				Collection<String> specialities = null;
+				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+					specialities = CollectionUtils.collect(
+							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+							new BeanToPropertyValueTransformer("speciality"));
+					specialities.add(null);
+					specialities.add("ALL");
+				}
+
+				AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(
+						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+								updatedTime, discarded, null, null, specialities, null),
+						IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
+				response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<IndirectLarygoscopyExamination> getGlobalIndirectLarygoscopyExam(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded) {
+		List<IndirectLarygoscopyExamination> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(DPDoctorUtils
+					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+					IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Precedure Note");
+		}
+		return response;
+	}
+
+	private List<IndirectLarygoscopyExamination> getCustomIndirectLarygoscopyExam(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<IndirectLarygoscopyExamination> response = null;
+		try {
+			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
+									updatedTime, discarded, null, null, null),
+							IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Procedure Note");
+		}
+		return response;
+	}
+
 
 }

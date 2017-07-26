@@ -25,6 +25,7 @@ import com.dpdocter.beans.Complaint;
 import com.dpdocter.beans.Diagnoses;
 import com.dpdocter.beans.Diagram;
 import com.dpdocter.beans.ECGDetails;
+import com.dpdocter.beans.EarsExamination;
 import com.dpdocter.beans.Echo;
 import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.GeneralExam;
@@ -32,6 +33,8 @@ import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
+import com.dpdocter.beans.NeckExamination;
+import com.dpdocter.beans.NoseExamination;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
@@ -40,6 +43,10 @@ import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
+import com.dpdocter.beans.PresentingComplaintEars;
+import com.dpdocter.beans.PresentingComplaintNose;
+import com.dpdocter.beans.PresentingComplaintOralCavity;
+import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
@@ -968,6 +975,152 @@ public class ClinicalNotesApi {
 		esClinicalNotesService.addHolter(esHolter);
 		Response<Holter> response = new Response<Holter>();
 		response.setData(holter);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE, notes = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
+	public Response<PresentingComplaintNose> addEditPCNose(PresentingComplaintNose request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPcNose())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		PresentingComplaintNose presentingComplaintNose = clinicalNotesService.addEditPCNose(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<PresentingComplaintNose> response = new Response<PresentingComplaintNose>();
+		response.setData(presentingComplaintNose);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS, notes = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
+	public Response<PresentingComplaintEars> addEditPCEars(PresentingComplaintEars request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPcEars())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		PresentingComplaintEars presentingComplaintEars = clinicalNotesService.addEditPCEars(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_EARS, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<PresentingComplaintEars> response = new Response<PresentingComplaintEars>();
+		response.setData(presentingComplaintEars);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
+	public Response<PresentingComplaintThroat> addEditPCThroat(PresentingComplaintThroat request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPcThroat())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		PresentingComplaintThroat presentingComplaintThroat = clinicalNotesService.addEditPCThroat(request);
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_THROAT, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<PresentingComplaintThroat> response = new Response<PresentingComplaintThroat>();
+		response.setData(presentingComplaintThroat);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY, notes = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
+	public Response<PresentingComplaintOralCavity> addEditPCOralCavity(PresentingComplaintOralCavity request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getPcOralCavity())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.addEditPCOralCavity(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<PresentingComplaintOralCavity> response = new Response<PresentingComplaintOralCavity>();
+		response.setData(presentingComplaintOralCavity);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
+	public Response<NoseExamination> addEditNoseExam(NoseExamination request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getNoseExam())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		NoseExamination noseExamination = clinicalNotesService.addEditNoseExam(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.NOSE_EXAM, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<NoseExamination> response = new Response<NoseExamination>();
+		response.setData(noseExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
+	public Response<NeckExamination> addEditNeckExam(NeckExamination request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getNeckExam())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		NeckExamination neckExamination = clinicalNotesService.addEditNeckExam(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.NECK_EXAM, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<NeckExamination> response = new Response<NeckExamination>();
+		response.setData(neckExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
+	public Response<EarsExamination> addEditEarsExam(EarsExamination request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getEarsExam())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		EarsExamination earsExamination = clinicalNotesService.addEditEarsExam(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.EARS_EXAM, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<EarsExamination> response = new Response<EarsExamination>();
+		response.setData(earsExamination);
 		return response;
 	}
 

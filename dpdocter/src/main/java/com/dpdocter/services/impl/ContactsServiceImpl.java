@@ -723,7 +723,7 @@ public class ContactsServiceImpl implements ContactsService {
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
-			String message = request.getMessage() + " -powered by Healthcoco";
+			String message = request.getMessage() + "-Powered%20by%20Healthcoco";
 			
 			if (request.getGroupId() != null) {
 				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));

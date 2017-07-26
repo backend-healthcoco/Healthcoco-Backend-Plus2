@@ -2,11 +2,11 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-public class PresentingComplaintNotes extends GenericCollection {
+public class PresentingComplaintNose extends GenericCollection {
 
 	private String id;
 
-	private String pcNotes;
+	private String pcNose;
 
 	private String doctorId;
 
@@ -26,12 +26,12 @@ public class PresentingComplaintNotes extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getPcNotes() {
-		return pcNotes;
+	public String getPcNose() {
+		return pcNose;
 	}
 
-	public void setPcNotes(String pcNotes) {
-		this.pcNotes = pcNotes;
+	public void setPcNose(String pcNose) {
+		this.pcNose = pcNose;
 	}
 
 	public String getDoctorId() {
@@ -76,9 +76,9 @@ public class PresentingComplaintNotes extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "PresentingComplaintNotes [id=" + id + ", pcNotes=" + pcNotes + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", speciality=" + speciality + "]";
+		return "PresentingComplaintNose [id=" + id + ", pcNose=" + pcNose + ", doctorId=" + doctorId + ", locationId="
+				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", speciality=" + speciality
+				+ "]";
 	}
 
 }

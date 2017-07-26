@@ -1,4 +1,4 @@
-package com.dpdocter.elasticsearch.repository;
+package com.dpdocter.repository;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;

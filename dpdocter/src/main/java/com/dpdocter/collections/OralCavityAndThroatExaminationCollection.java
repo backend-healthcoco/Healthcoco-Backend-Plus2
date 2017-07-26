@@ -1,30 +1,21 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-public class PresentingComplaintNotesCollection extends GenericCollection {
+public class OralCavityAndThroatExaminationCollection extends GenericCollection {
 
-	@Id
 	private ObjectId id;
 
-	@Field
-	private String pcNotes;
+	private String oralCavityExam;
 
-	@Field
 	private ObjectId doctorId;
 
-	@Field
 	private ObjectId locationId;
 
-	@Field
 	private ObjectId hospitalId;
 
-	@Field
 	private Boolean discarded = false;
 
-	@Field
 	private String speciality;
 
 	public ObjectId getId() {
@@ -35,12 +26,12 @@ public class PresentingComplaintNotesCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getPcNotes() {
-		return pcNotes;
+	public String getOralCavityExam() {
+		return oralCavityExam;
 	}
 
-	public void setPcNotes(String pcNotes) {
-		this.pcNotes = pcNotes;
+	public void setOralCavityExam(String oralCavityExam) {
+		this.oralCavityExam = oralCavityExam;
 	}
 
 	public ObjectId getDoctorId() {
@@ -85,9 +76,9 @@ public class PresentingComplaintNotesCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "PresentingComplaintNotesCollection [id=" + id + ", pcNotes=" + pcNotes + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", speciality=" + speciality + "]";
+		return "OralCavityAndThroatExaminationCollection [id=" + id + ", oralCavityExam=" + oralCavityExam
+				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", discarded=" + discarded + ", speciality=" + speciality + "]";
 	}
 
 }

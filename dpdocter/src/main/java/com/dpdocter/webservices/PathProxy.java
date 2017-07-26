@@ -246,6 +246,24 @@ public interface PathProxy {
 		public static final String ADD_ECHO = "/echo/add";
 
 		public static final String ADD_HOLTER = "/holter/add";
+		
+		public static final String ADD_PC_NOSE = "/pcnose/add";
+		
+		public static final String ADD_PC_EARS = "/pcears/add";
+		
+		public static final String ADD_PC_THROAT = "/pcthroat/add";
+		
+		public static final String ADD_PC_ORAL_CAVITY = "/pcoralCavity/add";
+		
+		public static final String ADD_NECK_EXAM = "/neckExam/add";
+		
+		public static final String ADD_NOSE_EXAM = "/noseExam/add";
+		
+		public static final String ADD_EARS_EXAM = "/earsExam/add";
+		
+		public static final String ADD_INDIRECT_LARYGOSCOPY_EXAM= "/indirectLarygoscopyExam/add";
+		
+		public static final String ADD_ORAL_CAVITY_THROAT_EXAM= "/oralCavityThroatExam/add";
 
 		public static final String ADD_PROCEDURE_NOTE = "/procedureNote/add";
 

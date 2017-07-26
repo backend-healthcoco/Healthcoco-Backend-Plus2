@@ -27,7 +27,8 @@ public enum Resource {
 																																															"PHARMACY"), COLLECTION_BOY(
 																																																	"COLLECTION_BOY"), PROCEDURE_NOTE(
 																																																			"PROCEDURE_NOTE"), BABY_NOTES(
-																																																					"BABY_NOTES"),OPERATION_NOTES("OPERATION_NOTES"),LABOUR_NOTES("LABOUR_NOTES");
+																																																					"BABY_NOTES"),OPERATION_NOTES("OPERATION_NOTES"),LABOUR_NOTES("LABOUR_NOTES"),
+	PC_NOSE("PC_NOSE"),PC_EARS("PC_EARS"),PC_THROAT("PC_THROAT"),PC_ORAL_CAVITY("PC_ORAL_CAVITY"),NOSE_EXAM("NOSE_EXAM"),NECK_EXAM("NECK_EXAM"),EARS_EXAM("EARS_EXAM"),ORAL_CAVITY_THROAT_EXAM("ORAL_CAVITY_THROAT_EXAM"),INDIRECT_LAGYROSCOPY_EXAM("INDIRECT_LAGYROSCOPY_EXAM");
 
 	private String type;
 

@@ -24,7 +24,7 @@ import com.dpdocter.beans.PV;
 import com.dpdocter.beans.PresentComplaint;
 import com.dpdocter.beans.PresentComplaintHistory;
 import com.dpdocter.beans.PresentingComplaintEars;
-import com.dpdocter.beans.PresentingComplaintNotes;
+import com.dpdocter.beans.PresentingComplaintNose;
 import com.dpdocter.beans.PresentingComplaintOralCavity;
 import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
@@ -159,7 +159,7 @@ public class ClinicalNotesAddRequest {
 
 	private List<Holter> holters;
 
-	private List<PresentingComplaintNotes> presentingComplaintNotes;
+	private List<PresentingComplaintNose> presentingComplaintNotes;
 
 	private List<PresentingComplaintOralCavity> presentingComplaintOralCavities;
 
@@ -1013,11 +1013,11 @@ public class ClinicalNotesAddRequest {
 		this.globalProcedureNotes = globalProcedureNotes;
 	}
 
-	public List<PresentingComplaintNotes> getPresentingComplaintNotes() {
+	public List<PresentingComplaintNose> getPresentingComplaintNotes() {
 		return presentingComplaintNotes;
 	}
 
-	public void setPresentingComplaintNotes(List<PresentingComplaintNotes> presentingComplaintNotes) {
+	public void setPresentingComplaintNotes(List<PresentingComplaintNose> presentingComplaintNotes) {
 		this.presentingComplaintNotes = presentingComplaintNotes;
 	}
 
