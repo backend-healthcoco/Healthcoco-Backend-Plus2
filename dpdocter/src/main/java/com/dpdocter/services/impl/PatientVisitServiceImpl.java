@@ -1566,6 +1566,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Boolean showNoOfChildren) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
+		Boolean showExamTitle = false;
 		try {
 			clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 			if (clinicalNotesCollection != null) {
@@ -1697,6 +1698,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setEcho(clinicalNotesCollection.getEcho());
 					clinicalNotesJasperDetails.setHolter(clinicalNotesCollection.getHolter());
 					clinicalNotesJasperDetails.setProcedureNote(clinicalNotesCollection.getProcedureNote());
+					clinicalNotesJasperDetails.setNoseExam(clinicalNotesCollection.getNoseExam());
+					clinicalNotesJasperDetails
+							.setOralCavityThroatExam(clinicalNotesCollection.getOralCavityThroatExam());
+					clinicalNotesJasperDetails
+							.setIndirectLarygoscopyExam(clinicalNotesCollection.getIndirectLarygoscopyExam());
+					clinicalNotesJasperDetails.setEarsExam(clinicalNotesCollection.getEarsExam());
+					clinicalNotesJasperDetails.setNeckExam(clinicalNotesCollection.getNeckExam());
+					clinicalNotesJasperDetails.setPcNose(clinicalNotesCollection.getPcNose());
+					clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
+					clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
+					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
+						parameters.put("Examination", "Examination :");
+						showExamTitle = true;
+					}
+					parameters.put("showExamTitle", showExamTitle);
 
 					if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 						clinicalNotesJasperDetails

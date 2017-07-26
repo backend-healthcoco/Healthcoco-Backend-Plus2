@@ -1546,6 +1546,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							}
 							patient.setImageUrl(getFinalImageURL(patient.getImageUrl()));
 							patient.setThumbnailUrl(getFinalImageURL(patient.getThumbnailUrl()));
+
 						}
 					}
 					BeanUtil.map(collection, appointment);

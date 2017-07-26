@@ -29,6 +29,24 @@ public class ClinicalNotesJasperDetails {
 	private String generalExam;
 
 	private String systemExam;
+	
+	private String noseExam;
+	
+	private String oralCavityThroatExam;
+	
+	private String indirectLarygoscopyExam;
+	
+	private String neckExam;
+	
+	private String earsExam;
+	
+	private String pcNose;
+	
+	private String pcOralCavity;
+	
+	private String pcThroat;
+		
+	private String pcEars;
 
 	private String presentComplaintHistory;
 
@@ -271,6 +289,78 @@ public class ClinicalNotesJasperDetails {
 				+ ", pv=" + pv + ", pa=" + pa + ", ps=" + ps + ", ecgDetails=" + ecgDetails + ", xRayDetails="
 				+ xRayDetails + ", echo=" + echo + ", holter=" + holter + ", lmp=" + lmp + ", edd=" + edd
 				+ ", noOfChildren=" + noOfChildren + "]";
+	}
+
+	public String getNoseExam() {
+		return noseExam;
+	}
+
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
+	}
+
+	public String getIndirectLarygoscopyExam() {
+		return indirectLarygoscopyExam;
+	}
+
+	public String getNeckExam() {
+		return neckExam;
+	}
+
+	public String getEarsExam() {
+		return earsExam;
+	}
+
+	public String getPcNose() {
+		return pcNose;
+	}
+
+	public String getPcOralCavity() {
+		return pcOralCavity;
+	}
+
+	public String getPcThroat() {
+		return pcThroat;
+	}
+
+	public String getPcEars() {
+		return pcEars;
+	}
+
+	public void setNoseExam(String noseExam) {
+		this.noseExam = noseExam;
+	}
+
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
+	}
+
+	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
+		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
+	}
+
+	public void setNeckExam(String neckExam) {
+		this.neckExam = neckExam;
+	}
+
+	public void setEarsExam(String earsExam) {
+		this.earsExam = earsExam;
+	}
+
+	public void setPcNose(String pcNose) {
+		this.pcNose = pcNose;
+	}
+
+	public void setPcOralCavity(String pcOralCavity) {
+		this.pcOralCavity = pcOralCavity;
+	}
+
+	public void setPcThroat(String pcThroat) {
+		this.pcThroat = pcThroat;
+	}
+
+	public void setPcEars(String pcEars) {
+		this.pcEars = pcEars;
 	}
 
 	public String getProcedureNote() {

@@ -209,7 +209,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(createClinicalNotesSubreport(parameters,
 					contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle));
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.CLINICAL_NOTES.getType()))
-			createClinicalNotes(jasperDesign, columnWidth, contentFontSize);
+			createClinicalNotes(parameters, jasperDesign, columnWidth, contentFontSize);
 
 		if (componentType.getType().equalsIgnoreCase(ComponentType.VISITS.getType())
 				&& parameters.get("prescriptions") != null)
@@ -345,12 +345,15 @@ public class JasperReportServiceImpl implements JasperReportService {
 				.addBand(createLine(0, columnWidth, PositionTypeEnum.FIX_RELATIVE_TO_TOP));
 	}
 
-	private void createClinicalNotes(JasperDesign jasperDesign, int columnWidth, Integer contentFontSize) {
+	private void createClinicalNotes(Map<String, Object> parameters, JasperDesign jasperDesign, int columnWidth,
+			Integer contentFontSize) {
 		int fieldWidth = 118;
 		if (contentFontSize > 13)
 			fieldWidth = 145;
 		else if (contentFontSize > 11)
 			fieldWidth = 128;
+
+		Boolean showExamTitle = (Boolean) parameters.get("showExamTitle");
 
 		band = new JRDesignBand();
 		band.setHeight(10);
@@ -380,15 +383,46 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$P{complaints}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$P{presentComplaintHistory}", fieldWidth,
 				false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCNose}", "$P{pcNose}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCOralCavity}", "$P{pcOralCavity}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$P{pcThroat}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$P{pcEars}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{MenstrualHistory}", "$P{menstrualHistory}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$P{obstetricHistory}", fieldWidth, false, 0);
-		addItems(jasperDesign, columnWidth, "$P{GeneralExam}", "$P{generalExam}", fieldWidth, false, 0);
+		if (showExamTitle) {
+
+			band = new JRDesignBand();
+			band.setHeight(20);
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Examination}"));
+			jrDesignTextField.setX(1);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setUnderline(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(new Float(contentFontSize));
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		}
+
+		addItems(jasperDesign, columnWidth, "$P{NoseExam}", "$P{noseExam}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{OralCavityThroatExam}", "$P{oralCavityThroatExam}", fieldWidth, false,
+				0);
+		addItems(jasperDesign, columnWidth, "$P{IndirectLarygoscopyExam}", "$P{indirectLarygoscopyExam}", fieldWidth,
+				false, 0);
+		addItems(jasperDesign, columnWidth, "$P{NeckExam}", "$P{neckExam}", fieldWidth, false, 0);
+
+		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$P{earsExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$P{systemExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$P{noOfChildren}", fieldWidth, false, 0);
 
 		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$P{lmp}", "$P{EDD}", "$P{edd}");
 
 		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$P{indicationOfUSG}", fieldWidth, true, 0);
+
 		addItems(jasperDesign, columnWidth, "$P{PA}", "$P{pa}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PS}", "$P{ps}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PV}", "$P{pv}", fieldWidth, false, 0);
@@ -763,6 +797,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setTopMargin(0);
 
 		jasperDesign.addStyle(normalStyle);
+		Boolean showExamTitle = (Boolean) parameters.get("showExamTitle");
 
 		int fieldWidth = 118;
 		if (contentFontSize > 13)
@@ -798,10 +833,40 @@ public class JasperReportServiceImpl implements JasperReportService {
 		addItems(jasperDesign, columnWidth, "$P{Complaints}", "$F{complaints}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{PresentComplaintHistory}", "$F{presentComplaintHistory}", fieldWidth,
 				false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCNose}", "$F{pcNose}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCOralCavity}", "$F{pcOralCavity}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCThroat}", "$F{pcThroat}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{PCEars}", "$F{pcEars}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{MenstrualHistory}", "$F{menstrualHistory}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{ObstetricHistory}", "$F{obstetricHistory}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{GeneralExam}", "$F{generalExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{SystemExam}", "$F{systemExam}", fieldWidth, false, 0);
+		if (showExamTitle) {
+			band = new JRDesignBand();
+			band.setHeight(20);
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{Examination}"));
+			jrDesignTextField.setX(1);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setUnderline(true);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setFontSize(new Float(contentFontSize));
+			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		}
+
+		addItems(jasperDesign, columnWidth, "$P{NoseExam}", "$F{noseExam}", fieldWidth, false, 0);
+		addItems(jasperDesign, columnWidth, "$P{OralCavityThroatExam}", "$F{oralCavityThroatExam}", fieldWidth, false,
+				0);
+		addItems(jasperDesign, columnWidth, "$P{IndirectLarygoscopyExam}", "$F{indirectLarygoscopyExam}", fieldWidth,
+				false, 0);
+		addItems(jasperDesign, columnWidth, "$P{NeckExam}", "$F{neckExam}", fieldWidth, false, 0);
+
+		addItems(jasperDesign, columnWidth, "$P{EarsExam}", "$F{earsExam}", fieldWidth, false, 0);
 		addItems(jasperDesign, columnWidth, "$P{NoOfChildren}", "$F{noOfChildren}", fieldWidth, false, 0);
 		addLMPAndEDD(jasperDesign, columnWidth, fieldWidth, 0, "$P{LMP}", "$F{lmp}", "$P{EDD}", "$F{edd}");
 		addItems(jasperDesign, columnWidth, "$P{IndicationOfUSG}", "$F{indicationOfUSG}", fieldWidth, true, 0);

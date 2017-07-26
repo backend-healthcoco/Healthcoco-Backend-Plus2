@@ -330,31 +330,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Autowired
 	private ProcedureNoteRepository procedureNoteRepository;
-	
+
 	@Autowired
 	private PresentingComplaintNotesRepository presentingComplaintNotesRepository;
-	
+
 	@Autowired
 	private PresentingComplaintEarsRepository presentingComplaintEarsRepository;
-	
+
 	@Autowired
 	private PresentingComplaintOralCavityRepository presentingComplaintOralCavityRepository;
-	
+
 	@Autowired
 	private PresentingComplaintThroatRepository presentingComplaintThroatRepository;
-	
+
 	@Autowired
 	private NoseExaminationRepository noseExaminationRepository;
-	
+
 	@Autowired
 	private EarsExaminationRepository earsExaminationRepository;
-	
+
 	@Autowired
 	private NeckExaminationRepository neckExaminationRepository;
-	
+
 	@Autowired
 	private OralCavityThroatExaminationRepository oralCavityThroatExaminationRepository;
-	
+
 	@Autowired
 	private IndirectLarygoscopyExaminationRepository indirectLarygoscopyExaminationRepository;
 
@@ -983,34 +983,44 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
-			/*if (request.getPcNotes() != null && !request.getPcNotes().isEmpty()
-					&& request.getGlobalPCNotes() != null) {
-				Set<String> customPCNotes = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcNotes())),
-						new HashSet<>(splitCSV(request.getGlobalPCNotes())));
-				for (String customPCNote : customPCNotes) {
 
-					PresentingComplaintNotes presentingComplaintNotes = new PresentingComplaintNotes();
-					presentingComplaintNotes.setPcNotes(customPCNote);
-					PresentingComplaintNotesCollection presentingComplaintNotesCollection = new PresentingComplaintNotesCollection();
-					BeanUtil.map(presentingComplaintNotes, presentingComplaintNotesCollection);
-					presentingComplaintNotesCollection.setDoctorId(new ObjectId(request.getDoctorId()));
-					presentingComplaintNotesCollection.setLocationId(new ObjectId(request.getLocationId()));
-					presentingComplaintNotesCollection.setHospitalId(new ObjectId(request.getHospitalId()));
-					presentingComplaintNotesCollection.setCreatedBy(createdBy);
-					presentingComplaintNotesCollection.setCreatedTime(createdTime);
-					presentingComplaintNotesCollection.setId(null);
-					presentingComplaintNotesCollection = procedureNoteRepository.save(presentingComplaintNotesCollection);
-					transactionalManagementService.addResource(presentingComplaintNotesCollection.getId(), Resource.PROCEDURE_NOTE,
-							false);
-					ESProcedureNoteDocument esProcedureNoteDocument = new ESProcedureNoteDocument();
-					BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
-					esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
-					// noteIds.add(notesCollection.getId());
-
-				}
-			}*/
+			/*
+			 * if (request.getPcNotes() != null &&
+			 * !request.getPcNotes().isEmpty() && request.getGlobalPCNotes() !=
+			 * null) { Set<String> customPCNotes = compareGlobalElements( new
+			 * HashSet<>(splitCSV(request.getPcNotes())), new
+			 * HashSet<>(splitCSV(request.getGlobalPCNotes()))); for (String
+			 * customPCNote : customPCNotes) {
+			 * 
+			 * PresentingComplaintNotes presentingComplaintNotes = new
+			 * PresentingComplaintNotes();
+			 * presentingComplaintNotes.setPcNotes(customPCNote);
+			 * PresentingComplaintNotesCollection
+			 * presentingComplaintNotesCollection = new
+			 * PresentingComplaintNotesCollection();
+			 * BeanUtil.map(presentingComplaintNotes,
+			 * presentingComplaintNotesCollection);
+			 * presentingComplaintNotesCollection.setDoctorId(new
+			 * ObjectId(request.getDoctorId()));
+			 * presentingComplaintNotesCollection.setLocationId(new
+			 * ObjectId(request.getLocationId()));
+			 * presentingComplaintNotesCollection.setHospitalId(new
+			 * ObjectId(request.getHospitalId()));
+			 * presentingComplaintNotesCollection.setCreatedBy(createdBy);
+			 * presentingComplaintNotesCollection.setCreatedTime(createdTime);
+			 * presentingComplaintNotesCollection.setId(null);
+			 * presentingComplaintNotesCollection =
+			 * procedureNoteRepository.save(presentingComplaintNotesCollection);
+			 * transactionalManagementService.addResource(
+			 * presentingComplaintNotesCollection.getId(),
+			 * Resource.PROCEDURE_NOTE, false); ESProcedureNoteDocument
+			 * esProcedureNoteDocument = new ESProcedureNoteDocument();
+			 * BeanUtil.map(procedureNoteCollection, esProcedureNoteDocument);
+			 * esClinicalNotesService.addProcedureNote(esProcedureNoteDocument);
+			 * // noteIds.add(notesCollection.getId());
+			 * 
+			 * } }
+			 */
 
 			//
 			// clinicalNotesCollection.setComplaints(complaintIds);
@@ -3544,7 +3554,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
-		
+
 		case PC_NOSE: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -3562,7 +3572,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
-		
+
 		case PC_EARS: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -3580,7 +3590,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
-		
+
 		case PC_THROAT: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -3591,14 +3601,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case PC_ORAL_CAVITY: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -3609,7 +3620,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
@@ -4407,6 +4419,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
+		Boolean showExamTitle = false;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -4421,14 +4434,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("investigations", clinicalNotesCollection.getInvestigation());
 		parameters.put("diagnosis", clinicalNotesCollection.getDiagnosis());
 		parameters.put("complaints", clinicalNotesCollection.getComplaint());
-
 		parameters.put("presentComplaint", clinicalNotesCollection.getPresentComplaint());
 		parameters.put("presentComplaintHistory", clinicalNotesCollection.getPresentComplaintHistory());
 		parameters.put("generalExam", clinicalNotesCollection.getGeneralExam());
 		parameters.put("systemExam", clinicalNotesCollection.getSystemExam());
+		parameters.put("noseExam", clinicalNotesCollection.getNoseExam());
+		parameters.put("oralCavityThroatExam", clinicalNotesCollection.getOralCavityThroatExam());
+		parameters.put("indirectLarygoscopyExam", clinicalNotesCollection.getIndirectLarygoscopyExam());
+		parameters.put("neckExam", clinicalNotesCollection.getNeckExam());
+		parameters.put("earsExam", clinicalNotesCollection.getEarsExam());
+		parameters.put("pcNose", clinicalNotesCollection.getPcNose());
+		parameters.put("pcOralCavity", clinicalNotesCollection.getPcOralCavity());
+		parameters.put("pcThroat", clinicalNotesCollection.getPcThroat());
+		parameters.put("pcEars", clinicalNotesCollection.getPcEars());
 		parameters.put("menstrualHistory", clinicalNotesCollection.getMenstrualHistory());
 		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
 		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
+		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
+			parameters.put("Examination", "Examination :");
+			showExamTitle = true;
+		}
+		parameters.put("showExamTitle", showExamTitle);
 
 		if (!isCustomPDF || showUSG)
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
@@ -6188,7 +6218,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return precedureNote;
 	}
-	
+
 	@Override
 	@Transactional
 	public PresentingComplaintNose addEditPCNose(PresentingComplaintNose presentingComplaintNotes) {
@@ -6198,7 +6228,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(presentingComplaintNotesCollection.getId())) {
 				presentingComplaintNotesCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintNotesCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(presentingComplaintNotesCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(presentingComplaintNotesCollection.getDoctorId());
 					if (userCollection != null) {
 						presentingComplaintNotesCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6211,10 +6242,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				PresentingComplaintNoseCollection oldPresentingComplaintNotesCollection = presentingComplaintNotesRepository
 						.findOne(presentingComplaintNotesCollection.getId());
 				presentingComplaintNotesCollection.setCreatedBy(oldPresentingComplaintNotesCollection.getCreatedBy());
-				presentingComplaintNotesCollection.setCreatedTime(oldPresentingComplaintNotesCollection.getCreatedTime());
+				presentingComplaintNotesCollection
+						.setCreatedTime(oldPresentingComplaintNotesCollection.getCreatedTime());
 				presentingComplaintNotesCollection.setDiscarded(oldPresentingComplaintNotesCollection.getDiscarded());
 			}
-			presentingComplaintNotesCollection = presentingComplaintNotesRepository.save(presentingComplaintNotesCollection);
+			presentingComplaintNotesCollection = presentingComplaintNotesRepository
+					.save(presentingComplaintNotesCollection);
 
 			BeanUtil.map(presentingComplaintNotesCollection, presentingComplaintNotes);
 		} catch (Exception e) {
@@ -6224,7 +6257,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return presentingComplaintNotes;
 	}
-	
+
 	@Override
 	@Transactional
 	public EarsExamination addEditEarsExam(EarsExamination earsExamination) {
@@ -6260,14 +6293,13 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return earsExamination;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public NeckExamination addEditNeckExam(NeckExamination neckExamination) {
 		try {
 			NeckExaminationCollection neckExaminationCollection = new NeckExaminationCollection();
-			BeanUtil.map(neckExamination , neckExaminationCollection);
+			BeanUtil.map(neckExamination, neckExaminationCollection);
 			if (DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getId())) {
 				neckExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId())) {
@@ -6287,7 +6319,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				neckExaminationCollection.setCreatedTime(oldNeckExaminationCollection.getCreatedTime());
 				neckExaminationCollection.setDiscarded(oldNeckExaminationCollection.getDiscarded());
 			}
-				neckExaminationCollection = neckExaminationRepository.save(neckExaminationCollection);
+			neckExaminationCollection = neckExaminationRepository.save(neckExaminationCollection);
 
 			BeanUtil.map(neckExaminationCollection, neckExamination);
 		} catch (Exception e) {
@@ -6297,8 +6329,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return neckExamination;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public NoseExamination addEditNoseExam(NoseExamination noseExamination) {
@@ -6334,18 +6365,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return noseExamination;
 	}
-	
-	
+
 	@Override
 	@Transactional
-	public OralCavityAndThroatExamination addEditOralCavityThroatExam(OralCavityAndThroatExamination oralCavityAndThroatExamination) {
+	public OralCavityAndThroatExamination addEditOralCavityThroatExam(
+			OralCavityAndThroatExamination oralCavityAndThroatExamination) {
 		try {
 			OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = new OralCavityAndThroatExaminationCollection();
 			BeanUtil.map(oralCavityAndThroatExamination, oralCavityAndThroatExaminationCollection);
 			if (DPDoctorUtils.anyStringEmpty(oralCavityAndThroatExaminationCollection.getId())) {
 				oralCavityAndThroatExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(oralCavityAndThroatExaminationCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(oralCavityAndThroatExaminationCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(oralCavityAndThroatExaminationCollection.getDoctorId());
 					if (userCollection != null) {
 						oralCavityAndThroatExaminationCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6357,11 +6389,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				OralCavityAndThroatExaminationCollection oldOralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository
 						.findOne(oralCavityAndThroatExaminationCollection.getId());
-				oralCavityAndThroatExaminationCollection.setCreatedBy(oldOralCavityAndThroatExaminationCollection.getCreatedBy());
-				oralCavityAndThroatExaminationCollection.setCreatedTime(oldOralCavityAndThroatExaminationCollection.getCreatedTime());
-				oralCavityAndThroatExaminationCollection.setDiscarded(oldOralCavityAndThroatExaminationCollection.getDiscarded());
+				oralCavityAndThroatExaminationCollection
+						.setCreatedBy(oldOralCavityAndThroatExaminationCollection.getCreatedBy());
+				oralCavityAndThroatExaminationCollection
+						.setCreatedTime(oldOralCavityAndThroatExaminationCollection.getCreatedTime());
+				oralCavityAndThroatExaminationCollection
+						.setDiscarded(oldOralCavityAndThroatExaminationCollection.getDiscarded());
 			}
-			oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
+			oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository
+					.save(oralCavityAndThroatExaminationCollection);
 
 			BeanUtil.map(oralCavityAndThroatExaminationCollection, oralCavityAndThroatExamination);
 		} catch (Exception e) {
@@ -6371,17 +6407,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return oralCavityAndThroatExamination;
 	}
-	
+
 	@Override
 	@Transactional
-	public IndirectLarygoscopyExamination addEditIndirectLarygoscopyExam(IndirectLarygoscopyExamination indirectLarygoscopyExamination) {
+	public IndirectLarygoscopyExamination addEditIndirectLarygoscopyExam(
+			IndirectLarygoscopyExamination indirectLarygoscopyExamination) {
 		try {
 			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = new IndirectLarygoscopyExaminationCollection();
 			BeanUtil.map(indirectLarygoscopyExamination, indirectLarygoscopyExaminationCollection);
 			if (DPDoctorUtils.anyStringEmpty(indirectLarygoscopyExaminationCollection.getId())) {
 				indirectLarygoscopyExaminationCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(indirectLarygoscopyExamination.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(indirectLarygoscopyExaminationCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(indirectLarygoscopyExaminationCollection.getDoctorId());
 					if (userCollection != null) {
 						indirectLarygoscopyExamination
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6393,11 +6431,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				IndirectLarygoscopyExaminationCollection oldIndirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
 						.findOne(indirectLarygoscopyExaminationCollection.getId());
-				indirectLarygoscopyExaminationCollection.setCreatedBy(oldIndirectLarygoscopyExaminationCollection.getCreatedBy());
-				indirectLarygoscopyExaminationCollection.setCreatedTime(oldIndirectLarygoscopyExaminationCollection.getCreatedTime());
-				indirectLarygoscopyExaminationCollection.setDiscarded(oldIndirectLarygoscopyExaminationCollection.getDiscarded());
+				indirectLarygoscopyExaminationCollection
+						.setCreatedBy(oldIndirectLarygoscopyExaminationCollection.getCreatedBy());
+				indirectLarygoscopyExaminationCollection
+						.setCreatedTime(oldIndirectLarygoscopyExaminationCollection.getCreatedTime());
+				indirectLarygoscopyExaminationCollection
+						.setDiscarded(oldIndirectLarygoscopyExaminationCollection.getDiscarded());
 			}
-			indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
+			indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
+					.save(indirectLarygoscopyExaminationCollection);
 
 			BeanUtil.map(indirectLarygoscopyExaminationCollection, indirectLarygoscopyExamination);
 		} catch (Exception e) {
@@ -6407,8 +6449,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return indirectLarygoscopyExamination;
 	}
-	
-	
+
 	@Override
 	@Transactional
 	public PresentingComplaintEars addEditPCEars(PresentingComplaintEars presentingComplaintEars) {
@@ -6418,7 +6459,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(presentingComplaintEarsCollection.getId())) {
 				presentingComplaintEarsCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintEarsCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(presentingComplaintEarsCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(presentingComplaintEarsCollection.getDoctorId());
 					if (userCollection != null) {
 						presentingComplaintEarsCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6434,7 +6476,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				presentingComplaintEarsCollection.setCreatedTime(oldPresentingComplaintEarCollection.getCreatedTime());
 				presentingComplaintEarsCollection.setDiscarded(oldPresentingComplaintEarCollection.getDiscarded());
 			}
-			presentingComplaintEarsCollection = presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
+			presentingComplaintEarsCollection = presentingComplaintEarsRepository
+					.save(presentingComplaintEarsCollection);
 
 			BeanUtil.map(presentingComplaintEarsCollection, presentingComplaintEars);
 		} catch (Exception e) {
@@ -6444,8 +6487,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return presentingComplaintEars;
 	}
-	
-	
 
 	@Override
 	@Transactional
@@ -6456,7 +6497,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			if (DPDoctorUtils.anyStringEmpty(presentingComplaintThroatCollection.getId())) {
 				presentingComplaintThroatCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintThroatCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(presentingComplaintThroatCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(presentingComplaintThroatCollection.getDoctorId());
 					if (userCollection != null) {
 						presentingComplaintThroatCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6469,10 +6511,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				PresentingComplaintThroatCollection oldPresentingComplaintThroatCollection = presentingComplaintThroatRepository
 						.findOne(presentingComplaintThroatCollection.getId());
 				presentingComplaintThroatCollection.setCreatedBy(oldPresentingComplaintThroatCollection.getCreatedBy());
-				presentingComplaintThroatCollection.setCreatedTime(oldPresentingComplaintThroatCollection.getCreatedTime());
+				presentingComplaintThroatCollection
+						.setCreatedTime(oldPresentingComplaintThroatCollection.getCreatedTime());
 				presentingComplaintThroatCollection.setDiscarded(oldPresentingComplaintThroatCollection.getDiscarded());
 			}
-			presentingComplaintThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintThroatCollection);
+			presentingComplaintThroatCollection = presentingComplaintThroatRepository
+					.save(presentingComplaintThroatCollection);
 
 			BeanUtil.map(presentingComplaintThroatCollection, presentingComplaintThroat);
 		} catch (Exception e) {
@@ -6482,17 +6526,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return presentingComplaintThroat;
 	}
-	
+
 	@Override
 	@Transactional
-	public PresentingComplaintOralCavity addEditPCOralCavity(PresentingComplaintOralCavity presentingComplaintOralCavity) {
+	public PresentingComplaintOralCavity addEditPCOralCavity(
+			PresentingComplaintOralCavity presentingComplaintOralCavity) {
 		try {
 			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = new PresentingComplaintOralCavityCollection();
 			BeanUtil.map(presentingComplaintOralCavity, presentingComplaintOralCavityCollection);
 			if (DPDoctorUtils.anyStringEmpty(presentingComplaintOralCavityCollection.getId())) {
 				presentingComplaintOralCavityCollection.setCreatedTime(new Date());
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintOralCavityCollection.getDoctorId())) {
-					UserCollection userCollection = userRepository.findOne(presentingComplaintOralCavityCollection.getDoctorId());
+					UserCollection userCollection = userRepository
+							.findOne(presentingComplaintOralCavityCollection.getDoctorId());
 					if (userCollection != null) {
 						presentingComplaintOralCavityCollection
 								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
@@ -6504,11 +6550,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			} else {
 				PresentingComplaintOralCavityCollection oldPresentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
 						.findOne(presentingComplaintOralCavityCollection.getId());
-				presentingComplaintOralCavityCollection.setCreatedBy(oldPresentingComplaintOralCavityCollection.getCreatedBy());
-				presentingComplaintOralCavityCollection.setCreatedTime(oldPresentingComplaintOralCavityCollection.getCreatedTime());
-				presentingComplaintOralCavityCollection.setDiscarded(oldPresentingComplaintOralCavityCollection.getDiscarded());
+				presentingComplaintOralCavityCollection
+						.setCreatedBy(oldPresentingComplaintOralCavityCollection.getCreatedBy());
+				presentingComplaintOralCavityCollection
+						.setCreatedTime(oldPresentingComplaintOralCavityCollection.getCreatedTime());
+				presentingComplaintOralCavityCollection
+						.setDiscarded(oldPresentingComplaintOralCavityCollection.getDiscarded());
 			}
-			presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
+			presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
+					.save(presentingComplaintOralCavityCollection);
 
 			BeanUtil.map(presentingComplaintOralCavityCollection, presentingComplaintOralCavity);
 		} catch (Exception e) {
@@ -6518,7 +6568,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return presentingComplaintOralCavity;
 	}
-
 
 	@SuppressWarnings("unchecked")
 	private List<PA> getCustomGlobalPA(int page, int size, String doctorId, String locationId, String hospitalId,
@@ -6605,26 +6654,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private List<ProcedureNote> getCustomGlobalProcedureNote(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<ProcedureNote> response = new ArrayList<ProcedureNote>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<ProcedureNote> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						ProcedureNoteCollection.class, ProcedureNote.class);
-				response = results.getMappedResults();
+			AggregationResults<ProcedureNote> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					ProcedureNoteCollection.class, ProcedureNote.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7362,31 +7411,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return list;
 
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<PresentingComplaintNose> getCustomGlobalPCNOse(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentingComplaintNose> response = new ArrayList<PresentingComplaintNose>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<PresentingComplaintNose> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
-				response = results.getMappedResults();
+			AggregationResults<PresentingComplaintNose> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7416,9 +7465,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PresentingComplaintNose> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
-					PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
+			AggregationResults<PresentingComplaintNose> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+									specialities, null),
+							PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -7433,11 +7484,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentingComplaintNose> response = null;
 		try {
-			AggregationResults<PresentingComplaintNose> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
+			AggregationResults<PresentingComplaintNose> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					PresentingComplaintNoseCollection.class, PresentingComplaintNose.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7446,32 +7496,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	private List<PresentingComplaintEars> getCustomGlobalPCEars(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentingComplaintEars> response = new ArrayList<PresentingComplaintEars>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<PresentingComplaintEars> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
-				response = results.getMappedResults();
+			AggregationResults<PresentingComplaintEars> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7501,9 +7550,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PresentingComplaintEars> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
-					PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
+			AggregationResults<PresentingComplaintEars> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+									specialities, null),
+							PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -7518,11 +7569,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentingComplaintEars> response = null;
 		try {
-			AggregationResults<PresentingComplaintEars> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
+			AggregationResults<PresentingComplaintEars> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					PresentingComplaintEarsCollection.class, PresentingComplaintEars.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7531,31 +7581,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	@SuppressWarnings("unchecked")
-	private List<PresentingComplaintThroat> getCustomGlobalPCThroat(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
-		List<PresentingComplaintThroat> response = new ArrayList<PresentingComplaintThroat>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
 
-				AggregationResults<PresentingComplaintThroat> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
-				response = results.getMappedResults();
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintThroat> getCustomGlobalPCThroat(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintThroat> response = new ArrayList<PresentingComplaintThroat>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<PresentingComplaintThroat> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7585,9 +7635,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PresentingComplaintThroat> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
-					PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
+			AggregationResults<PresentingComplaintThroat> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+									specialities, null),
+							PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -7602,11 +7654,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentingComplaintThroat> response = null;
 		try {
-			AggregationResults<PresentingComplaintThroat> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
+			AggregationResults<PresentingComplaintThroat> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					PresentingComplaintThroatCollection.class, PresentingComplaintThroat.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7615,32 +7666,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	
-	@SuppressWarnings("unchecked")
-	private List<PresentingComplaintOralCavity> getCustomGlobalPCOralCavity(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
-		List<PresentingComplaintOralCavity> response = new ArrayList<PresentingComplaintOralCavity>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
 
-				AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
-				response = results.getMappedResults();
+	@SuppressWarnings("unchecked")
+	private List<PresentingComplaintOralCavity> getCustomGlobalPCOralCavity(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
+		List<PresentingComplaintOralCavity> response = new ArrayList<PresentingComplaintOralCavity>();
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7652,8 +7702,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<PresentingComplaintOralCavity> getGlobalPCOralCavity(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded) {
+	private List<PresentingComplaintOralCavity> getGlobalPCOralCavity(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded) {
 		List<PresentingComplaintOralCavity> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -7670,9 +7720,11 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
-					PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
+			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate
+					.aggregate(
+							DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null,
+									specialities, null),
+							PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
 			response = results.getMappedResults();
 
 		} catch (Exception e) {
@@ -7683,15 +7735,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<PresentingComplaintOralCavity> getCustomPCOralCavity(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<PresentingComplaintOralCavity> getCustomPCOralCavity(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<PresentingComplaintOralCavity> response = null;
 		try {
-			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
+			AggregationResults<PresentingComplaintOralCavity> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					PresentingComplaintOralCavityCollection.class, PresentingComplaintOralCavity.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7700,32 +7751,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	private List<NoseExamination> getCustomGlobalNoseExam(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<NoseExamination> response = new ArrayList<NoseExamination>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<NoseExamination> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						NoseExaminationCollection.class, NoseExamination.class);
-				response = results.getMappedResults();
+			AggregationResults<NoseExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					NoseExaminationCollection.class, NoseExamination.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7785,33 +7835,31 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-	
-	
-	
+
 	@SuppressWarnings("unchecked")
 	private List<NeckExamination> getCustomGlobalNeckExam(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<NeckExamination> response = new ArrayList<NeckExamination>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<NeckExamination> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						NeckExaminationCollection.class, NeckExamination.class);
-				response = results.getMappedResults();
+			AggregationResults<NeckExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					NeckExaminationCollection.class, NeckExamination.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7872,31 +7920,30 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	private List<EarsExamination> getCustomGlobalEarsExam(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded) {
 		List<EarsExamination> response = new ArrayList<EarsExamination>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<EarsExamination> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						EarsExaminationCollection.class, EarsExamination.class);
-				response = results.getMappedResults();
+			AggregationResults<EarsExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					EarsExaminationCollection.class, EarsExamination.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7957,31 +8004,30 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	
 	@SuppressWarnings("unchecked")
-	private List<OralCavityAndThroatExamination> getCustomGlobalOralCavityAndThroatExam(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<OralCavityAndThroatExamination> getCustomGlobalOralCavityAndThroatExam(int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<OralCavityAndThroatExamination> response = new ArrayList<OralCavityAndThroatExamination>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
-				response = results.getMappedResults();
+			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -7993,8 +8039,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<OralCavityAndThroatExamination> getGlobalOralCavityAndThroat(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded) {
+	private List<OralCavityAndThroatExamination> getGlobalOralCavityAndThroat(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded) {
 		List<OralCavityAndThroatExamination> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -8011,8 +8057,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,
+							null),
 					OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
 			response = results.getMappedResults();
 
@@ -8024,15 +8071,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<OralCavityAndThroatExamination> getCustomOralCavityAndThroatExam(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<OralCavityAndThroatExamination> getCustomOralCavityAndThroatExam(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<OralCavityAndThroatExamination> response = null;
 		try {
-			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
+			AggregationResults<OralCavityAndThroatExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					OralCavityAndThroatExaminationCollection.class, OralCavityAndThroatExamination.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -8042,31 +8088,30 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	
 	@SuppressWarnings("unchecked")
-	private List<IndirectLarygoscopyExamination> getCustomGlobalIndirectLarygoscopyExam(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<IndirectLarygoscopyExamination> getCustomGlobalIndirectLarygoscopyExam(int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<IndirectLarygoscopyExamination> response = new ArrayList<IndirectLarygoscopyExamination>();
-			try {
-				DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
-				if (doctorCollection == null) {
-					logger.warn("No Doctor Found");
-					throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
-				}
-				Collection<String> specialities = null;
-				if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
-					specialities = CollectionUtils.collect(
-							(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
-							new BeanToPropertyValueTransformer("speciality"));
-					specialities.add(null);
-					specialities.add("ALL");
-				}
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
 
-				AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(
-						DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
-								updatedTime, discarded, null, null, specialities, null),
-						IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
-				response = results.getMappedResults();
+			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
+			response = results.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -8078,8 +8123,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IndirectLarygoscopyExamination> getGlobalIndirectLarygoscopyExam(int page, int size, String doctorId, String updatedTime,
-			Boolean discarded) {
+	private List<IndirectLarygoscopyExamination> getGlobalIndirectLarygoscopyExam(int page, int size, String doctorId,
+			String updatedTime, Boolean discarded) {
 		List<IndirectLarygoscopyExamination> response = null;
 		try {
 			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
@@ -8096,8 +8141,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				specialities.add(null);
 			}
 
-			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(DPDoctorUtils
-					.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities, null),
+			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createGlobalAggregation(page, size, updatedTime, discarded, null, null, specialities,
+							null),
 					IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
 			response = results.getMappedResults();
 
@@ -8109,15 +8155,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
-	private List<IndirectLarygoscopyExamination> getCustomIndirectLarygoscopyExam(int page, int size, String doctorId, String locationId,
-			String hospitalId, String updatedTime, Boolean discarded) {
+	private List<IndirectLarygoscopyExamination> getCustomIndirectLarygoscopyExam(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded) {
 		List<IndirectLarygoscopyExamination> response = null;
 		try {
-			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate
-					.aggregate(
-							DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId,
-									updatedTime, discarded, null, null, null),
-							IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
+			AggregationResults<IndirectLarygoscopyExamination> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomAggregation(page, size, doctorId, locationId, hospitalId, updatedTime,
+							discarded, null, null, null),
+					IndirectLarygoscopyExaminationCollection.class, IndirectLarygoscopyExamination.class);
 			response = results.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -8126,6 +8171,5 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		}
 		return response;
 	}
-
 
 }

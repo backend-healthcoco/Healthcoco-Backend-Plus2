@@ -103,7 +103,7 @@ public class ClinicalNotesCollection extends GenericCollection {
 	private String holter;
 
 	@Field
-	private String pcNotes;
+	private String pcNose;
 
 	@Field
 	private String pcOralCavity;
@@ -529,12 +529,14 @@ public class ClinicalNotesCollection extends GenericCollection {
 		this.noOfMaleChildren = noOfMaleChildren;
 	}
 
-	public String getPcNotes() {
-		return pcNotes;
+	
+
+	public String getPcNose() {
+		return pcNose;
 	}
 
-	public void setPcNotes(String pcNotes) {
-		this.pcNotes = pcNotes;
+	public void setPcNose(String pcNose) {
+		this.pcNose = pcNose;
 	}
 
 	public String getPcOralCavity() {

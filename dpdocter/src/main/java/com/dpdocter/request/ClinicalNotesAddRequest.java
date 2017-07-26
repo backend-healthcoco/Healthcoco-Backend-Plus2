@@ -83,7 +83,7 @@ public class ClinicalNotesAddRequest {
 
 	private String holter;
 
-	private String pcNotes;
+	private String pcNose;
 
 	private String pcOralCavity;
 
@@ -244,13 +244,14 @@ public class ClinicalNotesAddRequest {
 	private int noOfFemaleChildren;
 
 	private int noOfMaleChildren;
+	
 
-	public String getPcNotes() {
-		return pcNotes;
+	public String getPcNose() {
+		return pcNose;
 	}
 
-	public void setPcNotes(String pcNotes) {
-		this.pcNotes = pcNotes;
+	public void setPcNose(String pcNose) {
+		this.pcNose = pcNose;
 	}
 
 	public String getPcOralCavity() {
@@ -1098,7 +1099,7 @@ public class ClinicalNotesAddRequest {
 				+ ", presentComplaintHistory=" + presentComplaintHistory + ", menstrualHistory=" + menstrualHistory
 				+ ", obstetricHistory=" + obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv
 				+ ", pa=" + pa + ", ps=" + ps + ", procedureNote=" + procedureNote + ", ecgDetails=" + ecgDetails
-				+ ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter=" + holter + ", pcNotes=" + pcNotes
+				+ ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter=" + holter + ", pcNose=" + pcNose
 				+ ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat + ", pcEars=" + pcEars + ", noseExam="
 				+ noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam + ", indirectLarygoscopyExam="
 				+ indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam=" + earsExam + ", doctorId="
