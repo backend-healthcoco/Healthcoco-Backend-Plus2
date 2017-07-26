@@ -3610,6 +3610,42 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			break;
 		}
 
+		case NECK_EXAM: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalNeckExam(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case NOSE_EXAM: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalNoseExam(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
 		case PC_ORAL_CAVITY: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -3628,6 +3664,62 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
+		
+
+		case EARS_EXAM: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalEarsExam(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case ORAL_CAVITY_THROAT_EXAM: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalOralCavityAndThroat(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomOralCavityAndThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalOralCavityAndThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		
+		case INDIRECT_LAGYROSCOPY_EXAM: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalIndirectLarygoscopyExam(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+
 
 		}
 		return response;

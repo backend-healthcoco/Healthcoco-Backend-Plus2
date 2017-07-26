@@ -31,6 +31,7 @@ import com.dpdocter.beans.EyeObservation;
 import com.dpdocter.beans.GeneralExam;
 import com.dpdocter.beans.Holter;
 import com.dpdocter.beans.IndicationOfUSG;
+import com.dpdocter.beans.IndirectLarygoscopyExamination;
 import com.dpdocter.beans.Investigation;
 import com.dpdocter.beans.MenstrualHistory;
 import com.dpdocter.beans.NeckExamination;
@@ -38,6 +39,7 @@ import com.dpdocter.beans.NoseExamination;
 import com.dpdocter.beans.Notes;
 import com.dpdocter.beans.Observation;
 import com.dpdocter.beans.ObstetricHistory;
+import com.dpdocter.beans.OralCavityAndThroatExamination;
 import com.dpdocter.beans.PA;
 import com.dpdocter.beans.PS;
 import com.dpdocter.beans.PV;
@@ -51,6 +53,7 @@ import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
 import com.dpdocter.beans.XRayDetails;
+import com.dpdocter.collections.OralCavityAndThroatExaminationCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
@@ -1121,6 +1124,48 @@ public class ClinicalNotesApi {
 		esClinicalNotesService.addHolter(esHolter);*/
 		Response<EarsExamination> response = new Response<EarsExamination>();
 		response.setData(earsExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
+	public Response<OralCavityAndThroatExamination> addEditOralCavityThroatExam(OralCavityAndThroatExamination request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getOralCavityExam())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService.addEditOralCavityThroatExam(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<OralCavityAndThroatExamination> response = new Response<OralCavityAndThroatExamination>();
+		response.setData(oralCavityAndThroatExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
+	@POST
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
+	public Response<IndirectLarygoscopyExamination> addEditOralCavityThroatExam(IndirectLarygoscopyExamination request) {
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
+				request.getHospitalId(), request.getIndirectLarygoscopyExam())) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.addEditIndirectLarygoscopyExam(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM, false);
+		/*ESHolterDocument esHolter = new ESHolterDocument();
+		BeanUtil.map(holter, esHolter);
+		esClinicalNotesService.addHolter(esHolter);*/
+		Response<IndirectLarygoscopyExamination> response = new Response<IndirectLarygoscopyExamination>();
+		response.setData(indirectLarygoscopyExamination);
 		return response;
 	}
 
