@@ -78,7 +78,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 					if (specialityCollection != null) {
 						speciality = specialityCollection.getSpeciality();
 					}
-
+					System.out.println(speciality);
 					tempPermissions = getAllPermissionBySpeciality(String.valueOf(speciality));
 
 					if (tempPermissions != null) {
@@ -236,6 +236,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			break;
+			
 		case "DENTIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
@@ -255,7 +256,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			break;
 			
-		case "Ear-Nose-Throat (ENT) Specialist":
+		case "EAR-NOSE-THROAT (ENT) SPECIALIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
 			List<String> entPermissions = new ArrayList<String>(Arrays.asList(entPermission()));

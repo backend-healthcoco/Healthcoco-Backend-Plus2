@@ -718,6 +718,7 @@ public class ContactsServiceImpl implements ContactsService {
 	public Boolean sendSMSToGroup(BulkSMSRequest request)
 	{
 		List<PatientGroupLookupResponse> patientGroupLookupResponses = null;
+		List<PatientCard> patientCards = null;
 		User user = null;
 		Boolean status = false;
 		Aggregation aggregation = null;
@@ -758,7 +759,27 @@ public class ContactsServiceImpl implements ContactsService {
 
 				}
 			}
-			
+			else
+			{
+				Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(request.getDoctorId()));
+				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
+				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "patientId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+						PatientCollection.class, PatientCard.class);
+				patientCards = aggregationResults.getMappedResults();
+				if (patientCards != null) {
+					mobileNumbers = new ArrayList<>();
+					for (PatientCard patientCard : patientCards) {
+
+						mobileNumbers.add(patientCard.getUser().getMobileNumber());
+
+					}
+
+				}
+			}
 			if(mobileNumbers.size() > 500)
 			{
 				throw new BusinessException(ServiceError.NotAcceptable , "Cannot send more messages to more than 500 patients. Please select other group or create new one.");
