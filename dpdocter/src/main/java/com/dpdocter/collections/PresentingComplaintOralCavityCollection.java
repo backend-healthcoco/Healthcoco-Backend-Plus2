@@ -3,7 +3,7 @@ package com.dpdocter.collections;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "pc_oral_cavity_cl")
+@Document(collection = "presenting_complaint_oral_cavity_cl")
 public class PresentingComplaintOralCavityCollection extends GenericCollection {
 
 	private ObjectId id;

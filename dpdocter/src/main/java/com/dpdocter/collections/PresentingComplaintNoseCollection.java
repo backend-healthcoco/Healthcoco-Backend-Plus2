@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "presenting_collection_nose_cl")
+@Document(collection = "presenting_complaint_nose_cl")
 public class PresentingComplaintNoseCollection extends GenericCollection {
 
 	@Id

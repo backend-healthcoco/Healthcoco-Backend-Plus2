@@ -1,6 +1,8 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
+@Document(collection = "indirect_larygoscopy_examination_cl")
 
 public class IndirectLarygoscopyExaminationCollection extends GenericCollection {
 

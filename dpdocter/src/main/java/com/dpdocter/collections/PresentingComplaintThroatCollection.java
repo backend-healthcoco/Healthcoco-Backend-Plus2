@@ -1,7 +1,9 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "presenting_complaint_throat_cl")
 public class PresentingComplaintThroatCollection extends GenericCollection {
 
 	private ObjectId id;
