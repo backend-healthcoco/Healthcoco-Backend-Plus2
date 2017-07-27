@@ -653,7 +653,7 @@ public class SMSServicesImpl implements SMSServices {
 			List<String> numberlist = new ArrayList<String> (numbers);
 			String numberString = StringUtils.join(numberlist, ',');
 			// String password = new String(loginRequest.getPassword());
-			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey" + AUTH_KEY + "&mobiles="
+			String url =  "http://dndsms.resellergrow.com/api/sendhttp.php?authkey=" + AUTH_KEY + "&mobiles="
 					+ numberString + "&message=" + URLEncoder.encode(message, "UTF-8") + "&sender="
 					+ SENDER_ID + "&route=" + PROMOTIONAL_ROUTE + "&country=" + COUNTRY_CODE;
 			URL obj = new URL(url);
