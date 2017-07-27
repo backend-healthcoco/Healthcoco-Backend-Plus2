@@ -718,12 +718,13 @@ public class ContactsServiceImpl implements ContactsService {
 	public Boolean sendSMSToGroup(BulkSMSRequest request)
 	{
 		List<PatientGroupLookupResponse> patientGroupLookupResponses = null;
+		List<PatientCard> patientCards = null;
 		User user = null;
 		Boolean status = false;
 		Aggregation aggregation = null;
 		List<String> mobileNumbers = null;
 		try {
-			String message = request.getMessage() + " -powered by Healthcoco";
+			String message = request.getMessage() + "-Powered%20by%20Healthcoco";
 			
 			if (request.getGroupId() != null) {
 				Criteria criteria = new Criteria().and("groupId").is(new ObjectId(request.getGroupId()));
@@ -755,6 +756,27 @@ public class ContactsServiceImpl implements ContactsService {
 					mobileNumbers = new ArrayList<>();
 
 					mobileNumbers.add(user.getMobileNumber());
+
+				}
+			}
+			else
+			{
+				Criteria criteria = new Criteria().and("doctorId").is(new ObjectId(request.getDoctorId()));
+				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
+				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
+				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+						Aggregation.unwind("user"), Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+				AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+						PatientCollection.class, PatientCard.class);
+				patientCards = aggregationResults.getMappedResults();
+				if (patientCards != null) {
+					mobileNumbers = new ArrayList<>();
+					for (PatientCard patientCard : patientCards) {
+
+						mobileNumbers.add(patientCard.getUser().getMobileNumber());
+
+					}
 
 				}
 			}
