@@ -41,6 +41,10 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintEarsDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
@@ -65,6 +69,10 @@ import com.dpdocter.elasticsearch.repository.ESPSRepository;
 import com.dpdocter.elasticsearch.repository.ESPVRepository;
 import com.dpdocter.elasticsearch.repository.ESPresentComplaintHistoryRepository;
 import com.dpdocter.elasticsearch.repository.ESPresentComplaintRepository;
+import com.dpdocter.elasticsearch.repository.ESPresentingComplaintEarsRepository;
+import com.dpdocter.elasticsearch.repository.ESPresentingComplaintNoseRepository;
+import com.dpdocter.elasticsearch.repository.ESPresentingComplaintOralCavityRepository;
+import com.dpdocter.elasticsearch.repository.ESPresentingComplaintThroatRepository;
 import com.dpdocter.elasticsearch.repository.ESProcedureNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESProvisionalDiagnosisRepository;
 import com.dpdocter.elasticsearch.repository.ESSystemExamRepository;
@@ -155,6 +163,19 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 
 	@Autowired
 	private ESProcedureNoteRepository esProcedureNoteRepository;
+	
+	@Autowired
+	private ESPresentingComplaintNoseRepository esPresentingComplaintNoseRepository;
+	
+	@Autowired
+	private ESPresentingComplaintEarsRepository esPresentingComplaintEarsRepository;
+	
+	@Autowired
+	private ESPresentingComplaintThroatRepository esPresentingComplaintThroatRepository;
+	
+	@Autowired
+	private ESPresentingComplaintOralCavityRepository esPresentingComplaintOralCavityRepository;
+	
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
@@ -3744,6 +3765,68 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 
 	}
+	
+	@Override
+	public boolean addPCNose(ESPresentingComplaintNoseDocument request) {
+		boolean response = false;
+		try {
+			esPresentingComplaintNoseRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public boolean addPCEars(ESPresentingComplaintEarsDocument request) {
+		boolean response = false;
+		try {
+			esPresentingComplaintEarsRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PC_EARS, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public boolean addPCThroat(ESPresentingComplaintThroatDocument request) {
+		boolean response = false;
+		try {
+			esPresentingComplaintThroatRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PC_THROAT, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+
+	
+	@Override
+	public boolean addPCOralCavity(ESPresentingComplaintOralCavityDocument request) {
+		boolean response = false;
+		try {
+			esPresentingComplaintOralCavityRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.PC_ORAL_CAVITY, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+
 
 	@Override
 	public List<ESProcedureNoteDocument> searchProcedureNote(String range, int page, int size, String doctorId,
@@ -3764,6 +3847,687 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 			break;
 		default:
 			break;
+		}
+		return response;
+	}
+	
+	@Override
+	public List<ESPresentingComplaintNoseDocument> searchPCNose(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintNoseDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalPCNose(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomPCNose(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalPCNose(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	@Override
+	public List<ESPresentingComplaintEarsDocument> searchPCEars(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintEarsDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalPCEars(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomPCEars(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalPCEars(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	
+	@Override
+	public List<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintThroatDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalPCThroat(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalPCThroat(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	@Override
+	public List<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintOralCavityDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalPCOralCavity(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalPCOralCavity(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	/**
+	 * 
+	 * @param page
+	 *            - page no for pagination
+	 * @param size
+	 *            - size for pagination
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 *            - searchterm for search
+	 * @return
+	 */
+
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintEarsDocument> getCustomGlobalPCEars(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintEarsDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_EARS, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"pcEars");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting X Ray details");
+		}
+		return response;
+
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintEarsDocument> getGlobalPCEars(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintEarsDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_EARS, page, size, updatedTime, discarded,
+					null, searchTerm, specialities, null, null, "pcEars");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	private List<ESPresentingComplaintEarsDocument> getCustomPCEars(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintEarsDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESPresentingComplaintEarsDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "pcEars");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintEarsDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+	
+	/**
+	 * 
+	 * @param page
+	 *            - page no for pagination
+	 * @param size
+	 *            - size for pagination
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 *            - searchterm for search
+	 * @return
+	 */
+
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintThroatDocument> getCustomGlobalPCThroat(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintThroatDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_THROAT, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"pcThroat");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting X Ray details");
+		}
+		return response;
+
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintThroatDocument> getGlobalPCThroat(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintThroatDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_THROAT, page, size, updatedTime, discarded,
+					null, searchTerm, specialities, null, null, "pcThroat");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	private List<ESPresentingComplaintThroatDocument> getCustomPCThroat(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintThroatDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESPresentingComplaintThroatDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "pcThroat");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintThroatDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+	
+	/**
+	 * 
+	 * @param page
+	 *            - page no for pagination
+	 * @param size
+	 *            - size for pagination
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 *            - searchterm for search
+	 * @return
+	 */
+
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintOralCavityDocument> getCustomGlobalPCOralCavity(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintOralCavityDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_ORAL_CAVITY, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"pcOralCavity");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting X Ray details");
+		}
+		return response;
+
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintOralCavityDocument> getGlobalPCOralCavity(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintOralCavityDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_ORAL_CAVITY, page, size, updatedTime, discarded,
+					null, searchTerm, specialities, null, null, "pcOralCavity");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	private List<ESPresentingComplaintOralCavityDocument> getCustomPCOralCavity(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintOralCavityDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESPresentingComplaintOralCavityDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "pcOralCavity");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintOralCavityDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+	
+	/**
+	 * 
+	 * @param page
+	 *            - page no for pagination
+	 * @param size
+	 *            - size for pagination
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 *            - searchterm for search
+	 * @return
+	 */
+
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintNoseDocument> getCustomGlobalPCNose(int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintNoseDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.PC_NOSE, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"pcNose");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting X Ray details");
+		}
+		return response;
+
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<ESPresentingComplaintNoseDocument> getGlobalPCNose(int page, int size, String doctorId, String updatedTime,
+			Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintNoseDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.PC_NOSE, page, size, updatedTime, discarded,
+					null, searchTerm, specialities, null, null, "pcNose");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+		}
+		return response;
+	}
+
+	/**
+	 * 
+	 * @param page
+	 * @param size
+	 * @param doctorId
+	 * @param locationId
+	 * @param hospitalId
+	 * @param updatedTime
+	 * @param discarded
+	 * @param searchTerm
+	 * @return
+	 */
+	private List<ESPresentingComplaintNoseDocument> getCustomPCNose(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESPresentingComplaintNoseDocument> response = null;
+		try {
+			if (doctorId == null)
+				response = new ArrayList<ESPresentingComplaintNoseDocument>();
+			else {
+				SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded, null, searchTerm, null, null, "pcNose");
+				response = elasticsearchTemplate.queryForList(searchQuery, ESPresentingComplaintNoseDocument.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
 		}
 		return response;
 	}

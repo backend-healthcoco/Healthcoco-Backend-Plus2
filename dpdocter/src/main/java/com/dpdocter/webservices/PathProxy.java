@@ -803,6 +803,14 @@ public interface PathProxy {
 		public static final String SEARCH_HOLTER = "holter/{range}";
 
 		public static final String SEARCH_PROCEDURE_NOTE = "procedureNote/{range}";
+		
+		public static final String SEARCH_PC_NOSE = "pcNose/{range}";
+		
+		public static final String SEARCH_PC_EARS = "pcEars/{range}";
+		
+		public static final String SEARCH_PC_THROAT = "pcThroat/{range}";
+		
+		public static final String SEARCH_PC_ORAL_CAVITY = "pcOralCavity/{range}";
 
 	}
 

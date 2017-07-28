@@ -34,6 +34,10 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintEarsDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
@@ -531,6 +535,82 @@ public class ESClinicalNotesApi {
 		List<ESProcedureNoteDocument> esProcedureNoteDocuments = esClinicalNotesService.searchProcedureNote(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
 		Response<ESProcedureNoteDocument> response = new Response<ESProcedureNoteDocument>();
 		response.setDataList(esProcedureNoteDocuments);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_NOSE)
+	@GET
+	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_NOSE, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_NOSE)
+	public Response<ESPresentingComplaintNoseDocument> searchPCNose(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESPresentingComplaintNoseDocument> esPresentingComplaintNoseDocuments = esClinicalNotesService.searchPCNose(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESPresentingComplaintNoseDocument> response = new Response<ESPresentingComplaintNoseDocument>();
+		response.setDataList(esPresentingComplaintNoseDocuments);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_EARS)
+	@GET
+	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_EARS, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_EARS)
+	public Response<ESPresentingComplaintEarsDocument> searchPCEars(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESPresentingComplaintEarsDocument> ePresentingComplaintEarsDocuments = esClinicalNotesService.searchPCEars(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESPresentingComplaintEarsDocument> response = new Response<ESPresentingComplaintEarsDocument>();
+		response.setDataList(ePresentingComplaintEarsDocuments);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_THROAT)
+	@GET
+	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_THROAT, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_THROAT)
+	public Response<ESPresentingComplaintThroatDocument> searchPCThroat(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESPresentingComplaintThroatDocument> esPresentingComplaintThroatDocuments = esClinicalNotesService.searchPCThroat(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESPresentingComplaintThroatDocument> response = new Response<ESPresentingComplaintThroatDocument>();
+		response.setDataList(esPresentingComplaintThroatDocuments);
+		return response;
+	}
+	
+	@Path(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_ORAL_CAVITY)
+	@GET
+	@ApiOperation(value = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_ORAL_CAVITY, notes = PathProxy.SolrClinicalNotesUrls.SEARCH_PC_ORAL_CAVITY)
+	public Response<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(@PathParam("range") String range, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam(value = "doctorId") String doctorId,
+			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
+			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded,
+			@QueryParam(value = "searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(range, doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<ESPresentingComplaintOralCavityDocument> esPresentingComplaintThroatDocuments = esClinicalNotesService.searchPCOralCavity(range, page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+		Response<ESPresentingComplaintOralCavityDocument> response = new Response<ESPresentingComplaintOralCavityDocument>();
+		response.setDataList(esPresentingComplaintThroatDocuments);
 		return response;
 	}
 

@@ -72,6 +72,10 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintEarsDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
@@ -994,9 +998,9 @@ public class ClinicalNotesApi {
 		PresentingComplaintNose presentingComplaintNose = clinicalNotesService.addEditPCNose(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESPresentingComplaintNoseDocument esPresentingComplaintNose = new ESPresentingComplaintNoseDocument();
+		BeanUtil.map(presentingComplaintNose, esPresentingComplaintNose);
+		esClinicalNotesService.addPCNose(esPresentingComplaintNose);
 		Response<PresentingComplaintNose> response = new Response<PresentingComplaintNose>();
 		response.setData(presentingComplaintNose);
 		return response;
@@ -1015,9 +1019,9 @@ public class ClinicalNotesApi {
 		PresentingComplaintEars presentingComplaintEars = clinicalNotesService.addEditPCEars(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_EARS, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESPresentingComplaintEarsDocument esPresentingComplaintEars = new ESPresentingComplaintEarsDocument();
+		BeanUtil.map(presentingComplaintEars, esPresentingComplaintEars);
+		esClinicalNotesService.addPCEars(esPresentingComplaintEars);
 		Response<PresentingComplaintEars> response = new Response<PresentingComplaintEars>();
 		response.setData(presentingComplaintEars);
 		return response;
@@ -1035,9 +1039,9 @@ public class ClinicalNotesApi {
 
 		PresentingComplaintThroat presentingComplaintThroat = clinicalNotesService.addEditPCThroat(request);
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_THROAT, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESPresentingComplaintThroatDocument esPresentingComplaintThroat = new ESPresentingComplaintThroatDocument();
+		BeanUtil.map(presentingComplaintThroat, esPresentingComplaintThroat);
+		esClinicalNotesService.addPCThroat(esPresentingComplaintThroat);
 		Response<PresentingComplaintThroat> response = new Response<PresentingComplaintThroat>();
 		response.setData(presentingComplaintThroat);
 		return response;
@@ -1056,9 +1060,9 @@ public class ClinicalNotesApi {
 		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.addEditPCOralCavity(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavity= new ESPresentingComplaintOralCavityDocument();
+		BeanUtil.map(presentingComplaintOralCavity, esPresentingComplaintOralCavity);
+		esClinicalNotesService.addPCOralCavity(esPresentingComplaintOralCavity);
 		Response<PresentingComplaintOralCavity> response = new Response<PresentingComplaintOralCavity>();
 		response.setData(presentingComplaintOralCavity);
 		return response;

@@ -20,6 +20,10 @@ import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintEarsDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
@@ -138,6 +142,26 @@ public interface ESClinicalNotesService {
 	boolean addProcedureNote(ESProcedureNoteDocument request);
 
 	List<ESProcedureNoteDocument> searchProcedureNote(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	boolean addPCNose(ESPresentingComplaintNoseDocument request);
+
+	boolean addPCEars(ESPresentingComplaintEarsDocument request);
+
+	boolean addPCThroat(ESPresentingComplaintThroatDocument request);
+
+	boolean addPCOralCavity(ESPresentingComplaintOralCavityDocument request);
+
+	List<ESPresentingComplaintNoseDocument> searchPCNose(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESPresentingComplaintEarsDocument> searchPCEars(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESPresentingComplaintOralCavityDocument> searchPCOralCavity(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
 }
