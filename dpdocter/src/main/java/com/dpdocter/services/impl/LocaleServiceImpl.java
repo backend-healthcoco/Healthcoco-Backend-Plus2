@@ -48,7 +48,7 @@ public class LocaleServiceImpl implements LocaleService {
 
 	@Override
 	@Transactional
-	public Locale getLocaleDetails(String id) {
+	public Locale getLocaleDetails(String id, String userId) {
 		Locale response = null;
 		LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(id));
 		if (localeCollection == null) {
@@ -56,13 +56,19 @@ public class LocaleServiceImpl implements LocaleService {
 		}
 		response = new Locale();
 		BeanUtil.map(localeCollection, response);
-
+		if (localeCollection != null && !DPDoctorUtils.anyStringEmpty(userId)) {
+			RecommendationsCollection recommendationsCollection = recommendationsRepository
+					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
+			if (recommendationsCollection != null) {
+				response.setIsLocaleRecommended(recommendationsCollection.getDiscarded());
+			}
+		}
 		return response;
 	}
 
 	@Override
 	@Transactional
-	public Locale getLocaleDetailsByContactDetails(String contactNumber) {
+	public Locale getLocaleDetailsByContactDetails(String contactNumber, String userId) {
 		Locale response = null;
 		LocaleCollection localeCollection = localeRepository.findByMobileNumber(contactNumber);
 		if (localeCollection == null) {
@@ -70,6 +76,13 @@ public class LocaleServiceImpl implements LocaleService {
 		}
 		response = new Locale();
 		BeanUtil.map(localeCollection, response);
+		if (localeCollection != null && !DPDoctorUtils.anyStringEmpty(userId)) {
+			RecommendationsCollection recommendationsCollection = recommendationsRepository
+					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
+			if (recommendationsCollection != null) {
+				response.setIsLocaleRecommended(recommendationsCollection.getDiscarded());
+			}
+		}
 		return response;
 	}
 

@@ -38,7 +38,7 @@ public class Locale extends GenericCollection {
 	private String paymentInfo;
 	private String localeType = LocaleType.PHARMACY.getType();
 	private Boolean isPasswordVerified = false;
-	private Boolean isLocaleRecommended;
+	private Boolean isLocaleRecommended=false;
 	private Boolean isAcceptRequest = true;
 
 	public List<String> getPharmacyType() {

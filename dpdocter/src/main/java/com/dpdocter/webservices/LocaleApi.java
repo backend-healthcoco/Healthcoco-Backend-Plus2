@@ -81,7 +81,7 @@ public class LocaleApi {
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_LOCALE_DETAILS)
 	public Response<Locale> getLocaleDetails(@QueryParam("id") String id,
-			@QueryParam("contactNumber") String contactNumber) {
+			@QueryParam("contactNumber") String contactNumber, @QueryParam("userId") String userId) {
 		Response<Locale> response = null;
 		Locale locale = null;
 
@@ -90,11 +90,11 @@ public class LocaleApi {
 					"Please provide id or contact number. Both cannot be null");
 		}
 		if (id != null && !id.isEmpty()) {
-			locale = localeService.getLocaleDetails(id);
+			locale = localeService.getLocaleDetails(id, userId);
 			response = new Response<Locale>();
 			response.setData(locale);
 		} else {
-			locale = localeService.getLocaleDetailsByContactDetails(contactNumber);
+			locale = localeService.getLocaleDetailsByContactDetails(contactNumber, userId);
 			response = new Response<Locale>();
 			response.setData(locale);
 		}
