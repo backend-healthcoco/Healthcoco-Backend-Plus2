@@ -1015,7 +1015,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (pharmacyType != null && !pharmacyType.isEmpty()) {
 				for (int i = 0; i < pharmacyType.size(); i++)
 					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
-
+				boolQueryBuilder.must(QueryBuilders.termQuery("pharmacyType", pharmacyType));
 			}
 
 			if (maxTime == 0) {
@@ -1148,7 +1148,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					smsTrackDetail.setSmsDetails(smsDetails);
 					smsServices.sendSMS(smsTrackDetail, true);
 				}
-
 			}
 			status = true;
 		} catch (Exception e) {

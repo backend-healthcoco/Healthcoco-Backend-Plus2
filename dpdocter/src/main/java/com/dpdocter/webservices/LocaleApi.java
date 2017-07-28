@@ -321,7 +321,7 @@ public class LocaleApi {
 		}
 
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
-		response = new Response<>();
+		response = new Response<Locale>();
 		response.setData(locale);
 		return response;
 	}

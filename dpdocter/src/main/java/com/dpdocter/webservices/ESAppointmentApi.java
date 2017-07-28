@@ -82,7 +82,7 @@ public class ESAppointmentApi {
 	public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
-			@QueryParam("paymentType") String paymentType,@DefaultValue("false") @QueryParam("homeService") Boolean homeService,
+			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
 			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
 			@QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days,
 			@MatrixParam("pharmacyType") List<String> pharmacyType,
