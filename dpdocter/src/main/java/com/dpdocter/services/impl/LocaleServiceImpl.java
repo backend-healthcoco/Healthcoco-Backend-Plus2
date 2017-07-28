@@ -60,7 +60,7 @@ public class LocaleServiceImpl implements LocaleService {
 			RecommendationsCollection recommendationsCollection = recommendationsRepository
 					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
 			if (recommendationsCollection != null) {
-				response.setIsLocaleRecommended(recommendationsCollection.getDiscarded());
+				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
 			}
 		}
 		return response;
@@ -80,7 +80,7 @@ public class LocaleServiceImpl implements LocaleService {
 			RecommendationsCollection recommendationsCollection = recommendationsRepository
 					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
 			if (recommendationsCollection != null) {
-				response.setIsLocaleRecommended(recommendationsCollection.getDiscarded());
+				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
 			}
 		}
 		return response;
