@@ -7,10 +7,20 @@ import com.dpdocter.response.ImageURLResponse;
 public class PrescriptionRequest {
 
 	private String prescriptionId;
-	
+
 	private ImageURLResponse prescriptionURL;
-	
+
 	private List<DrugRequest> drugs;
+
+	private Integer quantity = 0;
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
 
 	public String getPrescriptionId() {
 		return prescriptionId;
@@ -19,8 +29,6 @@ public class PrescriptionRequest {
 	public void setPrescriptionId(String prescriptionId) {
 		this.prescriptionId = prescriptionId;
 	}
-
-	
 
 	public ImageURLResponse getPrescriptionURL() {
 		return prescriptionURL;
@@ -43,6 +51,5 @@ public class PrescriptionRequest {
 		return "PrescriptionRequest [prescriptionId=" + prescriptionId + ", prescriptionURL=" + prescriptionURL
 				+ ", drugs=" + drugs + "]";
 	}
-	
-	
+
 }

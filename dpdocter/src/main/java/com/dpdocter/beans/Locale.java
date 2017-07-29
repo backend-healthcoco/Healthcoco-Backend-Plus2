@@ -38,8 +38,9 @@ public class Locale extends GenericCollection {
 	private String paymentInfo;
 	private String localeType = LocaleType.PHARMACY.getType();
 	private Boolean isPasswordVerified = false;
-	private Boolean isLocaleRecommended=false;
+	private Boolean isLocaleRecommended = false;
 	private Boolean isAcceptRequest = true;
+	private Double minimumAmountForDelivery = 0.0;
 
 	public List<String> getPharmacyType() {
 		return pharmacyType;
@@ -312,6 +313,14 @@ public class Locale extends GenericCollection {
 
 	public void setIsAcceptRequest(Boolean isAcceptRequest) {
 		this.isAcceptRequest = isAcceptRequest;
+	}
+
+	public Double getMinimumAmountForDelivery() {
+		return minimumAmountForDelivery;
+	}
+
+	public void setMinimumAmountForDelivery(Double minimumAmountForDelivery) {
+		this.minimumAmountForDelivery = minimumAmountForDelivery;
 	}
 
 }

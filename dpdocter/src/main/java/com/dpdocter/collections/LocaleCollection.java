@@ -80,6 +80,19 @@ public class LocaleCollection extends GenericCollection {
 
 	@Field
 	private Boolean isAcceptRequest = true;
+	
+	@Field
+	private Double minimumAmountForDelivery = 0.0;
+	
+	
+
+	public Double getMinimumAmountForDelivery() {
+		return minimumAmountForDelivery;
+	}
+
+	public void setMinimumAmountForDelivery(Double minimumAmountForDelivery) {
+		this.minimumAmountForDelivery = minimumAmountForDelivery;
+	}
 
 	public List<String> getPharmacyType() {
 		return pharmacyType;

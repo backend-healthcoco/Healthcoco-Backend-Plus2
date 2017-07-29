@@ -153,8 +153,19 @@ public class ESUserLocaleDocument {
 	@Field(type = FieldType.Boolean)
 	private Boolean isAcceptRequest = true;
 
+	@Field(type = FieldType.Double)
+	private Double minimumAmountForDelivery = 0.0;
+
 	@Transient
 	private Double distance;
+
+	public Double getMinimumAmountForDelivery() {
+		return minimumAmountForDelivery;
+	}
+
+	public void setMinimumAmountForDelivery(Double minimumAmountForDelivery) {
+		this.minimumAmountForDelivery = minimumAmountForDelivery;
+	}
 
 	public String getId() {
 		return id;
@@ -447,8 +458,6 @@ public class ESUserLocaleDocument {
 	public void setIsHomeDeliveryAvailable(Boolean isHomeDeliveryAvailable) {
 		this.isHomeDeliveryAvailable = isHomeDeliveryAvailable;
 	}
-
-	
 
 	public double getHomeDeliveryRadius() {
 		return homeDeliveryRadius;
