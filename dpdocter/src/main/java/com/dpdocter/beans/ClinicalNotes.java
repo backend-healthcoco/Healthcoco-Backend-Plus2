@@ -60,7 +60,7 @@ public class ClinicalNotes extends GenericCollection {
 
 	private String holter;
 
-	private String pcNotes;
+	private String pcNose;
 
 	private String pcOralCavity;
 
@@ -430,14 +430,6 @@ public class ClinicalNotes extends GenericCollection {
 		this.noOfMaleChildren = noOfMaleChildren;
 	}
 
-	public String getPcNotes() {
-		return pcNotes;
-	}
-
-	public void setPcNotes(String pcNotes) {
-		this.pcNotes = pcNotes;
-	}
-
 	public String getPcOralCavity() {
 		return pcOralCavity;
 	}
@@ -502,6 +494,22 @@ public class ClinicalNotes extends GenericCollection {
 		this.earsExam = earsExam;
 	}
 
+	public String getPcNose() {
+		return pcNose;
+	}
+
+	public void setPcNose(String pcNose) {
+		this.pcNose = pcNose;
+	}
+
+	public String getProcedureNote() {
+		return procedureNote;
+	}
+
+	public void setProcedureNote(String procedureNote) {
+		this.procedureNote = procedureNote;
+	}
+
 	@Override
 	public String toString() {
 		return "ClinicalNotes [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", diagnoses=" + diagnoses + ", diagrams="
@@ -512,7 +520,7 @@ public class ClinicalNotes extends GenericCollection {
 				+ presentComplaintHistory + ", menstrualHistory=" + menstrualHistory + ", obstetricHistory="
 				+ obstetricHistory + ", indicationOfUSG=" + indicationOfUSG + ", pv=" + pv + ", pa=" + pa + ", ps=" + ps
 				+ ", ecgDetails=" + ecgDetails + ", xRayDetails=" + xRayDetails + ", echo=" + echo + ", holter="
-				+ holter + ", pcNotes=" + pcNotes + ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat
+				+ holter + ", pcNose=" + pcNose + ", pcOralCavity=" + pcOralCavity + ", pcThroat=" + pcThroat
 				+ ", pcEars=" + pcEars + ", noseExam=" + noseExam + ", oralCavityThroatExam=" + oralCavityThroatExam
 				+ ", indirectLarygoscopyExam=" + indirectLarygoscopyExam + ", neckExam=" + neckExam + ", earsExam="
 				+ earsExam + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
@@ -523,11 +531,4 @@ public class ClinicalNotes extends GenericCollection {
 				+ noOfMaleChildren + "]";
 	}
 
-	public String getProcedureNote() {
-		return procedureNote;
-	}
-
-	public void setProcedureNote(String procedureNote) {
-		this.procedureNote = procedureNote;
-	}
 }

@@ -1636,5 +1636,112 @@ public class ClinicalNotesApi {
 		response.setData(procedureNote);
 		return response;
 	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
+	public Response<PresentingComplaintNose> deletePCNose(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		PresentingComplaintNose presentingComplaintNose = clinicalNotesService.deletePCNose(id, doctorId, locationId, hospitalId, discarded);
+
+		if (presentingComplaintNose != null) {
+			transactionalManagementService.addResource(new ObjectId(presentingComplaintNose.getId()), Resource.PC_NOSE,
+					false);
+			ESPresentingComplaintNoseDocument esPresentingComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
+			BeanUtil.map(presentingComplaintNose, esPresentingComplaintNoseDocument);
+			esClinicalNotesService.addPCNose(esPresentingComplaintNoseDocument);
+		}
+		Response<PresentingComplaintNose> response = new Response<PresentingComplaintNose>();
+		response.setData(presentingComplaintNose);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
+	public Response<PresentingComplaintEars> deletePCEars(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		PresentingComplaintEars presentingComplaintEars = clinicalNotesService.deletePCEars(id, doctorId, locationId, hospitalId, discarded);
+
+		if (presentingComplaintEars != null) {
+			transactionalManagementService.addResource(new ObjectId(presentingComplaintEars.getId()), Resource.PC_EARS,
+					false);
+			ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
+			BeanUtil.map(presentingComplaintEars, esPresentingComplaintEarsDocument);
+			esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
+		}
+		Response<PresentingComplaintEars> response = new Response<PresentingComplaintEars>();
+		response.setData(presentingComplaintEars);
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
+	public Response<PresentingComplaintOralCavity> deletePCOralCavity(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.deletePCOralCavity(id, doctorId, locationId, hospitalId, discarded);
+
+		if (presentingComplaintOralCavity != null) {
+			transactionalManagementService.addResource(new ObjectId(presentingComplaintOralCavity.getId()), Resource.PC_EARS,
+					false);
+			ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavityDocument = new ESPresentingComplaintOralCavityDocument();
+			BeanUtil.map(presentingComplaintOralCavity, esPresentingComplaintOralCavityDocument);
+			esClinicalNotesService.addPCOralCavity(esPresentingComplaintOralCavityDocument);
+		}
+		Response<PresentingComplaintOralCavity> response = new Response<PresentingComplaintOralCavity>();
+		response.setData(presentingComplaintOralCavity);
+		return response;
+	}
+		
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
+	public Response<PresentingComplaintThroat> deletePCThroat(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		PresentingComplaintThroat presentingComplaintThroat = clinicalNotesService.deletePCThroat(id, doctorId, locationId, hospitalId, discarded);
+		if (presentingComplaintThroat != null) {
+			transactionalManagementService.addResource(new ObjectId(presentingComplaintThroat.getId()), Resource.PC_EARS,
+					false);
+			ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
+			BeanUtil.map(presentingComplaintThroat, esPresentingComplaintThroatDocument);
+			esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
+		}
+		Response<PresentingComplaintThroat> response = new Response<PresentingComplaintThroat>();
+		response.setData(presentingComplaintThroat);
+		return response;
+	}
+		
+		
 
 }

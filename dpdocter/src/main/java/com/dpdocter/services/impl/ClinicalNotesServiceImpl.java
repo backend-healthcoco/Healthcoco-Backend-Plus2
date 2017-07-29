@@ -7080,6 +7080,179 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
+	
+	@Override
+	public PresentingComplaintNose deletePCNose(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		PresentingComplaintNose response = null;
+		try {
+			PresentingComplaintNoseCollection presentingComplaintNoseCollection = presentingComplaintNotesRepository.findOne(new ObjectId(id));
+			if (presentingComplaintNoseCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintNoseCollection.getDoctorId(),
+						presentingComplaintNoseCollection.getHospitalId(), presentingComplaintNoseCollection.getLocationId())) {
+					if (presentingComplaintNoseCollection.getDoctorId().toString().equals(doctorId)
+							&& presentingComplaintNoseCollection.getHospitalId().toString().equals(hospitalId)
+							&& presentingComplaintNoseCollection.getLocationId().toString().equals(locationId)) {
+
+						presentingComplaintNoseCollection.setDiscarded(discarded);
+						presentingComplaintNoseCollection.setUpdatedTime(new Date());
+						presentingComplaintNotesRepository.save(presentingComplaintNoseCollection);
+						response = new PresentingComplaintNose();
+						BeanUtil.map(presentingComplaintNoseCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					presentingComplaintNoseCollection.setDiscarded(discarded);
+					presentingComplaintNoseCollection.setUpdatedTime(new Date());
+					presentingComplaintNotesRepository.save(presentingComplaintNoseCollection);
+					response = new PresentingComplaintNose();
+					BeanUtil.map(presentingComplaintNoseCollection, response);
+				}
+			} else {
+				logger.warn("PC nose not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC nose not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	
+	@Override
+	public PresentingComplaintEars deletePCEars(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		PresentingComplaintEars response = null;
+		try {
+			PresentingComplaintEarsCollection presentingComplaintEarsCollection = presentingComplaintEarsRepository.findOne(new ObjectId(id));
+			if (presentingComplaintEarsCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintEarsCollection.getDoctorId(),
+						presentingComplaintEarsCollection.getHospitalId(), presentingComplaintEarsCollection.getLocationId())) {
+					if (presentingComplaintEarsCollection.getDoctorId().toString().equals(doctorId)
+							&& presentingComplaintEarsCollection.getHospitalId().toString().equals(hospitalId)
+							&& presentingComplaintEarsCollection.getLocationId().toString().equals(locationId)) {
+
+						presentingComplaintEarsCollection.setDiscarded(discarded);
+						presentingComplaintEarsCollection.setUpdatedTime(new Date());
+						presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
+						response = new PresentingComplaintEars();
+						BeanUtil.map(presentingComplaintEarsCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					presentingComplaintEarsCollection.setDiscarded(discarded);
+					presentingComplaintEarsCollection.setUpdatedTime(new Date());
+					presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
+					response = new PresentingComplaintEars();
+					BeanUtil.map(presentingComplaintEarsCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public PresentingComplaintOralCavity deletePCOralCavity(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		PresentingComplaintOralCavity response = null;
+		try {
+			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.findOne(new ObjectId(id));
+			if (presentingComplaintOralCavityCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintOralCavityCollection.getDoctorId(),
+						presentingComplaintOralCavityCollection.getHospitalId(), presentingComplaintOralCavityCollection.getLocationId())) {
+					if (presentingComplaintOralCavityCollection.getDoctorId().toString().equals(doctorId)
+							&& presentingComplaintOralCavityCollection.getHospitalId().toString().equals(hospitalId)
+							&& presentingComplaintOralCavityCollection.getLocationId().toString().equals(locationId)) {
+
+						presentingComplaintOralCavityCollection.setDiscarded(discarded);
+						presentingComplaintOralCavityCollection.setUpdatedTime(new Date());
+						presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
+						response = new PresentingComplaintOralCavity();
+						BeanUtil.map(presentingComplaintOralCavityCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					presentingComplaintOralCavityCollection.setDiscarded(discarded);
+					presentingComplaintOralCavityCollection.setUpdatedTime(new Date());
+					presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
+					response = new PresentingComplaintOralCavity();
+					BeanUtil.map(presentingComplaintOralCavityCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public PresentingComplaintThroat deletePCThroat(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		PresentingComplaintThroat response = null;
+		try {
+			PresentingComplaintThroatCollection presentingComplaintThroatCollection = presentingComplaintThroatRepository.findOne(new ObjectId(id));
+			if (presentingComplaintThroatCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintThroatCollection.getDoctorId(),
+						presentingComplaintThroatCollection.getHospitalId(), presentingComplaintThroatCollection.getLocationId())) {
+					if (presentingComplaintThroatCollection.getDoctorId().toString().equals(doctorId)
+							&& presentingComplaintThroatCollection.getHospitalId().toString().equals(hospitalId)
+							&& presentingComplaintThroatCollection.getLocationId().toString().equals(locationId)) {
+
+						presentingComplaintThroatCollection.setDiscarded(discarded);
+						presentingComplaintThroatCollection.setUpdatedTime(new Date());
+						presentingComplaintThroatRepository.save(presentingComplaintThroatCollection);
+						response = new PresentingComplaintThroat();
+						BeanUtil.map(presentingComplaintThroatCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					presentingComplaintThroatCollection.setDiscarded(discarded);
+					presentingComplaintThroatCollection.setUpdatedTime(new Date());
+					presentingComplaintThroatRepository.save(presentingComplaintThroatCollection);
+					response = new PresentingComplaintThroat();
+					BeanUtil.map(presentingComplaintThroatCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
 
 	@SuppressWarnings("unchecked")
 	private List<PS> getGlobalPS(int page, int size, String doctorId, String updatedTime, Boolean discarded) {

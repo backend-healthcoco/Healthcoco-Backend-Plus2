@@ -187,4 +187,16 @@ public interface ClinicalNotesService {
 	IndirectLarygoscopyExamination addEditIndirectLarygoscopyExam(
 			IndirectLarygoscopyExamination indirectLarygoscopyExamination);
 
+	PresentingComplaintNose deletePCNose(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentingComplaintEars deletePCEars(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentingComplaintOralCavity deletePCOralCavity(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
+	PresentingComplaintThroat deletePCThroat(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded);
+
 }

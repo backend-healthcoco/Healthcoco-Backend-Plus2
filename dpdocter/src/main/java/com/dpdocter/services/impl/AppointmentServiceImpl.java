@@ -1709,6 +1709,16 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (recommendationsCollection != null)
 						location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
 				}
+				
+				location.setClinicAddress((!DPDoctorUtils.anyStringEmpty(location.getStreetAddress())
+						? location.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getLandmarkDetails())
+								? location.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getLocality()) ? location.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getCity()) ? location.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getState()) ? location.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getCountry()) ? location.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(location.getPostalCode()) ? location.getPostalCode() : ""));
 
 				location.setLogoThumbnailUrl(getFinalImageURL(location.getLogoThumbnailUrl()));
 				location.setLogoUrl(getFinalImageURL(location.getLogoUrl()));

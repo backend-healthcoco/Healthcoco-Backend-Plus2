@@ -318,6 +318,15 @@ public interface PathProxy {
 		public static final String DELETE_HOLTER = "/holter/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String DELETE_PROCEDURE_NOTE = "/procedureNote/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_PC_NOSE = "/pcNose/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_PC_EARS = "/pcEars/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_PC_ORAL_CAVITY = "/pcOralCavity/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_PC_THROAT = "/pcThroat/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_NECK_EXAM = "/neckExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_EARS_EXAM = "/earsExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_NOSE_EXAM = "/noseExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_ORAL_CAVITY_THROAT_EXAM = "/oralCavityThroatExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_INDIRECT_LARYGOSCOPY_EXAM = "/indirectLarygoscopy/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
 
