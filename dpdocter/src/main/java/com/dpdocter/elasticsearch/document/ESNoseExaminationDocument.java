@@ -3,9 +3,11 @@ package com.dpdocter.elasticsearch.document;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+@Document(indexName = "nose_examination_in" , type = "nose_examination")
 public class ESNoseExaminationDocument {
 
 	@Id

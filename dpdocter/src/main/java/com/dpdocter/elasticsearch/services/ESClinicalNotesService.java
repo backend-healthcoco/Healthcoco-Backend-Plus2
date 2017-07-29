@@ -6,15 +6,20 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
+import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
+import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESPADocument;
 import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
@@ -163,5 +168,15 @@ public interface ESClinicalNotesService {
 
 	List<ESPresentingComplaintThroatDocument> searchPCThroat(String range, int page, int size, String doctorId,
 			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	boolean addNeckExam(ESNeckExaminationDocument request);
+
+	boolean addNoseExam(ESNoseExaminationDocument request);
+
+	boolean addEarsExam(ESEarsExaminationDocument request);
+
+	boolean addOralCavityThroatExam(ESOralCavityAndThroatExaminationDocument request);
+
+	boolean addIndirectLarygoscopyExam(ESIndirectLarygoscopyExaminationDocument request);
 
 }

@@ -27,15 +27,20 @@ import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
+import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
+import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESPADocument;
 import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
@@ -55,15 +60,20 @@ import com.dpdocter.elasticsearch.repository.ESDiagnosesRepository;
 import com.dpdocter.elasticsearch.repository.ESDiagramsRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
 import com.dpdocter.elasticsearch.repository.ESECGDetailsRepository;
+import com.dpdocter.elasticsearch.repository.ESEarsExaminationRepository;
 import com.dpdocter.elasticsearch.repository.ESEchoRepository;
 import com.dpdocter.elasticsearch.repository.ESGeneralExamRepository;
 import com.dpdocter.elasticsearch.repository.ESHolterRepository;
 import com.dpdocter.elasticsearch.repository.ESIndicationOfUSGRepository;
+import com.dpdocter.elasticsearch.repository.ESIndirectLarygoscopryExaminationRepository;
 import com.dpdocter.elasticsearch.repository.ESInvestigationsRepository;
 import com.dpdocter.elasticsearch.repository.ESMenstrualHistoryRepository;
+import com.dpdocter.elasticsearch.repository.ESNeckExaminationRepository;
+import com.dpdocter.elasticsearch.repository.ESNoseExaminationRepository;
 import com.dpdocter.elasticsearch.repository.ESNotesRepository;
 import com.dpdocter.elasticsearch.repository.ESObservationsRepository;
 import com.dpdocter.elasticsearch.repository.ESObstetricHistoryRepository;
+import com.dpdocter.elasticsearch.repository.ESOralCavityThroatExaminationRepository;
 import com.dpdocter.elasticsearch.repository.ESPARepository;
 import com.dpdocter.elasticsearch.repository.ESPSRepository;
 import com.dpdocter.elasticsearch.repository.ESPVRepository;
@@ -175,6 +185,21 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 	
 	@Autowired
 	private ESPresentingComplaintOralCavityRepository esPresentingComplaintOralCavityRepository;
+	
+	@Autowired
+	private ESNeckExaminationRepository esNeckExaminationRepository;
+	
+	@Autowired
+	private ESNoseExaminationRepository esNoseExaminationRepository;
+	
+	@Autowired
+	private ESOralCavityThroatExaminationRepository esOralCavityThroatExaminationRepository;
+	
+	@Autowired
+	private ESEarsExaminationRepository esEarsExaminationRepository;
+	
+	@Autowired
+	private ESIndirectLarygoscopryExaminationRepository esIndirectLarygoscopryExaminationRepository;
 	
 
 	@Autowired
@@ -3826,6 +3851,82 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 
 	}
+	
+	@Override
+	public boolean addNeckExam(ESNeckExaminationDocument request) {
+		boolean response = false;
+		try {
+			esNeckExaminationRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.NECK_EXAM, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public boolean addNoseExam(ESNoseExaminationDocument request) {
+		boolean response = false;
+		try {
+			esNoseExaminationRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.NOSE_EXAM, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public boolean addEarsExam(ESEarsExaminationDocument request) {
+		boolean response = false;
+		try {
+			esEarsExaminationRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.EARS_EXAM, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public boolean addOralCavityThroatExam(ESOralCavityAndThroatExaminationDocument request) {
+		boolean response = false;
+		try {
+			esOralCavityThroatExaminationRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+	
+	@Override
+	public boolean addIndirectLarygoscopyExam(ESIndirectLarygoscopyExaminationDocument request) {
+		boolean response = false;
+		try {
+			esIndirectLarygoscopryExaminationRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LAGYROSCOPY_EXAM, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving PC Note");
+		}
+		return response;
+
+	}
+
 
 
 	@Override

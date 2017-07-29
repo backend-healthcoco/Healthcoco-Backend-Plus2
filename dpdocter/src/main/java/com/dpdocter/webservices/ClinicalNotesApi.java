@@ -58,15 +58,20 @@ import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
 import com.dpdocter.elasticsearch.document.ESDiagramsDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
+import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
+import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
 import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESPADocument;
 import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
@@ -1717,6 +1722,132 @@ public class ClinicalNotesApi {
 	}
 		
 	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
+	public Response<NoseExamination> deleteNoseExam(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		NoseExamination noseExamination = clinicalNotesService.deleteNoseExam(id, doctorId, locationId, hospitalId, discarded);
+		if (noseExamination != null) {
+			transactionalManagementService.addResource(new ObjectId(noseExamination.getId()), Resource.NOSE_EXAM,
+					false);
+			ESNoseExaminationDocument esNoseExaminationDocument = new ESNoseExaminationDocument();
+			BeanUtil.map(noseExamination, esNoseExaminationDocument);
+			esClinicalNotesService.addNoseExam(esNoseExaminationDocument);
+		}
+		Response<NoseExamination> response = new Response<NoseExamination>();
+		response.setData(noseExamination);
+		return response;
+	}
+		
+		
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
+	public Response<NeckExamination> deleteNeckExam(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		NeckExamination neckExamination = clinicalNotesService.deleteNeckExam(id, doctorId, locationId, hospitalId, discarded);
+		if (neckExamination != null) {
+			transactionalManagementService.addResource(new ObjectId(neckExamination.getId()), Resource.NECK_EXAM,
+					false);
+			ESNeckExaminationDocument esNeckExaminationDocument = new ESNeckExaminationDocument();
+			BeanUtil.map(neckExamination, esNeckExaminationDocument);
+			esClinicalNotesService.addNeckExam(esNeckExaminationDocument);
+		}
+		Response<NeckExamination> response = new Response<NeckExamination>();
+		response.setData(neckExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
+	public Response<EarsExamination> deleteEarsExam(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		EarsExamination EarsExamination = clinicalNotesService.deleteEarsExam(id, doctorId, locationId, hospitalId, discarded);
+		if (EarsExamination != null) {
+			transactionalManagementService.addResource(new ObjectId(EarsExamination.getId()), Resource.EARS_EXAM,
+					false);
+			ESEarsExaminationDocument esEarsExaminationDocument = new ESEarsExaminationDocument();
+			BeanUtil.map(EarsExamination, esEarsExaminationDocument);
+			esClinicalNotesService.addEarsExam(esEarsExaminationDocument);
+		}
+		Response<EarsExamination> response = new Response<EarsExamination>();
+		response.setData(EarsExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
+	public Response<OralCavityAndThroatExamination> deleteOralCavityThroatExam(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService.deleteOralCavityThroatExam(id, doctorId, locationId, hospitalId, discarded);
+		if (oralCavityAndThroatExamination != null) {
+			transactionalManagementService.addResource(new ObjectId(oralCavityAndThroatExamination.getId()), Resource.ORAL_CAVITY_THROAT_EXAM,
+					false);
+			ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
+			BeanUtil.map(oralCavityAndThroatExamination, esOralCavityAndThroatExaminationDocument);
+			esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
+		}
+		Response<OralCavityAndThroatExamination> response = new Response<OralCavityAndThroatExamination>();
+		response.setData(oralCavityAndThroatExamination);
+		return response;
+	}
+	
+	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
+	@DELETE
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
+	public Response<IndirectLarygoscopyExamination> deleteIndirectlarygoscopyExam(@PathParam(value = "id") String id,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(id, doctorId, hospitalId, locationId)) {
+			logger.warn("Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
+		}
+		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.deleteIndirectLarygoscopyExam(id, doctorId, locationId, hospitalId, discarded);
+		if (indirectLarygoscopyExamination != null) {
+			transactionalManagementService.addResource(new ObjectId(indirectLarygoscopyExamination.getId()), Resource.INDIRECT_LAGYROSCOPY_EXAM,
+					false);
+			ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
+			BeanUtil.map(indirectLarygoscopyExamination, esIndirectLarygoscopyExaminationDocument);
+			esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
+		}
+		Response<IndirectLarygoscopyExamination> response = new Response<IndirectLarygoscopyExamination>();
+		response.setData(indirectLarygoscopyExamination);
+		return response;
+	}
+	
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
@@ -1741,7 +1872,5 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintThroat);
 		return response;
 	}
-		
-		
 
 }

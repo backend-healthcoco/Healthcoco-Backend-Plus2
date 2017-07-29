@@ -6,14 +6,14 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "ears_examination_in" , type = "ears_examination")
-public class ESEarsExaminationDocument {
+@Document(indexName = "neck_examination_in" , type="neck_examination")
+public class ESNeckExaminationDocument {
 
 	@Id
 	private String id;
 
 	@Field(type = FieldType.String)
-	private String earsExam;
+	private String neckExam;
 
 	@Field(type = FieldType.String)
 	private String doctorId;
@@ -41,12 +41,12 @@ public class ESEarsExaminationDocument {
 		this.id = id;
 	}
 
-	public String getEarsExam() {
-		return earsExam;
+	public String getNeckExam() {
+		return neckExam;
 	}
 
-	public void setEarsExam(String earsExam) {
-		this.earsExam = earsExam;
+	public void setNeckExam(String neckExam) {
+		this.neckExam = neckExam;
 	}
 
 	public String getDoctorId() {
@@ -99,7 +99,7 @@ public class ESEarsExaminationDocument {
 
 	@Override
 	public String toString() {
-		return "ESEarsExaminationDocument [id=" + id + ", earsExam=" + earsExam + ", doctorId=" + doctorId
+		return "ESNeckExaminationDocument [id=" + id + ", neckExam=" + neckExam + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", speciality=" + speciality + ", updatedTime=" + updatedTime + "]";
 	}

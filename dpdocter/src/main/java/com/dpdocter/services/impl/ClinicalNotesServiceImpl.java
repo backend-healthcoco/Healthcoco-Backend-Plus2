@@ -7253,6 +7253,221 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
+	
+	@Override
+	public NeckExamination deleteNeckExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		NeckExamination response = null;
+		try {
+			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findOne(new ObjectId(id));
+			if (neckExaminationCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(neckExaminationCollection.getDoctorId(),
+						neckExaminationCollection.getHospitalId(), neckExaminationCollection.getLocationId())) {
+					if (neckExaminationCollection.getDoctorId().toString().equals(doctorId)
+							&& neckExaminationCollection.getHospitalId().toString().equals(hospitalId)
+							&& neckExaminationCollection.getLocationId().toString().equals(locationId)) {
+
+						neckExaminationCollection.setDiscarded(discarded);
+						neckExaminationCollection.setUpdatedTime(new Date());
+						neckExaminationRepository.save(neckExaminationCollection);
+						response = new NeckExamination();
+						BeanUtil.map(neckExaminationCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					neckExaminationCollection.setDiscarded(discarded);
+					neckExaminationCollection.setUpdatedTime(new Date());
+					neckExaminationRepository.save(neckExaminationCollection);
+					response = new NeckExamination();
+					BeanUtil.map(neckExaminationCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public NoseExamination deleteNoseExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		NoseExamination response = null;
+		try {
+			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findOne(new ObjectId(id));
+			if (noseExaminationCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(noseExaminationCollection.getDoctorId(),
+						noseExaminationCollection.getHospitalId(), noseExaminationCollection.getLocationId())) {
+					if (noseExaminationCollection.getDoctorId().toString().equals(doctorId)
+							&& noseExaminationCollection.getHospitalId().toString().equals(hospitalId)
+							&& noseExaminationCollection.getLocationId().toString().equals(locationId)) {
+
+						noseExaminationCollection.setDiscarded(discarded);
+						noseExaminationCollection.setUpdatedTime(new Date());
+						noseExaminationRepository.save(noseExaminationCollection);
+						response = new NoseExamination();
+						BeanUtil.map(noseExaminationCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					noseExaminationCollection.setDiscarded(discarded);
+					noseExaminationCollection.setUpdatedTime(new Date());
+					noseExaminationRepository.save(noseExaminationCollection);
+					response = new NoseExamination();
+					BeanUtil.map(noseExaminationCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public OralCavityAndThroatExamination deleteOralCavityThroatExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		OralCavityAndThroatExamination response = null;
+		try {
+			OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.findOne(new ObjectId(id));
+			if (oralCavityAndThroatExaminationCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(oralCavityAndThroatExaminationCollection.getDoctorId(),
+						oralCavityAndThroatExaminationCollection.getHospitalId(), oralCavityAndThroatExaminationCollection.getLocationId())) {
+					if (oralCavityAndThroatExaminationCollection.getDoctorId().toString().equals(doctorId)
+							&& oralCavityAndThroatExaminationCollection.getHospitalId().toString().equals(hospitalId)
+							&& oralCavityAndThroatExaminationCollection.getLocationId().toString().equals(locationId)) {
+
+						oralCavityAndThroatExaminationCollection.setDiscarded(discarded);
+						oralCavityAndThroatExaminationCollection.setUpdatedTime(new Date());
+						oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
+						response = new OralCavityAndThroatExamination();
+						BeanUtil.map(oralCavityAndThroatExaminationCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					oralCavityAndThroatExaminationCollection.setDiscarded(discarded);
+					oralCavityAndThroatExaminationCollection.setUpdatedTime(new Date());
+					oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
+					response = new OralCavityAndThroatExamination();
+					BeanUtil.map(oralCavityAndThroatExaminationCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public EarsExamination deleteEarsExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		EarsExamination response = null;
+		try {
+			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findOne(new ObjectId(id));
+			if (earsExaminationCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(earsExaminationCollection.getDoctorId(),
+						earsExaminationCollection.getHospitalId(), earsExaminationCollection.getLocationId())) {
+					if (earsExaminationCollection.getDoctorId().toString().equals(doctorId)
+							&& earsExaminationCollection.getHospitalId().toString().equals(hospitalId)
+							&& earsExaminationCollection.getLocationId().toString().equals(locationId)) {
+
+						earsExaminationCollection.setDiscarded(discarded);
+						earsExaminationCollection.setUpdatedTime(new Date());
+						earsExaminationRepository.save(earsExaminationCollection);
+						response = new EarsExamination();
+						BeanUtil.map(earsExaminationCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					earsExaminationCollection.setDiscarded(discarded);
+					earsExaminationCollection.setUpdatedTime(new Date());
+					earsExaminationRepository.save(earsExaminationCollection);
+					response = new EarsExamination();
+					BeanUtil.map(earsExaminationCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
+	
+	@Override
+	public IndirectLarygoscopyExamination deleteIndirectLarygoscopyExam(String id, String doctorId, String locationId, String hospitalId,
+			Boolean discarded) {
+		IndirectLarygoscopyExamination response = null;
+		try {
+			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.findOne(new ObjectId(id));
+			if (indirectLarygoscopyExaminationCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(indirectLarygoscopyExaminationCollection.getDoctorId(),
+						indirectLarygoscopyExaminationCollection.getHospitalId(), indirectLarygoscopyExaminationCollection.getLocationId())) {
+					if (indirectLarygoscopyExaminationCollection.getDoctorId().toString().equals(doctorId)
+							&& indirectLarygoscopyExaminationCollection.getHospitalId().toString().equals(hospitalId)
+							&& indirectLarygoscopyExaminationCollection.getLocationId().toString().equals(locationId)) {
+
+						indirectLarygoscopyExaminationCollection.setDiscarded(discarded);
+						indirectLarygoscopyExaminationCollection.setUpdatedTime(new Date());
+						indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
+						response = new IndirectLarygoscopyExamination();
+						BeanUtil.map(indirectLarygoscopyExaminationCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					indirectLarygoscopyExaminationCollection.setDiscarded(discarded);
+					indirectLarygoscopyExaminationCollection.setUpdatedTime(new Date());
+					indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
+					response = new IndirectLarygoscopyExamination();
+					BeanUtil.map(indirectLarygoscopyExaminationCollection, response);
+				}
+			} else {
+				logger.warn("PC ears not found!");
+				throw new BusinessException(ServiceError.NoRecord, "PC ears not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+
+	}
 
 	@SuppressWarnings("unchecked")
 	private List<PS> getGlobalPS(int page, int size, String doctorId, String updatedTime, Boolean discarded) {

@@ -6,14 +6,14 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "ears_examination_in" , type = "ears_examination")
-public class ESEarsExaminationDocument {
+@Document(indexName = "indirect_larygoscopy_examination_in", type = "indirect_larygoscopy_examination")
+public class ESIndirectLarygoscopyExaminationDocument {
 
 	@Id
 	private String id;
 
 	@Field(type = FieldType.String)
-	private String earsExam;
+	private String indirectLarygoscopyExam;
 
 	@Field(type = FieldType.String)
 	private String doctorId;
@@ -41,12 +41,12 @@ public class ESEarsExaminationDocument {
 		this.id = id;
 	}
 
-	public String getEarsExam() {
-		return earsExam;
+	public String getIndirectLarygoscopyExam() {
+		return indirectLarygoscopyExam;
 	}
 
-	public void setEarsExam(String earsExam) {
-		this.earsExam = earsExam;
+	public void setIndirectLarygoscopyExam(String indirectLarygoscopyExam) {
+		this.indirectLarygoscopyExam = indirectLarygoscopyExam;
 	}
 
 	public String getDoctorId() {
@@ -99,9 +99,10 @@ public class ESEarsExaminationDocument {
 
 	@Override
 	public String toString() {
-		return "ESEarsExaminationDocument [id=" + id + ", earsExam=" + earsExam + ", doctorId=" + doctorId
-				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", speciality=" + speciality + ", updatedTime=" + updatedTime + "]";
+		return "ESIndirectLarygoscopyExaminationDocument [id=" + id + ", indirectLarygoscopyExam="
+				+ indirectLarygoscopyExam + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", speciality=" + speciality + ", updatedTime="
+				+ updatedTime + "]";
 	}
 
 }

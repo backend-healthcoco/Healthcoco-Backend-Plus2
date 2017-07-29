@@ -199,4 +199,16 @@ public interface ClinicalNotesService {
 	PresentingComplaintThroat deletePCThroat(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded);
 
+	NeckExamination deleteNeckExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	NoseExamination deleteNoseExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	OralCavityAndThroatExamination deleteOralCavityThroatExam(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
+
+	EarsExamination deleteEarsExam(String id, String doctorId, String locationId, String hospitalId, Boolean discarded);
+
+	IndirectLarygoscopyExamination deleteIndirectLarygoscopyExam(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded);
+
 }
