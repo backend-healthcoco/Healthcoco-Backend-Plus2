@@ -299,7 +299,7 @@ public class DoctorProfileApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
 			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "false") @QueryParam(value = "isSearched") Boolean isSearched) {
+			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
@@ -707,7 +707,7 @@ public class DoctorProfileApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
 			@QueryParam(value = "patientId") String patientId,
-			@DefaultValue(value = "false") @QueryParam(value = "isSearched") Boolean isSearched) {
+			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
