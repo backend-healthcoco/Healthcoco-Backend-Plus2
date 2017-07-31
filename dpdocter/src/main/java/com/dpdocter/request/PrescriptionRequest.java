@@ -12,16 +12,6 @@ public class PrescriptionRequest {
 
 	private List<DrugRequest> drugs;
 
-	private Integer quantity = 0;
-
-	public Integer getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
-
 	public String getPrescriptionId() {
 		return prescriptionId;
 	}
