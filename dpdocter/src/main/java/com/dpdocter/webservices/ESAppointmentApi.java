@@ -85,7 +85,7 @@ public class ESAppointmentApi {
 			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
 			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
 			@QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days,
-			@MatrixParam("pharmacyType") List<String> pharmacyType,
+			@MatrixParam("types") List<String> pharmacyType,
 			@QueryParam("isGenericMedicineAvailable") Boolean isGenericMedicineAvailable) {
 
 		List<ESUserLocaleDocument> pharmacies = solrAppointmentService.getPharmacies(page, size, city, localeName,

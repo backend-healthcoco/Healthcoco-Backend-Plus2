@@ -7,10 +7,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Locale;
+import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.UserCollection;
@@ -43,6 +45,9 @@ public class LocaleServiceImpl implements LocaleService {
 
 	@Autowired
 	FileManager fileManager;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
 
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
 
@@ -55,6 +60,32 @@ public class LocaleServiceImpl implements LocaleService {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		}
 		response = new Locale();
+		if (localeCollection.getLocaleImages() != null && !localeCollection.getLocaleImages().isEmpty()) {
+
+			for (LocaleImage image : localeCollection.getLocaleImages()) {
+				image.setImageUrl(imagePath + image.getImageUrl());
+				image.setThumbnailUrl(imagePath + image.getThumbnailUrl());
+			}
+
+		}
+		if (localeCollection.getAddress() != null) {
+
+			localeCollection
+					.setLocaleAddress((!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getStreetAddress())
+							? localeCollection.getAddress().getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getLandmarkDetails())
+									? localeCollection.getAddress().getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getLocality())
+									? localeCollection.getAddress().getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getCity())
+									? localeCollection.getAddress().getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getState())
+									? localeCollection.getAddress().getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getCountry())
+									? localeCollection.getAddress().getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getPostalCode())
+									? localeCollection.getAddress().getPostalCode() : ""));
+		}
 		BeanUtil.map(localeCollection, response);
 		if (localeCollection != null && !DPDoctorUtils.anyStringEmpty(userId)) {
 			RecommendationsCollection recommendationsCollection = recommendationsRepository
@@ -73,6 +104,33 @@ public class LocaleServiceImpl implements LocaleService {
 		LocaleCollection localeCollection = localeRepository.findByMobileNumber(contactNumber);
 		if (localeCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
+		}
+		if (localeCollection.getLocaleImages() != null && !localeCollection.getLocaleImages().isEmpty()) {
+
+			for (LocaleImage image : localeCollection.getLocaleImages()) {
+				image.setImageUrl(imagePath + image.getImageUrl());
+				image.setThumbnailUrl(imagePath + image.getThumbnailUrl());
+			}
+
+		}
+
+		if (localeCollection.getAddress() != null) {
+
+			localeCollection
+					.setLocaleAddress((!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getStreetAddress())
+							? localeCollection.getAddress().getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getLandmarkDetails())
+									? localeCollection.getAddress().getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getLocality())
+									? localeCollection.getAddress().getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getCity())
+									? localeCollection.getAddress().getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getState())
+									? localeCollection.getAddress().getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getCountry())
+									? localeCollection.getAddress().getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getPostalCode())
+									? localeCollection.getAddress().getPostalCode() : ""));
 		}
 		response = new Locale();
 		BeanUtil.map(localeCollection, response);

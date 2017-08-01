@@ -1013,8 +1013,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
 			}
 			if (pharmacyType != null && !pharmacyType.isEmpty()) {
-				for (int i = 0; i < pharmacyType.size(); i++)
+				for (int i = 0; i < pharmacyType.size(); i++){
 					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
+				}
 				boolQueryBuilder.must(QueryBuilders.termQuery("pharmacyType", pharmacyType));
 			}
 
