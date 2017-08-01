@@ -5,79 +5,79 @@ package com.dpdocter.beans;
  */
 public class Address {
 
-    private String country;
+	private String country;
 
-    private String city;
+	private String city;
 
-    private String state;
+	private String state;
 
-    private String postalCode;
+	private String postalCode;
 
-    private String locality;
-    
-    private String landmarkDetails;
+	private String locality;
 
-    private Double latitude;
+	private String landmarkDetails;
 
-    private Double longitude;
+	private Double latitude;
 
-    private String streetAddress;
-    
-    public String getCountry() {
-	return country;
-    }
+	private Double longitude;
 
-    public void setCountry(String country) {
-	this.country = country;
-    }
+	private String streetAddress;
 
-    public String getCity() {
-	return city;
-    }
+	public String getCountry() {
+		return country;
+	}
 
-    public void setCity(String city) {
-	this.city = city;
-    }
+	public void setCountry(String country) {
+		this.country = country;
+	}
 
-    public String getState() {
-	return state;
-    }
+	public String getCity() {
+		return city;
+	}
 
-    public void setState(String state) {
-	this.state = state;
-    }
+	public void setCity(String city) {
+		this.city = city;
+	}
 
-    public String getPostalCode() {
-	return postalCode;
-    }
+	public String getState() {
+		return state;
+	}
 
-    public void setPostalCode(String postalCode) {
-	this.postalCode = postalCode;
-    }
+	public void setState(String state) {
+		this.state = state;
+	}
 
-    public Double getLatitude() {
-	return latitude;
-    }
+	public String getPostalCode() {
+		return postalCode;
+	}
 
-    public void setLatitude(Double latitude) {
-	this.latitude = latitude;
-    }
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
-    public Double getLongitude() {
-	return longitude;
-    }
+	public Double getLatitude() {
+		return latitude;
+	}
 
-    public void setLongitude(Double longitude) {
-	this.longitude = longitude;
-    }
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
 
-    public String getLocality() {
-	return locality;
-    }
+	public Double getLongitude() {
+		return longitude;
+	}
 
-    public void setLocality(String locality) {
-	this.locality = locality;
-    }
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getLocality() {
+		return locality;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
 
 	public String getStreetAddress() {
 		return streetAddress;
@@ -100,6 +100,10 @@ public class Address {
 		return "Address [country=" + country + ", city=" + city + ", state=" + state + ", postalCode=" + postalCode
 				+ ", locality=" + locality + ", latitude=" + latitude + ", longitude=" + longitude + ", streetAddress="
 				+ streetAddress + "]";
+	}
+
+	public Address() {
+		super();
 	}
 
 	public Address(String country, String city, String state, String postalCode, String locality,
