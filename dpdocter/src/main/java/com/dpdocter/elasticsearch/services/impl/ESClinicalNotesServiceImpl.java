@@ -4037,6 +4037,48 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 	
+	@Override
+	public List<ESNeckExaminationDocument> searchNeckExam(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESNeckExaminationDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalNeckExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	@Override
+	public List<ESNoseExaminationDocument> searchNoseExam(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESNoseExaminationDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalNoseExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
 	/**
 	 * 
 	 * @param page
@@ -5230,6 +5272,156 @@ private List<ESIndirectLarygoscopyExaminationDocument> getGlobalIndirectLarygosc
 	}
 	return response;
 }
+
+/**
+* 
+* @param page
+*            - page no for pagination
+* @param size
+*            - size for pagination
+* @param doctorId
+* @param locationId
+* @param hospitalId
+* @param updatedTime
+* @param discarded
+* @param searchTerm
+*            - searchterm for search
+* @return
+*/
+
+@SuppressWarnings("unchecked")
+private List<ESOralCavityAndThroatExaminationDocument> getCustomGlobalOralCavityThroatExam(int page, int size, String doctorId,
+		String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESOralCavityAndThroatExaminationDocument> response = null;
+	try {
+		List<ESDoctorDocument> doctorCollections = null;
+		Collection<String> specialities = Collections.EMPTY_LIST;
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+			if (doctorCollections != null && !doctorCollections.isEmpty()) {
+				List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+				if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+					BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+							.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+					int count = (int) elasticsearchTemplate.count(
+							new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+							ESSpecialityDocument.class);
+					if (count > 0) {
+						SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+								.withPageable(new PageRequest(0, count)).build();
+						List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+								.queryForList(searchQuery, ESSpecialityDocument.class);
+						if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+							specialities = CollectionUtils.collect(resultsSpeciality,
+									new BeanToPropertyValueTransformer("speciality"));
+							specialities.add("ALL");
+						}
+					}
+				}
+			}
+		}
+
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ORAL_CAVITY_THROAT_EXAM, page, size, doctorId,
+				locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+				"oralCavityExam");
+		response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
+	} catch (Exception e) {
+		e.printStackTrace();
+		logger.error(e);
+		throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting X Ray details");
+	}
+	return response;
+
+}
+
+/**//**
+* 
+* @param page
+* @param size
+* @param doctorId
+* @param updatedTime
+* @param discarded
+* @param searchTerm
+* @return
+*//*
+*/	@SuppressWarnings("unchecked")
+private List<ESOralCavityAndThroatExaminationDocument> getGlobalOralCavityThroatExam(int page, int size, String doctorId, String updatedTime,
+		Boolean discarded, String searchTerm) {
+	List<ESOralCavityAndThroatExaminationDocument> response = null;
+	try {
+		List<ESDoctorDocument> doctorCollections = null;
+		Collection<String> specialities = Collections.EMPTY_LIST;
+
+		if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+			doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+			if (doctorCollections != null && !doctorCollections.isEmpty()) {
+				List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+				if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+					BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+							.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+					int count = (int) elasticsearchTemplate.count(
+							new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+							ESSpecialityDocument.class);
+					if (count > 0) {
+						SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+								.withPageable(new PageRequest(0, count)).build();
+						List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+								.queryForList(searchQuery, ESSpecialityDocument.class);
+						if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+							specialities = CollectionUtils.collect(resultsSpeciality,
+									new BeanToPropertyValueTransformer("speciality"));
+							specialities.add("ALL");
+						}
+					}
+				}
+			}
+		}
+
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LAGYROSCOPY_EXAM, page, size, updatedTime, discarded,
+				null, searchTerm, specialities, null, null, "oralCavityExam");
+		response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
+	} catch (Exception e) {
+		e.printStackTrace();
+		logger.error(e);
+		throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+	}
+	return response;
+}
+
+/**//**
+* 
+* @param page
+* @param size
+* @param doctorId
+* @param locationId
+* @param hospitalId
+* @param updatedTime
+* @param discarded
+* @param searchTerm
+* @return
+*//*
+*/	private List<ESOralCavityAndThroatExaminationDocument> getCustomOralCavityThroatExam(int page, int size, String doctorId, String locationId,
+		String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+	List<ESOralCavityAndThroatExaminationDocument> response = null;
+	try {
+		if (doctorId == null)
+			response = new ArrayList<ESOralCavityAndThroatExaminationDocument>();
+		else {
+			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
+					updatedTime, discarded, null, searchTerm, null, null, "oralCavityExam");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+		logger.error(e);
+		throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting PC Note");
+	}
+	return response;
+}
+
 
 
 }

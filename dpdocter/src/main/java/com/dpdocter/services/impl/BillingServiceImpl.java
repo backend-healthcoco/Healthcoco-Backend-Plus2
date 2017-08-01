@@ -224,10 +224,12 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientInvoiceCollection.setCreatedTime(new Date());
 			} else {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
+				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal() - doctorPatientInvoiceCollection.getBalanceAmount();
+				
 				if (doctorPatientInvoiceCollection.getReceiptIds() != null
-						&& !doctorPatientInvoiceCollection.getReceiptIds().isEmpty()) {
+						&& !doctorPatientInvoiceCollection.getReceiptIds().isEmpty() && paidAmount > request.getGrandTotal()) {
 					throw new BusinessException(ServiceError.Unknown,
-							"Invoice cannot be edited as receipt is already added.");
+							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
 				dueAmount = -doctorPatientInvoiceCollection.getBalanceAmount();
 				doctorPatientInvoiceCollection.setUpdatedTime(new Date());

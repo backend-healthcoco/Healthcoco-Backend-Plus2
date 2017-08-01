@@ -179,4 +179,10 @@ public interface ESClinicalNotesService {
 
 	boolean addIndirectLarygoscopyExam(ESIndirectLarygoscopyExaminationDocument request);
 
+	List<ESNeckExaminationDocument> searchNeckExam(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
+	List<ESNoseExaminationDocument> searchNoseExam(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
 }

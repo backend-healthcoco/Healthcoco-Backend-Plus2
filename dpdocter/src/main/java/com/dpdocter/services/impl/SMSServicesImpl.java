@@ -167,8 +167,8 @@ public class SMSServicesImpl implements SMSServices {
 			}
 
 			for (SMSDetail smsDetails : smsTrackDetail.getSmsDetails()) {
-				if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
-					isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);
+				/*if (!DPDoctorUtils.anyStringEmpty(smsTrackDetail.getLocationId()))
+					isSMSInAccount = this.checkNoOFsms(smsDetails.getSms().getSmsText(), subscriptionDetailCollection);*/
 				if (isSMSInAccount) {
 					if (!isEnvProduction) {
 						if (userNumber != null && smsDetails.getSms() != null
