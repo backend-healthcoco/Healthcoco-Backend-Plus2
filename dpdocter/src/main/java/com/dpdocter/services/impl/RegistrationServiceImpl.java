@@ -2980,7 +2980,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
 									streetAddress)) {
 								Address address = new Address(country, city, state, postalCode, locality, null, null,
-										streetAddress);
+										null,streetAddress);
 								request.setAddress(address);
 							}
 							if (!DPDoctorUtils.anyStringEmpty(fields[19]) && !fields[19].equalsIgnoreCase("NULL")) {
