@@ -1,12 +1,13 @@
 package com.dpdocter.elasticsearch.document;
 
-import org.exolab.castor.types.Date;
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "neck_examination_in" , type="neck_examination")
+@Document(indexName = "neck_examination_in", type = "neck_examination")
 public class ESNeckExaminationDocument {
 
 	@Id

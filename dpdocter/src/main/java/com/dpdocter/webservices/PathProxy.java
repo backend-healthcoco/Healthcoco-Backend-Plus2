@@ -326,7 +326,7 @@ public interface PathProxy {
 		public static final String DELETE_EARS_EXAM = "/earsExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DELETE_NOSE_EXAM = "/noseExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DELETE_ORAL_CAVITY_THROAT_EXAM = "/oralCavityThroatExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
-		public static final String DELETE_INDIRECT_LARYGOSCOPY_EXAM = "/indirectLarygoscopy/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_INDIRECT_LARYGOSCOPY_EXAM = "/indirectLarygoscopyExam/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 		public static final String ADD_EDIT_EYE_OBSERVATION = "/eyeObservation/add";
 
