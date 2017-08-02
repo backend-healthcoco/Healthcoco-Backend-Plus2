@@ -10,14 +10,11 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 
 	@Id
 	private ObjectId id;
-	@Field
-	private ObjectId locationId;
-	@Field
-	private ObjectId doctorId;
+
 	@Field
 	private ObjectId patientId;
 	@Field
-	private ObjectId hospitalId;
+	private ObjectId localeId;
 	@Field
 	private String patientName;
 	@Field
@@ -29,7 +26,7 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 	@Field
 	private Integer noOfRecommendation;
 	@Field
-	private String doctorReply;
+	private String pharmacyReply;
 	@Field
 	private Boolean isAnonymous;
 	@Field
@@ -45,22 +42,6 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public ObjectId getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(ObjectId locationId) {
-		this.locationId = locationId;
-	}
-
-	public ObjectId getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(ObjectId doctorId) {
-		this.doctorId = doctorId;
 	}
 
 	public ObjectId getPatientId() {
@@ -111,14 +92,6 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 		this.noOfRecommendation = noOfRecommendation;
 	}
 
-	public String getDoctorReply() {
-		return doctorReply;
-	}
-
-	public void setDoctorReply(String doctorReply) {
-		this.doctorReply = doctorReply;
-	}
-
 	public Boolean getIsAnonymous() {
 		return isAnonymous;
 	}
@@ -151,23 +124,20 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 		this.isDiscarded = isDiscarded;
 	}
 
-	public ObjectId getHospitalId() {
-		return hospitalId;
+	public ObjectId getLocaleId() {
+		return localeId;
 	}
 
-	public void setHospitalId(ObjectId hospitalId) {
-		this.hospitalId = hospitalId;
+	public void setLocaleId(ObjectId localeId) {
+		this.localeId = localeId;
 	}
 
-	@Override
-	public String toString() {
-		return "PharmacyFeedbackCollection [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
-				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", patientName=" + patientName
-				+ ", pharmacyRecommendation=" + pharmacyRecommendation + ", overallExperience=" + overallExperience
-				+ ", experienceWithPharmacy=" + experienceWithPharmacy + ", noOfRecommendation=" + noOfRecommendation
-				+ ", doctorReply=" + doctorReply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved
-				+ ", adminUpdatedExperienceWithPharmacy=" + adminUpdatedExperienceWithPharmacy + ", isDiscarded="
-				+ isDiscarded + "]";
+	public String getPharmacyReply() {
+		return pharmacyReply;
+	}
+
+	public void setPharmacyReply(String pharmacyReply) {
+		this.pharmacyReply = pharmacyReply;
 	}
 
 }

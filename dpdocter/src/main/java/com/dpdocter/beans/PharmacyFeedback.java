@@ -1,7 +1,5 @@
 package com.dpdocter.beans;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class PharmacyFeedback extends GenericCollection {
@@ -12,18 +10,15 @@ public class PharmacyFeedback extends GenericCollection {
 	 * experience at the pharmacy?* 5 Star can be in points look at zomato
 	 * Describe your experience at the pharmacy. Text from patient
 	 */
-
 	private String id;
-	private String locationId;
-	private String doctorId;
 	private String patientId;
-	private ObjectId hospitalId;
+	private String localeId;
 	private String patientName;
 	private Boolean pharmacyRecommendation;
 	private Float overallExperience;
 	private String experienceWithPharmacy;
 	private Integer noOfRecommendation;
-	private String doctorReply;
+	private String pharmacyReply;
 	private Boolean isAnonymous;
 	private Boolean isApproved = false;
 	private String adminUpdatedExperienceWithPharmacy;
@@ -35,22 +30,6 @@ public class PharmacyFeedback extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
 	}
 
 	public String getPatientId() {
@@ -101,12 +80,12 @@ public class PharmacyFeedback extends GenericCollection {
 		this.noOfRecommendation = noOfRecommendation;
 	}
 
-	public String getDoctorReply() {
-		return doctorReply;
+	public String getPharmacyReply() {
+		return pharmacyReply;
 	}
 
-	public void setDoctorReply(String doctorReply) {
-		this.doctorReply = doctorReply;
+	public void setPharmacyReply(String pharmacyReply) {
+		this.pharmacyReply = pharmacyReply;
 	}
 
 	public Boolean getIsAnonymous() {
@@ -141,23 +120,22 @@ public class PharmacyFeedback extends GenericCollection {
 		this.isDiscarded = isDiscarded;
 	}
 
-	public ObjectId getHospitalId() {
-		return hospitalId;
+	public String getLocaleId() {
+		return localeId;
 	}
 
-	public void setHospitalId(ObjectId hospitalId) {
-		this.hospitalId = hospitalId;
+	public void setLocaleId(String localeId) {
+		this.localeId = localeId;
 	}
 
 	@Override
 	public String toString() {
-		return "PharmacyFeedback [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId + ", patientId="
-				+ patientId + ", hospitalId=" + hospitalId + ", patientName=" + patientName
-				+ ", pharmacyRecommendation=" + pharmacyRecommendation + ", overallExperience=" + overallExperience
-				+ ", experienceWithPharmacy=" + experienceWithPharmacy + ", noOfRecommendation=" + noOfRecommendation
-				+ ", doctorReply=" + doctorReply + ", isAnonymous=" + isAnonymous + ", isApproved=" + isApproved
-				+ ", adminUpdatedExperienceWithPharmacy=" + adminUpdatedExperienceWithPharmacy + ", isDiscarded="
-				+ isDiscarded + "]";
+		return "PharmacyFeedback [id=" + id + ", patientId=" + patientId + ", localeId=" + localeId + ", patientName="
+				+ patientName + ", pharmacyRecommendation=" + pharmacyRecommendation + ", overallExperience="
+				+ overallExperience + ", experienceWithPharmacy=" + experienceWithPharmacy + ", noOfRecommendation="
+				+ noOfRecommendation + ", pharmacyReply=" + pharmacyReply + ", isAnonymous=" + isAnonymous
+				+ ", isApproved=" + isApproved + ", adminUpdatedExperienceWithPharmacy="
+				+ adminUpdatedExperienceWithPharmacy + ", isDiscarded=" + isDiscarded + "]";
 	}
 
 }

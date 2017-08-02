@@ -1015,8 +1015,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (pharmacyType != null && !pharmacyType.isEmpty()) {
 				for (int i = 0; i < pharmacyType.size(); i++){
 					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
+					boolQueryBuilder.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType));
 				}
-				boolQueryBuilder.must(QueryBuilders.termsQuery("pharmacyType", pharmacyType));
+				
 			}
 
 			if (maxTime == 0) {

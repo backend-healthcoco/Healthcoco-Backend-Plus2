@@ -21,6 +21,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.services.FeedbackService;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,23 +30,23 @@ import io.swagger.annotations.ApiOperation;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Path(PathProxy.FEEDBACK_BASE_URL)
-@Api(value = PathProxy.FEEDBACK_BASE_URL , description = "Endpoint for feedback API")
+@Api(value = PathProxy.FEEDBACK_BASE_URL, description = "Endpoint for feedback API")
 public class FeedbackAPI {
-	
+
 	private final Logger logger = Logger.getLogger(FeedbackAPI.class);
-	
+
 	@Autowired
 	FeedbackService feedbackService;
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK)
-	public Response<AppointmentGeneralFeedback> addEditAppointmentGeneralFeedback(AppointmentGeneralFeedback feedback)
-	{
+	public Response<AppointmentGeneralFeedback> addEditAppointmentGeneralFeedback(AppointmentGeneralFeedback feedback) {
 		Response<AppointmentGeneralFeedback> response = new Response<>();
 		AppointmentGeneralFeedback appointmentGeneralFeedback = null;
 		try {
-			if (feedback == null) {
+			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getDoctorId(), feedback.getPatientId(),
+					feedback.getHospitalId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 			}
 			appointmentGeneralFeedback = feedbackService.addEditAppointmentGeneralFeedback(feedback);
@@ -57,16 +58,15 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
-	public Response<PharmacyFeedback> addEditPharmacyFeedback(PharmacyFeedback feedback)
-	{
+	public Response<PharmacyFeedback> addEditPharmacyFeedback(PharmacyFeedback feedback) {
 		Response<PharmacyFeedback> response = new Response<>();
 		PharmacyFeedback pharmacyFeedback = null;
 		try {
-			if (feedback == null) {
+			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getLocaleId(), feedback.getPatientId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 			}
 			pharmacyFeedback = feedbackService.addEditPharmacyFeedback(feedback);
@@ -78,16 +78,16 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PRESCRIPTION_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PRESCRIPTION_FEEDBACK)
-	public Response<PrescriptionFeedback> addEditPrescriptionFeedback(PrescriptionFeedback feedback)
-	{
+	public Response<PrescriptionFeedback> addEditPrescriptionFeedback(PrescriptionFeedback feedback) {
 		Response<PrescriptionFeedback> response = new Response<>();
 		PrescriptionFeedback prescriptionFeedback = null;
 		try {
-			if (feedback == null) {
+			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getDoctorId(), feedback.getPatientId(),
+					feedback.getHospitalId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 			}
 			prescriptionFeedback = feedbackService.addEditPrescriptionFeedback(prescriptionFeedback);
@@ -99,12 +99,11 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
-	public Response<AppointmentGeneralFeedback> getGeneralAppointmentFeedback(FeedbackGetRequest request)
-	{
+	public Response<AppointmentGeneralFeedback> getGeneralAppointmentFeedback(FeedbackGetRequest request) {
 		Response<AppointmentGeneralFeedback> response = new Response<>();
 		List<AppointmentGeneralFeedback> feedbacks = null;
 		try {
@@ -117,12 +116,11 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
-	@POST
+
+	@GET
 	@Path(PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
-	public Response<PharmacyFeedback> getPharmacyFeedback(FeedbackGetRequest request)
-	{
+	public Response<PharmacyFeedback> getPharmacyFeedback(FeedbackGetRequest request) {
 		Response<PharmacyFeedback> response = new Response<>();
 		List<PharmacyFeedback> feedbacks = null;
 		try {
@@ -135,13 +133,11 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
-	
+
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PRESCRIPTION_FEEDBACK)
-	public Response<PrescriptionFeedback> getPrescriptionFeedback(FeedbackGetRequest request)
-	{
+	public Response<PrescriptionFeedback> getPrescriptionFeedback(FeedbackGetRequest request) {
 		Response<PrescriptionFeedback> response = new Response<>();
 		List<PrescriptionFeedback> feedbacks = null;
 		try {
@@ -154,6 +150,5 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
-	
 
 }
