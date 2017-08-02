@@ -219,7 +219,7 @@ public class ClinicalNotesAddRequest {
 
 	private String globalProcedureNotes;
 
-	private String globalPCNotes;
+	private String globalPCNose;
 
 	private String globalPCOralCavity;
 
@@ -318,12 +318,14 @@ public class ClinicalNotesAddRequest {
 		this.earsExam = earsExam;
 	}
 
-	public String getGlobalPCNotes() {
-		return globalPCNotes;
+	
+
+	public String getGlobalPCNose() {
+		return globalPCNose;
 	}
 
-	public void setGlobalPCNotes(String globalPCNotes) {
-		this.globalPCNotes = globalPCNotes;
+	public void setGlobalPCNose(String globalPCNose) {
+		this.globalPCNose = globalPCNose;
 	}
 
 	public String getGlobalPCOralCavity() {
@@ -1130,12 +1132,12 @@ public class ClinicalNotesAddRequest {
 				+ globalPVs + ", globalPAs=" + globalPAs + ", globalPSs=" + globalPSs + ", globalEcgDetails="
 				+ globalEcgDetails + ", globalXRayDetails=" + globalXRayDetails + ", globalEchoes=" + globalEchoes
 				+ ", globalHolters=" + globalHolters + ", globalProcedureNotes=" + globalProcedureNotes
-				+ ", globalPCNotes=" + globalPCNotes + ", globalPCOralCavity=" + globalPCOralCavity
-				+ ", globalPCThroat=" + globalPCThroat + ", globalPCEars=" + globalPCEars + ", globalNoseExam="
-				+ globalNoseExam + ", globalOralCavityThroatExam=" + globalOralCavityThroatExam
-				+ ", globalIndirectLarygoscopyExam=" + globalIndirectLarygoscopyExam + ", globalNeckExam="
-				+ globalNeckExam + ", globalEarsExam=" + globalEarsExam + ", lmp=" + lmp + ", edd=" + edd
-				+ ", noOfFemaleChildren=" + noOfFemaleChildren + ", noOfMaleChildren=" + noOfMaleChildren + "]";
+				+ ", globalPCNose=" + globalPCNose + ", globalPCOralCavity=" + globalPCOralCavity + ", globalPCThroat="
+				+ globalPCThroat + ", globalPCEars=" + globalPCEars + ", globalNoseExam=" + globalNoseExam
+				+ ", globalOralCavityThroatExam=" + globalOralCavityThroatExam + ", globalIndirectLarygoscopyExam="
+				+ globalIndirectLarygoscopyExam + ", globalNeckExam=" + globalNeckExam + ", globalEarsExam="
+				+ globalEarsExam + ", lmp=" + lmp + ", edd=" + edd + ", noOfFemaleChildren=" + noOfFemaleChildren
+				+ ", noOfMaleChildren=" + noOfMaleChildren + "]";
 	}
 
 }

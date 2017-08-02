@@ -216,7 +216,11 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
 				|| resource.equals(Resource.INDICATION_OF_USG) || resource.equals(Resource.PV)
 				|| resource.equals(Resource.ECG) || resource.equals(Resource.XRAY) || resource.equals(Resource.ECHO)
-				|| resource.equals(Resource.HOLTER) || resource.equals(Resource.TREATMENTSERVICE)) {
+				|| resource.equals(Resource.HOLTER) || resource.equals(Resource.TREATMENTSERVICE) || resource.equals(Resource.PC_EARS)
+				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
+				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
+				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM) 
+				|| resource.equals(Resource.INDIRECT_LAGYROSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
@@ -363,7 +367,11 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.GENERAL_EXAMINATION) || resource.equals(Resource.SYSTEMIC_EXAMINATION)
 				|| resource.equals(Resource.PRESENT_COMPLAINT) || resource.equals(Resource.HISTORY_OF_PRESENT_COMPLAINT)
 				|| resource.equals(Resource.MENSTRUAL_HISTORY) || resource.equals(Resource.OBSTETRIC_HISTORY)
-				|| resource.equals(Resource.TREATMENTSERVICE)) {
+				|| resource.equals(Resource.TREATMENTSERVICE) || resource.equals(Resource.PC_EARS)
+				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
+				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
+				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM) 
+				|| resource.equals(Resource.INDIRECT_LAGYROSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
