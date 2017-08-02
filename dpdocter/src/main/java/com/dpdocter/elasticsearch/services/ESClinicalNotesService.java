@@ -185,4 +185,15 @@ public interface ESClinicalNotesService {
 	List<ESNoseExaminationDocument> searchNoseExam(String range, int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
 
+	List<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm);
+
+	List<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page, int size,
+			String doctorId, String locationId, String hospitalId, String updatedTime, Boolean discarded,
+			String searchTerm);
+
+	List<ESEarsExaminationDocument> searchEarsExam(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm);
+
 }

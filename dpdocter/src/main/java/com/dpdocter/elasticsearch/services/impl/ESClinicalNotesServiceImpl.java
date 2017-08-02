@@ -4079,6 +4079,69 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		return response;
 	}
 	
+	@Override
+	public List<ESEarsExaminationDocument> searchEarsExam(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESEarsExaminationDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalEarsExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	@Override
+	public List<ESOralCavityAndThroatExaminationDocument> searchOralCavityThroatExam(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESOralCavityAndThroatExaminationDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalOralCavityThroatExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomOralCavityThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalOralCavityThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
+	@Override
+	public List<ESIndirectLarygoscopyExaminationDocument> searchIndirectLarygoscopyExam(String range, int page, int size, String doctorId,
+			String locationId, String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESIndirectLarygoscopyExaminationDocument> response = null;
+		switch (Range.valueOf(range.toUpperCase())) {
+
+		case GLOBAL:
+			response = getGlobalIndirectLarygoscopyExam(page, size, doctorId, updatedTime, discarded, searchTerm);
+			break;
+		case CUSTOM:
+			response = getCustomIndierctLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		case BOTH:
+			response = getCustomGlobalIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded, searchTerm);
+			break;
+		default:
+			break;
+		}
+		return response;
+	}
+	
 	/**
 	 * 
 	 * @param page

@@ -820,6 +820,16 @@ public interface PathProxy {
 		public static final String SEARCH_PC_THROAT = "pcThroat/{range}";
 		
 		public static final String SEARCH_PC_ORAL_CAVITY = "pcOralCavity/{range}";
+		
+		public static final String SEARCH_NECK_EXAM = "neckExam/{range}";
+		
+		public static final String SEARCH_NOSE_EXAM = "noseExam/{range}";
+		
+		public static final String SEARCH_EARS_EXAM = "earsExam/{range}";
+		
+		public static final String SEARCH_ORAL_CAVITY_THROAT_EXAM = "oralCavityThroatExam/{range}";
+		
+		public static final String SEARCH_INDIRECT_LARYGOSCOPY_EXAM = "indirectLarygoscopyExam/{range}";
 
 	}
 
