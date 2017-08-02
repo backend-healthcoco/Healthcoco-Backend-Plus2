@@ -1086,9 +1086,9 @@ public class ClinicalNotesApi {
 		NoseExamination noseExamination = clinicalNotesService.addEditNoseExam(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.NOSE_EXAM, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESNoseExaminationDocument esNoseExaminationDocument = new ESNoseExaminationDocument();
+		BeanUtil.map(noseExamination, esNoseExaminationDocument);
+		esClinicalNotesService.addNoseExam(esNoseExaminationDocument);
 		Response<NoseExamination> response = new Response<NoseExamination>();
 		response.setData(noseExamination);
 		return response;
@@ -1107,9 +1107,9 @@ public class ClinicalNotesApi {
 		NeckExamination neckExamination = clinicalNotesService.addEditNeckExam(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.NECK_EXAM, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESNeckExaminationDocument esNeckExaminationDocument = new ESNeckExaminationDocument();
+		BeanUtil.map(neckExamination, esNeckExaminationDocument);
+		esClinicalNotesService.addNeckExam(esNeckExaminationDocument);
 		Response<NeckExamination> response = new Response<NeckExamination>();
 		response.setData(neckExamination);
 		return response;
@@ -1128,9 +1128,9 @@ public class ClinicalNotesApi {
 		EarsExamination earsExamination = clinicalNotesService.addEditEarsExam(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.EARS_EXAM, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESEarsExaminationDocument esEarsExaminationDocument = new ESEarsExaminationDocument();
+		BeanUtil.map(earsExamination, esEarsExaminationDocument);
+		esClinicalNotesService.addEarsExam(esEarsExaminationDocument);
 		Response<EarsExamination> response = new Response<EarsExamination>();
 		response.setData(earsExamination);
 		return response;
@@ -1149,9 +1149,9 @@ public class ClinicalNotesApi {
 		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService.addEditOralCavityThroatExam(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM, false);
-		/*ESHolterDocument esHolter = new ESHolterDocument();
-		BeanUtil.map(holter, esHolter);
-		esClinicalNotesService.addHolter(esHolter);*/
+		ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
+		BeanUtil.map(oralCavityAndThroatExamination, esOralCavityAndThroatExaminationDocument);
+		esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
 		Response<OralCavityAndThroatExamination> response = new Response<OralCavityAndThroatExamination>();
 		response.setData(oralCavityAndThroatExamination);
 		return response;
