@@ -19,9 +19,12 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Locale;
 import com.dpdocter.beans.LocaleImage;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
+import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.RecommendationType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
@@ -49,6 +52,9 @@ public class LocaleApi {
 
 	@Autowired
 	LocaleService localeService;
+
+	@Autowired
+	ESLocaleService esLocaleService;
 
 	@Autowired
 	PharmacyService pharmacyService;
@@ -321,6 +327,12 @@ public class LocaleApi {
 		}
 
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
+		if (locale != null) {
+			ESUserLocaleDocument document = new ESUserLocaleDocument();
+			BeanUtil.map(locale, document);
+			esLocaleService.addLocale(document);
+		}
+
 		response = new Response<Locale>();
 		response.setData(locale);
 		return response;

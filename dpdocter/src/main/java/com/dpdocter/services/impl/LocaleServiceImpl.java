@@ -170,15 +170,19 @@ public class LocaleServiceImpl implements LocaleService {
 				} else {
 					switch (type) {
 					case LIKE:
+						if(recommendationsCollection.getDiscarded()){
 						localeCollection
 								.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() + 1);
 						recommendationsCollection.setDiscarded(false);
+						}
 						break;
 
 					case UNLIKE:
+						if(!recommendationsCollection.getDiscarded()){
 						localeCollection
 								.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() - 1);
 						recommendationsCollection.setDiscarded(true);
+						}
 						break;
 
 					default:
@@ -191,7 +195,7 @@ public class LocaleServiceImpl implements LocaleService {
 				response = new Locale();
 				BeanUtil.map(localeCollection, response);
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
-				// response.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
+				
 
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Error  location  not found");

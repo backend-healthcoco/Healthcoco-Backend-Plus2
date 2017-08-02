@@ -72,6 +72,7 @@ public class FeedbackAPI {
 			}
 			pharmacyFeedback = feedbackService.addEditPharmacyFeedback(feedback);
 			response.setData(pharmacyFeedback);
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger.warn(e);
@@ -118,7 +119,7 @@ public class FeedbackAPI {
 		return response;
 	}
 
-	@GET
+	@POST
 	@Path(PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PHARMACY_FEEDBACK)
 	public Response<PharmacyFeedback> getPharmacyFeedback(FeedbackGetRequest request) {

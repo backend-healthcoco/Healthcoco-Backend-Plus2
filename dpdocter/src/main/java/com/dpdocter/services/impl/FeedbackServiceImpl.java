@@ -107,6 +107,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		}
 
 		pharmacyFeedbackCollection = pharmacyFeedbackRepository.save(pharmacyFeedbackCollection);
+		response=new PharmacyFeedback();
 		if (pharmacyFeedbackCollection != null) {
 			BeanUtil.map(pharmacyFeedbackCollection, response);
 		}
@@ -254,14 +255,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
-				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
+				criteria.and("localeId").is(new ObjectId(request.getLocationId()));
 
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
-				criteria.and("doctorId").is(new ObjectId(request.getDoctorId()));
-
-			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
-				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
-
+			
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
 
