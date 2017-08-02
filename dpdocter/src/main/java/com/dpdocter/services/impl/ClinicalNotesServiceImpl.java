@@ -1308,7 +1308,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				for (String customOralCavityThroatExam : customOralCavityThroatExams) {
 
 					OralCavityAndThroatExamination oralCavityAndThroatExamination = new OralCavityAndThroatExamination();
-					oralCavityAndThroatExamination.setOralCavityExam(customOralCavityThroatExam);
+					oralCavityAndThroatExamination.setOralCavityThroatExam(customOralCavityThroatExam);
 					OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = new OralCavityAndThroatExaminationCollection();
 					BeanUtil.map(oralCavityAndThroatExamination, oralCavityAndThroatExaminationCollection);
 					oralCavityAndThroatExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));

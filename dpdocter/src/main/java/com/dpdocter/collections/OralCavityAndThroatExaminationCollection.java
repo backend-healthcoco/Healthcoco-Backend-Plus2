@@ -8,7 +8,7 @@ public class OralCavityAndThroatExaminationCollection extends GenericCollection 
 
 	private ObjectId id;
 
-	private String oralCavityExam;
+	private String oralCavityThroatExam;
 
 	private ObjectId doctorId;
 
@@ -28,12 +28,12 @@ public class OralCavityAndThroatExaminationCollection extends GenericCollection 
 		this.id = id;
 	}
 
-	public String getOralCavityExam() {
-		return oralCavityExam;
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
 	}
 
-	public void setOralCavityExam(String oralCavityExam) {
-		this.oralCavityExam = oralCavityExam;
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
 	}
 
 	public ObjectId getDoctorId() {
@@ -78,7 +78,7 @@ public class OralCavityAndThroatExaminationCollection extends GenericCollection 
 
 	@Override
 	public String toString() {
-		return "OralCavityAndThroatExaminationCollection [id=" + id + ", oralCavityExam=" + oralCavityExam
+		return "OralCavityAndThroatExaminationCollection [id=" + id + ", oralCavityThroatExam=" + oralCavityThroatExam
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", discarded=" + discarded + ", speciality=" + speciality + "]";
 	}

@@ -5388,7 +5388,7 @@ private List<ESOralCavityAndThroatExaminationDocument> getCustomGlobalOralCavity
 
 		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.ORAL_CAVITY_THROAT_EXAM, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
-				"oralCavityExam");
+				"oralCavityThroatExam");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -5444,7 +5444,7 @@ private List<ESOralCavityAndThroatExaminationDocument> getGlobalOralCavityThroat
 		}
 
 		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LAGYROSCOPY_EXAM, page, size, updatedTime, discarded,
-				null, searchTerm, specialities, null, null, "oralCavityExam");
+				null, searchTerm, specialities, null, null, "oralCavityThroatExam");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -5474,7 +5474,7 @@ private List<ESOralCavityAndThroatExaminationDocument> getGlobalOralCavityThroat
 			response = new ArrayList<ESOralCavityAndThroatExaminationDocument>();
 		else {
 			SearchQuery searchQuery = DPDoctorUtils.createCustomQuery(page, size, doctorId, locationId, hospitalId,
-					updatedTime, discarded, null, searchTerm, null, null, "oralCavityExam");
+					updatedTime, discarded, null, searchTerm, null, null, "oralCavityThroatExam");
 			response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
 		}
 	} catch (Exception e) {

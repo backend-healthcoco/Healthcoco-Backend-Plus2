@@ -6,14 +6,14 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-@Document(indexName = "oral_cavity_throat_examination_in" , type = "oral_cavity_throat_examination")
+@Document(indexName = "oral_cavity_throat_examination_in", type = "oral_cavity_throat_examination")
 public class ESOralCavityAndThroatExaminationDocument {
 
 	@Id
 	private String id;
 
 	@Field(type = FieldType.String)
-	private String oralCavityExam;
+	private String oralCavityThroatExam;
 
 	@Field(type = FieldType.String)
 	private String doctorId;
@@ -41,12 +41,12 @@ public class ESOralCavityAndThroatExaminationDocument {
 		this.id = id;
 	}
 
-	public String getOralCavityExam() {
-		return oralCavityExam;
+	public String getOralCavityThroatExam() {
+		return oralCavityThroatExam;
 	}
 
-	public void setOralCavityExam(String oralCavityExam) {
-		this.oralCavityExam = oralCavityExam;
+	public void setOralCavityThroatExam(String oralCavityThroatExam) {
+		this.oralCavityThroatExam = oralCavityThroatExam;
 	}
 
 	public String getDoctorId() {
@@ -99,7 +99,7 @@ public class ESOralCavityAndThroatExaminationDocument {
 
 	@Override
 	public String toString() {
-		return "ESOralCavityAndThroatExaminationDocument [id=" + id + ", oralCavityExam=" + oralCavityExam
+		return "ESOralCavityAndThroatExaminationDocument [id=" + id + ", oralCavityThroatExam=" + oralCavityThroatExam
 				+ ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
 				+ ", discarded=" + discarded + ", speciality=" + speciality + ", updatedTime=" + updatedTime + "]";
 	}
