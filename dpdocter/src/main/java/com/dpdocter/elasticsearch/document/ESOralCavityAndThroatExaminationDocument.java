@@ -1,6 +1,7 @@
 package com.dpdocter.elasticsearch.document;
 
-import org.exolab.castor.types.Date;
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
