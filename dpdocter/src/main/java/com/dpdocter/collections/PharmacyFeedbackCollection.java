@@ -20,7 +20,7 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 	@Field
 	private Boolean pharmacyRecommendation;
 	@Field
-	private Float overallExperience;
+	private Double overallExperience = 0.0;
 	@Field
 	private String experienceWithPharmacy;
 	@Field
@@ -68,11 +68,13 @@ public class PharmacyFeedbackCollection extends GenericCollection {
 		this.pharmacyRecommendation = pharmacyRecommendation;
 	}
 
-	public Float getOverallExperience() {
+	
+
+	public Double getOverallExperience() {
 		return overallExperience;
 	}
 
-	public void setOverallExperience(Float overallExperience) {
+	public void setOverallExperience(Double overallExperience) {
 		this.overallExperience = overallExperience;
 	}
 

@@ -6,6 +6,7 @@ import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.pharmacyFeedbackRequest;
 
 public interface FeedbackService {
 
@@ -13,7 +14,7 @@ public interface FeedbackService {
 
 	PrescriptionFeedback addEditPrescriptionFeedback(PrescriptionFeedback feedback);
 
-	PharmacyFeedback addEditPharmacyFeedback(PharmacyFeedback feedback);
+	PharmacyFeedback addEditPharmacyFeedback(pharmacyFeedbackRequest feedback);
 
 	List<AppointmentGeneralFeedback> getAppointmentGeneralFeedbackList(FeedbackGetRequest request);
 

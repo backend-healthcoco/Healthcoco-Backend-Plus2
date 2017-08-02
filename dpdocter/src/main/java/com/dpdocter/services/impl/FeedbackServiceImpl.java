@@ -27,6 +27,7 @@ import com.dpdocter.repository.PharmacyFeedbackRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.pharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -94,19 +95,17 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Override
 	@Transactional
-	public PharmacyFeedback addEditPharmacyFeedback(PharmacyFeedback feedback) {
+	public PharmacyFeedback addEditPharmacyFeedback(pharmacyFeedbackRequest feedback) {
 		PharmacyFeedback response = null;
-		PharmacyFeedbackCollection pharmacyFeedbackCollection = null;
-		
-		pharmacyFeedbackCollection = pharmacyFeedbackRepository.findOne(new ObjectId(feedback.getId()));
-		if (pharmacyFeedbackCollection == null) {
-			feedback.setCreatedTime(new Date());
-			pharmacyFeedbackCollection = new PharmacyFeedbackCollection();
-		}
-		if (feedback.getExperienceWithPharmacy() != null) {
-			feedback.setAdminUpdatedExperienceWithPharmacy(feedback.getExperienceWithPharmacy());
-		}
+		PharmacyFeedbackCollection pharmacyFeedbackCollection = new PharmacyFeedbackCollection();
+
 		BeanUtil.map(feedback, pharmacyFeedbackCollection);
+		pharmacyFeedbackCollection.setCreatedTime(new Date());
+		
+		if (feedback.getExperienceWithPharmacy() != null) {
+			pharmacyFeedbackCollection.setAdminUpdatedExperienceWithPharmacy(feedback.getExperienceWithPharmacy());
+		}
+
 		pharmacyFeedbackCollection = pharmacyFeedbackRepository.save(pharmacyFeedbackCollection);
 		if (pharmacyFeedbackCollection != null) {
 			BeanUtil.map(pharmacyFeedbackCollection, response);

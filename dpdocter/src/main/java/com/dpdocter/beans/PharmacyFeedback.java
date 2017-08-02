@@ -15,7 +15,7 @@ public class PharmacyFeedback extends GenericCollection {
 	private String localeId;
 	private String patientName;
 	private Boolean pharmacyRecommendation;
-	private Float overallExperience;
+	private Double overallExperience;
 	private String experienceWithPharmacy;
 	private Integer noOfRecommendation;
 	private String pharmacyReply;
@@ -56,11 +56,11 @@ public class PharmacyFeedback extends GenericCollection {
 		this.pharmacyRecommendation = pharmacyRecommendation;
 	}
 
-	public Float getOverallExperience() {
+	public Double getOverallExperience() {
 		return overallExperience;
 	}
 
-	public void setOverallExperience(Float overallExperience) {
+	public void setOverallExperience(Double overallExperience) {
 		this.overallExperience = overallExperience;
 	}
 

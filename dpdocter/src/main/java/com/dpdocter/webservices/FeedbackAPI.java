@@ -19,6 +19,7 @@ import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.pharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -62,11 +63,11 @@ public class FeedbackAPI {
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
-	public Response<PharmacyFeedback> addEditPharmacyFeedback(PharmacyFeedback feedback) {
+	public Response<PharmacyFeedback> addEditPharmacyFeedback(pharmacyFeedbackRequest feedback) {
 		Response<PharmacyFeedback> response = new Response<>();
 		PharmacyFeedback pharmacyFeedback = null;
 		try {
-			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getLocaleId(), feedback.getPatientId())) {
+			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getLocaleId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 			}
 			pharmacyFeedback = feedbackService.addEditPharmacyFeedback(feedback);
