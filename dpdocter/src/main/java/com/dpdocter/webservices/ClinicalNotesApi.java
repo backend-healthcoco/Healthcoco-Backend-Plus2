@@ -1168,11 +1168,11 @@ public class ClinicalNotesApi {
 		}
 
 		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.addEditIndirectLarygoscopyExam(request);
-
+		
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM, false);
-		ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
-		BeanUtil.map(indirectLarygoscopyExamination, esOralCavityAndThroatExaminationDocument);
-		esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
+		ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
+		BeanUtil.map(indirectLarygoscopyExamination, esIndirectLarygoscopyExaminationDocument);
+		esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
 		Response<IndirectLarygoscopyExamination> response = new Response<IndirectLarygoscopyExamination>();
 		response.setData(indirectLarygoscopyExamination);
 		return response;
