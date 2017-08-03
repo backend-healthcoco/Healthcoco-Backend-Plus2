@@ -494,8 +494,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 			Aggregation aggregation = null;
 
 			if (size > 0)
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria), Aggregation.skip((page) * size),
-						Aggregation.limit(size), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+								Aggregation.limit(size)));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
@@ -540,6 +541,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			 * valueOf(contactState));
 			 */
 			criteria.and("userId").is(new ObjectId(userId));
+
 			criteria.and("uniqueRequestId").is(uniqueRequestId);
 
 			if (!DPDoctorUtils.anyStringEmpty(replyType))
