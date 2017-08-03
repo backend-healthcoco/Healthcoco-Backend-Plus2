@@ -1290,7 +1290,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					indirectLarygoscopyExaminationCollection.setCreatedTime(createdTime);
 					indirectLarygoscopyExaminationCollection.setId(null);
 					indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
-					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(), Resource.INDIRECT_LAGYROSCOPY_EXAM,
+					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(), Resource.INDIRECT_LARYGOSCOPY_EXAM,
 							false);
 					ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
 					BeanUtil.map(indirectLarygoscopyExaminationCollection, esIndirectLarygoscopyExaminationDocument);

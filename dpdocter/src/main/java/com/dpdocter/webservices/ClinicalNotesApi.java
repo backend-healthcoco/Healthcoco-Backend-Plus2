@@ -1160,7 +1160,7 @@ public class ClinicalNotesApi {
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
-	public Response<IndirectLarygoscopyExamination> addEditOralCavityThroatExam(IndirectLarygoscopyExamination request) {
+	public Response<IndirectLarygoscopyExamination> addEditIndirectLarygosccopyExam(IndirectLarygoscopyExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getIndirectLarygoscopyExam())) {
 			logger.warn("Invalid Input");
@@ -1169,7 +1169,7 @@ public class ClinicalNotesApi {
 
 		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.addEditIndirectLarygoscopyExam(request);
 
-		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM, false);
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM, false);
 		ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
 		BeanUtil.map(indirectLarygoscopyExamination, esOralCavityAndThroatExaminationDocument);
 		esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
@@ -1837,7 +1837,7 @@ public class ClinicalNotesApi {
 		}
 		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.deleteIndirectLarygoscopyExam(id, doctorId, locationId, hospitalId, discarded);
 		if (indirectLarygoscopyExamination != null) {
-			transactionalManagementService.addResource(new ObjectId(indirectLarygoscopyExamination.getId()), Resource.INDIRECT_LAGYROSCOPY_EXAM,
+			transactionalManagementService.addResource(new ObjectId(indirectLarygoscopyExamination.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM,
 					false);
 			ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
 			BeanUtil.map(indirectLarygoscopyExamination, esIndirectLarygoscopyExaminationDocument);

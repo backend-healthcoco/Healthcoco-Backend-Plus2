@@ -220,7 +220,7 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
 				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM) 
-				|| resource.equals(Resource.INDIRECT_LAGYROSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
+				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));
@@ -371,7 +371,7 @@ public class DPDoctorUtils {
 				|| resource.equals(Resource.PC_NOSE) || resource.equals(Resource.PC_ORAL_CAVITY)
 				|| resource.equals(Resource.PC_THROAT) || resource.equals(Resource.NECK_EXAM)
 				|| resource.equals(Resource.NOSE_EXAM) || resource.equals(Resource.ORAL_CAVITY_THROAT_EXAM) 
-				|| resource.equals(Resource.INDIRECT_LAGYROSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
+				|| resource.equals(Resource.INDIRECT_LARYGOSCOPY_EXAM) || resource.equals(Resource.EARS_EXAM)) {
 			if (specialities != null && !specialities.isEmpty()) {
 				OrQueryBuilder orQueryBuilder = new OrQueryBuilder();
 				orQueryBuilder.add(QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("speciality")));

@@ -3918,7 +3918,7 @@ public class ESClinicalNotesServiceImpl implements ESClinicalNotesService {
 		try {
 			esIndirectLarygoscopryExaminationRepository.save(request);
 			response = true;
-			transnationalService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LAGYROSCOPY_EXAM, true);
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving PC Note");
@@ -5237,7 +5237,7 @@ private List<ESIndirectLarygoscopyExaminationDocument> getCustomGlobalIndirectLa
 			}
 		}
 
-		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INDIRECT_LAGYROSCOPY_EXAM, page, size, doctorId,
+		SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.INDIRECT_LARYGOSCOPY_EXAM, page, size, doctorId,
 				locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
 				"indirectLarygoscopyExam");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESIndirectLarygoscopyExaminationDocument.class);
@@ -5294,7 +5294,7 @@ private List<ESIndirectLarygoscopyExaminationDocument> getGlobalIndirectLarygosc
 			}
 		}
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LAGYROSCOPY_EXAM, page, size, updatedTime, discarded,
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LARYGOSCOPY_EXAM, page, size, updatedTime, discarded,
 				null, searchTerm, specialities, null, null, "indirectLarygoscopyExam");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESIndirectLarygoscopyExaminationDocument.class);
 	} catch (Exception e) {
@@ -5443,7 +5443,7 @@ private List<ESOralCavityAndThroatExaminationDocument> getGlobalOralCavityThroat
 			}
 		}
 
-		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LAGYROSCOPY_EXAM, page, size, updatedTime, discarded,
+		SearchQuery searchQuery = DPDoctorUtils.createGlobalQuery(Resource.INDIRECT_LARYGOSCOPY_EXAM, page, size, updatedTime, discarded,
 				null, searchTerm, specialities, null, null, "oralCavityThroatExam");
 		response = elasticsearchTemplate.queryForList(searchQuery, ESOralCavityAndThroatExaminationDocument.class);
 	} catch (Exception e) {
