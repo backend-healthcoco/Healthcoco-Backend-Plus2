@@ -2299,6 +2299,343 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
+			
+			if (request.getPcNose() != null && !request.getPcNose().isEmpty()
+					&& request.getGlobalPCNose() != null) {
+				Set<String> customPCNoses = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcNose())),
+						new HashSet<>(splitCSV(request.getGlobalPCNose())));
+				for (String customPCNose : customPCNoses) {
+
+					PresentingComplaintNose presentingComplaintNose = new PresentingComplaintNose();
+					presentingComplaintNose.setPcNose(customPCNose);
+					PresentingComplaintNoseCollection presentingComplaintNoseCollection = new PresentingComplaintNoseCollection();
+					BeanUtil.map(presentingComplaintNose, presentingComplaintNoseCollection);
+					presentingComplaintNoseCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintNoseCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintNoseCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintNoseCollection.setCreatedBy(createdBy);
+					presentingComplaintNoseCollection.setCreatedTime(createdTime);
+					presentingComplaintNoseCollection.setId(null);
+					presentingComplaintNoseCollection = presentingComplaintNotesRepository.save(presentingComplaintNoseCollection);
+					transactionalManagementService.addResource(presentingComplaintNoseCollection.getId(), Resource.PC_NOSE,
+							false);
+					ESPresentingComplaintNoseDocument esPresentingComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
+					BeanUtil.map(presentingComplaintNoseCollection, esPresentingComplaintNoseDocument);
+					esClinicalNotesService.addPCNose(esPresentingComplaintNoseDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			
+			if (request.getPcOralCavity() != null && !request.getPcOralCavity().isEmpty()
+					&& request.getGlobalPCOralCavity() != null) {
+				Set<String> customPCOralCavities = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcOralCavity())),
+						new HashSet<>(splitCSV(request.getGlobalPCOralCavity())));
+				for (String customPCOralCavity : customPCOralCavities) {
+
+					PresentingComplaintOralCavity presentingComplaintOralCavity = new PresentingComplaintOralCavity();
+					presentingComplaintOralCavity.setPcOralCavity(customPCOralCavity);
+					PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = new PresentingComplaintOralCavityCollection();
+					BeanUtil.map(presentingComplaintOralCavity, presentingComplaintOralCavityCollection);
+					presentingComplaintOralCavityCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintOralCavityCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintOralCavityCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintOralCavityCollection.setCreatedBy(createdBy);
+					presentingComplaintOralCavityCollection.setCreatedTime(createdTime);
+					presentingComplaintOralCavityCollection.setId(null);
+					presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
+					transactionalManagementService.addResource(presentingComplaintOralCavityCollection.getId(), Resource.PC_ORAL_CAVITY,
+							false);
+					ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
+					BeanUtil.map(presentingComplaintOralCavityCollection, esPresentingComplaintEarsDocument);
+					esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getPcEars() != null && !request.getPcEars().isEmpty()
+					&& request.getGlobalPCEars() != null) {
+				Set<String> customPCEars = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcNose())),
+						new HashSet<>(splitCSV(request.getPcNose())));
+				for (String customPCEar : customPCEars) {
+
+					PresentingComplaintEars presentingComplaintEars = new PresentingComplaintEars();
+					presentingComplaintEars.setPcEars(customPCEar);
+					PresentingComplaintEarsCollection presentingComplaintEarsCollection = new PresentingComplaintEarsCollection();
+					BeanUtil.map(presentingComplaintEars, presentingComplaintEarsCollection);
+					presentingComplaintEarsCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintEarsCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintEarsCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintEarsCollection.setCreatedBy(createdBy);
+					presentingComplaintEarsCollection.setCreatedTime(createdTime);
+					presentingComplaintEarsCollection.setId(null);
+					presentingComplaintEarsCollection = presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
+					transactionalManagementService.addResource(presentingComplaintEarsCollection.getId(), Resource.PC_EARS,
+							false);
+					ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
+					BeanUtil.map(presentingComplaintEarsCollection, esPresentingComplaintEarsDocument);
+					esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
+					&& request.getGlobalPCThroat() != null) {
+				Set<String> customPCOralThroats = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcThroat())),
+						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
+				for (String customPCOralThroat : customPCOralThroats) {
+
+					PresentingComplaintThroat presentingComplaintThroat = new PresentingComplaintThroat();
+					presentingComplaintThroat.setPcThroat(customPCOralThroat);
+					PresentingComplaintThroatCollection presentingComplaintOralThroatCollection = new PresentingComplaintThroatCollection();
+					BeanUtil.map(presentingComplaintThroat, presentingComplaintOralThroatCollection);
+					presentingComplaintOralThroatCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintOralThroatCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintOralThroatCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
+					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
+					presentingComplaintOralThroatCollection.setId(null);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
+							false);
+					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
+					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
+					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
+					&& request.getGlobalPCThroat() != null) {
+				Set<String> customPCOralThroats = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcThroat())),
+						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
+				for (String customPCOralThroat : customPCOralThroats) {
+
+					PresentingComplaintThroat presentingComplaintThroat = new PresentingComplaintThroat();
+					presentingComplaintThroat.setPcThroat(customPCOralThroat);
+					PresentingComplaintThroatCollection presentingComplaintOralThroatCollection = new PresentingComplaintThroatCollection();
+					BeanUtil.map(presentingComplaintThroat, presentingComplaintOralThroatCollection);
+					presentingComplaintOralThroatCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintOralThroatCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintOralThroatCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
+					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
+					presentingComplaintOralThroatCollection.setId(null);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
+							false);
+					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
+					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
+					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
+					&& request.getGlobalPCThroat() != null) {
+				Set<String> customPCOralThroats = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getPcThroat())),
+						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
+				for (String customPCOralThroat : customPCOralThroats) {
+
+					PresentingComplaintThroat presentingComplaintThroat = new PresentingComplaintThroat();
+					presentingComplaintThroat.setPcThroat(customPCOralThroat);
+					PresentingComplaintThroatCollection presentingComplaintOralThroatCollection = new PresentingComplaintThroatCollection();
+					BeanUtil.map(presentingComplaintThroat, presentingComplaintOralThroatCollection);
+					presentingComplaintOralThroatCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					presentingComplaintOralThroatCollection.setLocationId(new ObjectId(request.getLocationId()));
+					presentingComplaintOralThroatCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
+					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
+					presentingComplaintOralThroatCollection.setId(null);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
+							false);
+					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
+					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
+					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getNeckExam() != null && !request.getNeckExam().isEmpty()
+					&& request.getGlobalNeckExam() != null) {
+				Set<String> customNeckExams = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getNeckExam())),
+						new HashSet<>(splitCSV(request.getGlobalNeckExam())));
+				for (String customNeckExam : customNeckExams) {
+
+					NeckExamination neckExamination = new NeckExamination();
+					neckExamination.setNeckExam(customNeckExam);
+					NeckExaminationCollection neckExaminationCollection = new NeckExaminationCollection();
+					BeanUtil.map(neckExamination, neckExaminationCollection);
+					neckExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					neckExaminationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					neckExaminationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					neckExaminationCollection.setCreatedBy(createdBy);
+					neckExaminationCollection.setCreatedTime(createdTime);
+					neckExaminationCollection.setId(null);
+					neckExaminationCollection = neckExaminationRepository.save(neckExaminationCollection);
+					transactionalManagementService.addResource(neckExaminationCollection.getId(), Resource.NECK_EXAM,
+							false);
+					ESNeckExaminationDocument esNeckExaminationDocument = new ESNeckExaminationDocument();
+					BeanUtil.map(neckExaminationCollection, esNeckExaminationDocument);
+					esClinicalNotesService.addNeckExam(esNeckExaminationDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getNoseExam() != null && !request.getNoseExam().isEmpty()
+					&& request.getGlobalNoseExam() != null) {
+				Set<String> customNoseExams = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getNoseExam())),
+						new HashSet<>(splitCSV(request.getGlobalNoseExam())));
+				for (String customNoseExam : customNoseExams) {
+
+					NoseExamination noseExamination = new NoseExamination();
+					noseExamination.setNoseExam(customNoseExam);
+					NoseExaminationCollection noseExaminationCollection = new NoseExaminationCollection();
+					BeanUtil.map(noseExamination, noseExaminationCollection);
+					noseExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					noseExaminationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					noseExaminationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					noseExaminationCollection.setCreatedBy(createdBy);
+					noseExaminationCollection.setCreatedTime(createdTime);
+					noseExaminationCollection.setId(null);
+					noseExaminationCollection = noseExaminationRepository.save(noseExaminationCollection);
+					transactionalManagementService.addResource(noseExaminationCollection.getId(), Resource.NOSE_EXAM,
+							false);
+					ESNeckExaminationDocument esNeckExaminationDocument = new ESNeckExaminationDocument();
+					BeanUtil.map(noseExaminationCollection, esNeckExaminationDocument);
+					esClinicalNotesService.addNeckExam(esNeckExaminationDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getEarsExam() != null && !request.getEarsExam().isEmpty()
+					&& request.getGlobalEarsExam() != null) {
+				Set<String> customEarsExams = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getEarsExam())),
+						new HashSet<>(splitCSV(request.getGlobalEarsExam())));
+				for (String customEarsExam : customEarsExams) {
+
+					EarsExamination earsExamination = new EarsExamination();
+					earsExamination.setEarsExam(customEarsExam);
+					EarsExaminationCollection earsExaminationCollection = new EarsExaminationCollection();
+					BeanUtil.map(earsExamination, earsExaminationCollection);
+					earsExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					earsExaminationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					earsExaminationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					earsExaminationCollection.setCreatedBy(createdBy);
+					earsExaminationCollection.setCreatedTime(createdTime);
+					earsExaminationCollection.setId(null);
+					earsExaminationCollection = earsExaminationRepository.save(earsExaminationCollection);
+					transactionalManagementService.addResource(earsExaminationCollection.getId(), Resource.EARS_EXAM,
+							false);
+					ESEarsExaminationDocument esEarsExaminationDocument = new ESEarsExaminationDocument();
+					BeanUtil.map(earsExaminationCollection, esEarsExaminationDocument);
+					esClinicalNotesService.addEarsExam(esEarsExaminationDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getEarsExam() != null && !request.getEarsExam().isEmpty()
+					&& request.getGlobalEarsExam() != null) {
+				Set<String> customEarsExams = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getEarsExam())),
+						new HashSet<>(splitCSV(request.getGlobalEarsExam())));
+				for (String customEarsExam : customEarsExams) {
+
+					EarsExamination earsExamination = new EarsExamination();
+					earsExamination.setEarsExam(customEarsExam);
+					EarsExaminationCollection earsExaminationCollection = new EarsExaminationCollection();
+					BeanUtil.map(earsExamination, earsExaminationCollection);
+					earsExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					earsExaminationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					earsExaminationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					earsExaminationCollection.setCreatedBy(createdBy);
+					earsExaminationCollection.setCreatedTime(createdTime);
+					earsExaminationCollection.setId(null);
+					earsExaminationCollection = earsExaminationRepository.save(earsExaminationCollection);
+					transactionalManagementService.addResource(earsExaminationCollection.getId(), Resource.EARS_EXAM,
+							false);
+					ESEarsExaminationDocument esEarsExaminationDocument = new ESEarsExaminationDocument();
+					BeanUtil.map(earsExaminationCollection, esEarsExaminationDocument);
+					esClinicalNotesService.addEarsExam(esEarsExaminationDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getIndirectLarygoscopyExam() != null && !request.getIndirectLarygoscopyExam().isEmpty()
+					&& request.getGlobalIndirectLarygoscopyExam() != null) {
+				Set<String> customIndirectLagyroScopyExams = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getIndirectLarygoscopyExam())),
+						new HashSet<>(splitCSV(request.getGlobalIndirectLarygoscopyExam())));
+				for (String customIndirectLagyroScopyExam : customIndirectLagyroScopyExams) {
+
+					IndirectLarygoscopyExamination indirectLarygoscopyExamination = new IndirectLarygoscopyExamination();
+					indirectLarygoscopyExamination.setIndirectLarygoscopyExam(customIndirectLagyroScopyExam);
+					IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = new IndirectLarygoscopyExaminationCollection();
+					BeanUtil.map(indirectLarygoscopyExamination, indirectLarygoscopyExaminationCollection);
+					indirectLarygoscopyExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					indirectLarygoscopyExaminationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					indirectLarygoscopyExaminationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					indirectLarygoscopyExaminationCollection.setCreatedBy(createdBy);
+					indirectLarygoscopyExaminationCollection.setCreatedTime(createdTime);
+					indirectLarygoscopyExaminationCollection.setId(null);
+					indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
+					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(), Resource.INDIRECT_LARYGOSCOPY_EXAM,
+							false);
+					ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
+					BeanUtil.map(indirectLarygoscopyExaminationCollection, esIndirectLarygoscopyExaminationDocument);
+					esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
+			
+			if (request.getOralCavityThroatExam() != null && !request.getOralCavityThroatExam().isEmpty()
+					&& request.getGlobalOralCavityThroatExam() != null) {
+				Set<String> customOralCavityThroatExams = compareGlobalElements(
+						new HashSet<>(splitCSV(request.getOralCavityThroatExam())),
+						new HashSet<>(splitCSV(request.getGlobalOralCavityThroatExam())));
+				for (String customOralCavityThroatExam : customOralCavityThroatExams) {
+
+					OralCavityAndThroatExamination oralCavityAndThroatExamination = new OralCavityAndThroatExamination();
+					oralCavityAndThroatExamination.setOralCavityThroatExam(customOralCavityThroatExam);
+					OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = new OralCavityAndThroatExaminationCollection();
+					BeanUtil.map(oralCavityAndThroatExamination, oralCavityAndThroatExaminationCollection);
+					oralCavityAndThroatExaminationCollection.setDoctorId(new ObjectId(request.getDoctorId()));
+					oralCavityAndThroatExaminationCollection.setLocationId(new ObjectId(request.getLocationId()));
+					oralCavityAndThroatExaminationCollection.setHospitalId(new ObjectId(request.getHospitalId()));
+					oralCavityAndThroatExaminationCollection.setCreatedBy(createdBy);
+					oralCavityAndThroatExaminationCollection.setCreatedTime(createdTime);
+					oralCavityAndThroatExaminationCollection.setId(null);
+					oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
+					transactionalManagementService.addResource(oralCavityAndThroatExaminationCollection.getId(), Resource.ORAL_CAVITY_THROAT_EXAM,
+							false);
+					ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
+					BeanUtil.map(oralCavityAndThroatExaminationCollection, esOralCavityAndThroatExaminationDocument);
+					esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
+					// noteIds.add(notesCollection.getId());
+
+				}
+			}
 
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
