@@ -27,6 +27,7 @@ import com.dpdocter.repository.PharmacyFeedbackRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.request.pharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
@@ -75,19 +76,15 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Override
 	@Transactional
-	public PrescriptionFeedback addEditPrescriptionFeedback(PrescriptionFeedback feedback) {
+	public PrescriptionFeedback addEditPrescriptionFeedback(PrescriptionFeedbackRequest feedback) {
 		PrescriptionFeedback response = null;
-		PrescriptionFeedbackCollection prescriptionFeedbackCollection = null;
-		prescriptionFeedbackCollection = prescritptionFeedbackRepository.findOne(new ObjectId(feedback.getId()));
-		if (prescriptionFeedbackCollection == null) {
-			feedback.setCreatedTime(new Date());
+		PrescriptionFeedbackCollection prescriptionFeedbackCollection = new PrescriptionFeedbackCollection();
 
-			prescriptionFeedbackCollection = new PrescriptionFeedbackCollection();
-
-		}
 		BeanUtil.map(feedback, prescriptionFeedbackCollection);
+		prescriptionFeedbackCollection.setCreatedTime(new Date());
 		prescriptionFeedbackCollection = prescritptionFeedbackRepository.save(prescriptionFeedbackCollection);
 		if (prescriptionFeedbackCollection != null) {
+			response = new PrescriptionFeedback();
 			BeanUtil.map(prescriptionFeedbackCollection, response);
 		}
 		return response;
@@ -101,13 +98,13 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 		BeanUtil.map(feedback, pharmacyFeedbackCollection);
 		pharmacyFeedbackCollection.setCreatedTime(new Date());
-		
+
 		if (feedback.getExperienceWithPharmacy() != null) {
 			pharmacyFeedbackCollection.setAdminUpdatedExperienceWithPharmacy(feedback.getExperienceWithPharmacy());
 		}
 
 		pharmacyFeedbackCollection = pharmacyFeedbackRepository.save(pharmacyFeedbackCollection);
-		response=new PharmacyFeedback();
+		response = new PharmacyFeedback();
 		if (pharmacyFeedbackCollection != null) {
 			BeanUtil.map(pharmacyFeedbackCollection, response);
 		}
@@ -257,7 +254,6 @@ public class FeedbackServiceImpl implements FeedbackService {
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
 				criteria.and("localeId").is(new ObjectId(request.getLocationId()));
 
-			
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
 

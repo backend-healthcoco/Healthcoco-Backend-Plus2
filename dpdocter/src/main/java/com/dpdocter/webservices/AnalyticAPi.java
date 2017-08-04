@@ -46,8 +46,8 @@ public class AnalyticAPi {
 	@ApiOperation(value = PathProxy.AnalyticUrls.GET_PATIENT_ANALYTICS_DATA, notes = PathProxy.AnalyticUrls.GET_PATIENT_ANALYTICS_DATA)
 	public Response<PatientAnalyticResponse> getPatientAnalyticnData(@PathParam("doctorId") String doctorId,
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
-			@DefaultValue("0") @QueryParam("fromDate") String fromDate,
-			@DefaultValue("0") @QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
+			 @QueryParam("fromDate") String fromDate,
+			 @QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
 			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm) {
 		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,

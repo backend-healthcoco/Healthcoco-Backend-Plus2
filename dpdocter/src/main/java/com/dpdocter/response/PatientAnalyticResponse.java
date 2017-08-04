@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.dpdocter.beans.PatientAnalyticData;
-import com.dpdocter.beans.WorkingHours;
 
 public class PatientAnalyticResponse {
 	private int day;
@@ -17,12 +16,15 @@ public class PatientAnalyticResponse {
 
 	private int count;
 
+	private String city;
+
 	private String groupName;
-	
+
 	private String groupId;
 
-	private List<PatientAnalyticData> data;
-	
+	private List<PatientAnalyticData> patients;
+
+	private Date date;
 
 	public String getGroupId() {
 		return groupId;
@@ -32,26 +34,12 @@ public class PatientAnalyticResponse {
 		this.groupId = groupId;
 	}
 
-	private Date date;
-
 	public int getWeek() {
 		return week;
 	}
 
 	public void setWeek(int week) {
 		this.week = week;
-	}
-
-	public void setData(List<PatientAnalyticData> data) {
-		this.data = data;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
 	}
 
 	public int getDay() {
@@ -62,16 +50,20 @@ public class PatientAnalyticResponse {
 		return month;
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
 	public int getYear() {
 		return year;
 	}
 
 	public int getCount() {
 		return count;
-	}
-
-	public Object getData() {
-		return data;
 	}
 
 	public void setDay(int day) {
@@ -96,6 +88,22 @@ public class PatientAnalyticResponse {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public List<PatientAnalyticData> getPatients() {
+		return patients;
+	}
+
+	public void setPatients(List<PatientAnalyticData> patients) {
+		this.patients = patients;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 }

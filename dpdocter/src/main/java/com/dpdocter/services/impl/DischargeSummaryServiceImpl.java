@@ -583,14 +583,14 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
 			show = true;
 			parameters.put("dOA",
-					"<b>DOA:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+					"<b>Date of Admission:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
 		}
 		parameters.put("showDOA", show);
 		show = false;
 		if (dischargeSummaryCollection.getDischargeDate() != null) {
 			show = true;
 			parameters.put("dOD",
-					"<b>DOD:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+					"<b>Date of Discharge:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
 		}
 		parameters.put("showDOD", show);
 		show = false;
@@ -1200,8 +1200,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getComplaints())) {
 					dischargeSummaryCollection.setComplaint(dischargeSummaryCollection.getComplaints());
 				}
-				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getDischargeId())) {
-					dischargeSummaryCollection.setUniqueEmrId(dischargeSummaryCollection.getDischargeId());
+				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.setUniqueEmrId())) {
+					dischargeSummaryCollection.setUniqueEmrId(dischargeSummaryCollection.setUniqueEmrId());
 				}
 				if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getGeneralExamination())) {
 					dischargeSummaryCollection.setGeneralExam(dischargeSummaryCollection.getGeneralExamination());
