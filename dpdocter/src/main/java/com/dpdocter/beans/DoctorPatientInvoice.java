@@ -6,35 +6,39 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.InvoiceItemResponse;
 
-public class DoctorPatientInvoice extends GenericCollection{
+import bsh.This;
+
+public class DoctorPatientInvoice extends GenericCollection {
 
 	private String id;
-	
+
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
+
 	private String patientId;
-	
+
 	private String uniqueInvoiceId;
-	
-	private List<InvoiceItemResponse> invoiceItems;   
-	
+
+	private List<InvoiceItemResponse> invoiceItems;
+
 	private Discount totalDiscount;
 
 	private double totalCost = 0.0;
 
+	private double oldTotalCost = this.totalCost;
+
 	private Tax totalTax;
-	
-	private Double grandTotal= 0.0;
-	
-	private Double usedAdvanceAmount= 0.0;
-	
-	private Double refundAmount= 0.0;
-	
-	private Double balanceAmount= 0.0;
+
+	private Double grandTotal = 0.0;
+
+	private Double usedAdvanceAmount = 0.0;
+
+	private Double refundAmount = 0.0;
+
+	private Double balanceAmount = 0.0;
 
 	private Boolean discarded = false;
 
@@ -176,6 +180,14 @@ public class DoctorPatientInvoice extends GenericCollection{
 
 	public void setInvoiceDate(Date invoiceDate) {
 		this.invoiceDate = invoiceDate;
+	}
+
+	public double getOldTotalCost() {
+		return oldTotalCost;
+	}
+
+	public void setOldTotalCost(double oldTotalCost) {
+		this.oldTotalCost = oldTotalCost;
 	}
 
 	@Override
