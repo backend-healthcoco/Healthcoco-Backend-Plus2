@@ -6,7 +6,7 @@ import java.util.List;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.response.InvoiceItemResponse;
 
-import bsh.This;
+
 
 public class DoctorPatientInvoice extends GenericCollection {
 
