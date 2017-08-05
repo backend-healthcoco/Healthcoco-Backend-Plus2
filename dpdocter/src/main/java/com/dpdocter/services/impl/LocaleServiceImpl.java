@@ -16,6 +16,7 @@ import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.RecommendationType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -36,6 +37,9 @@ public class LocaleServiceImpl implements LocaleService {
 
 	@Autowired
 	LocaleRepository localeRepository;
+	
+	@Autowired
+	ESLocaleService esLocaleService;
 
 	@Autowired
 	UserRepository userRepository;
@@ -192,6 +196,7 @@ public class LocaleServiceImpl implements LocaleService {
 
 				recommendationsCollection = recommendationsRepository.save(recommendationsCollection);
 				localeCollection = localeRepository.save(localeCollection);
+				esLocaleService.updateLocale(localeCollection.getId().toString(), localeCollection);
 				response = new Locale();
 				BeanUtil.map(localeCollection, response);
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());

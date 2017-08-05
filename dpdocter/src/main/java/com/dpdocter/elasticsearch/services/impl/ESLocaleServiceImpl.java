@@ -22,6 +22,7 @@ import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -79,6 +80,21 @@ public class ESLocaleServiceImpl implements ESLocaleService {
 		} else {
 			response = true;
 			esUserLocale.setIsAcceptRequest(isOpen);
+			esUserLocale = esUserLocaleRepository.save(esUserLocale);
+		}
+		return response;
+	}
+	
+	@Override
+	public Boolean updateLocale(String localeId, LocaleCollection localeCollection) {
+		Boolean response = false;
+		ESUserLocaleDocument esUserLocale = esUserLocaleRepository.findOne(localeId);
+		if (esUserLocale == null) {
+			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
+		} else {
+			response = true;
+
+			BeanUtil.map(localeCollection, esUserLocale);
 			esUserLocale = esUserLocaleRepository.save(esUserLocale);
 		}
 		return response;

@@ -327,12 +327,6 @@ public class LocaleApi {
 		}
 
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
-		if (locale != null) {
-			ESUserLocaleDocument document = new ESUserLocaleDocument();
-			BeanUtil.map(locale, document);
-			esLocaleService.addLocale(document);
-		}
-
 		response = new Response<Locale>();
 		response.setData(locale);
 		return response;
