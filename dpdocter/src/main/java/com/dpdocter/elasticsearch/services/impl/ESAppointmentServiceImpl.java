@@ -295,7 +295,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (response.size() >= 50)
 						break;
 					AppointmentSearchResponse appointmentSearchResponse = new AppointmentSearchResponse();
-					appointmentSearchResponse.setId(esUserLocaleDocument.getLocaleId());
+					appointmentSearchResponse.setId(esUserLocaleDocument.getId());
 					appointmentSearchResponse.setResponse(esUserLocaleDocument.getLocaleName());
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.PHARMACY);
 					response.add(appointmentSearchResponse);
@@ -1013,11 +1013,11 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
 			}
 			if (pharmacyType != null && !pharmacyType.isEmpty()) {
-				for (int i = 0; i < pharmacyType.size(); i++){
+				for (int i = 0; i < pharmacyType.size(); i++) {
 					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
 					boolQueryBuilder.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType.get(i).toUpperCase()));
 				}
-				
+
 			}
 
 			if (maxTime == 0) {
