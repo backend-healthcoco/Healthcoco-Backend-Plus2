@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 
 import com.dpdocter.enums.InvoiceItemType;
@@ -28,6 +30,17 @@ public class InvoiceItem {
 	private Tax tax;
 
 	private Double finalCost = 0.0;
+	
+	public List<TreatmentFields> getTreatmentFields() {
+		return treatmentFields;
+	}
+
+	public void setTreatmentFields(List<TreatmentFields> treatmentFields) {
+		this.treatmentFields = treatmentFields;
+	}
+
+	private List<TreatmentFields> treatmentFields;
+	
 
 	public ObjectId getItemId() {
 		return itemId;

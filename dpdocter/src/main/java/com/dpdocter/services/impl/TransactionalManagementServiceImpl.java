@@ -1315,9 +1315,13 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private void checkPharmacy(ObjectId resourceId) {
 		try {
 			LocaleCollection localeCollection = localeRepository.findOne(resourceId);
-			UserCollection userCollection=userRepository.findAdminByMobileNumber(localeCollection.getContactNumber(), "PHARMACY");
-					
+			UserCollection userCollection = null;
 			if (localeCollection != null) {
+				userCollection = userRepository.findAdminByMobileNumber(localeCollection.getContactNumber(),
+						"PHARMACY");
+			}
+
+			if (localeCollection != null && userCollection != null) {
 				ESUserLocaleDocument esUserLocaleDocument = new ESUserLocaleDocument();
 				BeanUtil.map(userCollection, esUserLocaleDocument);
 				BeanUtil.map(localeCollection, esUserLocaleDocument);
