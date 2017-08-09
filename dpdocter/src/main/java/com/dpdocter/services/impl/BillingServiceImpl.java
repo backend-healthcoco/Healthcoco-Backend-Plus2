@@ -581,6 +581,8 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
+						
+						if(doctorPatientInvoiceCollection.getBalanceAmount() < 0.0)doctorPatientInvoiceCollection.setBalanceAmount(0.0);
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					} else {
@@ -591,6 +593,7 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
+						if(doctorPatientInvoiceCollection.getBalanceAmount() < 0.0)doctorPatientInvoiceCollection.setBalanceAmount(0.0);
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					}
