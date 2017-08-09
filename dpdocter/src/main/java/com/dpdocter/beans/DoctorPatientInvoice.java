@@ -28,12 +28,12 @@ public class DoctorPatientInvoice extends GenericCollection {
 
 	private double totalCost = 0.0;
 
-	private double oldTotalCost = this.totalCost;
-
 	private Tax totalTax;
 
 	private Double grandTotal = 0.0;
 
+	private Double oldGrantTotal = this.grandTotal;
+	
 	private Double usedAdvanceAmount = 0.0;
 
 	private Double refundAmount = 0.0;
@@ -182,12 +182,12 @@ public class DoctorPatientInvoice extends GenericCollection {
 		this.invoiceDate = invoiceDate;
 	}
 
-	public double getOldTotalCost() {
-		return oldTotalCost;
+	public Double getOldGrantTotal() {
+		return oldGrantTotal;
 	}
 
-	public void setOldTotalCost(double oldTotalCost) {
-		this.oldTotalCost = oldTotalCost;
+	public void setOldGrantTotal(Double oldGrantTotal) {
+		this.oldGrantTotal = oldGrantTotal;
 	}
 
 	@Override
@@ -195,9 +195,10 @@ public class DoctorPatientInvoice extends GenericCollection {
 		return "DoctorPatientInvoice [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", uniqueInvoiceId=" + uniqueInvoiceId
 				+ ", invoiceItems=" + invoiceItems + ", totalDiscount=" + totalDiscount + ", totalCost=" + totalCost
-				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", usedAdvanceAmount=" + usedAdvanceAmount
-				+ ", refundAmount=" + refundAmount + ", balanceAmount=" + balanceAmount + ", discarded=" + discarded
-				+ ", receiptIds=" + receiptIds + ", invoiceDate=" + invoiceDate + "]";
+				+ ", totalTax=" + totalTax + ", grandTotal=" + grandTotal + ", oldGrantTotal=" + oldGrantTotal
+				+ ", usedAdvanceAmount=" + usedAdvanceAmount + ", refundAmount=" + refundAmount + ", balanceAmount="
+				+ balanceAmount + ", discarded=" + discarded + ", receiptIds=" + receiptIds + ", invoiceDate="
+				+ invoiceDate + "]";
 	}
 
 }
