@@ -108,6 +108,7 @@ public class DoctorPatientInvoice extends GenericCollection {
 
 	public void setGrandTotal(Double grandTotal) {
 		this.grandTotal = grandTotal;
+		this.oldGrantTotal = grandTotal;
 	}
 
 	public Double getUsedAdvanceAmount() {
