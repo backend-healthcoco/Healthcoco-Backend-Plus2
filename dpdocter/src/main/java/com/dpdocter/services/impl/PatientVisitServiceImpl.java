@@ -1566,7 +1566,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			Boolean showNoOfChildren) {
 		ClinicalNotesCollection clinicalNotesCollection = null;
 		ClinicalNotesJasperDetails clinicalNotesJasperDetails = null;
-		Boolean showExamTitle = false;
+		Boolean showTitle = false;
 		try {
 			clinicalNotesCollection = clinicalNotesRepository.findOne(new ObjectId(clinicalNotesId));
 			if (clinicalNotesCollection != null) {
@@ -1653,7 +1653,10 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 
 						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
-						bmi = (bmi != null && !bmi.isEmpty() ? "BMI: " + bmi + " " + VitalSignsUnit.BMI.getUnit() : "");
+						bmi = (bmi != null && !bmi.isEmpty()
+								? "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3) + " "
+										+ VitalSignsUnit.BMI.getUnit()
+								: "");
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + bmi;
@@ -1662,7 +1665,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 						}
 
 						String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
-						bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa + " " + VitalSignsUnit.BSA.getUnit() : "");
+						bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3) + " " + VitalSignsUnit.BSA.getUnit() : "");
 						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + bsa;
@@ -1688,8 +1691,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails
 							.setProvisionalDiagnosis(clinicalNotesCollection.getProvisionalDiagnosis());
 
-					if (!isCustomPDF || showUSG)
+					if (!isCustomPDF || showUSG) {
 						clinicalNotesJasperDetails.setIndicationOfUSG(clinicalNotesCollection.getIndicationOfUSG());
+					}
 					clinicalNotesJasperDetails.setPv(clinicalNotesCollection.getPv());
 					clinicalNotesJasperDetails.setPa(clinicalNotesCollection.getPa());
 					clinicalNotesJasperDetails.setPs(clinicalNotesCollection.getPs());
@@ -1709,15 +1713,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setPcOralCavity(clinicalNotesCollection.getPcOralCavity());
 					clinicalNotesJasperDetails.setPcThroat(clinicalNotesCollection.getPcThroat());
 					clinicalNotesJasperDetails.setPcEars(clinicalNotesCollection.getPcEars());
+					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
+							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
+						parameters.put("Complaints", "Complaints :");
+						showTitle = true;
+					}
+					parameters.put("showPCTitle", showTitle);
+					showTitle = false;
 					if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
 						parameters.put("Examination", "Examination :");
-						showExamTitle = true;
+						showTitle = true;
 					}
-					parameters.put("showExamTitle", showExamTitle);
+					parameters.put("showExamTitle", showTitle);
 
 					if (clinicalNotesCollection.getLmp() != null && (!isCustomPDF || showLMP))
 						clinicalNotesJasperDetails

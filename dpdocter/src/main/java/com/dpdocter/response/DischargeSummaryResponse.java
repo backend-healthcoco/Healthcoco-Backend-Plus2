@@ -5,6 +5,7 @@ import java.util.Date;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 
@@ -54,6 +55,15 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String holter;
 	private String procedureNote;
 	private String doctorIncharge;
+	private VitalSigns vitalSigns;
+
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
 
 	public String getIndicationOfUSG() {
 		return indicationOfUSG;

@@ -57,6 +57,7 @@ import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.Range;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VisitedFor;
+import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -180,7 +181,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
 			dischargeSummaryCollection = new DischargeSummaryCollection();
 			if (dischargeSummary.getId() == null) {
-				
+
 				dischargeSummary.setCreatedTime(new Date());
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
@@ -191,7 +192,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())) {
 				oldDischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(dischargeSummary.getId()));
-				
+
 				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())) {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
@@ -245,9 +246,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			BeanUtil.map(dischargeSummaryCollection, response);
 			response.setPrescriptions(prescription);
 
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error while adding  discharge summary : " + e.getCause().getMessage());
 			throw new BusinessException(ServiceError.Unknown,
@@ -564,7 +563,106 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						}
 					}
 				}
+			if (dischargeSummaryCollection.getVitalSigns() != null) {
+				String vitalSigns = null;
 
+				String pulse = dischargeSummaryCollection.getVitalSigns().getPulse();
+				pulse = (pulse != null && !pulse.isEmpty()
+						? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(pulse))
+					vitalSigns = pulse;
+
+				String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
+				temp = (temp != null && !temp.isEmpty()
+						? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(temp)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + temp;
+					else
+						vitalSigns = temp;
+				}
+
+				String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
+				breathing = (breathing != null && !breathing.isEmpty()
+						? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+
+				if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + breathing;
+					else
+						vitalSigns = breathing;
+				}
+
+				String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
+				weight = (weight != null && !weight.isEmpty()
+						? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(temp)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + weight;
+					else
+						vitalSigns = weight;
+				}
+
+				String bloodPressure = "";
+				if (dischargeSummaryCollection.getVitalSigns().getBloodPressure() != null) {
+					String systolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getSystolic();
+					systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+
+					String diastolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getDiastolic();
+					diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+
+					if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+						bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
+								+ VitalSignsUnit.BLOODPRESSURE.getUnit();
+					if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+						if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+							vitalSigns = vitalSigns + ",  " + bloodPressure;
+						else
+							vitalSigns = bloodPressure;
+					}
+				}
+				String spo2 = dischargeSummaryCollection.getVitalSigns().getSpo2();
+				spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + spo2;
+					else
+						vitalSigns = spo2;
+				}
+				String height = dischargeSummaryCollection.getVitalSigns().getHeight();
+				height = (height != null && !height.isEmpty()
+						? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(height)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + height;
+					else
+						vitalSigns = spo2;
+				}
+
+				String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();
+				bmi = (bmi != null && !bmi.isEmpty() ? "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3)
+						+ " " + VitalSignsUnit.BMI.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + bmi;
+					else
+						vitalSigns = bmi;
+				}
+
+				String bsa = dischargeSummaryCollection.getVitalSigns().getBsa();
+				bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3)
+						+ " " + VitalSignsUnit.BSA.getUnit() : "");
+				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + bsa;
+					else
+						vitalSigns = bsa;
+				}
+				show=true;
+				parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+			} 
+			parameters.put("showVitalSign", show);
+			show=false;
 			parameters.put("prescriptionItems", prescriptionItems);
 			parameters.put("showIntructions", showIntructions);
 			parameters.put("showDirection", showDirection);
@@ -582,15 +680,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
 			show = true;
-			parameters.put("dOA",
-					"<b>Date of Admission:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+			parameters.put("dOA", "<b>Date of Admission:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
 		}
 		parameters.put("showDOA", show);
 		show = false;
 		if (dischargeSummaryCollection.getDischargeDate() != null) {
 			show = true;
-			parameters.put("dOD",
-					"<b>Date of Discharge:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+			parameters.put("dOD", "<b>Date of Discharge:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
 		}
 		parameters.put("showDOD", show);
 		show = false;

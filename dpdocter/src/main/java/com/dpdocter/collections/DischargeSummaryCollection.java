@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.PrescriptionAndAdvice;
+import com.dpdocter.beans.VitalSigns;
 import com.dpdocter.beans.WorkingHours;
 
 @Document(collection = "discharge_summary_cl")
@@ -112,7 +113,17 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String procedureNote;
 	@Field
 	private String doctorIncharge;
-	
+
+	@Field
+	private VitalSigns vitalSigns;
+
+	public VitalSigns getVitalSigns() {
+		return vitalSigns;
+	}
+
+	public void setVitalSigns(VitalSigns vitalSigns) {
+		this.vitalSigns = vitalSigns;
+	}
 
 	public String getDoctorIncharge() {
 		return doctorIncharge;

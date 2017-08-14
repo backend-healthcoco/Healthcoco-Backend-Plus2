@@ -991,10 +991,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				}
 			}
 
-			if (request.getPcNose() != null && !request.getPcNose().isEmpty()
-					&& request.getGlobalPCNose() != null) {
-				Set<String> customPCNoses = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcNose())),
+			if (request.getPcNose() != null && !request.getPcNose().isEmpty() && request.getGlobalPCNose() != null) {
+				Set<String> customPCNoses = compareGlobalElements(new HashSet<>(splitCSV(request.getPcNose())),
 						new HashSet<>(splitCSV(request.getGlobalPCNose())));
 				for (String customPCNose : customPCNoses) {
 
@@ -1008,9 +1006,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintNoseCollection.setCreatedBy(createdBy);
 					presentingComplaintNoseCollection.setCreatedTime(createdTime);
 					presentingComplaintNoseCollection.setId(null);
-					presentingComplaintNoseCollection = presentingComplaintNotesRepository.save(presentingComplaintNoseCollection);
-					transactionalManagementService.addResource(presentingComplaintNoseCollection.getId(), Resource.PC_NOSE,
-							false);
+					presentingComplaintNoseCollection = presentingComplaintNotesRepository
+							.save(presentingComplaintNoseCollection);
+					transactionalManagementService.addResource(presentingComplaintNoseCollection.getId(),
+							Resource.PC_NOSE, false);
 					ESPresentingComplaintNoseDocument esPresentingComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
 					BeanUtil.map(presentingComplaintNoseCollection, esPresentingComplaintNoseDocument);
 					esClinicalNotesService.addPCNose(esPresentingComplaintNoseDocument);
@@ -1018,8 +1017,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
-			
+
 			if (request.getPcOralCavity() != null && !request.getPcOralCavity().isEmpty()
 					&& request.getGlobalPCOralCavity() != null) {
 				Set<String> customPCOralCavities = compareGlobalElements(
@@ -1037,9 +1035,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralCavityCollection.setCreatedBy(createdBy);
 					presentingComplaintOralCavityCollection.setCreatedTime(createdTime);
 					presentingComplaintOralCavityCollection.setId(null);
-					presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
-					transactionalManagementService.addResource(presentingComplaintOralCavityCollection.getId(), Resource.PC_ORAL_CAVITY,
-							false);
+					presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
+							.save(presentingComplaintOralCavityCollection);
+					transactionalManagementService.addResource(presentingComplaintOralCavityCollection.getId(),
+							Resource.PC_ORAL_CAVITY, false);
 					ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
 					BeanUtil.map(presentingComplaintOralCavityCollection, esPresentingComplaintEarsDocument);
 					esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
@@ -1047,11 +1046,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
-			if (request.getPcEars() != null && !request.getPcEars().isEmpty()
-					&& request.getGlobalPCEars() != null) {
-				Set<String> customPCEars = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcNose())),
+
+			if (request.getPcEars() != null && !request.getPcEars().isEmpty() && request.getGlobalPCEars() != null) {
+				Set<String> customPCEars = compareGlobalElements(new HashSet<>(splitCSV(request.getPcNose())),
 						new HashSet<>(splitCSV(request.getPcNose())));
 				for (String customPCEar : customPCEars) {
 
@@ -1065,9 +1062,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintEarsCollection.setCreatedBy(createdBy);
 					presentingComplaintEarsCollection.setCreatedTime(createdTime);
 					presentingComplaintEarsCollection.setId(null);
-					presentingComplaintEarsCollection = presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
-					transactionalManagementService.addResource(presentingComplaintEarsCollection.getId(), Resource.PC_EARS,
-							false);
+					presentingComplaintEarsCollection = presentingComplaintEarsRepository
+							.save(presentingComplaintEarsCollection);
+					transactionalManagementService.addResource(presentingComplaintEarsCollection.getId(),
+							Resource.PC_EARS, false);
 					ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
 					BeanUtil.map(presentingComplaintEarsCollection, esPresentingComplaintEarsDocument);
 					esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
@@ -1075,11 +1073,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
 					&& request.getGlobalPCThroat() != null) {
-				Set<String> customPCOralThroats = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcThroat())),
+				Set<String> customPCOralThroats = compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())),
 						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
 				for (String customPCOralThroat : customPCOralThroats) {
 
@@ -1093,9 +1090,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
 					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
 					presentingComplaintOralThroatCollection.setId(null);
-					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
-					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
-							false);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
+							.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(),
+							Resource.PC_THROAT, false);
 					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
 					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -1103,11 +1101,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
 					&& request.getGlobalPCThroat() != null) {
-				Set<String> customPCOralThroats = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcThroat())),
+				Set<String> customPCOralThroats = compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())),
 						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
 				for (String customPCOralThroat : customPCOralThroats) {
 
@@ -1121,9 +1118,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
 					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
 					presentingComplaintOralThroatCollection.setId(null);
-					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
-					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
-							false);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
+							.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(),
+							Resource.PC_THROAT, false);
 					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
 					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -1131,11 +1129,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
 					&& request.getGlobalPCThroat() != null) {
-				Set<String> customPCOralThroats = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcThroat())),
+				Set<String> customPCOralThroats = compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())),
 						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
 				for (String customPCOralThroat : customPCOralThroats) {
 
@@ -1149,9 +1146,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
 					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
 					presentingComplaintOralThroatCollection.setId(null);
-					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
-					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
-							false);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
+							.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(),
+							Resource.PC_THROAT, false);
 					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
 					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -1159,11 +1157,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getNeckExam() != null && !request.getNeckExam().isEmpty()
 					&& request.getGlobalNeckExam() != null) {
-				Set<String> customNeckExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getNeckExam())),
+				Set<String> customNeckExams = compareGlobalElements(new HashSet<>(splitCSV(request.getNeckExam())),
 						new HashSet<>(splitCSV(request.getGlobalNeckExam())));
 				for (String customNeckExam : customNeckExams) {
 
@@ -1187,11 +1184,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getNoseExam() != null && !request.getNoseExam().isEmpty()
 					&& request.getGlobalNoseExam() != null) {
-				Set<String> customNoseExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getNoseExam())),
+				Set<String> customNoseExams = compareGlobalElements(new HashSet<>(splitCSV(request.getNoseExam())),
 						new HashSet<>(splitCSV(request.getGlobalNoseExam())));
 				for (String customNoseExam : customNoseExams) {
 
@@ -1215,11 +1211,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getEarsExam() != null && !request.getEarsExam().isEmpty()
 					&& request.getGlobalEarsExam() != null) {
-				Set<String> customEarsExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getEarsExam())),
+				Set<String> customEarsExams = compareGlobalElements(new HashSet<>(splitCSV(request.getEarsExam())),
 						new HashSet<>(splitCSV(request.getGlobalEarsExam())));
 				for (String customEarsExam : customEarsExams) {
 
@@ -1243,11 +1238,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getEarsExam() != null && !request.getEarsExam().isEmpty()
 					&& request.getGlobalEarsExam() != null) {
-				Set<String> customEarsExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getEarsExam())),
+				Set<String> customEarsExams = compareGlobalElements(new HashSet<>(splitCSV(request.getEarsExam())),
 						new HashSet<>(splitCSV(request.getGlobalEarsExam())));
 				for (String customEarsExam : customEarsExams) {
 
@@ -1271,7 +1265,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getIndirectLarygoscopyExam() != null && !request.getIndirectLarygoscopyExam().isEmpty()
 					&& request.getGlobalIndirectLarygoscopyExam() != null) {
 				Set<String> customIndirectLagyroScopyExams = compareGlobalElements(
@@ -1289,9 +1283,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					indirectLarygoscopyExaminationCollection.setCreatedBy(createdBy);
 					indirectLarygoscopyExaminationCollection.setCreatedTime(createdTime);
 					indirectLarygoscopyExaminationCollection.setId(null);
-					indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
-					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(), Resource.INDIRECT_LARYGOSCOPY_EXAM,
-							false);
+					indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
+							.save(indirectLarygoscopyExaminationCollection);
+					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(),
+							Resource.INDIRECT_LARYGOSCOPY_EXAM, false);
 					ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
 					BeanUtil.map(indirectLarygoscopyExaminationCollection, esIndirectLarygoscopyExaminationDocument);
 					esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
@@ -1299,7 +1294,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getOralCavityThroatExam() != null && !request.getOralCavityThroatExam().isEmpty()
 					&& request.getGlobalOralCavityThroatExam() != null) {
 				Set<String> customOralCavityThroatExams = compareGlobalElements(
@@ -1317,9 +1312,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					oralCavityAndThroatExaminationCollection.setCreatedBy(createdBy);
 					oralCavityAndThroatExaminationCollection.setCreatedTime(createdTime);
 					oralCavityAndThroatExaminationCollection.setId(null);
-					oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
-					transactionalManagementService.addResource(oralCavityAndThroatExaminationCollection.getId(), Resource.ORAL_CAVITY_THROAT_EXAM,
-							false);
+					oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository
+							.save(oralCavityAndThroatExaminationCollection);
+					transactionalManagementService.addResource(oralCavityAndThroatExaminationCollection.getId(),
+							Resource.ORAL_CAVITY_THROAT_EXAM, false);
 					ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
 					BeanUtil.map(oralCavityAndThroatExaminationCollection, esOralCavityAndThroatExaminationDocument);
 					esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
@@ -1327,7 +1323,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			//
 			// clinicalNotesCollection.setComplaints(complaintIds);
 			// clinicalNotesCollection.setInvestigations(investigationIds);
@@ -2299,11 +2295,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
-			if (request.getPcNose() != null && !request.getPcNose().isEmpty()
-					&& request.getGlobalPCNose() != null) {
-				Set<String> customPCNoses = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcNose())),
+
+			if (request.getPcNose() != null && !request.getPcNose().isEmpty() && request.getGlobalPCNose() != null) {
+				Set<String> customPCNoses = compareGlobalElements(new HashSet<>(splitCSV(request.getPcNose())),
 						new HashSet<>(splitCSV(request.getGlobalPCNose())));
 				for (String customPCNose : customPCNoses) {
 
@@ -2317,9 +2311,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintNoseCollection.setCreatedBy(createdBy);
 					presentingComplaintNoseCollection.setCreatedTime(createdTime);
 					presentingComplaintNoseCollection.setId(null);
-					presentingComplaintNoseCollection = presentingComplaintNotesRepository.save(presentingComplaintNoseCollection);
-					transactionalManagementService.addResource(presentingComplaintNoseCollection.getId(), Resource.PC_NOSE,
-							false);
+					presentingComplaintNoseCollection = presentingComplaintNotesRepository
+							.save(presentingComplaintNoseCollection);
+					transactionalManagementService.addResource(presentingComplaintNoseCollection.getId(),
+							Resource.PC_NOSE, false);
 					ESPresentingComplaintNoseDocument esPresentingComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
 					BeanUtil.map(presentingComplaintNoseCollection, esPresentingComplaintNoseDocument);
 					esClinicalNotesService.addPCNose(esPresentingComplaintNoseDocument);
@@ -2327,8 +2322,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
-			
+
 			if (request.getPcOralCavity() != null && !request.getPcOralCavity().isEmpty()
 					&& request.getGlobalPCOralCavity() != null) {
 				Set<String> customPCOralCavities = compareGlobalElements(
@@ -2346,9 +2340,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralCavityCollection.setCreatedBy(createdBy);
 					presentingComplaintOralCavityCollection.setCreatedTime(createdTime);
 					presentingComplaintOralCavityCollection.setId(null);
-					presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.save(presentingComplaintOralCavityCollection);
-					transactionalManagementService.addResource(presentingComplaintOralCavityCollection.getId(), Resource.PC_ORAL_CAVITY,
-							false);
+					presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
+							.save(presentingComplaintOralCavityCollection);
+					transactionalManagementService.addResource(presentingComplaintOralCavityCollection.getId(),
+							Resource.PC_ORAL_CAVITY, false);
 					ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
 					BeanUtil.map(presentingComplaintOralCavityCollection, esPresentingComplaintEarsDocument);
 					esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
@@ -2356,11 +2351,9 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
-			if (request.getPcEars() != null && !request.getPcEars().isEmpty()
-					&& request.getGlobalPCEars() != null) {
-				Set<String> customPCEars = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcNose())),
+
+			if (request.getPcEars() != null && !request.getPcEars().isEmpty() && request.getGlobalPCEars() != null) {
+				Set<String> customPCEars = compareGlobalElements(new HashSet<>(splitCSV(request.getPcNose())),
 						new HashSet<>(splitCSV(request.getPcNose())));
 				for (String customPCEar : customPCEars) {
 
@@ -2374,9 +2367,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintEarsCollection.setCreatedBy(createdBy);
 					presentingComplaintEarsCollection.setCreatedTime(createdTime);
 					presentingComplaintEarsCollection.setId(null);
-					presentingComplaintEarsCollection = presentingComplaintEarsRepository.save(presentingComplaintEarsCollection);
-					transactionalManagementService.addResource(presentingComplaintEarsCollection.getId(), Resource.PC_EARS,
-							false);
+					presentingComplaintEarsCollection = presentingComplaintEarsRepository
+							.save(presentingComplaintEarsCollection);
+					transactionalManagementService.addResource(presentingComplaintEarsCollection.getId(),
+							Resource.PC_EARS, false);
 					ESPresentingComplaintEarsDocument esPresentingComplaintEarsDocument = new ESPresentingComplaintEarsDocument();
 					BeanUtil.map(presentingComplaintEarsCollection, esPresentingComplaintEarsDocument);
 					esClinicalNotesService.addPCEars(esPresentingComplaintEarsDocument);
@@ -2384,11 +2378,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
 					&& request.getGlobalPCThroat() != null) {
-				Set<String> customPCOralThroats = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcThroat())),
+				Set<String> customPCOralThroats = compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())),
 						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
 				for (String customPCOralThroat : customPCOralThroats) {
 
@@ -2402,9 +2395,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
 					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
 					presentingComplaintOralThroatCollection.setId(null);
-					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
-					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
-							false);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
+							.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(),
+							Resource.PC_THROAT, false);
 					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
 					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -2412,11 +2406,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
 					&& request.getGlobalPCThroat() != null) {
-				Set<String> customPCOralThroats = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcThroat())),
+				Set<String> customPCOralThroats = compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())),
 						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
 				for (String customPCOralThroat : customPCOralThroats) {
 
@@ -2430,9 +2423,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
 					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
 					presentingComplaintOralThroatCollection.setId(null);
-					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
-					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
-							false);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
+							.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(),
+							Resource.PC_THROAT, false);
 					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
 					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -2440,11 +2434,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getPcThroat() != null && !request.getPcThroat().isEmpty()
 					&& request.getGlobalPCThroat() != null) {
-				Set<String> customPCOralThroats = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getPcThroat())),
+				Set<String> customPCOralThroats = compareGlobalElements(new HashSet<>(splitCSV(request.getPcThroat())),
 						new HashSet<>(splitCSV(request.getGlobalPCThroat())));
 				for (String customPCOralThroat : customPCOralThroats) {
 
@@ -2458,9 +2451,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					presentingComplaintOralThroatCollection.setCreatedBy(createdBy);
 					presentingComplaintOralThroatCollection.setCreatedTime(createdTime);
 					presentingComplaintOralThroatCollection.setId(null);
-					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository.save(presentingComplaintOralThroatCollection);
-					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(), Resource.PC_THROAT,
-							false);
+					presentingComplaintOralThroatCollection = presentingComplaintThroatRepository
+							.save(presentingComplaintOralThroatCollection);
+					transactionalManagementService.addResource(presentingComplaintOralThroatCollection.getId(),
+							Resource.PC_THROAT, false);
 					ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 					BeanUtil.map(presentingComplaintOralThroatCollection, esPresentingComplaintThroatDocument);
 					esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -2468,11 +2462,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getNeckExam() != null && !request.getNeckExam().isEmpty()
 					&& request.getGlobalNeckExam() != null) {
-				Set<String> customNeckExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getNeckExam())),
+				Set<String> customNeckExams = compareGlobalElements(new HashSet<>(splitCSV(request.getNeckExam())),
 						new HashSet<>(splitCSV(request.getGlobalNeckExam())));
 				for (String customNeckExam : customNeckExams) {
 
@@ -2496,11 +2489,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getNoseExam() != null && !request.getNoseExam().isEmpty()
 					&& request.getGlobalNoseExam() != null) {
-				Set<String> customNoseExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getNoseExam())),
+				Set<String> customNoseExams = compareGlobalElements(new HashSet<>(splitCSV(request.getNoseExam())),
 						new HashSet<>(splitCSV(request.getGlobalNoseExam())));
 				for (String customNoseExam : customNoseExams) {
 
@@ -2524,11 +2516,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getEarsExam() != null && !request.getEarsExam().isEmpty()
 					&& request.getGlobalEarsExam() != null) {
-				Set<String> customEarsExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getEarsExam())),
+				Set<String> customEarsExams = compareGlobalElements(new HashSet<>(splitCSV(request.getEarsExam())),
 						new HashSet<>(splitCSV(request.getGlobalEarsExam())));
 				for (String customEarsExam : customEarsExams) {
 
@@ -2552,11 +2543,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getEarsExam() != null && !request.getEarsExam().isEmpty()
 					&& request.getGlobalEarsExam() != null) {
-				Set<String> customEarsExams = compareGlobalElements(
-						new HashSet<>(splitCSV(request.getEarsExam())),
+				Set<String> customEarsExams = compareGlobalElements(new HashSet<>(splitCSV(request.getEarsExam())),
 						new HashSet<>(splitCSV(request.getGlobalEarsExam())));
 				for (String customEarsExam : customEarsExams) {
 
@@ -2580,7 +2570,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getIndirectLarygoscopyExam() != null && !request.getIndirectLarygoscopyExam().isEmpty()
 					&& request.getGlobalIndirectLarygoscopyExam() != null) {
 				Set<String> customIndirectLagyroScopyExams = compareGlobalElements(
@@ -2598,9 +2588,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					indirectLarygoscopyExaminationCollection.setCreatedBy(createdBy);
 					indirectLarygoscopyExaminationCollection.setCreatedTime(createdTime);
 					indirectLarygoscopyExaminationCollection.setId(null);
-					indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.save(indirectLarygoscopyExaminationCollection);
-					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(), Resource.INDIRECT_LARYGOSCOPY_EXAM,
-							false);
+					indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
+							.save(indirectLarygoscopyExaminationCollection);
+					transactionalManagementService.addResource(indirectLarygoscopyExaminationCollection.getId(),
+							Resource.INDIRECT_LARYGOSCOPY_EXAM, false);
 					ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
 					BeanUtil.map(indirectLarygoscopyExaminationCollection, esIndirectLarygoscopyExaminationDocument);
 					esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
@@ -2608,7 +2599,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-			
+
 			if (request.getOralCavityThroatExam() != null && !request.getOralCavityThroatExam().isEmpty()
 					&& request.getGlobalOralCavityThroatExam() != null) {
 				Set<String> customOralCavityThroatExams = compareGlobalElements(
@@ -2626,9 +2617,10 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 					oralCavityAndThroatExaminationCollection.setCreatedBy(createdBy);
 					oralCavityAndThroatExaminationCollection.setCreatedTime(createdTime);
 					oralCavityAndThroatExaminationCollection.setId(null);
-					oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.save(oralCavityAndThroatExaminationCollection);
-					transactionalManagementService.addResource(oralCavityAndThroatExaminationCollection.getId(), Resource.ORAL_CAVITY_THROAT_EXAM,
-							false);
+					oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository
+							.save(oralCavityAndThroatExaminationCollection);
+					transactionalManagementService.addResource(oralCavityAndThroatExaminationCollection.getId(),
+							Resource.ORAL_CAVITY_THROAT_EXAM, false);
 					ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
 					BeanUtil.map(oralCavityAndThroatExaminationCollection, esOralCavityAndThroatExaminationDocument);
 					esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
@@ -4263,14 +4255,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalNeckExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case NOSE_EXAM: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -4281,14 +4274,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalNoseExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case PC_ORAL_CAVITY: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -4307,7 +4301,6 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 			break;
 		}
-		
 
 		case EARS_EXAM: {
 			switch (Range.valueOf(range.toUpperCase())) {
@@ -4319,14 +4312,15 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getCustomEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalEarsExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case ORAL_CAVITY_THROAT_EXAM: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -4334,17 +4328,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalOralCavityAndThroat(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomOralCavityAndThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomOralCavityAndThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalOralCavityAndThroatExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalOralCavityAndThroatExam(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-		
+
 		case INDIRECT_LAGYROSCOPY_EXAM: {
 			switch (Range.valueOf(range.toUpperCase())) {
 
@@ -4352,17 +4348,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				response = getGlobalIndirectLarygoscopyExam(page, size, doctorId, updatedTime, discarded);
 				break;
 			case CUSTOM:
-				response = getCustomIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime,
+						discarded);
 				break;
 			case BOTH:
-				response = getCustomGlobalIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				response = getCustomGlobalIndirectLarygoscopyExam(page, size, doctorId, locationId, hospitalId,
+						updatedTime, discarded);
 				break;
 			default:
 				break;
 			}
 			break;
 		}
-
 
 		}
 		return response;
@@ -5154,7 +5151,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-		Boolean showExamTitle = false;
+
+		Boolean showTitle = false;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -5185,15 +5183,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("menstrualHistory", clinicalNotesCollection.getMenstrualHistory());
 		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
 		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
+		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
+			parameters.put("Complaints", "Complaints :");
+			showTitle = true;
+		}
+		parameters.put("showPCTitle", showTitle);
+		showTitle = false;
 		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
 			parameters.put("Examination", "Examination :");
-			showExamTitle = true;
+			showTitle = true;
 		}
-		parameters.put("showExamTitle", showExamTitle);
+		parameters.put("showExamTitle", showTitle);
 
 		if (!isCustomPDF || showUSG)
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
@@ -5298,7 +5305,37 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				else
 					vitalSigns = spo2;
 			}
+			String height = clinicalNotesCollection.getVitalSigns().getHeight();
+			height = (height != null && !height.isEmpty()
+					? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(height)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + height;
+				else
+					vitalSigns = spo2;
+			}
 
+			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
+			bmi = (bmi != null && !bmi.isEmpty()
+					? "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3) + " "
+							+ VitalSignsUnit.BMI.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bmi;
+				else
+					vitalSigns = bmi;
+			}
+
+			String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
+			bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3) + " " + VitalSignsUnit.BSA.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bsa;
+				else
+					vitalSigns = bsa;
+			}
+			
 			parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
 		} else
 			parameters.put("vitalSigns", null);
@@ -7723,16 +7760,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public PresentingComplaintNose deletePCNose(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
 		PresentingComplaintNose response = null;
 		try {
-			PresentingComplaintNoseCollection presentingComplaintNoseCollection = presentingComplaintNotesRepository.findOne(new ObjectId(id));
+			PresentingComplaintNoseCollection presentingComplaintNoseCollection = presentingComplaintNotesRepository
+					.findOne(new ObjectId(id));
 			if (presentingComplaintNoseCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintNoseCollection.getDoctorId(),
-						presentingComplaintNoseCollection.getHospitalId(), presentingComplaintNoseCollection.getLocationId())) {
+						presentingComplaintNoseCollection.getHospitalId(),
+						presentingComplaintNoseCollection.getLocationId())) {
 					if (presentingComplaintNoseCollection.getDoctorId().toString().equals(doctorId)
 							&& presentingComplaintNoseCollection.getHospitalId().toString().equals(hospitalId)
 							&& presentingComplaintNoseCollection.getLocationId().toString().equals(locationId)) {
@@ -7766,17 +7805,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
-	
+
 	@Override
 	public PresentingComplaintEars deletePCEars(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
 		PresentingComplaintEars response = null;
 		try {
-			PresentingComplaintEarsCollection presentingComplaintEarsCollection = presentingComplaintEarsRepository.findOne(new ObjectId(id));
+			PresentingComplaintEarsCollection presentingComplaintEarsCollection = presentingComplaintEarsRepository
+					.findOne(new ObjectId(id));
 			if (presentingComplaintEarsCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintEarsCollection.getDoctorId(),
-						presentingComplaintEarsCollection.getHospitalId(), presentingComplaintEarsCollection.getLocationId())) {
+						presentingComplaintEarsCollection.getHospitalId(),
+						presentingComplaintEarsCollection.getLocationId())) {
 					if (presentingComplaintEarsCollection.getDoctorId().toString().equals(doctorId)
 							&& presentingComplaintEarsCollection.getHospitalId().toString().equals(hospitalId)
 							&& presentingComplaintEarsCollection.getLocationId().toString().equals(locationId)) {
@@ -7810,16 +7850,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
-	public PresentingComplaintOralCavity deletePCOralCavity(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public PresentingComplaintOralCavity deletePCOralCavity(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded) {
 		PresentingComplaintOralCavity response = null;
 		try {
-			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository.findOne(new ObjectId(id));
+			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
+					.findOne(new ObjectId(id));
 			if (presentingComplaintOralCavityCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintOralCavityCollection.getDoctorId(),
-						presentingComplaintOralCavityCollection.getHospitalId(), presentingComplaintOralCavityCollection.getLocationId())) {
+						presentingComplaintOralCavityCollection.getHospitalId(),
+						presentingComplaintOralCavityCollection.getLocationId())) {
 					if (presentingComplaintOralCavityCollection.getDoctorId().toString().equals(doctorId)
 							&& presentingComplaintOralCavityCollection.getHospitalId().toString().equals(hospitalId)
 							&& presentingComplaintOralCavityCollection.getLocationId().toString().equals(locationId)) {
@@ -7853,16 +7895,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public PresentingComplaintThroat deletePCThroat(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
 		PresentingComplaintThroat response = null;
 		try {
-			PresentingComplaintThroatCollection presentingComplaintThroatCollection = presentingComplaintThroatRepository.findOne(new ObjectId(id));
+			PresentingComplaintThroatCollection presentingComplaintThroatCollection = presentingComplaintThroatRepository
+					.findOne(new ObjectId(id));
 			if (presentingComplaintThroatCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(presentingComplaintThroatCollection.getDoctorId(),
-						presentingComplaintThroatCollection.getHospitalId(), presentingComplaintThroatCollection.getLocationId())) {
+						presentingComplaintThroatCollection.getHospitalId(),
+						presentingComplaintThroatCollection.getLocationId())) {
 					if (presentingComplaintThroatCollection.getDoctorId().toString().equals(doctorId)
 							&& presentingComplaintThroatCollection.getHospitalId().toString().equals(hospitalId)
 							&& presentingComplaintThroatCollection.getLocationId().toString().equals(locationId)) {
@@ -7896,7 +7940,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public NeckExamination deleteNeckExam(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
@@ -7939,7 +7983,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public NoseExamination deleteNoseExam(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
@@ -7982,16 +8026,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
-	public OralCavityAndThroatExamination deleteOralCavityThroatExam(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public OralCavityAndThroatExamination deleteOralCavityThroatExam(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded) {
 		OralCavityAndThroatExamination response = null;
 		try {
-			OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository.findOne(new ObjectId(id));
+			OralCavityAndThroatExaminationCollection oralCavityAndThroatExaminationCollection = oralCavityThroatExaminationRepository
+					.findOne(new ObjectId(id));
 			if (oralCavityAndThroatExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(oralCavityAndThroatExaminationCollection.getDoctorId(),
-						oralCavityAndThroatExaminationCollection.getHospitalId(), oralCavityAndThroatExaminationCollection.getLocationId())) {
+						oralCavityAndThroatExaminationCollection.getHospitalId(),
+						oralCavityAndThroatExaminationCollection.getLocationId())) {
 					if (oralCavityAndThroatExaminationCollection.getDoctorId().toString().equals(doctorId)
 							&& oralCavityAndThroatExaminationCollection.getHospitalId().toString().equals(hospitalId)
 							&& oralCavityAndThroatExaminationCollection.getLocationId().toString().equals(locationId)) {
@@ -8025,7 +8071,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
 	public EarsExamination deleteEarsExam(String id, String doctorId, String locationId, String hospitalId,
 			Boolean discarded) {
@@ -8068,16 +8114,18 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 
 	}
-	
+
 	@Override
-	public IndirectLarygoscopyExamination deleteIndirectLarygoscopyExam(String id, String doctorId, String locationId, String hospitalId,
-			Boolean discarded) {
+	public IndirectLarygoscopyExamination deleteIndirectLarygoscopyExam(String id, String doctorId, String locationId,
+			String hospitalId, Boolean discarded) {
 		IndirectLarygoscopyExamination response = null;
 		try {
-			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository.findOne(new ObjectId(id));
+			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
+					.findOne(new ObjectId(id));
 			if (indirectLarygoscopyExaminationCollection != null) {
 				if (!DPDoctorUtils.anyStringEmpty(indirectLarygoscopyExaminationCollection.getDoctorId(),
-						indirectLarygoscopyExaminationCollection.getHospitalId(), indirectLarygoscopyExaminationCollection.getLocationId())) {
+						indirectLarygoscopyExaminationCollection.getHospitalId(),
+						indirectLarygoscopyExaminationCollection.getLocationId())) {
 					if (indirectLarygoscopyExaminationCollection.getDoctorId().toString().equals(doctorId)
 							&& indirectLarygoscopyExaminationCollection.getHospitalId().toString().equals(hospitalId)
 							&& indirectLarygoscopyExaminationCollection.getLocationId().toString().equals(locationId)) {

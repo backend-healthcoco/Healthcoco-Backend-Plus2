@@ -838,8 +838,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId patientObjectId = null, doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
-
-			patientObjectId = new ObjectId(patientId);
+			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
+				patientObjectId = new ObjectId(patientId);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
