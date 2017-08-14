@@ -3,9 +3,17 @@ package com.dpdocter.beans;
 import java.util.Date;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import com.dpdocter.enums.QueueStatus;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PatientQueue {
 
+	private String id;
+    
+	private Integer count; 
+    
+    private QueueStatus status = QueueStatus.SCHEDULED;
+    
     private String doctorId;
 
     private String locationId;
@@ -76,9 +84,34 @@ public class PatientQueue {
 	this.appointmentId = appointmentId;
     }
 
-    @Override
-    public String toString() {
-	return "PatientQueue [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patient=" + patient + ", date=" + date
-		+ ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + "]";
-    }
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public QueueStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueueStatus status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientQueue [id=" + id + ", count=" + count + ", status=" + status + ", doctorId=" + doctorId
+				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patient=" + patient + ", date="
+				+ date + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + "]";
+	}
 }

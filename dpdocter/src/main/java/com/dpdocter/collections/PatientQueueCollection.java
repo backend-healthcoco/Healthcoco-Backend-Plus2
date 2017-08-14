@@ -4,11 +4,14 @@ import java.util.Date;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.dpdocter.enums.QueueStatus;
 
 @Document(collection = "patient_queue_cl")
 @CompoundIndexes({
@@ -46,6 +49,15 @@ public class PatientQueueCollection extends GenericCollection {
     @Field
     private Boolean discarded = false;
 
+    @Field
+    private QueueStatus status = QueueStatus.SCHEDULED;
+    
+    @Field
+    private Integer waitingTime = 0;//in seconds
+    
+    @Field
+    private Integer engagedTime = 0;//in seconds
+    
     public ObjectId getId() {
 	return id;
     }
@@ -126,10 +138,35 @@ public class PatientQueueCollection extends GenericCollection {
 	this.discarded = discarded;
     }
 
-    @Override
-    public String toString() {
-	return "PatientQueueCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patientId="
-		+ patientId + ", date=" + date + ", startTime=" + startTime + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + ", discarded="
-		+ discarded + "]";
-    }
+	public QueueStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueueStatus status) {
+		this.status = status;
+	}
+
+	public Integer getWaitingTime() {
+		return waitingTime;
+	}
+
+	public void setWaitingTime(Integer waitingTime) {
+		this.waitingTime = waitingTime;
+	}
+
+	public Integer getEngagedTime() {
+		return engagedTime;
+	}
+
+	public void setEngagedTime(Integer engagedTime) {
+		this.engagedTime = engagedTime;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientQueueCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", date=" + date + ", startTime="
+				+ startTime + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + ", discarded="
+				+ discarded + ", status=" + status + ", waitingTime=" + waitingTime + ", engagedTime=" + engagedTime + "]";
+	}
 }

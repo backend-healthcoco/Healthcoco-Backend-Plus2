@@ -36,6 +36,8 @@ import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.response.LocationWithAppointmentCount;
+import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.MailService;
@@ -345,14 +347,14 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_QUEUE, notes = PathProxy.AppointmentUrls.GET_PATIENT_QUEUE)
 	public Response<PatientQueue> getPatientQueue(@PathParam(value = "doctorId") String doctorId,
-			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId)
+			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId, @QueryParam(value = "status") String status)
 			throws MessagingException {
 		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
 			mailService
 					.sendExceptionMail("Invalid input :: DoctorId, LocationId, HospitalId, PatientId cannot be null");
 			throw new BusinessException(ServiceError.InvalidInput, "DoctorId, LocationId, HospitalId cannot be null");
 		}
-		List<PatientQueue> patientQueues = appointmentService.getPatientQueue(doctorId, locationId, hospitalId);
+		List<PatientQueue> patientQueues = appointmentService.getPatientQueue(doctorId, locationId, hospitalId, status);
 
 		Response<PatientQueue> response = new Response<PatientQueue>();
 		response.setDataList(patientQueues);
@@ -375,4 +377,57 @@ public class AppointmentApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.AppointmentUrls.NO_OF_PATIENT_IN_QUEUE)
+	@GET
+	@ApiOperation(value = "NO_OF_PATIENT_IN_QUEUE", notes = "NO_OF_PATIENT_IN_QUEUE")
+	public Response<LocationWithPatientQueueDetails> getNoOfPatientInQueue(@PathParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId)
+			throws MessagingException {
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			logger.warn("Invalid Input");
+			mailService.sendExceptionMail("Invalid input :: Location Id cannot be null");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		LocationWithPatientQueueDetails locationWithPatientQueueDetails = appointmentService.getNoOfPatientInQueue(locationId, doctorId);
+		Response<LocationWithPatientQueueDetails> response = new Response<LocationWithPatientQueueDetails>();
+		response.setData(locationWithPatientQueueDetails);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AppointmentUrls.GET_DOCTORS)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_DOCTORS, notes = PathProxy.AppointmentUrls.GET_DOCTORS)
+	public Response<LocationWithAppointmentCount> getDoctorsWithAppointmentCount(@PathParam(value = "locationId") String locationId,
+			@QueryParam(value = "role") String role, @DefaultValue("false") @QueryParam(value = "active") Boolean active, 
+			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to) throws MessagingException {
+
+		if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			logger.warn("Location Id cannot be empty");
+			mailService.sendExceptionMail("Invalid input :: Location Id cannot be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "Location Id cannot be empty");
+		}
+		LocationWithAppointmentCount locationWithAppointmentCount = appointmentService.getDoctorsWithAppointmentCount(locationId, role, active, from, to);
+		Response<LocationWithAppointmentCount> response = new Response<LocationWithAppointmentCount>();
+		response.setData(locationWithAppointmentCount);
+		return response;
+
+	}
+	
+	@Path(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_QUEUE)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_QUEUE, notes = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_QUEUE)
+	public Response<Boolean> changeStatusInQueue(@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId, @PathParam(value = "patientId") String patientId,
+			@PathParam(value = "status") String status) throws MessagingException {
+
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId, status)) {
+			logger.warn("DoctorId, Location Id, Hospital Id, Patient Id, status cannot be empty");
+			mailService.sendExceptionMail("Invalid input :: DoctorId, Location Id, Hospital Id, Patient Id, status cannot be empty");
+			throw new BusinessException(ServiceError.InvalidInput, "DoctorId, Location Id, Hospital Id, Patient Id, status cannot be empty");
+		}
+		Boolean changeStatus = appointmentService.changeStatusInQueue(doctorId, locationId, hospitalId, patientId, status);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(changeStatus);
+		return response;
+
+	}
 }

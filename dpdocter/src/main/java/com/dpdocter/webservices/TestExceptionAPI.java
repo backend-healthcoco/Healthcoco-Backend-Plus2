@@ -71,7 +71,7 @@ public class TestExceptionAPI {
 
 	@GET
 	@Path("/notification/{id}")
-	public void testNotification(@PathParam("id") final Integer id) {
+	public Boolean testNotification(@PathParam("id") final Integer id) {
 		final String patientToken = "ex_B-ybBKNo:APA91bFuB36OhqqC4DpLfk77qirsPDW-x4-W-ePHikTPa0iTAV0_TV3H9Y07S42N9Yo4FBMt3EMN-iJtBhxuct840KTuRRoGReajh8L2WRx55yNnW45-arSeco2zsYEZ9aIsaYvuM9V3";
 		final String doctorToken = "dQm3y7MATVI:APA91bEiyFic8EZqhMPpDQ9o2mxl-37BfxoSzLJKyw-rBwsZbPNHMr4NgymsBuQhsZpQCsHBd90vlZ6snoBCCWGEKvAEOUzZ1D3uQrlsPcn6-_KsLx9k-fXoEWOFtSWlQRHmxEH2SKZM";
 		Thread t = new Thread() {
@@ -113,6 +113,7 @@ public class TestExceptionAPI {
 		} catch (InterruptedException iex) {
 			iex.printStackTrace();
 		}
+		return true;
 	}
 	
 }

@@ -78,6 +78,7 @@ import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.QueueStatus;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.SMSContent;
 import com.dpdocter.enums.SMSFormatType;
@@ -106,8 +107,10 @@ import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.response.AppointmentLookupResponse;
 import com.dpdocter.response.DoctorClinicProfileLookupResponse;
+import com.dpdocter.response.DoctorWithAppointmentCount;
+import com.dpdocter.response.LocationWithAppointmentCount;
+import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
-import com.dpdocter.response.StartEndTImeinDateTime;
 import com.dpdocter.response.UserLocationWithDoctorClinicProfile;
 import com.dpdocter.response.UserRoleResponse;
 import com.dpdocter.services.AppointmentService;
@@ -123,7 +126,6 @@ import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.DateAndTimeUtility;
-import common.util.web.DateUtil;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -2184,7 +2186,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 	@Override
 	@Transactional
-	public List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId) {
+	public List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId, String status) {
 		List<PatientQueue> response = null;
 		try {
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
@@ -2206,14 +2208,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
+			Criteria criteria = new Criteria("doctorId").is(doctorObjectId).and("locationId")
+					.is(locationObjectId).and("hospitalId").is(hospitalObjectId)
+					.and("date").gt(start).lte(end).and("discarded").is(false);
+			
+			if (!DPDoctorUtils.anyStringEmpty(status))criteria.and("status").is(status.toUpperCase());
+			
 			response = mongoTemplate
 					.aggregate(
 							Aggregation
 									.newAggregation(
-											Aggregation
-													.match(new Criteria("doctorId").is(doctorObjectId).and("locationId")
-															.is(locationObjectId).and("hospitalId").is(hospitalObjectId)
-															.and("date").gt(start).lte(end).and("discarded").is(false)),
+											Aggregation.match(criteria),
 											Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 											Aggregation.unwind("patient"),
 											Aggregation.lookup("user_cl", "patientId", "_id", "patient.user"),
@@ -2647,6 +2652,202 @@ public class AppointmentServiceImpl implements AppointmentService {
 			patientQueueRepository.save(entry.getValue());
 		}
 
+	}
+
+	@Override
+	public LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId) {
+		LocationWithPatientQueueDetails response = null;
+		try{
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId));
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			criteria.and("date").gt(start).lte(end).and("discarded").is(false);
+			
+			if (doctorId != null && !doctorId.isEmpty()) {
+				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();
+				for (String id : doctorId)
+					doctorObjectIds.add(new ObjectId(id));
+				criteria.and("doctorId").in(doctorObjectIds);
+			}
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+			Aggregation.group("$status").count().as("count"));
+							
+			List<PatientQueue> patientQueueCollections = mongoTemplate.aggregate(aggregation, PatientQueueCollection.class, PatientQueue.class).getMappedResults();
+			if(patientQueueCollections != null && !patientQueueCollections.isEmpty()) {
+				response = new LocationWithPatientQueueDetails();
+				response.setLocationId(locationId);
+				for(PatientQueue patientQueueCollection : patientQueueCollections) {
+					switch(QueueStatus.valueOf(patientQueueCollection.getId().toUpperCase())) {
+					    
+					case SCHEDULED : response.setScheduledPatientNum(patientQueueCollection.getCount());break;
+					case WAITING : response.setWaitingPatientNum(patientQueueCollection.getCount());break;
+					case ENGAGED : response.setEngagedPatientNum(patientQueueCollection.getCount());break;
+					case CHECKED_OUT : response.setCheckedOutPatientNum(patientQueueCollection.getCount());break;
+					}
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting No Of Patient In Queue");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active, String from, String to) {
+		LocationWithAppointmentCount response = new LocationWithAppointmentCount();
+		List<DoctorWithAppointmentCount> doctors = new ArrayList<DoctorWithAppointmentCount>();
+		long totalCount = 0;
+		try {
+				Collection<ObjectId> userIds = null;
+				if (!DPDoctorUtils.anyStringEmpty(role)) {
+					List<UserRoleResponse> userRoleResponse = mongoTemplate.aggregate(
+							Aggregation.newAggregation(
+									Aggregation.match(new Criteria("role").is(role.toUpperCase()).and("locationId")
+											.is(new ObjectId(locationId))),
+									Aggregation.lookup("user_role_cl", "_id", "roleId", "userRoleCollections")),
+							RoleCollection.class, UserRoleResponse.class).getMappedResults();
+					if (userRoleResponse != null && !userRoleResponse.isEmpty()) {
+						List<UserRoleCollection> userRoleCollections = userRoleResponse.get(0).getUserRoleCollections();
+						userIds = CollectionUtils.collect(userRoleCollections, new BeanToPropertyValueTransformer("userId"));
+						if (userIds == null || userIds.isEmpty()) {
+							return response;
+						}
+					}
+				}
+
+				Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId));
+
+				Criteria criteriaForActive = new Criteria();
+				if (active)criteriaForActive.and("user.isActive").is(true);
+				
+				Aggregation aggregation = null;
+				if (userIds != null && !userIds.isEmpty()) {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria.and("doctorId").in(userIds)),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.match(criteriaForActive));
+				} else {
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("user_cl", "doctorId", "_id", "user"), Aggregation.unwind("user"),
+							Aggregation.match(criteriaForActive));
+				}
+
+				List<UserLocationWithDoctorClinicProfile> userWithDoctorProfile = mongoTemplate.aggregate(aggregation,
+						DoctorClinicProfileCollection.class, UserLocationWithDoctorClinicProfile.class)
+						.getMappedResults();
+
+				for (Iterator<UserLocationWithDoctorClinicProfile> iterator = userWithDoctorProfile.iterator(); iterator
+						.hasNext();) {
+					UserLocationWithDoctorClinicProfile doctorClinicProfileCollection = iterator.next();
+
+					UserCollection userCollection = doctorClinicProfileCollection.getUser();
+					if (userCollection != null) {
+						DoctorWithAppointmentCount doctor = new DoctorWithAppointmentCount();
+						BeanUtil.map(userCollection, doctor);
+						doctor.setDoctorId(userCollection.getId().toString());
+						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+
+						Criteria criteria2 = new Criteria("doctorId").is(userCollection.getId()).and("locationId").is(new ObjectId(locationId));
+						if (!DPDoctorUtils.anyStringEmpty(from)) {
+							localCalendar.setTime(new Date(Long.parseLong(from)));
+							int currentDay = localCalendar.get(Calendar.DATE);
+							int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+							int currentYear = localCalendar.get(Calendar.YEAR);
+
+							DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+									DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+							criteria2.and("fromDate").gte(fromTime);
+						}
+						if (!DPDoctorUtils.anyStringEmpty(to)) {
+							localCalendar.setTime(new Date(Long.parseLong(to)));
+							int currentDay = localCalendar.get(Calendar.DATE);
+							int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+							int currentYear = localCalendar.get(Calendar.YEAR);
+
+							DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+									DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+							criteria2.and("toDate").lte(toTime);
+						}
+						long count = mongoTemplate.count(new Query(criteria2), AppointmentCollection.class);
+						totalCount = totalCount + count;
+						doctor.setNoOfAppointments(count);
+						doctors.add(doctor);
+					}
+				}
+			response.setDoctors(doctors);
+			response.setNoOfAppointments(totalCount);
+			response.setLocationId(locationId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId, String status) {
+		Boolean response = false;
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null, patientObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			if (!DPDoctorUtils.anyStringEmpty(patientId))
+				patientObjectId = new ObjectId(patientId);
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+			
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			
+			PatientQueueCollection patientQueueCollection = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId, start, end);
+			if(patientQueueCollection == null)throw new BusinessException(ServiceError.Unknown, "Patient In Queue is not present");
+			
+			if(status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
+				if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.WAITING.name())) {
+					patientQueueCollection.setWaitingTime(patientQueueCollection.getWaitingTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
+				}else if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
+					patientQueueCollection.setWaitingTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
+				}
+			}if(status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
+				if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.WAITING.name())) {
+					patientQueueCollection.setWaitingTime(patientQueueCollection.getWaitingTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
+				}else if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
+					patientQueueCollection.setWaitingTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
+				}
+			}
+			
+			patientQueueCollection.setStatus(QueueStatus.valueOf(status));
+			patientQueueCollection.setUpdatedTime(new Date());
+			patientQueueRepository.save(patientQueueCollection);
+			response = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
 	}
 
 }

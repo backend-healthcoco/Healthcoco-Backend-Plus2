@@ -14,6 +14,8 @@ import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.response.LocationWithAppointmentCount;
+import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
 
 public interface AppointmentService {
@@ -59,8 +61,14 @@ public interface AppointmentService {
 	List<PatientQueue> rearrangePatientInQueue(String doctorId, String locationId, String hospitalId, String patientId,
 			String appointmentId, int sequenceNo);
 
-	List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId);
+	List<PatientQueue> getPatientQueue(String doctorId, String locationId, String hospitalId, String status);
 
 	Appointment getAppointmentById(ObjectId appointmentId);
+
+	LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId);
+
+	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active, String from, String to);
+
+	Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId, String status);
 
 }
