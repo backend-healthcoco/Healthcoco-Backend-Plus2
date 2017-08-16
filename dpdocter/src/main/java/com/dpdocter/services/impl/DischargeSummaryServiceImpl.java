@@ -658,11 +658,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					else
 						vitalSigns = bsa;
 				}
-				show = true;
-				parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
+
 			}
-			parameters.put("showVitalSign", show);
-			show = false;
+
 			parameters.put("prescriptionItems", prescriptionItems);
 			parameters.put("showIntructions", showIntructions);
 			parameters.put("showDirection", showDirection);
