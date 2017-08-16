@@ -18,6 +18,8 @@ public class DoctorMultipleDataAddEditResponse {
     private DoctorExperience experience;
 
     private List<String> specialities;
+    
+    private List<String> parentSpecialities;
 
     private String imageUrl;
 
@@ -186,6 +188,14 @@ public class DoctorMultipleDataAddEditResponse {
 				+ ", thumbnailProfileImageUrl=" + thumbnailProfileImageUrl + ", thumbnailCoverImageUrl="
 				+ thumbnailCoverImageUrl + ", gender=" + gender + ", dob=" + dob + ", colorCode=" + colorCode
 				+ ", userUId=" + userUId + "]";
+	}
+
+	public List<String> getParentSpecialities() {
+		return parentSpecialities;
+	}
+
+	public void setParentSpecialities(List<String> parentSpecialities) {
+		this.parentSpecialities = parentSpecialities;
 	}
 
 }

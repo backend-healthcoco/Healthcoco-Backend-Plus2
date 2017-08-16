@@ -658,11 +658,11 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					else
 						vitalSigns = bsa;
 				}
-				show=true;
+				show = true;
 				parameters.put("vitalSigns", vitalSigns != null && !vitalSigns.isEmpty() ? vitalSigns : null);
-			} 
+			}
 			parameters.put("showVitalSign", show);
-			show=false;
+			show = false;
 			parameters.put("prescriptionItems", prescriptionItems);
 			parameters.put("showIntructions", showIntructions);
 			parameters.put("showDirection", showDirection);
@@ -1046,6 +1046,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
 		} catch (Exception e) {
 			logger.error(e);
+			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 

@@ -1021,6 +1021,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		UserCollection userCollection = null;
 		DoctorCollection doctorCollection = null;
 		List<String> specialitiesresponse = new ArrayList<>();
+		List<String> parentSpecialitiesresponse = new ArrayList<>();
 		DoctorMultipleDataAddEditResponse response = null;
 		try {
 			userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -1062,23 +1063,30 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 						@SuppressWarnings("unchecked")
 						Collection<String> specialities = CollectionUtils.collect(specialityCollections,
 								new BeanToPropertyValueTransformer("superSpeciality"));
+						Collection<String> parentSpecialities = CollectionUtils.collect(specialityCollections,
+								new BeanToPropertyValueTransformer("speciality"));
+
 						if (specialityIds != null && !specialityIds.isEmpty()) {
 							doctorCollection.setSpecialities(new ArrayList<>(specialityIds));
 							specialitiesresponse.addAll(specialities);
+							parentSpecialitiesresponse.addAll(parentSpecialities);
 							if (oldSpecialities != null && !oldSpecialities.isEmpty())
 								removeOldSpecialityPermissions(specialityIds, oldSpecialities, request.getDoctorId());
 						} else {
 							doctorCollection.setSpecialities(null);
 							assignDefaultUIPermissions(request.getDoctorId());
 							specialitiesresponse = null;
+							parentSpecialitiesresponse=null;
 						}
 					} else {
 						doctorCollection.setSpecialities(null);
 						assignDefaultUIPermissions(request.getDoctorId());
 						specialitiesresponse = null;
+						parentSpecialitiesresponse=null;
 					}
 				} else {
 					doctorCollection.setSpecialities(null);
+					
 				}
 
 				if (request.getProfileImage() != null) {
@@ -1107,6 +1115,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 				BeanUtil.map(userCollection, response);
 				BeanUtil.map(doctorCollection, response);
 				response.setSpecialities(specialitiesresponse);
+				response.setParentSpecialities(parentSpecialitiesresponse);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
