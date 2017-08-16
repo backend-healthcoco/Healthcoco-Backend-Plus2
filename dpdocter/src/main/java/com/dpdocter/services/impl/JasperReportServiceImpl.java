@@ -3400,12 +3400,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Complaints}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{complaints}", 18, contentFontSize - 1, false);
 		}
-		show = (Boolean) parameters.get("showVitalSign");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{VitalSigns}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{vitalSigns}", 18, contentFontSize - 1, false);
-		}
-		show = (Boolean) parameters.get("showpresentComplaints");
+				show = (Boolean) parameters.get("showpresentComplaints");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{PresentComplaints}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{presentComplaints}", 18, contentFontSize - 1, false);
