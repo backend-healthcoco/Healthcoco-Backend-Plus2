@@ -97,8 +97,22 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 		try {
-			addSearchRequestInQueue(request);
-			response = addSearchRequestInCollection(request);
+			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId())) {
+				addSearchRequestInQueue(request);
+				response = addSearchRequestInCollection(request);
+			} else {
+				OrderDrugCollection orderDrugCollection = new OrderDrugCollection();
+				String uniqueRequestId = UniqueIdInitial.PHARMACY_REQUEST.getInitial()
+						+ DPDoctorUtils.generateRandomId();
+				request.setUniqueRequestId(uniqueRequestId);
+				response = addSearchRequestInCollection(request);
+				BeanUtil.map(request, orderDrugCollection);
+				orderDrugCollection.setCreatedTime(new Date());
+				orderDrugRepository.save(orderDrugCollection);
+				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(), "",
+						RoleEnum.PHARMIST, "Keep my order ready");
+
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While adding Search Request In Queue");
@@ -146,6 +160,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 * sqs.getQueueUrl(getQueueUrlRequest).getQueueUrl(); } if
 		 * (DPDoctorUtils.anyStringEmpty(searchPharmacyRequestQueueURL)) {
 		 */
+
 		CreateQueueRequest createQueueRequest = new CreateQueueRequest(searchPharmacyRequestQueue);
 		String searchPharmacyRequestQueueURL = sqs.createQueue(createQueueRequest).getQueueUrl();
 		// }
@@ -165,6 +180,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 * messageAttributeValue);
 		 */
 		String messageBody = Jackson.toJsonString(request);
+
 		// sendMessageRequest.setMessageBody(Jackson.toJsonString(request));
 		sqs.sendMessage(new SendMessageRequest(searchPharmacyRequestQueueURL, messageBody));
 	}
@@ -286,7 +302,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 		OrderDrugCollection orderDrugCollection = null;
 
 		try {
-
 			SearchRequestToPharmacyCollection requestToPharmacyCollection = searchRequestToPharmacyRepository
 					.findByRequestIdandPharmacyId(request.getUniqueRequestId(), new ObjectId(request.getLocaleId()),
 							new ObjectId(request.getUserId()));
@@ -297,9 +312,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
 				orderDrugRepository.save(orderDrugCollection);
-				UserSearchRequest userSearchRequest = new UserSearchRequest();
-				userSearchRequest.setUniqueRequestId(request.getUniqueRequestId());
-				userSearchRequest.setUniqueRequestId(request.getUniqueResponseId());
 				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
@@ -496,7 +508,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
-								Aggregation.limit(size));
+						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
