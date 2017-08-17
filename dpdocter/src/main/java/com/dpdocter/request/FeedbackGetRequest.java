@@ -62,6 +62,14 @@ public class FeedbackGetRequest {
 		this.page = page;
 	}
 
+	public String getLocaleId() {
+		return localeId;
+	}
+
+	public void setLocaleId(String localeId) {
+		this.localeId = localeId;
+	}
+
 	@Override
 	public String toString() {
 		return "FeedbackGetRequest [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId

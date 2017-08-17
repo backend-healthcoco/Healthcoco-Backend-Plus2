@@ -14,21 +14,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AppointmentGeneralFeedback;
+import com.dpdocter.beans.DailyImprovementFeedback;
+import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
+import com.dpdocter.collections.DailyImprovementFeedbackCollection;
+import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PharmacyFeedbackCollection;
 import com.dpdocter.collections.PrescriptionFeedbackCollection;
+import com.dpdocter.enums.DurationUnitEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AppointmentGeneralFeedbackRepository;
+import com.dpdocter.repository.DailyImprovementFeedbackRepository;
+import com.dpdocter.repository.PatientFeedbackRepository;
 import com.dpdocter.repository.PharmacyFeedbackRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PatientFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
-import com.dpdocter.request.pharmacyFeedbackRequest;
+import com.dpdocter.response.PatientFeedbackResponse;
+import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -44,6 +54,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Autowired
 	private PharmacyFeedbackRepository pharmacyFeedbackRepository;
+	
+	@Autowired
+	private DailyImprovementFeedbackRepository dailyImprovementFeedbackRepository;
+	
+	@Autowired
+	private PatientFeedbackRepository patientFeedbackRepository;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -92,7 +108,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Override
 	@Transactional
-	public PharmacyFeedback addEditPharmacyFeedback(pharmacyFeedbackRequest feedback) {
+	public PharmacyFeedback addEditPharmacyFeedback(PharmacyFeedbackRequest feedback) {
 		PharmacyFeedback response = null;
 		PharmacyFeedbackCollection pharmacyFeedbackCollection = new PharmacyFeedbackCollection();
 
@@ -273,5 +289,154 @@ public class FeedbackServiceImpl implements FeedbackService {
 		}
 		return pharmacyFeedbacks;
 	}
+	
+	private Integer getDurationDays(List<Duration> durations)
+	{
+		Integer maxDays = 0;
+		
+		for(Duration duration : durations)
+		{
+			Integer days = 0;
+			if(duration.getDurationUnit().getUnit().equals(DurationUnitEnum.DAY.getDurationUnit()))
+			{
+				days = Integer.parseInt(duration.getValue());
+			}
+			else if(duration.getDurationUnit().getUnit().equals(DurationUnitEnum.WEEK.getDurationUnit()))
+			{
+				days = Integer.parseInt(duration.getValue()) * 7;
+			}
+			else if(duration.getDurationUnit().getUnit().equals(DurationUnitEnum.MONTH.getDurationUnit()))
+			{
+				days = Integer.parseInt(duration.getValue()) * 30;
+			}
+			
+			if(days > maxDays)
+			{
+				maxDays = days;
+			}
+		}
+		return maxDays;
+	}
+	
+	
+	@Override
+	@Transactional
+	public DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedback feedback) {
+		DailyImprovementFeedback response = null;
+		DailyImprovementFeedbackCollection dailyImprovementFeedbackCollection = new DailyImprovementFeedbackCollection();
+
+		BeanUtil.map(feedback, dailyImprovementFeedbackCollection);
+		dailyImprovementFeedbackCollection.setCreatedTime(new Date());
+
+		dailyImprovementFeedbackCollection = dailyImprovementFeedbackRepository.save(dailyImprovementFeedbackCollection);
+		response = new DailyImprovementFeedback();
+		if (dailyImprovementFeedbackCollection != null) {
+			BeanUtil.map(dailyImprovementFeedbackCollection, response);
+		}
+		return response;
+	}
+
+	
+	@Override
+	@Transactional
+	public List<DailyImprovementFeedback> getDailyImprovementFeedbackList(FeedbackGetRequest request) {
+		List<DailyImprovementFeedback> dailyImprovementFeedbacks = null;
+
+		try {
+
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+				criteria.and("doctorId").is(new ObjectId(request.getDoctorId()));
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
+				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
+
+			if (request.getSize() > 0)
+				dailyImprovementFeedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DailyImprovementFeedbackCollection.class,
+						DailyImprovementFeedback.class).getMappedResults();
+			else
+				dailyImprovementFeedbacks = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						DailyImprovementFeedbackCollection.class, DailyImprovementFeedback.class).getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return dailyImprovementFeedbacks;
+	}
+	
+	
+	@Override
+	@Transactional
+	public PatientFeedback addEditPatientFeedback(PatientFeedbackRequest feedback) {
+		PatientFeedback response = null;
+		PatientFeedbackCollection patientFeedbackCollection = new PatientFeedbackCollection();
+
+		BeanUtil.map(feedback, patientFeedbackCollection);
+		patientFeedbackCollection.setCreatedTime(new Date());
+
+		if (feedback.getExperience() != null) {
+			patientFeedbackCollection.setAdminUpdatedExperience(feedback.getExperience());
+		}
+
+		patientFeedbackCollection = patientFeedbackRepository.save(patientFeedbackCollection);
+		response = new PatientFeedback();
+		if (patientFeedbackCollection != null) {
+			BeanUtil.map(patientFeedbackCollection, response);
+		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request) {
+		List<PatientFeedbackResponse> feedbackResponses= null;
+
+		try {
+
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
+				criteria.and("localeId").is(new ObjectId(request.getLocaleId()));
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+				criteria.and("doctorId").is(new ObjectId(request.getDoctorId()));
+			
+			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
+				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
+
+			if (request.getSize() > 0)
+				feedbackResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DailyImprovementFeedbackCollection.class,
+						PatientFeedbackResponse.class).getMappedResults();
+			else
+				feedbackResponses = mongoTemplate.aggregate(
+						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
+						DailyImprovementFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return feedbackResponses;
+	}
+	
+	
 
 }

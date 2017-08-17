@@ -1192,9 +1192,14 @@ public interface PathProxy {
 		public static final String ADD_EDIT_GENERAL_APPOINTMENT_FEEDBACK = "/addEditAppointmentGeneralFeedback";
 		public static final String ADD_EDIT_PRESCRIPTION_FEEDBACK = "/addEditPRescriptionFeedback";
 		public static final String ADD_EDIT_PHARMACY_FEEDBACK = "/addEditPharmacyFeedback";
+		public static final String ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK = "/addEditDailyImprovementFeedback";
+		public static final String ADD_EDIT_PATIENT_FEEDBACK = "/addEditPatientFeedback";
+		
 		public static final String GET_GENERAL_APPOINTMENT_FEEDBACK = "/getAppointmentGeneralFeedback";
 		public static final String GET_PRESCRIPTION_FEEDBACK = "/getPrescriptionFeedback";
 		public static final String GET_PHARMACY_FEEDBACK = "/getPharmacyFeedback";
+		public static final String GET_DAILY_IMPROVEMENT_FEEDBACK = "/getDailyImprovementFeedback";
+		public static final String GET_PATIENT_FEEDBACK = "/getPatientFeedback";
 	}
 
 	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";

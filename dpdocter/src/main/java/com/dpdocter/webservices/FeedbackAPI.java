@@ -14,13 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.AppointmentGeneralFeedback;
+import com.dpdocter.beans.DailyImprovementFeedback;
+import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PatientFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
-import com.dpdocter.request.pharmacyFeedbackRequest;
+import com.dpdocter.response.PatientFeedbackResponse;
+import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -64,7 +68,7 @@ public class FeedbackAPI {
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PHARMACY_FEEDBACK)
-	public Response<PharmacyFeedback> addEditPharmacyFeedback(pharmacyFeedbackRequest feedback) {
+	public Response<PharmacyFeedback> addEditPharmacyFeedback(PharmacyFeedbackRequest feedback) {
 		Response<PharmacyFeedback> response = new Response<>();
 		PharmacyFeedback pharmacyFeedback = null;
 		try {
@@ -102,6 +106,50 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
+	
+	@POST
+	@Path(PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
+	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
+	public Response<DailyImprovementFeedback> addEditDailyImprovementFeedback(DailyImprovementFeedback feedback) {
+		Response<DailyImprovementFeedback> response = new Response<>();
+		DailyImprovementFeedback dailyImprovementFeedback = null;
+		try {
+			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getDoctorId(), feedback.getPatientId(),
+					feedback.getHospitalId())) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+			}
+			dailyImprovementFeedback = feedbackService.addEditDailyImprovementFeedback(feedback);
+			response.setData(dailyImprovementFeedback);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+
+	@POST
+	@Path(PathProxy.FeedbackUrls.ADD_EDIT_PATIENT_FEEDBACK)
+	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_PATIENT_FEEDBACK)
+	public Response<PatientFeedback> addEditPatientFeedback(PatientFeedbackRequest feedback) {
+		Response<PatientFeedback> response = new Response<>();
+		PatientFeedback patientFeedback = null;
+		try {
+			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getDoctorId(), feedback.getPatientId(),
+					feedback.getHospitalId())) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+			}
+			patientFeedback = feedbackService.addEditPatientFeedback(feedback);
+			response.setData(patientFeedback);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+
 
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_GENERAL_APPOINTMENT_FEEDBACK)
@@ -145,6 +193,40 @@ public class FeedbackAPI {
 		List<PrescriptionFeedback> feedbacks = null;
 		try {
 			feedbacks = feedbackService.getPrescriptionFeedbackList(request);
+			response.setDataList(feedbacks);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@POST
+	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
+	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
+	public Response<DailyImprovementFeedback> getDailyImprovementFeedback(FeedbackGetRequest request) {
+		Response<DailyImprovementFeedback> response = new Response<>();
+		List<DailyImprovementFeedback> feedbacks = null;
+		try {
+			feedbacks = feedbackService.getDailyImprovementFeedbackList(request);
+			response.setDataList(feedbacks);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@POST
+	@Path(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
+	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
+	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request) {
+		Response<PatientFeedbackResponse> response = new Response<>();
+		List<PatientFeedbackResponse> feedbacks = null;
+		try {
+			feedbacks = feedbackService.getPatientFeedbackList(request);
 			response.setDataList(feedbacks);
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -1,6 +1,6 @@
 package com.dpdocter.request;
 
-public class pharmacyFeedbackRequest {
+public class PharmacyFeedbackRequest {
 
 	private String patientId;
 	private String localeId;
