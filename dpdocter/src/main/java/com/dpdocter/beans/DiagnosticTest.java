@@ -23,6 +23,8 @@ public class DiagnosticTest extends GenericCollection {
 
 	private String code;
 
+	private long count;
+
 	public String getId() {
 		return id;
 	}
@@ -87,11 +89,18 @@ public class DiagnosticTest extends GenericCollection {
 		this.specimen = specimen;
 	}
 
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
 	@Override
 	public String toString() {
 		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", specimen="
 				+ specimen + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
-				+ ", code=" + code + "]";
+				+ ", code=" + code + ", count=" + count + "]";
 	}
-
 }

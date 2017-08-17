@@ -2829,13 +2829,13 @@ public class AppointmentServiceImpl implements AppointmentService {
 				if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.WAITING.name())) {
 					patientQueueCollection.setWaitingTime(patientQueueCollection.getWaitingTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
 				}else if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-					patientQueueCollection.setWaitingTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
+					patientQueueCollection.setEngagedTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
 				}
 			}if(status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
 				if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.WAITING.name())) {
 					patientQueueCollection.setWaitingTime(patientQueueCollection.getWaitingTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
 				}else if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-					patientQueueCollection.setWaitingTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
+					patientQueueCollection.setEngagedTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
 				}
 			}
 			

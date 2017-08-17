@@ -1297,10 +1297,11 @@ public interface PathProxy {
 
 	}
 
-	public static final String ANALYTIC_BASE_URL = BASE_URL + "/analytics";
+	public static final String ANALYTICS_BASE_URL = BASE_URL + "/analytics";
 
-	public interface AnalyticUrls {
+	public interface AnalyticsUrls {
 		public static final String GET_PATIENT_ANALYTICS_DATA = "/patient/{doctorId}/{locationId}/{hospitalId}";
+		public static final String GET_MOST_PRESCRIBED_PRESCRIPTION_ITEMS = "/mostPrescribed/{type}/{locationId}/{hospitalId}";
 
 	}
 }

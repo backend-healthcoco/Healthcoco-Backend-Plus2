@@ -40,6 +40,8 @@ public class Drug extends GenericCollection{
     
     private String drugCode;
 
+    private long count;
+    
 	public String getId() {
 		return id;
 	}
@@ -168,12 +170,20 @@ public class Drug extends GenericCollection{
 		this.drugCode = drugCode;
 	}
 
+	public long getCount() {
+		return count;
+	}
+
+	public void setCount(long count) {
+		this.count = count;
+	}
+
 	@Override
 	public String toString() {
 		return "Drug [id=" + id + ", drugType=" + drugType + ", drugName=" + drugName + ", explanation=" + explanation
 				+ ", discarded=" + discarded + ", doctorId=" + doctorId + ", hospitalId=" + hospitalId + ", locationId="
 				+ locationId + ", duration=" + duration + ", dosage=" + dosage + ", dosageTime=" + dosageTime
 				+ ", direction=" + direction + ", categories=" + categories + ", rankingCount=" + rankingCount
-				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + "]";
+				+ ", genericNames=" + genericNames + ", drugCode=" + drugCode + ", count=" + count + "]";
 	}
 }
