@@ -65,7 +65,7 @@ public class AnalyticsAPI {
 			@QueryParam("doctorId") String doctorId,
 			 @QueryParam("fromDate") String fromDate,
 			 @QueryParam("toDate") String toDate,
-			@QueryParam("searchType") String searchType) {
+			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(type, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Type, locationId, hospitalId should not be empty");
@@ -77,7 +77,7 @@ public class AnalyticsAPI {
 			}
 		} 
 		List<?> objects = analyticsService.getMostPrescribedPrescriptionItems(type, doctorId, locationId,
-				hospitalId, fromDate, toDate, searchType);
+				hospitalId, fromDate, toDate, searchType, page, size);
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(objects);
