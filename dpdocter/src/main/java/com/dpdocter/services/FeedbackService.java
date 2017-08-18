@@ -29,10 +29,10 @@ public interface FeedbackService {
 
 	DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedback feedback);
 
-	List<DailyImprovementFeedback> getDailyImprovementFeedbackList(FeedbackGetRequest request);
-
 	PatientFeedback addEditPatientFeedback(PatientFeedbackRequest feedback);
 
-	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request);
+	List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId, int page, int size);
+
+	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request, String type);
 
 }

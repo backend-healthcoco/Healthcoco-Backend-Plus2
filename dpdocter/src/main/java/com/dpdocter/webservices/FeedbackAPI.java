@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -114,8 +115,7 @@ public class FeedbackAPI {
 		Response<DailyImprovementFeedback> response = new Response<>();
 		DailyImprovementFeedback dailyImprovementFeedback = null;
 		try {
-			if (feedback == null & DPDoctorUtils.allStringsEmpty(feedback.getDoctorId(), feedback.getPatientId(),
-					feedback.getHospitalId())) {
+			if (DPDoctorUtils.allStringsEmpty(feedback.getPrescriptionId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 			}
 			dailyImprovementFeedback = feedbackService.addEditDailyImprovementFeedback(feedback);
@@ -205,11 +205,12 @@ public class FeedbackAPI {
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedback> getDailyImprovementFeedback(FeedbackGetRequest request) {
+	public Response<DailyImprovementFeedback> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
+		    @QueryParam(value = "prescriptionId") String prescriptionId) {
 		Response<DailyImprovementFeedback> response = new Response<>();
 		List<DailyImprovementFeedback> feedbacks = null;
 		try {
-			feedbacks = feedbackService.getDailyImprovementFeedbackList(request);
+			feedbacks = feedbackService.getDailyImprovementFeedbackList(prescriptionId, page, size);
 			response.setDataList(feedbacks);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -222,11 +223,12 @@ public class FeedbackAPI {
 	@POST
 	@Path(PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_PATIENT_FEEDBACK)
-	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request) {
+	public Response<PatientFeedbackResponse> getPatientFeedback(FeedbackGetRequest request , @QueryParam("type") String type) {
 		Response<PatientFeedbackResponse> response = new Response<>();
 		List<PatientFeedbackResponse> feedbacks = null;
+		System.out.println("------ get patient feedback -----");
 		try {
-			feedbacks = feedbackService.getPatientFeedbackList(request);
+			feedbacks = feedbackService.getPatientFeedbackList(request , type);
 			response.setDataList(feedbacks);
 		} catch (Exception e) {
 			// TODO: handle exception

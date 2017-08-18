@@ -6,10 +6,7 @@ import com.dpdocter.enums.FeelingTypeEnum;
 public class DailyImprovementFeedback extends GenericCollection {
 
 	private String id;
-	private String doctorId;
-	private String locationId;
-	private String hospitalId;
-	private String patientId;
+	private String prescriptionId;
 	private String explanation;
 	private FeelingTypeEnum feelingType;
 	private Long submissionDate;
@@ -23,28 +20,12 @@ public class DailyImprovementFeedback extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getDoctorId() {
-		return doctorId;
+	public String getPrescriptionId() {
+		return prescriptionId;
 	}
 
-	public void setDoctorId(String doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public String getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
-	}
-
-	public String getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(String hospitalId) {
-		this.hospitalId = hospitalId;
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 	public String getExplanation() {
@@ -79,19 +60,11 @@ public class DailyImprovementFeedback extends GenericCollection {
 		this.day = day;
 	}
 
-	public String getPatientId() {
-		return patientId;
-	}
-
-	public void setPatientId(String patientId) {
-		this.patientId = patientId;
-	}
-
 	@Override
 	public String toString() {
-		return "DailyImprovementFeedback [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", explanation=" + explanation
-				+ ", feelingType=" + feelingType + ", submissionDate=" + submissionDate + ", day=" + day + "]";
+		return "DailyImprovementFeedback [id=" + id + ", prescriptionId=" + prescriptionId + ", explanation="
+				+ explanation + ", feelingType=" + feelingType + ", submissionDate=" + submissionDate + ", day=" + day
+				+ "]";
 	}
 
 }

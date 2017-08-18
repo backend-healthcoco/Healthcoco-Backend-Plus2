@@ -11,13 +11,7 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private ObjectId doctorId;
-	@Field
-	private ObjectId locationId;
-	@Field
-	private ObjectId hospitalId;
-	@Field
-	private ObjectId patientId;
+	private String prescriptionId;
 	@Field
 	private String explanation;
 	@Field
@@ -33,30 +27,6 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 
 	public void setId(ObjectId id) {
 		this.id = id;
-	}
-
-	public ObjectId getDoctorId() {
-		return doctorId;
-	}
-
-	public void setDoctorId(ObjectId doctorId) {
-		this.doctorId = doctorId;
-	}
-
-	public ObjectId getLocationId() {
-		return locationId;
-	}
-
-	public void setLocationId(ObjectId locationId) {
-		this.locationId = locationId;
-	}
-
-	public ObjectId getHospitalId() {
-		return hospitalId;
-	}
-
-	public void setHospitalId(ObjectId hospitalId) {
-		this.hospitalId = hospitalId;
 	}
 
 	public String getExplanation() {
@@ -91,19 +61,19 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 		this.day = day;
 	}
 
-	public ObjectId getPatientId() {
-		return patientId;
+	public String getPrescriptionId() {
+		return prescriptionId;
 	}
 
-	public void setPatientId(ObjectId patientId) {
-		this.patientId = patientId;
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
 	}
 
 	@Override
 	public String toString() {
-		return "DailyImprovementFeedbackCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
-				+ ", hospitalId=" + hospitalId + ", explanation=" + explanation + ", feelingType=" + feelingType
-				+ ", submissionDate=" + submissionDate + ", day=" + day + "]";
+		return "DailyImprovementFeedbackCollection [id=" + id + ", prescriptionId=" + prescriptionId + ", explanation="
+				+ explanation + ", feelingType=" + feelingType + ", submissionDate=" + submissionDate + ", day=" + day
+				+ "]";
 	}
 
 }

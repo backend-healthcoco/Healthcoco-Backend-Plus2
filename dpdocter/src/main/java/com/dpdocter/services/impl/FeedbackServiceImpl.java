@@ -339,27 +339,21 @@ public class FeedbackServiceImpl implements FeedbackService {
 	
 	@Override
 	@Transactional
-	public List<DailyImprovementFeedback> getDailyImprovementFeedbackList(FeedbackGetRequest request) {
+	public List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId , int page , int size) {
 		List<DailyImprovementFeedback> dailyImprovementFeedbacks = null;
 
 		try {
 
 			Criteria criteria = new Criteria();
-			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
-				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
+			if (!DPDoctorUtils.anyStringEmpty(prescriptionId))
+			{
+				criteria.and("prescriptionId").is(new ObjectId(prescriptionId));
+			}
+		
 
-			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
-				criteria.and("doctorId").is(new ObjectId(request.getDoctorId()));
-
-			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
-				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
-
-			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
-				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
-
-			if (request.getSize() > 0)
+			if (size > 0)
 				dailyImprovementFeedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
+						Aggregation.skip(page * size), Aggregation.limit(size),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DailyImprovementFeedbackCollection.class,
 						DailyImprovementFeedback.class).getMappedResults();
 			else
@@ -399,11 +393,10 @@ public class FeedbackServiceImpl implements FeedbackService {
 	
 	@Override
 	@Transactional
-	public List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request) {
+	public List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request , String type) {
 		List<PatientFeedbackResponse> feedbackResponses= null;
 
 		try {
-
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
 				criteria.and("localeId").is(new ObjectId(request.getLocaleId()));
@@ -419,17 +412,21 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
+			
+			//criteria.and("discarded").is(false);
+			criteria.and("isApproved").is(true);
 
 			if (request.getSize() > 0)
 				feedbackResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
-						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DailyImprovementFeedbackCollection.class,
+						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), PatientFeedbackCollection.class,
 						PatientFeedbackResponse.class).getMappedResults();
 			else
 				feedbackResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-						DailyImprovementFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
+						PatientFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
