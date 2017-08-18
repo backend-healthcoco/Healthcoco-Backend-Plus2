@@ -5316,19 +5316,26 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			}
 
 			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
-			bmi = (bmi != null && !bmi.isEmpty()
-					? "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3) + " "
-							+ VitalSignsUnit.BMI.getUnit()
-					: "");
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+
+				bmi = "Bmi : " + String.format("%.3f", Double.parseDouble(bmi));
+			} else {
+				bmi = "";
+			}
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (!DPDoctorUtils.allStringsEmpty(bmi))
 					vitalSigns = vitalSigns + ",  " + bmi;
 				else
 					vitalSigns = bmi;
 			}
 
 			String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
-			bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3) + " " + VitalSignsUnit.BSA.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+
+				bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+			} else {
+				bsa = "";
+			}
 			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + bsa;

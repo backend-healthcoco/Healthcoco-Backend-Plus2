@@ -258,8 +258,8 @@ public class LocaleApi {
 	@Path(PathProxy.LocaleUrls.GET_PHARMCIES_FOR_ORDER)
 	public Response<SearchRequestToPharmacyResponse> getPharmaciesForOrder(@QueryParam("userId") String userId,
 			@QueryParam("uniqueRequestId") String uniqueRequestId, @QueryParam("replyType") String replyType,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("lat") Double latitude,
-			@QueryParam("long") Double longitude) {
+			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("latitude") Double latitude,
+			@QueryParam("longitude") Double longitude) {
 		Response<SearchRequestToPharmacyResponse> response = null;
 		List<SearchRequestToPharmacyResponse> list = null;
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
