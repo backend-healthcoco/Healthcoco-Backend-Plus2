@@ -1117,13 +1117,18 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 					doctorClinicProfileCollections.add(doctorClinicProfileCollection);
 				}
 				for (DoctorClinicProfileCollection doctorClinicProfileCollection : doctorClinicProfileCollections) {
-					LocationCollection locationCollection = locationRepository
-							.findOne(doctorClinicProfileCollection.getLocationId());
+					LocationCollection locationCollection = null;
+					if (!DPDoctorUtils.anyStringEmpty(doctorClinicProfileCollection.getLocationId())) {
+						locationCollection = locationRepository.findOne(doctorClinicProfileCollection.getLocationId());
+					}
 					GeoPoint geoPoint = null;
-					if (locationCollection.getLatitude() != null && locationCollection.getLongitude() != null)
-						geoPoint = new GeoPoint(locationCollection.getLatitude(), locationCollection.getLongitude());
+
 					ESDoctorDocument doctorDocument = new ESDoctorDocument();
 					if (locationCollection != null) {
+						if (locationCollection.getLatitude() != null && locationCollection.getLongitude() != null)
+							geoPoint = new GeoPoint(locationCollection.getLatitude(),
+									locationCollection.getLongitude());
+						
 						BeanUtil.map(locationCollection, doctorDocument);
 
 						ESLocationDocument esLocationDocument = new ESLocationDocument();
