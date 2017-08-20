@@ -1,3 +1,4 @@
+
 package com.dpdocter.services.impl;
 
 import java.util.Map;
@@ -1403,7 +1404,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(38 + drugWidth);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(dosageWidth);
+		jrDesignTextField.setWidth(dosageWidth-3);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 

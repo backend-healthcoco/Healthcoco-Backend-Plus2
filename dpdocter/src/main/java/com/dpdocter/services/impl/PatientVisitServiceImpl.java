@@ -1470,7 +1470,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			patientDetails = new PatientDetails();
 		}
 		List<String> patientDetailList = new ArrayList<String>();
-		patientDetailList.add("<b>Patient Name: </b>" + firstName.toUpperCase());
+		patientDetailList.add("<b>Patient Name: " + firstName.toUpperCase() + "</b>");
 		patientDetailList.add("<b>Patient ID: </b>"
 				+ (patientCard != null && patientCard.getPID() != null ? patientCard.getPID() : "--"));
 
@@ -1686,7 +1686,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					clinicalNotesJasperDetails.setObservations(clinicalNotesCollection.getObservation());
 					clinicalNotesJasperDetails.setNotes(clinicalNotesCollection.getNote());
 					clinicalNotesJasperDetails.setInvestigations(clinicalNotesCollection.getInvestigation());
-					clinicalNotesJasperDetails.setDiagnosis(clinicalNotesCollection.getDiagnosis());
+					clinicalNotesJasperDetails.setDiagnosis("<b>"+clinicalNotesCollection.getDiagnosis()+"</b>");
 					clinicalNotesJasperDetails.setComplaints(clinicalNotesCollection.getComplaint());
 					clinicalNotesJasperDetails.setPresentComplaint(clinicalNotesCollection.getPresentComplaint());
 					clinicalNotesJasperDetails
