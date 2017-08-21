@@ -19,6 +19,7 @@ public class AddEditLabTestPickupRequest {
 	private Integer numberOfSamplesRequested;
 	private Integer numberOfSamplesPicked;
 	private String requestId;
+	private Boolean isCompleted;
 
 	public String getId() {
 		return id;
@@ -122,6 +123,14 @@ public class AddEditLabTestPickupRequest {
 
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
+	}
+
+	public Boolean getIsCompleted() {
+		return isCompleted;
+	}
+
+	public void setIsCompleted(Boolean isCompleted) {
+		this.isCompleted = isCompleted;
 	}
 
 	@Override

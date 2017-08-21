@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Clinic;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
@@ -34,6 +35,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.request.LabReportsAddRequest;
+import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
@@ -474,9 +476,9 @@ public class LabApi {
 	}
 	
 	@POST
-	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS)
+	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
-	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS, notes = PathProxy.LabUrls.UPLOAD_REPORTS)
+	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART, notes = PathProxy.LabUrls.UPLOAD_REPORTS_MULTIPART)
 	public Response<LabReports> addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
 			@FormDataParam("data") FormDataBodyPart data) {
 		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
@@ -487,6 +489,22 @@ public class LabApi {
 		}
 
 		LabReports labReports = labReportsService.addLabReports(file, request);
+
+		Response<LabReports> response = new Response<LabReports>();
+		response.setData(labReports);
+		return response;
+	}
+	
+	@POST
+	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS, notes = PathProxy.LabUrls.UPLOAD_REPORTS)
+	public Response<LabReports> addRecordsBase64(RecordUploadRequest request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		LabReports labReports = labReportsService.addLabReportBase64(request.getFileDetails(), request.getLabReportsAddRequest());
 
 		Response<LabReports> response = new Response<LabReports>();
 		response.setData(labReports);

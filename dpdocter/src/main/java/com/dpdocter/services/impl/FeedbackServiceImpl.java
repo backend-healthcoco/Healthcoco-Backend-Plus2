@@ -1,5 +1,6 @@
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -434,6 +435,70 @@ public class FeedbackServiceImpl implements FeedbackService {
 		return feedbackResponses;
 	}
 	
+	
+	private List<Integer> getDaysForNotification(Integer maxDays)
+	{
+		List<Integer> notificationDays = null;
+		
+		if (maxDays <= 1)
+		{
+			return notificationDays;
+		}
+		else if(isBetween(maxDays, 2, 5))
+		{
+			Double pivot = maxDays.doubleValue() / 2;
+			Double maxN = Math.ceil(pivot);
+			notificationDays = calcNotificationDays(maxDays, maxN);
+		}
+		
+		else if(isBetween(maxDays, 6, 10))
+		{
+			Double pivot = maxDays.doubleValue() / 3;
+			Double maxN = Math.ceil(pivot);
+			notificationDays = calcNotificationDays(maxDays, maxN);
+		}
+		
+		else if(isBetween(maxDays, 11, 30))
+		{
+			Double pivot = maxDays.doubleValue() / 4;
+			Double maxN = Math.ceil(pivot);
+			notificationDays = calcNotificationDays(maxDays, maxN);
+		}
+		
+		else if(isBetween(maxDays, 31, 100))
+		{
+			Double pivot = maxDays.doubleValue() / 4;
+			Double maxN = Math.ceil(pivot);
+			notificationDays = calcNotificationDays(maxDays, maxN);
+		}
+		
+		else 
+		{
+			Double pivot = maxDays.doubleValue() / 7;
+			Double maxN = Math.ceil(pivot);
+			notificationDays = calcNotificationDays(maxDays, maxN);
+		}
+		
+		return notificationDays;
+	}
+	
+	private boolean isBetween(Integer value, Integer lower, Integer upper) {
+		  return lower <= value && value <= upper;
+		}
+	
+	private List<Integer> calcNotificationDays(Integer maxDays , Double maxN)
+	{
+		List<Integer> notificationDays = new ArrayList<>();
+		Double dayDiff =Math.ceil((maxDays - 2) / maxN);
+		Integer day = 2;
+		notificationDays.add(day);
+		while(day <= maxDays)
+		{
+			day = day + dayDiff.intValue();
+			notificationDays.add(day);
+		}
+		return notificationDays;
+	}
 	
 
 }

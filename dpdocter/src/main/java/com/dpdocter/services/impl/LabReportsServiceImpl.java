@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.exceptions.BusinessException;
@@ -60,6 +61,44 @@ public class LabReportsServiceImpl implements LabReportsService{
 				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
 				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
 				imageURLResponse = fileManager.saveImage(file, recordPath, true);
+			}
+			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
+					new ObjectId(request.getLabTestSampleId()));
+			if (labReportsCollection == null) {
+				labReportsCollection = new LabReportsCollection();
+			}
+			if (labReportsCollection.getLabReports() == null) {
+				List<ImageURLResponse> responses = new ArrayList<>();
+				labReportsCollection.setLabReports(responses);
+			}
+			BeanUtil.map(request, labReportsCollection);
+			labReportsCollection.getLabReports().add(imageURLResponse);
+			labReportsCollection = labReportsRepository.save(labReportsCollection);
+			response = new LabReports();
+			BeanUtil.map(labReportsCollection, response);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
+	@Override
+	@Transactional
+	public LabReports addLabReportBase64(FileDetails fileDetails, LabReportsAddRequest request) {
+		LabReports response = null;
+		LabReportsCollection labReportsCollection = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			if (fileDetails != null) {
+				String path = "lab-reports";
+				//FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetails.getFileName());
+				String fileName = fileDetails.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, recordPath, true);
 			}
 			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
 					new ObjectId(request.getLabTestSampleId()));
