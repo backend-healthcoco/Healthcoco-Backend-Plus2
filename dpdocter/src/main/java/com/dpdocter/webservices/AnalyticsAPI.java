@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.AppointmentAnalyticResponse;
+import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
+import com.dpdocter.response.AppointmentCountAnalyticResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.services.AnalyticsService;
 
@@ -81,6 +84,66 @@ public class AnalyticsAPI {
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(objects);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_APPOINTMENT_ANALYTICS_DATA)
+	public Response<AppointmentAnalyticResponse> getAppointmentAnalyticnData(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			 @QueryParam("fromDate") String fromDate,
+			 @QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
+			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		AppointmentAnalyticResponse appointmentAnalyticResponse = analyticsService.getAppointmentAnalyticnData(doctorId, locationId,
+				hospitalId, fromDate, toDate, queryType, searchType, searchTerm, page, size);
+
+		Response<AppointmentAnalyticResponse> response = new Response<AppointmentAnalyticResponse>();
+		response.setData(appointmentAnalyticResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_APPOINTMENT_AVERAGE_TIME_ANALYTICS_DATA)
+	public Response<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticnData(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			 @QueryParam("fromDate") String fromDate,
+			 @QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
+			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		List<AppointmentAverageTimeAnalyticResponse> appointmentAnalyticResponse = analyticsService.getAppointmentAverageTimeAnalyticnData(doctorId, locationId,
+				hospitalId, fromDate, toDate, queryType, searchType, searchTerm, page, size);
+
+		Response<AppointmentAverageTimeAnalyticResponse> response = new Response<AppointmentAverageTimeAnalyticResponse>();
+		response.setDataList(appointmentAnalyticResponse);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_COUNT_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_APPOINTMENT_COUNT_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_APPOINTMENT_COUNT_ANALYTICS_DATA)
+	public Response<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticnData(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			 @QueryParam("fromDate") String fromDate,
+			 @QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
+			@QueryParam("searchType") String searchType, @QueryParam("searchTerm") String searchTerm, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		List<AppointmentCountAnalyticResponse> appointmentAnalyticResponse = analyticsService.getAppointmentCountAnalyticnData(doctorId, locationId,
+				hospitalId, fromDate, toDate, queryType, searchType, searchTerm, page, size);
+
+		Response<AppointmentCountAnalyticResponse> response = new Response<AppointmentCountAnalyticResponse>();
+		response.setDataList(appointmentAnalyticResponse);
 		return response;
 	}
 }

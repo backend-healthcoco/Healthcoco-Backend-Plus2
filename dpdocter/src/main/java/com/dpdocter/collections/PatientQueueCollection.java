@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -53,10 +52,19 @@ public class PatientQueueCollection extends GenericCollection {
     private QueueStatus status = QueueStatus.SCHEDULED;
     
     @Field
-    private Integer waitingTime = 0;//in seconds
+    private long waitedFor = 0;
     
     @Field
-    private Integer engagedTime = 0;//in seconds
+    private long engagedFor = 0;
+    
+    @Field
+    private long engagedAt = 0;
+    
+    @Field
+    private long checkedInAt = 0;
+    
+    @Field
+    private long checkedOutAt = 0;
     
     public ObjectId getId() {
 	return id;
@@ -146,20 +154,44 @@ public class PatientQueueCollection extends GenericCollection {
 		this.status = status;
 	}
 
-	public Integer getWaitingTime() {
-		return waitingTime;
+	public long getWaitedFor() {
+		return waitedFor;
 	}
 
-	public void setWaitingTime(Integer waitingTime) {
-		this.waitingTime = waitingTime;
+	public void setWaitedFor(long waitedFor) {
+		this.waitedFor = waitedFor;
 	}
 
-	public Integer getEngagedTime() {
-		return engagedTime;
+	public long getEngagedAt() {
+		return engagedAt;
 	}
 
-	public void setEngagedTime(Integer engagedTime) {
-		this.engagedTime = engagedTime;
+	public void setEngagedAt(long engagedAt) {
+		this.engagedAt = engagedAt;
+	}
+
+	public long getCheckedInAt() {
+		return checkedInAt;
+	}
+
+	public void setCheckedInAt(long checkedInAt) {
+		this.checkedInAt = checkedInAt;
+	}
+
+	public long getCheckedOutAt() {
+		return checkedOutAt;
+	}
+
+	public void setCheckedOutAt(long checkedOutAt) {
+		this.checkedOutAt = checkedOutAt;
+	}
+
+	public long getEngagedFor() {
+		return engagedFor;
+	}
+
+	public void setEngagedFor(long engagedFor) {
+		this.engagedFor = engagedFor;
 	}
 
 	@Override
@@ -167,6 +199,7 @@ public class PatientQueueCollection extends GenericCollection {
 		return "PatientQueueCollection [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", patientId=" + patientId + ", date=" + date + ", startTime="
 				+ startTime + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + ", discarded="
-				+ discarded + ", status=" + status + ", waitingTime=" + waitingTime + ", engagedTime=" + engagedTime + "]";
+				+ discarded + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
+				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + "]";
 	}
 }

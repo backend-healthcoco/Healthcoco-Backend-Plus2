@@ -2689,9 +2689,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 					switch(QueueStatus.valueOf(patientQueueCollection.getId().toUpperCase())) {
 					    
 					case SCHEDULED : response.setScheduledPatientNum(patientQueueCollection.getCount());break;
-					case WAITING : response.setWaitingPatientNum(patientQueueCollection.getCount());break;
+					case CHECKED_IN : response.setWaitingPatientNum(patientQueueCollection.getCount());break;
 					case ENGAGED : response.setEngagedPatientNum(patientQueueCollection.getCount());break;
 					case CHECKED_OUT : response.setCheckedOutPatientNum(patientQueueCollection.getCount());break;
+					default: break;
 					}
 				}
 			}
@@ -2825,18 +2826,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 			PatientQueueCollection patientQueueCollection = patientQueueRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId, start, end);
 			if(patientQueueCollection == null)throw new BusinessException(ServiceError.Unknown, "Patient In Queue is not present");
 			
-			if(status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
-				if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.WAITING.name())) {
-					patientQueueCollection.setWaitingTime(patientQueueCollection.getWaitingTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
-				}else if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-					patientQueueCollection.setEngagedTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
-				}
-			}if(status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-				if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.WAITING.name())) {
-					patientQueueCollection.setWaitingTime(patientQueueCollection.getWaitingTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
-				}else if(patientQueueCollection.getStatus().name().equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-					patientQueueCollection.setEngagedTime(patientQueueCollection.getEngagedTime() + (new Date().getSeconds() - patientQueueCollection.getUpdatedTime().getSeconds()));
-				}
+			if(status.equalsIgnoreCase(QueueStatus.CHECKED_IN.name())) {
+				patientQueueCollection.setCheckedInAt(new Date().getTime());
+			}else if(status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
+				patientQueueCollection.setEngagedAt(new Date().getTime());
+				patientQueueCollection.setWaitedFor(patientQueueCollection.getEngagedAt() - patientQueueCollection.getCheckedInAt());
+			}else if(status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
+				patientQueueCollection.setCheckedOutAt(new Date().getTime());
+				patientQueueCollection.setEngagedFor(patientQueueCollection.getCheckedOutAt() - patientQueueCollection.getEngagedAt());
 			}
 			
 			patientQueueCollection.setStatus(QueueStatus.valueOf(status));

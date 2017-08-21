@@ -1,32 +1,48 @@
 package com.dpdocter.services.impl;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DiagnosticTest;
 import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.PatientCard;
+import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.PatientQueueCollection;
 import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.PatientAnalyticType;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.enums.SearchType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.AppointmentAnalyticResponse;
+import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
+import com.dpdocter.response.AppointmentCountAnalyticResponse;
+import com.dpdocter.response.AppointmentDeatilAnalyticResponse;
 import com.dpdocter.response.PatientAnalyticResponse;
 import com.dpdocter.services.AnalyticsService;
 import com.mongodb.BasicDBObject;
@@ -805,6 +821,423 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While getting most prescribed drugs");
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting most prescribed drugs");
+		}
+		return response;
+	}
+
+	@Override
+	public AppointmentAnalyticResponse getAppointmentAnalyticnData(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm, int page, int size) {
+		AppointmentAnalyticResponse response = null;
+		try {
+			Criteria criteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria = criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
+			}
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("fromDate").gte(fromTime);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+				criteria.and("toDate").lte(toTime);
+			}
+			
+			long count = mongoTemplate.count(new Query(criteria), AppointmentCollection.class);
+			if(count > 0) {
+				response = new AppointmentAnalyticResponse();
+				int skip=0, limit=10;
+				if(size > 0) {skip=page*size; limit= size;}
+				
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+						Aggregation.lookup("patient_queue_cl", "appointmentId", "appointmentId", "patientQueue"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patientQueue").append("preserveNullAndEmptyArrays", true))),
+//						Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
+//						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+//						Aggregation.match(new Criteria("patient.locationId").is(new ObjectId(locationId))),
+						Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$doctor").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(
+								new BasicDBObject("$group",
+										new BasicDBObject("id","$_id")
+										.append("date", new BasicDBObject("$first", "$fromDate"))
+												.append("fromTime", new BasicDBObject("$first", "$time.fromTime"))
+												.append("waitedFor", new BasicDBObject("$max", "$patientQueue.waitedFor"))
+												.append("engagedAt", new BasicDBObject("$max", "$patientQueue.engagedAt"))
+												.append("checkedInAt", new BasicDBObject("$max", "$patientQueue.checkedInAt"))
+												.append("checkedOutAt", new BasicDBObject("$max", "$patientQueue.checkedOutAt"))
+												.append("patientName", new BasicDBObject("$first", "$patient.localPatientName"))
+												.append("patientId", new BasicDBObject("$first", "$patientId"))
+												.append("locationId", new BasicDBObject("$first", "$locationId"))
+												.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+												.append("doctorName", new BasicDBObject("$first", "$doctor.firstName")))),
+						Aggregation.skip(skip), Aggregation.limit(limit),
+						Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")));
+				
+				List<AppointmentDeatilAnalyticResponse> analyticResponses = mongoTemplate.aggregate(aggregation, AppointmentCollection.class, AppointmentDeatilAnalyticResponse.class).getMappedResults();
+				response.setTotalAppointments(count);
+				
+				for(AppointmentDeatilAnalyticResponse appointmentDeatilAnalyticResponse : analyticResponses) {
+					List<PatientCard> patientCards = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(
+											Aggregation.match(new Criteria("userId")
+													.is(new ObjectId(appointmentDeatilAnalyticResponse.getPatientId())).and("locationId")
+													.is(new ObjectId(appointmentDeatilAnalyticResponse.getLocationId())).and("hospitalId")
+													.is(new ObjectId(appointmentDeatilAnalyticResponse.getHospitalId())))), PatientCollection.class, PatientCard.class).getMappedResults();
+					if (patientCards != null && !patientCards.isEmpty()) {
+						appointmentDeatilAnalyticResponse.setPatientName(patientCards.get(0).getLocalPatientName());
+					}
+				}
+				response.setAppointments(analyticResponses);
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting appointment analytics data");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting appointment analytics data");
+		}
+		return response;
+	}
+
+	@Override
+	public List<AppointmentAverageTimeAnalyticResponse> getAppointmentAverageTimeAnalyticnData(String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, String queryType, String searchType,
+			String searchTerm, int page, int size) {
+		List<AppointmentAverageTimeAnalyticResponse> response = null;
+		try {
+			
+			Criteria criteria = new Criteria("discarded").is(false);
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			if(!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("date").gt(start);
+			}
+			if(!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("date").lte(end);
+			}
+
+			AggregationOperation aggregationOperation = null;
+			if(!DPDoctorUtils.anyStringEmpty(searchType))
+			switch (SearchType.valueOf(searchType.toUpperCase())) {
+				
+				case DAILY: {
+					aggregationOperation = new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("day", "$day").append("month", "$month").append("year",
+													"$year")).append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
+																.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
+																.append("date", new BasicDBObject("$first", "$date"))));
+	
+					break;
+				}
+
+				case WEEKLY: {
+	
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("week", "$week").append("month", "$month").append("year",
+											"$year")).append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
+													.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
+													.append("date", new BasicDBObject("$first", "$date"))));
+	
+					break;
+				}
+
+				case MONTHLY: {
+					aggregationOperation = new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("month", "$month").append("year", "$year"))
+									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
+									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
+									.append("date", new BasicDBObject("$first", "$date"))));
+	
+					break;
+				}
+				case YEARLY: {
+	
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+									.append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
+									.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
+									.append("date", new BasicDBObject("$first", "$date"))));
+	
+					break;
+	
+				}
+				default:
+					break;
+				}
+			else {
+				aggregationOperation = new CustomAggregationOperation(
+						new BasicDBObject("$group",
+								new BasicDBObject("_id",
+										new BasicDBObject("day", "$day").append("month", "$month").append("year",
+												"$year")).append("averageWaitingTime", new BasicDBObject("$avg", "$waitedFor"))
+															.append("averageEngagedTime", new BasicDBObject("$avg", "$engagedFor"))
+															.append("date", new BasicDBObject("$first", "$date"))));
+			}
+		
+			Aggregation	aggregation = null;
+			if(size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new ProjectionOperation(
+								Fields.from(Fields.field("date", "$date"), Fields.field("waitedFor", "$waitedFor"), Fields.field("engagedFor", "$engagedFor"))).and("date").extractDayOfMonth().as("day").and("date").extractMonth()
+									.as("month").and("date").extractYear().as("year").and("date")
+									.extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(Direction.DESC, "date"), Aggregation.skip(page * size), Aggregation.limit(size));
+			}else {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new ProjectionOperation(
+								Fields.from(Fields.field("date", "$date"), Fields.field("waitedFor", "$waitedFor"), Fields.field("engagedFor", "$engagedFor"))).and("date").extractDayOfMonth().as("day").and("date").extractMonth()
+									.as("month").and("date").extractYear().as("year").and("date")
+									.extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(Direction.DESC, "date"));
+			}
+				AggregationResults<AppointmentAverageTimeAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						PatientQueueCollection.class, AppointmentAverageTimeAnalyticResponse.class);
+				response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting appointment average time analytics data");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting appointment average time analytics data");
+		}
+		return response;
+	}
+
+	@Override
+	public List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticnData(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm,
+			int page, int size) {
+		List<AppointmentCountAnalyticResponse> response = null;
+		try {
+			
+			Criteria criteria = new Criteria();
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				criteria.and("doctorId").in(new ObjectId(doctorId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+
+			if(!DPDoctorUtils.anyStringEmpty(queryType)) {
+				if(queryType.equalsIgnoreCase("CANCEL"))criteria.and("state").is(AppointmentState.CANCEL.getState());
+				else if(queryType.equalsIgnoreCase("PATIENTGROUP")){
+					response = getAppointmentCountAnalyticnDataByPatientGroup(doctorId, locationId,
+							hospitalId, fromDate, toDate, page, size);
+					return response;
+				}
+			}
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			if(!DPDoctorUtils.anyStringEmpty(fromDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").gt(start);
+			}
+			if(!DPDoctorUtils.anyStringEmpty(toDate)) {
+				localCalendar.setTime(new Date(Long.parseLong(toDate)));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+				criteria.and("fromDate").lte(end);
+			}
+
+			AggregationOperation aggregationOperation = null;
+			if(!DPDoctorUtils.anyStringEmpty(searchType))
+			switch (SearchType.valueOf(searchType.toUpperCase())) {
+				
+				case DAILY: {
+					aggregationOperation = new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("day", "$day").append("month", "$month").append("year",
+													"$year"))
+									.append("count", new BasicDBObject("$sum", 1))
+									.append("date", new BasicDBObject("$first", "$fromDate"))));
+	
+					break;
+				}
+
+				case WEEKLY: {
+	
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("week", "$week").append("month", "$month").append("year",
+											"$year")).append("count", new BasicDBObject("$sum", 1))
+								.append("date", new BasicDBObject("$first", "$fromDate"))));
+	
+					break;
+				}
+
+				case MONTHLY: {
+					aggregationOperation = new CustomAggregationOperation(
+							new BasicDBObject("$group",
+									new BasicDBObject("_id",
+											new BasicDBObject("month", "$month").append("year", "$year"))
+									.append("count", new BasicDBObject("$sum", 1))
+									.append("date", new BasicDBObject("$first", "$fromDate"))));
+	
+					break;
+				}
+				case YEARLY: {
+	
+					aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("year", "$year"))
+							.append("count", new BasicDBObject("$sum", 1))
+							.append("date", new BasicDBObject("$first", "$fromDate"))));
+	
+					break;
+	
+				}
+				default:
+					break;
+				}
+			else {
+				aggregationOperation = new CustomAggregationOperation(
+						new BasicDBObject("$group",
+								new BasicDBObject("_id",
+										new BasicDBObject("day", "$day").append("month", "$month").append("year","$year"))
+								.append("count", new BasicDBObject("$sum", 1))
+								.append("date", new BasicDBObject("$first", "$fromDate"))));
+			}
+		
+			Aggregation	aggregation = null;
+			if(size > 0) {
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						new ProjectionOperation(
+								Fields.from(Fields.field("fromDate", "$fromDate"))).and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
+									.as("month").and("fromDate").extractYear().as("year").and("fromDate")
+									.extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(Direction.DESC, "fromDate"), Aggregation.skip(page * size), Aggregation.limit(size));
+			}else {
+				aggregation = Aggregation.newAggregation(
+						Aggregation.match(criteria),
+						new ProjectionOperation(
+								Fields.from(Fields.field("fromDate", "$fromDate"))).and("fromDate").extractDayOfMonth().as("day").and("fromDate").extractMonth()
+									.as("month").and("fromDate").extractYear().as("year").and("fromDate")
+									.extractWeek().as("week"),
+							aggregationOperation, Aggregation.sort(Direction.DESC, "fromDate"));
+			}
+				AggregationResults<AppointmentCountAnalyticResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						AppointmentCollection.class, AppointmentCountAnalyticResponse.class);
+				response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting appointment count analytics data");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting appointment count analytics data");
+		}
+		return response;
+	}
+
+	private List<AppointmentCountAnalyticResponse> getAppointmentCountAnalyticnDataByPatientGroup(String doctorId,
+			String locationId, String hospitalId, String fromDate, String toDate, int page, int size) {
+		List<AppointmentCountAnalyticResponse> response = null;
+		try {
+				Criteria criteria = new Criteria();
+				
+				if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+					criteria.and("doctorId").in(new ObjectId(doctorId));
+				}
+				if (!DPDoctorUtils.anyStringEmpty(locationId)) {
+					criteria.and("locationId").is(new ObjectId(locationId));
+				}
+	
+				Criteria criteria2 = new Criteria();
+				Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+				if(!DPDoctorUtils.anyStringEmpty(fromDate)) {
+					localCalendar.setTime(new Date(Long.parseLong(fromDate)));
+					int currentDay = localCalendar.get(Calendar.DATE);
+					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+					int currentYear = localCalendar.get(Calendar.YEAR);
+	
+					DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+					criteria2.and("appointment.fromDate").gt(start);
+				}
+				if(!DPDoctorUtils.anyStringEmpty(toDate)) {
+					localCalendar.setTime(new Date(Long.parseLong(toDate)));
+					int currentDay = localCalendar.get(Calendar.DATE);
+					int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+					int currentYear = localCalendar.get(Calendar.YEAR);
+	
+					DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+							DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+					criteria2.and("appointment.fromDate").lte(end);
+				}
+				
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria), 
+						Aggregation.lookup("patient_group_cl", "groupId", "id", "patientGroupCollection"),
+						Aggregation.unwind("patientGroupCollection"),
+						Aggregation.lookup("appointment_cl", "patientId", "patientGroupCollection.patientId", "appointment"),
+						Aggregation.unwind("appointment"),
+						Aggregation.match(criteria2), 
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id","id")
+								.append("groupName", new BasicDBObject("$first", "$name"))
+								.append("count", new BasicDBObject("$sum", 1)))));
+				
+	
+				response = mongoTemplate.aggregate(aggregation, GroupCollection.class, AppointmentCountAnalyticResponse.class).getMappedResults();
+
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While getting appointment count analytics data by patient group");
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While getting appointment count analytics data by patient group");
 		}
 		return response;
 	}

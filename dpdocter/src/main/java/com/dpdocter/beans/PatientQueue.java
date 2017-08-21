@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.Date;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.QueueStatus;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -28,6 +29,16 @@ public class PatientQueue {
 
     private String appointmentId;
 
+    private long waitedFor = 0;
+    
+    private long engagedAt = 0;
+    
+    private long checkedInAt = 0;
+    
+    private long checkedOutAt = 0;
+    
+    private long engagedFor = 0;
+    
     public String getDoctorId() {
 	return doctorId;
     }
@@ -108,10 +119,52 @@ public class PatientQueue {
 		this.status = status;
 	}
 
+	public long getWaitedFor() {
+		return waitedFor;
+	}
+
+	public void setWaitedFor(long waitedFor) {
+		this.waitedFor = waitedFor;
+	}
+
+	public long getEngagedAt() {
+		return engagedAt;
+	}
+
+	public void setEngagedAt(long engagedAt) {
+		this.engagedAt = engagedAt;
+	}
+
+	public long getCheckedInAt() {
+		return checkedInAt;
+	}
+
+	public void setCheckedInAt(long checkedInAt) {
+		this.checkedInAt = checkedInAt;
+	}
+
+	public long getCheckedOutAt() {
+		return checkedOutAt;
+	}
+
+	public void setCheckedOutAt(long checkedOutAt) {
+		this.checkedOutAt = checkedOutAt;
+	}
+
+	public long getEngagedFor() {
+		return engagedFor;
+	}
+
+	public void setEngagedFor(long engagedFor) {
+		this.engagedFor = engagedFor;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientQueue [id=" + id + ", count=" + count + ", status=" + status + ", doctorId=" + doctorId
 				+ ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", patient=" + patient + ", date="
-				+ date + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + "]";
+				+ date + ", sequenceNo=" + sequenceNo + ", appointmentId=" + appointmentId + ", waitedFor=" + waitedFor
+				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
+				+ ", engagedFor=" + engagedFor + "]";
 	}
 }
