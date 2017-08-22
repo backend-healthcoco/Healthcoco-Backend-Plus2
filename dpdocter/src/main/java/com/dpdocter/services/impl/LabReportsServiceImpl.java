@@ -2,6 +2,7 @@ package com.dpdocter.services.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -92,13 +93,16 @@ public class LabReportsServiceImpl implements LabReportsService{
 		LabReportsCollection labReportsCollection = null;
 		ImageURLResponse imageURLResponse = null;
 		try {
+			Date createdTime = new Date();
+			
 			if (fileDetails != null) {
-				String path = "lab-reports";
-				//FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetails.getFileName());
-				String fileName = fileDetails.getFileName().replaceFirst("." + fileExtension, "");
-				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
-				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails, recordPath, true);
+				//String path = "lab-reports";
+				//String recordLabel = fileDetails.getFileName();
+				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
+				String path = "lab-reports" + File.separator + request.getLabTestSampleId();
+
+				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails,
+						path, false);
 			}
 			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
 					new ObjectId(request.getLabTestSampleId()));
