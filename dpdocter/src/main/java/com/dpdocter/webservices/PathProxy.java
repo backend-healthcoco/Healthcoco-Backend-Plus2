@@ -401,7 +401,7 @@ public interface PathProxy {
 
 		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
 
-		public static final String GET_USER_RECORDS_PATIENT_ID = "user/{patientId}";
+		public static final String GET_USER_RECORDS = "/user/get";
 
 		public static final String GET_USER_RECORDS_ALLOWANCE = "user/allowance";
 

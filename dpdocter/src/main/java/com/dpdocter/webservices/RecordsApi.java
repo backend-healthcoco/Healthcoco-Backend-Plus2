@@ -338,8 +338,6 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		
-
 		Records records = recordsService.addRecordsMultipart(file, request);
 
 		// patient track
@@ -440,17 +438,18 @@ public class RecordsApi {
 
 	}
 
-	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
+	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS)
 	@GET
-	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID, notes = PathProxy.RecordsUrls.GET_USER_RECORDS_PATIENT_ID)
-	public Response<UserRecords> getUserRecordsByuserId(@PathParam("patientId") String patientId,
+	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS, notes = PathProxy.RecordsUrls.GET_USER_RECORDS)
+	public Response<UserRecords> getUserRecordsByuserId(@QueryParam("patientId") String patientId,
 			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId) || DPDoctorUtils.anyStringEmpty(hospitalId, doctorId, locationId)) {
 			logger.warn("User Id Cannot Be Empty");
-			throw new BusinessException(ServiceError.InvalidInput, "Patient Id  Cannot Be Empty");
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Patient Id or hospitalId ,doctorId ,locationId Cannot Be Empty");
 		}
 		Response<UserRecords> response = new Response<UserRecords>();
 
