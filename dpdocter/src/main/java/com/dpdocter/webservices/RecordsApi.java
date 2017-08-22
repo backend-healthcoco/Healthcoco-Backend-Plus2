@@ -446,7 +446,7 @@ public class RecordsApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(patientId) || DPDoctorUtils.anyStringEmpty(hospitalId, doctorId, locationId)) {
+		if (DPDoctorUtils.anyStringEmpty(patientId,hospitalId, doctorId, locationId)) {
 			logger.warn("User Id Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id or hospitalId ,doctorId ,locationId Cannot Be Empty");
