@@ -338,12 +338,7 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		if (file != null) {
-			if (DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName(),
-					request.getRecordsType())) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid file or record type ");
-			}
-		}
+		
 
 		Records records = recordsService.addRecordsMultipart(file, request);
 
@@ -408,6 +403,12 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
+		if (file != null) {
+			if (DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName(),
+					request.getRecordsType())) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid file or record type ");
+			}
+		}
 		UserRecords records = recordsService.addUserRecordsMultipart(file, request);
 
 		if (records != null) {
