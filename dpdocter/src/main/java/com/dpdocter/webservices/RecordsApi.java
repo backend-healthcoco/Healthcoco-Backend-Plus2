@@ -441,18 +441,17 @@ public class RecordsApi {
 	@Path(value = PathProxy.RecordsUrls.GET_USER_RECORDS)
 	@GET
 	@ApiOperation(value = PathProxy.RecordsUrls.GET_USER_RECORDS, notes = PathProxy.RecordsUrls.GET_USER_RECORDS)
-	public Response<UserRecords> getUserRecordsByuserId(@QueryParam("patientId") String patientId,
-			@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
+	public Response<UserRecords> getUserRecords(@QueryParam("patientId") String patientId, @QueryParam("page") int page,
+			@QueryParam("size") int size, @QueryParam("doctorId") String doctorId,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
-		if (DPDoctorUtils.anyStringEmpty(patientId,hospitalId, doctorId, locationId)) {
-			logger.warn("User Id Cannot Be Empty");
+		if (DPDoctorUtils.anyStringEmpty(patientId) && DPDoctorUtils.anyStringEmpty(hospitalId, doctorId, locationId)) {
+			logger.warn("Patient Id or hospitalId ,doctorId ,locationId Cannot Be Empty");
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Patient Id or hospitalId ,doctorId ,locationId Cannot Be Empty");
 		}
 		Response<UserRecords> response = new Response<UserRecords>();
-
 		List<UserRecords> records = recordsService.getUserRecordsByuserId(patientId, doctorId, locationId, hospitalId,
 				page, size, updatedTime, discarded);
 		response.setDataList(records);
