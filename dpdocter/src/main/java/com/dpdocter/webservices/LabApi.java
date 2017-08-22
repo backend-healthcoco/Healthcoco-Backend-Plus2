@@ -497,7 +497,6 @@ public class LabApi {
 	
 	@POST
 	@Path(value = PathProxy.LabUrls.UPLOAD_REPORTS)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.LabUrls.UPLOAD_REPORTS, notes = PathProxy.LabUrls.UPLOAD_REPORTS)
 	public Response<LabReports> addRecordsBase64(RecordUploadRequest request) {
 		if (request == null) {

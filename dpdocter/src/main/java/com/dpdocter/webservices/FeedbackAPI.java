@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -206,11 +207,12 @@ public class FeedbackAPI {
 	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	public Response<DailyImprovementFeedback> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
-		    @QueryParam(value = "prescriptionId") String prescriptionId) {
+		    @QueryParam(value = "prescriptionId") String prescriptionId, @QueryParam(value = "doctorId") String doctorId,
+		    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
 		Response<DailyImprovementFeedback> response = new Response<>();
 		List<DailyImprovementFeedback> feedbacks = null;
 		try {
-			feedbacks = feedbackService.getDailyImprovementFeedbackList(prescriptionId, page, size);
+			feedbacks = feedbackService.getDailyImprovementFeedbackList(prescriptionId, doctorId, locationId, hospitalId, page, size);
 			response.setDataList(feedbacks);
 		} catch (Exception e) {
 			// TODO: handle exception

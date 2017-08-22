@@ -31,8 +31,9 @@ public interface FeedbackService {
 
 	PatientFeedback addEditPatientFeedback(PatientFeedbackRequest feedback);
 
-	List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId, int page, int size);
-
 	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request, String type);
+
+	List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId, String doctorId,
+			String locationId, String hospitalId, int page, int size);
 
 }

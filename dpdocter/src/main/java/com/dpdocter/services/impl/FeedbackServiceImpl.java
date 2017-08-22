@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.QueryParam;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -340,7 +342,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 	
 	@Override
 	@Transactional
-	public List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId , int page , int size) {
+	public List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId , String doctorId,
+		     String locationId, String hospitalId, int page , int size) {
 		List<DailyImprovementFeedback> dailyImprovementFeedbacks = null;
 
 		try {
@@ -350,8 +353,19 @@ public class FeedbackServiceImpl implements FeedbackService {
 			{
 				criteria.and("prescriptionId").is(new ObjectId(prescriptionId));
 			}
-		
-
+			
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+			{
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
+			
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+			{
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
+			
+			criteria.and("discarded").is(false);
+			
 			if (size > 0)
 				dailyImprovementFeedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.skip(page * size), Aggregation.limit(size),
