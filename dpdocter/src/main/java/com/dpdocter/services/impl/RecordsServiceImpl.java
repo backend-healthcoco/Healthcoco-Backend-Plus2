@@ -1358,16 +1358,18 @@ public class RecordsServiceImpl implements RecordsService {
 						.setRecordsLabel(FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
 			}
 			if (file != null) {
-				String path = "records" + File.separator + request.getPatientId();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
-				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-				String recordLabel = fileName;
-				fileManager.saveRecord(file, recordPath, 0.0, false);
-				recordsCollection.setRecordsUrl(recordPath);
-				recordsCollection.setRecordsPath(recordPath);
-				recordsCollection.setRecordsLabel(recordLabel);
+				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
+					String path = "userRecords" + File.separator + request.getPatientId();
+					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+					String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+					String recordLabel = fileName;
+					fileManager.saveRecord(file, recordPath, 0.0, false);
+					recordsCollection.setRecordsUrl(recordPath);
+					recordsCollection.setRecordsPath(recordPath);
+					recordsCollection.setRecordsLabel(recordLabel);
+				}
 			}
 
 			if (oldRecord != null) {
@@ -1575,10 +1577,13 @@ public class RecordsServiceImpl implements RecordsService {
 					request.getLocationId())) {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
 				if (userCollection == null) {
-					throw new BusinessException(ServiceError.InvalidInput, "Invalid User Id");
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id");
 				}
 			} else {
 				userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
+				}
 			}
 			if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 				userAllowanceDetailsCollection = userAllowanceDetailsRepository
@@ -1640,6 +1645,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
 				recordsFile.setFileSizeInMB(fileSizeInMB);
 				recordsFile.setRecordsUrl(recordPath);
+				recordsFile.setThumbnailUrl(fileManager.saveThumbnailUrl(file, recordPath));
 				recordsFile.setRecordsFileLabel(recordfileLabel);
 				recordsFile.setRecordsType(request.getRecordsType());
 
@@ -1687,7 +1693,9 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			response = new UserRecords();
 			BeanUtil.map(userRecordsCollection, response);
-		} catch (BusinessException e) {
+		} catch (
+
+		BusinessException e) {
 			logger.error(e);
 			throw e;
 		} catch (Exception e) {
@@ -1708,6 +1716,7 @@ public class RecordsServiceImpl implements RecordsService {
 				BeanUtil.map(userRecordsCollection, userRecords);
 				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
 					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+					recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
 				}
 			}
 
@@ -1762,6 +1771,7 @@ public class RecordsServiceImpl implements RecordsService {
 			for (UserRecords userRecords : response) {
 				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
 					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+					recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
 				}
 
 			}
@@ -1909,6 +1919,7 @@ public class RecordsServiceImpl implements RecordsService {
 			BeanUtil.map(userRecordsCollection, response);
 			for (RecordsFile recordsFile : response.getRecordsFiles()) {
 				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
 			}
 		} catch (Exception e) {
 			logger.error(e);

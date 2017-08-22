@@ -5,6 +5,8 @@ public class RecordsFile {
 	private String fileId;
 
 	private String recordsUrl;
+	
+	private String thumbnailUrl;
 
 	private String recordsPath;
 
@@ -13,6 +15,16 @@ public class RecordsFile {
 	private String recordsType;
 
 	private Double fileSizeInMB=0.0;
+	
+	
+
+	public String getThumbnailUrl() {
+		return thumbnailUrl;
+	}
+
+	public void setThumbnailUrl(String thumbnailUrl) {
+		this.thumbnailUrl = thumbnailUrl;
+	}
 
 	public String getFileId() {
 		return fileId;

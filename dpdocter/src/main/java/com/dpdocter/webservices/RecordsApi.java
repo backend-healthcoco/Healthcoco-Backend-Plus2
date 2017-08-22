@@ -338,6 +338,13 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
+		if (file != null) {
+			if (DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName(),
+					request.getRecordsType())) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid file or record type ");
+			}
+		}
+
 		Records records = recordsService.addRecordsMultipart(file, request);
 
 		// patient track
@@ -406,6 +413,7 @@ public class RecordsApi {
 		if (records != null) {
 			for (RecordsFile recordsFile : records.getRecordsFiles()) {
 				recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
 			}
 		}
 

@@ -360,7 +360,7 @@ public class BlogServicesImpl implements BlogService {
 						Aggregation.sort(Sort.Direction.DESC, "fevourite.createdTime"));
 			}
 
-			AggregationResults<BlogCollection> results = mongoTemplate.aggregate(aggregation, BlogCollection.class,
+			AggregationResults<BlogCollection> results = mongoTemplate.aggregate(aggregation, "blog_cl",
 					BlogCollection.class);
 			blogCollections = results.getMappedResults();
 			response = new ArrayList<Blog>();

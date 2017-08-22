@@ -211,10 +211,12 @@ public class FileManagerImpl implements FileManager {
 			ObjectMetadata metadata = new ObjectMetadata();
 			byte[] contentBytes = IOUtils.toByteArray(fis);
 
-			/*fileSizeInMB = new BigDecimal(contentBytes.length).divide(new BigDecimal(1000 * 1000)).doubleValue();
-			if (fileSizeInMB > 10) {
-				throw new BusinessException(ServiceError.Unknown, " You cannot upload file more than 1O mb");
-			}*/
+			/*
+			 * fileSizeInMB = new BigDecimal(contentBytes.length).divide(new
+			 * BigDecimal(1000 * 1000)).doubleValue(); if (fileSizeInMB > 10) {
+			 * throw new BusinessException(ServiceError.Unknown,
+			 * " You cannot upload file more than 1O mb"); }
+			 */
 
 			metadata.setContentLength(contentBytes.length);
 			metadata.setContentEncoding(file.getContentDisposition().getType());
@@ -225,7 +227,7 @@ public class FileManagerImpl implements FileManager {
 			response.setImageUrl(imagePath + recordPath);
 			if (createThumbnail) {
 				response.setThumbnailUrl(
-						imagePath + saveThumbnailAndReturnThumbNailUrlForLocaleImage(file, recordPath));
+						imagePath + saveThumbnailUrl(file, recordPath));
 			}
 		} catch (AmazonServiceException ase) {
 			ase.printStackTrace();
@@ -249,7 +251,9 @@ public class FileManagerImpl implements FileManager {
 
 	}
 
-	public String saveThumbnailAndReturnThumbNailUrlForLocaleImage(FormDataBodyPart file, String path) {
+	@Override
+	@Transactional
+	public String saveThumbnailUrl(FormDataBodyPart file, String path) {
 		String thumbnailUrl = "";
 
 		try {
