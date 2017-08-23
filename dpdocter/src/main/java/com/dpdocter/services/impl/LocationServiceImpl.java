@@ -713,6 +713,7 @@ public class LocationServiceImpl implements LocationServices {
 						LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
 								.findOne(new ObjectId(labTestSample.getId()));
 						BeanUtil.map(labTestSample, labTestSampleCollection);
+						labTestSampleCollection.setRateCardTestAssociation(labTestSample.getRateCardTestAssociation());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						labTestSampleIds.add(labTestSampleCollection.getId());
 					} else {

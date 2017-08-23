@@ -9,6 +9,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -47,6 +48,9 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Autowired
 	MongoTemplate mongoTemplate;
+	
+	@Value(value = "${image.path}")
+	private String imagePath;
 	
 	@Override
 	@Transactional
@@ -102,7 +106,12 @@ public class LabReportsServiceImpl implements LabReportsService{
 				String path = "lab-reports" + File.separator + request.getLabTestSampleId();
 
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails,
-						path, false);
+						path, true);
+				if(imageURLResponse != null)
+				{
+					imageURLResponse.setImageUrl(imagePath + imageURLResponse.getImageUrl());
+					imageURLResponse.setThumbnailUrl(imagePath + imageURLResponse.getThumbnailUrl());
+				}
 			}
 			labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(
 					new ObjectId(request.getLabTestSampleId()));
