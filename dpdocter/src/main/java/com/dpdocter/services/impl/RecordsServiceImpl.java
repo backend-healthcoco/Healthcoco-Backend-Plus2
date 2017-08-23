@@ -38,6 +38,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.Count;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
@@ -82,6 +83,7 @@ import com.dpdocter.repository.TagsRepository;
 import com.dpdocter.repository.UserAllowanceDetailsRepository;
 import com.dpdocter.repository.UserRecordsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.request.PatientRegistrationRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
@@ -1567,12 +1569,12 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public UserRecords addUserRecordsMultipart(FormDataBodyPart file, UserRecords request) {
+	public UserRecords addUserRecords(UserRecords request) {
 		UserRecords response = null;
 		try {
 			Date createdTime = new Date();
 			UserCollection userCollection = null;
-			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
+
 			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
 					request.getLocationId())) {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -1584,72 +1586,32 @@ public class RecordsServiceImpl implements RecordsService {
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
-			}
-			if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-				userAllowanceDetailsCollection = userAllowanceDetailsRepository
-						.findByUserId(new ObjectId(request.getPatientId()));
-				if (userAllowanceDetailsCollection == null) {
-					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
-							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject()
-															.append("if",
-																	new BasicDBObject("$eq",
-																			Arrays.asList("$emailAddress",
-																					"$userName")))
-															.append("then", "$$PRUNE").append("else", "$$KEEP")))));
+				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 
-					List<UserCollection> userCollections = mongoTemplate
-							.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
-					Collection<ObjectId> userIds = CollectionUtils.collect(userCollections,
-							new BeanToPropertyValueTransformer("id"));
-					userAllowanceDetailsCollection.setUserIds(new ArrayList<>(userIds));
-				}
+					for (int index = 0; request.getRecordsFiles().size() > index; index++) {
 
-				if (userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() <= 0) {
-					throw new BusinessException(ServiceError.Unknown, "No Space left");
+						UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
+								.findByUserId(new ObjectId(request.getPatientId()));
+						if (userAllowanceDetailsCollection.getAllowedRecordsSizeInMB()
+								- userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() >= 0) {
+							userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
+									userAllowanceDetailsCollection.getAvailableRecordsSizeInMB()
+											- request.getRecordsFiles().get(index).getFileSizeInMB());
+							userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+						} else {
+							request.getRecordsFiles().remove(index);
+						}
+
+					}
 				}
 			}
 			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
 			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
 				oldRecord = userRecordsRepository.findOne(new ObjectId(request.getId()));
-
 			}
 
 			userRecordsCollection = new UserRecordsCollection();
 			BeanUtil.map(request, userRecordsCollection);
-			RecordsFile recordsFile = null;
-			if (file != null) {
-				String path = "userRecords" + File.separator + request.getPatientId();
-				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
-				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-				String recordfileLabel = fileName;
-				Double fileSizeInMB = 0.0;
-				if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
-					fileSizeInMB = fileManager.saveRecord(file, recordPath,
-							userAllowanceDetailsCollection.getAvailableRecordsSizeInMB(), true);
-
-					userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
-							userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() - fileSizeInMB);
-					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
-				} else {
-					fileSizeInMB = fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
-				}
-
-				recordsFile = new RecordsFile();
-				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
-				recordsFile.setFileSizeInMB(fileSizeInMB);
-				recordsFile.setRecordsUrl(recordPath);
-				recordsFile.setThumbnailUrl(fileManager.saveThumbnailUrl(file, recordPath));
-				recordsFile.setRecordsFileLabel(recordfileLabel);
-				recordsFile.setRecordsType(request.getRecordsType());
-
-			}
 
 			if (oldRecord != null) {
 				userRecordsCollection.setCreatedTime(oldRecord.getCreatedTime());
@@ -1670,18 +1632,6 @@ public class RecordsServiceImpl implements RecordsService {
 				}
 				userRecordsCollection.setCreatedTime(new Date());
 			}
-			if (recordsFile != null) {
-				if (userRecordsCollection.getRecordsFiles() != null) {
-					userRecordsCollection.getRecordsFiles().add(recordsFile);
-				}
-
-				else {
-					List<RecordsFile> recordsFiles = new ArrayList<RecordsFile>();
-					recordsFiles.add(recordsFile);
-					userRecordsCollection.setRecordsFiles(recordsFiles);
-
-				}
-			}
 
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 
@@ -1693,6 +1643,7 @@ public class RecordsServiceImpl implements RecordsService {
 			}
 			response = new UserRecords();
 			BeanUtil.map(userRecordsCollection, response);
+
 		} catch (
 
 		BusinessException e) {
@@ -1701,7 +1652,8 @@ public class RecordsServiceImpl implements RecordsService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "While add edit user record");
+
 		}
 		return response;
 	}
@@ -1930,7 +1882,7 @@ public class RecordsServiceImpl implements RecordsService {
 	}
 
 	@Override
-	public UserRecords ShareUserRecordsFile(String recordId, String userId) {
+	public UserRecords shareUserRecordsFile(String recordId, String userId) {
 		UserRecords response = null;
 		try {
 			UserRecordsCollection userRecordsCollection = userRecordsRepository.findOne(new ObjectId(recordId));
@@ -1997,6 +1949,85 @@ public class RecordsServiceImpl implements RecordsService {
 		smsDetails.add(smsDetail);
 		smsTrackDetail.setSmsDetails(smsDetails);
 		smsServices.sendSMS(smsTrackDetail, true);
+	}
+
+	@Override
+	public RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request) {
+		RecordsFile recordsFile = null;
+		try {
+			UserAllowanceDetailsCollection userAllowanceDetailsCollection = null;
+			Date createdTime = new Date();
+
+			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+				UserCollection userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
+				if (userCollection == null) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
+				}
+				userAllowanceDetailsCollection = userAllowanceDetailsRepository
+						.findByUserId(new ObjectId(request.getPatientId()));
+
+				if (userAllowanceDetailsCollection == null) {
+					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
+					Aggregation aggregation = Aggregation.newAggregation(
+							Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
+							new CustomAggregationOperation(
+									new BasicDBObject("$redact",
+											new BasicDBObject("$cond",
+													new BasicDBObject()
+															.append("if",
+																	new BasicDBObject("$eq",
+																			Arrays.asList("$emailAddress",
+																					"$userName")))
+															.append("then", "$$PRUNE").append("else", "$$KEEP")))));
+
+					List<UserCollection> userCollections = mongoTemplate
+							.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+					@SuppressWarnings("unchecked")
+					Collection<ObjectId> userIds = CollectionUtils.collect(userCollections,
+							new BeanToPropertyValueTransformer("id"));
+					userAllowanceDetailsCollection.setUserIds(new ArrayList<>(userIds));
+				}
+
+				if (userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() <= 0) {
+					throw new BusinessException(ServiceError.Unknown, "No Space left");
+				}
+			}
+			if (file != null) {
+				String path = "userRecords" + File.separator + request.getPatientId();
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
+				String recordfileLabel = fileName;
+				Double fileSizeInMB = 0.0;
+				if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
+					fileSizeInMB = fileManager.saveRecord(file, recordPath,
+							userAllowanceDetailsCollection.getAvailableRecordsSizeInMB(), true);
+
+					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+				} else {
+					fileSizeInMB = fileManager.saveRecord(file, recordPath, fileSizeInMB, false);
+				}
+
+				recordsFile = new RecordsFile();
+				recordsFile.setFileId("file" + DPDoctorUtils.generateRandomId());
+				recordsFile.setFileSizeInMB(fileSizeInMB);
+				recordsFile.setRecordsUrl(recordPath);
+				recordsFile.setThumbnailUrl(fileManager.saveThumbnailUrl(file, recordPath));
+				recordsFile.setRecordsFileLabel(recordfileLabel);
+				recordsFile.setRecordsPath(path);
+				recordsFile.setRecordsType(request.getRecordsType());
+
+			}
+
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "error while uploading my file record");
+
+		}
+		return recordsFile;
+
 	}
 
 }

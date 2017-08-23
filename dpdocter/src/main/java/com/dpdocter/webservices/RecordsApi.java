@@ -33,6 +33,7 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.ChangeRecordLabelDescriptionRequest;
+import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
@@ -388,26 +389,16 @@ public class RecordsApi {
 		return response;
 	}
 
-	@POST
 	@Path(value = PathProxy.RecordsUrls.ADD_USER_RECORDS)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@POST
 	@ApiOperation(value = PathProxy.RecordsUrls.ADD_USER_RECORDS, notes = PathProxy.RecordsUrls.ADD_USER_RECORDS)
-	public Response<UserRecords> addUserRecords(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		UserRecords request = data.getValueAs(UserRecords.class);
+	public Response<UserRecords> addUserRecords(UserRecords request) {
 
-		if (request == null && file == null) {
+		if (request == null) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		if (file != null) {
-			if (DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName(),
-					request.getRecordsType())) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid file or record type ");
-			}
-		}
-		UserRecords records = recordsService.addUserRecordsMultipart(file, request);
+		UserRecords records = recordsService.addUserRecords(request);
 
 		if (records != null) {
 			for (RecordsFile recordsFile : records.getRecordsFiles()) {
@@ -418,6 +409,31 @@ public class RecordsApi {
 
 		Response<UserRecords> response = new Response<UserRecords>();
 		response.setData(records);
+		return response;
+	}
+
+	@POST
+	@Path(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
+	@Consumes({ MediaType.MULTIPART_FORM_DATA })
+	@ApiOperation(value = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE, notes = PathProxy.RecordsUrls.UPLOAD_USER_RECORD_FILE)
+	public Response<RecordsFile> uploadUserRecord(@FormDataParam("file") FormDataBodyPart file,
+			@FormDataParam("data") FormDataBodyPart data) {
+
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		MyFiileRequest request = data.getValueAs(MyFiileRequest.class);
+
+		if (request == null || DPDoctorUtils.anyStringEmpty(file.getContentDisposition().getFileName())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		RecordsFile recordsFile = recordsService.uploadUserRecord(file, request);
+		if (recordsFile != null) {
+			recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+			recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
+		}
+
+		Response<RecordsFile> response = new Response<RecordsFile>();
+		response.setData(recordsFile);
 		return response;
 	}
 
@@ -518,7 +534,7 @@ public class RecordsApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Record Id  and userId Cannot Be Empty");
 		}
 
-		UserRecords record = recordsService.ShareUserRecordsFile(recordId, patientId);
+		UserRecords record = recordsService.shareUserRecordsFile(recordId, patientId);
 		Response<UserRecords> response = new Response<UserRecords>();
 		response.setData(record);
 		return response;

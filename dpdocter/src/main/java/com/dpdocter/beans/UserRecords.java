@@ -14,18 +14,15 @@ public class UserRecords extends GenericCollection {
 
 	private String recordsLabel;
 
-	private String recordsType;
-
 	private String explanation;
 
 	private String patientId;
 
 	private String doctorId;
-	
+
 	private String locationId;
-	
+
 	private String hospitalId;
-	
 
 	public String getLocationId() {
 		return locationId;
@@ -93,14 +90,6 @@ public class UserRecords extends GenericCollection {
 
 	public void setRecordsLabel(String recordsLabel) {
 		this.recordsLabel = recordsLabel;
-	}
-
-	public String getRecordsType() {
-		return recordsType;
-	}
-
-	public void setRecordsType(String recordsType) {
-		this.recordsType = recordsType;
 	}
 
 	public String getExplanation() {

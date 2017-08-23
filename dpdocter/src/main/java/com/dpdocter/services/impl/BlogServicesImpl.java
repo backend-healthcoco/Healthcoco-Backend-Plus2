@@ -203,12 +203,9 @@ public class BlogServicesImpl implements BlogService {
 		Blog response = null;
 		try {
 			BlogCollection blogCollection = null;
-			if (!DPDoctorUtils.anyStringEmpty(slugUrl))
-			{
+			if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
 				blogCollection = blogRepository.findBySlugURL(slugUrl);
-			}
-			else
-			{
+			} else {
 				blogCollection = blogRepository.findOne(new ObjectId(blogId));
 			}
 			if (blogCollection != null) {
@@ -224,9 +221,7 @@ public class BlogServicesImpl implements BlogService {
 				}
 				if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))
 					response.setTitleImage(imagePath + response.getTitleImage());
-			}
-			else
-			{
+			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid slug url");
 			}
 		} catch (Exception e) {
@@ -342,7 +337,7 @@ public class BlogServicesImpl implements BlogService {
 			List<BlogCollection> blogCollections = null;
 
 			if (!DPDoctorUtils.anyStringEmpty(userId))
-				criteria = criteria.and("fevourite.userId").is(userId);
+				criteria = criteria.and("fevourite.userId").is(new ObjectId(userId));
 			if (!DPDoctorUtils.anyStringEmpty(category))
 				criteria = criteria.and("category").is(category);
 			if (!DPDoctorUtils.anyStringEmpty(title))

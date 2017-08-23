@@ -15,9 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Blog;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.BlogResponse;
 import com.dpdocter.services.BlogService;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,6 +54,10 @@ public class BlogApi {
 	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL, notes = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
 	public Response<Blog> getBlogBySlugURL(@PathParam("slugURL") String slugURL, @QueryParam("userId") String userId) {
 		Blog blogresponse = blogService.getBlog(null, slugURL, userId);
+		if(DPDoctorUtils.anyStringEmpty(slugURL)){
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+			
+		}
 		Response<Blog> response = new Response<Blog>();
 		response.setData(blogresponse);
 		return response;

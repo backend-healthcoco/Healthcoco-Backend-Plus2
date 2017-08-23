@@ -17,10 +17,10 @@ public class UserAllowanceDetailsCollection extends  GenericCollection{
 	private List<ObjectId> userIds;
 	
     @Field
-    private Double allowedRecordsSizeInMB = 500.0;
+    private Double allowedRecordsSizeInMB = 50.0;
 
     @Field
-    private Double availableRecordsSizeInMB = 500.0;
+    private Double availableRecordsSizeInMB = 50.0;
 
 	public ObjectId getId() {
 		return id;

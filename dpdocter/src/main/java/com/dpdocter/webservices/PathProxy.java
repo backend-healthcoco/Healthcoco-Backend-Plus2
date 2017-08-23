@@ -398,6 +398,7 @@ public interface PathProxy {
 		public static final String CHANGE_RECORD_STATE = "/{recordId}/{recordsState}/changeState";
 
 		public static final String ADD_USER_RECORDS = "/user/add";
+		public static final String UPLOAD_USER_RECORD_FILE = "/upload/file/";
 
 		public static final String GET_USER_RECORD_BY_ID = "user/{recordId}/view";
 

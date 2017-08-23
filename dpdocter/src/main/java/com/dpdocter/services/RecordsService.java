@@ -7,9 +7,11 @@ import org.bson.types.ObjectId;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.Records;
+import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.Tags;
 import com.dpdocter.beans.UserAllowanceDetails;
 import com.dpdocter.beans.UserRecords;
+import com.dpdocter.request.MyFiileRequest;
 import com.dpdocter.request.RecordsAddRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
 import com.dpdocter.request.RecordsEditRequest;
@@ -67,7 +69,7 @@ public interface RecordsService {
 
 	Records changeRecordState(String recordId, String recordsState);
 
-	UserRecords addUserRecordsMultipart(FormDataBodyPart file, UserRecords request);
+	UserRecords addUserRecords(UserRecords request);
 
 	UserRecords getUserRecordById(String recordId);
 
@@ -79,6 +81,8 @@ public interface RecordsService {
 	UserRecords deleteUserRecord(String recordId, Boolean discarded, Boolean isVisible);
 
 	public UserRecords deleteUserRecordsFile(String recordId, List<String> fileIds);
-	
-	UserRecords ShareUserRecordsFile(String recordId, String patientId);
+
+	UserRecords shareUserRecordsFile(String recordId, String patientId);
+
+	RecordsFile uploadUserRecord(FormDataBodyPart file, MyFiileRequest request);
 }
