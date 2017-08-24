@@ -5154,7 +5154,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
-		Boolean showExamTitle = false;
+		Boolean showTitle = false;
 		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(
 				clinicalNotesCollection.getDoctorId(), clinicalNotesCollection.getLocationId(),
 				clinicalNotesCollection.getHospitalId(), ComponentType.ALL.getType());
@@ -5185,15 +5185,24 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		parameters.put("menstrualHistory", clinicalNotesCollection.getMenstrualHistory());
 		parameters.put("obstetricHistory", clinicalNotesCollection.getObstetricHistory());
 		parameters.put("provisionalDiagnosis", clinicalNotesCollection.getProvisionalDiagnosis());
+		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcNose())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
+				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
+			parameters.put("ComplaintsTitle", "Complaints :");
+			showTitle = true;
+		}
+		parameters.put("showPCTitle", showTitle);
+		showTitle = false;
 		if (!DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getEarsExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNeckExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getIndirectLarygoscopyExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getOralCavityThroatExam())
 				|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getNoseExam())) {
 			parameters.put("Examination", "Examination :");
-			showExamTitle = true;
+			showTitle = true;
 		}
-		parameters.put("showExamTitle", showExamTitle);
+		parameters.put("showExamTitle", showTitle);
 
 		if (!isCustomPDF || showUSG)
 			parameters.put("indicationOfUSG", clinicalNotesCollection.getIndicationOfUSG());
