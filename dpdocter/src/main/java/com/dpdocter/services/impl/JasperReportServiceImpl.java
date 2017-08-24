@@ -390,7 +390,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band = new JRDesignBand();
 			band.setHeight(20);
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{Complaints}"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{ComplaintsTitle}"));
 			jrDesignTextField.setX(1);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(20);
@@ -859,7 +859,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band = new JRDesignBand();
 			band.setHeight(20);
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{Complaints}"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{ComplaintsTitle}"));
 			jrDesignTextField.setX(1);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(20);

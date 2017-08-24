@@ -1724,7 +1724,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcEars())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcOralCavity())
 							|| !DPDoctorUtils.allStringsEmpty(clinicalNotesCollection.getPcThroat())) {
-						parameters.put("Complaints", "Complaints :");
+						parameters.put("ComplaintsTitle", "Complaints :");
 						showTitle = true;
 					}
 					parameters.put("showPCTitle", showTitle);
