@@ -3563,8 +3563,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
+			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-
+			
+			
 			band = new JRDesignBand();
 			band.setHeight(18);
 			jrDesignTextField = new JRDesignTextField();
@@ -3579,8 +3581,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+			
 
 		}
 	}
