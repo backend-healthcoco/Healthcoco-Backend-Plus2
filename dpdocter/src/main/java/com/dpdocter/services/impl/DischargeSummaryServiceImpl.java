@@ -794,7 +794,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		show = false;
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
-			show = true;
+			
 			parameters.put("fromDate",
 					"<b>on Date :</b>" + simpleDateFormat.format(dischargeSummaryCollection.getFromDate()));
 			parameters.put("time",
@@ -803,6 +803,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 									Double.parseDouble(dischargeSummaryCollection.getTime().getFromTime().toString()))
 							+ " - " + DPDoctorUtils.convertIntoTime(
 									Double.parseDouble(dischargeSummaryCollection.getTime().getToTime().toString())));
+			show = true;
 		}
 		parameters.put("showNextReview", show);
 		show = false;
