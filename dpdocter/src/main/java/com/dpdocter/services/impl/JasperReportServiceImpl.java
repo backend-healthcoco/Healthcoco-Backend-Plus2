@@ -1404,7 +1404,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setX(38 + drugWidth);
 		jrDesignTextField.setY(0);
 		jrDesignTextField.setHeight(18);
-		jrDesignTextField.setWidth(dosageWidth-3);
+		jrDesignTextField.setWidth(dosageWidth - 3);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
@@ -3401,7 +3401,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Complaints}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{complaints}", 18, contentFontSize - 1, false);
 		}
-				show = (Boolean) parameters.get("showpresentComplaints");
+		show = (Boolean) parameters.get("showpresentComplaints");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{PresentComplaints}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{presentComplaints}", 18, contentFontSize - 1, false);
@@ -3565,12 +3565,13 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
+			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 			band = new JRDesignBand();
 			band.setHeight(18);
 			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{toDate}"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{time}"));
 			jrDesignTextField.setX(1);
 			jrDesignTextField.setY(0);
 			jrDesignTextField.setHeight(18);
@@ -3581,8 +3582,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 			jrDesignTextField.setStretchWithOverflow(true);
 			jrDesignTextField.setMarkup("html");
 			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 			band.addElement(jrDesignTextField);
+			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
 		}
 	}
