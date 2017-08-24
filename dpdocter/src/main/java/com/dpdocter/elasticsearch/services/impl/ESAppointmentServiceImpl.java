@@ -162,15 +162,19 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			} else {
 				if (DPDoctorUtils.allStringsEmpty(city, location)) {
 					if (latitude != null && longitude != null) {
+						int distance=4;
+						do{
 						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-										.lon(Double.parseDouble(longitude)).distance("30km"))
+										.lon(Double.parseDouble(longitude)).distance(distance+"km"))
 								.must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
 						esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
 								.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build(),
 								ESLocationDocument.class);
-					} else {
+						distance = distance + 4;
+						} while ((esLocationDocuments.size() < 10) &&(distance < 30));
+					 }else {
 					}
 					if (city != null && location != null)
 						esLocationDocuments = esLocationRepository.findLocationByCityLocation(city, location, true,
@@ -261,14 +265,18 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			} else {
 				if (DPDoctorUtils.allStringsEmpty(city, location)) {
 					if (latitude != null && longitude != null) {
+						int distance=4;
+						do{
 						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-										.lon(Double.parseDouble(longitude)).distance("30km"))
+										.lon(Double.parseDouble(longitude)).distance(distance+"km"))
 								.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true));
 						esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
 								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
 								.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
 								ESUserLocaleDocument.class);
+						distance = distance + 4;
+					} while ((esUserLocaleDocuments.size() < 10) &&(distance < 30));
 					}
 				} else {
 					BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -341,16 +349,20 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			} else {
 				if (DPDoctorUtils.allStringsEmpty(city, location)) {
 					if (latitude != null && longitude != null) {
-						BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-								.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-										.lon(Double.parseDouble(longitude)).distance("30km"))
-								.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+						int distance = 4;
+						do {
 
-						esDoctorDocuments = elasticsearchTemplate.queryForList(
-								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-										.withPageable(new PageRequest(0, 50 - response.size()))
-										.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
-								ESDoctorDocument.class);
+							BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+									.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+											.lon(Double.parseDouble(longitude)).distance(distance + "km"))
+									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
+
+							esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
+									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
+									ESDoctorDocument.class);
+							distance = distance + 4;
+						} while ((esDoctorDocuments.size() < 10) &&(distance < 30));
 					}
 
 				} else {
