@@ -3546,46 +3546,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 				addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
 			}
 		}
-		show = (Boolean) parameters.get("showNextReview");
-		if (show) {
-			addDischargeitems(jasperDesign, columnWidth, "$P{NextReview}", 18, contentFontSize - 1, true);
-			band = new JRDesignBand();
-			band.setHeight(18);
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{fromDate}"));
-			jrDesignTextField.setX(1);
-			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(columnWidth);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-			jrDesignTextField.setBold(false);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
-			band.addElement(jrDesignTextField);
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-			
-			
-			band = new JRDesignBand();
-			band.setHeight(18);
-			jrDesignTextField = new JRDesignTextField();
-			jrDesignTextField.setExpression(new JRDesignExpression("$P{time}"));
-			jrDesignTextField.setX(1);
-			jrDesignTextField.setY(0);
-			jrDesignTextField.setHeight(18);
-			jrDesignTextField.setWidth(columnWidth);
-			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
-			jrDesignTextField.setBold(false);
-			jrDesignTextField.setStretchWithOverflow(true);
-			jrDesignTextField.setMarkup("html");
-			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
-			band.addElement(jrDesignTextField);
-			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-			
-
-		}
+	
 	}
 
 	private void addDischargeitems(JasperDesign jasperDesign, int columnWidth, String value, int height,

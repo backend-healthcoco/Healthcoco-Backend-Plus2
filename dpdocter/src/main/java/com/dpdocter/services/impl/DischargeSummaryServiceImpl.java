@@ -1,6 +1,7 @@
 package com.dpdocter.services.impl;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -180,7 +181,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			UserCollection doctor = userRepository.findOne(new ObjectId(dischargeSummary.getDoctorId()));
 			dischargeSummaryCollection = new DischargeSummaryCollection();
 			if (dischargeSummary.getId() == null) {
-				
+
 				dischargeSummary.setCreatedTime(new Date());
 				dischargeSummary.setCreatedBy(doctor.getFirstName());
 				dischargeSummary.setUniqueEmrId(
@@ -191,7 +192,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.anyStringEmpty(dischargeSummary.getId())) {
 				oldDischargeSummaryCollection = dischargeSummaryRepository
 						.findOne(new ObjectId(dischargeSummary.getId()));
-				
+
 				if (DPDoctorUtils.anyStringEmpty(oldDischargeSummaryCollection.getUniqueEmrId())) {
 					oldDischargeSummaryCollection.setUniqueEmrId(
 							UniqueIdInitial.DISCHARGE_SUMMARY.getInitial() + "-" + DPDoctorUtils.generateRandomId());
@@ -469,7 +470,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	}
 
 	private JasperReportResponse createJasper(DischargeSummaryCollection dischargeSummaryCollection,
-			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException {
+			PatientCollection patient, UserCollection user) throws NumberFormatException, IOException, ParseException {
 		JasperReportResponse response = null;
 		List<PrescriptionJasperDetails> prescriptionItems = new ArrayList<PrescriptionJasperDetails>();
 		Map<String, Object> parameters = new HashMap<String, Object>();
@@ -582,15 +583,15 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		show = false;
 		if (dischargeSummaryCollection.getAdmissionDate() != null) {
 			show = true;
-			parameters.put("dOA",
-					"<b>Date of Admission:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
+			parameters.put("dOA", "<b>Date of Admission:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getAdmissionDate()));
 		}
 		parameters.put("showDOA", show);
 		show = false;
 		if (dischargeSummaryCollection.getDischargeDate() != null) {
 			show = true;
-			parameters.put("dOD",
-					"<b>Date of Discharge:-</b>" + simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
+			parameters.put("dOD", "<b>Date of Discharge:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getDischargeDate()));
 		}
 		parameters.put("showDOD", show);
 		show = false;
@@ -794,20 +795,21 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		show = false;
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
-			
-			parameters.put("fromDate",
-					"<b>on Date :</b>" + simpleDateFormat.format(dischargeSummaryCollection.getFromDate()));
-			parameters.put("time",
-					"<b>Timing :</b>"
-							+ DPDoctorUtils.convertIntoTime(
-									Double.parseDouble(dischargeSummaryCollection.getTime().getFromTime().toString()))
-							+ " - " + DPDoctorUtils.convertIntoTime(
-									Double.parseDouble(dischargeSummaryCollection.getTime().getToTime().toString())));
-			show = true;
-		}
-		parameters.put("showNextReview", show);
-		show = false;
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+			String _24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
+					dischargeSummaryCollection.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "
+					+ sdf.format(dischargeSummaryCollection.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on " + dateTime);
+
+		}
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());

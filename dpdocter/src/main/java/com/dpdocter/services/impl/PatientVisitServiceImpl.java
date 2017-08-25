@@ -5,6 +5,7 @@ import static com.dpdocter.enums.VisitedFor.PRESCRIPTION;
 import static com.dpdocter.enums.VisitedFor.REPORTS;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1006,7 +1007,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 	private JasperReportResponse createJasper(PatientVisitLookupResponse patientVisitLookupResponse,
 			PatientCollection patient, UserCollection user, HistoryCollection historyCollection, Boolean showPH,
 			Boolean showPLH, Boolean showFH, Boolean showDA, Boolean showUSG, Boolean isLabPrint, Boolean isCustomPDF,
-			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) throws IOException {
+			Boolean showLMP, Boolean showEDD, Boolean showNoOfChildren) throws IOException, ParseException {
 		JasperReportResponse response = null;
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String resourceId = "<b>VID: </b>" + (patientVisitLookupResponse.getUniqueEmrId() != null
@@ -1175,7 +1176,24 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		parameters.put("clinicalNotes", clinicalNotes);
 		parameters.put("treatments", patientTreatments);
 		parameters.put("visitId", patientVisitLookupResponse.getId().toString());
+		if (parameters.get("followUpAppointment") == null
+				&& !DPDoctorUtils.anyStringEmpty(patientVisitLookupResponse.getAppointmentId())
+				&& patientVisitLookupResponse.getTime() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
+			String _24HourTime = String.format("%02d:%02d",
+					patientVisitLookupResponse.getTime().getFromTime() / 60,
+					patientVisitLookupResponse.getTime().getFromTime() % 60);
+			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+			sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+			_24HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
+			_12HourSDF.setTimeZone(TimeZone.getTimeZone("IST"));
 
+			Date _24HourDt = _24HourSDF.parse(_24HourTime);
+			String dateTime = _12HourSDF.format(_24HourDt) + ", "
+					+ sdf.format(patientVisitLookupResponse.getFromDate());
+			parameters.put("followUpAppointment", "Next Review on " + dateTime);
+		}
 		if (historyCollection != null) {
 			parameters.put("showHistory", true);
 			includeHistoryInPdf(historyCollection, showPH, showPLH, showFH, showDA, parameters);
