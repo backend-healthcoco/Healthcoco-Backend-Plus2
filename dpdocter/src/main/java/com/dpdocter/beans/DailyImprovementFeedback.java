@@ -15,7 +15,7 @@ public class DailyImprovementFeedback extends GenericCollection {
 	private FeelingTypeEnum feelingType;
 	private Long submissionDate;
 	private Integer day;
-	private Boolean discarded;
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;

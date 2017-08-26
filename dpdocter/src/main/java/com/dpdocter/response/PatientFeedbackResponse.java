@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.beans.PatientCard;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.MedicationEffectType;
@@ -16,7 +17,7 @@ public class PatientFeedbackResponse extends GenericCollection {
 	private String doctorId;
 	private String doctorName;
 	private String patientId;
-	private PatientCard patientCard;
+	private PatientShortCard patientCard;
 	private String hospitalId;
 	private String hospitalName;
 	private String localeId;
@@ -85,11 +86,11 @@ public class PatientFeedbackResponse extends GenericCollection {
 		this.patientId = patientId;
 	}
 
-	public PatientCard getPatientCard() {
+	public PatientShortCard getPatientCard() {
 		return patientCard;
 	}
 
-	public void setPatientCard(PatientCard patientCard) {
+	public void setPatientCard(PatientShortCard patientCard) {
 		this.patientCard = patientCard;
 	}
 

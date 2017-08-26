@@ -18,6 +18,7 @@ import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.PatientFeedback;
+import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
@@ -25,6 +26,7 @@ import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PharmacyFeedbackCollection;
 import com.dpdocter.collections.PrescriptionFeedbackCollection;
@@ -39,13 +41,16 @@ import com.dpdocter.repository.HospitalRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientFeedbackRepository;
+import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PharmacyFeedbackRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
 import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
+import com.dpdocter.response.DailyImprovementFeedbackResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
 import com.dpdocter.services.FeedbackService;
 
@@ -84,6 +89,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Autowired
 	private LocaleRepository localeRepository;
 
+	@Autowired
+	private PatientRepository patientRepository;
 	@Override
 	@Transactional
 	public AppointmentGeneralFeedback addEditAppointmentGeneralFeedback(AppointmentGeneralFeedback feedback) {
@@ -356,9 +363,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 	
 	@Override
 	@Transactional
-	public List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId , String doctorId,
+	public List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId , String doctorId,
 		     String locationId, String hospitalId, int page , int size) {
-		List<DailyImprovementFeedback> dailyImprovementFeedbacks = null;
+		List<DailyImprovementFeedbackResponse> dailyImprovementFeedbacks = null;
+		LocationCollection locationCollection = null;
+		HospitalCollection hospitalCollection = null;
+		UserCollection userCollection = null;
 
 		try {
 
@@ -371,25 +381,47 @@ public class FeedbackServiceImpl implements FeedbackService {
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 			{
 				criteria.and("doctorId").is(new ObjectId(doctorId));
+				userCollection = userRepository.findOne(new ObjectId(doctorId));
 			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 			{
 				criteria.and("locationId").is(new ObjectId(locationId));
+				locationCollection = locationRepository.findOne(new ObjectId(locationId));
 			}
 			
 			criteria.and("discarded").is(false);
 			
 			if (size > 0)
 				dailyImprovementFeedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						Aggregation.unwind("patientCard"),
 						Aggregation.skip(page * size), Aggregation.limit(size),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DailyImprovementFeedbackCollection.class,
-						DailyImprovementFeedback.class).getMappedResults();
+						DailyImprovementFeedbackResponse.class).getMappedResults();
 			else
 				dailyImprovementFeedbacks = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+								Aggregation.unwind("patientCard"),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
-						DailyImprovementFeedbackCollection.class, DailyImprovementFeedback.class).getMappedResults();
+						DailyImprovementFeedbackCollection.class, DailyImprovementFeedbackResponse.class).getMappedResults();
+			
+			for (DailyImprovementFeedbackResponse dailyImprovementFeedbackResponse : dailyImprovementFeedbacks) {
+				
+				if(locationCollection != null)
+				{
+					dailyImprovementFeedbackResponse.setLocationName(locationCollection.getLocationName());
+				}
+				if(userCollection != null)
+				{
+					dailyImprovementFeedbackResponse.setDoctorName(userCollection.getFirstName());
+				}
+				if(hospitalCollection != null)
+				{
+					dailyImprovementFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -418,6 +450,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 		}
 		return response;
 	}
+	
+	
 	
 	
 	@Override
@@ -503,6 +537,71 @@ public class FeedbackServiceImpl implements FeedbackService {
 		return feedbackResponses;
 	}
 	
+	
+	@Override
+	@Transactional
+	public PatientFeedbackResponse addPatientFeedbackReply(PatientFeedbackReplyRequest request) {
+		PatientFeedbackResponse patientFeedbackResponse = null;
+		LocaleCollection localeCollection = null;
+		LocationCollection locationCollection = null;
+		HospitalCollection hospitalCollection = null;
+		UserCollection userCollection = null;
+		List<PatientCollection> patientCollection = null;
+		try {
+
+			PatientFeedbackCollection patientFeedbackCollection = patientFeedbackRepository
+					.findOne(new ObjectId(request.getId()));
+
+			if (patientFeedbackCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+
+			
+
+			if (patientFeedbackCollection.getLocaleId() != null)
+				localeCollection = localeRepository.findOne(patientFeedbackCollection.getDoctorId());
+
+			if (patientFeedbackCollection.getHospitalId() != null)
+				hospitalCollection = hospitalRepository.findOne(patientFeedbackCollection.getHospitalId());
+
+			if (patientFeedbackCollection.getDoctorId() != null)
+				userCollection = userRepository.findOne(patientFeedbackCollection.getDoctorId());
+
+			if (patientFeedbackCollection.getLocationId() != null)
+				locationCollection = locationRepository.findOne(patientFeedbackCollection.getLocationId());
+
+			if (patientFeedbackCollection.getPatientId() != null)
+				patientCollection = patientRepository.findByUserId(patientFeedbackCollection.getPatientId());
+			patientFeedbackCollection.setReply(request.getReply());
+			patientFeedbackCollection = patientFeedbackRepository.save(patientFeedbackCollection);
+			patientFeedbackResponse =  new PatientFeedbackResponse();
+			BeanUtil.map(patientFeedbackCollection, patientFeedbackResponse);
+			if (localeCollection != null) {
+				patientFeedbackResponse.setLocaleName(localeCollection.getLocaleName());
+			}
+			if (locationCollection != null) {
+				patientFeedbackResponse.setLocationName(locationCollection.getLocationName());
+			}
+			if (userCollection != null) {
+				patientFeedbackResponse.setDoctorName(userCollection.getFirstName());
+			}
+			if (hospitalCollection != null) {
+				patientFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
+			}
+			
+			if(patientCollection != null && patientCollection.size() > 0)
+			{
+				PatientShortCard patientShortCard = new PatientShortCard();
+				BeanUtil.map(patientCollection.get(0), patientShortCard);
+				patientFeedbackResponse.setPatientCard(patientShortCard);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return patientFeedbackResponse;
+	}
 	
 	private List<Integer> getDaysForNotification(Integer maxDays)
 	{

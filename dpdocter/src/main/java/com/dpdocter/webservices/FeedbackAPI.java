@@ -23,8 +23,10 @@ import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
+import com.dpdocter.response.DailyImprovementFeedbackResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
 import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
@@ -203,14 +205,14 @@ public class FeedbackAPI {
 		return response;
 	}
 	
-	@POST
+	@GET
 	@Path(PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.GET_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedback> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<DailyImprovementFeedbackResponse> getDailyImprovementFeedback( @QueryParam("page") int page, @QueryParam("size") int size,
 		    @QueryParam(value = "prescriptionId") String prescriptionId, @QueryParam(value = "doctorId") String doctorId,
 		    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId) {
-		Response<DailyImprovementFeedback> response = new Response<>();
-		List<DailyImprovementFeedback> feedbacks = null;
+		Response<DailyImprovementFeedbackResponse> response = new Response<>();
+		List<DailyImprovementFeedbackResponse> feedbacks = null;
 		try {
 			feedbacks = feedbackService.getDailyImprovementFeedbackList(prescriptionId, doctorId, locationId, hospitalId, page, size);
 			response.setDataList(feedbacks);
@@ -239,5 +241,24 @@ public class FeedbackAPI {
 		}
 		return response;
 	}
+	
+	@POST
+	@Path(PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
+	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_PATIENT_FEEDBACK_REPLY)
+	public Response<PatientFeedbackResponse> addPatientFeedbackReply(PatientFeedbackReplyRequest request) {
+		Response<PatientFeedbackResponse> response = new Response<>();
+		PatientFeedbackResponse feedbacks = null;
+		try {
+			feedbacks = feedbackService.addPatientFeedbackReply(request);
+			response.setData(feedbacks);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
 
 }

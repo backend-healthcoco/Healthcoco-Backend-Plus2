@@ -8,8 +8,10 @@ import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.request.FeedbackGetRequest;
+import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
+import com.dpdocter.response.DailyImprovementFeedbackResponse;
 import com.dpdocter.response.PatientFeedbackResponse;
 import com.dpdocter.request.PharmacyFeedbackRequest;
 
@@ -33,7 +35,9 @@ public interface FeedbackService {
 
 	List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request, String type);
 
-	List<DailyImprovementFeedback> getDailyImprovementFeedbackList(String prescriptionId, String doctorId,
+	List<DailyImprovementFeedbackResponse> getDailyImprovementFeedbackList(String prescriptionId, String doctorId,
 			String locationId, String hospitalId, int page, int size);
+
+	PatientFeedbackResponse addPatientFeedbackReply(PatientFeedbackReplyRequest request);
 
 }
