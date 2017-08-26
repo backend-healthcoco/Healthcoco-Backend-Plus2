@@ -1242,10 +1242,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				if (patientTreatmentCollection.getDoctorId() != null
 						&& patientTreatmentCollection.getHospitalId() != null
 						&& patientTreatmentCollection.getLocationId() != null) {
+					Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
+					int no = 0;
 					if (patientTreatmentCollection.getTreatments() != null
 							&& !patientTreatmentCollection.getTreatments().isEmpty()) {
-						Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
-						int no = 0;
+						
 						patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
 						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
 							PatientTreatmentJasperDetails patientTreatments = new PatientTreatmentJasperDetails();
