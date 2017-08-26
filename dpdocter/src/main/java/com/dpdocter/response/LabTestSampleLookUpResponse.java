@@ -2,6 +2,7 @@ package com.dpdocter.response;
 
 import java.util.List;
 
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.collections.GenericCollection;
@@ -15,6 +16,7 @@ public class LabTestSampleLookUpResponse extends GenericCollection {
 	private String sampleType;
 	private String daughterLabLocationId;
 	private String parentLabLocationId;
+	private LabReports labReports;
 	private List<RateCardTestAssociation> rateCardTestAssociation;
 	private Boolean isUrgent;
 	private Long urgentTime;
@@ -151,6 +153,14 @@ public class LabTestSampleLookUpResponse extends GenericCollection {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public LabReports getLabReports() {
+		return labReports;
+	}
+
+	public void setLabReports(LabReports labReports) {
+		this.labReports = labReports;
 	}
 
 	@Override

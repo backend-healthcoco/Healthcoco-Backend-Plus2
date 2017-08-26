@@ -103,4 +103,6 @@ public interface LocationServices {
 
 	List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId, Long from, Long to, String searchTerm,
 			int size, int page);
+
+	Boolean updateRequestStatus(String id, String status);
 }

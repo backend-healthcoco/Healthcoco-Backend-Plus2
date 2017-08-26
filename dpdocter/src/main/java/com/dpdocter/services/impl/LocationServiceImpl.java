@@ -511,7 +511,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -555,7 +555,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
@@ -624,7 +624,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -668,7 +668,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
@@ -714,6 +714,7 @@ public class LocationServiceImpl implements LocationServices {
 								.findOne(new ObjectId(labTestSample.getId()));
 						BeanUtil.map(labTestSample, labTestSampleCollection);
 						labTestSampleCollection.setRateCardTestAssociation(labTestSample.getRateCardTestAssociation());
+						labTestSampleCollection.setIsCollected(request.getIsCompleted());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						labTestSampleIds.add(labTestSampleCollection.getId());
 					} else {
@@ -722,6 +723,7 @@ public class LocationServiceImpl implements LocationServices {
 						LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
 						BeanUtil.map(labTestSample, labTestSampleCollection);
 						labTestSampleCollection.setCreatedTime(new Date());
+						labTestSampleCollection.setIsCollected(request.getIsCompleted());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						labTestSampleIds.add(labTestSampleCollection.getId());
 					}
@@ -737,6 +739,7 @@ public class LocationServiceImpl implements LocationServices {
 							UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
 					LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
 					BeanUtil.map(labTestSample, labTestSampleCollection);
+					labTestSampleCollection.setIsCollected(request.getIsCompleted());
 					labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 					labTestSampleIds.add(labTestSampleCollection.getId());
 				}
@@ -899,6 +902,7 @@ public class LocationServiceImpl implements LocationServices {
 					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				} else {
 					ObjectId oldId = collectionBoyLabAssociationCollection.getId();
+					//collectionBoyLabAssociation.getCollectionBoyId().toString().equals(anObject)
 					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 					collectionBoyLabAssociationCollection.setId(oldId);
 				}
@@ -1517,7 +1521,8 @@ public class LocationServiceImpl implements LocationServices {
 			Criteria criteria = new Criteria();
 
 			ObjectId locationObjectId = new ObjectId(locationId);
-			//criteria.and("isCollected").is(true);
+			criteria.and("isCollected").is(true);
+			criteria.and("isCompleted").is(true);
 			if(from != null && to != null)
 			{
 				DateTime fromDate = new DateTime(from);
@@ -1534,16 +1539,20 @@ public class LocationServiceImpl implements LocationServices {
 					criteria.and("parentLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.unwind("location"), 
+							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
 
 				} else {
 					criteria.and("daughterLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.unwind("location"), 
+							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
 
 				}
@@ -1552,27 +1561,48 @@ public class LocationServiceImpl implements LocationServices {
 					criteria.and("parentLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+							Aggregation.unwind("location"), 
+							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 				} else {
 					criteria.and("daughterLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+							Aggregation.unwind("location"),
+							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 				}
 			}
 			AggregationResults<LabTestSampleLookUpResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestSampleCollection.class, LabTestSampleLookUpResponse.class);
-			System.out.println(aggregation);
+			//System.out.println(aggregation);
 			response = aggregationResults.getMappedResults();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting lab reports");
 			throw new BusinessException(ServiceError.Unknown, "Error Getting lab reports");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public Boolean updateRequestStatus(String id ,String status)
+	{
+		Boolean response = false;
+		try {
+			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.findOne(new ObjectId(id));
+			labTestPickupCollection.setStatus(status);
+			labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+			response = true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return response;
 	}

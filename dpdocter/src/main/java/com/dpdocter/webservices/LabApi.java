@@ -561,5 +561,27 @@ public class LabApi {
 		response.setDataList(labTestSamples);
 		return response;
 	}
+	
+	@Path(PathProxy.LabUrls.UPDATE_REQUEST_STATUS)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.UPDATE_REQUEST_STATUS, notes = PathProxy.LabUrls.UPDATE_REQUEST_STATUS)
+	public Response<Boolean> updateRequestStatus(@PathParam("id") String id , @QueryParam("status") String status) {
+		//List<LabTestPickupLookupResponse> labTestPickups = null;
+		Boolean result = null;
+		Response<Boolean> response = null;
+
+		try {
+			result = locationServices.updateRequestStatus(id, status);
+			response = new Response<Boolean>();
+			response.setData(result);
+		} catch (Exception e) {
+			// TODO: handle exception
+			//logger.warn(e);
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	
 
 }
