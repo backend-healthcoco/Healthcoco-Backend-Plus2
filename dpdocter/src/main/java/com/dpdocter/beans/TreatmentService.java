@@ -32,6 +32,8 @@ public class TreatmentService extends GenericCollection {
 
 	private List<String> fieldsRequired;
 
+	private Double count = 0.0;
+	
 	public String getId() {
 		return id;
 	}
@@ -128,12 +130,20 @@ public class TreatmentService extends GenericCollection {
 		this.fieldsRequired = fieldsRequired;
 	}
 
+	public Double getCount() {
+		return count;
+	}
+
+	public void setCount(Double count) {
+		this.count = count;
+	}
+
 	@Override
 	public String toString() {
 		return "TreatmentService [id=" + id + ", name=" + name + ", speciality=" + speciality + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId + ", discarded=" + discarded
 				+ ", cost=" + cost + ", treatmentCode=" + treatmentCode + ", rankingCount=" + rankingCount
-				+ ", category=" + category + ", fieldsRequired=" + fieldsRequired + "]";
+				+ ", category=" + category + ", fieldsRequired=" + fieldsRequired + ", count=" + count + "]";
 	}
 
 }

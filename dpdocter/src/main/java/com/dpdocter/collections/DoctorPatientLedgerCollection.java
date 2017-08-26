@@ -33,10 +33,10 @@ public class DoctorPatientLedgerCollection extends GenericCollection{
 //	private Double dueAmount;
 
 	@Field
-	private Double creditAmount;
+	private Double creditAmount = 0.0;
 	
 	@Field
-	private Double debitAmount;
+	private Double debitAmount = 0.0;
 
 	@Field
 	private Boolean discarded = false;

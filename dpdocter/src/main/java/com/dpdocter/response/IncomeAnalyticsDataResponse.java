@@ -11,6 +11,8 @@ public class IncomeAnalyticsDataResponse {
 	
 	private String doctorName;
 	
+	private String groupName;
+	
 	private Date date;
 	
 	private Double cost;
@@ -95,10 +97,18 @@ public class IncomeAnalyticsDataResponse {
 		this.invoices = invoices;
 	}
 
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
 	@Override
 	public String toString() {
 		return "IncomeAnalyticsDataResponse [serviceName=" + serviceName + ", title=" + title + ", doctorName="
-				+ doctorName + ", date=" + date + ", cost=" + cost + ", discount=" + discount + ", tax=" + tax
-				+ ", invoiceAmount=" + invoiceAmount + ", invoices=" + invoices + "]";
+				+ doctorName + ", groupName=" + groupName + ", date=" + date + ", cost=" + cost + ", discount="
+				+ discount + ", tax=" + tax + ", invoiceAmount=" + invoiceAmount + ", invoices=" + invoices + "]";
 	}
 }

@@ -15,9 +15,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.enums.PrescriptionItems;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentCountAnalyticResponse;
@@ -72,7 +74,7 @@ public class AnalyticsAPI {
 			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId,
 			 @QueryParam("fromDate") String fromDate,
-			 @QueryParam("toDate") String toDate,
+			 @QueryParam("toDate") String toDate, @QueryParam("queryType") String queryType,
 			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
 		if (DPDoctorUtils.allStringsEmpty(type, locationId, hospitalId)) {
 			throw new BusinessException(ServiceError.InvalidInput,
@@ -85,7 +87,7 @@ public class AnalyticsAPI {
 			}
 		} 
 		List<?> objects = analyticsService.getMostPrescribedPrescriptionItems(type, doctorId, locationId,
-				hospitalId, fromDate, toDate, searchType, page, size);
+				hospitalId, fromDate, toDate, queryType, searchType, page, size);
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(objects);
@@ -231,4 +233,45 @@ public class AnalyticsAPI {
 		response.setDataList(paymentAnalyticsDataResponses);
 		return response;
 	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_AMOUNT_DUE_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_AMOUNT_DUE_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_AMOUNT_DUE_ANALYTICS_DATA)
+	public Response<AmountDueAnalyticsDataResponse> getAmountDueAnalyticsData(@QueryParam("doctorId") String doctorId,
+			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			 @QueryParam("fromDate") String fromDate,
+			 @QueryParam("toDate") String toDate, @DefaultValue(value = "ALL") @QueryParam("queryType") String queryType,
+			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(doctorId, locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"doctorId, locationId, hospitalId should not be empty");
+		}
+		List<AmountDueAnalyticsDataResponse> paymentAnalyticsDataResponses = analyticsService.getAmountDueAnalyticsData(doctorId, locationId,
+				hospitalId, fromDate, toDate, queryType, searchType, page, size);
+
+		Response<AmountDueAnalyticsDataResponse> response = new Response<AmountDueAnalyticsDataResponse>();
+		response.setDataList(paymentAnalyticsDataResponses);
+		return response;
+	}
+	
+	@Path(value = PathProxy.AnalyticsUrls.GET_TREATMENTS_ANALYTICS_DATA)
+	@GET
+	@ApiOperation(value = PathProxy.AnalyticsUrls.GET_TREATMENTS_ANALYTICS_DATA, notes = PathProxy.AnalyticsUrls.GET_TREATMENTS_ANALYTICS_DATA)
+	public Response<TreatmentService> getTreatmentsAnalyticsData(@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+			@QueryParam("doctorId") String doctorId,
+			 @QueryParam("fromDate") String fromDate,
+			 @QueryParam("toDate") String toDate,
+			@QueryParam("searchType") String searchType, @QueryParam("page") int page, @QueryParam("size") int size) {
+		if (DPDoctorUtils.allStringsEmpty(locationId, hospitalId)) {
+			throw new BusinessException(ServiceError.InvalidInput,
+					"Type, locationId, hospitalId should not be empty");
+		} 
+		List<TreatmentService> objects = analyticsService.getTreatmentsAnalyticsData(doctorId, locationId,
+				hospitalId, fromDate, toDate, searchType, page, size);
+
+		Response<TreatmentService> response = new Response<TreatmentService>();
+		response.setDataList(objects);
+		return response;
+	}
+
 }

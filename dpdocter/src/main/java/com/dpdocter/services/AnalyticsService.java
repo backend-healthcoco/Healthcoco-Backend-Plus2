@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.response.AmountDueAnalyticsDataResponse;
 import com.dpdocter.response.AppointmentAnalyticResponse;
 import com.dpdocter.response.AppointmentAverageTimeAnalyticResponse;
 import com.dpdocter.response.AppointmentCountAnalyticResponse;
@@ -20,7 +22,7 @@ public interface AnalyticsService {
 			String fromDate, String toDate, String queryType, String searchType, String searchTerm);
 
 	public List<?> getMostPrescribedPrescriptionItems(String type, String doctorId, String locationId,
-			String hospitalId, String fromDate, String toDate, String searchType, int page, int size);
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
 
 	public AppointmentAnalyticResponse getAppointmentAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, String searchTerm, int page, int size);
@@ -44,5 +46,11 @@ public interface AnalyticsService {
 
 	public List<PaymentAnalyticsDataResponse> getPaymentAnalyticsData(String doctorId, String locationId,
 			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+
+	public List<AmountDueAnalyticsDataResponse> getAmountDueAnalyticsData(String doctorId, String locationId,
+			String hospitalId, String fromDate, String toDate, String queryType, String searchType, int page, int size);
+
+	public List<TreatmentService> getTreatmentsAnalyticsData(String doctorId, String locationId, String hospitalId,
+			String fromDate, String toDate, String searchType, int page, int size);
 
 }

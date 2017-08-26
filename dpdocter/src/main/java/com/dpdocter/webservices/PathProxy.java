@@ -1311,6 +1311,8 @@ public interface PathProxy {
 		public static final String GET_INCOME_ANALYTICS_DATA = "/income";
 		public static final String GET_PAYMENT_DETAILS_ANALYTICS_DATA = "/paymentDetails";
 		public static final String GET_PAYMENT_ANALYTICS_DATA = "/payment";
+		public static final String GET_AMOUNT_DUE_ANALYTICS_DATA = "/amountDue";
+		public static final String GET_TREATMENTS_ANALYTICS_DATA = "/treatments";
 
 	}
 }
