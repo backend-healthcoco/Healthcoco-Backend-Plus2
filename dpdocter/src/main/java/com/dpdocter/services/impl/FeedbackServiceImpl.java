@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.QueryParam;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -24,24 +22,31 @@ import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
 import com.dpdocter.collections.AppointmentGeneralFeedbackCollection;
 import com.dpdocter.collections.DailyImprovementFeedbackCollection;
+import com.dpdocter.collections.HospitalCollection;
+import com.dpdocter.collections.LocaleCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientFeedbackCollection;
 import com.dpdocter.collections.PharmacyFeedbackCollection;
 import com.dpdocter.collections.PrescriptionFeedbackCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DurationUnitEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AppointmentGeneralFeedbackRepository;
 import com.dpdocter.repository.DailyImprovementFeedbackRepository;
+import com.dpdocter.repository.HospitalRepository;
+import com.dpdocter.repository.LocaleRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientFeedbackRepository;
 import com.dpdocter.repository.PharmacyFeedbackRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
+import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.request.PrescriptionFeedbackRequest;
 import com.dpdocter.response.PatientFeedbackResponse;
-import com.dpdocter.request.PharmacyFeedbackRequest;
 import com.dpdocter.services.FeedbackService;
 
 import common.util.web.DPDoctorUtils;
@@ -69,6 +74,15 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
+	
+	@Autowired
+	private HospitalRepository hospitalRepository;
+	
+	@Autowired
+	private LocaleRepository localeRepository;
 
 	@Override
 	@Transactional
@@ -410,37 +424,77 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Transactional
 	public List<PatientFeedbackResponse> getPatientFeedbackList(FeedbackGetRequest request , String type) {
 		List<PatientFeedbackResponse> feedbackResponses= null;
-
+		LocaleCollection localeCollection = null;
+		LocationCollection locationCollection = null;
+		HospitalCollection hospitalCollection = null;
+		UserCollection userCollection = null;
 		try {
 			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
+			{
 				criteria.and("localeId").is(new ObjectId(request.getLocaleId()));
+				localeCollection = localeRepository.findOne(new ObjectId(request.getLocaleId()));
+			}	
+			
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))
+			{
 				criteria.and("hospitalId").is(new ObjectId(request.getHospitalId()));
+				hospitalCollection = hospitalRepository.findOne(new ObjectId(request.getHospitalId()));
+			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId()))
+			{
 				criteria.and("doctorId").is(new ObjectId(request.getDoctorId()));
+				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
+			}
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocationId()))
+			{
 				criteria.and("locationId").is(new ObjectId(request.getLocationId()));
+				locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(request.getPatientId()))
 				criteria.and("patientId").is(new ObjectId(request.getPatientId()));
+			
+			
 			
 			//criteria.and("discarded").is(false);
 			criteria.and("isApproved").is(true);
 
 			if (request.getSize() > 0)
-				feedbackResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
+				feedbackResponses = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+						Aggregation.unwind("patientCard"),
 						Aggregation.skip(request.getPage() * request.getSize()), Aggregation.limit(request.getSize()),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), PatientFeedbackCollection.class,
 						PatientFeedbackResponse.class).getMappedResults();
 			else
 				feedbackResponses = mongoTemplate.aggregate(
 						Aggregation.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+								Aggregation.unwind("patientCard"),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
 						PatientFeedbackCollection.class, PatientFeedbackResponse.class).getMappedResults();
+			
+			for (PatientFeedbackResponse patientFeedbackResponse : feedbackResponses) {
+				if(localeCollection != null)
+				{
+					patientFeedbackResponse.setLocaleName(localeCollection.getLocaleName());
+				}
+				if(locationCollection != null)
+				{
+					patientFeedbackResponse.setLocationName(locationCollection.getLocationName());
+				}
+				if(userCollection != null)
+				{
+					patientFeedbackResponse.setDoctorName(userCollection.getFirstName());
+				}
+				if(hospitalCollection != null)
+				{
+					patientFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
+				}
+			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();

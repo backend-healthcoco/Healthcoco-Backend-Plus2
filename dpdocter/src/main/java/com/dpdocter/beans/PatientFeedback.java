@@ -199,5 +199,4 @@ public class PatientFeedback extends GenericCollection {
 				+ adminUpdatedExperience + ", isDiscarded=" + isDiscarded + ", isMedicationOnTime=" + isMedicationOnTime
 				+ ", medicationEffectType=" + medicationEffectType + ", feedbackType=" + feedbackType + "]";
 	}
-
 }
