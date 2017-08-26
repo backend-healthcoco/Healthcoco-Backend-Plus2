@@ -31,10 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.GenericCode;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.PatientTreatment;
 import com.dpdocter.beans.PatientTreatmentJasperDetails;
 import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.TreatmentServiceCost;
 import com.dpdocter.collections.DoctorCollection;
@@ -1416,8 +1418,29 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				} else {
 					patientTreatments.setStatus("--");
 				}
-				patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
 
+				String serviceName = treatmentServicesCollection.getName() != null
+						? treatmentServicesCollection.getName() : "";
+				String fieldName = "";
+				if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
+					for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
+						String key = treatmentFile.getKey();
+						if (!DPDoctorUtils.anyStringEmpty(key)) {
+							if (key.equalsIgnoreCase("toothNumber")) {
+								key = "Tooth No :";
+							}
+							if (key.equalsIgnoreCase("material")) {
+								key = "Material :";
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
+								fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+							}
+						}
+					}
+				}
+				serviceName = serviceName == "" ? "--" : serviceName + fieldName;
+				patientTreatments.setTreatmentServiceName(serviceName);
 				if (treatment.getQuantity() != null && treatment.getQuantity().getValue() > 0) {
 					showTreatmentQuantity = true;
 					String quantity = treatment.getQuantity().getValue() + " ";

@@ -32,6 +32,7 @@ import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
 import com.dpdocter.collections.DoctorPatientLedgerCollection;
@@ -224,10 +225,12 @@ public class BillingServiceImpl implements BillingService {
 				doctorPatientInvoiceCollection.setCreatedTime(new Date());
 			} else {
 				doctorPatientInvoiceCollection = doctorPatientInvoiceRepository.findOne(new ObjectId(request.getId()));
-				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal() - doctorPatientInvoiceCollection.getBalanceAmount();
-				
+				Double paidAmount = doctorPatientInvoiceCollection.getGrandTotal()
+						- doctorPatientInvoiceCollection.getBalanceAmount();
+
 				if (doctorPatientInvoiceCollection.getReceiptIds() != null
-						&& !doctorPatientInvoiceCollection.getReceiptIds().isEmpty() && paidAmount > request.getGrandTotal()) {
+						&& !doctorPatientInvoiceCollection.getReceiptIds().isEmpty()
+						&& paidAmount > request.getGrandTotal()) {
 					throw new BusinessException(ServiceError.Unknown,
 							"Invoice cannot be edited as old invoice's total is less than paid amount.");
 				}
@@ -581,8 +584,9 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
-						
-						if(doctorPatientInvoiceCollection.getBalanceAmount() < 0.0)doctorPatientInvoiceCollection.setBalanceAmount(0.0);
+
+						if (doctorPatientInvoiceCollection.getBalanceAmount() < 0.0)
+							doctorPatientInvoiceCollection.setBalanceAmount(0.0);
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					} else {
@@ -593,7 +597,8 @@ public class BillingServiceImpl implements BillingService {
 						doctorPatientInvoiceCollection.setBalanceAmount(doctorPatientInvoiceCollection
 								.getBalanceAmount() - (request.getAmountPaid() != null ? request.getAmountPaid() : 0.0)
 								- (request.getUsedAdvanceAmount() != null ? request.getUsedAdvanceAmount() : 0.0));
-						if(doctorPatientInvoiceCollection.getBalanceAmount() < 0.0)doctorPatientInvoiceCollection.setBalanceAmount(0.0);
+						if (doctorPatientInvoiceCollection.getBalanceAmount() < 0.0)
+							doctorPatientInvoiceCollection.setBalanceAmount(0.0);
 						doctorPatientReceiptCollection
 								.setBalanceAmount(doctorPatientInvoiceCollection.getBalanceAmount());
 					}
@@ -1323,7 +1328,28 @@ public class BillingServiceImpl implements BillingService {
 				} else {
 					invoiceItemJasperDetail.setStatus("--");
 				}
-				invoiceItemJasperDetail.setServiceName(invoiceItem.getName());
+
+				String serviceName = invoiceItem.getName() != null ? invoiceItem.getName() : "";
+				String fieldName = "";
+				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
+					for (TreatmentFields treatmentFile : invoiceItem.getTreatmentFields()) {
+						String key = treatmentFile.getKey();
+						if (!DPDoctorUtils.anyStringEmpty(key)) {
+							if (key.equalsIgnoreCase("toothNumber")) {
+								key = "Tooth No :";
+							}
+							if (key.equalsIgnoreCase("material")) {
+								key = "Material :";
+							}
+
+							if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
+								fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+							}
+						}
+					}
+				}
+				serviceName = serviceName == "" ? "--" : serviceName + fieldName;
+				invoiceItemJasperDetail.setServiceName(serviceName);
 
 				if (invoiceItem.getQuantity() != null) {
 					showInvoiceItemQuantity = true;

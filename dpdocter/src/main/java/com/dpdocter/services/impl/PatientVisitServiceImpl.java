@@ -59,6 +59,7 @@ import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -1180,8 +1181,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				&& !DPDoctorUtils.anyStringEmpty(patientVisitLookupResponse.getAppointmentId())
 				&& patientVisitLookupResponse.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-			String _24HourTime = String.format("%02d:%02d",
-					patientVisitLookupResponse.getTime().getFromTime() / 60,
+			String _24HourTime = String.format("%02d:%02d", patientVisitLookupResponse.getTime().getFromTime() / 60,
 					patientVisitLookupResponse.getTime().getFromTime() % 60);
 			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
@@ -1237,14 +1237,15 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		PatientTreatmentCollection patientTreatmentCollection = null;
 		List<PatientTreatmentJasperDetails> patientTreatmentJasperDetails = null;
 		try {
+			Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
 			patientTreatmentCollection = patientTreamentRepository.findOne(new ObjectId(treatmentId));
 			if (patientTreatmentCollection != null) {
 				if (patientTreatmentCollection.getDoctorId() != null
 						&& patientTreatmentCollection.getHospitalId() != null
 						&& patientTreatmentCollection.getLocationId() != null) {
+
 					if (patientTreatmentCollection.getTreatments() != null
 							&& !patientTreatmentCollection.getTreatments().isEmpty()) {
-						Boolean showTreatmentQuantity = false, showTreatmentDiscount = false;
 						int no = 0;
 						patientTreatmentJasperDetails = new ArrayList<PatientTreatmentJasperDetails>();
 						for (Treatment treatment : patientTreatmentCollection.getTreatments()) {
@@ -1259,7 +1260,28 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							} else {
 								patientTreatments.setStatus("--");
 							}
-							patientTreatments.setTreatmentServiceName(treatmentServicesCollection.getName());
+							String serviceName = treatmentServicesCollection.getName() != null
+									? treatmentServicesCollection.getName() : "";
+							String fieldName = "";
+							if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
+								for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
+									String key = treatmentFile.getKey();
+									if (!DPDoctorUtils.anyStringEmpty(key)) {
+										if (key.equalsIgnoreCase("toothNumber")) {
+											key = "Tooth No :";
+										}
+										if (key.equalsIgnoreCase("material")) {
+											key = "Material :";
+										}
+
+										if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
+											fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+										}
+									}
+								}
+							}
+							serviceName = serviceName == "" ? "--" : serviceName + fieldName;
+							patientTreatments.setTreatmentServiceName(serviceName);
 
 							if (treatment.getQuantity() != null && treatment.getQuantity().getValue() > 0) {
 								showTreatmentQuantity = true;
