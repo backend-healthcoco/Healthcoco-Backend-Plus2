@@ -246,24 +246,24 @@ public interface PathProxy {
 		public static final String ADD_ECHO = "/echo/add";
 
 		public static final String ADD_HOLTER = "/holter/add";
-		
+
 		public static final String ADD_PC_NOSE = "/pcnose/add";
-		
+
 		public static final String ADD_PC_EARS = "/pcears/add";
-		
+
 		public static final String ADD_PC_THROAT = "/pcthroat/add";
-		
+
 		public static final String ADD_PC_ORAL_CAVITY = "/pcoralCavity/add";
-		
+
 		public static final String ADD_NECK_EXAM = "/neckExam/add";
-		
+
 		public static final String ADD_NOSE_EXAM = "/noseExam/add";
-		
+
 		public static final String ADD_EARS_EXAM = "/earsExam/add";
-		
-		public static final String ADD_INDIRECT_LARYGOSCOPY_EXAM= "/indirectLarygoscopyExam/add";
-		
-		public static final String ADD_ORAL_CAVITY_THROAT_EXAM= "/oralCavityThroatExam/add";
+
+		public static final String ADD_INDIRECT_LARYGOSCOPY_EXAM = "/indirectLarygoscopyExam/add";
+
+		public static final String ADD_ORAL_CAVITY_THROAT_EXAM = "/oralCavityThroatExam/add";
 
 		public static final String ADD_PROCEDURE_NOTE = "/procedureNote/add";
 
@@ -813,23 +813,23 @@ public interface PathProxy {
 		public static final String SEARCH_HOLTER = "holter/{range}";
 
 		public static final String SEARCH_PROCEDURE_NOTE = "procedureNote/{range}";
-		
+
 		public static final String SEARCH_PC_NOSE = "pcNose/{range}";
-		
+
 		public static final String SEARCH_PC_EARS = "pcEars/{range}";
-		
+
 		public static final String SEARCH_PC_THROAT = "pcThroat/{range}";
-		
+
 		public static final String SEARCH_PC_ORAL_CAVITY = "pcOralCavity/{range}";
-		
+
 		public static final String SEARCH_NECK_EXAM = "neckExam/{range}";
-		
+
 		public static final String SEARCH_NOSE_EXAM = "noseExam/{range}";
-		
+
 		public static final String SEARCH_EARS_EXAM = "earsExam/{range}";
-		
+
 		public static final String SEARCH_ORAL_CAVITY_THROAT_EXAM = "oralCavityThroatExam/{range}";
-		
+
 		public static final String SEARCH_INDIRECT_LARYGOSCOPY_EXAM = "indirectLarygoscopyExam/{range}";
 
 	}
@@ -897,11 +897,11 @@ public interface PathProxy {
 		public static final String GET_PATIENT_QUEUE = "/queue/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String GET_APPOINTMENT_ID = "/{appointmentId}/view";
-		
+
 		public static final String NO_OF_PATIENT_IN_QUEUE = "/numofpatientinqueue/{locationId}";
-		
+
 		public static final String GET_DOCTORS = "/getDoctorsWithAppointmentCount/{locationId}";
-		
+
 		public static final String CHANGE_STATUS_IN_QUEUE = "/patientQueue/changeStatus/{doctorId}/{locationId}/{hospitalId}/{patientId}/{status}";
 	}
 
@@ -1195,15 +1195,15 @@ public interface PathProxy {
 		public static final String ADD_EDIT_PHARMACY_FEEDBACK = "/addEditPharmacyFeedback";
 		public static final String ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK = "/addEditDailyImprovementFeedback";
 		public static final String ADD_EDIT_PATIENT_FEEDBACK = "/addEditPatientFeedback";
-		
+
 		public static final String GET_GENERAL_APPOINTMENT_FEEDBACK = "/getAppointmentGeneralFeedback";
 		public static final String GET_PRESCRIPTION_FEEDBACK = "/getPrescriptionFeedback";
 		public static final String GET_PHARMACY_FEEDBACK = "/getPharmacyFeedback";
 		public static final String GET_DAILY_IMPROVEMENT_FEEDBACK = "/getDailyImprovementFeedback";
 		public static final String GET_PATIENT_FEEDBACK = "/getPatientFeedback";
-		
-		public static final String ADD_PATIENT_FEEDBACK_REPLY  = "/addPatientFeedbackReply";
-		public static final String APPROVE_PATIENT_FEEDBACK  = "/approvePatientFeedback";
+
+		public static final String ADD_PATIENT_FEEDBACK_REPLY = "/addPatientFeedbackReply";
+		public static final String APPROVE_PATIENT_FEEDBACK = "/approvePatientFeedback";
 	}
 
 	public static final String DISCHARGE_SUMMARY_BASE_URL = BASE_URL + "/dischargeSummary";
@@ -1317,6 +1317,19 @@ public interface PathProxy {
 		public static final String GET_PAYMENT_ANALYTICS_DATA = "/payment";
 		public static final String GET_AMOUNT_DUE_ANALYTICS_DATA = "/amountDue";
 		public static final String GET_TREATMENTS_ANALYTICS_DATA = "/treatments";
+
+	}
+
+	public static final String ADMIT_CARD_URL = BASE_URL + "/admitCard";
+
+	public interface AdmitCardUrls {
+
+		public static final String GET_ADMIT_CARDS = "/getAdmitCard";
+		public static final String ADD_ADMIT_CARD = "/add";
+		public static final String VIEW_ADMIT_CARD = "/view/{admitCardId}";
+		public static final String DELETE_ADMIT_CARD = "/{admitCardId}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DOWNLOAD_ADMIT_CARD = "/download/{admitCardId}/";
+		public static final String EMAIL_ADMIT_CARD = "/{admitCardId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 	}
 }
