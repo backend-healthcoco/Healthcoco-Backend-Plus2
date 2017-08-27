@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.RecordsFile;
+import com.dpdocter.enums.RoleEnum;
 
 @Document(collection = "user_records_cl")
 public class UserRecordsCollection extends GenericCollection {
@@ -45,6 +46,28 @@ public class UserRecordsCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 
+	@Field
+	private RoleEnum uploadedBy = RoleEnum.PATIENT;
+	
+	@Field
+	private ObjectId shareWith;
+
+	public ObjectId getShareWith() {
+		return shareWith;
+	}
+
+	public void setShareWith(ObjectId shareWith) {
+		this.shareWith = shareWith;
+	}
+
+	public RoleEnum getUploadedBy() {
+		return uploadedBy;
+	}
+
+	public void setUploadedBy(RoleEnum uploadedBy) {
+		this.uploadedBy = uploadedBy;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -76,8 +99,6 @@ public class UserRecordsCollection extends GenericCollection {
 	public void setExplanation(String explanation) {
 		this.explanation = explanation;
 	}
-
-	
 
 	public ObjectId getPatientId() {
 		return patientId;

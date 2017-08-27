@@ -69,6 +69,7 @@ import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RecordsState;
 import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -1567,7 +1568,6 @@ public class RecordsServiceImpl implements RecordsService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public UserRecords addUserRecords(UserRecords request) {
 		UserRecords response = null;
@@ -1581,28 +1581,32 @@ public class RecordsServiceImpl implements RecordsService {
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid Doctor Id");
 				}
-			} else {
+				request.setUploadedBy(RoleEnum.DOCTOR);
+			}
+
+			else {
 				userCollection = userRepository.findOne(new ObjectId(request.getPatientId()));
 				if (userCollection == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 				}
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
+					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
+							.findByUserId(new ObjectId(request.getPatientId()));
 
 					for (int index = 0; request.getRecordsFiles().size() > index; index++) {
-
-						UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
-								.findByUserId(new ObjectId(request.getPatientId()));
 						if (userAllowanceDetailsCollection.getAllowedRecordsSizeInMB()
 								- userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() >= 0) {
 							userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
 									userAllowanceDetailsCollection.getAvailableRecordsSizeInMB()
 											- request.getRecordsFiles().get(index).getFileSizeInMB());
-							userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+
 						} else {
 							request.getRecordsFiles().remove(index);
 						}
 
 					}
+					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+					request.setUploadedBy(RoleEnum.PATIENT);
 				}
 			}
 			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
@@ -1636,8 +1640,8 @@ public class RecordsServiceImpl implements RecordsService {
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 
 			if (!DPDoctorUtils.allStringsEmpty(userRecordsCollection.getDoctorId(),
-					userRecordsCollection.getPatientId())) {
-				pushNotificationServices.notifyUser(userRecordsCollection.getPatientId().toString(),
+					userRecordsCollection.getShareWith())) {
+				pushNotificationServices.notifyUser(userRecordsCollection.getShareWith().toString(),
 						"Dr." + userCollection.getFirstName() + "has shared record with you - Tap to view it!",
 						ComponentType.USER_RECORD.getType(), userRecordsCollection.getId().toString(), null);
 			}
@@ -1694,8 +1698,10 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			Criteria criteria = new Criteria("createdTime").gt(new Date(createdTimeStamp)).and("patientId")
-					.is(patientObjectId);
+			Criteria criteria = new Criteria("createdTime").gt(new Date(createdTimeStamp));
+			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
+				criteria = new Criteria("patientId").is(patientObjectId)
+						.orOperator(new Criteria("shareWith").is(patientObjectId));
 			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
@@ -1793,6 +1799,22 @@ public class RecordsServiceImpl implements RecordsService {
 				logger.warn("User Record Not found.Check Record Id");
 				throw new BusinessException(ServiceError.NoRecord, "User Record Not found.Check Record Id");
 			}
+			if (discarded) {
+				if (userRecordsCollection.getUploadedBy().getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
+
+					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
+							.findByUserId(userRecordsCollection.getPatientId());
+					for (RecordsFile file : userRecordsCollection.getRecordsFiles()) {
+
+						userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
+								userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() + file.getFileSizeInMB());
+
+					}
+					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+
+				}
+
+			}
 			userRecordsCollection.setDiscarded(discarded);
 			userRecordsCollection.setIsVisible(isVisible);
 			userRecordsCollection.setUpdatedTime(new Date());
@@ -1857,15 +1879,37 @@ public class RecordsServiceImpl implements RecordsService {
 				logger.warn("User Record Not found.Check RecordId");
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
 			}
+			if (userRecordsCollection.getUploadedBy().getRole().equalsIgnoreCase(RoleEnum.PATIENT.getRole())) {
+				if (userRecordsCollection.getRecordsFiles() != null
+						&& !userRecordsCollection.getRecordsFiles().isEmpty()) {
 
-			for (int index = 0; userRecordsCollection.getRecordsFiles().size() > index; index++) {
-				for (String fileId : fileIds) {
-					if (userRecordsCollection.getRecordsFiles().get(index).getFileId().equals(fileId)) {
-						userRecordsCollection.getRecordsFiles().remove(index);
+					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
+							.findByUserId(userRecordsCollection.getPatientId());
+					for (int index = 0; userRecordsCollection.getRecordsFiles().size() > index; index++) {
+						for (String fileId : fileIds) {
+							if (userRecordsCollection.getRecordsFiles().get(index).getFileId().equals(fileId)) {
+								userRecordsCollection.getRecordsFiles().remove(index);
+								userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
+										userAllowanceDetailsCollection.getAvailableRecordsSizeInMB()
+												+ userRecordsCollection.getRecordsFiles().get(index).getFileSizeInMB());
+							}
+
+						}
 					}
+					userAllowanceDetailsRepository.save(userAllowanceDetailsCollection);
+				}
+			} else {
+				for (int index = 0; userRecordsCollection.getRecordsFiles().size() > index; index++) {
+					for (String fileId : fileIds) {
+						if (userRecordsCollection.getRecordsFiles().get(index).getFileId().equals(fileId)) {
+							userRecordsCollection.getRecordsFiles().remove(index);
 
+						}
+
+					}
 				}
 			}
+
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 			response = new UserRecords();
 			BeanUtil.map(userRecordsCollection, response);
@@ -1891,7 +1935,7 @@ public class RecordsServiceImpl implements RecordsService {
 				throw new BusinessException(ServiceError.NoRecord, "Record Not found.Check RecordId");
 			}
 			userRecordsCollection.setUpdatedTime(new Date());
-			userRecordsCollection.setPatientId(new ObjectId(userId));
+			userRecordsCollection.setShareWith(new ObjectId(userId));
 			userRecordsCollection = userRecordsRepository.save(userRecordsCollection);
 			response = new UserRecords();
 			BeanUtil.map(userRecordsCollection, response);
@@ -1902,17 +1946,17 @@ public class RecordsServiceImpl implements RecordsService {
 			UserCollection doctor = userRepository.findOne(userRecordsCollection.getDoctorId());
 			if (doctor != null) {
 				PatientCollection patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(
-						userRecordsCollection.getPatientId(), userRecordsCollection.getDoctorId(),
+						userRecordsCollection.getShareWith(), userRecordsCollection.getDoctorId(),
 						userRecordsCollection.getLocationId(), userRecordsCollection.getHospitalId());
 				UserCollection patient = userRepository.findOne(userRecordsCollection.getPatientId());
 
-				pushNotificationServices.notifyUser(userRecordsCollection.getPatientId().toString(),
+				pushNotificationServices.notifyUser(userRecordsCollection.getShareWith().toString(),
 						"Dr." + doctor.getFirstName() + "has shared record with you - Tap to view it!",
 						ComponentType.USER_RECORD.getType(), userRecordsCollection.getId().toString(), null);
 				sendUserRecordSmsToPatient(patientCollection.getLocalPatientName(), patient.getMobileNumber(),
 						userRecordsCollection.getRecordsLabel(), "Dr." + doctor.getFirstName(),
 						userRecordsCollection.getDoctorId(), userRecordsCollection.getLocationId(),
-						userRecordsCollection.getHospitalId(), userRecordsCollection.getPatientId());
+						userRecordsCollection.getHospitalId(), userRecordsCollection.getShareWith());
 			}
 
 		} catch (Exception e) {

@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.RoleEnum;
 
 public class UserRecords extends GenericCollection {
 
@@ -17,6 +18,10 @@ public class UserRecords extends GenericCollection {
 	private String explanation;
 
 	private String patientId;
+	
+	private RoleEnum uploadedBy;
+
+	private String shareWith;
 
 	private String doctorId;
 
@@ -114,6 +119,22 @@ public class UserRecords extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public String getShareWith() {
+		return shareWith;
+	}
+
+	public void setShareWith(String shareWith) {
+		this.shareWith = shareWith;
+	}
+
+	public RoleEnum getUploadedBy() {
+		return uploadedBy;
+	}
+
+	public void setUploadedBy(RoleEnum uploadedBy) {
+		this.uploadedBy = uploadedBy;
 	}
 
 }
