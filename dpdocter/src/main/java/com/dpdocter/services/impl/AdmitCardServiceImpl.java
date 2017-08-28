@@ -164,7 +164,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	@Override
 	@Transactional
 	public List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size, long updatedTime) {
+			String patientId, int page, int size, long updatedTime,Boolean discarded) {
 		List<AdmitCardResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -182,6 +182,9 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			}
 			if (updatedTime > 0) {
 				criteria = criteria.and("createdTime").is(new Date(updatedTime));
+			}
+			if (discarded) {
+				criteria = criteria.and("discarded").is(discarded);
 			}
 
 			Aggregation aggregation = null;

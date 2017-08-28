@@ -78,12 +78,8 @@ public class AdmitCardAPI {
 		Response<AdmitCardResponse> response = null;
 		List<AdmitCardResponse> admitCardResponses = null;
 
-		if (DPDoctorUtils.anyStringEmpty(patientId, doctorId, locationId, hospitalId)) {
-			throw new BusinessException(ServiceError.InvalidInput,
-					"Doctor or patient id or locationId or hospitalId is null");
-		}
 		admitCardResponses = admitCardService.getAdmitCards(doctorId, locationId, hospitalId, patientId, page, size,
-				updatedTime);
+				updatedTime,discarded);
 		response = new Response<AdmitCardResponse>();
 		response.setDataList(admitCardResponses);
 

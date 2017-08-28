@@ -13,7 +13,7 @@ public interface AdmitCardService {
 	AdmitCardResponse addEditAdmitcard(FormDataBodyPart file, AdmitCardRequest request);
 
 	List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId, String patientId,
-			int page, int size, long updatedTime);
+			int page, int size, long updatedTime,Boolean discarded);
 
 	AdmitCardResponse deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
 			Boolean discarded);
