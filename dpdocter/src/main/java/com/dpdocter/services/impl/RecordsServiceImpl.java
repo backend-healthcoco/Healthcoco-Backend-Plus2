@@ -38,11 +38,9 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.dpdocter.beans.Count;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.FileDownloadResponse;
 import com.dpdocter.beans.FlexibleCounts;
 import com.dpdocter.beans.MailAttachment;
-import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Records;
 import com.dpdocter.beans.RecordsFile;
@@ -1699,14 +1697,14 @@ public class RecordsServiceImpl implements RecordsService {
 				patientObjectId = new ObjectId(patientId);
 
 			Criteria criteria = new Criteria("createdTime").gt(new Date(createdTimeStamp));
-			if (!DPDoctorUtils.anyStringEmpty(patientObjectId))
-				criteria = new Criteria("patientId").is(patientObjectId)
-						.orOperator(new Criteria("shareWith").is(patientObjectId));
+			if (!DPDoctorUtils.anyStringEmpty(patientObjectId)) {
+				criteria = criteria.orOperator(new Criteria("patientId").is(patientObjectId),
+						new Criteria("shareWith").is(patientObjectId));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));
-
 			} else {
 				criteria.and("doctorId").exists(false).and("locationId").exists(false).and("hospitalId").exists(false);
 			}

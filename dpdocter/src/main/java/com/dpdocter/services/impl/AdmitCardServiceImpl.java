@@ -1,10 +1,8 @@
 package com.dpdocter.services.impl;
 
-import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Patient;
 import com.dpdocter.collections.AdmitCardCollection;
-import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.UniqueIdInitial;
@@ -31,12 +28,8 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AdmitCardRequest;
 import com.dpdocter.response.AdmitCardResponse;
-import com.dpdocter.response.DischargeSummaryResponse;
-import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.AdmitCardService;
 import com.dpdocter.services.FileManager;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
 
 import common.util.web.DPDoctorUtils;
 
@@ -44,8 +37,6 @@ import common.util.web.DPDoctorUtils;
 public class AdmitCardServiceImpl implements AdmitCardService {
 
 	private static Logger logger = Logger.getLogger(AdmitCardServiceImpl.class.getName());
-	@Autowired
-	private FileManager fileManager;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -67,7 +58,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	public AdmitCardResponse addEditAdmitcard(AdmitCardRequest request) {
 		AdmitCardResponse response = null;
 		try {
-			Date createdTime = new Date();
 			Patient patientdetail = new Patient();
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
 			if (doctor == null) {
@@ -108,13 +98,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		return response;
 	}
 
-	private String getFinalImageURL(String imageURL) {
-		if (imageURL != null) {
-			return imagePath + imageURL;
-		} else
-			return null;
-	}
-
 	@Override
 	@Transactional
 	public AdmitCardResponse getAdmitCard(String cardId) {
@@ -150,17 +133,17 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		List<AdmitCardResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
-			if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria = criteria.and("doctorId").is(new ObjectId(doctorId));
 			}
-			if (DPDoctorUtils.anyStringEmpty(locationId)) {
+			if (!DPDoctorUtils.anyStringEmpty(locationId)) {
 				criteria = criteria.and("locationId").is(new ObjectId(locationId));
 			}
-			if (DPDoctorUtils.anyStringEmpty(locationId)) {
-				criteria = criteria.and("locationId").is(new ObjectId(locationId));
-			}
-			if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 				criteria = criteria.and("patientId").is(new ObjectId(patientId));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId)) {
+				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (updatedTime > 0) {
 				criteria = criteria.and("createdTime").is(new Date(updatedTime));
