@@ -139,4 +139,17 @@ public class AdmitCardAPI {
 		return response;
 	}
 
+	@Path(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
+	@GET
+	@ApiOperation(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
+	public Response<Boolean> emailDischargeSummary(@PathParam(value = "admitCardId") String admitCardId,
+			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
+			@PathParam(value = "hospitalId") String hospitalId,
+			@PathParam(value = "emailAddress") String emailAddress) {
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
+
 }
