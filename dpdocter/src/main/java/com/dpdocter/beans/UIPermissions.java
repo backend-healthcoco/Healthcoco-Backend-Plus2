@@ -15,6 +15,7 @@ public class UIPermissions {
 	private List<String> profilePermissions = new ArrayList<String>();
 	private List<String> vitalSignPermissions = new ArrayList<String>();
 	private List<String> dischargeSummaryPermissions = new ArrayList<String>();
+	private List<String> admitCardPermissions = new ArrayList<String>();
 
 	public List<String> getTabPermissions() {
 		return tabPermissions;
@@ -79,5 +80,13 @@ public class UIPermissions {
 				+ ", prescriptionPermissions=" + prescriptionPermissions + ", profilePermissions=" + profilePermissions
 				+ ", vitalSignPermissions=" + vitalSignPermissions + ", dischargeSummaryPermissions="
 				+ dischargeSummaryPermissions + "]";
+	}
+
+	public List<String> getAdmitCardPermissions() {
+		return admitCardPermissions;
+	}
+
+	public void setAdmitCardPermissions(List<String> admitCardPermissions) {
+		this.admitCardPermissions = admitCardPermissions;
 	}
 }

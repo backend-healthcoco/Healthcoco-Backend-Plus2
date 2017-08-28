@@ -64,6 +64,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		Set<String> tabPermissionsSet = new HashSet<String>();
 		Set<String> vitalSignPermissionSet = new HashSet<String>();
 		Set<String> dischargeSummaryPermissionSet = new HashSet<String>();
+		Set<String> admitCardPermissionSet = new HashSet<String>();
 		DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
 		if (doctorCollection != null) {
 			uiPermissions = new UIPermissions();
@@ -87,6 +88,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 						tabPermissionsSet.addAll(tempPermissions.getTabPermissions());
 						vitalSignPermissionSet.addAll(tempPermissions.getVitalSignPermissions());
 						dischargeSummaryPermissionSet.addAll(tempPermissions.getDischargeSummaryPermissions());
+						admitCardPermissionSet.addAll(tempPermissions.getAdmitCardPermissions());
 					}
 				}
 				uiPermissions.setPatientVisitPermissions(new ArrayList<String>(patientVisitPermissionsSet));
@@ -96,6 +98,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 				uiPermissions.setTabPermissions(new ArrayList<String>(tabPermissionsSet));
 				uiPermissions.setVitalSignPermissions(new ArrayList<String>(vitalSignPermissionSet));
 				uiPermissions.setDischargeSummaryPermissions(new ArrayList<String>(dischargeSummaryPermissionSet));
+				uiPermissions.setAdmitCardPermissions(new ArrayList<String>(admitCardPermissionSet));
 			}
 		}
 		return uiPermissions;
@@ -147,6 +150,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		ArrayList<String> tabPermission = null;
 		ArrayList<String> vitalSignPermission = null;
 		ArrayList<String> dischargeSummaryPermission = null;
+		ArrayList<String> admitCardPermission = null;
 		switch (speciality.toUpperCase().trim()) {
 		case "OPHTHALMOLOGIST":
 			uiPermissions = new UIPermissions();
@@ -167,6 +171,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
 		case "PEDIATRICIAN":
 			uiPermissions = new UIPermissions();
@@ -185,6 +190,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
 		case "GYNAECOLOGIST/OBSTETRICIAN":
 			uiPermissions = new UIPermissions();
@@ -210,6 +216,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
 		case "CARDIOLOGIST":
 			uiPermissions = new UIPermissions();
@@ -231,8 +238,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
-			
+
 		case "DENTIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
@@ -250,8 +258,9 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
-			
+
 		case "EAR-NOSE-THROAT (ENT) SPECIALIST":
 			uiPermissions = new UIPermissions();
 			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
@@ -270,6 +279,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
 		case "EMPTY":
 			uiPermissions = new UIPermissions();
@@ -287,6 +297,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
 		default:
 			uiPermissions = new UIPermissions();
@@ -304,6 +315,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 			uiPermissions.setVitalSignPermissions(vitalSignPermission);
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
 		}
 		return uiPermissions;
@@ -320,6 +332,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		ArrayList<String> tabPermission = null;
 		ArrayList<String> vitalSignPermission = null;
 		ArrayList<String> dischargeSummaryPermission = null;
+		ArrayList<String> admitCardPermission = null;
 		uiPermissions = new UIPermissions();
 		clinicalNotesPermission = new ArrayList<String>();
 		clinicalNotesPermission.add(ClinicalNotesPermissionEnum.VITAL_SIGNS.getPermissions());
@@ -335,6 +348,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 		vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 		dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+		admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 		uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 		uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 		uiPermissions.setProfilePermissions(profilePermission);
@@ -342,6 +356,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 		uiPermissions.setPatientVisitPermissions(patientVisitPermission);
 		uiPermissions.setVitalSignPermissions(vitalSignPermission);
 		uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+		uiPermissions.setAdmitCardPermissions(admitCardPermission);
 		return uiPermissions;
 	}
 
@@ -387,7 +402,11 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	private String[] dischargeSummaryPermission() {
 		return Arrays.toString(DischargeSummaryPermissions.values()).replaceAll("^.|.$", "").split(", ");
 	}
-	
+
+	private String[] admitcardPermission() {
+		return Arrays.toString(DischargeSummaryPermissions.values()).replaceAll("^.|.$", "").split(", ");
+	}
+
 	private String[] entPermission() {
 		return Arrays.toString(ENTPermissionType.values()).replaceAll("^.|.$", "").split(", ");
 	}
