@@ -16,6 +16,7 @@ import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DynamicUICollection;
 import com.dpdocter.collections.SpecialityCollection;
+import com.dpdocter.enums.AdmitCardPermissionEnum;
 import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.ClinicalNotesPermissionEnum;
 import com.dpdocter.enums.DentistPermissionEnum;
@@ -404,7 +405,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 	}
 
 	private String[] admitcardPermission() {
-		return Arrays.toString(DischargeSummaryPermissions.values()).replaceAll("^.|.$", "").split(", ");
+		return Arrays.toString(AdmitCardPermissionEnum.values()).replaceAll("^.|.$", "").split(", ");
 	}
 
 	private String[] entPermission() {
