@@ -165,6 +165,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -184,6 +185,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -210,6 +212,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -232,6 +235,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -252,6 +256,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -273,6 +278,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -291,6 +297,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
@@ -309,6 +316,7 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
 			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
 			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
 			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
 			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
 			uiPermissions.setProfilePermissions(profilePermission);
