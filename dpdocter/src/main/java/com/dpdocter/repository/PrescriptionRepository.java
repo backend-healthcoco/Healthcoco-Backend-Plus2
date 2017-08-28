@@ -61,7 +61,7 @@ public interface PrescriptionRepository extends MongoRepository<PrescriptionColl
     @Query("{'uniqueEmrId' : ?0}")
 	PrescriptionCollection findByUniqueId(String uniqueEmrId);
 
-    @Query("{'isActive' : ?0, 'items' : {$exists : true}}")
+    @Query("{'isActive' : true, 'items' : {$exists : true}}")
 	List<PrescriptionCollection> findActiveAndDrugExistRx();
 
     @Query("{'isActive' : true, 'items' : {$exists : true}, 'patientId' : ?0}")
