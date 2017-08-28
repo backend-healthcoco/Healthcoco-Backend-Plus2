@@ -18,16 +18,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.AdmitCardRequest;
-import com.dpdocter.request.DischargeSummaryRequest;
 import com.dpdocter.response.AdmitCardResponse;
-import com.dpdocter.response.DischargeSummaryResponse;
 import com.dpdocter.services.AdmitCardService;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 
 import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
@@ -47,18 +42,21 @@ public class AdmitCardAPI {
 
 	@POST
 	@Path(value = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD)
-	@Consumes({ MediaType.MULTIPART_FORM_DATA })
 	@ApiOperation(value = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.ADD_ADMIT_CARD)
-	public Response<AdmitCardResponse> addEditAdmitCard(@FormDataParam("file") FormDataBodyPart file,
-			@FormDataParam("data") FormDataBodyPart data) {
+	public Response<AdmitCardResponse> addEditAdmitCard(AdmitCardRequest request) {
 		Response<AdmitCardResponse> response = null;
 		AdmitCardResponse admitCardResponse = null;
-		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		AdmitCardRequest request = data.getValueAs(AdmitCardRequest.class);
+
 		if (request == null) {
+
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
+
+		}
+		if (DPDoctorUtils.allStringsEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
+				request.getPatientId())) {
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid input");
 		}
-		admitCardResponse = admitCardService.addEditAdmitcard(file, request);
+		admitCardResponse = admitCardService.addEditAdmitcard(request);
 		if (admitCardResponse != null) {
 			response = new Response<AdmitCardResponse>();
 			response.setData(admitCardResponse);
@@ -79,7 +77,7 @@ public class AdmitCardAPI {
 		List<AdmitCardResponse> admitCardResponses = null;
 
 		admitCardResponses = admitCardService.getAdmitCards(doctorId, locationId, hospitalId, patientId, page, size,
-				updatedTime,discarded);
+				updatedTime, discarded);
 		response = new Response<AdmitCardResponse>();
 		response.setDataList(admitCardResponses);
 

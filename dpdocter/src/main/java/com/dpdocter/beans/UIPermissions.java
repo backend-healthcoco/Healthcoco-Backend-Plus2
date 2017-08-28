@@ -73,15 +73,6 @@ public class UIPermissions {
 		this.dischargeSummaryPermissions = dischargeSummaryPermissions;
 	}
 
-	@Override
-	public String toString() {
-		return "UIPermissions [tabPermissions=" + tabPermissions + ", patientVisitPermissions="
-				+ patientVisitPermissions + ", clinicalNotesPermissions=" + clinicalNotesPermissions
-				+ ", prescriptionPermissions=" + prescriptionPermissions + ", profilePermissions=" + profilePermissions
-				+ ", vitalSignPermissions=" + vitalSignPermissions + ", dischargeSummaryPermissions="
-				+ dischargeSummaryPermissions + "]";
-	}
-
 	public List<String> getAdmitCardPermissions() {
 		return admitCardPermissions;
 	}
@@ -89,4 +80,16 @@ public class UIPermissions {
 	public void setAdmitCardPermissions(List<String> admitCardPermissions) {
 		this.admitCardPermissions = admitCardPermissions;
 	}
+
+	@Override
+	public String toString() {
+		return "UIPermissions [tabPermissions=" + tabPermissions + ", patientVisitPermissions="
+				+ patientVisitPermissions + ", clinicalNotesPermissions=" + clinicalNotesPermissions
+				+ ", prescriptionPermissions=" + prescriptionPermissions + ", profilePermissions=" + profilePermissions
+				+ ", vitalSignPermissions=" + vitalSignPermissions + ", dischargeSummaryPermissions="
+				+ dischargeSummaryPermissions + ", admitCardPermissions=" + admitCardPermissions + "]";
+	}
+
+	
+	
 }

@@ -64,7 +64,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Override
 	@Transactional
-	public AdmitCardResponse addEditAdmitcard(FormDataBodyPart file, AdmitCardRequest request) {
+	public AdmitCardResponse addEditAdmitcard(AdmitCardRequest request) {
 		AdmitCardResponse response = null;
 		try {
 			Date createdTime = new Date();
@@ -81,19 +81,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			}
 			BeanUtil.map(patientCollection, patientdetail);
 
-			if (file != null) {
-				if (!DPDoctorUtils.anyStringEmpty(file.getFormDataContentDisposition().getFileName())) {
-					String path = "sign" + File.separator + request.getPatientId();
-					FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
-					String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
-					String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
-					String imagepath = path + File.separator + fileName + createdTime.getTime() + "." + fileExtension;
-					ImageURLResponse imageURLResponse = fileManager.saveImage(file, imagepath, false);
-					if (imageURLResponse != null) {
-						request.setSignImageURL(imagepath);
-					}
-				}
-			}
 			AdmitCardCollection admitCardCollection = new AdmitCardCollection();
 
 			BeanUtil.map(request, admitCardCollection);
@@ -112,9 +99,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			response = new AdmitCardResponse();
 			BeanUtil.map(admitCardCollection, response);
 			response.setPatient(patientdetail);
-			if (!DPDoctorUtils.anyStringEmpty(response.getSignImageURL())) {
-				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
-			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -148,9 +133,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			Patient patient = new Patient();
 			BeanUtil.map(patientCollection, patient);
 			response.setPatient(patient);
-			if (!DPDoctorUtils.anyStringEmpty(response.getSignImageURL())) {
-				response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -164,7 +146,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	@Override
 	@Transactional
 	public List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId,
-			String patientId, int page, int size, long updatedTime,Boolean discarded) {
+			String patientId, int page, int size, long updatedTime, Boolean discarded) {
 		List<AdmitCardResponse> response = null;
 		try {
 			Criteria criteria = new Criteria();
@@ -213,9 +195,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				patient = new Patient();
 				BeanUtil.map(patientCollection, patient);
 				admitCardResponse.setPatient(patient);
-				if (!DPDoctorUtils.anyStringEmpty(admitCardResponse.getSignImageURL())) {
-					admitCardResponse.setSignImageURL(getFinalImageURL(admitCardResponse.getSignImageURL()));
-				}
+
 			}
 
 		} catch (Exception e) {
@@ -252,9 +232,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 						Patient patient = new Patient();
 						BeanUtil.map(patientCollection, patient);
 						response.setPatient(patient);
-						if (!DPDoctorUtils.anyStringEmpty(response.getSignImageURL())) {
-							response.setSignImageURL(getFinalImageURL(response.getSignImageURL()));
-						}
+
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.InvalidInput,

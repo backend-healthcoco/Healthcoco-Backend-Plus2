@@ -44,8 +44,8 @@ public class AdmitCardCollection extends GenericCollection {
 	private String treatmentsPlan;
 	@Field
 	private String diagnosis;
-	@Field
-	private String signImageURL;
+	
+	
 	@Field
 	private Boolean discarded=false;;
 
@@ -125,9 +125,7 @@ public class AdmitCardCollection extends GenericCollection {
 		return diagnosis;
 	}
 
-	public String getSignImageURL() {
-		return signImageURL;
-	}
+	
 
 	public void setId(ObjectId id) {
 		this.id = id;
@@ -197,9 +195,7 @@ public class AdmitCardCollection extends GenericCollection {
 		this.diagnosis = diagnosis;
 	}
 
-	public void setSignImageURL(String signImageURL) {
-		this.signImageURL = signImageURL;
-	}
+	
 
 	public String getUniqueEmrId() {
 		return uniqueEmrId;

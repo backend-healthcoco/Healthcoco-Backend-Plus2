@@ -24,7 +24,6 @@ public class AdmitCardRequest {
 	private String jointInvolvement;
 	private String treatmentsPlan;
 	private String diagnosis;
-	private String signImageURL;
 	private Boolean discarded;
 
 	public String getId() {
@@ -145,14 +144,6 @@ public class AdmitCardRequest {
 
 	public void setDiagnosis(String diagnosis) {
 		this.diagnosis = diagnosis;
-	}
-
-	public String getSignImageURL() {
-		return signImageURL;
-	}
-
-	public void setSignImageURL(String signImageURL) {
-		this.signImageURL = signImageURL;
 	}
 
 	public String getJointInvolvement() {

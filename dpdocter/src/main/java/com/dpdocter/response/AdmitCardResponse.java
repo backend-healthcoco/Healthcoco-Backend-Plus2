@@ -25,9 +25,8 @@ public class AdmitCardResponse {
 	private String jointInvolvement;
 	private String treatmentsPlan;
 	private String diagnosis;
-	private String signImageURL;
 	private Patient patient;
-	private Boolean discarded=false;
+	private Boolean discarded = false;
 
 	public String getId() {
 		return id;
@@ -99,10 +98,6 @@ public class AdmitCardResponse {
 
 	public String getDiagnosis() {
 		return diagnosis;
-	}
-
-	public String getSignImageURL() {
-		return signImageURL;
 	}
 
 	public Patient getPatient() {
@@ -179,10 +174,6 @@ public class AdmitCardResponse {
 
 	public void setDiagnosis(String diagnosis) {
 		this.diagnosis = diagnosis;
-	}
-
-	public void setSignImageURL(String signImageURL) {
-		this.signImageURL = signImageURL;
 	}
 
 	public void setPatient(Patient patient) {
