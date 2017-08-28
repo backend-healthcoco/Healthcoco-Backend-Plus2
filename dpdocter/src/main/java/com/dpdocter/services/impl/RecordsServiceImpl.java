@@ -73,6 +73,7 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AdmitCardRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -93,6 +94,7 @@ import com.dpdocter.request.TagRecordRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.MailResponse;
 import com.dpdocter.response.RecordsLookupResponse;
+import com.dpdocter.services.AdmitCardService;
 import com.dpdocter.services.BillingService;
 import com.dpdocter.services.ClinicalNotesService;
 import com.dpdocter.services.DischargeSummaryService;
@@ -180,6 +182,9 @@ public class RecordsServiceImpl implements RecordsService {
 
 	@Autowired
 	private BillingService BillingService;
+
+	@Autowired
+	private AdmitCardService admitCardService;
 
 	@Autowired
 	private UserRecordsRepository userRecordsRepository;
@@ -917,6 +922,11 @@ public class RecordsServiceImpl implements RecordsService {
 
 				case RECEIPT:
 					count.setValue(BillingService.getReceiptCount(doctorObjectId, patientObjectId, locationObjectId,
+							hospitalObjectId, isOTPVerified));
+					break;
+
+				case ADMIT_CARD:
+					count.setValue(admitCardService.getAdmitCardCount(doctorObjectId, patientObjectId, locationObjectId,
 							hospitalObjectId, isOTPVerified));
 					break;
 				default:

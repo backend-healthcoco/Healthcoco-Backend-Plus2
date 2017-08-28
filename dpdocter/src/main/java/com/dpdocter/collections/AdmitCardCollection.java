@@ -43,9 +43,7 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private String treatmentsPlan;
 	@Field
-	private String diagnosis;
-	
-	
+	private String diagnosis;	
 	@Field
 	private Boolean discarded=false;;
 

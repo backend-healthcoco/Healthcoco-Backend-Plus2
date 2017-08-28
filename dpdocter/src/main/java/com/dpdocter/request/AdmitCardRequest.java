@@ -24,7 +24,7 @@ public class AdmitCardRequest {
 	private String jointInvolvement;
 	private String treatmentsPlan;
 	private String diagnosis;
-	private Boolean discarded;
+	private Boolean discarded=false;
 
 	public String getId() {
 		return id;

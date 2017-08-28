@@ -72,7 +72,7 @@ public class AdmitCardAPI {
 			@QueryParam(value = "size") int size, @QueryParam(value = "doctorId") String doctorId,
 			@QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 			@QueryParam(value = "patientId") String patientId, @QueryParam("updatedTime") long updatedTime,
-			@DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+			@DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
 		Response<AdmitCardResponse> response = null;
 		List<AdmitCardResponse> admitCardResponses = null;
 

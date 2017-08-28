@@ -29,7 +29,6 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AdmitCardRequest;
 import com.dpdocter.response.AdmitCardResponse;
 import com.dpdocter.services.AdmitCardService;
-import com.dpdocter.services.FileManager;
 
 import common.util.web.DPDoctorUtils;
 
@@ -148,9 +147,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 			if (updatedTime > 0) {
 				criteria = criteria.and("createdTime").is(new Date(updatedTime));
 			}
-			if (discarded) {
-				criteria = criteria.and("discarded").is(discarded);
-			}
+
+			criteria = criteria.and("discarded").is(discarded);
 
 			Aggregation aggregation = null;
 
@@ -233,6 +231,27 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		}
 		return response;
 
+	}
+
+	@Override
+	public int getAdmitCardCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
+			ObjectId hospitalObjectId, boolean isOTPVerified) {
+		int response = 0;
+		try {
+			if (isOTPVerified)
+				response = admitCardRepository.countByPatientId(patientObjectId);
+			else
+				response = admitCardRepository.countByPatientIdDoctorLocationHospital(patientObjectId, doctorObjectId,
+						locationObjectId, hospitalObjectId);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while count discharge summary : " + e.getCause().getMessage());
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while count discharge summary : " + e.getCause().getMessage());
+		}
+
+		return response;
 	}
 
 }
