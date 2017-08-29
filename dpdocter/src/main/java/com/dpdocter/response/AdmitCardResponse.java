@@ -4,8 +4,9 @@ import java.util.Date;
 
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientDetails;
+import com.dpdocter.collections.GenericCollection;
 
-public class AdmitCardResponse {
+public class AdmitCardResponse extends GenericCollection {
 
 	private String id;
 	private String patientId;

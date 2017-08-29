@@ -1715,9 +1715,7 @@ public class RecordsServiceImpl implements RecordsService {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));
-			} else {
-				criteria.and("doctorId").exists(false).and("locationId").exists(false).and("hospitalId").exists(false);
-			}
+			} 
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
@@ -1736,8 +1734,12 @@ public class RecordsServiceImpl implements RecordsService {
 			response = aggregationResults.getMappedResults();
 			for (UserRecords userRecords : response) {
 				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
+					if(!DPDoctorUtils.anyStringEmpty(recordsFile.getRecordsUrl())){
 					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+					}
+					if(!DPDoctorUtils.anyStringEmpty(recordsFile.getThumbnailUrl())){
 					recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
+					}
 				}
 
 			}
