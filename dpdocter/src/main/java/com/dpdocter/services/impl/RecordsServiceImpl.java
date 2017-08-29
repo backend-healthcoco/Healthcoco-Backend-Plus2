@@ -1733,13 +1733,16 @@ public class RecordsServiceImpl implements RecordsService {
 					UserRecordsCollection.class, UserRecords.class);
 			response = aggregationResults.getMappedResults();
 			for (UserRecords userRecords : response) {
+				if(userRecords.getRecordsFiles()!=null){
 				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
+					
 					if(!DPDoctorUtils.anyStringEmpty(recordsFile.getRecordsUrl())){
 					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
 					}
 					if(!DPDoctorUtils.anyStringEmpty(recordsFile.getThumbnailUrl())){
 					recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
 					}
+				}
 				}
 
 			}
