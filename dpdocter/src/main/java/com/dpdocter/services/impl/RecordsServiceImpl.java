@@ -73,7 +73,6 @@ import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.AdmitCardRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
@@ -1607,6 +1606,10 @@ public class RecordsServiceImpl implements RecordsService {
 							userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
 									userAllowanceDetailsCollection.getAvailableRecordsSizeInMB()
 											- request.getRecordsFiles().get(index).getFileSizeInMB());
+							request.getRecordsFiles().get(index).setRecordsUrl(
+									request.getRecordsFiles().get(index).getRecordsUrl().replace(imagePath, ""));
+							request.getRecordsFiles().get(index).setThumbnailUrl(
+									request.getRecordsFiles().get(index).getThumbnailUrl().replace(imagePath, ""));
 
 						} else {
 							request.getRecordsFiles().remove(index);
@@ -1715,7 +1718,7 @@ public class RecordsServiceImpl implements RecordsService {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));
-			} 
+			}
 			if (!discarded)
 				criteria.and("discarded").is(discarded);
 
@@ -1733,16 +1736,16 @@ public class RecordsServiceImpl implements RecordsService {
 					UserRecordsCollection.class, UserRecords.class);
 			response = aggregationResults.getMappedResults();
 			for (UserRecords userRecords : response) {
-				if(userRecords.getRecordsFiles()!=null){
-				for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
-					
-					if(!DPDoctorUtils.anyStringEmpty(recordsFile.getRecordsUrl())){
-					recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+				if (userRecords.getRecordsFiles() != null) {
+					for (RecordsFile recordsFile : userRecords.getRecordsFiles()) {
+
+						if (!DPDoctorUtils.anyStringEmpty(recordsFile.getRecordsUrl())) {
+							recordsFile.setRecordsUrl(getFinalImageURL(recordsFile.getRecordsUrl()));
+						}
+						if (!DPDoctorUtils.anyStringEmpty(recordsFile.getThumbnailUrl())) {
+							recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
+						}
 					}
-					if(!DPDoctorUtils.anyStringEmpty(recordsFile.getThumbnailUrl())){
-					recordsFile.setThumbnailUrl(getFinalImageURL(recordsFile.getThumbnailUrl()));
-					}
-				}
 				}
 
 			}
