@@ -44,6 +44,8 @@ public class LabTestSampleCollection extends GenericCollection {
 	private ObjectId parentLabLocationId;
 	@Field
 	private Boolean isCompleted = false;
+	@Field
+	private Boolean isCollectedAtLab = false;
 
 	public ObjectId getId() {
 		return id;
@@ -171,6 +173,14 @@ public class LabTestSampleCollection extends GenericCollection {
 
 	public void setIsCompleted(Boolean isCompleted) {
 		this.isCompleted = isCompleted;
+	}
+
+	public Boolean getIsCollectedAtLab() {
+		return isCollectedAtLab;
+	}
+
+	public void setIsCollectedAtLab(Boolean isCollectedAtLab) {
+		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
 	@Override

@@ -18,6 +18,7 @@ public class LabTestSample extends GenericCollection {
 	private Boolean isUrgent;
 	private Long urgentTime;
 	private Boolean isCollected = false;
+	private Boolean isCollectedAtLab = false;
 	private Boolean isHardCopyRequired;
 	private Boolean isHardCopyGiven;
 	private String status;
@@ -141,6 +142,14 @@ public class LabTestSample extends GenericCollection {
 
 	public void setParentLabLocationId(String parentLabLocationId) {
 		this.parentLabLocationId = parentLabLocationId;
+	}
+
+	public Boolean getIsCollectedAtLab() {
+		return isCollectedAtLab;
+	}
+
+	public void setIsCollectedAtLab(Boolean isCollectedAtLab) {
+		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
 	@Override

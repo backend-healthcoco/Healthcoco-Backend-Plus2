@@ -787,7 +787,7 @@ public class SignUpServiceImpl implements SignUpService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while contacting Healthcoco");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while contacting Healthcoco");
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return response;
 	}

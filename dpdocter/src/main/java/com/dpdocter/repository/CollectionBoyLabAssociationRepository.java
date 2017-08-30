@@ -1,5 +1,7 @@
 package com.dpdocter.repository;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -13,5 +15,8 @@ public interface CollectionBoyLabAssociationRepository extends MongoRepository<C
 	
 	@Query("{ 'parentLabId': ?0,'daughterLabId': ?1}")
 	public CollectionBoyLabAssociationCollection findbyParentIdandDaughterId( ObjectId parentLabId, ObjectId daughterLabId);
+	
+	@Query("{'collectionBoyId' : ?0}")
+	public List<CollectionBoyLabAssociationCollection> findAllAssociationByCollectionBoyId(ObjectId collectionBoyId);
 	
 }

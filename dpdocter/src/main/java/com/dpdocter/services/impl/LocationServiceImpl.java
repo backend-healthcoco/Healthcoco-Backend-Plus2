@@ -1,8 +1,10 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
@@ -242,10 +244,32 @@ public class LocationServiceImpl implements LocationServices {
 	public CollectionBoy discardCB(String collectionBoyId, Boolean discarded) {
 		CollectionBoy response = null;
 		CollectionBoyCollection collectionBoyCollection = null;
+		List<CollectionBoyLabAssociationCollection> collectionBoyLabAssociationCollections = null;
 		collectionBoyCollection = collectionBoyRepository.findOne(new ObjectId(collectionBoyId));
 		if (collectionBoyCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Collection Boy record not found");
 		}
+		
+		if (discarded == true) {
+			collectionBoyLabAssociationCollections = collectionBoyLabAssociationRepository
+					.findAllAssociationByCollectionBoyId(new ObjectId(collectionBoyId));
+			for (CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection : collectionBoyLabAssociationCollections) {
+				collectionBoyLabAssociationCollection.setIsActive(false);
+				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+						.save(collectionBoyLabAssociationCollection);
+			}
+		}
+
+		else if (discarded == false) {
+			collectionBoyLabAssociationCollections = collectionBoyLabAssociationRepository
+					.findAllAssociationByCollectionBoyId(new ObjectId(collectionBoyId));
+			for (CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection : collectionBoyLabAssociationCollections) {
+				collectionBoyLabAssociationCollection.setIsActive(true);
+				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
+						.save(collectionBoyLabAssociationCollection);
+			}
+		}
+		
 		collectionBoyCollection.setDiscarded(discarded);
 		collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
 		if (collectionBoyCollection != null) {
@@ -342,12 +366,21 @@ public class LocationServiceImpl implements LocationServices {
 	public List<LabTestPickupLookupResponse> getRequestForCB(String collectionBoyId,Long from, Long to, String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
+		Date fromDate = null;
+		Date toDate = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 
 			criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
 			criteria.and("isCompleted").is(false);
+		/*	
+			if(from != null && to != null)
+			{
+				fromDate = new Date(from);
+				toDate = new Date(to);
+				criteria.and("updatedTime").gte(fromDate).lte(toDate);
+			}*/
 			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
@@ -462,12 +495,28 @@ public class LocationServiceImpl implements LocationServices {
 
 		List<LabTestPickupLookupResponse> response = null;
 		List<LabTestSample> labTestSamples = null;
+		Date fromDate = null;
+		Date toDate = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 
 			criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			criteria.and("isCompleted").is(false);
+			
+			/*if(from != null && to != null)
+			{
+				fromDate = new Date(from);
+				toDate = new Date(to);
+				criteria.and("updatedTime").gte(fromDate).lte(toDate);
+			}*/
+			
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("parentLab.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+			}
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -575,12 +624,69 @@ public class LocationServiceImpl implements LocationServices {
 
 		List<LabTestPickupLookupResponse> response = null;
 		List<LabTestSample> labTestSamples = null;
+		Date fromDate = null;
+		Date toDate = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
+			
+			
 
 			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
 			criteria.and("isCompleted").is(false);
+			
+		/*	if(from == null && to ==null)
+			{
+				fromDate = new Date(0l);
+				toDate =  new Date();
+			}
+			else if(from == null && to != null)
+			{
+				fromDate = new Date(0l);
+				toDate =  new Date(to);
+			}
+			else if (from != null && to == null) {
+				fromDate = new Date(from);
+				toDate =  new Date();
+			}
+			else
+			{
+				fromDate = new Date(from);
+				toDate =  new Date(to);
+			}
+			System.out.println(fromDate);
+			System.out.println(toDate);
+			criteria.andOperator(Criteria.where("updatedTime").gte(fromDate) , Criteria.where("updatedTime").lt(toDate));
+			
+			*/
+			
+			/*Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			if (from != null) {
+				localCalendar.setTime(new Date(from));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
+
+				criteria.and("updatedTime").gte(fromTime);
+			} else if (to != null) {
+				localCalendar.setTime(new Date(to));
+				int currentDay = localCalendar.get(Calendar.DATE);
+				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+				int currentYear = localCalendar.get(Calendar.YEAR);
+
+				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
+
+				criteria.and("updatedTime").lte(toTime);
+			}*/
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
+						new Criteria("parentLab.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+			}
+			
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -669,6 +775,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			System.out.println(aggregation);
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
@@ -902,6 +1009,7 @@ public class LocationServiceImpl implements LocationServices {
 					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				} else {
 					ObjectId oldId = collectionBoyLabAssociationCollection.getId();
+					
 					//collectionBoyLabAssociation.getCollectionBoyId().toString().equals(anObject)
 					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 					collectionBoyLabAssociationCollection.setId(oldId);
@@ -1523,6 +1631,7 @@ public class LocationServiceImpl implements LocationServices {
 			ObjectId locationObjectId = new ObjectId(locationId);
 			criteria.and("isCollected").is(true);
 			criteria.and("isCompleted").is(true);
+			criteria.and("isCollectedAtLab").is(true);
 			if(from != null && to != null)
 			{
 				DateTime fromDate = new DateTime(from);
