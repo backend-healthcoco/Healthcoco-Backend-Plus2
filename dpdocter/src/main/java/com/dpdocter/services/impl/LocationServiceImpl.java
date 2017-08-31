@@ -20,6 +20,7 @@ import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.GeocodedLocation;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickup;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.LabTestSample;
@@ -32,6 +33,7 @@ import com.dpdocter.collections.CRNCollection;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.CollectionBoyLabAssociationCollection;
 import com.dpdocter.collections.LabAssociationCollection;
+import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.collections.LocationCollection;
@@ -49,6 +51,7 @@ import com.dpdocter.repository.CRNRepository;
 import com.dpdocter.repository.CollectionBoyLabAssociationRepository;
 import com.dpdocter.repository.CollectionBoyRepository;
 import com.dpdocter.repository.LabAssociationRepository;
+import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
 import com.dpdocter.repository.LabTestSampleRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -112,6 +115,9 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Autowired
 	private LabTestSampleRepository labTestSampleRepository;
+	
+	@Autowired
+	private LabReportsRepository labReportsRepository;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
@@ -1590,19 +1596,6 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("isCompleted").is(true);
 			criteria.and("isCollectedAtLab").is(true);
 			
-			/*if(from != null && to != null)
-			{
-				criteria.is("updatedTime").gte(from).lt(to);
-			}
-			else if(from == null && to != null )
-			{
-				criteria.is("updatedTime").lt(to);
-			}
-			else if(to == null && from != null)
-			{
-				criteria.is("updatedTime").gte(from);
-			}*/
-			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("location.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
@@ -1655,7 +1648,16 @@ public class LocationServiceImpl implements LocationServices {
 					LabTestSampleCollection.class, LabTestSampleLookUpResponse.class);
 			//System.out.println(aggregation);
 			response = aggregationResults.getMappedResults();
-
+			for (LabTestSampleLookUpResponse labTestSampleLookUpResponse : response) {
+				LabReportsCollection labReportsCollection = labReportsRepository.getByRequestIdandSAmpleId(new ObjectId(labTestSampleLookUpResponse.getId()));
+				if(labReportsCollection != null)
+				{
+					LabReports labReports = new LabReports();
+					BeanUtil.map(labReportsCollection, labReports);
+					labTestSampleLookUpResponse.setLabReports(labReports);
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Getting lab reports");

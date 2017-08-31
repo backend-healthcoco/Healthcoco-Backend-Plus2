@@ -66,7 +66,6 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.DuplicateKeyException;
 
 import common.util.web.DPDoctorUtils;
@@ -781,15 +780,14 @@ public class SignUpServiceImpl implements SignUpService {
 			esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
 		} catch (DuplicateKeyException de) {
 			logger.error(de);
-			throw new BusinessException(ServiceError.Unknown,
-					"An account already exists with this mobile.Please use another email address to register.");
+			throw new BusinessException(ServiceError.Unknown, "Mobile number already registerd. Please login");
 		} catch (BusinessException be) {
-			logger.error(be);
+			logger.warn(be);
 			throw be;
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e + " Error occured while creating doctor");
-			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+			logger.error(e + " Error occured while contacting Healthcoco");
+			throw new BusinessException(ServiceError.Unknown, " Error occured while contacting Healthcoco.");
 		}
 		return response;
 	}
