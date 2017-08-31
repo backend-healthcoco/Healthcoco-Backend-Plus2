@@ -464,11 +464,16 @@ public class FeedbackServiceImpl implements FeedbackService {
 		UserCollection userCollection = null;
 		try {
 			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(type))
+			{
+				criteria.and("feedbackType").is(type);
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
 			{
 				criteria.and("localeId").is(new ObjectId(request.getLocaleId()));
 				localeCollection = localeRepository.findOne(new ObjectId(request.getLocaleId()));
-			}	
+			}
+			
 			
 			
 			if (!DPDoctorUtils.anyStringEmpty(request.getHospitalId()))

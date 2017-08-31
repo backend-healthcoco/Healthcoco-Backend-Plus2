@@ -66,6 +66,7 @@ import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 import com.dpdocter.tokenstore.CustomPasswordEncoder;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.mongodb.DuplicateKeyException;
 
 import common.util.web.DPDoctorUtils;
@@ -784,10 +785,23 @@ public class SignUpServiceImpl implements SignUpService {
 		} catch (BusinessException be) {
 			logger.warn(be);
 			throw be;
-		} catch (Exception e) {
+		} /*catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error occured while contacting Healthcoco");
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}*/ catch (NoSuchAlgorithmException nae) {
+			// TODO Auto-generated catch block
+			nae.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
+			
+		} catch (NoSuchProviderException nspe) {
+			// TODO Auto-generated catch block
+			nspe.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
 		}
 		return response;
 	}

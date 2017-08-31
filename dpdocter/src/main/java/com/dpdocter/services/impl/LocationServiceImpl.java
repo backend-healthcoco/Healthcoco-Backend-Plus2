@@ -1,14 +1,11 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -735,11 +732,11 @@ public class LocationServiceImpl implements LocationServices {
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
-			System.out.println(aggregation);
+			//System.out.println(aggregation);
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
-			System.out.println(response);
+			//System.out.println(response);
 			for (LabTestPickupLookupResponse labTestPickup : response) {
 
 				aggregation = Aggregation.newAggregation(
