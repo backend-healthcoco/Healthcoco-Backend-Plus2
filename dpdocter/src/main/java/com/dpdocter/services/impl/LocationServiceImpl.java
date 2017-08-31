@@ -504,13 +504,6 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			criteria.and("isCompleted").is(false);
 			
-			/*if(from != null && to != null)
-			{
-				fromDate = new Date(from);
-				toDate = new Date(to);
-				criteria.and("updatedTime").gte(fromDate).lte(toDate);
-			}*/
-			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
@@ -624,8 +617,6 @@ public class LocationServiceImpl implements LocationServices {
 
 		List<LabTestPickupLookupResponse> response = null;
 		List<LabTestSample> labTestSamples = null;
-		Date fromDate = null;
-		Date toDate = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -635,51 +626,20 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
 			criteria.and("isCompleted").is(false);
 			
-		/*	if(from == null && to ==null)
+			if(from != null && to != null)
 			{
-				fromDate = new Date(0l);
-				toDate =  new Date();
+				criteria.andOperator(Criteria.where("updatedTime").gte(new Date(from)) , Criteria.where("updatedTime").lt(new Date(to)));
 			}
-			else if(from == null && to != null)
+			else if(from == null && to != null )
 			{
-				fromDate = new Date(0l);
-				toDate =  new Date(to);
+				criteria.andOperator(Criteria.where("updatedTime").lt(new Date(to)));
 			}
-			else if (from != null && to == null) {
-				fromDate = new Date(from);
-				toDate =  new Date();
-			}
-			else
+			else if(to == null && from != null)
 			{
-				fromDate = new Date(from);
-				toDate =  new Date(to);
+				criteria.andOperator(Criteria.where("updatedTime").gte(from));
 			}
-			System.out.println(fromDate);
-			System.out.println(toDate);
-			criteria.andOperator(Criteria.where("updatedTime").gte(fromDate) , Criteria.where("updatedTime").lt(toDate));
 			
-			*/
 			
-			/*Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
-			if (from != null) {
-				localCalendar.setTime(new Date(from));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0);
-
-				criteria.and("updatedTime").gte(fromTime);
-			} else if (to != null) {
-				localCalendar.setTime(new Date(to));
-				int currentDay = localCalendar.get(Calendar.DATE);
-				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-				int currentYear = localCalendar.get(Calendar.YEAR);
-
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59);
-
-				criteria.and("updatedTime").lte(toTime);
-			}*/
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("daughterLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
@@ -779,7 +739,7 @@ public class LocationServiceImpl implements LocationServices {
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
-
+			System.out.println(response);
 			for (LabTestPickupLookupResponse labTestPickup : response) {
 
 				aggregation = Aggregation.newAggregation(
@@ -821,7 +781,7 @@ public class LocationServiceImpl implements LocationServices {
 								.findOne(new ObjectId(labTestSample.getId()));
 						BeanUtil.map(labTestSample, labTestSampleCollection);
 						labTestSampleCollection.setRateCardTestAssociation(labTestSample.getRateCardTestAssociation());
-						labTestSampleCollection.setIsCollected(request.getIsCompleted());
+						labTestSampleCollection.setIsCompleted(request.getIsCompleted());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						labTestSampleIds.add(labTestSampleCollection.getId());
 					} else {
@@ -830,7 +790,7 @@ public class LocationServiceImpl implements LocationServices {
 						LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
 						BeanUtil.map(labTestSample, labTestSampleCollection);
 						labTestSampleCollection.setCreatedTime(new Date());
-						labTestSampleCollection.setIsCollected(request.getIsCompleted());
+						labTestSampleCollection.setIsCompleted(request.getIsCompleted());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
 						labTestSampleIds.add(labTestSampleCollection.getId());
 					}
@@ -1632,12 +1592,20 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("isCollected").is(true);
 			criteria.and("isCompleted").is(true);
 			criteria.and("isCollectedAtLab").is(true);
-			if(from != null && to != null)
+			
+			/*if(from != null && to != null)
 			{
-				DateTime fromDate = new DateTime(from);
-				DateTime toDate = new DateTime(to);
-				criteria.and("createdTime").lte(toDate).gte(fromDate);
+				criteria.is("updatedTime").gte(from).lt(to);
 			}
+			else if(from == null && to != null )
+			{
+				criteria.is("updatedTime").lt(to);
+			}
+			else if(to == null && from != null)
+			{
+				criteria.is("updatedTime").gte(from);
+			}*/
+			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("location.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
@@ -1649,7 +1617,7 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), 
-							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
 							Aggregation.unwind("labReports"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
@@ -1659,7 +1627,7 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), 
-							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
 							Aggregation.unwind("labReports"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
@@ -1671,7 +1639,7 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"), 
-							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
 							Aggregation.unwind("labReports"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
@@ -1680,7 +1648,7 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
 							Aggregation.unwind("location"),
-							Aggregation.lookup("lab_reports_cl", "_id", "labTestSampleId", "labReports"),
+							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
 							Aggregation.unwind("labReports"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
