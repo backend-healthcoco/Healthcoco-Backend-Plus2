@@ -779,31 +779,18 @@ public class SignUpServiceImpl implements SignUpService {
 			BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
 			transnationalService.addResource(collectionBoyCollection.getId(), Resource.COLLECTION_BOY, false);
 			esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
-		} catch (BusinessException be) {
-			logger.warn(be);
-			throw be;
-		} /*catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e + " Error occured while contacting Healthcoco");
-			throw new BusinessException(ServiceError.Unknown, e.getMessage());
-		}*/ catch (NoSuchAlgorithmException nae) {
-			// TODO Auto-generated catch block
-			nae.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
-			
-		} catch (NoSuchProviderException nspe) {
-			// TODO Auto-generated catch block
-			nspe.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
-		}
-		catch (DuplicateKeyException de) {
+		} catch (DuplicateKeyException de) {
 			logger.error(de);
-			throw new BusinessException(ServiceError.Unknown, "Mobile number already registerd. Please login");
-		} 
+			throw new BusinessException(ServiceError.Unknown,
+					"An account already exists with this mobile.Please use another email address to register.");
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error occured while creating doctor");
+			throw new BusinessException(ServiceError.Unknown, "Error occured while creating doctor");
+		}
 		return response;
 	}
 
