@@ -779,9 +779,6 @@ public class SignUpServiceImpl implements SignUpService {
 			BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
 			transnationalService.addResource(collectionBoyCollection.getId(), Resource.COLLECTION_BOY, false);
 			esRegistrationService.addCollectionBoy(esCollectionBoyDocument);
-		} catch (DuplicateKeyException de) {
-			logger.error(de);
-			throw new BusinessException(ServiceError.Unknown, "Mobile number already registerd. Please login");
 		} catch (BusinessException be) {
 			logger.warn(be);
 			throw be;
@@ -803,6 +800,10 @@ public class SignUpServiceImpl implements SignUpService {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown , "Unable to contact healthcoco" );
 		}
+		catch (DuplicateKeyException de) {
+			logger.error(de);
+			throw new BusinessException(ServiceError.Unknown, "Mobile number already registerd. Please login");
+		} 
 		return response;
 	}
 
