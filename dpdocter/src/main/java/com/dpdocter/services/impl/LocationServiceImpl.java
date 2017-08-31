@@ -1606,9 +1606,7 @@ public class LocationServiceImpl implements LocationServices {
 					criteria.and("parentLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), 
-							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
-							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.unwind("location"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
 
@@ -1616,9 +1614,7 @@ public class LocationServiceImpl implements LocationServices {
 					criteria.and("daughterLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), 
-							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
-							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.unwind("location"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
 
@@ -1628,18 +1624,14 @@ public class LocationServiceImpl implements LocationServices {
 					criteria.and("parentLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"), 
-							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
-							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.unwind("location"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 				} else {
 					criteria.and("daughterLabLocationId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabLocationId", "_id", "location"),
-							Aggregation.unwind("location"),
-							Aggregation.lookup("lab_reports_cl", "labTestSampleId", "sampleId", "labReports"),
-							Aggregation.unwind("labReports"),Aggregation.match(criteria),
+							Aggregation.unwind("location"),Aggregation.match(criteria),
 							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 				}
