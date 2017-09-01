@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.AppointmentGeneralFeedback;
 import com.dpdocter.beans.DailyImprovementFeedback;
+import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.Duration;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PatientShortCard;
@@ -45,6 +46,7 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PharmacyFeedbackRepository;
 import com.dpdocter.repository.PrescritptionFeedbackRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DailyImprovementFeedbackRequest;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
@@ -345,14 +347,28 @@ public class FeedbackServiceImpl implements FeedbackService {
 	
 	@Override
 	@Transactional
-	public DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedback feedback) {
+	public DailyImprovementFeedback addEditDailyImprovementFeedback(DailyImprovementFeedbackRequest feedback) {
 		DailyImprovementFeedback response = null;
-		DailyImprovementFeedbackCollection dailyImprovementFeedbackCollection = new DailyImprovementFeedbackCollection();
+		
+		DailyImprovementFeedbackCollection dailyImprovementFeedbackCollection = null;
+		
+		dailyImprovementFeedbackCollection = dailyImprovementFeedbackRepository.findOne(new ObjectId(feedback.getId()));
+		
+		if(dailyImprovementFeedbackCollection == null)
+		{
+			dailyImprovementFeedbackCollection = new DailyImprovementFeedbackCollection();
+			BeanUtil.map(feedback, dailyImprovementFeedbackCollection);
+			dailyImprovementFeedbackCollection.setCreatedTime(new Date());
+		}
 
-		BeanUtil.map(feedback, dailyImprovementFeedbackCollection);
-		dailyImprovementFeedbackCollection.setCreatedTime(new Date());
+		if (dailyImprovementFeedbackCollection.getDailyPatientFeedbacks() == null) {
+			List<DailyPatientFeedback> dailyPatientFeedbacks = new ArrayList<>();
+			dailyImprovementFeedbackCollection.setDailyPatientFeedbacks(dailyPatientFeedbacks);
+		}
+		dailyImprovementFeedbackCollection.getDailyPatientFeedbacks().add(feedback.getDailyPatientFeedback());
 
-		dailyImprovementFeedbackCollection = dailyImprovementFeedbackRepository.save(dailyImprovementFeedbackCollection);
+		dailyImprovementFeedbackCollection = dailyImprovementFeedbackRepository
+				.save(dailyImprovementFeedbackCollection);
 		response = new DailyImprovementFeedback();
 		if (dailyImprovementFeedbackCollection != null) {
 			BeanUtil.map(dailyImprovementFeedbackCollection, response);

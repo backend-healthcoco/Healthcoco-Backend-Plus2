@@ -21,10 +21,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.collections.LabReportsCollection;
+import com.dpdocter.collections.LabTestCollection;
+import com.dpdocter.collections.LabTestPickupCollection;
+import com.dpdocter.collections.LabTestSampleCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LabReportsRepository;
+import com.dpdocter.repository.LabTestPickupRepository;
+import com.dpdocter.repository.LabTestSampleRepository;
+import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
@@ -42,6 +48,14 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Autowired
 	LabReportsRepository labReportsRepository;
+	
+	@Autowired
+	LabTestSampleRepository labTestSampleRepository;
+	
+	@Autowired
+	LabTestPickupRepository labTestPickupRepository;
+	
+	
 	
 	@Autowired
 	FileManager fileManager;
@@ -78,6 +92,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 			}
 			BeanUtil.map(request, labReportsCollection);
 			labReportsCollection.getLabReports().add(imageURLResponse);
+			labReportsCollection.setUploadCounts(labReportsCollection.getUploadCounts() + 1);
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
@@ -127,6 +142,16 @@ public class LabReportsServiceImpl implements LabReportsService{
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
+			
+			
+			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.getByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
+			
+			if(labTestPickupCollection != null)
+			{
+				labTestPickupCollection.setStatus("REPORTS UPLOADED");
+				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+			}
+			
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -166,6 +191,30 @@ public class LabReportsServiceImpl implements LabReportsService{
 			throw new BusinessException(ServiceError.Unknown, "Error Getting lab reports");
 		}
 		return response;
+	}
+	
+	@Override
+	@Transactional
+	public LabReports editLabReports(EditLabReportsRequest request) {
+
+		LabReports labReports = null;
+	
+		try {
+			LabReportsCollection labReportsCollection = labReportsRepository.findOne(new ObjectId(request.getId()));
+			if (labReportsCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Record not found");
+			}
+			labReportsCollection.setLabReports(request.getLabReports());
+			labReportsCollection = labReportsRepository.save(labReportsCollection);
+			labReports = new LabReports();
+			BeanUtil.map(labReportsCollection, labReports);
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		return labReports;
+		
 	}
 	
 }

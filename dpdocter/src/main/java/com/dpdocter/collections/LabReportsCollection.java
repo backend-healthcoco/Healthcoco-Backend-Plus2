@@ -54,6 +54,9 @@ public class LabReportsCollection extends GenericCollection {
 	@Field
 	private String recordsState;
 
+	@Field
+	private Integer uploadCounts = 0;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -164,6 +167,14 @@ public class LabReportsCollection extends GenericCollection {
 
 	public void setPatientName(String patientName) {
 		this.patientName = patientName;
+	}
+
+	public Integer getUploadCounts() {
+		return uploadCounts;
+	}
+
+	public void setUploadCounts(Integer uploadCounts) {
+		this.uploadCounts = uploadCounts;
 	}
 
 }

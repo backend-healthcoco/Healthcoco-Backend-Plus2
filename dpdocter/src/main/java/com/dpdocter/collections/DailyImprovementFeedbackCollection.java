@@ -1,9 +1,12 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.enums.FeelingTypeEnum;
 
 public class DailyImprovementFeedbackCollection extends GenericCollection {
@@ -21,13 +24,7 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 	@Field
 	private ObjectId hospitalId;
 	@Field
-	private String explanation;
-	@Field
-	private FeelingTypeEnum feelingType;
-	@Field
-	private Long submissionDate;
-	@Field
-	private Integer day;
+	private List<DailyPatientFeedback> dailyPatientFeedbacks;
 	@Field
 	private Boolean discarded;
 
@@ -39,36 +36,12 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getExplanation() {
-		return explanation;
+	public List<DailyPatientFeedback> getDailyPatientFeedbacks() {
+		return dailyPatientFeedbacks;
 	}
 
-	public void setExplanation(String explanation) {
-		this.explanation = explanation;
-	}
-
-	public FeelingTypeEnum getFeelingType() {
-		return feelingType;
-	}
-
-	public void setFeelingType(FeelingTypeEnum feelingType) {
-		this.feelingType = feelingType;
-	}
-
-	public Long getSubmissionDate() {
-		return submissionDate;
-	}
-
-	public void setSubmissionDate(Long submissionDate) {
-		this.submissionDate = submissionDate;
-	}
-
-	public Integer getDay() {
-		return day;
-	}
-
-	public void setDay(Integer day) {
-		this.day = day;
+	public void setDailyPatientFeedbacks(List<DailyPatientFeedback> dailyPatientFeedbacks) {
+		this.dailyPatientFeedbacks = dailyPatientFeedbacks;
 	}
 
 	public ObjectId getPrescriptionId() {
@@ -121,9 +94,9 @@ public class DailyImprovementFeedbackCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DailyImprovementFeedbackCollection [id=" + id + ", prescriptionId=" + prescriptionId + ", explanation="
-				+ explanation + ", feelingType=" + feelingType + ", submissionDate=" + submissionDate + ", day=" + day
-				+ "]";
+		return "DailyImprovementFeedbackCollection [id=" + id + ", prescriptionId=" + prescriptionId + ", locationId="
+				+ locationId + ", doctorId=" + doctorId + ", patientId=" + patientId + ", hospitalId=" + hospitalId
+				+ ", dailyPatientFeedbacks=" + dailyPatientFeedbacks + ", discarded=" + discarded + "]";
 	}
 
 }

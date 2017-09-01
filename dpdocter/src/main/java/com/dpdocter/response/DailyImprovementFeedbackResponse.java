@@ -1,5 +1,8 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
+import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
 import com.dpdocter.collections.GenericCollection;
@@ -17,10 +20,7 @@ public class DailyImprovementFeedbackResponse extends GenericCollection {
 	private String hospitalId;
 	private String hospitalName;
 	private String prescriptionId;
-	private String explanation;
-	private FeelingTypeEnum feelingType;
-	private Long submissionDate;
-	private Integer day;
+	private List<DailyPatientFeedback> dailyPatientFeedbacks;
 	private Boolean discarded;
 
 	public String getId() {
@@ -103,36 +103,12 @@ public class DailyImprovementFeedbackResponse extends GenericCollection {
 		this.prescriptionId = prescriptionId;
 	}
 
-	public String getExplanation() {
-		return explanation;
+	public List<DailyPatientFeedback> getDailyPatientFeedbacks() {
+		return dailyPatientFeedbacks;
 	}
 
-	public void setExplanation(String explanation) {
-		this.explanation = explanation;
-	}
-
-	public FeelingTypeEnum getFeelingType() {
-		return feelingType;
-	}
-
-	public void setFeelingType(FeelingTypeEnum feelingType) {
-		this.feelingType = feelingType;
-	}
-
-	public Long getSubmissionDate() {
-		return submissionDate;
-	}
-
-	public void setSubmissionDate(Long submissionDate) {
-		this.submissionDate = submissionDate;
-	}
-
-	public Integer getDay() {
-		return day;
-	}
-
-	public void setDay(Integer day) {
-		this.day = day;
+	public void setDailyPatientFeedbacks(List<DailyPatientFeedback> dailyPatientFeedbacks) {
+		this.dailyPatientFeedbacks = dailyPatientFeedbacks;
 	}
 
 	public Boolean getDiscarded() {
@@ -141,6 +117,15 @@ public class DailyImprovementFeedbackResponse extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	@Override
+	public String toString() {
+		return "DailyImprovementFeedbackResponse [id=" + id + ", locationId=" + locationId + ", locationName="
+				+ locationName + ", doctorId=" + doctorId + ", doctorName=" + doctorName + ", patientId=" + patientId
+				+ ", patientCard=" + patientCard + ", hospitalId=" + hospitalId + ", hospitalName=" + hospitalName
+				+ ", prescriptionId=" + prescriptionId + ", dailyPatientFeedbacks=" + dailyPatientFeedbacks
+				+ ", discarded=" + discarded + "]";
 	}
 
 }

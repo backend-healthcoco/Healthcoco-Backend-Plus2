@@ -20,8 +20,10 @@ import com.dpdocter.beans.DailyImprovementFeedback;
 import com.dpdocter.beans.PatientFeedback;
 import com.dpdocter.beans.PharmacyFeedback;
 import com.dpdocter.beans.PrescriptionFeedback;
+import com.dpdocter.collections.DailyImprovementFeedbackCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.request.DailyImprovementFeedbackRequest;
 import com.dpdocter.request.FeedbackGetRequest;
 import com.dpdocter.request.PatientFeedbackReplyRequest;
 import com.dpdocter.request.PatientFeedbackRequest;
@@ -114,7 +116,7 @@ public class FeedbackAPI {
 	@POST
 	@Path(PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
 	@ApiOperation(value = PathProxy.FeedbackUrls.ADD_EDIT_DAILY_IMPROVEMENT_FEEDBACK)
-	public Response<DailyImprovementFeedback> addEditDailyImprovementFeedback(DailyImprovementFeedback feedback) {
+	public Response<DailyImprovementFeedback> addEditDailyImprovementFeedback(DailyImprovementFeedbackRequest feedback) {
 		Response<DailyImprovementFeedback> response = new Response<>();
 		DailyImprovementFeedback dailyImprovementFeedback = null;
 		try {

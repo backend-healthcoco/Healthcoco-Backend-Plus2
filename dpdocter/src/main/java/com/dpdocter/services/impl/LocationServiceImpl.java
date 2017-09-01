@@ -63,6 +63,7 @@ import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
+import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.LabAssociationLookupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
@@ -434,7 +435,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.unwind("labTestSampleIds"),
@@ -478,7 +479,7 @@ public class LocationServiceImpl implements LocationServices {
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<LabTestPickupLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestPickupCollection.class, LabTestPickupLookupResponse.class);
 			response = aggregationResults.getMappedResults();
@@ -837,7 +838,7 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("id").in(labTestSampleIds);
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<LabTestSample> aggregationResults = mongoTemplate.aggregate(aggregation,
 					LabTestSampleCollection.class, LabTestSample.class);
 			List<LabTestSample> labTestSamples = aggregationResults.getMappedResults();
@@ -887,8 +888,8 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<CollectionBoy> getCollectionBoyList(int size, int page, String locationId, String searchTerm) {
-		List<CollectionBoy> response = null;
+	public List<CollectionBoyResponse> getCollectionBoyList(int size, int page, String locationId, String searchTerm) {
+		List<CollectionBoyResponse> response = null;
 		try {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
@@ -903,13 +904,17 @@ public class LocationServiceImpl implements LocationServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
-					CollectionBoyCollection.class, CollectionBoy.class);
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						Aggregation.unwind("location"),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					CollectionBoyCollection.class, CollectionBoyResponse.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -936,7 +941,7 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("locationId").is(new ObjectId(locationId));
 
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<CollectionBoy> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoy.class);
 			count = aggregationResults.getMappedResults().size();
@@ -971,6 +976,12 @@ public class LocationServiceImpl implements LocationServices {
 					collectionBoyLabAssociationCollection = new CollectionBoyLabAssociationCollection();
 					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				} else {
+					if((!collectionBoyLabAssociationCollection.getCollectionBoyId().toString().equals(collectionBoyLabAssociation.getCollectionBoyId())) && collectionBoyLabAssociationCollection.getIsActive() == true)
+					{
+						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
+						LocationCollection locationCollection = locationRepository.findOne(collectionBoyLabAssociationCollection.getDaughterLabId());
+						throw new BusinessException(ServiceError.Forbidden , "Collection boy " + collectionBoyCollection.getName() + " is already addigned to " + locationCollection.getLocationName() + ". Please select another lab / collection boy");
+					}
 					ObjectId oldId = collectionBoyLabAssociationCollection.getId();
 					
 					//collectionBoyLabAssociation.getCollectionBoyId().toString().equals(anObject)
@@ -989,7 +1000,7 @@ public class LocationServiceImpl implements LocationServices {
 			criteria.and("isActive").is(true);
 			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-					Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+					Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<CollectionBoyLabAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, CollectionBoyLabAssociationCollection.class,
 					CollectionBoyLabAssociationLookupResponse.class);
@@ -1029,12 +1040,12 @@ public class LocationServiceImpl implements LocationServices {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.unwind("location"), Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<CBLabAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyLabAssociationCollection.class, CBLabAssociationLookupResponse.class);
@@ -1081,7 +1092,7 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
 
 				} else {
@@ -1089,7 +1100,7 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"), Aggregation.skip((page) * size),
 							Aggregation.limit(size));
 
 				}
@@ -1099,14 +1110,14 @@ public class LocationServiceImpl implements LocationServices {
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 				} else {
 					criteria.and("daughterLabId").is(locationObjectId);
 					aggregation = Aggregation.newAggregation(
 							Aggregation.lookup("location_cl", "parentLabId", "_id", "location"),
 							Aggregation.unwind("location"), Aggregation.match(criteria),
-							Aggregation.sort(Sort.Direction.DESC, "createdTime"));
+							Aggregation.sort(Sort.Direction.DESC, "updatedTime"));
 
 				}
 			}
@@ -1167,11 +1178,11 @@ public class LocationServiceImpl implements LocationServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<RateCard> aggregationResults = mongoTemplate.aggregate(aggregation,
 					RateCardCollection.class, RateCard.class);
 			rateCards = aggregationResults.getMappedResults();
@@ -1273,7 +1284,7 @@ public class LocationServiceImpl implements LocationServices {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"), Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<RateCardTestAssociationLookupResponse> aggregationResults = mongoTemplate.aggregate(
 					aggregation, RateCardTestAssociationCollection.class, RateCardTestAssociationLookupResponse.class);
 			rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
@@ -1282,7 +1293,7 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
 						Aggregation.unwind("diagnosticTest"),
 						Aggregation.match(criteria.and("labId").is(new ObjectId(labId))),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 				AggregationResults<RateCardTestAssociationLookupResponse> results = mongoTemplate.aggregate(aggregation,
 						RateCardTestAssociationCollection.class, RateCardTestAssociationLookupResponse.class);
 				specialRateCardsTests = results.getMappedResults();

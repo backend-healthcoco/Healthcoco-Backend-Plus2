@@ -1,11 +1,8 @@
-package com.dpdocter.beans;
+package com.dpdocter.request;
 
-import java.util.List;
+import com.dpdocter.beans.DailyPatientFeedback;
 
-import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.FeelingTypeEnum;
-
-public class DailyImprovementFeedback extends GenericCollection {
+public class DailyImprovementFeedbackRequest {
 
 	private String id;
 	private String locationId;
@@ -13,7 +10,7 @@ public class DailyImprovementFeedback extends GenericCollection {
 	private String patientId;
 	private String hospitalId;
 	private String prescriptionId;
-	private List<DailyPatientFeedback> dailyPatientFeedbacks;
+	private DailyPatientFeedback dailyPatientFeedback;
 	private Boolean discarded = false;
 
 	public String getId() {
@@ -22,22 +19,6 @@ public class DailyImprovementFeedback extends GenericCollection {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public String getPrescriptionId() {
-		return prescriptionId;
-	}
-
-	public void setPrescriptionId(String prescriptionId) {
-		this.prescriptionId = prescriptionId;
-	}
-
-	public List<DailyPatientFeedback> getDailyPatientFeedbacks() {
-		return dailyPatientFeedbacks;
-	}
-
-	public void setDailyPatientFeedbacks(List<DailyPatientFeedback> dailyPatientFeedbacks) {
-		this.dailyPatientFeedbacks = dailyPatientFeedbacks;
 	}
 
 	public String getLocationId() {
@@ -72,6 +53,22 @@ public class DailyImprovementFeedback extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
+	public String getPrescriptionId() {
+		return prescriptionId;
+	}
+
+	public void setPrescriptionId(String prescriptionId) {
+		this.prescriptionId = prescriptionId;
+	}
+
+	public DailyPatientFeedback getDailyPatientFeedback() {
+		return dailyPatientFeedback;
+	}
+
+	public void setDailyPatientFeedback(DailyPatientFeedback dailyPatientFeedback) {
+		this.dailyPatientFeedback = dailyPatientFeedback;
+	}
+
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -82,9 +79,9 @@ public class DailyImprovementFeedback extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "DailyImprovementFeedback [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
+		return "DailyImprovementFeedbackRequest [id=" + id + ", locationId=" + locationId + ", doctorId=" + doctorId
 				+ ", patientId=" + patientId + ", hospitalId=" + hospitalId + ", prescriptionId=" + prescriptionId
-				+ ", dailyPatientFeedbacks=" + dailyPatientFeedbacks + ", discarded=" + discarded + "]";
+				+ ", dailyPatientFeedback=" + dailyPatientFeedback + ", discarded=" + discarded + "]";
 	}
 
 }

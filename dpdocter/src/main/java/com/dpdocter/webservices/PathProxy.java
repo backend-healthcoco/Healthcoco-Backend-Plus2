@@ -1281,6 +1281,7 @@ public interface PathProxy {
 		public static final String UPLOAD_REPORTS = "/uploadReports";
 		public static final String GET_REPORTS_FOR_SAMPLES = "/getReportsForSample";
 		public static final String UPDATE_REQUEST_STATUS = "/updateRequestStatus/{id}";
+		public static final String EDIT_LAB_REPORTS = "/editLabReports";
 
 	}
 

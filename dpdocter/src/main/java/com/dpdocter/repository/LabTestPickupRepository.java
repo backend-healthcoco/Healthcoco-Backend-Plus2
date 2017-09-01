@@ -11,4 +11,7 @@ public interface LabTestPickupRepository extends MongoRepository<LabTestPickupCo
 	@Query("{'requestId' : ?0}")
 	LabTestPickupCollection getByRequestId(String requestId);
 	
+	@Query("{'labTestSampleIds' : ?0}")
+	LabTestPickupCollection getByLabTestSampleId(ObjectId labTestSampleId);
+	
 }
