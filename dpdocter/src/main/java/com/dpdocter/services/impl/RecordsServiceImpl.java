@@ -1582,6 +1582,10 @@ public class RecordsServiceImpl implements RecordsService {
 			Date createdTime = new Date();
 			UserCollection userCollection = null;
 
+			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
+			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
+				oldRecord = userRecordsRepository.findOne(new ObjectId(request.getId()));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getHospitalId(),
 					request.getLocationId())) {
 				userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
@@ -1599,7 +1603,15 @@ public class RecordsServiceImpl implements RecordsService {
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
 							.findByUserId(new ObjectId(request.getPatientId()));
+					if(oldRecord!=null){
+						for (RecordsFile file : oldRecord.getRecordsFiles()) {
 
+							userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
+									userAllowanceDetailsCollection.getAvailableRecordsSizeInMB()
+											+ file.getFileSizeInMB());
+
+						}
+					}
 					for (int index = 0; request.getRecordsFiles().size() > index; index++) {
 						if (userAllowanceDetailsCollection.getAllowedRecordsSizeInMB()
 								- userAllowanceDetailsCollection.getAvailableRecordsSizeInMB() >= 0) {
@@ -1620,10 +1632,7 @@ public class RecordsServiceImpl implements RecordsService {
 					request.setUploadedBy(RoleEnum.PATIENT);
 				}
 			}
-			UserRecordsCollection userRecordsCollection = null, oldRecord = null;
-			if (!DPDoctorUtils.anyStringEmpty(request.getId())) {
-				oldRecord = userRecordsRepository.findOne(new ObjectId(request.getId()));
-			}
+			
 
 			userRecordsCollection = new UserRecordsCollection();
 			BeanUtil.map(request, userRecordsCollection);
@@ -1633,9 +1642,7 @@ public class RecordsServiceImpl implements RecordsService {
 				userRecordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 				userRecordsCollection.setDiscarded(oldRecord.getDiscarded());
 				userRecordsCollection.setUniqueEmrId(oldRecord.getUniqueEmrId());
-				userRecordsCollection.setIsVisible(oldRecord.getIsVisible());
-				userRecordsCollection.setRecordsFiles(oldRecord.getRecordsFiles());
-
+				
 			} else {
 				userRecordsCollection
 						.setUniqueEmrId(UniqueIdInitial.USERREPORTS.getInitial() + DPDoctorUtils.generateRandomId());
