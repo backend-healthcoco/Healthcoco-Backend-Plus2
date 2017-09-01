@@ -2019,6 +2019,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(serviceWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + serviceWidth;
 
@@ -2412,6 +2413,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setHeight(18);
 		jrDesignTextField.setWidth(serviceWidth);
 		jrDesignTextField.setStretchWithOverflow(true);
+		jrDesignTextField.setMarkup("html");
 		band.addElement(jrDesignTextField);
 		xSpace = xSpace + serviceWidth;
 

@@ -32,6 +32,7 @@ import com.dpdocter.services.AdmitCardService;
 
 import common.util.web.DPDoctorUtils;
 
+@Transactional
 @Service
 public class AdmitCardServiceImpl implements AdmitCardService {
 
@@ -53,7 +54,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	private PatientRepository patientRepository;
 
 	@Override
-	@Transactional
 	public AdmitCardResponse addEditAdmitcard(AdmitCardRequest request) {
 		AdmitCardResponse response = null;
 		try {
@@ -98,7 +98,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	}
 
 	@Override
-	@Transactional
 	public AdmitCardResponse getAdmitCard(String cardId) {
 		AdmitCardResponse response = null;
 		try {
@@ -126,7 +125,6 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 	}
 
 	@Override
-	@Transactional
 	public List<AdmitCardResponse> getAdmitCards(String doctorId, String locationId, String hospitalId,
 			String patientId, int page, int size, long updatedTime, Boolean discarded) {
 		List<AdmitCardResponse> response = null;
@@ -145,7 +143,7 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 				criteria = criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
 			if (updatedTime > 0) {
-				criteria = criteria.and("createdTime").is(new Date(updatedTime));
+				criteria = criteria.and("updatedTime").is(new Date(updatedTime));
 			}
 
 			criteria = criteria.and("discarded").is(discarded);
@@ -187,8 +185,8 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		return response;
 	}
 
-	@Override
 	@Transactional
+	@Override
 	public AdmitCardResponse deleteAdmitCard(String cardId, String doctorId, String hospitalId, String locationId,
 			Boolean discarded) {
 
