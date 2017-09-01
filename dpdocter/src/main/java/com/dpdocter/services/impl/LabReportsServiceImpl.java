@@ -143,15 +143,15 @@ public class LabReportsServiceImpl implements LabReportsService{
 			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
 			
-			
+			System.out.println(request);
 			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.getByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
-			
+			System.out.println(labTestPickupCollection);
 			if(labTestPickupCollection != null)
 			{
 				labTestPickupCollection.setStatus("REPORTS UPLOADED");
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			}
-			
+			System.out.println(labTestPickupCollection);
 
 		} catch (Exception e) {
 			// TODO: handle exception

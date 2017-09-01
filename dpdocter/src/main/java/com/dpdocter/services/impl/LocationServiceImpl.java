@@ -801,6 +801,7 @@ public class LocationServiceImpl implements LocationServices {
 
 				}
 				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
+				labTestPickupCollection.setUpdatedTime(new Date());
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			} else {
 				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
@@ -828,6 +829,7 @@ public class LocationServiceImpl implements LocationServices {
 				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection.setIsCompleted(false);
 				labTestPickupCollection.setStatus(request.getStatus());
+				labTestPickupCollection.setUpdatedTime(new Date());
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 
 			}
@@ -904,14 +906,10 @@ public class LocationServiceImpl implements LocationServices {
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 			AggregationResults<CollectionBoyResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					CollectionBoyCollection.class, CollectionBoyResponse.class);
