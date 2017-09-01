@@ -1716,7 +1716,7 @@ public class RecordsServiceImpl implements RecordsService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			Criteria criteria = new Criteria("createdTime").gt(new Date(createdTimeStamp));
+			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp));
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId)) {
 				criteria = criteria.orOperator(new Criteria("patientId").is(patientObjectId),
 						new Criteria("shareWith").is(patientObjectId));
