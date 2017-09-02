@@ -761,6 +761,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 			notification.setNotificationType(componentType);
 			String jsonOutput = mapper.writeValueAsString(notification);
+			System.out.println(jsonOutput);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 			Result result = sender.send(messageObj, pushToken, 1);
 			List<String> deviceIds = new ArrayList<String>();
