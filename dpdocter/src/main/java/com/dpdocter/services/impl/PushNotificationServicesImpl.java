@@ -699,8 +699,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			if (role.equals(RoleEnum.PHARMIST)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
+			
 
-			if (role.equals(RoleEnum.PATIENT)) {
+			if (role.equals(RoleEnum.PATIENT) || role.equals(RoleEnum.COLLECTION_BOY)) {
 				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
 			}
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
@@ -709,9 +710,19 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.ANDROID.getType())) {
 
-							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
-									userDeviceCollection.getPushToken(), message, ComponentType.USER_ORDER.getType(),
-									requestId, responseId, role.getRole());
+							if(role.equals(RoleEnum.COLLECTION_BOY))
+							{
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message, ComponentType.LAB_REQUEST.getType(),
+										null, null, role.getRole());
+							}
+							else
+							{
+								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+										userDeviceCollection.getPushToken(), message, ComponentType.USER_ORDER.getType(),
+										requestId, responseId, role.getRole());
+							}
+							
 						}
 					}
 				}
@@ -728,7 +739,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = null;
 
-			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())) {
+			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString()) || role.equals(RoleEnum.COLLECTION_BOY.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {
@@ -740,10 +751,15 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			notification.setTitle("Healthcoco");
 			notification.setText(message);
 
-			notification.setReq(requestId);
-			notification.setRes(responseId);
+			if (requestId != null) {
+				notification.setReq(requestId);
+			}
 
-			notification.setNotificationType(ComponentType.USER_ORDER.getType());
+			if (responseId != null) {
+				notification.setRes(responseId);
+			}
+
+			notification.setNotificationType(componentType);
 			String jsonOutput = mapper.writeValueAsString(notification);
 			Message messageObj = new Message.Builder().delayWhileIdle(true).addData("message", jsonOutput).build();
 			Result result = sender.send(messageObj, pushToken, 1);

@@ -43,6 +43,8 @@ import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.SpecimenCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -68,6 +70,7 @@ import com.dpdocter.response.LabAssociationLookupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LocationServices;
+import com.dpdocter.services.PushNotificationServices;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
@@ -119,9 +122,17 @@ public class LocationServiceImpl implements LocationServices {
 	
 	@Autowired
 	private LabReportsRepository labReportsRepository;
+	
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
 
 	@Value("${geocoding.services.api.key}")
 	private String GEOCODING_SERVICES_API_KEY;
+	
+	@Value("${collection.boy.notification}")
+	private String COLLECTION_BOY_NOTIFICATION;
+	
+	
 
 	@Autowired
 	MongoTemplate mongoTemplate;
@@ -819,6 +830,10 @@ public class LocationServiceImpl implements LocationServices {
 				if (collectionBoyLabAssociationCollection != null) {
 					labTestPickupCollection
 							.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());
+					CollectionBoyCollection collectionBoyCollection = collectionBoyRepository.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
+					pushNotificationServices.notifyPharmacy(collectionBoyCollection.getUserId().toString(), null, null, RoleEnum.COLLECTION_BOY, COLLECTION_BOY_NOTIFICATION);;
+					
+				//pushNotificationServices.notifyPharmacy(id, requestId, responseId, role, message);
 				}
 				labTestPickupCollection.setCreatedTime(new Date());
 				labTestPickupCollection.setIsCompleted(false);
