@@ -346,5 +346,17 @@ public class BillingApi {
 		response.setData(true);
 		return response;
 	}
+	
+	@Path(value = PathProxy.BillingUrls.DUE_AMOUNT_REMAINDER)
+	@GET
+	@ApiOperation(value = PathProxy.BillingUrls.DUE_AMOUNT_REMAINDER, notes = PathProxy.BillingUrls.DUE_AMOUNT_REMAINDER)
+	public Response<Boolean> sendDueAmountRemainder(@PathParam("receiptId") String patientId,
+			@PathParam("doctorId") String doctorId, @PathParam("locationId") String locationId,
+			@PathParam("hospitalId") String hospitalId) {
+		billingService.sendDueRemainderToPatient(doctorId, locationId, hospitalId, patientId);
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(true);
+		return response;
+	}
 
 }

@@ -53,10 +53,8 @@ import com.dpdocter.beans.PatientVisitLookupBean;
 import com.dpdocter.beans.Prescription;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionJasperDetails;
-import com.dpdocter.beans.PrintSettings;
 import com.dpdocter.beans.PrintSettingsText;
 import com.dpdocter.beans.Records;
-import com.dpdocter.beans.RecordsFile;
 import com.dpdocter.beans.TestAndRecordData;
 import com.dpdocter.beans.Treatment;
 import com.dpdocter.beans.TreatmentFields;
@@ -1264,8 +1262,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 									? treatmentServicesCollection.getName() : "";
 							String fieldName = "";
 							if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
+								String key = "";
 								for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
-									String key = treatmentFile.getKey();
+									key = treatmentFile.getKey();
 									if (!DPDoctorUtils.anyStringEmpty(key)) {
 										if (key.equalsIgnoreCase("toothNumber")) {
 											key = "Tooth No :";
@@ -1275,7 +1274,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 										}
 
 										if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
-											fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+											fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue()
+													+ "</i></font>";
 										}
 									}
 								}

@@ -32,6 +32,9 @@ import com.dpdocter.beans.InvoiceAndReceiptInitials;
 import com.dpdocter.beans.InvoiceItem;
 import com.dpdocter.beans.InvoiceItemJasperDetails;
 import com.dpdocter.beans.MailAttachment;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.TreatmentFields;
 import com.dpdocter.collections.DoctorPatientDueAmountCollection;
 import com.dpdocter.collections.DoctorPatientInvoiceCollection;
@@ -41,10 +44,12 @@ import com.dpdocter.collections.EmailTrackCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
+import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.BillingType;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.ReceiptType;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -71,6 +76,7 @@ import com.dpdocter.services.JasperReportService;
 import com.dpdocter.services.MailBodyGenerator;
 import com.dpdocter.services.MailService;
 import com.dpdocter.services.PatientVisitService;
+import com.dpdocter.services.SMSServices;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -132,10 +138,16 @@ public class BillingServiceImpl implements BillingService {
 	private String imagePath;
 
 	@Autowired
+	private SMSServices smsServices;
+
+	@Autowired
 	DoctorPatientLedgerRepository doctorPatientLedgerRepository;
 
 	@Autowired
 	DoctorPatientDueAmountRepository doctorPatientDueAmountRepository;
+
+	@Value(value = "${sms.add.dueAmount.to.patient}")
+	private String dueAmountRemainderSMS;
 
 	@Override
 	public InvoiceAndReceiptInitials getInitials(String locationId) {
@@ -1331,8 +1343,9 @@ public class BillingServiceImpl implements BillingService {
 				String serviceName = invoiceItem.getName() != null ? invoiceItem.getName() : "";
 				String fieldName = "";
 				if (invoiceItem.getTreatmentFields() != null && !invoiceItem.getTreatmentFields().isEmpty()) {
+					String key = "";
 					for (TreatmentFields treatmentFile : invoiceItem.getTreatmentFields()) {
-						String key = treatmentFile.getKey();
+						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
 								key = "Tooth No :";
@@ -1750,6 +1763,47 @@ public class BillingServiceImpl implements BillingService {
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
+	}
+
+	@Override
+	public Boolean sendDueRemainderToPatient(String doctorId, String locationId, String hospitalId, String patientId) {
+		Boolean response = false;
+		try {
+
+			DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(
+					new ObjectId(patientId), new ObjectId(doctorId), new ObjectId(locationId),
+					new ObjectId(hospitalId));
+			UserCollection patient = userRepository.findOne(new ObjectId(patientId));
+			UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+			smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+			smsTrackDetail.setLocationId(new ObjectId(locationId));
+			smsTrackDetail.setType(ComponentType.DUE_AMOUNT.getType());
+			SMSDetail smsDetail = new SMSDetail();
+			smsDetail.setUserId(new ObjectId(patientId));
+			smsDetail.setUserName(patient.getFirstName());
+			SMS sms = new SMS();
+			String message = dueAmountRemainderSMS;
+			sms.setSmsText(message.replace("{patientName}", patient.getFirstName()).replace("{doctorName}",
+					doctor.getTitle() + " " + doctor.getFirstName()));
+			SMSAddress smsAddress = new SMSAddress();
+			smsAddress.setRecipient(patient.getMobileNumber());
+			sms.setSmsAddress(smsAddress);
+			smsDetail.setSms(sms);
+			smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			smsDetails.add(smsDetail);
+			smsTrackDetail.setSmsDetails(smsDetails);
+			smsServices.sendSMS(smsTrackDetail, true);
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			logger.error("Error while getting invoices" + e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting invoices" + e);
+		}
+		return response;
 	}
 
 }
