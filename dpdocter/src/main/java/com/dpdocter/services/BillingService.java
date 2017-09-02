@@ -62,5 +62,7 @@ public interface BillingService {
 
 	public void emailInvoice(String invoiceId, String doctorId, String locationId, String hospitalId,
 			String emailAddress);
+	
+	public Boolean sendDueRemainderToPatient(String doctorId, String locationId, String hospitalId, String patientId);
 
 }

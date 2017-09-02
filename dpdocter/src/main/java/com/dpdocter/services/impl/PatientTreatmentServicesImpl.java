@@ -1423,8 +1423,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						? treatmentServicesCollection.getName() : "";
 				String fieldName = "";
 				if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
+					String key ="";
 					for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
-						String key = treatmentFile.getKey();
+						 key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
 								key = "Tooth No :";
