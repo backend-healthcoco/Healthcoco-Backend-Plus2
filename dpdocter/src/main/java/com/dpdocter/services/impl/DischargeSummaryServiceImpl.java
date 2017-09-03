@@ -1040,7 +1040,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
 					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
-					mailResponse.getMailRecordCreatedDate(), "Consent Form", "emrMailTemplate.vm");
+					mailResponse.getMailRecordCreatedDate(), "Discharge Summary", "emrMailTemplate.vm");
 			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Discharge Summary", body,
 					mailResponse.getMailAttachment());
 			if (mailResponse.getMailAttachment() != null

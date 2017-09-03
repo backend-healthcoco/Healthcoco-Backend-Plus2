@@ -129,7 +129,7 @@ public class AdmitCardAPI {
 	@ApiOperation(value = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD)
 	public Response<String> downloadDischargeSummary(@PathParam("admitCardId") String admitCardId) {
 		Response<String> response = new Response<String>();
-
+		response.setData(admitCardService.downloadDischargeSummary(admitCardId));
 		return response;
 	}
 
@@ -140,7 +140,7 @@ public class AdmitCardAPI {
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "emailAddress") String emailAddress) {
-
+		admitCardService.emailAdmitCard(admitCardId, doctorId, locationId, hospitalId, emailAddress);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(true);
 		return response;

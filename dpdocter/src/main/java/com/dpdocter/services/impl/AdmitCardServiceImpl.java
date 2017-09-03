@@ -1,8 +1,16 @@
 package com.dpdocter.services.impl;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,20 +23,43 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.DefaultPrintSettings;
+import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.AdmitCardCollection;
+import com.dpdocter.collections.DischargeSummaryCollection;
+import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.LineSpace;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AdmitCardRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PrintSettingsRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.AdmitCardRequest;
 import com.dpdocter.response.AdmitCardResponse;
+import com.dpdocter.response.JasperReportResponse;
+import com.dpdocter.response.MailResponse;
 import com.dpdocter.services.AdmitCardService;
+import com.dpdocter.services.EmailTackService;
+import com.dpdocter.services.JasperReportService;
+import com.dpdocter.services.MailBodyGenerator;
+import com.dpdocter.services.MailService;
+import com.dpdocter.services.PatientVisitService;
 
 import common.util.web.DPDoctorUtils;
 
@@ -52,6 +83,30 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 
 	@Autowired
 	private PatientRepository patientRepository;
+
+	@Autowired
+	private JasperReportService jasperReportService;
+
+	@Autowired
+	private PatientVisitService patientVisitService;
+
+	@Autowired
+	private PrintSettingsRepository printSettingsRepository;
+
+	@Autowired
+	private LocationRepository locationRepository;
+
+	@Autowired
+	private EmailTackService emailTackService;
+
+	@Autowired
+	private MailBodyGenerator mailBodyGenerator;
+
+	@Autowired
+	private MailService mailService;
+
+	@Value(value = "${jasper.print.admitCard.a4.fileName}")
+	private String admitCardReportA4FileName;
 
 	@Override
 	public AdmitCardResponse addEditAdmitcard(AdmitCardRequest request) {
@@ -252,4 +307,279 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		return response;
 	}
 
+	@Override
+	public String downloadDischargeSummary(String admitCardId) {
+		String response = null;
+
+		try {
+			AdmitCardCollection admitCardCollection = admitCardRepository.findOne(new ObjectId(admitCardId));
+			if (admitCardCollection != null) {
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+						admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
+						admitCardCollection.getHospitalId());
+
+				UserCollection user = userRepository.findOne(admitCardCollection.getPatientId());
+				JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+				if (jasperReportResponse != null)
+					response = getFinalImageURL(jasperReportResponse.getPath());
+				if (jasperReportResponse != null && jasperReportResponse.getFileSystemResource() != null)
+					if (jasperReportResponse.getFileSystemResource().getFile().exists())
+						jasperReportResponse.getFileSystemResource().getFile().delete();
+			} else {
+				logger.warn("Invoice Id does not exist");
+				throw new BusinessException(ServiceError.NotFound, "Id does not exist");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Exception in download Discharge Summary ");
+		}
+		return response;
+	}
+
+	private JasperReportResponse createJasper(AdmitCardCollection admitCardCollection, PatientCollection patient,
+			UserCollection user) throws NumberFormatException, IOException, ParseException {
+		JasperReportResponse response = null;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		String pattern = "dd/MM/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		Boolean show = false;
+
+		PrintSettingsCollection printSettings = printSettingsRepository.getSettings(admitCardCollection.getDoctorId(),
+				admitCardCollection.getLocationId(), admitCardCollection.getHospitalId(), ComponentType.ALL.getType());
+
+		if (printSettings == null) {
+			printSettings = new PrintSettingsCollection();
+			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
+			BeanUtil.map(defaultPrintSettings, printSettings);
+		}
+
+		if (admitCardCollection.getAdmissionDate() != null) {
+			show = true;
+			parameters.put("dOA",
+					"<b>Date of Admission:-</b>" + simpleDateFormat.format(admitCardCollection.getAdmissionDate()));
+		}
+		parameters.put("showDOA", show);
+		show = false;
+		if (admitCardCollection.getDischargeDate() != null) {
+			show = true;
+			parameters.put("dOD",
+					"<b>Date of Discharge:-</b>" + simpleDateFormat.format(admitCardCollection.getDischargeDate()));
+		}
+		parameters.put("showDOD", show);
+		show = false;
+		if (admitCardCollection.getOperationDate() != null) {
+			show = true;
+			parameters.put("operationdate", simpleDateFormat.format(admitCardCollection.getOperationDate()));
+		}
+		parameters.put("showOD", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getNatureOfOperation())) {
+			show = true;
+			parameters.put("natureOfOperation", admitCardCollection.getNatureOfOperation());
+		}
+		parameters.put("showNOfOp", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getPastHistory())) {
+			show = true;
+			parameters.put("pastHistory", admitCardCollection.getPastHistory());
+		}
+		parameters.put("showPH", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getFamilyHistory())) {
+			show = true;
+			parameters.put("familyHistory", admitCardCollection.getFamilyHistory());
+		}
+		parameters.put("showFH", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getPersonalHistory())) {
+			show = true;
+			parameters.put("personalHistory", admitCardCollection.getPersonalHistory());
+		}
+		parameters.put("showPersonalHistory", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getComplaint())) {
+			show = true;
+			parameters.put("complaints", admitCardCollection.getComplaint());
+		}
+		parameters.put("showcompl", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getJointInvolvement())) {
+			show = true;
+			parameters.put("jointInvolvement", admitCardCollection.getJointInvolvement());
+		}
+		parameters.put("showJINV", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getxRayDetails())) {
+			show = true;
+			parameters.put("xRayDetails", admitCardCollection.getxRayDetails());
+		}
+		parameters.put("showXD", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getDiagnosis())) {
+			show = true;
+			parameters.put("diagnosis", admitCardCollection.getDiagnosis());
+		}
+		parameters.put("showDiagnosis", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getTreatmentsPlan())) {
+			show = true;
+			parameters.put("treatmentPlan", admitCardCollection.getTreatmentsPlan());
+		}
+		parameters.put("showTP", show);
+		show = false;
+
+		parameters.put("contentLineSpace",
+				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
+						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());
+		patientVisitService.generatePatientDetails(
+				(printSettings != null && printSettings.getHeaderSetup() != null
+						? printSettings.getHeaderSetup().getPatientDetails() : null),
+				patient,
+				"<b>ADMIT-CARD-ID: </b>"
+						+ (admitCardCollection.getUniqueEmrId() != null ? admitCardCollection.getUniqueEmrId() : "--"),
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+		patientVisitService.generatePrintSetup(parameters, printSettings, admitCardCollection.getDoctorId());
+		String pdfName = (user != null ? user.getFirstName() : "") + "ADMIT-CARD-"
+				+ admitCardCollection.getUniqueEmrId() + new Date().getTime();
+
+		String layout = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
+				: "PORTRAIT";
+		String pageSize = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+		Integer topMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getTopMargin() : 20) : 20;
+		Integer bottonMargin = printSettings != null
+				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getBottomMargin() : 20) : 20;
+		Integer leftMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getLeftMargin() != 20
+						? printSettings.getPageSetup().getLeftMargin() : 20)
+				: 20;
+		Integer rightMargin = printSettings != null
+				? (printSettings.getPageSetup() != null && printSettings.getPageSetup().getRightMargin() != null
+						? printSettings.getPageSetup().getRightMargin() : 20)
+				: 20;
+		response = jasperReportService.createPDF(ComponentType.ADMIT_CARD, parameters, admitCardReportA4FileName,
+				layout, pageSize, topMargin, bottonMargin, leftMargin, rightMargin,
+				Integer.parseInt(parameters.get("contentFontSize").toString()), pdfName.replaceAll("\\s+", ""));
+
+		return response;
+
+	}
+
+	private String getFinalImageURL(String imageURL) {
+		if (imageURL != null) {
+			return imagePath + imageURL;
+		} else
+			return null;
+	}
+
+	@Override
+	public void emailAdmitCard(String admitcardId, String doctorId, String locationId, String hospitalId,
+			String emailAddress) {
+		MailResponse mailResponse = null;
+		AdmitCardCollection admitCardCollection = null;
+		MailAttachment mailAttachment = null;
+		UserCollection user = null;
+		PatientCollection patient = null;
+		EmailTrackCollection emailTrackCollection = new EmailTrackCollection();
+		try {
+			admitCardCollection = admitCardRepository.findOne(new ObjectId(admitcardId));
+			if (admitCardCollection != null) {
+				if (admitCardCollection.getDoctorId() != null && admitCardCollection.getHospitalId() != null
+						&& admitCardCollection.getLocationId() != null) {
+					if (admitCardCollection.getDoctorId().equals(doctorId)
+							&& admitCardCollection.getHospitalId().equals(hospitalId)
+							&& admitCardCollection.getLocationId().equals(locationId)) {
+
+						user = userRepository.findOne(admitCardCollection.getPatientId());
+						patient = patientRepository.findByUserIdLocationIdAndHospitalId(
+								admitCardCollection.getPatientId(), admitCardCollection.getLocationId(),
+								admitCardCollection.getHospitalId());
+						user.setFirstName(patient.getLocalPatientName());
+						emailTrackCollection.setDoctorId(admitCardCollection.getDoctorId());
+						emailTrackCollection.setHospitalId(admitCardCollection.getHospitalId());
+						emailTrackCollection.setLocationId(admitCardCollection.getLocationId());
+						emailTrackCollection.setType(ComponentType.ADMIT_CARD.getType());
+						emailTrackCollection.setSubject("ADMIT CARD");
+						if (user != null) {
+							emailTrackCollection.setPatientName(patient.getLocalPatientName());
+							emailTrackCollection.setPatientId(user.getId());
+						}
+
+						JasperReportResponse jasperReportResponse = createJasper(admitCardCollection, patient, user);
+						mailAttachment = new MailAttachment();
+						mailAttachment.setAttachmentName(FilenameUtils.getName(jasperReportResponse.getPath()));
+						mailAttachment.setFileSystemResource(jasperReportResponse.getFileSystemResource());
+						UserCollection doctorUser = userRepository.findOne(new ObjectId(doctorId));
+						LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+
+						mailResponse = new MailResponse();
+						mailResponse.setMailAttachment(mailAttachment);
+						mailResponse.setDoctorName(doctorUser.getTitle() + " " + doctorUser.getFirstName());
+						String address = (!DPDoctorUtils.anyStringEmpty(locationCollection.getStreetAddress())
+								? locationCollection.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLandmarkDetails())
+										? locationCollection.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getLocality())
+										? locationCollection.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCity())
+										? locationCollection.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getState())
+										? locationCollection.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getCountry())
+										? locationCollection.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(locationCollection.getPostalCode())
+										? locationCollection.getPostalCode() : "");
+
+						if (address.charAt(address.length() - 2) == ',') {
+							address = address.substring(0, address.length() - 2);
+						}
+						mailResponse.setClinicAddress(address);
+						mailResponse.setClinicName(locationCollection.getLocationName());
+						SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+						sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+						mailResponse.setMailRecordCreatedDate(sdf.format(admitCardCollection.getCreatedTime()));
+						mailResponse.setPatientName(user.getFirstName());
+						emailTackService.saveEmailTrack(emailTrackCollection);
+
+					} else {
+						logger.warn("Admit Card Id, doctorId, location Id, hospital Id does not match");
+						throw new BusinessException(ServiceError.NotFound,
+								" Admit Card  Id, doctorId, location Id, hospital Id does not match");
+					}
+				}
+
+			} else {
+				logger.warn("Discharge Summary  not found.Please check Admit Card Id.");
+				throw new BusinessException(ServiceError.NoRecord,
+						"Discharge Summary not found.Please check Admit Card Id.");
+			}
+
+			String body = mailBodyGenerator.generateEMREmailBody(mailResponse.getPatientName(),
+					mailResponse.getDoctorName(), mailResponse.getClinicName(), mailResponse.getClinicAddress(),
+					mailResponse.getMailRecordCreatedDate(), "Admit Card", "emrMailTemplate.vm");
+			mailService.sendEmail(emailAddress, mailResponse.getDoctorName() + " sent you Admit Card", body,
+					mailResponse.getMailAttachment());
+			if (mailResponse.getMailAttachment() != null
+					&& mailResponse.getMailAttachment().getFileSystemResource() != null)
+				if (mailResponse.getMailAttachment().getFileSystemResource().getFile().exists())
+					mailResponse.getMailAttachment().getFileSystemResource().getFile().delete();
+		} catch (Exception e) {
+			logger.error(e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+
+	}
 }

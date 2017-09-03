@@ -23,4 +23,9 @@ public interface AdmitCardService {
 	int getAdmitCardCount(ObjectId doctorObjectId, ObjectId patientObjectId, ObjectId locationObjectId,
 			ObjectId hospitalObjectId, boolean isOTPVerified);
 
+	String downloadDischargeSummary(String admitCardId);
+
+	void emailAdmitCard(String admitcardId, String doctorId, String locationId, String hospitalId,
+			String emailAddress);
+
 }
