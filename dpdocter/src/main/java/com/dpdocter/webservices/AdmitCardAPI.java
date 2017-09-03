@@ -127,7 +127,7 @@ public class AdmitCardAPI {
 	@Path(value = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD)
 	@GET
 	@ApiOperation(value = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.DOWNLOAD_ADMIT_CARD)
-	public Response<String> downloadDischargeSummary(@PathParam("admitCardId") String admitCardId) {
+	public Response<String> downloadAdmitCard(@PathParam("admitCardId") String admitCardId) {
 		Response<String> response = new Response<String>();
 		response.setData(admitCardService.downloadDischargeSummary(admitCardId));
 		return response;
@@ -136,7 +136,7 @@ public class AdmitCardAPI {
 	@Path(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
 	@GET
 	@ApiOperation(value = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD, notes = PathProxy.AdmitCardUrls.EMAIL_ADMIT_CARD)
-	public Response<Boolean> emailDischargeSummary(@PathParam(value = "admitCardId") String admitCardId,
+	public Response<Boolean> emailAdmitCard(@PathParam(value = "admitCardId") String admitCardId,
 			@PathParam(value = "doctorId") String doctorId, @PathParam(value = "locationId") String locationId,
 			@PathParam(value = "hospitalId") String hospitalId,
 			@PathParam(value = "emailAddress") String emailAddress) {
