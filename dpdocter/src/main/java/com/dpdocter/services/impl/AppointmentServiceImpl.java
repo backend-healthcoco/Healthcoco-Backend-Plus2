@@ -2814,7 +2814,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		return response;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId, String status) {
 		Boolean response = false;

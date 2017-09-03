@@ -71,4 +71,5 @@ public interface AppointmentService {
 
 	Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId, String status);
 
+	public void updateQueue();
 }
