@@ -3651,7 +3651,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		show = (Boolean) parameters.get("showPersonalHistory");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{PersonalHistoryTitle}", 18, contentFontSize - 1, true);
-			addDischargeitems(jasperDesign, columnWidth, "$P{pesonalHistory}", 18, contentFontSize - 1, false);
+			addDischargeitems(jasperDesign, columnWidth, "$P{personalHistory}", 18, contentFontSize - 1, false);
 		}
 		show = (Boolean) parameters.get("showcompl");
 		if (show) {
