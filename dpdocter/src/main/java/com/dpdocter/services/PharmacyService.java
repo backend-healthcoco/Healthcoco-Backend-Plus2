@@ -6,6 +6,7 @@ import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
+import com.dpdocter.response.UserFakeRequestDetailResponse;
 
 public interface PharmacyService {
 
@@ -24,5 +25,7 @@ public interface PharmacyService {
 
 	List<SearchRequestToPharmacyResponse> getPharmacyListbyOrderHistory(String userId, String uniqueRequestId,
 			String replyType, int page, int size, Double latitude, Double longitude);
+
+	UserFakeRequestDetailResponse getUserFakeRequestCount(String userId);
 
 }

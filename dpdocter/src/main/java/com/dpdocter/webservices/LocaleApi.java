@@ -31,6 +31,7 @@ import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
+import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.services.LocaleService;
 import com.dpdocter.services.PharmacyService;
 import com.sun.jersey.multipart.FormDataBodyPart;
@@ -351,6 +352,19 @@ public class LocaleApi {
 			LOGGER.warn(e);
 			e.printStackTrace();
 		}
+		return response;
+	}
+
+	@GET
+	@Path(value = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT)
+	@ApiOperation(value = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT, notes = PathProxy.LocaleUrls.GET_USER_FAKE_REQUEST_COUNT)
+	public Response<UserFakeRequestDetailResponse> getUserFakeRequestCount(@PathParam("patientId") String patientId) {
+		Response<UserFakeRequestDetailResponse> response = null;
+		if (DPDoctorUtils.anyStringEmpty(patientId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");		}
+		UserFakeRequestDetailResponse detailResponse = pharmacyService.getUserFakeRequestCount(patientId);
+		response = new Response<UserFakeRequestDetailResponse>();
+		response.setData(detailResponse);
 		return response;
 	}
 

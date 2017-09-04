@@ -1187,6 +1187,7 @@ public interface PathProxy {
 		public static final String UPLOAD_RX_IMAGE = "/uploadRXImage";
 		public static final String ADD_EDIT_RECOMMENDATION = "/addEditRecommendation";
 		public static final String ORDER_DRUG = "/orderDrugs";
+		public static final String GET_USER_FAKE_REQUEST_COUNT = "/getFakeRequestCount/{patientId}";
 	}
 
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";

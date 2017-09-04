@@ -1,11 +1,14 @@
 
 package com.dpdocter.services.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -26,25 +29,32 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
+import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.collections.BlockUserCollection;
 import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
+import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.BlockUserRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.OrderDrugRepository;
 import com.dpdocter.repository.SearchRequestFromUserRepository;
 import com.dpdocter.repository.SearchRequestToPharmacyRepository;
+import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
+import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -75,6 +85,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 	private ElasticsearchTemplate elasticsearchTemplate;
 
 	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
 	private PushNotificationServices pushNotificationServices;
 
 	@Autowired
@@ -85,6 +98,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private BlockUserRepository blockUserRepository;
 
 	@Override
 	@Transactional
@@ -97,6 +113,53 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 		try {
+			UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(request.getUserId());
+			BlockUserCollection blockUserCollection = blockUserRepository
+					.findByUserId(new ObjectId(request.getUserId()), false);
+			if (blockUserCollection != null) {
+				DateTime dateTime = new DateTime().minusDays(1);
+				Date date = dateTime.toDate();
+				if (blockUserCollection.getIsForDay() && !date.after(blockUserCollection.getUpdatedTime())) {
+					throw new BusinessException(ServiceError.NotAuthorized, "user request has block for 1 Hour");
+				}
+				dateTime = new DateTime().minusHours(1);
+				date = dateTime.toDate();
+				if (blockUserCollection.getIsForHour() && !date.after(blockUserCollection.getUpdatedTime())) {
+					throw new BusinessException(ServiceError.NotAuthorized, "user request has for 1 Day");
+				}
+				blockUserCollection.setDiscarded(true);
+				blockUserCollection.setIsForDay(false);
+				blockUserCollection.setIsForHour(false);
+				blockUserCollection.setUpdatedTime(new Date());
+				blockUserCollection = blockUserRepository.save(blockUserCollection);
+			}
+
+			if (detailResponse.getNoOfAttemptInHour() > 3 || detailResponse.getNoOfAttemptIn24Hour() > 10) {
+				blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()), true);
+				if (blockUserCollection != null) {
+					if (detailResponse.getNoOfAttemptIn24Hour() > 10) {
+						blockUserCollection.setIsForDay(true);
+
+					} else {
+						blockUserCollection.setIsForHour(true);
+					}
+
+				} else {
+					blockUserCollection = new BlockUserCollection();
+					if (detailResponse.getNoOfAttemptIn24Hour() > 10) {
+						blockUserCollection.setIsForDay(true);
+
+					} else {
+						blockUserCollection.setIsForHour(true);
+					}
+					blockUserCollection.setCreatedTime(new Date());
+				}
+				blockUserCollection.setDiscarded(false);
+				blockUserCollection.setUserIds(detailResponse.getUserIds());
+				blockUserCollection.setUpdatedTime(new Date());
+				blockUserCollection = blockUserRepository.save(blockUserCollection);
+			}
+
 			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId())) {
 				addSearchRequestInQueue(request);
 				response = addSearchRequestInCollection(request);
@@ -113,6 +176,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 						RoleEnum.PHARMIST, "Keep my order ready");
 
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While adding Search Request In Queue");
@@ -603,6 +667,95 @@ public class PharmacyServiceImpl implements PharmacyService {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while getting locale List " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Transactional
+	@Override
+	public UserFakeRequestDetailResponse getUserFakeRequestCount(String userId) {
+		UserFakeRequestDetailResponse response = new UserFakeRequestDetailResponse();
+		try {
+			List<ObjectId> userIds = null;
+			Integer countfor24Hour = 0;
+			Integer countforHour = 0;
+			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
+			if (userCollection == null) {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
+			}
+			Aggregation aggregation = Aggregation
+					.newAggregation(
+							Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
+							new CustomAggregationOperation(
+									new BasicDBObject("$redact",
+											new BasicDBObject("$cond",
+													new BasicDBObject()
+															.append("if",
+																	new BasicDBObject("$eq",
+																			Arrays.asList("$emailAddress",
+																					"$userName")))
+															.append("then", "$$PRUNE").append("else", "$$KEEP")))));
+
+			List<UserCollection> userCollections = mongoTemplate
+					.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
+			userIds = new ArrayList<ObjectId>();
+			for (UserCollection patient : userCollections) {
+				userIds.add(patient.getId());
+			}
+
+			Criteria criteria = new Criteria();
+			DateTime dateTime = new DateTime().minusHours(24);
+			Date date = dateTime.toDate();
+			criteria.and("createdTime").gt(date);
+			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(userIds);
+
+			aggregation = Aggregation
+					.newAggregation(
+							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
+									"response"),
+							Aggregation.unwind("response"),
+							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+							Aggregation.match(criteria), Aggregation.group("uniqueRequestId"),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
+											.append("uniqueRequestId",
+													new BasicDBObject("$first", "$uniqueRequestId")))));
+
+			countfor24Hour = mongoTemplate
+					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
+					.getMappedResults().size();
+
+			criteria = new Criteria();
+			dateTime = new DateTime().minusHours(1);
+			date = dateTime.toDate();
+			criteria.and("createdTime").gt(date);
+			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(userIds);
+
+			aggregation = Aggregation
+					.newAggregation(
+							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
+									"response"),
+							Aggregation.unwind("response"),
+							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+							Aggregation.match(criteria), Aggregation.group("uniqueRequestId"),
+							new CustomAggregationOperation(new BasicDBObject("$group",
+									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
+											.append("uniqueRequestId",
+													new BasicDBObject("$first", "$uniqueRequestId")))));
+
+			countforHour = mongoTemplate
+					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
+					.getMappedResults().size();
+			response.setUserIds(userIds);
+			response.setNoOfAttemptIn24Hour(countfor24Hour);
+			response.setNoOfAttemptAllowedInHour(countforHour);
+
+		} catch (Exception e) {
+			logger.error("Error while count user Fake Request " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error while getting count user Fake Request " + e.getMessage());
+
 		}
 		return response;
 	}
