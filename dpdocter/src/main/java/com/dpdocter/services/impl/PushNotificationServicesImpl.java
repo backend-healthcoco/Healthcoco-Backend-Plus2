@@ -696,12 +696,12 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 		try {
 
-			if (role.equals(RoleEnum.PHARMIST)) {
+			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
 			
 
-			if (role.equals(RoleEnum.PATIENT) || role.equals(RoleEnum.COLLECTION_BOY)) {
+			if (role.equals(RoleEnum.PATIENT) ) {
 				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
 			}
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
