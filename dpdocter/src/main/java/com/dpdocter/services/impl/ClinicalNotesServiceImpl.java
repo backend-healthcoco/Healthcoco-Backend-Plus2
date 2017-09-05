@@ -421,7 +421,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * }
 			 */
 			// complaintIds = new ArrayList<ObjectId>();
-			if (request.getComplaint() != null && !request.getComplaint().isEmpty()
+			/*if (request.getComplaint() != null && !request.getComplaint().isEmpty()
 					&& request.getGlobalComplaints() != null) {
 				Set<String> customComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalComplaints())));
@@ -457,12 +457,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (customObservations != null)
 					for (String customObservation : customObservations) {
 						Observation observation = new Observation();
-						/*
+						
 						 * observation.setDoctorId(request.getDoctorId());
 						 * observation.setLocationId(request.getLocationId());
 						 * observation.setHospitalId(request.getHospitalId());
 						 * observation.setDoctorId(request.getDoctorId());
-						 */
+						 
 						observation.setObservation(customObservation);
 
 						ObservationCollection observationCollection = new ObservationCollection();
@@ -1323,7 +1323,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-
+*/
 			//
 			// clinicalNotesCollection.setComplaints(complaintIds);
 			// clinicalNotesCollection.setInvestigations(investigationIds);
@@ -1752,7 +1752,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			 * // noteIds.add(notesCollection.getId()); } else { //
 			 * noteIds.add(new ObjectId(note.getId())); } } }
 			 */
-			if (request.getComplaint() != null && !request.getComplaint().isEmpty()
+			/*if (request.getComplaint() != null && !request.getComplaint().isEmpty()
 					&& request.getGlobalComplaints() != null) {
 				Set<String> customComplaints = compareGlobalElements(new HashSet<>(splitCSV(request.getComplaint())),
 						new HashSet<>(splitCSV(request.getGlobalComplaints())));
@@ -1790,12 +1790,12 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (customObservations != null)
 					for (String customObservation : customObservations) {
 						Observation observation = new Observation();
-						/*
+						
 						 * observation.setDoctorId(request.getDoctorId());
 						 * observation.setLocationId(request.getLocationId());
 						 * observation.setHospitalId(request.getHospitalId());
 						 * observation.setDoctorId(request.getDoctorId());
-						 */
+						 
 						observation.setObservation(customObservation);
 
 						ObservationCollection observationCollection = new ObservationCollection();
@@ -2628,7 +2628,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 				}
 			}
-
+*/
 			diagnosisIds = new ArrayList<ObjectId>();
 			if (request.getDiagnoses() != null && !request.getDiagnoses().isEmpty()) {
 				for (Diagnoses diagnosis : request.getDiagnoses()) {
