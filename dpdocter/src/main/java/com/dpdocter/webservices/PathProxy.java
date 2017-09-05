@@ -1165,7 +1165,7 @@ public interface PathProxy {
 
 		public static final String EMAIL_RECEIPT = "receipt/{receiptId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 		
-		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{receiptId}/{doctorId}/{locationId}/{hospitalId}/remainder";
+		public static final String DUE_AMOUNT_REMAINDER = "dueAmount/{patientId}/{doctorId}/{locationId}/{hospitalId}/remainder";
 	}
 
 	public static final String LOCALE_BASE_URL = BASE_URL + "/locale";

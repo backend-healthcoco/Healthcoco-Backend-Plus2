@@ -1510,7 +1510,6 @@ public class BillingServiceImpl implements BillingService {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		JasperReportResponse response = null;
 		String pattern = "dd/MM/yyyy";
-		UserCollection doctor = userRepository.findOne(doctorPatientReceiptCollection.getDoctorId());
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		String userName = "";
 		if (!DPDoctorUtils.allStringsEmpty(user.getTitle())) {
@@ -1773,7 +1772,7 @@ public class BillingServiceImpl implements BillingService {
 			DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(
 					new ObjectId(patientId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
-			if (doctorPatientDueAmountCollection.getDueAmount() > 0) {
+			if (doctorPatientDueAmountCollection.getDueAmount() < 0) {
 				UserCollection patient = userRepository.findOne(new ObjectId(patientId));
 				UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
 				LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
@@ -1789,7 +1788,8 @@ public class BillingServiceImpl implements BillingService {
 				String message = dueAmountRemainderSMS;
 				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
 						.replace("{doctorName}", doctor.getTitle() + " " + doctor.getFirstName())
-						.replace("{clinicName}", locationCollection.getLocationName()).replace("{dueAmount}", doctorPatientDueAmountCollection.getDueAmount().toString()));
+						.replace("{clinicName}", locationCollection.getLocationName())
+						.replace("{dueAmount}", doctorPatientDueAmountCollection.getDueAmount().toString()));
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(patient.getMobileNumber());
 				sms.setSmsAddress(smsAddress);
@@ -1799,6 +1799,7 @@ public class BillingServiceImpl implements BillingService {
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
 				smsServices.sendSMS(smsTrackDetail, true);
+				response = true;
 			}
 		} catch (BusinessException be) {
 			logger.error(be);
