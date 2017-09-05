@@ -715,7 +715,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 									"response"),
 							Aggregation.unwind("response"),
 							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria), Aggregation.group("uniqueRequestId"),
+							Aggregation.match(criteria),
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
 											.append("uniqueRequestId",
@@ -737,7 +737,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 									"response"),
 							Aggregation.unwind("response"),
 							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria), Aggregation.group("uniqueRequestId"),
+							Aggregation.match(criteria),
 							new CustomAggregationOperation(new BasicDBObject("$group",
 									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
 											.append("uniqueRequestId",
@@ -748,7 +748,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 					.getMappedResults().size();
 			response.setUserIds(userIds);
 			response.setNoOfAttemptIn24Hour(countfor24Hour);
-			response.setNoOfAttemptAllowedInHour(countforHour);
+			response.setNoOfAttemptInHour(countforHour);
 
 		} catch (Exception e) {
 			logger.error("Error while count user Fake Request " + e.getMessage());
