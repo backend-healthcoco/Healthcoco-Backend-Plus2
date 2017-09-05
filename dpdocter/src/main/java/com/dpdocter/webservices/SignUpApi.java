@@ -304,14 +304,15 @@ public class SignUpApi {
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	public Response<CollectionBoy> collectionBoySignup(CollectionBoy request) {
-		if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-			logger.warn("Request send  is NULL");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
-		}
-		CollectionBoy collectionBoy = signUpService.signupCollectionBoys(request);
-
-		Response<CollectionBoy> response = new Response<CollectionBoy>();
-		response.setData(collectionBoy);
+		Response<CollectionBoy> response  = null;
+		
+			if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+				logger.warn("Request send  is NULL");
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
+			}
+			CollectionBoy collectionBoy = signUpService.signupCollectionBoys(request);
+			response = new Response<CollectionBoy>();
+			response.setData(collectionBoy);
 		return response;
 	}
 

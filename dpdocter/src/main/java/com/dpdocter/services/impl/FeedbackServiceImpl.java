@@ -352,7 +352,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		
 		DailyImprovementFeedbackCollection dailyImprovementFeedbackCollection = null;
 		
-		dailyImprovementFeedbackCollection = dailyImprovementFeedbackRepository.findOne(new ObjectId(feedback.getId()));
+		dailyImprovementFeedbackCollection = dailyImprovementFeedbackRepository.findByPrescriptionId(new ObjectId(feedback.getPrescriptionId()));
 		
 		if(dailyImprovementFeedbackCollection == null)
 		{

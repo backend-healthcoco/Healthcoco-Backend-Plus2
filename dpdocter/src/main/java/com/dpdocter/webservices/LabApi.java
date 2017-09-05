@@ -278,13 +278,18 @@ public class LabApi {
 	@POST
 	@ApiOperation(value = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION, notes = PathProxy.LabUrls.ADD_CB_LAB_ASSOCIATION)
 	public Response<Location> addEditCBLabAssociation(List<CollectionBoyLabAssociation> collectionBoyLabAssociations) {
-		if (collectionBoyLabAssociations == null) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		Response<Location> response= null;
+		try {
+			if (collectionBoyLabAssociations == null) {
+				logger.warn("Invalid Input");
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+			}
+			response = new Response<Location>();
+			response.setDataList(locationServices.addCollectionBoyAssociatedLabs(collectionBoyLabAssociations));
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
-		Response<Location> response = new Response<Location>();
-		response.setDataList(locationServices.addCollectionBoyAssociatedLabs(collectionBoyLabAssociations));
-
 		return response;
 	}
 	

@@ -976,18 +976,18 @@ public class LocationServiceImpl implements LocationServices {
 							"Invalid Input - Parent & Daughter Lab ID cannot be null");
 				}
 				collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-						.findbyParentIdandDaughterId(new ObjectId(collectionBoyLabAssociation.getCollectionBoyId()),
+						.findbyParentIdandDaughterId(
 								new ObjectId(collectionBoyLabAssociation.getParentLabId()),
 								new ObjectId(collectionBoyLabAssociation.getDaughterLabId()));
 				if (collectionBoyLabAssociationCollection == null) {
 					collectionBoyLabAssociationCollection = new CollectionBoyLabAssociationCollection();
 					BeanUtil.map(collectionBoyLabAssociation, collectionBoyLabAssociationCollection);
 				} else {
-					if((!collectionBoyLabAssociationCollection.getCollectionBoyId().toString().equals(collectionBoyLabAssociation.getCollectionBoyId())) && collectionBoyLabAssociationCollection.getIsActive() == true)
+					if(!collectionBoyLabAssociationCollection.getCollectionBoyId().equals(new ObjectId(collectionBoyLabAssociation.getCollectionBoyId()))  && collectionBoyLabAssociationCollection.getIsActive() == true)
 					{
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
 						LocationCollection locationCollection = locationRepository.findOne(collectionBoyLabAssociationCollection.getDaughterLabId());
-						throw new BusinessException(ServiceError.Forbidden , "Collection boy " + collectionBoyCollection.getName() + " is already addigned to " + locationCollection.getLocationName() + ". Please select another lab / collection boy");
+						throw new BusinessException(ServiceError.Unknown , "Collection boy " + collectionBoyCollection.getName() + " is already assigned to " + locationCollection.getLocationName() + ". Please select another lab / collection boy");
 					}
 					ObjectId oldId = collectionBoyLabAssociationCollection.getId();
 					
@@ -1022,6 +1022,7 @@ public class LocationServiceImpl implements LocationServices {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.warn(e);
+			throw new BusinessException(ServiceError.Unknown , e.getMessage());
 		}
 		return locations;
 	}
@@ -1044,6 +1045,7 @@ public class LocationServiceImpl implements LocationServices {
 			if (!DPDoctorUtils.anyStringEmpty(collectionBoyId)) {
 				criteria.and("collectionBoyId").is(new ObjectId(collectionBoyId));
 			}
+			criteria.and("isActive").is(true);
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("location_cl", "daughterLabId", "_id", "location"),
