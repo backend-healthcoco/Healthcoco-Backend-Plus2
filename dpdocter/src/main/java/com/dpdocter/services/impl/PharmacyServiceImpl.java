@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -113,19 +115,18 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 		try {
-			UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(request.getUserId());
-			BlockUserCollection blockUserCollection = blockUserRepository
-					.findByUserId(new ObjectId(request.getUserId()), false);
+			BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()), false);
+			
 			if (blockUserCollection != null) {
 				DateTime dateTime = new DateTime().minusDays(1);
 				Date date = dateTime.toDate();
 				if (blockUserCollection.getIsForDay() && !date.after(blockUserCollection.getUpdatedTime())) {
-					throw new BusinessException(ServiceError.InvalidInput, "user request has block for 1 Hour");
+					throw new BusinessException(ServiceError.InvalidInput, "user request has block for 1 Day");
 				}
 				dateTime = new DateTime().minusHours(1);
 				date = dateTime.toDate();
 				if (blockUserCollection.getIsForHour() && !date.after(blockUserCollection.getUpdatedTime())) {
-					throw new BusinessException(ServiceError.InvalidInput, "user request has for 1 Day");
+					throw new BusinessException(ServiceError.InvalidInput, "user request has for 1 Hours");
 				}
 				blockUserCollection.setDiscarded(true);
 				blockUserCollection.setIsForDay(false);
@@ -134,6 +135,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 				blockUserCollection = blockUserRepository.save(blockUserCollection);
 			}
 
+			//Instead of calling before block user collection its better to call here
+			UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(request.getUserId());
+			
 			if (detailResponse.getNoOfAttemptInHour() > 3 || detailResponse.getNoOfAttemptIn24Hour() > 10) {
 				blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()), true);
 				if (blockUserCollection != null) {
@@ -671,6 +675,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override
 	public UserFakeRequestDetailResponse getUserFakeRequestCount(String userId) {
@@ -699,15 +704,16 @@ public class PharmacyServiceImpl implements PharmacyService {
 			List<UserCollection> userCollections = mongoTemplate
 					.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
 			userIds = new ArrayList<ObjectId>();
-			for (UserCollection patient : userCollections) {
-				userIds.add(patient.getId());
-			}
+//			for (UserCollection patient : userCollections) {
+//				userIds.add(patient.getId());
+//			}
 
+			userIds = (List<ObjectId>) CollectionUtils.collect(userCollections, new BeanToPropertyValueTransformer("id"));
 			Criteria criteria = new Criteria();
 			DateTime dateTime = new DateTime().minusHours(24);
 			Date date = dateTime.toDate();
 			criteria.and("createdTime").gt(date);
-			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(userIds);
+			criteria.and("orders").size(0).and("response.replyType").nin(Arrays.asList("YES","ACCEPTED")).and("userId").in(userIds);//Corrected Here
 
 			aggregation = Aggregation
 					.newAggregation(
@@ -729,7 +735,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			dateTime = new DateTime().minusHours(1);
 			date = dateTime.toDate();
 			criteria.and("createdTime").gt(date);
-			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(userIds);
+			criteria.and("orders").size(0).and("response.replyType").nin(Arrays.asList("YES","ACCEPTED")).and("userId").in(userIds);//Corrected Here
 
 			aggregation = Aggregation
 					.newAggregation(
