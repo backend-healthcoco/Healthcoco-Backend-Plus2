@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 import com.dpdocter.collections.BlockUserCollection;
 
 public interface BlockUserRepository extends MongoRepository<BlockUserCollection, ObjectId> {
-	@Query("{'userIds':?0,'discarded': ?1")
+	@Query("{'userIds':?0,'discarded': ?1}")
 	BlockUserCollection findByUserId(ObjectId userId,Boolean discarded);
 
 }
