@@ -2,8 +2,9 @@ package com.dpdocter.response;
 
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Locale;
+import com.dpdocter.collections.GenericCollection;
 
-public class SearchRequestToPharmacyResponse {
+public class SearchRequestToPharmacyResponse extends GenericCollection{
 
 	private String id;
 
