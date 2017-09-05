@@ -120,12 +120,12 @@ public class PharmacyServiceImpl implements PharmacyService {
 				DateTime dateTime = new DateTime().minusDays(1);
 				Date date = dateTime.toDate();
 				if (blockUserCollection.getIsForDay() && !date.after(blockUserCollection.getUpdatedTime())) {
-					throw new BusinessException(ServiceError.NotAuthorized, "user request has block for 1 Hour");
+					throw new BusinessException(ServiceError.InvalidInput, "user request has block for 1 Hour");
 				}
 				dateTime = new DateTime().minusHours(1);
 				date = dateTime.toDate();
 				if (blockUserCollection.getIsForHour() && !date.after(blockUserCollection.getUpdatedTime())) {
-					throw new BusinessException(ServiceError.NotAuthorized, "user request has for 1 Day");
+					throw new BusinessException(ServiceError.InvalidInput, "user request has for 1 Day");
 				}
 				blockUserCollection.setDiscarded(true);
 				blockUserCollection.setIsForDay(false);
@@ -153,9 +153,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 						blockUserCollection.setIsForHour(true);
 					}
 					blockUserCollection.setCreatedTime(new Date());
+					blockUserCollection.setUserIds(detailResponse.getUserIds());
 				}
 				blockUserCollection.setDiscarded(false);
-				blockUserCollection.setUserIds(detailResponse.getUserIds());
 				blockUserCollection.setUpdatedTime(new Date());
 				blockUserCollection = blockUserRepository.save(blockUserCollection);
 			}
