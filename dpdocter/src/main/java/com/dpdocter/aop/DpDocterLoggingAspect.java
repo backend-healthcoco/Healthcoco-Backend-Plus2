@@ -53,7 +53,7 @@ public class DpDocterLoggingAspect {
 
 	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
 	public Response<Exception> logAfterThrowingAllMethods(JoinPoint pjp ,Exception e) throws Throwable {
-		if(!(pjp.getSignature().getName().equalsIgnoreCase("login") || pjp.getSignature().getName().equalsIgnoreCase("loginPatient"))){
+		if(!(pjp.getSignature().getName().equalsIgnoreCase("login") || pjp.getSignature().getName().equalsIgnoreCase("loginPatient") || pjp.getSignature().getName().equalsIgnoreCase("getBlogBySlugURL"))){
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
@@ -72,7 +72,7 @@ public class DpDocterLoggingAspect {
 
 	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
 	public Response<Exception> logAfterThrowingAllMethods(JoinPoint pjp ,DuplicateKeyException e) throws Throwable {
-		if(!(pjp.getSignature().getName().equalsIgnoreCase("login") || pjp.getSignature().getName().equalsIgnoreCase("loginPatient"))){
+		if(!(pjp.getSignature().getName().equalsIgnoreCase("login") || pjp.getSignature().getName().equalsIgnoreCase("loginPatient") || pjp.getSignature().getName().equalsIgnoreCase("getBlogBySlugURL"))){
 		
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
@@ -90,7 +90,7 @@ public class DpDocterLoggingAspect {
 	
 	@AfterThrowing(value = "com.dpdocter.aop.PointcutDefinition.apiLayer()", throwing = "e")
 	public Response<Exception> logAfterThrowingAllMethods(JoinPoint pjp ,BusinessException e) throws Throwable {
-		if(!(pjp.getSignature().getName().equalsIgnoreCase("login") || pjp.getSignature().getName().equalsIgnoreCase("loginPatient"))){
+		if(!(pjp.getSignature().getName().equalsIgnoreCase("login") || pjp.getSignature().getName().equalsIgnoreCase("loginPatient") || pjp.getSignature().getName().equalsIgnoreCase("getBlogBySlugURL") )){
 		
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
