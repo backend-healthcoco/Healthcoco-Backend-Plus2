@@ -662,16 +662,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 					logger.error("Incorrect User Id");
 					throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 				}
-				// userCollection.setFirstName(request.getLocalPatientName());
+				
+				if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName()))userCollection.setFirstName(request.getLocalPatientName());
+				
 				userCollection.setIsActive(true);
+				userCollection.setUpdatedTime(new Date());
 				// userCollection.setEmailAddress(request.getEmailAddress());
-				userCollection = userRepository.save(userCollection);
+				
 				BeanUtil.map(userCollection, registeredPatientDetails);
 				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId,
 						doctorObjectId, locationObjectId, hospitalObjectId);
 				if (patientCollection != null) {
-					if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName()))
+					if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 						patientCollection.setLocalPatientName(request.getLocalPatientName());
+						patientCollection.setFirstName(request.getLocalPatientName());
+					}
 					if (!DPDoctorUtils.anyStringEmpty(request.getBloodGroup()))
 						patientCollection.setBloodGroup(request.getBloodGroup());
 					if (!DPDoctorUtils.anyStringEmpty(request.getGender()))
@@ -695,6 +700,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					userCollection.setThumbnailUrl(null);
 				}
+				
+				patientCollection.setUpdatedTime(new Date());
+				userCollection = userRepository.save(userCollection);
 				patientCollection = patientRepository.save(patientCollection);
 
 				Patient patient = new Patient();
