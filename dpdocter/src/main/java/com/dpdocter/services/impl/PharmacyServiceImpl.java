@@ -1,13 +1,9 @@
 
 package com.dpdocter.services.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -32,7 +28,7 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
 import com.dpdocter.beans.CustomAggregationOperation;
-import com.dpdocter.collections.BlockUserCollection;
+import com.dpdocter.beans.PatientNumberAndUserIds;
 import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
@@ -115,56 +111,60 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 		try {
-			BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()), false);
-			
-			if (blockUserCollection != null) {
-				DateTime dateTime = new DateTime().minusDays(1);
-				Date date = dateTime.toDate();
-				if (blockUserCollection.getIsForDay() && !date.after(blockUserCollection.getUpdatedTime())) {
-					throw new BusinessException(ServiceError.InvalidInput, "user request has block for 1 Day");
-				}
-				dateTime = new DateTime().minusHours(1);
-				date = dateTime.toDate();
-				if (blockUserCollection.getIsForHour() && !date.after(blockUserCollection.getUpdatedTime())) {
-					throw new BusinessException(ServiceError.InvalidInput, "user request has for 1 Hours");
-				}
-				blockUserCollection.setDiscarded(true);
-				blockUserCollection.setIsForDay(false);
-				blockUserCollection.setIsForHour(false);
-				blockUserCollection.setUpdatedTime(new Date());
-				blockUserCollection = blockUserRepository.save(blockUserCollection);
-			}
 
-			//Instead of calling before block user collection its better to call here
-			UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(request.getUserId());
-			
-			if (detailResponse.getNoOfAttemptInHour() > 3 || detailResponse.getNoOfAttemptIn24Hour() > 10) {
-				blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()), true);
-				if (blockUserCollection != null) {
-					if (detailResponse.getNoOfAttemptIn24Hour() > 10) {
-						blockUserCollection.setIsForDay(true);
+			/*
+			 * BlockUserCollection blockUserCollection = blockUserRepository
+			 * .findByUserId(new ObjectId(request.getUserId())); if
+			 * (blockUserCollection != null) { if
+			 * (!blockUserCollection.getDiscarded()) { DateTime dateTime = null;
+			 * Date date = null; if (blockUserCollection.getIsForDay()) {
+			 * dateTime = new DateTime().minusDays(1); date = dateTime.toDate();
+			 * if (!date.after(blockUserCollection.getUpdatedTime())) { throw
+			 * new BusinessException(ServiceError.InvalidInput,
+			 * "user request has blocked for 1 Hour"); } } else if
+			 * (blockUserCollection.getIsForHour()) { if
+			 * (!date.after(blockUserCollection.getUpdatedTime())) { throw new
+			 * BusinessException(ServiceError.InvalidInput,
+			 * "user request has blocked for 1 Day"); } }
+			 * blockUserCollection.setDiscarded(true);
+			 * blockUserCollection.setIsForDay(false);
+			 * blockUserCollection.setIsForHour(false);
+			 * blockUserCollection.setUpdatedTime(new Date());
+			 * blockUserCollection =
+			 * blockUserRepository.save(blockUserCollection);
+			 * 
+			 * } }
+			 * 
+			 * // Instead of calling before block user collection its better to
+			 * // call here UserFakeRequestDetailResponse detailResponse =
+			 * getUserFakeRequestCount(request.getUserId()); if
+			 * (detailResponse.getNoOfAttemptInHour() >= 3 ||
+			 * detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+			 * 
+			 * if (blockUserCollection != null) { if
+			 * (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+			 * blockUserCollection.setIsForDay(true);
+			 * 
+			 * } else { blockUserCollection.setIsForHour(true); }
+			 * 
+			 * } else { blockUserCollection = new BlockUserCollection(); if
+			 * (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+			 * blockUserCollection.setIsForDay(true);
+			 * 
+			 * } else { blockUserCollection.setIsForHour(true); }
+			 * blockUserCollection.setCreatedTime(new Date()); }
+			 * blockUserCollection.setDiscarded(false);
+			 * blockUserCollection.setUserIds(detailResponse.getUserIds());
+			 * blockUserCollection.setUpdatedTime(new Date());
+			 * blockUserCollection =
+			 * blockUserRepository.save(blockUserCollection); throw new
+			 * BusinessException(ServiceError.InvalidInput,
+			 * "user request has blocked"); }
+			 */
 
-					} else {
-						blockUserCollection.setIsForHour(true);
-					}
+			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
 
-				} else {
-					blockUserCollection = new BlockUserCollection();
-					if (detailResponse.getNoOfAttemptIn24Hour() > 10) {
-						blockUserCollection.setIsForDay(true);
-
-					} else {
-						blockUserCollection.setIsForHour(true);
-					}
-					blockUserCollection.setCreatedTime(new Date());
-					blockUserCollection.setUserIds(detailResponse.getUserIds());
-				}
-				blockUserCollection.setDiscarded(false);
-				blockUserCollection.setUpdatedTime(new Date());
-				blockUserCollection = blockUserRepository.save(blockUserCollection);
-			}
-
-			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId())) {
+			{
 				addSearchRequestInQueue(request);
 				response = addSearchRequestInCollection(request);
 			} else {
@@ -681,39 +681,31 @@ public class PharmacyServiceImpl implements PharmacyService {
 	public UserFakeRequestDetailResponse getUserFakeRequestCount(String userId) {
 		UserFakeRequestDetailResponse response = new UserFakeRequestDetailResponse();
 		try {
-			List<ObjectId> userIds = null;
+
 			Integer countfor24Hour = 0;
 			Integer countforHour = 0;
+			Criteria criteria = new Criteria();
 			UserCollection userCollection = userRepository.findOne(new ObjectId(userId));
 			if (userCollection == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 			}
-			Aggregation aggregation = Aggregation
-					.newAggregation(
-							Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
-							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject()
-															.append("if",
-																	new BasicDBObject("$eq",
-																			Arrays.asList("$emailAddress",
-																					"$userName")))
-															.append("then", "$$PRUNE").append("else", "$$KEEP")))));
 
-			List<UserCollection> userCollections = mongoTemplate
-					.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();
-			userIds = new ArrayList<ObjectId>();
-//			for (UserCollection patient : userCollections) {
-//				userIds.add(patient.getId());
-//			}
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria("mobileNumber").regex("^" + userCollection.getMobileNumber(), "i")
+							.and("userState").is("USERSTATECOMPLETE")),
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", "$mobileNumber").append("userIds",
+									new BasicDBObject("$push", "$_id").append("mobileNumber",
+											new BasicDBObject("$first", "$mobileNumber"))))));
 
-			userIds = (List<ObjectId>) CollectionUtils.collect(userCollections, new BeanToPropertyValueTransformer("id"));
-			Criteria criteria = new Criteria();
+			PatientNumberAndUserIds user = mongoTemplate
+					.aggregate(aggregation, UserCollection.class, PatientNumberAndUserIds.class)
+					.getUniqueMappedResult();
+
 			DateTime dateTime = new DateTime().minusHours(24);
 			Date date = dateTime.toDate();
 			criteria.and("createdTime").gt(date);
-			criteria.and("orders").size(0).and("response.replyType").nin(Arrays.asList("YES","ACCEPTED")).and("userId").in(userIds);//Corrected Here
+			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
 			aggregation = Aggregation
 					.newAggregation(
@@ -735,7 +727,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 			dateTime = new DateTime().minusHours(1);
 			date = dateTime.toDate();
 			criteria.and("createdTime").gt(date);
-			criteria.and("orders").size(0).and("response.replyType").nin(Arrays.asList("YES","ACCEPTED")).and("userId").in(userIds);//Corrected Here
+
+			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
 			aggregation = Aggregation
 					.newAggregation(
@@ -752,7 +745,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 			countforHour = mongoTemplate
 					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
 					.getMappedResults().size();
-			response.setUserIds(userIds);
+			response.setUserIds(user.getUserIds());
 			response.setNoOfAttemptIn24Hour(countfor24Hour);
 			response.setNoOfAttemptInHour(countforHour);
 
