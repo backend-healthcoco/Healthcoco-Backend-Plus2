@@ -1,25 +1,27 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "oral_cavity_and_throat_examination_cl")
 public class OralCavityAndThroatExaminationCollection extends GenericCollection {
-
+	@Id
 	private ObjectId id;
-
+	@Field
 	private String oralCavityThroatExam;
-
+	@Field
 	private ObjectId doctorId;
-
+	@Field
 	private ObjectId locationId;
-
+	@Field
 	private ObjectId hospitalId;
-
+	@Field
 	private Boolean discarded = false;
-
+	@Field
 	private String speciality;
-
+	@Field
 	public ObjectId getId() {
 		return id;
 	}
