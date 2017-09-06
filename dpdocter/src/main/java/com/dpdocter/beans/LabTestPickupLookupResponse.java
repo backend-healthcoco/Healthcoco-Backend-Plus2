@@ -25,6 +25,7 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 	private String collectionBoyId;
 	private Location parentLab;
 	private Location daughterLab;
+	private CollectionBoy collectionBoy;
 
 	public String getId() {
 		return id;
@@ -176,6 +177,14 @@ public class LabTestPickupLookupResponse extends GenericCollection {
 
 	public void setDaughterLab(Location daughterLab) {
 		this.daughterLab = daughterLab;
+	}
+
+	public CollectionBoy getCollectionBoy() {
+		return collectionBoy;
+	}
+
+	public void setCollectionBoy(CollectionBoy collectionBoy) {
+		this.collectionBoy = collectionBoy;
 	}
 
 	@Override

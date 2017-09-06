@@ -665,7 +665,10 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation
 								.lookup("location_cl", "parentLabLocationId", "_id",
 										"parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.match(criteria),
+						Aggregation.unwind("parentLab"),
+						
+						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+						Aggregation.unwind("collectionBoy"),Aggregation.match(criteria),
 						new CustomAggregationOperation(
 								new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")
@@ -709,7 +712,10 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation
 								.lookup("location_cl", "parentLabLocationId", "_id",
 										"parentLab"),
-						Aggregation.unwind("parentLab"), Aggregation.match(criteria),
+						Aggregation.unwind("parentLab"),
+						Aggregation.lookup("collection_boy_cl", "collectionBoyId", "_id", "collectionBoy"),
+						Aggregation.unwind("collectionBoy")
+						, Aggregation.match(criteria),
 						new CustomAggregationOperation(
 								new BasicDBObject("$group",
 										new BasicDBObject("_id", "$_id")

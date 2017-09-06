@@ -20,21 +20,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.FileDetails;
 import com.dpdocter.beans.LabReports;
+import com.dpdocter.beans.SMS;
+import com.dpdocter.beans.SMSAddress;
+import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
+import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.SMSTrackDetail;
+import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LabReportsRepository;
 import com.dpdocter.repository.LabTestPickupRepository;
 import com.dpdocter.repository.LabTestSampleRepository;
+import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LabReportsService;
+import com.dpdocter.services.SMSServices;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 
@@ -55,6 +63,12 @@ public class LabReportsServiceImpl implements LabReportsService{
 	@Autowired
 	LabTestPickupRepository labTestPickupRepository;
 	
+	@Autowired
+	LocationRepository locationRepository;
+	
+	@Autowired
+	SMSServices smsServices;
+	
 	
 	
 	@Autowired
@@ -65,6 +79,9 @@ public class LabReportsServiceImpl implements LabReportsService{
 	
 	@Value(value = "${image.path}")
 	private String imagePath;
+	
+	@Value(value = "${lab.reports.upload}")
+	private String labReportUploadMessage;
 	
 	@Override
 	@Transactional
@@ -143,19 +160,45 @@ public class LabReportsServiceImpl implements LabReportsService{
 			response = new LabReports();
 			BeanUtil.map(labReportsCollection, response);
 			
-			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository.findOne(new ObjectId(request.getLabTestSampleId()));
-			if(labTestSampleCollection != null)
-			{
-				labTestSampleCollection.setStatus("REPORTS UPLOADED");
-				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
-			}
+			
 			LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.getByLabTestSampleId(new ObjectId(request.getLabTestSampleId()));
 			if(labTestPickupCollection != null)
 			{
 				labTestPickupCollection.setStatus("REPORTS UPLOADED");
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			}
+			
+			LabTestSampleCollection labTestSampleCollection = labTestSampleRepository.findOne(new ObjectId(request.getLabTestSampleId()));
+			if(labTestSampleCollection != null)
+			{
+				labTestSampleCollection.setStatus("REPORTS UPLOADED");
+				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
+				LocationCollection daughterlocationCollection = locationRepository.findOne(labReportsCollection.getUploadedByLocationId());
+				LocationCollection parentLocationCollection = locationRepository.findOne(labReportsCollection.getUploadedByLocationId());
+				String message = labReportUploadMessage;
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				
+				smsTrackDetail.setType("LAB REPORT UPLOAD");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(daughterlocationCollection.getId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(daughterlocationCollection.getLocationName());
+				message = message.replace("{patientName}", labTestSampleCollection.getPatientName());
+				message = message.replace("{specimenName}", labTestSampleCollection.getSampleType());
+				message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
+				sms.setSmsText(message);
 
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(daughterlocationCollection.getClinicNumber());
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				smsServices.sendSMS(smsTrackDetail, true);
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
