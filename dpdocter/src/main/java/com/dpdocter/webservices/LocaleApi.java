@@ -190,8 +190,6 @@ public class LocaleApi {
 			@FormDataParam("data") FormDataBodyPart data) {
 		Response<UserSearchRequest> response = null;
 		UserSearchRequest status = null;
-		try {
-
 			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
 			// System.out.println(data.toString());
 			UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
@@ -214,11 +212,7 @@ public class LocaleApi {
 			response = new Response<UserSearchRequest>();
 			response.setData(status);
 
-		} catch (Exception e) {
-			// TODO: handle exception
-			LOGGER.warn(e);
-			e.printStackTrace();
-		}
+		
 		return response;
 	}
 

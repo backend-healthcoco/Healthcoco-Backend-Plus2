@@ -1423,9 +1423,9 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 						? treatmentServicesCollection.getName() : "";
 				String fieldName = "";
 				if (treatment.getTreatmentFields() != null && !treatment.getTreatmentFields().isEmpty()) {
-					String key ="";
+					String key = "";
 					for (TreatmentFields treatmentFile : treatment.getTreatmentFields()) {
-						 key = treatmentFile.getKey();
+						key = treatmentFile.getKey();
 						if (!DPDoctorUtils.anyStringEmpty(key)) {
 							if (key.equalsIgnoreCase("toothNumber")) {
 								key = "Tooth No :";
@@ -1435,7 +1435,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 							}
 
 							if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
-								fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+								fieldName = fieldName + "<br><font size='1'><i>" + key + treatmentFile.getValue()
+										+ "</i></font>";
 							}
 						}
 					}

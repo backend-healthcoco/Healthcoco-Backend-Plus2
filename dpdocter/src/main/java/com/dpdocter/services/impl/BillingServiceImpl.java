@@ -1355,7 +1355,7 @@ public class BillingServiceImpl implements BillingService {
 							}
 
 							if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
-								fieldName = "<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+								fieldName = fieldName+"<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
 							}
 						}
 					}
