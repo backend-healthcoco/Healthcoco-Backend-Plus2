@@ -745,6 +745,7 @@ public class LocationServiceImpl implements LocationServices {
 														new BasicDBObject("$first", "$collectionBoyId"))
 												.append("parentLab", new BasicDBObject("$first", "$parentLab"))
 												.append("daughterLab", new BasicDBObject("$first", "$daughterLab"))
+												.append("collectionBoy", new BasicDBObject("$first", "$collectionBoy"))
 												.append("createdTime", new BasicDBObject("$first", "$createdTime"))
 												.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
 												.append("createdBy", new BasicDBObject("$first", "$createdBy")))),
