@@ -173,7 +173,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 			{
 				labTestSampleCollection.setStatus("REPORTS UPLOADED");
 				labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
-				LocationCollection daughterlocationCollection = locationRepository.findOne(labReportsCollection.getUploadedByLocationId());
+				LocationCollection daughterlocationCollection = locationRepository.findOne(labReportsCollection.getLocationId());
 				LocationCollection parentLocationCollection = locationRepository.findOne(labReportsCollection.getUploadedByLocationId());
 				String message = labReportUploadMessage;
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
@@ -186,8 +186,9 @@ public class LabReportsServiceImpl implements LabReportsService{
 				message = message.replace("{patientName}", labTestSampleCollection.getPatientName());
 				message = message.replace("{specimenName}", labTestSampleCollection.getSampleType());
 				message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
+				System.out.println(message);
 				sms.setSmsText(message);
-
+				System.out.println(daughterlocationCollection.getClinicNumber());
 				SMSAddress smsAddress = new SMSAddress();
 				smsAddress.setRecipient(daughterlocationCollection.getClinicNumber());
 				sms.setSmsAddress(smsAddress);
