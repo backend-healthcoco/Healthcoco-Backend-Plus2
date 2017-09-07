@@ -486,6 +486,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		try {
 			Integer distance = 4;
+			String citylongitude=null;
+			String citylatitude=null;
+
 			do {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isDoctorListed", true))
@@ -493,10 +496,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 					ESCityDocument esCityDocument = esCityRepository.findByName(city);
 					if (esCityDocument != null) {
-						latitude = esCityDocument.getLatitude() + "";
-						longitude = esCityDocument.getLongitude() + "";
+						 citylongitude=esCityDocument.getLongitude() + "";
+						 citylatitude=esCityDocument.getLatitude() + "";
+
+						boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+								.lat(Double.parseDouble(citylatitude))
+								.lon(Double.parseDouble(citylongitude)).distance("30km"));
 					}
-					distance = 30;
+
 				}
 				if (!DPDoctorUtils.anyStringEmpty(service)) {
 					List<ESTreatmentServiceDocument> esTreatmentServiceDocuments = esTreatmentServiceRepository
@@ -722,7 +729,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (latitude != null && longitude != null) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
-					distance = 30;
+					distance = distance+28;
 				}
 				SearchQuery searchQuery = null;
 				if (size > 0)
@@ -768,6 +775,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								DPDoctorUtils.distance(Double.parseDouble(latitude), Double.parseDouble(longitude),
 										doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
 					}
+
+					if (citylatitude != null && citylongitude != null && doctorDocument.getLatitude() != null
+							&& doctorDocument.getLongitude() != null) {
+						doctorDocument.setDistance(
+								DPDoctorUtils.distance(Double.parseDouble(citylatitude), Double.parseDouble(citylongitude),
+										doctorDocument.getLatitude(), doctorDocument.getLongitude(), "K"));
+					}
 					doctorDocument.getDob();
 					String address = (!DPDoctorUtils.anyStringEmpty(doctorDocument.getStreetAddress())
 							? doctorDocument.getStreetAddress() + ", " : "")
@@ -810,14 +824,20 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESLocationDocument> esLocationDocuments = null;
 		try {
 			Integer distance = 4;
+			String citylatitude=null;
+			String citylongitude=null;
 			do {
+				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
 				if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 					ESCityDocument esCityDocument = esCityRepository.findByName(city);
 					if (esCityDocument != null) {
-						latitude = esCityDocument.getLatitude() + "";
-						longitude = esCityDocument.getLongitude() + "";
+						citylatitude=esCityDocument.getLatitude() + "";
+						citylongitude=esCityDocument.getLongitude() + "";
+						boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+								.lat(Double.parseDouble(citylatitude))
+								.lon(Double.parseDouble(citylongitude)).distance("30km"));
 					}
-					distance = 30;
+
 				}
 
 				if (!DPDoctorUtils.anyStringEmpty(test)) {
@@ -842,8 +862,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				Collection<String> locationIds = CollectionUtils.collect(esLabTestDocuments,
 						new BeanToPropertyValueTransformer("locationId"));
 
-				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-						.must(QueryBuilders.matchQuery("isLocationListed", true))
+				boolQueryBuilder.must(QueryBuilders.matchQuery("isLocationListed", true))
 						.must(QueryBuilders.termsQuery("locationId", locationIds))
 						.must(QueryBuilders.termQuery("isLab", true));
 				if (booking != null && booking)
@@ -918,7 +937,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (latitude != null && longitude != null) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 							.lon(Double.parseDouble(longitude)).distance("30km"));
-					distance = 30;
+					distance = distance+28;
 				}
 				SearchQuery searchQuery = null;
 				if (size > 0)
@@ -947,6 +966,11 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							&& document.getLongitude() != null) {
 						labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude),
 								Double.parseDouble(longitude), document.getLatitude(), document.getLongitude(), "K"));
+					}
+					if (citylongitude != null && citylatitude != null && document.getLatitude() != null
+							&& document.getLongitude() != null) {
+						labResponse.setDistance(DPDoctorUtils.distance(Double.parseDouble(citylatitude),
+								Double.parseDouble(citylongitude), document.getLatitude(), document.getLongitude(), "K"));
 					}
 					String address = (!DPDoctorUtils.anyStringEmpty(document.getStreetAddress())
 							? document.getStreetAddress() + ", " : "")
@@ -992,6 +1016,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
 		try {
 			Integer distance = 4;
+			String citylongitude=null;
+			String citylatitude=null;
 			do {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isLocaleListed", true));
@@ -999,10 +1025,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
 					ESCityDocument esCityDocument = esCityRepository.findByName(city);
 					if (esCityDocument != null) {
-						latitude = esCityDocument.getLatitude() + "";
-						longitude = esCityDocument.getLongitude() + "";
+						citylatitude=esCityDocument.getLatitude() + "";
+						citylongitude=esCityDocument.getLongitude() + "";
+						boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+								
+								.lat(Double.parseDouble(citylatitude))
+								.lon(Double.parseDouble(citylongitude)).distance("30km"));
 					}
-					distance=30;
 				}
 				if (!DPDoctorUtils.anyStringEmpty(localeName)) {
 					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
@@ -1064,10 +1093,10 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 											.lt(maxTime)))))));
 				}
 
-				if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)){
+				if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
-					distance=30;
+					distance = distance+28;
 				}
 
 				SearchQuery searchQuery = null;
@@ -1079,7 +1108,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 				esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
-				
+
 			} while (latitude != null && longitude != null && distance < 30 && esUserLocaleDocuments.size() < 10);
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
@@ -1104,6 +1133,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							&& esUserLocaleDocument.getAddress().getLongitude() != null) {
 						esUserLocaleDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude),
 								Double.parseDouble(longitude), esUserLocaleDocument.getAddress().getLatitude(),
+								esUserLocaleDocument.getAddress().getLongitude(), "K"));
+					}
+					if (citylatitude != null && citylongitude != null && esUserLocaleDocument.getAddress() != null
+							&& esUserLocaleDocument.getAddress().getLatitude() != null
+							&& esUserLocaleDocument.getAddress().getLongitude() != null) {
+						esUserLocaleDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(citylatitude),
+								Double.parseDouble(citylongitude), esUserLocaleDocument.getAddress().getLatitude(),
 								esUserLocaleDocument.getAddress().getLongitude(), "K"));
 					}
 					if (esUserLocaleDocument.getAddress() != null) {
