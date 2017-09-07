@@ -729,7 +729,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (latitude != null && longitude != null) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
-					distance = distance+28;
+					distance = distance+26;
 				}
 				SearchQuery searchQuery = null;
 				if (size > 0)
@@ -937,7 +937,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (latitude != null && longitude != null) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 							.lon(Double.parseDouble(longitude)).distance("30km"));
-					distance = distance+28;
+					distance = distance+26;
 				}
 				SearchQuery searchQuery = null;
 				if (size > 0)
@@ -1096,7 +1096,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
-					distance = distance+28;
+					distance = distance+26;
 				}
 
 				SearchQuery searchQuery = null;
