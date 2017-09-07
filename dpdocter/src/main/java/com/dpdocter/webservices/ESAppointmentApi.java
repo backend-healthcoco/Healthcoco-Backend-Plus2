@@ -58,7 +58,8 @@ public class ESAppointmentApi {
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS, notes = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
 	public Response<ESDoctorDocument> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
-			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@DefaultValue("") @QueryParam(value = "latitude") String latitude,
+			@DefaultValue("") @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
 			@DefaultValue("false") @QueryParam("booking") Boolean booking,
 			@DefaultValue("false") @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee,
@@ -81,7 +82,8 @@ public class ESAppointmentApi {
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
 	public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
-			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@DefaultValue("") @QueryParam(value = "latitude") String latitude,
+			@DefaultValue("") @QueryParam(value = "longitude") String longitude,
 			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
 			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
 			@QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days,
@@ -113,12 +115,12 @@ public class ESAppointmentApi {
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)
 	public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
-			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
-			@QueryParam("test") String test, @QueryParam("booking") Boolean booking,
-			@QueryParam("calling") Boolean calling, @QueryParam("minTime") int minTime,
-			@QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
-			@QueryParam("onlineReports") Boolean onlineReports, @QueryParam("homeService") Boolean homeService,
-			@QueryParam("nabl") Boolean nabl) {
+			@DefaultValue("") @QueryParam(value = "latitude") String latitude,
+			@DefaultValue("") @QueryParam(value = "longitude") String longitude, @QueryParam("test") String test,
+			@QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling,
+			@QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
+			@MatrixParam("days") List<String> days, @QueryParam("onlineReports") Boolean onlineReports,
+			@QueryParam("homeService") Boolean homeService, @QueryParam("nabl") Boolean nabl) {
 
 		List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude,
 				test, booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl);
