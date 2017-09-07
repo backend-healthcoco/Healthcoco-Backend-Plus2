@@ -755,7 +755,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				System.out.println(searchQuery);
 				esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 
-			} while (citylatitude == null && citylongitude == null && distance < 30 && esDoctorDocuments.size() < 10);
+			} while (citylatitude == null && citylongitude == null && distance <= 30 && esDoctorDocuments.size() < 10);
 			if (esDoctorDocuments != null) {
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 					if (doctorDocument.getSpecialities() != null) {
@@ -973,7 +973,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
 				esLocationDocuments = elasticsearchTemplate.queryForList(searchQuery, ESLocationDocument.class);
 
-			} while (citylatitude == null && citylongitude == null && distance < 30 && esLocationDocuments.size() < 10);
+			} while (citylatitude == null && citylongitude == null && distance <= 30 && esLocationDocuments.size() < 10);
 			if (esLocationDocuments != null && !esLocationDocuments.isEmpty()) {
 				for (ESLocationDocument document : esLocationDocuments) {
 					LabResponse labResponse = new LabResponse();
@@ -1147,7 +1147,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 				esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
 
-			} while (citylatitude == null && citylongitude == null && distance < 30
+			} while (citylatitude == null && citylongitude == null && distance <= 30
 					&& esUserLocaleDocuments.size() < 10);
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
