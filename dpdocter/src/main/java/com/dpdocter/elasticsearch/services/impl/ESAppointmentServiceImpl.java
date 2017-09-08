@@ -977,88 +977,126 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable) {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
+		
+		List<ESUserLocaleDocument> response = null;
 		try {
-			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-					.must(QueryBuilders.matchQuery("isLocaleListed", true));
+			Integer distance = 4;
+			String citylongitude = null;
+			String citylatitude = null;
+			do {
+				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+						.must(QueryBuilders.matchQuery("isLocaleListed", true));
 
-			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
-				ESCityDocument esCityDocument = esCityRepository.findByName(city);
-				if (esCityDocument != null) {
-					latitude = esCityDocument.getLatitude() + "";
-					longitude = esCityDocument.getLongitude() + "";
+				/*
+				 * if (DPDoctorUtils.anyStringEmpty(longitude, latitude) &&
+				 * !DPDoctorUtils.anyStringEmpty(city)) { ESCityDocument
+				 * esCityDocument = esCityRepository.findByName(city); if
+				 * (esCityDocument != null) {
+				 * citylatitude=esCityDocument.getLatitude() + "";
+				 * citylongitude=esCityDocument.getLongitude() + "";
+				 * boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery(
+				 * "geoPoint")
+				 * 
+				 * .lat(Double.parseDouble(citylatitude))
+				 * .lon(Double.parseDouble(citylongitude)).distance("30km")); }
+				 * }
+				 */
+
+				if (!DPDoctorUtils.anyStringEmpty(localeName)) {
+					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
 				}
-			}
-			if (!DPDoctorUtils.anyStringEmpty(localeName)) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
-			}
-			if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));
-			}
-			if (homeService != null) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("isHomeDeliveryAvailable", homeService));
-			}
-			if (isTwentyFourSevenOpen != null) {
-				boolQueryBuilder
-						.must(QueryBuilders.matchPhrasePrefixQuery("isTwentyFourSevenOpen", isTwentyFourSevenOpen));
-			}
-			if (isGenericMedicineAvailable != null) {
-				boolQueryBuilder.must(
-						QueryBuilders.matchPhrasePrefixQuery("isGenericMedicineAvailable", isGenericMedicineAvailable));
-			}
+				if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
+					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));
+				}
+				if (homeService != null) {
 
-			if (days != null && !days.isEmpty()) {
-				for (int i = 0; i < days.size(); i++)
-					days.set(i, days.get(i).toLowerCase());
+					boolQueryBuilder.must(QueryBuilders.termQuery("isHomeDeliveryAvailable", homeService));
+				}
+				if (isTwentyFourSevenOpen != null) {
 
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules",
-						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
-			}
-			if (pharmacyType != null && !pharmacyType.isEmpty()) {
-				for (int i = 0; i < pharmacyType.size(); i++) {
-					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
-					boolQueryBuilder.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType.get(i).toUpperCase()));
+					boolQueryBuilder.must(QueryBuilders.termQuery("isTwentyFourSevenOpen", isTwentyFourSevenOpen));
+				}
+				if (isGenericMedicineAvailable != null) {
+
+					boolQueryBuilder
+							.must(QueryBuilders.termQuery("isGenericMedicineAvailable", isGenericMedicineAvailable));
 				}
 
-			}
+				if (days != null && !days.isEmpty()) {
+					for (int i = 0; i < days.size(); i++)
+						days.set(i, days.get(i).toLowerCase());
 
-			if (maxTime == 0) {
-				maxTime = 86399999;
-				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("localeWorkingSchedules",
-						boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
-								boolQuery().must(QueryBuilders.orQuery(
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules",
+							boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
+				}
+				if (pharmacyType != null && !pharmacyType.isEmpty()) {
+					for (int i = 0; i < pharmacyType.size(); i++) {
+						pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
+						boolQueryBuilder
+								.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType.get(i).toUpperCase()));
+					}
 
-										QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime")
-												.gt(minTime).lt(maxTime),
+				}
 
-										QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime")
-												.gt(minTime).lt(maxTime)))))),
-						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
+				if (maxTime == 0) {
+					maxTime = 86399999;
+					boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("localeWorkingSchedules",
+							boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
+									boolQuery().must(QueryBuilders.orQuery(
 
-			} else {
-				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
-						.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+											QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime")
+													.gt(minTime).lt(maxTime),
 
-								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime)
-										.lt(maxTime),
+											QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime")
+													.gt(minTime).lt(maxTime)))))),
+							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
 
-								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
-										.lt(maxTime)))))));
-			}
+				} else {
+					boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery().must(
+							nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
 
-			if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude))
-				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-						.lon(Double.parseDouble(longitude)).distance("30km"));
+									QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime)
+											.lt(maxTime),
 
-			SearchQuery searchQuery = null;
-			if (size > 0)
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
-						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
-			else
-				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
-			esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
+									QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
+											.lt(maxTime)))))));
+				}
+				if (latitude.equals("21.1458004") && longitude.equals("79.0881546")) {
+					citylatitude = "21.1458004";
+					citylongitude = "79.0881546";
+					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint")
 
+							.lat(Double.parseDouble(citylatitude)).lon(Double.parseDouble(citylongitude))
+							.distance("30km"));
+
+				} else if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
+					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
+					distance = distance + 26;
+				}
+
+				SearchQuery searchQuery = null;
+				if (size > 0)
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withPageable(new PageRequest(page, size))
+							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+				else
+					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+				
+				esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
+
+				if(esUserLocaleDocuments != null && response == null)response = new ArrayList<ESUserLocaleDocument>();
+				if(response != null) {
+					response.addAll(esUserLocaleDocuments);
+					if(size > 0) {
+						size = size - response.size();
+						if(size == 0)break;
+					}
+				}
+				
+			} while (citylatitude == null && citylongitude == null && distance <= 30 && esUserLocaleDocuments.size() < 10);
+			
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
 					if (esUserLocaleDocument.getImageUrl() != null)
@@ -1077,11 +1115,18 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (esUserLocaleDocument.getLogoUrl() != null)
 						esUserLocaleDocument.setLogoUrl(getFinalImageURL(esUserLocaleDocument.getLogoUrl()));
 
-					if (latitude != null && longitude != null && esUserLocaleDocument.getAddress() != null
+					if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)
 							&& esUserLocaleDocument.getAddress().getLatitude() != null
 							&& esUserLocaleDocument.getAddress().getLongitude() != null) {
 						esUserLocaleDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(latitude),
 								Double.parseDouble(longitude), esUserLocaleDocument.getAddress().getLatitude(),
+								esUserLocaleDocument.getAddress().getLongitude(), "K"));
+					}
+					if (citylatitude != null && citylongitude != null && esUserLocaleDocument.getAddress() != null
+							&& esUserLocaleDocument.getAddress().getLatitude() != null
+							&& esUserLocaleDocument.getAddress().getLongitude() != null) {
+						esUserLocaleDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(citylatitude),
+								Double.parseDouble(citylongitude), esUserLocaleDocument.getAddress().getLatitude(),
 								esUserLocaleDocument.getAddress().getLongitude(), "K"));
 					}
 					if (esUserLocaleDocument.getAddress() != null) {
@@ -1107,13 +1152,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				}
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown,
 					"Error While Getting Doctor Details From ES : " + e.getMessage());
 		}
-		return esUserLocaleDocuments;
+		return response;
 	}
 
 
