@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.services.LocaleService;
 import com.dpdocter.services.PharmacyService;
+import com.dpdocter.services.TransactionalManagementService;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -62,6 +64,9 @@ public class LocaleApi {
 
 	@Autowired
 	ServletContext context;
+	
+	@Autowired
+	private TransactionalManagementService transnationalService;
 
 	/*
 	 * @POST
@@ -322,6 +327,7 @@ public class LocaleApi {
 		}
 
 		locale = localeService.addEditRecommedation(localeId, patientId, type);
+		transnationalService.checkPharmacy(new ObjectId(locale.getId()));
 		response = new Response<Locale>();
 		response.setData(locale);
 		return response;

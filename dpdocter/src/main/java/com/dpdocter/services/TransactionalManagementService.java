@@ -31,6 +31,8 @@ public interface TransactionalManagementService {
     void checkLocation(ObjectId resourceId);
 
     void checkDoctor(ObjectId resourceId, ObjectId locationId);
+    
+    void checkPharmacy(ObjectId resourceId);
 
 	void sendReminderToDoctor();
 

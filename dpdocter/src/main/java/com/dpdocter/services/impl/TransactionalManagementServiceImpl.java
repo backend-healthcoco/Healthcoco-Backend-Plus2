@@ -1190,7 +1190,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkLandmarkLocality(ObjectId resourceId) {
+	public void checkLandmarkLocality(ObjectId resourceId) {
 		try {
 			LandmarkLocalityCollection landmarkLocalityCollection = landmarkLocalityRepository.findOne(resourceId);
 			if (landmarkLocalityCollection != null) {
@@ -1204,7 +1204,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkCity(ObjectId resourceId) {
+	public void checkCity(ObjectId resourceId) {
 		try {
 			CityCollection cityCollection = cityRepository.findOne(resourceId);
 			if (cityCollection != null) {
@@ -1218,7 +1218,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkReference(ObjectId resourceId) {
+	public void checkReference(ObjectId resourceId) {
 		try {
 			ReferencesCollection referenceCollection = referenceRepository.findOne(resourceId);
 			if (referenceCollection != null) {
@@ -1232,7 +1232,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkDisease(ObjectId resourceId) {
+	public void checkDisease(ObjectId resourceId) {
 		try {
 			DiseasesCollection diseasesCollection = diseasesRepository.findOne(resourceId);
 			if (diseasesCollection != null) {
@@ -1246,7 +1246,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkDiagnosticTest(ObjectId resourceId) {
+	public void checkDiagnosticTest(ObjectId resourceId) {
 		try {
 			DiagnosticTestCollection diagnosticTestCollection = diagnosticTestRepository.findOne(resourceId);
 			if (diagnosticTestCollection != null) {
@@ -1260,7 +1260,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkTreatmentService(ObjectId resourceId) {
+	public void checkTreatmentService(ObjectId resourceId) {
 		try {
 			TreatmentServicesCollection treatmentServicesCollection = treatmentServicesRepository.findOne(resourceId);
 			if (treatmentServicesCollection != null) {
@@ -1274,7 +1274,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkTreatmentServiceCost(ObjectId resourceId) {
+	public void checkTreatmentServiceCost(ObjectId resourceId) {
 		try {
 			TreatmentServicesCostCollection treatmentServicesCostCollection = treatmentServicesCostRepository
 					.findOne(resourceId);
@@ -1289,7 +1289,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkXray(ObjectId resourceId) {
+	public void checkXray(ObjectId resourceId) {
 		try {
 			XRayDetailsCollection xRayDetailsCollection = xRayDetailsRepository.findOne(resourceId);
 			if (xRayDetailsCollection != null) {
@@ -1303,7 +1303,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkHolter(ObjectId resourceId) {
+	public void checkHolter(ObjectId resourceId) {
 		try {
 			HolterCollection holterCollection = holterRepository.findOne(resourceId);
 			if (holterCollection != null) {
@@ -1316,8 +1316,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
-
-	private void checkPharmacy(ObjectId resourceId) {
+	@Override
+	@Transactional
+	public void checkPharmacy(ObjectId resourceId) {
 		try {
 			LocaleCollection localeCollection = localeRepository.findOne(resourceId);
 			UserCollection userCollection = null;
@@ -1339,7 +1340,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkEcho(ObjectId resourceId) {
+	public void checkEcho(ObjectId resourceId) {
 		try {
 
 			EchoCollection echoCollection = echoRepository.findOne(resourceId);
@@ -1354,7 +1355,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkProcedureNote(ObjectId resourceId) {
+	public void checkProcedureNote(ObjectId resourceId) {
 		try {
 
 			ProcedureNoteCollection procedureNoteCollection = procedureNoteRepository.findOne(resourceId);
@@ -1369,7 +1370,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkECG(ObjectId resourceId) {
+	public void checkECG(ObjectId resourceId) {
 		try {
 
 			ECGDetailsCollection ecgDetailsCollection = ecgDetailsRepository.findOne(resourceId);
@@ -1384,7 +1385,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkPS(ObjectId resourceId) {
+	public void checkPS(ObjectId resourceId) {
 		try {
 
 			PSCollection psCollection = psRepository.findOne(resourceId);
@@ -1399,7 +1400,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkPA(ObjectId resourceId) {
+	public void checkPA(ObjectId resourceId) {
 		try {
 
 			PACollection paCollection = paRepository.findOne(resourceId);
@@ -1414,7 +1415,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkPV(ObjectId resourceId) {
+	public void checkPV(ObjectId resourceId) {
 		try {
 
 			PVCollection pvCollection = pvRepository.findOne(resourceId);
@@ -1429,7 +1430,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkIndicationOfUCG(ObjectId resourceId) {
+	public void checkIndicationOfUCG(ObjectId resourceId) {
 		try {
 
 			IndicationOfUSGCollection indicationOfUCGCollection = indicationOfUSGRepository.findOne(resourceId);
@@ -1444,7 +1445,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkSystemExam(ObjectId resourceId) {
+	public void checkSystemExam(ObjectId resourceId) {
 		try {
 
 			SystemExamCollection systemExamCollection = systemExamRepository.findOne(resourceId);
@@ -1459,7 +1460,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkProvisionalDignosis(ObjectId resourceId) {
+	public void checkProvisionalDignosis(ObjectId resourceId) {
 		try {
 
 			ProvisionalDiagnosisCollection provitionalDiagnosisCollection = provisionalDiagnosisRepository
@@ -1475,7 +1476,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkPresentComplaintHistory(ObjectId resourceId) {
+	public void checkPresentComplaintHistory(ObjectId resourceId) {
 		try {
 
 			PresentComplaintHistoryCollection presentComplaintHistoryCollection = presentComplaintHistoryRepository
@@ -1491,7 +1492,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkGeneralExam(ObjectId resourceId) {
+	public void checkGeneralExam(ObjectId resourceId) {
 		try {
 
 			GeneralExamCollection generalExamCollection = generalExamRepository.findOne(resourceId);
@@ -1506,7 +1507,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 		}
 	}
 
-	private void checkPresentComplaint(ObjectId resourceId) {
+	public void checkPresentComplaint(ObjectId resourceId) {
 		try {
 
 			PresentComplaintCollection presentComplaintCollection = presentComplaintRepository.findOne(resourceId);
@@ -1520,8 +1521,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
-
-	private void checkAdvice(ObjectId resourceId) {
+ public void checkAdvice(ObjectId resourceId) {
 		try {
 
 			AdviceCollection adviceCollection = adviceRepository.findOne(resourceId);
@@ -1534,6 +1534,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			e.printStackTrace();
 			logger.error(e);
 		}
+	}
+	
+	
 	}
 
 }

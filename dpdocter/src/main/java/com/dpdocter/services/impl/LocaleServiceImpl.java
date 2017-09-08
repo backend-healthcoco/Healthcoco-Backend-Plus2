@@ -196,7 +196,6 @@ public class LocaleServiceImpl implements LocaleService {
 
 				recommendationsCollection = recommendationsRepository.save(recommendationsCollection);
 				localeCollection = localeRepository.save(localeCollection);
-				esLocaleService.updateLocale(localeCollection.getId().toString(), localeCollection);
 				response = new Locale();
 				BeanUtil.map(localeCollection, response);
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
