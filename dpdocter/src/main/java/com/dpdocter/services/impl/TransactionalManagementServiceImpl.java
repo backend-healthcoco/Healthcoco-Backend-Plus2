@@ -1128,7 +1128,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						if (locationCollection.getLatitude() != null && locationCollection.getLongitude() != null)
 							geoPoint = new GeoPoint(locationCollection.getLatitude(),
 									locationCollection.getLongitude());
-						
+
 						BeanUtil.map(locationCollection, doctorDocument);
 
 						ESLocationDocument esLocationDocument = new ESLocationDocument();
@@ -1316,6 +1316,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
+
 	@Override
 	@Transactional
 	public void checkPharmacy(ObjectId resourceId) {
@@ -1521,7 +1522,8 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			logger.error(e);
 		}
 	}
- public void checkAdvice(ObjectId resourceId) {
+
+	public void checkAdvice(ObjectId resourceId) {
 		try {
 
 			AdviceCollection adviceCollection = adviceRepository.findOne(resourceId);
@@ -1534,9 +1536,6 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			e.printStackTrace();
 			logger.error(e);
 		}
-	}
-	
-	
 	}
 
 }
