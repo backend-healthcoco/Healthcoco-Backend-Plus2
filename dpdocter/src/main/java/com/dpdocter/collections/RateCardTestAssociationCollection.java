@@ -31,6 +31,8 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 	private ObjectId labId;
 	@Field
 	private DiagnosticTest diagnosticTest;
+	@Field
+	private Boolean isAvailable;
 
 	public ObjectId getId() {
 		return id;
@@ -110,6 +112,14 @@ public class RateCardTestAssociationCollection extends GenericCollection {
 
 	public void setDiagnosticTest(DiagnosticTest diagnosticTest) {
 		this.diagnosticTest = diagnosticTest;
+	}
+
+	public Boolean getIsAvailable() {
+		return isAvailable;
+	}
+
+	public void setIsAvailable(Boolean isAvailable) {
+		this.isAvailable = isAvailable;
 	}
 
 	@Override

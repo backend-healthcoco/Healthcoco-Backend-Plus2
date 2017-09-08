@@ -995,6 +995,7 @@ public class LocationServiceImpl implements LocationServices {
 					{
 						CollectionBoyCollection collectionBoyCollection = collectionBoyRepository.findOne(collectionBoyLabAssociationCollection.getCollectionBoyId());
 						LocationCollection locationCollection = locationRepository.findOne(collectionBoyLabAssociationCollection.getDaughterLabId());
+						//throw new Exception("Collection boy " + collectionBoyCollection.getName() + " is already assigned to " + locationCollection.getLocationName() + ". Please select another lab / collection boy");
 						throw new BusinessException(ServiceError.Unknown , "Collection boy " + collectionBoyCollection.getName() + " is already assigned to " + locationCollection.getLocationName() + ". Please select another lab / collection boy");
 					}
 					ObjectId oldId = collectionBoyLabAssociationCollection.getId();
@@ -1285,6 +1286,7 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("diagnosticTest.testName").regex("^" + searchTerm));
 			}
 			criteria.and("rateCardId").is(new ObjectId(rateCardId));
+			criteria.and("isAvailable").is(true);
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
@@ -1631,8 +1633,8 @@ public class LocationServiceImpl implements LocationServices {
 			
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				criteria = criteria.orOperator(new Criteria("location.locationName").regex("^" + searchTerm, "i"),
-						new Criteria("location.locationName").regex("^" + searchTerm),new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+						new Criteria("location.locationName").regex("^" + searchTerm),new Criteria("patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientName").regex("^" + searchTerm));
 			}
 			if (size > 0) {
 				if (isParent) {

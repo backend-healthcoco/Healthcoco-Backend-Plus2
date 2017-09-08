@@ -289,6 +289,7 @@ public class LabApi {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new BusinessException(ServiceError.Forbidden , e.getMessage());
 		}
 		return response;
 	}
