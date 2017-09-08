@@ -438,6 +438,13 @@ public class AdmitCardServiceImpl implements AdmitCardService {
 		parameters.put("showTP", show);
 		show = false;
 
+		if (!DPDoctorUtils.allStringsEmpty(admitCardCollection.getExamination())) {
+			show = true;
+			parameters.put("examination", admitCardCollection.getExamination());
+		}
+		parameters.put("showEx", show);
+		show = false;
+
 		parameters.put("contentLineSpace",
 				(printSettings != null && !DPDoctorUtils.anyStringEmpty(printSettings.getContentLineStyle()))
 						? printSettings.getContentLineSpace() : LineSpace.SMALL.name());

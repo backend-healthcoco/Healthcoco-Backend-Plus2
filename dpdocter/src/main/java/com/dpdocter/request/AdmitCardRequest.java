@@ -23,8 +23,20 @@ public class AdmitCardRequest {
 	private String xRayDetails;
 	private String jointInvolvement;
 	private String treatmentsPlan;
+	private String examination;	
 	private String diagnosis;
 	private Boolean discarded=false;
+
+	
+	
+
+	public String getExamination() {
+		return examination;
+	}
+
+	public void setExamination(String examination) {
+		this.examination = examination;
+	}
 
 	public String getId() {
 		return id;

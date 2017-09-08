@@ -45,7 +45,21 @@ public class AdmitCardCollection extends GenericCollection {
 	@Field
 	private String diagnosis;	
 	@Field
-	private Boolean discarded=false;;
+	private Boolean discarded=false;
+	@Field
+	private String examination;
+	
+	
+
+	
+
+	public String getExamination() {
+		return examination;
+	}
+
+	public void setExamination(String examination) {
+		this.examination = examination;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;

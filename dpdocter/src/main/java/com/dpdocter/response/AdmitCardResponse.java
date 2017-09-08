@@ -28,6 +28,8 @@ public class AdmitCardResponse extends GenericCollection {
 	private String diagnosis;
 	private Patient patient;
 	private Boolean discarded = false;
+	private String 	examination;
+	
 
 	public String getId() {
 		return id;
@@ -189,4 +191,13 @@ public class AdmitCardResponse extends GenericCollection {
 		this.discarded = discarded;
 	}
 
+	public String getExamination() {
+		return examination;
+	}
+
+	public void setExamination(String examination) {
+		this.examination = examination;
+	}
+
+	
 }
