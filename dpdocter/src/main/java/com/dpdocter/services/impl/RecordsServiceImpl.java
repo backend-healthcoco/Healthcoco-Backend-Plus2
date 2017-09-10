@@ -2036,16 +2036,8 @@ public class RecordsServiceImpl implements RecordsService {
 				if (userAllowanceDetailsCollection == null) {
 					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
 					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("mobileNumber").is(userCollection.getMobileNumber())),
-							new CustomAggregationOperation(
-									new BasicDBObject("$redact",
-											new BasicDBObject("$cond",
-													new BasicDBObject()
-															.append("if",
-																	new BasicDBObject("$eq",
-																			Arrays.asList("$emailAddress",
-																					"$userName")))
-															.append("then", "$$PRUNE").append("else", "$$KEEP")))));
+							Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
+									.and("userState").is("USERSTATECOMPLETE")));
 
 					List<UserCollection> userCollections = mongoTemplate
 							.aggregate(aggregation, UserCollection.class, UserCollection.class).getMappedResults();

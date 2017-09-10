@@ -214,11 +214,11 @@ public class BlogServicesImpl implements BlogService {
 				response = new Blog();
 				BeanUtil.map(blogCollection, response);
 				response.setArticle(this.getBlogArticle(response.getArticleId()));
-				if (userId != null) {
+				if (!DPDoctorUtils.anyStringEmpty(userId)) {
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
-					if(blogLikesCollection!=null){
-					response.setIsliked(blogLikesCollection.getDiscarded());
+					if (blogLikesCollection != null) {
+						response.setIsliked(blogLikesCollection.getDiscarded());
 					}
 				}
 				if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))

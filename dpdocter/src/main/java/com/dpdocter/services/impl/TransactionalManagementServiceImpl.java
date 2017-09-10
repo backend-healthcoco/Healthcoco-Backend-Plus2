@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
+import com.dpdocter.beans.OralCavityAndThroatExamination;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -50,18 +51,23 @@ import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DoctorDrugCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.ECGDetailsCollection;
+import com.dpdocter.collections.EarsExaminationCollection;
 import com.dpdocter.collections.EchoCollection;
 import com.dpdocter.collections.GeneralExamCollection;
 import com.dpdocter.collections.HolterCollection;
 import com.dpdocter.collections.IndicationOfUSGCollection;
+import com.dpdocter.collections.IndirectLarygoscopyExaminationCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.NeckExaminationCollection;
+import com.dpdocter.collections.NoseExaminationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
+import com.dpdocter.collections.OralCavityAndThroatExaminationCollection;
 import com.dpdocter.collections.PACollection;
 import com.dpdocter.collections.PSCollection;
 import com.dpdocter.collections.PVCollection;
@@ -69,6 +75,10 @@ import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PresentComplaintCollection;
 import com.dpdocter.collections.PresentComplaintHistoryCollection;
+import com.dpdocter.collections.PresentingComplaintEarsCollection;
+import com.dpdocter.collections.PresentingComplaintNoseCollection;
+import com.dpdocter.collections.PresentingComplaintOralCavityCollection;
+import com.dpdocter.collections.PresentingComplaintThroatCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -91,22 +101,31 @@ import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
 import com.dpdocter.elasticsearch.document.ESDrugDocument;
 import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
+import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESEchoDocument;
 import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
 import com.dpdocter.elasticsearch.document.ESHolterDocument;
 import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
+import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
+import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
+import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESPADocument;
 import com.dpdocter.elasticsearch.document.ESPSDocument;
 import com.dpdocter.elasticsearch.document.ESPVDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
 import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintEarsDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintOralCavityDocument;
+import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
 import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
@@ -144,20 +163,25 @@ import com.dpdocter.repository.DoctorDrugRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.ECGDetailsRepository;
+import com.dpdocter.repository.EarsExaminationRepository;
 import com.dpdocter.repository.EchoRepository;
 import com.dpdocter.repository.GeneralExamRepository;
 import com.dpdocter.repository.HolterRepository;
 import com.dpdocter.repository.IndicationOfUSGRepository;
+import com.dpdocter.repository.IndirectLarygoscopyExaminationRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LabTestRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.MenstrualHistoryRepository;
+import com.dpdocter.repository.NeckExaminationRepository;
+import com.dpdocter.repository.NoseExaminationRepository;
 import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.ObstetricHistoryRepository;
+import com.dpdocter.repository.OralCavityThroatExaminationRepository;
 import com.dpdocter.repository.PARepository;
 import com.dpdocter.repository.PSRepository;
 import com.dpdocter.repository.PVRepository;
@@ -165,6 +189,10 @@ import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PresentComplaintHistoryRepository;
 import com.dpdocter.repository.PresentComplaintRepository;
+import com.dpdocter.repository.PresentingComplaintEarsRepository;
+import com.dpdocter.repository.PresentingComplaintNosesRepository;
+import com.dpdocter.repository.PresentingComplaintOralCavityRepository;
+import com.dpdocter.repository.PresentingComplaintThroatRepository;
 import com.dpdocter.repository.ProcedureNoteRepository;
 import com.dpdocter.repository.ProvisionalDiagnosisRepository;
 import com.dpdocter.repository.ReferenceRepository;
@@ -219,6 +247,9 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private ObservationRepository observationRepository;
+
+	@Autowired
+	private PresentingComplaintEarsRepository presentingComplaintEarsRepository;
 
 	@Autowired
 	private InvestigationRepository investigationRepository;
@@ -324,7 +355,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 	private IndicationOfUSGRepository indicationOfUSGRepository;
 
 	@Autowired
-	private ObstetricHistoryRepository ObstetricHistoryRepository;
+	private ObstetricHistoryRepository obstetricHistoryRepository;
 
 	@Autowired
 	private MenstrualHistoryRepository menstrualHistoryRepository;
@@ -355,6 +386,30 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private ESLocaleService esLocaleService;
+
+	@Autowired
+	private PresentingComplaintNosesRepository presentingComplaintNosesRepository;
+
+	@Autowired
+	private PresentingComplaintThroatRepository presentingComplaintThroatRepository;
+
+	@Autowired
+	private PresentingComplaintOralCavityRepository presentingComplaintOralCavityRepository;
+
+	@Autowired
+	private NoseExaminationRepository noseExaminationRepository;
+
+	@Autowired
+	private EarsExaminationRepository earsExaminationRepository;
+
+	@Autowired
+	private OralCavityThroatExaminationRepository oralCavityThroatExaminationRepository;
+
+	@Autowired
+	private IndirectLarygoscopyExaminationRepository indirectLarygoscopyExaminationRepository;
+
+	@Autowired
+	private NeckExaminationRepository neckExaminationRepository;
 
 	@Autowired
 	private AppLinkDetailsRepository appLinkDetailsRepository;
@@ -493,7 +548,33 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case PROCEDURE_NOTE:
 							checkProcedureNote(transactionalCollection.getResourceId());
 							break;
-
+						case PC_NOSE:
+							checkPCNoses(transactionalCollection.getResourceId());
+							break;
+						case PC_EARS:
+							checkPCEars(transactionalCollection.getResourceId());
+							break;
+						case PC_THROAT:
+							checkPCThroat(transactionalCollection.getResourceId());
+							break;
+						case PC_ORAL_CAVITY:
+							checkPCOralCavity(transactionalCollection.getResourceId());
+							break;
+						case EARS_EXAM:
+							checkEarsExam(transactionalCollection.getResourceId());
+							break;
+						case INDIRECT_LARYGOSCOPY_EXAM:
+							checkINdirectExam(transactionalCollection.getResourceId());
+							break;
+						case ORAL_CAVITY_THROAT_EXAM:
+							checkOralCavityAndThroatExam(transactionalCollection.getResourceId());
+							break;
+						case NOSE_EXAM:
+							checkNoseExam(transactionalCollection.getResourceId());
+							break;
+						case NECK_EXAM:
+							checkNeckExam(transactionalCollection.getResourceId());
+							break;
 						default:
 							break;
 						}
@@ -1531,6 +1612,146 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESAdvicesDocument esAdvicesDocument = new ESAdvicesDocument();
 				BeanUtil.map(adviceCollection, esAdvicesDocument);
 				esPrescriptionService.addAdvices(esAdvicesDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkPCNoses(ObjectId resourceId) {
+		try {
+
+			PresentingComplaintNoseCollection presentingComplaintNoseCollection = presentingComplaintNosesRepository
+					.findOne(resourceId);
+			if (presentingComplaintNoseCollection != null) {
+				ESPresentingComplaintNoseDocument esComplaintNoseDocument = new ESPresentingComplaintNoseDocument();
+				BeanUtil.map(presentingComplaintNoseCollection, esComplaintNoseDocument);
+				esClinicalNotesService.addPCNose(esComplaintNoseDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkPCThroat(ObjectId resourceId) {
+		try {
+
+			PresentingComplaintThroatCollection presentingComplaintThroatCollection = presentingComplaintThroatRepository
+					.findOne(resourceId);
+			if (presentingComplaintThroatCollection != null) {
+				ESPresentingComplaintThroatDocument esComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
+				BeanUtil.map(presentingComplaintThroatCollection, esComplaintThroatDocument);
+				esClinicalNotesService.addPCThroat(esComplaintThroatDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkPCOralCavity(ObjectId resourceId) {
+		try {
+
+			PresentingComplaintOralCavityCollection presentingComplaintOralCavityCollection = presentingComplaintOralCavityRepository
+					.findOne(resourceId);
+			if (presentingComplaintOralCavityCollection != null) {
+				ESPresentingComplaintOralCavityDocument esComplaintOralCavityDocument = new ESPresentingComplaintOralCavityDocument();
+				BeanUtil.map(presentingComplaintOralCavityCollection, esComplaintOralCavityDocument);
+				esClinicalNotesService.addPCOralCavity(esComplaintOralCavityDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkPCEars(ObjectId resourceId) {
+		try {
+
+			PresentingComplaintEarsCollection earsCollection = presentingComplaintEarsRepository.findOne(resourceId);
+			if (earsCollection != null) {
+				ESPresentingComplaintEarsDocument earsDocument = new ESPresentingComplaintEarsDocument();
+				BeanUtil.map(earsCollection, earsDocument);
+				esClinicalNotesService.addPCEars(earsDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkNoseExam(ObjectId resourceId) {
+		try {
+
+			NoseExaminationCollection noseExaminationCollection = noseExaminationRepository.findOne(resourceId);
+			if (noseExaminationCollection != null) {
+				ESNoseExaminationDocument noseExaminationDocument = new ESNoseExaminationDocument();
+				BeanUtil.map(noseExaminationCollection, noseExaminationDocument);
+				esClinicalNotesService.addNoseExam(noseExaminationDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkOralCavityAndThroatExam(ObjectId resourceId) {
+		try {
+
+			OralCavityAndThroatExaminationCollection cavityAndThroatExamination = oralCavityThroatExaminationRepository
+					.findOne(resourceId);
+			if (cavityAndThroatExamination != null) {
+				ESOralCavityAndThroatExaminationDocument examinationDocument = new ESOralCavityAndThroatExaminationDocument();
+				BeanUtil.map(cavityAndThroatExamination, examinationDocument);
+				esClinicalNotesService.addOralCavityThroatExam(examinationDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkINdirectExam(ObjectId resourceId) {
+		try {
+
+			IndirectLarygoscopyExaminationCollection indirectLarygoscopyExaminationCollection = indirectLarygoscopyExaminationRepository
+					.findOne(resourceId);
+			if (indirectLarygoscopyExaminationCollection != null) {
+				ESIndirectLarygoscopyExaminationDocument examinationDocument = new ESIndirectLarygoscopyExaminationDocument();
+				BeanUtil.map(indirectLarygoscopyExaminationCollection, examinationDocument);
+				esClinicalNotesService.addIndirectLarygoscopyExam(examinationDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkNeckExam(ObjectId resourceId) {
+		try {
+
+			NeckExaminationCollection neckExaminationCollection = neckExaminationRepository.findOne(resourceId);
+			if (neckExaminationCollection != null) {
+				ESNeckExaminationDocument examinationDocument = new ESNeckExaminationDocument();
+				BeanUtil.map(neckExaminationCollection, examinationDocument);
+				esClinicalNotesService.addNeckExam(examinationDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkEarsExam(ObjectId resourceId) {
+		try {
+
+			EarsExaminationCollection earsExaminationCollection = earsExaminationRepository.findOne(resourceId);
+			if (earsExaminationCollection != null) {
+				ESEarsExaminationDocument examinationDocument = new ESEarsExaminationDocument();
+				BeanUtil.map(earsExaminationCollection, examinationDocument);
+				esClinicalNotesService.addEarsExam(examinationDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -180,7 +180,7 @@ import com.dpdocter.repository.PatientVisitRepository;
 import com.dpdocter.repository.PresentComplaintHistoryRepository;
 import com.dpdocter.repository.PresentComplaintRepository;
 import com.dpdocter.repository.PresentingComplaintEarsRepository;
-import com.dpdocter.repository.PresentingComplaintNotesRepository;
+import com.dpdocter.repository.PresentingComplaintNosesRepository;
 import com.dpdocter.repository.PresentingComplaintOralCavityRepository;
 import com.dpdocter.repository.PresentingComplaintThroatRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -339,7 +339,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 	private ProcedureNoteRepository procedureNoteRepository;
 
 	@Autowired
-	private PresentingComplaintNotesRepository presentingComplaintNotesRepository;
+	private PresentingComplaintNosesRepository presentingComplaintNotesRepository;
 
 	@Autowired
 	private PresentingComplaintEarsRepository presentingComplaintEarsRepository;

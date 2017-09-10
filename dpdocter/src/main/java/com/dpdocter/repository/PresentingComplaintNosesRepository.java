@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.dpdocter.collections.PresentingComplaintNoseCollection;
 
-public interface PresentingComplaintNotesRepository extends MongoRepository<PresentingComplaintNoseCollection, ObjectId>{
+public interface PresentingComplaintNosesRepository extends MongoRepository<PresentingComplaintNoseCollection, ObjectId>{
 
 }

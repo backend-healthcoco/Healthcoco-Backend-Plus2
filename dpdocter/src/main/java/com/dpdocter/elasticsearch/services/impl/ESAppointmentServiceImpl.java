@@ -977,7 +977,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable) {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
-		
+
 		List<ESUserLocaleDocument> response = null;
 		try {
 			Integer distance = 4;
@@ -1083,20 +1083,23 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				else
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
-				
+
 				esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
 
-				if(esUserLocaleDocuments != null && response == null)response = new ArrayList<ESUserLocaleDocument>();
-				if(response != null) {
+				if (esUserLocaleDocuments != null && response == null)
+					response = new ArrayList<ESUserLocaleDocument>();
+				if (response != null) {
 					response.addAll(esUserLocaleDocuments);
-					if(size > 0) {
+					if (size > 0) {
 						size = size - response.size();
-						if(size == 0)break;
+						if (size == 0)
+							break;
 					}
 				}
-				
-			} while (citylatitude == null && citylongitude == null && distance <= 30 && esUserLocaleDocuments.size() < 10);
-			
+
+			} while (citylatitude == null && citylongitude == null && distance <= 30
+					&& esUserLocaleDocuments.size() != 0);
+
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
 					if (esUserLocaleDocument.getImageUrl() != null)
@@ -1122,13 +1125,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								Double.parseDouble(longitude), esUserLocaleDocument.getAddress().getLatitude(),
 								esUserLocaleDocument.getAddress().getLongitude(), "K"));
 					}
-					if (citylatitude != null && citylongitude != null && esUserLocaleDocument.getAddress() != null
-							&& esUserLocaleDocument.getAddress().getLatitude() != null
-							&& esUserLocaleDocument.getAddress().getLongitude() != null) {
-						esUserLocaleDocument.setDistance(DPDoctorUtils.distance(Double.parseDouble(citylatitude),
-								Double.parseDouble(citylongitude), esUserLocaleDocument.getAddress().getLatitude(),
-								esUserLocaleDocument.getAddress().getLongitude(), "K"));
-					}
+
 					if (esUserLocaleDocument.getAddress() != null) {
 						String address = (!DPDoctorUtils
 								.anyStringEmpty(esUserLocaleDocument.getAddress().getStreetAddress())
@@ -1159,7 +1156,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return response;
 	}
-
 
 	@Override
 	@Transactional
