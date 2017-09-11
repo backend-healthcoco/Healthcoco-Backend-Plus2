@@ -11,9 +11,9 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.IteratorUtils;
-import org.bson.types.ObjectId;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -61,7 +62,6 @@ import com.dpdocter.enums.SMSStatus;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.response.PatientGroupLookupResponse;
 import com.dpdocter.services.SMSServices;
 import com.google.common.collect.Lists;
 
@@ -983,7 +983,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			Integer distance = 4;
 			String citylongitude = null;
 			String citylatitude = null;
-			do {
+//			do {
 				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 						.must(QueryBuilders.matchQuery("isLocaleListed", true));
 
@@ -1071,35 +1071,44 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 				} else if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
 					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-							.lon(Double.parseDouble(longitude)).distance(distance + "km"));
-					distance = distance + 26;
+							.lon(Double.parseDouble(longitude)).distance("30km"));
 				}
 
 				SearchQuery searchQuery = null;
 				if (size > 0)
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withPageable(new PageRequest(page, size))
+							.withSort(SortBuilders.geoDistanceSort("geoPoint").point(Double.parseDouble(latitude), 
+									Double.parseDouble(longitude)).order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS))
 							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 				else
 					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 
 				esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
-
-				if (esUserLocaleDocuments != null && response == null)
-					response = new ArrayList<ESUserLocaleDocument>();
-				if (response != null) {
-					response.addAll(esUserLocaleDocuments);
-					if (size > 0) {
-						size = size - response.size();
-						if (size == 0)
-							break;
-					}
-				}
-
-			} while (citylatitude == null && citylongitude == null && distance <= 30
-					&& esUserLocaleDocuments.size() != 0);
-
+//				SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {
+//    		        @Override
+//    		        public SearchResponse extract(SearchResponse response) {
+//    		        	return response;
+//    		        }
+//    		    });
+//    		    System.out.println(searchResponse);
+	
+//				if(distance == 4  && (esUserLocaleDocuments == null || esUserLocaleDocuments.isEmpty() || (size > 0 && esUserLocaleDocuments.size() < size))){
+//					distance = distance + 26;
+//				}
+				
+//				if(esUserLocaleDocuments != null && response == null)response = new ArrayList<ESUserLocaleDocument>();
+//				if(response != null) {
+//					response.addAll(esUserLocaleDocuments);
+//					if(size > 0) {
+//						size = size - response.size();
+//						if(size == 0)break;
+//					}
+//				}
+//				
+//			} while (citylatitude == null && citylongitude == null && distance <= 30 && (size > 0 && esUserLocaleDocuments.size() < size));
+			
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
 					if (esUserLocaleDocument.getImageUrl() != null)
@@ -1154,7 +1163,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			throw new BusinessException(ServiceError.Unknown,
 					"Error While Getting Doctor Details From ES : " + e.getMessage());
 		}
-		return response;
+		return esUserLocaleDocuments;
 	}
 
 	@Override
