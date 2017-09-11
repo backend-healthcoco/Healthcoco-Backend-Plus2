@@ -29,6 +29,7 @@ import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
 import com.dpdocter.request.VerifyUnlockPatientRequest;
 import com.dpdocter.request.VerifyUnlockPatientRequest.FlagEnum;
+import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.ClinicContactUsService;
 import com.dpdocter.services.DoctorContactUsService;
@@ -303,15 +304,15 @@ public class SignUpApi {
 	@Path(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
-	public Response<CollectionBoy> collectionBoySignup(CollectionBoy request) {
-		Response<CollectionBoy> response  = null;
+	public Response<CollectionBoyResponse> collectionBoySignup(CollectionBoy request) {
+		Response<CollectionBoyResponse> response  = null;
 		
 			if (request == null || request.getPassword() == null || request.getPassword().trim().isEmpty()) {
 				logger.warn("Request send  is NULL");
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Request");
 			}
-			CollectionBoy collectionBoy = signUpService.signupCollectionBoys(request);
-			response = new Response<CollectionBoy>();
+			CollectionBoyResponse collectionBoy = signUpService.signupCollectionBoys(request);
+			response = new Response<CollectionBoyResponse>();
 			response.setData(collectionBoy);
 		return response;
 	}

@@ -16,6 +16,9 @@ public interface CollectionBoyLabAssociationRepository extends MongoRepository<C
 	@Query("{ 'parentLabId': ?0,'daughterLabId': ?1}")
 	public CollectionBoyLabAssociationCollection findbyParentIdandDaughterId( ObjectId parentLabId, ObjectId daughterLabId);
 	
+	@Query("{ 'parentLabId': ?0,'daughterLabId': ?1 ,'isActive' : ?2}")
+	public CollectionBoyLabAssociationCollection findbyParentIdandDaughterIdandIsActive( ObjectId parentLabId, ObjectId daughterLabId , Boolean isActive);
+	
 	@Query("{'collectionBoyId' : ?0}")
 	public List<CollectionBoyLabAssociationCollection> findAllAssociationByCollectionBoyId(ObjectId collectionBoyId);
 	

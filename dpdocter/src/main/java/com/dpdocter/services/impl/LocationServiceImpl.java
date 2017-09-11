@@ -285,6 +285,14 @@ public class LocationServiceImpl implements LocationServices {
 			}
 		}
 		
+		UserCollection userCollection = userRepository.findOne(collectionBoyCollection.getUserId());
+		if(userCollection != null)
+		{
+			userCollection.setIsActive(discarded);
+			userCollection = userRepository.save(userCollection);
+		}
+		
+		
 		collectionBoyCollection.setDiscarded(discarded);
 		collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
 		if (collectionBoyCollection != null) {
@@ -833,8 +841,8 @@ public class LocationServiceImpl implements LocationServices {
 				labTestPickupCollection.setRequestId(requestId);
 				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
 				CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
-						.findbyParentIdandDaughterId(new ObjectId(request.getParentLabLocationId()),
-								new ObjectId(request.getDaughterLabLocationId()));
+						.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
+								new ObjectId(request.getDaughterLabLocationId()), true);
 				if (collectionBoyLabAssociationCollection != null) {
 					labTestPickupCollection
 							.setCollectionBoyId(collectionBoyLabAssociationCollection.getCollectionBoyId());

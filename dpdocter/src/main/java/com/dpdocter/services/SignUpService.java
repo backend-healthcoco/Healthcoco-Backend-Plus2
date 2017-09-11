@@ -8,6 +8,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
+import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 
 public interface SignUpService {
@@ -36,7 +37,7 @@ public interface SignUpService {
 
     boolean checkMobileNumberExistForPatient(String mobileNumber);
 
-	CollectionBoy signupCollectionBoys(CollectionBoy collectionBoy);
+	CollectionBoyResponse signupCollectionBoys(CollectionBoy collectionBoy);
 
 	String verifyLocale(String tokenId);
 

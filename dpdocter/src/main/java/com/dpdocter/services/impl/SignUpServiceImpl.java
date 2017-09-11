@@ -57,6 +57,7 @@ import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.PatientProfilePicChangeRequest;
 import com.dpdocter.request.PatientSignUpRequest;
 import com.dpdocter.request.PatientSignupRequestMobile;
+import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.FileManager;
@@ -693,8 +694,8 @@ public class SignUpServiceImpl implements SignUpService {
 
 	@Override
 	@Transactional
-	public CollectionBoy signupCollectionBoys(CollectionBoy collectionBoy) {
-		CollectionBoy response = null;
+	public CollectionBoyResponse signupCollectionBoys(CollectionBoy collectionBoy) {
+		CollectionBoyResponse response = null;
 		ESCollectionBoyDocument esCollectionBoyDocument = null;
 		try {
 			// String localePassword = DPDoctorUtils.randomString(8);
@@ -770,9 +771,9 @@ public class SignUpServiceImpl implements SignUpService {
 				smsDetails.add(smsDetail);
 				smsTrackDetail.setSmsDetails(smsDetails);
 				smsServices.sendSMS(smsTrackDetail, true);
-				response = new CollectionBoy();
+				response = new CollectionBoyResponse();
 				BeanUtil.map(collectionBoyCollection, response);
-				response.setPassword(null);
+				//response.setPassword(null);
 			}
 			esCollectionBoyDocument = new ESCollectionBoyDocument();
 			BeanUtil.map(collectionBoyCollection, esCollectionBoyDocument);
