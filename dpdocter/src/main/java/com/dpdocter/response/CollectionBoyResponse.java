@@ -20,6 +20,7 @@ public class CollectionBoyResponse extends GenericCollection {
 	private Boolean isAvailable = false;
 	private Location location;
 
+
 	public String getId() {
 		return id;
 	}

@@ -751,7 +751,7 @@ public class SignUpServiceImpl implements SignUpService {
 			collectionBoyCollection = collectionBoyRepository.save(collectionBoyCollection);
 			if (collectionBoyCollection != null) {
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setType("LOCALE_SIGNUP");
+				smsTrackDetail.setType("CB_SIGNUP");
 				SMSDetail smsDetail = new SMSDetail();
 				smsDetail.setUserId(userCollection.getId());
 				if (userCollection != null)

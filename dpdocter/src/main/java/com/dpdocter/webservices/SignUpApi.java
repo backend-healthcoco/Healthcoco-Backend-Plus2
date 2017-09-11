@@ -301,6 +301,7 @@ public class SignUpApi {
 		return response;
 	}
 
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)
 	@POST
 	@ApiOperation(value = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY, notes = PathProxy.SignUpUrls.SIGNUP_COLLECTION_BOY)

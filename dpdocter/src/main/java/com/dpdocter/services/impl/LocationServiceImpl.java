@@ -288,7 +288,7 @@ public class LocationServiceImpl implements LocationServices {
 		UserCollection userCollection = userRepository.findOne(collectionBoyCollection.getUserId());
 		if(userCollection != null)
 		{
-			userCollection.setIsActive(discarded);
+			userCollection.setIsActive(!discarded);
 			userCollection = userRepository.save(userCollection);
 		}
 		
