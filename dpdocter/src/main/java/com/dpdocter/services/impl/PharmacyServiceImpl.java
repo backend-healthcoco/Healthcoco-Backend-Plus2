@@ -694,8 +694,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 					Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 							.and("userState").is("USERSTATECOMPLETE")),
 					new CustomAggregationOperation(new BasicDBObject("$group",
-							new BasicDBObject("_id", "$mobileNumber").append("userIds",
-									new BasicDBObject("$push", "$_id")).append("mobileNumber",
+							new BasicDBObject("_id", "$mobileNumber")
+									.append("userIds", new BasicDBObject("$push", "$_id")).append("mobileNumber",
 											new BasicDBObject("$first", "$mobileNumber")))));
 
 			PatientNumberAndUserIds user = mongoTemplate
