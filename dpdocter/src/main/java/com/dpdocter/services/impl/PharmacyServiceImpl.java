@@ -128,13 +128,13 @@ public class PharmacyServiceImpl implements PharmacyService {
 					dateTime = new DateTime().minusDays(1);
 					date = dateTime.toDate();
 					if (!date.after(blockUserCollection.getUpdatedTime())) {
-						throw new BusinessException(ServiceError.Unknown, "user  has blocked for next 1 hour");
+						throw new BusinessException(ServiceError.Unknown, "You have blocked for next 1 hour");
 					}
 				} else if (blockUserCollection.getIsForHour()) {
 					dateTime = new DateTime().minusHours(1);
 					date = dateTime.toDate();
 					if (!date.after(blockUserCollection.getUpdatedTime())) {
-						throw new BusinessException(ServiceError.Unknown, "user  has blocked for next 24 hours");
+						throw new BusinessException(ServiceError.Unknown, "You have blocked for next 24 hours");
 					}
 				}
 				blockUserCollection.setDiscarded(true);
