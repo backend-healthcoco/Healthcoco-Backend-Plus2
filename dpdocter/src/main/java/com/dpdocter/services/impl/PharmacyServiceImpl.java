@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.PatientNumberAndUserIds;
+import com.dpdocter.collections.BlockUserCollection;
 import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
@@ -110,57 +112,42 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 * required
 		 */
 		UserSearchRequest response = null;
-		try {
+		
 
-			/*
-			 * BlockUserCollection blockUserCollection = blockUserRepository
-			 * .findByUserId(new ObjectId(request.getUserId())); if
-			 * (blockUserCollection != null) { if
-			 * (!blockUserCollection.getDiscarded()) { DateTime dateTime = null;
-			 * Date date = null; if (blockUserCollection.getIsForDay()) {
-			 * dateTime = new DateTime().minusDays(1); date = dateTime.toDate();
-			 * if (!date.after(blockUserCollection.getUpdatedTime())) { throw
-			 * new BusinessException(ServiceError.InvalidInput,
-			 * "user request has blocked for 1 Hour"); } } else if
-			 * (blockUserCollection.getIsForHour()) { if
-			 * (!date.after(blockUserCollection.getUpdatedTime())) { throw new
-			 * BusinessException(ServiceError.InvalidInput,
-			 * "user request has blocked for 1 Day"); } }
-			 * blockUserCollection.setDiscarded(true);
-			 * blockUserCollection.setIsForDay(false);
-			 * blockUserCollection.setIsForHour(false);
-			 * blockUserCollection.setUpdatedTime(new Date());
-			 * blockUserCollection =
-			 * blockUserRepository.save(blockUserCollection);
-			 * 
-			 * } }
-			 * 
-			 * // Instead of calling before block user collection its better to
-			 * // call here UserFakeRequestDetailResponse detailResponse =
-			 * getUserFakeRequestCount(request.getUserId()); if
-			 * (detailResponse.getNoOfAttemptInHour() >= 3 ||
-			 * detailResponse.getNoOfAttemptIn24Hour() >= 10) {
-			 * 
-			 * if (blockUserCollection != null) { if
-			 * (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
-			 * blockUserCollection.setIsForDay(true);
-			 * 
-			 * } else { blockUserCollection.setIsForHour(true); }
-			 * 
-			 * } else { blockUserCollection = new BlockUserCollection(); if
-			 * (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
-			 * blockUserCollection.setIsForDay(true);
-			 * 
-			 * } else { blockUserCollection.setIsForHour(true); }
-			 * blockUserCollection.setCreatedTime(new Date()); }
-			 * blockUserCollection.setDiscarded(false);
-			 * blockUserCollection.setUserIds(detailResponse.getUserIds());
-			 * blockUserCollection.setUpdatedTime(new Date());
-			 * blockUserCollection =
-			 * blockUserRepository.save(blockUserCollection); throw new
-			 * BusinessException(ServiceError.InvalidInput,
-			 * "user request has blocked"); }
-			 */
+			BlockUserCollection blockUserCollection = blockUserRepository
+					.findByUserId(new ObjectId(request.getUserId()));
+			if (blockUserCollection != null) {
+				if (!blockUserCollection.getDiscarded()) {
+					DateTime dateTime = null;
+					Date date = null;
+					if (blockUserCollection.getIsForDay()) {
+						dateTime = new DateTime().minusDays(1);
+						date = dateTime.toDate();
+						if (!date.after(blockUserCollection.getUpdatedTime())) {
+							throw new BusinessException(ServiceError.InvalidInput,
+									"user request has blocked for 1 Hour");
+						}
+					} else if (blockUserCollection.getIsForHour()) {
+						dateTime = new DateTime().minusHours(1);
+						date = dateTime.toDate();
+						if (!date.after(blockUserCollection.getUpdatedTime())) {
+							throw new BusinessException(ServiceError.InvalidInput,
+									"user request has blocked for 1 Day");
+						}
+					}
+					blockUserCollection.setDiscarded(true);
+					blockUserCollection.setIsForDay(false);
+					blockUserCollection.setIsForHour(false);
+					blockUserCollection.setUpdatedTime(new Date());
+					blockUserCollection = blockUserRepository.save(blockUserCollection);
+
+				}
+
+			}
+			try{
+			checkFakeRequestCount(request.getUserId(), blockUserCollection);
+
+			// Instead of calling before block user collection its better to
 
 			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
 
@@ -757,6 +744,41 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 		}
 		return response;
+	}
+
+	@Async
+	private void checkFakeRequestCount(String userId, BlockUserCollection blockUserCollection)
+			throws InterruptedException {
+		System.out.println("task start");
+		UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(userId);
+		if (detailResponse.getNoOfAttemptInHour() >= 3 || detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+
+			if (blockUserCollection != null) {
+				if (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+					blockUserCollection.setIsForDay(true);
+
+				} else {
+					blockUserCollection.setIsForHour(true);
+				}
+
+			} else {
+				blockUserCollection = new BlockUserCollection();
+				if (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+					blockUserCollection.setIsForDay(true);
+
+				} else {
+					blockUserCollection.setIsForHour(true);
+				}
+				blockUserCollection.setCreatedTime(new Date());
+			}
+			blockUserCollection.setDiscarded(false);
+			blockUserCollection.setUserIds(detailResponse.getUserIds());
+			blockUserCollection.setUpdatedTime(new Date());
+			System.out.println("Task completed");
+			blockUserCollection = blockUserRepository.save(blockUserCollection);
+
+		}
+
 	}
 
 }

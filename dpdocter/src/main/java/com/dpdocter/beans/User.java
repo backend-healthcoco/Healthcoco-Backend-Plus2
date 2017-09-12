@@ -52,6 +52,8 @@ public class User {
 
 	private List<String> parentSpecialities;
 
+	private String role;
+
 	public User(String firstName, String mobileNumber) {
 		this.firstName = firstName;
 		this.mobileNumber = mobileNumber;
@@ -245,6 +247,14 @@ public class User {
 				+ secPhoneNumber + ", isPartOfClinic=" + isPartOfClinic + ", imageUrl=" + imageUrl + ", thumbnailUrl="
 				+ thumbnailUrl + ", colorCode=" + colorCode + ", userState=" + userState + ", userUId=" + userUId
 				+ ", specialities=" + specialities + ", parentSpecialities=" + parentSpecialities + "]";
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 }

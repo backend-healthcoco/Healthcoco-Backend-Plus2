@@ -15,6 +15,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.collections.OAuth2AuthenticationAccessTokenCollection;
+import com.dpdocter.collections.OAuth2AuthenticationRefreshTokenCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
@@ -23,6 +25,8 @@ import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.OAuth2AccessTokenRepository;
+import com.dpdocter.repository.OAuth2RefreshTokenRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserRepository;
@@ -45,6 +49,12 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private OAuth2RefreshTokenRepository oAuth2RefreshTokenRepository;
+
+	@Autowired
+	private OAuth2AccessTokenRepository oAuth2AccessTokenRepository;
 
 	@Autowired
 	private MailService mailService;
@@ -394,6 +404,17 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 				if (!(userCollection.getIsVerified())) {
 					return "User is not verified";
 				}
+				List<OAuth2AuthenticationRefreshTokenCollection> refreshTokenCollections = oAuth2RefreshTokenRepository
+						.findByTokenId("healthco2business", userCollection.getMobileNumber());
+				if (!refreshTokenCollections.isEmpty() && refreshTokenCollections != null) {
+					oAuth2RefreshTokenRepository.delete(refreshTokenCollections);
+				}
+
+				List<OAuth2AuthenticationAccessTokenCollection> accessTokenCollections = oAuth2AccessTokenRepository
+						.findByClientIdAndUserName("healthco2business", userCollection.getMobileNumber());
+				if (!accessTokenCollections.isEmpty() && accessTokenCollections != null) {
+					oAuth2AccessTokenRepository.delete(accessTokenCollections);
+				}
 				userCollection.setSalt(DPDoctorUtils.generateSalt());
 				String salt = new String(userCollection.getSalt());
 				char[] sha3Password = request.getPassword();
@@ -415,20 +436,21 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 	}
-	
+
 	@Override
 	public String resetPasswordCB(ResetPasswordRequest request) {
 		UserCollection userCollection = null;
 		try {
-				userCollection = userRepository.findAdminByMobileNumber(request.getMobileNumber(), UserState.COLLECTION_BOY.getState());
-				userCollection.setSalt(DPDoctorUtils.generateSalt());
-				String salt = new String(userCollection.getSalt());
-				char[] sha3Password = request.getPassword();
-				String password = new String(sha3Password);
-				password = passwordEncoder.encodePassword(password, salt);
-				userCollection.setPassword(password.toCharArray());
-				userRepository.save(userCollection);
-				return "You have successfully changed your password.";
+			userCollection = userRepository.findAdminByMobileNumber(request.getMobileNumber(),
+					UserState.COLLECTION_BOY.getState());
+			userCollection.setSalt(DPDoctorUtils.generateSalt());
+			String salt = new String(userCollection.getSalt());
+			char[] sha3Password = request.getPassword();
+			String password = new String(sha3Password);
+			password = passwordEncoder.encodePassword(password, salt);
+			userCollection.setPassword(password.toCharArray());
+			userRepository.save(userCollection);
+			return "You have successfully changed your password.";
 		} catch (IllegalArgumentException argumentException) {
 			return "Incorrect link. If you copied and pasted the link into a browser, please confirm that you didn't change or add any characters. You must click the link exactly as it appears in the verification SMS that we sent you.";
 		} catch (Exception e) {
