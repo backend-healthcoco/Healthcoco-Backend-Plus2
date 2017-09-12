@@ -405,7 +405,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 					return "User is not verified";
 				}
 				List<OAuth2AuthenticationRefreshTokenCollection> refreshTokenCollections = oAuth2RefreshTokenRepository
-						.findByTokenId("healthco2business", userCollection.getMobileNumber());
+						.findByclientIdAndUserName("healthco2business", userCollection.getMobileNumber());
 				if (!refreshTokenCollections.isEmpty() && refreshTokenCollections != null) {
 					oAuth2RefreshTokenRepository.delete(refreshTokenCollections);
 				}
