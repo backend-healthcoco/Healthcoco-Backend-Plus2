@@ -1355,7 +1355,8 @@ public class BillingServiceImpl implements BillingService {
 							}
 
 							if (!DPDoctorUtils.anyStringEmpty(treatmentFile.getValue())) {
-								fieldName = fieldName+"<br><font size='1'><i>" + key + treatmentFile.getValue() + "</i></font>";
+								fieldName = fieldName + "<br><font size='1'><i>" + key + treatmentFile.getValue()
+										+ "</i></font>";
 							}
 						}
 					}
@@ -1765,7 +1766,8 @@ public class BillingServiceImpl implements BillingService {
 	}
 
 	@Override
-	public Boolean sendDueRemainderToPatient(String doctorId, String locationId, String hospitalId, String patientId) {
+	public Boolean sendDueRemainderToPatient(String doctorId, String locationId, String hospitalId, String patientId,
+			String mobileNumber) {
 		Boolean response = false;
 		try {
 
@@ -1787,11 +1789,13 @@ public class BillingServiceImpl implements BillingService {
 				SMS sms = new SMS();
 				String message = dueAmountRemainderSMS;
 				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
-						.replace("{doctorName}", doctor.getTitle() + " " + doctor.getFirstName())
+						.replace("{clinicNumber}",
+								locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber()
+										: "")
 						.replace("{clinicName}", locationCollection.getLocationName())
 						.replace("{dueAmount}", doctorPatientDueAmountCollection.getDueAmount().toString()));
 				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(patient.getMobileNumber());
+				smsAddress.setRecipient(mobileNumber);
 				sms.setSmsAddress(smsAddress);
 				smsDetail.setSms(sms);
 				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);

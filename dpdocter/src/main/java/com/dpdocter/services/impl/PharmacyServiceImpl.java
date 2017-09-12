@@ -75,6 +75,12 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Value(value = "${pharmacy.response.queue}")
 	private String pharmacyResponseQueue;
 
+	@Value(value = "${pharmacy.fakerequest.hour}")
+	private String requestLimitForhour;
+
+	@Value(value = "${pharmacy.fakerequest.day}")
+	private String requestLimitForday;
+
 	@Autowired
 	private SearchRequestFromUserRepository searchRequestFromUserRepository;
 
@@ -112,39 +118,35 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 * required
 		 */
 		UserSearchRequest response = null;
-		
 
-			BlockUserCollection blockUserCollection = blockUserRepository
-					.findByUserId(new ObjectId(request.getUserId()));
-			if (blockUserCollection != null) {
-				if (!blockUserCollection.getDiscarded()) {
-					DateTime dateTime = null;
-					Date date = null;
-					if (blockUserCollection.getIsForDay()) {
-						dateTime = new DateTime().minusDays(1);
-						date = dateTime.toDate();
-						if (!date.after(blockUserCollection.getUpdatedTime())) {
-							throw new BusinessException(ServiceError.InvalidInput,
-									"user request has blocked for 1 Hour");
-						}
-					} else if (blockUserCollection.getIsForHour()) {
-						dateTime = new DateTime().minusHours(1);
-						date = dateTime.toDate();
-						if (!date.after(blockUserCollection.getUpdatedTime())) {
-							throw new BusinessException(ServiceError.InvalidInput,
-									"user request has blocked for 1 Day");
-						}
+		BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()));
+		if (blockUserCollection != null) {
+			if (!blockUserCollection.getDiscarded()) {
+				DateTime dateTime = null;
+				Date date = null;
+				if (blockUserCollection.getIsForDay()) {
+					dateTime = new DateTime().minusDays(1);
+					date = dateTime.toDate();
+					if (!date.after(blockUserCollection.getUpdatedTime())) {
+						throw new BusinessException(ServiceError.Unknown, "user  has blocked for next 1 hour");
 					}
-					blockUserCollection.setDiscarded(true);
-					blockUserCollection.setIsForDay(false);
-					blockUserCollection.setIsForHour(false);
-					blockUserCollection.setUpdatedTime(new Date());
-					blockUserCollection = blockUserRepository.save(blockUserCollection);
-
+				} else if (blockUserCollection.getIsForHour()) {
+					dateTime = new DateTime().minusHours(1);
+					date = dateTime.toDate();
+					if (!date.after(blockUserCollection.getUpdatedTime())) {
+						throw new BusinessException(ServiceError.Unknown, "user  has blocked for next 24 hours");
+					}
 				}
+				blockUserCollection.setDiscarded(true);
+				blockUserCollection.setIsForDay(false);
+				blockUserCollection.setIsForHour(false);
+				blockUserCollection.setUpdatedTime(new Date());
+				blockUserCollection = blockUserRepository.save(blockUserCollection);
 
 			}
-			try{
+
+		}
+		try {
 			checkFakeRequestCount(request.getUserId(), blockUserCollection);
 
 			// Instead of calling before block user collection its better to
@@ -751,10 +753,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 			throws InterruptedException {
 		System.out.println("task start");
 		UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(userId);
-		if (detailResponse.getNoOfAttemptInHour() >= 3 || detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+		if (detailResponse.getNoOfAttemptInHour() >= Integer.parseInt(requestLimitForday)
+				|| detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
 
 			if (blockUserCollection != null) {
-				if (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+				if (detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
 					blockUserCollection.setIsForDay(true);
 
 				} else {
@@ -763,7 +766,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 			} else {
 				blockUserCollection = new BlockUserCollection();
-				if (detailResponse.getNoOfAttemptIn24Hour() >= 10) {
+				if (detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
 					blockUserCollection.setIsForDay(true);
 
 				} else {
