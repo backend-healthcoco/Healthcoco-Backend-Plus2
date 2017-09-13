@@ -691,32 +691,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 					.aggregate(aggregation, UserCollection.class, PatientNumberAndUserIds.class)
 					.getUniqueMappedResult();
 
-			DateTime dateTime = new DateTime().minusHours(24);
-			Date date = dateTime.toDate();
-			criteria.and("createdTime").gt(date);
-			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
-
-			aggregation = Aggregation
-					.newAggregation(
-							Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId",
-									"response"),
-							Aggregation.unwind("response"),
-							Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
-							Aggregation.match(criteria),
-							new CustomAggregationOperation(new BasicDBObject("$group",
-									new BasicDBObject("_id", new BasicDBObject("uniqueRequestId", "$uniqueRequestId"))
-											.append("uniqueRequestId",
-													new BasicDBObject("$first", "$uniqueRequestId")))));
-
-			countfor24Hour = mongoTemplate
-					.aggregate(aggregation, SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class)
-					.getMappedResults().size();
-
-			criteria = new Criteria();
-			dateTime = new DateTime().minusHours(1);
-			date = dateTime.toDate();
-			criteria.and("createdTime").gt(date);
-
 			criteria.and("orders").size(0).and("response.replyType").is("YES").and("userId").in(user.getUserIds());
 
 			aggregation = Aggregation
