@@ -9,11 +9,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
 
 import com.dpdocter.collections.SMSTrackDetail;
 
-@Repository
 public interface SMSTrackRepository
 		extends MongoRepository<SMSTrackDetail, ObjectId>, PagingAndSortingRepository<SMSTrackDetail, ObjectId> {
 

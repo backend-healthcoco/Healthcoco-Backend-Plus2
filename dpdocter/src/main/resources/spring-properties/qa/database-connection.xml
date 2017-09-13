@@ -9,7 +9,7 @@
 		write-concern="SAFE">
 		<mongo:options connect-timeout="${db.connectTimeout}"
 			connections-per-host="${db.connectionPerHost}"
-			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" />
+			threads-allowed-to-block-for-connection-multiplier="${db.threadsAllowedTblockForConnectionMultiplier}" ssl="true"/>
 	</mongo:mongo>
 
 	<mongo:db-factory dbname="${db.name}" host="${db.host}"

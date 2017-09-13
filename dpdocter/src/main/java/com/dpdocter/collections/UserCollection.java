@@ -320,7 +320,7 @@ public class UserCollection extends GenericCollection {
 		this.userName = (String) dbObject.get("userName");
 		this.password = (char[]) dbObject.get("password");
 		this.emailAddress = (String) dbObject.get("emailAddress");
-		this.isActive = (Boolean) dbObject.get("emailAddress");
+		this.isActive = (Boolean) dbObject.get("isActive");
 		this.userUId = (String) dbObject.get("userUID");
 	}
 
