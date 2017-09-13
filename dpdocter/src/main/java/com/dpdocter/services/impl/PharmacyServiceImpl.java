@@ -119,6 +119,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 
+
 		BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()));
 		if (blockUserCollection != null) {
 			if (!blockUserCollection.getDiscarded()) {
@@ -145,13 +146,16 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 			}
 
+
 		}
 		try {
 			checkFakeRequestCount(request.getUserId(), blockUserCollection);
 
+
 			// Instead of calling before block user collection its better to
 
 			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
+
 
 			{
 				addSearchRequestInQueue(request);
@@ -679,6 +683,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 			}
 
+
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 							.and("userState").is("USERSTATECOMPLETE")),
@@ -691,6 +696,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 					.aggregate(aggregation, UserCollection.class, PatientNumberAndUserIds.class)
 					.getUniqueMappedResult();
 			
+
 			DateTime dateTime = new DateTime().minusHours(24);
 			Date date = dateTime.toDate();
 			criteria.and("createdTime").gt(date);
