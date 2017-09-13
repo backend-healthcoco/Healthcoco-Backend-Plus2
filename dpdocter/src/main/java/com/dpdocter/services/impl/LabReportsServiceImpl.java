@@ -251,6 +251,15 @@ public class LabReportsServiceImpl implements LabReportsService{
 			if (labReportsCollection == null) {
 				throw new BusinessException(ServiceError.NoRecord, "Record not found");
 			}
+			if(request.getLabReports() != null && request.getLabReports().isEmpty())
+			{
+				LabTestPickupCollection labTestPickupCollection = labTestPickupRepository.getByLabTestSampleId(labReportsCollection.getLabTestSampleId());
+				if(labTestPickupCollection != null)
+				{
+					labTestPickupCollection.setStatus("REPORTS PENDING");
+					labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
+				}
+			}
 			labReportsCollection.setLabReports(request.getLabReports());
 			labReportsCollection = labReportsRepository.save(labReportsCollection);
 			labReports = new LabReports();
