@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.ClinicImage;
-import com.dpdocter.beans.OralCavityAndThroatExamination;
 import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
@@ -40,6 +39,7 @@ import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.AppLinkDetailsCollection;
 import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.BabyNoteCollection;
 import com.dpdocter.collections.CityCollection;
 import com.dpdocter.collections.ComplaintCollection;
 import com.dpdocter.collections.DiagnosisCollection;
@@ -59,14 +59,18 @@ import com.dpdocter.collections.IndicationOfUSGCollection;
 import com.dpdocter.collections.IndirectLarygoscopyExaminationCollection;
 import com.dpdocter.collections.InvestigationCollection;
 import com.dpdocter.collections.LabTestCollection;
+import com.dpdocter.collections.LabourNoteCollection;
 import com.dpdocter.collections.LandmarkLocalityCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.MenstrualHistoryCollection;
 import com.dpdocter.collections.NeckExaminationCollection;
 import com.dpdocter.collections.NoseExaminationCollection;
 import com.dpdocter.collections.NotesCollection;
 import com.dpdocter.collections.OTPCollection;
 import com.dpdocter.collections.ObservationCollection;
+import com.dpdocter.collections.ObstetricHistoryCollection;
+import com.dpdocter.collections.OperationNoteCollection;
 import com.dpdocter.collections.OralCavityAndThroatExaminationCollection;
 import com.dpdocter.collections.PACollection;
 import com.dpdocter.collections.PSCollection;
@@ -91,6 +95,7 @@ import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.beans.DoctorLocation;
 import com.dpdocter.elasticsearch.document.ESAdvicesDocument;
+import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
@@ -111,10 +116,13 @@ import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
 import com.dpdocter.elasticsearch.document.ESLabTestDocument;
 import com.dpdocter.elasticsearch.document.ESLandmarkLocalityDocument;
 import com.dpdocter.elasticsearch.document.ESLocationDocument;
+import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
 import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNoseExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESNotesDocument;
 import com.dpdocter.elasticsearch.document.ESObservationsDocument;
+import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
+import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
 import com.dpdocter.elasticsearch.document.ESPADocument;
 import com.dpdocter.elasticsearch.document.ESPSDocument;
@@ -133,9 +141,11 @@ import com.dpdocter.elasticsearch.document.ESTreatmentServiceCostDocument;
 import com.dpdocter.elasticsearch.document.ESTreatmentServiceDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
+import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
 import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.services.ESCityService;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
+import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.elasticsearch.services.ESMasterService;
 import com.dpdocter.elasticsearch.services.ESPrescriptionService;
@@ -152,6 +162,7 @@ import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.AdviceRepository;
 import com.dpdocter.repository.AppLinkDetailsRepository;
+import com.dpdocter.repository.BabyNoteRepository;
 import com.dpdocter.repository.CityRepository;
 import com.dpdocter.repository.ComplaintRepository;
 import com.dpdocter.repository.DiagnosisRepository;
@@ -171,6 +182,7 @@ import com.dpdocter.repository.IndicationOfUSGRepository;
 import com.dpdocter.repository.IndirectLarygoscopyExaminationRepository;
 import com.dpdocter.repository.InvestigationRepository;
 import com.dpdocter.repository.LabTestRepository;
+import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LandmarkLocalityRepository;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.LocationRepository;
@@ -181,6 +193,7 @@ import com.dpdocter.repository.NotesRepository;
 import com.dpdocter.repository.OTPRepository;
 import com.dpdocter.repository.ObservationRepository;
 import com.dpdocter.repository.ObstetricHistoryRepository;
+import com.dpdocter.repository.OperationNoteRepository;
 import com.dpdocter.repository.OralCavityThroatExaminationRepository;
 import com.dpdocter.repository.PARepository;
 import com.dpdocter.repository.PSRepository;
@@ -223,6 +236,18 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private ESDischargeSummaryService esDischargeSummaryService;
+
+	@Autowired
+	private LabourNoteRepository labourNoteRepository;
+
+	@Autowired
+	private BabyNoteRepository babyNoteRepository;
+
+	@Autowired
+	private OperationNoteRepository operationNoteRepository;
 
 	@Autowired
 	private PatientRepository patientRepository;
@@ -575,6 +600,28 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 						case NECK_EXAM:
 							checkNeckExam(transactionalCollection.getResourceId());
 							break;
+						case LABOUR_NOTES:
+							checkLabourNotes(transactionalCollection.getResourceId());
+							break;
+
+						case BABY_NOTES:
+							checkBabyNote(transactionalCollection.getResourceId());
+							break;
+
+						case MENSTRUAL_HISTORY:
+							checkmenstrualHistory(transactionalCollection.getResourceId());
+							break;
+						case OBSTETRIC_HISTORY:
+							checkObstresrticHistory(transactionalCollection.getResourceId());
+							break;
+						case STATE:
+							break;
+						case OPERATION_NOTES:
+							checkOperationNote(transactionalCollection.getResourceId());
+							break;
+						case COLLECTION_BOY:
+							break;
+
 						default:
 							break;
 						}
@@ -1291,6 +1338,7 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 			if (cityCollection != null) {
 				ESCityDocument esCityDocument = new ESCityDocument();
 				BeanUtil.map(cityCollection, esCityDocument);
+
 				esCityService.addCities(esCityDocument);
 			}
 		} catch (Exception e) {
@@ -1752,6 +1800,81 @@ public class TransactionalManagementServiceImpl implements TransactionalManageme
 				ESEarsExaminationDocument examinationDocument = new ESEarsExaminationDocument();
 				BeanUtil.map(earsExaminationCollection, examinationDocument);
 				esClinicalNotesService.addEarsExam(examinationDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkmenstrualHistory(ObjectId resourceId) {
+		try {
+
+			MenstrualHistoryCollection historyCollection = menstrualHistoryRepository.findOne(resourceId);
+			if (historyCollection != null) {
+				ESMenstrualHistoryDocument historyDocument = new ESMenstrualHistoryDocument();
+				BeanUtil.map(historyCollection, historyDocument);
+				esClinicalNotesService.addMenstrualHistory(historyDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkObstresrticHistory(ObjectId resourceId) {
+		try {
+
+			ObstetricHistoryCollection historyCollection = obstetricHistoryRepository.findOne(resourceId);
+			if (historyCollection != null) {
+				ESObstetricHistoryDocument historyDocument = new ESObstetricHistoryDocument();
+				BeanUtil.map(historyCollection, historyDocument);
+				esClinicalNotesService.addObstetricsHistory(historyDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkLabourNotes(ObjectId resourceId) {
+		try {
+
+			LabourNoteCollection noteCollection = labourNoteRepository.findOne(resourceId);
+			if (noteCollection != null) {
+				EsLabourNoteDocument noteDocument = new EsLabourNoteDocument();
+				BeanUtil.map(noteCollection, noteDocument);
+				esDischargeSummaryService.addLabourNotes(noteDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkBabyNote(ObjectId resourceId) {
+		try {
+
+			BabyNoteCollection noteCollection = babyNoteRepository.findOne(resourceId);
+			if (noteCollection != null) {
+				ESBabyNoteDocument noteDocument = new ESBabyNoteDocument();
+				BeanUtil.map(noteCollection, noteDocument);
+				esDischargeSummaryService.addBabyNote(noteDocument);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	public void checkOperationNote(ObjectId resourceId) {
+		try {
+
+			OperationNoteCollection noteCollection = operationNoteRepository.findOne(resourceId);
+			if (noteCollection != null) {
+				ESOperationNoteDocument noteDocument = new ESOperationNoteDocument();
+				BeanUtil.map(noteCollection, noteDocument);
+				esDischargeSummaryService.addOperationNote(noteDocument);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

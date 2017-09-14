@@ -1,7 +1,5 @@
 package com.dpdocter.response;
 
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.collections.GenericCollection;
