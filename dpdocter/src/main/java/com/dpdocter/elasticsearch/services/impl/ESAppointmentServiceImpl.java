@@ -978,137 +978,126 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable) {
 		List<ESUserLocaleDocument> esUserLocaleDocuments = null;
 
-		List<ESUserLocaleDocument> response = null;
 		try {
-			Integer distance = 4;
-			String citylongitude = null;
-			String citylatitude = null;
-//			do {
-				BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
-						.must(QueryBuilders.matchQuery("isLocaleListed", true));
 
-				/*
-				 * if (DPDoctorUtils.anyStringEmpty(longitude, latitude) &&
-				 * !DPDoctorUtils.anyStringEmpty(city)) { ESCityDocument
-				 * esCityDocument = esCityRepository.findByName(city); if
-				 * (esCityDocument != null) {
-				 * citylatitude=esCityDocument.getLatitude() + "";
-				 * citylongitude=esCityDocument.getLongitude() + "";
-				 * boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery(
-				 * "geoPoint")
-				 * 
-				 * .lat(Double.parseDouble(citylatitude))
-				 * .lon(Double.parseDouble(citylongitude)).distance("30km")); }
-				 * }
-				 */
+			// do {
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.matchQuery("isLocaleListed", true));
 
-				if (!DPDoctorUtils.anyStringEmpty(localeName)) {
-					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
+			if (DPDoctorUtils.anyStringEmpty(longitude, latitude) && !DPDoctorUtils.anyStringEmpty(city)) {
+				ESCityDocument esCityDocument = esCityRepository.findByName(city);
+				if (esCityDocument != null) {
+					latitude = esCityDocument.getLatitude() + "";
+					longitude = esCityDocument.getLongitude() + "";
 				}
-				if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
-					boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));
-				}
-				if (homeService != null) {
+			}
 
-					boolQueryBuilder.must(QueryBuilders.termQuery("isHomeDeliveryAvailable", homeService));
-				}
-				if (isTwentyFourSevenOpen != null) {
+			if (!DPDoctorUtils.anyStringEmpty(localeName)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
+			}
+			if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
+				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));
+			}
+			if (homeService != null) {
 
-					boolQueryBuilder.must(QueryBuilders.termQuery("isTwentyFourSevenOpen", isTwentyFourSevenOpen));
-				}
-				if (isGenericMedicineAvailable != null) {
+				boolQueryBuilder.must(QueryBuilders.termQuery("isHomeDeliveryAvailable", homeService));
+			}
+			if (isTwentyFourSevenOpen != null) {
 
-					boolQueryBuilder
-							.must(QueryBuilders.termQuery("isGenericMedicineAvailable", isGenericMedicineAvailable));
-				}
+				boolQueryBuilder.must(QueryBuilders.termQuery("isTwentyFourSevenOpen", isTwentyFourSevenOpen));
+			}
+			if (isGenericMedicineAvailable != null) {
 
-				if (days != null && !days.isEmpty()) {
-					for (int i = 0; i < days.size(); i++)
-						days.set(i, days.get(i).toLowerCase());
+				boolQueryBuilder
+						.must(QueryBuilders.termQuery("isGenericMedicineAvailable", isGenericMedicineAvailable));
+			}
 
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules",
-							boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
-				}
-				if (pharmacyType != null && !pharmacyType.isEmpty()) {
-					for (int i = 0; i < pharmacyType.size(); i++) {
-						pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
-						boolQueryBuilder
-								.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType.get(i).toUpperCase()));
-					}
+			if (days != null && !days.isEmpty()) {
+				for (int i = 0; i < days.size(); i++)
+					days.set(i, days.get(i).toLowerCase());
 
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules",
+						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
+			}
+			if (pharmacyType != null && !pharmacyType.isEmpty()) {
+				for (int i = 0; i < pharmacyType.size(); i++) {
+					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
+					boolQueryBuilder.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType.get(i).toUpperCase()));
 				}
 
-				if (maxTime == 0) {
-					maxTime = 86399999;
-					boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("localeWorkingSchedules",
-							boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
-									boolQuery().must(QueryBuilders.orQuery(
+			}
 
-											QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime")
-													.gt(minTime).lt(maxTime),
+			if (maxTime == 0) {
+				maxTime = 86399999;
+				boolQueryBuilder.must(QueryBuilders.orQuery(QueryBuilders.nestedQuery("localeWorkingSchedules",
+						boolQuery().must(nestedQuery("localeWorkingSchedules.workingHours",
+								boolQuery().must(QueryBuilders.orQuery(
 
-											QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime")
-													.gt(minTime).lt(maxTime)))))),
-							QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
+										QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime")
+												.gt(minTime).lt(maxTime),
 
-				} else {
-					boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery().must(
-							nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
+										QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime")
+												.gt(minTime).lt(maxTime)))))),
+						QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("localeWorkingSchedules"))));
 
-									QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime)
-											.lt(maxTime),
+			} else {
+				boolQueryBuilder.must(QueryBuilders.nestedQuery("localeWorkingSchedules", boolQuery()
+						.must(nestedQuery("localeWorkingSchedules.workingHours", boolQuery().must(QueryBuilders.orQuery(
 
-									QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
-											.lt(maxTime)))))));
-				}
-				if (latitude.equals("21.1458004") && longitude.equals("79.0881546")) {
-					citylatitude = "21.1458004";
-					citylongitude = "79.0881546";
-					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint")
+								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.toTime").gt(minTime)
+										.lt(maxTime),
 
-							.lat(Double.parseDouble(citylatitude)).lon(Double.parseDouble(citylongitude))
-							.distance("30km"));
+								QueryBuilders.rangeQuery("localeWorkingSchedules.workingHours.fromTime").gt(minTime)
+										.lt(maxTime)))))));
+			}
+			if (latitude != null && longitude != null) {
+				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
+						.lon(Double.parseDouble(longitude)).distance("30km"));
+			}
 
-				} else if (!DPDoctorUtils.anyStringEmpty(latitude) && !DPDoctorUtils.anyStringEmpty(longitude)) {
-					boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
-							.lon(Double.parseDouble(longitude)).distance("30km"));
-				}
+			SearchQuery searchQuery = null;
+			if (size > 0)
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS))
+						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+			else
+				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 
-				SearchQuery searchQuery = null;
-				if (size > 0)
-					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withPageable(new PageRequest(page, size))
-							.withSort(SortBuilders.geoDistanceSort("geoPoint").point(Double.parseDouble(latitude), 
-									Double.parseDouble(longitude)).order(SortOrder.ASC).unit(DistanceUnit.KILOMETERS))
-							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
-				else
-					searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+			esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
+			// SearchResponse searchResponse =
+			// elasticsearchTemplate.query(searchQuery, new
+			// ResultsExtractor<SearchResponse>() {
+			// @Override
+			// public SearchResponse extract(SearchResponse response) {
+			// return response;
+			// }
+			// });
+			// System.out.println(searchResponse);
 
-				esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
-//				SearchResponse searchResponse = elasticsearchTemplate.query(searchQuery, new ResultsExtractor<SearchResponse>() {
-//    		        @Override
-//    		        public SearchResponse extract(SearchResponse response) {
-//    		        	return response;
-//    		        }
-//    		    });
-//    		    System.out.println(searchResponse);
-	
-//				if(distance == 4  && (esUserLocaleDocuments == null || esUserLocaleDocuments.isEmpty() || (size > 0 && esUserLocaleDocuments.size() < size))){
-//					distance = distance + 26;
-//				}
-				
-//				if(esUserLocaleDocuments != null && response == null)response = new ArrayList<ESUserLocaleDocument>();
-//				if(response != null) {
-//					response.addAll(esUserLocaleDocuments);
-//					if(size > 0) {
-//						size = size - response.size();
-//						if(size == 0)break;
-//					}
-//				}
-//				
-//			} while (citylatitude == null && citylongitude == null && distance <= 30 && (size > 0 && esUserLocaleDocuments.size() < size));
-			
+			// if(distance == 4 && (esUserLocaleDocuments == null ||
+			// esUserLocaleDocuments.isEmpty() || (size > 0 &&
+			// esUserLocaleDocuments.size() < size))){
+			// distance = distance + 26;
+			// }
+
+			// if(esUserLocaleDocuments != null && response == null)response =
+			// new ArrayList<ESUserLocaleDocument>();
+			// if(response != null) {
+			// response.addAll(esUserLocaleDocuments);
+			// if(size > 0) {
+			// size = size - response.size();
+			// if(size == 0)break;
+			// }
+			// }
+			//
+			// } while (citylatitude == null && citylongitude == null &&
+			// distance <= 30 && (size > 0 && esUserLocaleDocuments.size() <
+			// size));
+
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
 					if (esUserLocaleDocument.getImageUrl() != null)
