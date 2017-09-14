@@ -10,6 +10,12 @@ public class PrescriptionItemDetail {
     private Duration duration;
 
     private String dosage;
+    
+    private DrugType drugType;
+
+    private String drugName;
+    
+    private String explanation;
 
     private List<Long> dosageTime;
     
@@ -17,6 +23,31 @@ public class PrescriptionItemDetail {
 
     private String instructions;
     
+    
+	public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
 	public Drug getDrug() {
 		return drug;
 	}

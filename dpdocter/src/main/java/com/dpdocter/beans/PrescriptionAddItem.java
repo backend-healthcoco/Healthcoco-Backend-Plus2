@@ -6,6 +6,12 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PrescriptionAddItem {
     private String drugId;
+    
+    private DrugType drugType;
+
+    private String drugName;
+    
+    private String explanation;
 
     private Duration duration;
 
@@ -16,8 +22,34 @@ public class PrescriptionAddItem {
     private List<DrugDirection> direction;
 
     private String instructions;
+    
+    
 
-    public String getDrugId() {
+    public DrugType getDrugType() {
+		return drugType;
+	}
+
+	public void setDrugType(DrugType drugType) {
+		this.drugType = drugType;
+	}
+
+	public String getDrugName() {
+		return drugName;
+	}
+
+	public void setDrugName(String drugName) {
+		this.drugName = drugName;
+	}
+
+	public String getExplanation() {
+		return explanation;
+	}
+
+	public void setExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+
+	public String getDrugId() {
 		return drugId;
 	}
 
