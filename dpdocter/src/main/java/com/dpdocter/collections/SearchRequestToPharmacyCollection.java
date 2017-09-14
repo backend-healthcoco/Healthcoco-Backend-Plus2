@@ -27,6 +27,39 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 
 	@Field
 	private Discount discount;
+	
+	@Field
+    private double discountedPrice;
+	
+	@Field
+	private double realPrice;
+	
+	@Field
+	private String note;
+
+	public double getDiscountedPrice() {
+		return discountedPrice;
+	}
+
+	public void setDiscountedPrice(double discountedPrice) {
+		this.discountedPrice = discountedPrice;
+	}
+
+	public double getRealPrice() {
+		return realPrice;
+	}
+
+	public void setRealPrice(double realPrice) {
+		this.realPrice = realPrice;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
 
 	@Field
 	private String uniqueResponseId;

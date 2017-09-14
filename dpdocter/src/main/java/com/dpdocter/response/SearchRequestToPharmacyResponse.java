@@ -1,10 +1,12 @@
 package com.dpdocter.response;
 
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.collections.GenericCollection;
 
-public class SearchRequestToPharmacyResponse extends GenericCollection{
+public class SearchRequestToPharmacyResponse extends GenericCollection {
 
 	private String id;
 
@@ -20,11 +22,42 @@ public class SearchRequestToPharmacyResponse extends GenericCollection{
 
 	private Discount discount;
 
+	private double discountedPrice;
+
+	private double realPrice;
+
+	private String note;
+
 	private String uniqueResponseId;
 
 	private Double distance;
 
 	private Boolean isAlreadyRequested = false;
+	
+
+	public double getDiscountedPrice() {
+		return discountedPrice;
+	}
+
+	public void setDiscountedPrice(double discountedPrice) {
+		this.discountedPrice = discountedPrice;
+	}
+
+	public double getRealPrice() {
+		return realPrice;
+	}
+
+	public void setRealPrice(double realPrice) {
+		this.realPrice = realPrice;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
 
 	public String getId() {
 		return id;
