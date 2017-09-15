@@ -52,6 +52,7 @@ import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
+import com.dpdocter.scheduler.AsyncService;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
@@ -83,6 +84,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private SearchRequestFromUserRepository searchRequestFromUserRepository;
+
+	@Autowired
+	private AsyncService asyncService;
 
 	@Autowired
 	private LocaleRepository localeRepository;
@@ -119,7 +123,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 
-
 		BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()));
 		if (blockUserCollection != null) {
 			if (!blockUserCollection.getDiscarded()) {
@@ -146,16 +149,13 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 			}
 
-
 		}
 		try {
-			checkFakeRequestCount(request.getUserId(), blockUserCollection);
-
+			asyncService.checkFakeRequestCount(request.getUserId(), blockUserCollection);
 
 			// Instead of calling before block user collection its better to
 
 			if (DPDoctorUtils.anyStringEmpty(request.getLocaleId()))
-
 
 			{
 				addSearchRequestInQueue(request);
@@ -668,7 +668,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 		return response;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Transactional
 	@Override
 	public UserFakeRequestDetailResponse getUserFakeRequestCount(String userId) {
@@ -683,7 +682,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid patient Id");
 			}
 
-
 			Aggregation aggregation = Aggregation.newAggregation(
 					Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 							.and("userState").is("USERSTATECOMPLETE")),
@@ -695,7 +693,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 			PatientNumberAndUserIds user = mongoTemplate
 					.aggregate(aggregation, UserCollection.class, PatientNumberAndUserIds.class)
 					.getUniqueMappedResult();
-			
 
 			DateTime dateTime = new DateTime().minusHours(24);
 			Date date = dateTime.toDate();
@@ -752,42 +749,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 		}
 		return response;
-	}
-
-	@Async
-	private void checkFakeRequestCount(String userId, BlockUserCollection blockUserCollection)
-			throws InterruptedException {
-		System.out.println("task start");
-		UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(userId);
-		if (detailResponse.getNoOfAttemptInHour() >= Integer.parseInt(requestLimitForday)
-				|| detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
-
-			if (blockUserCollection != null) {
-				if (detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
-					blockUserCollection.setIsForDay(true);
-
-				} else {
-					blockUserCollection.setIsForHour(true);
-				}
-
-			} else {
-				blockUserCollection = new BlockUserCollection();
-				if (detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
-					blockUserCollection.setIsForDay(true);
-
-				} else {
-					blockUserCollection.setIsForHour(true);
-				}
-				blockUserCollection.setCreatedTime(new Date());
-			}
-			blockUserCollection.setDiscarded(false);
-			blockUserCollection.setUserIds(detailResponse.getUserIds());
-			blockUserCollection.setUpdatedTime(new Date());
-			System.out.println("Task completed");
-			blockUserCollection = blockUserRepository.save(blockUserCollection);
-
-		}
-
 	}
 
 }
