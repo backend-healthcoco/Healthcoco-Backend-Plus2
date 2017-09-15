@@ -218,12 +218,8 @@ public class BlogServicesImpl implements BlogService {
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 
-
-
 					if (blogLikesCollection != null) {
 						response.setIsliked(!blogLikesCollection.getDiscarded());
-
-
 
 					}
 				}
