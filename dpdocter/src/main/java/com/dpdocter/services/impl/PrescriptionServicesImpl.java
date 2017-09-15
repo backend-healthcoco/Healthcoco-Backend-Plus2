@@ -916,24 +916,24 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					if (drugCollection != null) {
 						BeanUtil.map(drugCollection, drugAddEditRequest);
 					}
-						drugAddEditRequest.setDoctorId(userCollection.getId().toString());
-						drugAddEditRequest.setHospitalId(request.getHospitalId());
-						drugAddEditRequest.setLocationId(request.getLocationId());
-						if (!DPDoctorUtils.allStringsEmpty(item.getDrugName())) {
-							drugAddEditRequest.setDrugName(item.getDrugName());
-						}
-						if (item.getDrugType() != null) {
-							drugAddEditRequest.setDrugType(item.getDrugType());
-						}
-						if (!DPDoctorUtils.anyStringEmpty(item.getExplanation())) {
-							drugAddEditRequest.setExplanation(item.getExplanation());
-						}
-						drugAddEditRequest.setDirection(item.getDirection());
-						drugAddEditRequest.setDuration(item.getDuration());
-						drugAddEditRequest.setDosage(item.getDosage());
-						drugAddEditRequest.setDosageTime(item.getDosageTime());
-						drug = addFavouriteDrug(drugAddEditRequest);
-					
+					drugAddEditRequest.setDoctorId(userCollection.getId().toString());
+					drugAddEditRequest.setHospitalId(request.getHospitalId());
+					drugAddEditRequest.setLocationId(request.getLocationId());
+					if (!DPDoctorUtils.allStringsEmpty(item.getDrugName())) {
+						drugAddEditRequest.setDrugName(item.getDrugName());
+					}
+					if (item.getDrugType() != null) {
+						drugAddEditRequest.setDrugType(item.getDrugType());
+					}
+					if (!DPDoctorUtils.anyStringEmpty(item.getExplanation())) {
+						drugAddEditRequest.setExplanation(item.getExplanation());
+					}
+					drugAddEditRequest.setDirection(item.getDirection());
+					drugAddEditRequest.setDuration(item.getDuration());
+					drugAddEditRequest.setDosage(item.getDosage());
+					drugAddEditRequest.setDosageTime(item.getDosageTime());
+					drug = addFavouriteDrug(drugAddEditRequest);
+					item.setDrugId(new ObjectId(drug.getId()));
 
 					prescriptionItemDetail.setDrug(drug);
 					items.add(item);
