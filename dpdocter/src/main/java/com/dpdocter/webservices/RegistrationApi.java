@@ -33,6 +33,8 @@ import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
+import com.dpdocter.beans.InternalPromoCode;
+import com.dpdocter.beans.InternalPromotionGroup;
 import com.dpdocter.beans.Location;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
@@ -56,6 +58,7 @@ import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
+import com.dpdocter.services.PromotionService;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -68,7 +71,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * @author veeraj
+ * @author parag
  */
 @Component
 @Path(PathProxy.REGISTRATION_BASE_URL)
@@ -93,6 +96,9 @@ public class RegistrationApi {
 
 	@Autowired
 	private DoctorRepository doctorRepository;
+
+	@Autowired
+	private PromotionService promotionService;
 
 	@Context
 	private UriInfo uriInfo;
@@ -124,6 +130,19 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, firstNameValidaton);
 		}
 
+		InternalPromotionGroup promotionGroup = promotionService.getPromotionGroup(request.getInternalPromoCode());
+		if (promotionGroup != null) {
+			InternalPromoCode internalPromoCode = new InternalPromoCode();
+			internalPromoCode.setMobileNumber(request.getMobileNumber());
+			internalPromoCode.setPromoCode(request.getInternalPromoCode().toUpperCase());
+			promotionService.addInternalPromoCode(internalPromoCode);
+		}
+		else
+		{
+			logger.warn("Promo Code not Found");
+			throw new BusinessException(ServiceError.InvalidInput, "Promo code not found");
+		}
+
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
 		RegisteredPatientDetails registeredPatientDetails = null;
 
@@ -143,6 +162,7 @@ public class RegistrationApi {
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
 		response.setData(registeredPatientDetails);
+
 		return response;
 	}
 

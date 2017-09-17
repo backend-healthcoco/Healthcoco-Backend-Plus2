@@ -12,7 +12,7 @@ public class PatientRegistrationRequest {
 	private String userId;
 
 	private String firstName;
-	
+
 	private String localPatientName;
 
 	private String mobileNumber;
@@ -66,13 +66,15 @@ public class PatientRegistrationRequest {
 	private String hospitalId;
 
 	private String doctorId;
-	
+
 	private Integer regularCheckUpMonths;
 
 	private String role;
-	
+
 	private Long registrationDate;
-	
+
+	private String internalPromoCode;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -327,6 +329,14 @@ public class PatientRegistrationRequest {
 
 	public void setRegistrationDate(Long registrationDate) {
 		this.registrationDate = registrationDate;
+	}
+
+	public String getInternalPromoCode() {
+		return internalPromoCode;
+	}
+
+	public void setInternalPromoCode(String internalPromoCode) {
+		this.internalPromoCode = internalPromoCode;
 	}
 
 	@Override
