@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.ClinicContactUs;
 import com.dpdocter.beans.CollectionBoy;
 import com.dpdocter.beans.DoctorContactUs;
+import com.dpdocter.beans.InternalPromoCode;
+import com.dpdocter.beans.InternalPromotionGroup;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.User;
 import com.dpdocter.enums.Resource;
@@ -33,6 +35,7 @@ import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.PateientSignUpCheckResponse;
 import com.dpdocter.services.ClinicContactUsService;
 import com.dpdocter.services.DoctorContactUsService;
+import com.dpdocter.services.PromotionService;
 import com.dpdocter.services.SignUpService;
 import com.dpdocter.services.TransactionalManagementService;
 
@@ -60,6 +63,9 @@ public class SignUpApi {
 
 	@Autowired
 	private ClinicContactUsService clinicContactUsService;
+	
+	@Autowired
+	private PromotionService promotionService;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -88,6 +94,20 @@ public class SignUpApi {
 			logger.warn("Inavlid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
 		}
+		
+		InternalPromotionGroup promotionGroup = promotionService.getPromotionGroup(request.getInternalPromoCode());
+		if (promotionGroup != null) {
+			InternalPromoCode internalPromoCode = new InternalPromoCode();
+			internalPromoCode.setMobileNumber(request.getMobileNumber());
+			internalPromoCode.setPromoCode(request.getInternalPromoCode().toUpperCase());
+			promotionService.addInternalPromoCode(internalPromoCode);
+		}
+		else
+		{
+			logger.warn("Promo Code not Found");
+			throw new BusinessException(ServiceError.InvalidInput, "Promo code not found");
+		}
+		
 		List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
 
 		if (request.isNewPatientNeedToBeCreated()) {
