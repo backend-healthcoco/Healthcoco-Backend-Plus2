@@ -190,7 +190,7 @@ public class AsyncService {
 				.getMappedResults();
 		for (SearchRequestToPharmacyCollection requestToPharmacyCollection : searchRequestToPharmacyCollections) {
 			LocaleIds.add(requestToPharmacyCollection.getLocaleId());
-			requestToPharmacyCollection.setReplyType(ReplyType.FULFILLED.getReplyType());
+			requestToPharmacyCollection.setReplyType(ReplyType.REQUEST_FULFILLED.getReplyType());
 		}
 		if (!LocaleIds.isEmpty() && LocaleIds != null) {
 			pushNotificationServices.notifyRefreshAll(RoleEnum.PHARMIST, LocaleIds, "refresh",
