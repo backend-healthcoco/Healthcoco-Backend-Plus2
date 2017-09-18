@@ -94,18 +94,17 @@ public class SignUpApi {
 			logger.warn("Inavlid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Inavlid Input");
 		}
-		
-		InternalPromotionGroup promotionGroup = promotionService.getPromotionGroup(request.getInternalPromoCode());
-		if (promotionGroup != null) {
-			InternalPromoCode internalPromoCode = new InternalPromoCode();
-			internalPromoCode.setMobileNumber(request.getMobileNumber());
-			internalPromoCode.setPromoCode(request.getInternalPromoCode().toUpperCase());
-			promotionService.addInternalPromoCode(internalPromoCode);
-		}
-		else
-		{
-			logger.warn("Promo Code not Found");
-			throw new BusinessException(ServiceError.InvalidInput, "Promo code not found");
+		if (request.getInternalPromoCode() != null) {
+			InternalPromotionGroup promotionGroup = promotionService.getPromotionGroup(request.getInternalPromoCode().trim());
+			if (promotionGroup != null) {
+				InternalPromoCode internalPromoCode = new InternalPromoCode();
+				internalPromoCode.setMobileNumber(request.getMobileNumber());
+				internalPromoCode.setPromoCode(request.getInternalPromoCode().toUpperCase());
+				promotionService.addInternalPromoCode(internalPromoCode);
+			} else {
+				logger.warn("Promo Code not Found");
+				throw new BusinessException(ServiceError.InvalidInput, "Promo code not found");
+			}
 		}
 		
 		List<RegisteredPatientDetails> users = new ArrayList<RegisteredPatientDetails>();
