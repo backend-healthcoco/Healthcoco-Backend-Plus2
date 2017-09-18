@@ -30,7 +30,13 @@ public interface SMSServices {
     List<SMSFormat> getSmsFormat(String doctorId, String locationId, String hospitalId, String type);
 
 	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, Boolean save) throws TwilioRestException;
+	
+	Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail,String otp , Boolean save) throws TwilioRestException;
 
 	String getBulkSMSResponse(List<String> mobileNumbers, String message);
+
+	String getOTPSMSResponse(String mobileNumber, String message, String otp);
+
+	Boolean sendAndSaveOTPSMS(String message, String mobileNumber, String otp);
 
 }

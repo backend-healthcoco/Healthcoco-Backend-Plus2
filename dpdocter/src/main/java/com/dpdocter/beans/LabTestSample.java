@@ -9,6 +9,7 @@ public class LabTestSample extends GenericCollection {
 
 	private String id;
 	private String patientName;
+	private String mobileNumber;
 	private Integer age;
 	private String gender;
 	private String sampleType;
@@ -152,14 +153,22 @@ public class LabTestSample extends GenericCollection {
 		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
 	@Override
 	public String toString() {
-		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender=" + gender
-				+ ", sampleType=" + sampleType + ", daughterLabLocationId=" + daughterLabLocationId
-				+ ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
+		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
+				+ age + ", gender=" + gender + ", sampleType=" + sampleType + ", daughterLabLocationId="
+				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
 				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
-				+ isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven
-				+ ", status=" + status + ", sampleId=" + sampleId + "]";
+				+ isCollected + ", isCollectedAtLab=" + isCollectedAtLab + ", isHardCopyRequired=" + isHardCopyRequired
+				+ ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId + "]";
 	}
 
 }

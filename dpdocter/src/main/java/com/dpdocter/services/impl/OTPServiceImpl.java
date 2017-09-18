@@ -254,8 +254,8 @@ public class OTPServiceImpl implements OTPService {
 	    SMSTrackDetail smsTrackDetail = sMSServices.createSMSTrackDetail(null, null, null, null, null,
 	    	OTP+" is your Healthcoco OTP. Code is valid for 30 minutes only, one time use. Stay Healthy and Happy!", mobileNumber,
 		    "OTPVerification");
-	    if(!isPatientOTP)response = sMSServices.sendSMS(smsTrackDetail, false);
-	    else response = sMSServices.sendOTPSMS(smsTrackDetail, false);
+	    if(!isPatientOTP)response = sMSServices.sendOTPSMS(smsTrackDetail, OTP, false);
+	    else response = sMSServices.sendOTPSMS(smsTrackDetail, OTP, false);
 
 	    OTPCollection otpCollection = new OTPCollection();
 	    otpCollection.setCreatedTime(new Date());

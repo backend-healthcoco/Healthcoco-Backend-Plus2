@@ -3,62 +3,65 @@ package com.dpdocter.beans;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Diagnoses extends GenericCollection {
 
-    private String id;
+	private String id;
 
-    private String diagnosis;
+	private String diagnosis;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String locationId;
+	private String locationId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private Boolean discarded = false;
-    
-    private String speciality;
+	private String category;
 
-    public String getId() {
-	return id;
-    }
+	private Boolean discarded = false;
 
-    public void setId(String id) {
-	this.id = id;
-    }
+	private String speciality;
 
-    public String getDoctorId() {
-	return doctorId;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setDoctorId(String doctorId) {
-	this.doctorId = doctorId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getLocationId() {
-	return locationId;
-    }
+	public String getDoctorId() {
+		return doctorId;
+	}
 
-    public void setLocationId(String locationId) {
-	this.locationId = locationId;
-    }
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public String getHospitalId() {
-	return hospitalId;
-    }
+	public String getLocationId() {
+		return locationId;
+	}
 
-    public void setHospitalId(String hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 
-    public String getDiagnosis() {
-	return diagnosis;
-    }
+	public String getHospitalId() {
+		return hospitalId;
+	}
 
-    public void setDiagnosis(String diagnosis) {
-	this.diagnosis = diagnosis;
-    }
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -74,6 +77,14 @@ public class Diagnoses extends GenericCollection {
 
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	@Override
