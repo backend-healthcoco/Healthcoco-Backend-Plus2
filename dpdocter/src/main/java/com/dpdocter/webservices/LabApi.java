@@ -466,12 +466,12 @@ public class LabApi {
 	@Path(PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
 	@GET
 	@ApiOperation(value = PathProxy.LabUrls.GET_PICKUPS_FOR_PL, notes = PathProxy.LabUrls.GET_PICKUPS_FOR_PL)
-	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId,@QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size , @QueryParam("page") int page) {
+	public Response<LabTestPickupLookupResponse> getPickUpForPL(@QueryParam("parentLabId") String parentLabId,@QueryParam("daughterLabId") String daughterLabId,@QueryParam("from") Long from,@QueryParam("to") Long to, @QueryParam("searchTerm") String searchTerm, @QueryParam("size") int size , @QueryParam("page") int page) {
 		List<LabTestPickupLookupResponse> labTestPickups = null;
 		Response<LabTestPickupLookupResponse> response = null;
 
 		try {
-			labTestPickups = locationServices.getRequestForPL(parentLabId, from, to, searchTerm, size, page);
+			labTestPickups = locationServices.getRequestForPL(parentLabId, daughterLabId ,from, to, searchTerm, size, page);
 			response = new Response<LabTestPickupLookupResponse>();
 			response.setDataList(labTestPickups);
 		} catch (Exception e) {

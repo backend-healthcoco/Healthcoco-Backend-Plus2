@@ -96,9 +96,6 @@ public interface LocationServices {
 	List<LabTestSampleLookUpResponse> getLabReports(String locationId, Boolean isParent, Long from, Long to,
 			String searchTerm, int page, int size);
 
-	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, Long from, Long to, String searchTerm,
-			int size, int page);
-
 	List<LabTestPickupLookupResponse> getRequestForDL(String daughterLabId, Long from, Long to, String searchTerm,
 			int size, int page);
 
@@ -106,4 +103,7 @@ public interface LocationServices {
 			int size, int page);
 
 	Boolean updateRequestStatus(String id, String status);
+
+	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, String daughterLabId, Long from, Long to,
+			String searchTerm, int size, int page);
 }

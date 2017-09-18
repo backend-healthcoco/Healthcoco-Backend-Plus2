@@ -8,74 +8,77 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Document(collection = "diagnosis_cl")
 public class DiagnosisCollection extends GenericCollection {
 
-    @Id
-    private ObjectId id;
+	@Id
+	private ObjectId id;
 
-    @Field
-    private String diagnosis;
+	@Field
+	private String diagnosis;
 
-    @Field
-    private ObjectId doctorId;
+	@Field
+	private ObjectId doctorId;
 
-    @Field
-    private ObjectId locationId;
+	@Field
+	private ObjectId locationId;
 
-    @Field
-    private ObjectId hospitalId;
+	@Field
+	private ObjectId hospitalId;
 
-    @Field
-    private Boolean discarded = false;
+	@Field
+	private Boolean discarded = false;
 
-    @Field
-    private String speciality;
+	@Field
+	private String category;
 
-    public ObjectId getId() {
-	return id;
-    }
+	@Field
+	private String speciality;
 
-    public void setId(ObjectId id) {
-	this.id = id;
-    }
+	public ObjectId getId() {
+		return id;
+	}
 
-    public ObjectId getDoctorId() {
-	return doctorId;
-    }
+	public void setId(ObjectId id) {
+		this.id = id;
+	}
 
-    public void setDoctorId(ObjectId doctorId) {
-	this.doctorId = doctorId;
-    }
+	public ObjectId getDoctorId() {
+		return doctorId;
+	}
 
-    public ObjectId getLocationId() {
-	return locationId;
-    }
+	public void setDoctorId(ObjectId doctorId) {
+		this.doctorId = doctorId;
+	}
 
-    public void setLocationId(ObjectId locationId) {
-	this.locationId = locationId;
-    }
+	public ObjectId getLocationId() {
+		return locationId;
+	}
 
-    public ObjectId getHospitalId() {
-	return hospitalId;
-    }
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
+	}
 
-    public void setHospitalId(ObjectId hospitalId) {
-	this.hospitalId = hospitalId;
-    }
+	public ObjectId getHospitalId() {
+		return hospitalId;
+	}
 
-    public String getDiagnosis() {
-	return diagnosis;
-    }
+	public void setHospitalId(ObjectId hospitalId) {
+		this.hospitalId = hospitalId;
+	}
 
-    public void setDiagnosis(String diagnosis) {
-	this.diagnosis = diagnosis;
-    }
+	public String getDiagnosis() {
+		return diagnosis;
+	}
 
-    public Boolean getDiscarded() {
-	return discarded;
-    }
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
 
-    public void setDiscarded(Boolean discarded) {
-	this.discarded = discarded;
-    }
+	public Boolean getDiscarded() {
+		return discarded;
+	}
+
+	public void setDiscarded(Boolean discarded) {
+		this.discarded = discarded;
+	}
 
 	public String getSpeciality() {
 		return speciality;
@@ -83,6 +86,14 @@ public class DiagnosisCollection extends GenericCollection {
 
 	public void setSpeciality(String speciality) {
 		this.speciality = speciality;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
 	@Override

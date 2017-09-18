@@ -637,7 +637,7 @@ public class LocationServiceImpl implements LocationServices {
 
 	@Override
 	@Transactional
-	public List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId,Long from, Long to, String searchTerm, int size, int page) {
+	public List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, String daughterLabId,Long from, Long to, String searchTerm, int size, int page) {
 
 		List<LabTestPickupLookupResponse> response = null;
 		List<LabTestSample> labTestSamples = null;
@@ -645,8 +645,10 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			
+			if (!DPDoctorUtils.anyStringEmpty(daughterLabId)) {
+				criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
+			}
 			
-
 			criteria.and("parentLabLocationId").is(new ObjectId(parentLabId));
 			criteria.and("isCompleted").is(false);
 			if(from != null)

@@ -212,6 +212,50 @@ public class SMSServicesImpl implements SMSServices {
 		return response;
 	}
 
+	@Override
+	@Transactional
+	public Boolean sendAndSaveOTPSMS(String message, String mobileNumber,String otp) {
+		Boolean response = false;
+		try {
+			
+			UserMobileNumbers userNumber = null;
+
+			if (!isEnvProduction) {
+				FileInputStream fileIn = new FileInputStream(MOBILE_NUMBERS_RESOURCE);
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				userNumber = (UserMobileNumbers) in.readObject();
+				in.close();
+				fileIn.close();
+			}
+			
+
+			
+					if (!isEnvProduction) {
+						if (userNumber != null && message != null
+								&& mobileNumber != null) {
+							String recipient = mobileNumber;
+							if (userNumber.mobileNumber.contains(recipient)) {
+								// xmlSMSData = createXMLData(message);
+								getOTPSMSResponse(recipient, message, otp);
+							}
+						}
+					} else {
+						if (userNumber != null && message != null
+								&& mobileNumber != null) {
+							String recipient = mobileNumber;
+							if (userNumber.mobileNumber.contains(recipient)) {
+								// xmlSMSData = createXMLData(message);
+								getOTPSMSResponse(recipient, message, otp);
+							}
+						}
+				}
+		} catch (Exception e) {
+			logger.error("Error : " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
+		}
+		return response;
+	}
+	
 	private static String hitSMSUrl(final String SMS_URL, String xmlSMSData) {
 		StringBuffer response = null;
 		try {
@@ -689,5 +733,64 @@ public class SMSServicesImpl implements SMSServices {
 
 		return response.toString();
 
+	}
+	
+	@Override
+	public String getOTPSMSResponse(String mobileNumber, String message , String otp) {
+
+		//http://dndsms.resellergrow.com/api/otp.php?authkey=93114AV2rXJuxL56001692&mobile=9766914900&message=0808&sender=HTCOCO&otp=0808
+		StringBuffer response = new StringBuffer();
+		try {
+			// String password = new String(loginRequest.getPassword());
+			String url =  "http://dndsms.resellergrow.com/api/otp.php?authkey=" + AUTH_KEY + "&mobile="
+					+ mobileNumber + "&message=" + URLEncoder.encode(message , "UTF-8") + "&sender="
+					+ SENDER_ID + "&otp=" + otp;
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			// optional default is POST
+			con.setRequestMethod("GET");
+
+			// add request header
+			// con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+			con.setRequestProperty("Accept-Charset", "UTF-8");
+			int responseCode = con.getResponseCode();
+			System.out.println("\nSending 'GET' request to URL : " + url);
+			System.out.println("Response Code : " + responseCode);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			/* response = new StringBuffer(); */
+
+			while ((inputLine = in.readLine()) != null) {
+
+				response.append(inputLine);
+
+			}
+			in.close();
+			System.out.println(response.toString());
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			return "Failed";
+		}
+
+		return response.toString();
+
+	}
+
+	@Override
+	public Boolean sendOTPSMS(SMSTrackDetail smsTrackDetail, String otp, Boolean save) throws TwilioRestException {
+		Boolean response = false;
+		try {
+			if(smsTrackDetail.getSmsDetails().size() > 0)
+				response = sendAndSaveOTPSMS(smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText(), smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient(), otp);
+		} catch (BusinessException e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while sendind Sms");
+		}
+		return response;
 	}
 }
