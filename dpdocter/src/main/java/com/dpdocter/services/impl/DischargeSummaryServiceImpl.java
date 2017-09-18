@@ -640,20 +640,26 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						vitalSigns = spo2;
 				}
 
-				String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();
-				bmi = (bmi != null && !bmi.isEmpty() ? "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3)
-						+ " " + VitalSignsUnit.BMI.getUnit() : "");
+				String bmi = dischargeSummaryCollection.getVitalSigns().getBmi().trim();
+
 				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+					if (bmi.length() - bmi.indexOf(".") > 2) {
+						bmi = "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3) + " "
+								+ VitalSignsUnit.BMI.getUnit();
+					}
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + bmi;
 					else
 						vitalSigns = bmi;
 				}
 
-				String bsa = dischargeSummaryCollection.getVitalSigns().getBsa();
-				bsa = (bsa != null && !bsa.isEmpty() ? "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3)
-						+ " " + VitalSignsUnit.BSA.getUnit() : "");
+				String bsa = dischargeSummaryCollection.getVitalSigns().getBsa().trim();
+
 				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+					if (bsa.length() - bsa.indexOf(".") > 2) {
+						bsa = "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3) + " "
+								+ VitalSignsUnit.BSA.getUnit();
+					}
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + bsa;
 					else
@@ -890,12 +896,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		parameters.put("showProcedureNote", show);
 		show = false;
 
-		if (
-				dischargeSummaryCollection.getFromDate()!=null
-				&& dischargeSummaryCollection.getTime() != null) {
+		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
-			String _24HourTime = String.format("%02d:%02d",
-					dischargeSummaryCollection.getTime().getFromTime() / 60,
+			String _24HourTime = String.format("%02d:%02d", dischargeSummaryCollection.getTime().getFromTime() / 60,
 					dischargeSummaryCollection.getTime().getFromTime() % 60);
 			SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
 			SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
