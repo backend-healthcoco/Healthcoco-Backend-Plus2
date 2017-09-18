@@ -14,6 +14,9 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,6 +110,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	@Value(value = "${image.path}")
 	private String imagePath;
@@ -291,6 +297,9 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 					sender = new FCMSender(DOCTOR_PAD_GEOCODING_SERVICES_API_KEY);
 				}
 
+			} else if (role.equalsIgnoreCase(RoleEnum.PHARMIST.getRole())) {
+				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
+				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {
 				// sender = new Sender(PATIENT_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PATIENT_GEOCODING_SERVICES_API_KEY);
@@ -699,9 +708,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			if (role.equals(RoleEnum.PHARMIST) || role.equals(RoleEnum.COLLECTION_BOY)) {
 				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
 			}
-			
 
-			if (role.equals(RoleEnum.PATIENT) ) {
+			if (role.equals(RoleEnum.PATIENT)) {
 				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
 			}
 			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
@@ -710,19 +718,16 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 						if (userDeviceCollection.getDeviceType().getType()
 								.equalsIgnoreCase(DeviceType.ANDROID.getType())) {
 
-							if(role.equals(RoleEnum.COLLECTION_BOY))
-							{
+							if (role.equals(RoleEnum.COLLECTION_BOY)) {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
-										userDeviceCollection.getPushToken(), message, ComponentType.LAB_REQUEST.getType(),
-										null, null, role.getRole());
-							}
-							else
-							{
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.LAB_REQUEST.getType(), null, null, role.getRole());
+							} else {
 								pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
-										userDeviceCollection.getPushToken(), message, ComponentType.USER_ORDER.getType(),
-										requestId, responseId, role.getRole());
+										userDeviceCollection.getPushToken(), message,
+										ComponentType.USER_ORDER.getType(), requestId, responseId, role.getRole());
 							}
-							
+
 						}
 					}
 				}
@@ -739,7 +744,8 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			ObjectMapper mapper = new ObjectMapper();
 			Sender sender = null;
 
-			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString()) || role.equals(RoleEnum.COLLECTION_BOY.getRole())) {
+			if (role.toString().equalsIgnoreCase(RoleEnum.PHARMIST.getRole().toString())
+					|| role.equals(RoleEnum.COLLECTION_BOY.getRole())) {
 				// sender = new Sender(DOCTOR_GEOCODING_SERVICES_API_KEY);
 				sender = new FCMSender(PHARMIST_GEOCODING_SERVICES_API_KEY);
 			} else {
@@ -782,6 +788,74 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 			return imagePath + imageURL;
 		} else
 			return null;
+	}
+
+	@Override
+	public Boolean notifyRefresh(String id, String requestId, String responseId, RoleEnum role, String message,
+			ComponentType componentType) {
+		Boolean response = false;
+		List<UserDeviceCollection> userDeviceCollections = null;
+
+		try {
+			if (role.equals(RoleEnum.PHARMIST)) {
+				userDeviceCollections = userDeviceRepository.findByLocaleId(new ObjectId(id));
+			}
+			if (role.equals(RoleEnum.PATIENT)) {
+				userDeviceCollections = userDeviceRepository.findByUserId(new ObjectId(id));
+			}
+			if (userDeviceCollections != null && !userDeviceCollections.isEmpty()) {
+				for (UserDeviceCollection userDeviceCollection : userDeviceCollections) {
+					if (userDeviceCollection.getDeviceType() != null) {
+						if (userDeviceCollection.getDeviceType().getType()
+								.equalsIgnoreCase(DeviceType.ANDROID.getType())) {
+
+							pushNotificationOnAndroidDevices(userDeviceCollection.getDeviceId(),
+									userDeviceCollection.getPushToken(), message, componentType.getType(), requestId,
+									responseId, role.getRole(), null);
+							response = true;
+						} else if (userDeviceCollection.getDeviceType().getType()
+								.equalsIgnoreCase(DeviceType.IOS.getType()) && role.equals(RoleEnum.PATIENT)) {
+							pushNotificationOnIosDevices(userDeviceCollection.getDeviceId(),
+									userDeviceCollection.getPushToken(), message, componentType.getType(), requestId,
+									responseId, userDeviceCollection.getRole().getRole(), null);
+							userDeviceCollection.setBatchCount(userDeviceCollection.getBatchCount() + 1);
+							userDeviceRepository.save(userDeviceCollection);
+						}
+
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error while pushing notification: " + e.getCause().getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean notifyRefreshAll(RoleEnum role, List<ObjectId> LocaleIds, String message,
+			ComponentType componentType) {
+		Boolean response = false;
+		List<UserDeviceCollection> deviceCollections = null;
+		Collection<String> pushTokens = null;
+		Collection<String> deviceIds = null;
+		if (role.equals(RoleEnum.PHARMIST)) {
+			Aggregation aggregation = Aggregation
+					.newAggregation(Aggregation.match(new Criteria().and("role").is(RoleEnum.PHARMIST.getRole())
+							.and("deviceType").is(DeviceType.ANDROID.getType()).and("localeId").in(LocaleIds)));
+			deviceCollections = mongoTemplate
+					.aggregate(aggregation, UserDeviceCollection.class, UserDeviceCollection.class).getMappedResults();
+		}
+
+		pushTokens = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("pushToken"));
+		deviceIds = CollectionUtils.collect(deviceCollections, new BeanToPropertyValueTransformer("deviceId"));
+		if (pushTokens != null && !pushTokens.isEmpty() && deviceIds != null && !deviceIds.isEmpty()) {
+			broadcastPushNotificationOnAndroidDevices(new ArrayList<String>(deviceIds),
+					new ArrayList<String>(pushTokens), message, null, role.toString(), DeviceType.ANDROID.getType());
+			response = true;
+		}
+
+		return response;
 	}
 
 }

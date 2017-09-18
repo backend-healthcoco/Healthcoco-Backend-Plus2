@@ -1,6 +1,8 @@
 package com.dpdocter.scheduler;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +20,23 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.PatientNumberAndUserIds;
 import com.dpdocter.collections.BlockUserCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
+import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.ComponentType;
+import com.dpdocter.enums.ReplyType;
+import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.repository.BlockUserRepository;
+import com.dpdocter.repository.SearchRequestToPharmacyRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
+import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
 
 @Service
 public class AsyncService {
-
 
 	@Autowired
 	private UserRepository userRepository;
@@ -43,6 +52,12 @@ public class AsyncService {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private SearchRequestToPharmacyRepository searchRequestToPharmacyRepository;
+
+	@Autowired
+	private PushNotificationServices pushNotificationServices;
 
 	@Async
 	public void checkFakeRequestCount(String userId, BlockUserCollection blockUserCollection)
@@ -162,4 +177,46 @@ public class AsyncService {
 		return response;
 	}
 
+	@Async
+	public void changeRequestStatus(String uniqueRequestId, ObjectId localeId) throws InterruptedException {
+		System.out.println("Execute method asynchronously. " + Thread.currentThread().getName());
+		List<ObjectId> LocaleIds = new ArrayList<ObjectId>();
+
+		Criteria criteria = new Criteria().and("uniqueRequestId").is(uniqueRequestId)
+				.orOperator(new Criteria("replyType").is(null), new Criteria("replyType").exists(false));
+		List<SearchRequestToPharmacyCollection> searchRequestToPharmacyCollections = mongoTemplate
+				.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)),
+						SearchRequestToPharmacyCollection.class, SearchRequestToPharmacyCollection.class)
+				.getMappedResults();
+		for (SearchRequestToPharmacyCollection requestToPharmacyCollection : searchRequestToPharmacyCollections) {
+			LocaleIds.add(requestToPharmacyCollection.getLocaleId());
+			requestToPharmacyCollection.setReplyType(ReplyType.FULFILLED.getReplyType());
+		}
+		if (!LocaleIds.isEmpty() && LocaleIds != null) {
+			pushNotificationServices.notifyRefreshAll(RoleEnum.PHARMIST, LocaleIds, "refresh",
+					ComponentType.REFRESH_REQUEST);
+		}
+
+	}
+
+	@Async
+	public void changeOrderStatus(String uniqueRequestId, ObjectId localeId, ObjectId userId)
+			throws InterruptedException {
+		System.out.println("Execute method asynchronously. " + Thread.currentThread().getName());
+
+		List<SearchRequestToPharmacyCollection> searchRequestToPharmacyCollections = searchRequestToPharmacyRepository
+				.findByUniqueRequestIdPharmacyIdAndReplyType(uniqueRequestId, "YES", localeId);
+
+		for (SearchRequestToPharmacyCollection requestToPharmacyCollection : searchRequestToPharmacyCollections) {
+
+			requestToPharmacyCollection.setReplyType(ReplyType.ORDER_FULFILLED.getReplyType());
+		}
+		if (searchRequestToPharmacyCollections != null && !searchRequestToPharmacyCollections.isEmpty()) {
+
+			pushNotificationServices.notifyRefresh(userId.toString(), "", "", RoleEnum.PATIENT, "refresh",
+					ComponentType.REFRESH_RESPONSE);
+
+		}
+
+	}
 }
