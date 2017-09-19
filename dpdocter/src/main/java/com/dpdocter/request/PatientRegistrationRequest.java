@@ -12,7 +12,7 @@ public class PatientRegistrationRequest {
 	private String userId;
 
 	private String firstName;
-	
+
 	private String localPatientName;
 
 	private String mobileNumber;
@@ -66,13 +66,13 @@ public class PatientRegistrationRequest {
 	private String hospitalId;
 
 	private String doctorId;
-	
+
 	private Integer regularCheckUpMonths;
 
 	private String role;
-	
+
 	private Long registrationDate;
-	
+
 	public String getUserId() {
 		return userId;
 	}

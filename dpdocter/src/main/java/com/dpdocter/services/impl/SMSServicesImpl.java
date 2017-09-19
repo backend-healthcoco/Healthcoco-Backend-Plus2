@@ -785,7 +785,10 @@ public class SMSServicesImpl implements SMSServices {
 		Boolean response = false;
 		try {
 			if(smsTrackDetail.getSmsDetails().size() > 0)
+			{
 				response = sendAndSaveOTPSMS(smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText(), smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient(), otp);
+			}
+			response = true;
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			logger.error(e);

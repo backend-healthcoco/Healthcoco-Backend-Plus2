@@ -1,50 +1,60 @@
 package com.dpdocter.request;
 
 public class PatientSignupRequestMobile {
-    private String name;
+	private String name;
 
-    private char[] password;
+	private char[] password;
 
-    private String mobileNumber;
+	private String mobileNumber;
 
-    private boolean isNewPatientNeedToBeCreated;
+	private String internalPromoCode;
 
-    public String getName() {
-	return name;
-    }
+	private boolean isNewPatientNeedToBeCreated;
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public char[] getPassword() {
-	return password;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setPassword(char[] password) {
-	this.password = password;
-    }
+	public char[] getPassword() {
+		return password;
+	}
 
-    public String getMobileNumber() {
-	return mobileNumber;
-    }
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
 
-    public void setMobileNumber(String mobileNumber) {
-	this.mobileNumber = mobileNumber;
-    }
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
 
-    public boolean isNewPatientNeedToBeCreated() {
-	return isNewPatientNeedToBeCreated;
-    }
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
 
-    public void setNewPatientNeedToBeCreated(boolean isNewPatientNeedToBeCreated) {
-	this.isNewPatientNeedToBeCreated = isNewPatientNeedToBeCreated;
-    }
+	public boolean isNewPatientNeedToBeCreated() {
+		return isNewPatientNeedToBeCreated;
+	}
 
-    @Override
-    public String toString() {
-	return "PatientSignupRequestMobile [name=" + name + ", password=" + password + ", mobileNumber=" + mobileNumber + ", isNewPatientNeedToBeCreated="
-		+ isNewPatientNeedToBeCreated + "]";
-    }
+	public void setNewPatientNeedToBeCreated(boolean isNewPatientNeedToBeCreated) {
+		this.isNewPatientNeedToBeCreated = isNewPatientNeedToBeCreated;
+	}
+
+	public String getInternalPromoCode() {
+		return internalPromoCode;
+	}
+
+	public void setInternalPromoCode(String internalPromoCode) {
+		this.internalPromoCode = internalPromoCode;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientSignupRequestMobile [name=" + name + ", password=" + password + ", mobileNumber=" + mobileNumber
+				+ ", isNewPatientNeedToBeCreated=" + isNewPatientNeedToBeCreated + "]";
+	}
 
 }

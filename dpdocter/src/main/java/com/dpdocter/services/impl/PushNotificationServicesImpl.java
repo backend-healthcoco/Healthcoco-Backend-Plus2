@@ -121,6 +121,7 @@ public class PushNotificationServicesImpl implements PushNotificationServices {
 	@Transactional
 	public UserDevice addDevice(UserDevice request) {
 		UserDevice response = null;
+		System.out.println(request);
 		try {
 			if (!DPDoctorUtils.anyStringEmpty(request.getDeviceId())) {
 				UserDeviceCollection userDeviceCollection = userDeviceRepository.findByDeviceId(request.getDeviceId());
