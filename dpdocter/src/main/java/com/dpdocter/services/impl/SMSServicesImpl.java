@@ -230,25 +230,20 @@ public class SMSServicesImpl implements SMSServices {
 			
 
 			
-					if (!isEnvProduction) {
-						if (userNumber != null && message != null
-								&& mobileNumber != null) {
-							String recipient = mobileNumber;
-							if (userNumber.mobileNumber.contains(recipient)) {
-								// xmlSMSData = createXMLData(message);
-								getOTPSMSResponse(recipient, message, otp);
-							}
-						}
-					} else {
-						if (userNumber != null && message != null
-								&& mobileNumber != null) {
-							String recipient = mobileNumber;
-							if (userNumber.mobileNumber.contains(recipient)) {
-								// xmlSMSData = createXMLData(message);
-								getOTPSMSResponse(recipient, message, otp);
-							}
-						}
+			if (!isEnvProduction) {
+				if (userNumber != null && message != null && mobileNumber != null) {
+					String recipient = mobileNumber;
+					if (userNumber.mobileNumber.contains(recipient)) {
+						// xmlSMSData = createXMLData(message);
+						getOTPSMSResponse(recipient, message, otp);
+					}
 				}
+			} else {
+				if (message != null && mobileNumber != null) {
+					String recipient = mobileNumber;
+					getOTPSMSResponse(recipient, message, otp);
+				}
+			}
 		} catch (Exception e) {
 			logger.error("Error : " + e.getMessage());
 			throw new BusinessException(ServiceError.Unknown, "Error : " + e.getMessage());
@@ -785,10 +780,7 @@ public class SMSServicesImpl implements SMSServices {
 		Boolean response = false;
 		try {
 			if(smsTrackDetail.getSmsDetails().size() > 0)
-			{
 				response = sendAndSaveOTPSMS(smsTrackDetail.getSmsDetails().get(0).getSms().getSmsText(), smsTrackDetail.getSmsDetails().get(0).getSms().getSmsAddress().getRecipient(), otp);
-			}
-			response = true;
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			logger.error(e);
