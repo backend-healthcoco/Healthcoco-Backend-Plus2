@@ -240,13 +240,9 @@ public class SMSServicesImpl implements SMSServices {
 							}
 						}
 					} else {
-						if (userNumber != null && message != null
-								&& mobileNumber != null) {
+						if (message != null && mobileNumber != null) {
 							String recipient = mobileNumber;
-							if (userNumber.mobileNumber.contains(recipient)) {
-								// xmlSMSData = createXMLData(message);
-								getOTPSMSResponse(recipient, message, otp);
-							}
+							getOTPSMSResponse(recipient, message, otp);
 						}
 				}
 		} catch (Exception e) {
