@@ -217,7 +217,6 @@ public class SMSServicesImpl implements SMSServices {
 	public Boolean sendAndSaveOTPSMS(String message, String mobileNumber,String otp) {
 		Boolean response = false;
 		try {
-			
 			UserMobileNumbers userNumber = null;
 
 			if (!isEnvProduction) {
@@ -228,20 +227,18 @@ public class SMSServicesImpl implements SMSServices {
 				fileIn.close();
 			}
 			
-
-			
 			if (!isEnvProduction) {
 				if (userNumber != null && message != null && mobileNumber != null) {
 					String recipient = mobileNumber;
 					if (userNumber.mobileNumber.contains(recipient)) {
 						// xmlSMSData = createXMLData(message);
-						getOTPSMSResponse(recipient, message, otp);
+						response=getOTPSMSResponse(recipient, message, otp);
 					}
 				}
 			} else {
 				if (message != null && mobileNumber != null) {
 					String recipient = mobileNumber;
-					getOTPSMSResponse(recipient, message, otp);
+					response=getOTPSMSResponse(recipient, message, otp);
 				}
 			}
 		} catch (Exception e) {
@@ -731,8 +728,9 @@ public class SMSServicesImpl implements SMSServices {
 	}
 	
 	@Override
-	public String getOTPSMSResponse(String mobileNumber, String message , String otp) {
+	public Boolean getOTPSMSResponse(String mobileNumber, String message , String otp) {
 
+		Boolean boolResponse = false;
 		//http://dndsms.resellergrow.com/api/otp.php?authkey=93114AV2rXJuxL56001692&mobile=9766914900&message=0808&sender=HTCOCO&otp=0808
 		StringBuffer response = new StringBuffer();
 		try {
@@ -765,13 +763,15 @@ public class SMSServicesImpl implements SMSServices {
 			}
 			in.close();
 			System.out.println(response.toString());
+			
+			if(responseCode == 200)boolResponse = true;
 		} catch (Exception e) {
 
 			e.printStackTrace();
-			return "Failed";
+			return false;
 		}
 
-		return response.toString();
+		return boolResponse;
 
 	}
 

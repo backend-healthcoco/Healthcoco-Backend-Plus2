@@ -35,7 +35,7 @@ public interface SMSServices {
 
 	String getBulkSMSResponse(List<String> mobileNumbers, String message);
 
-	String getOTPSMSResponse(String mobileNumber, String message, String otp);
+	Boolean getOTPSMSResponse(String mobileNumber, String message, String otp);
 
 	Boolean sendAndSaveOTPSMS(String message, String mobileNumber, String otp);
 
