@@ -73,8 +73,6 @@ public class PatientRegistrationRequest {
 
 	private Long registrationDate;
 
-	private String internalPromoCode;
-
 	public String getUserId() {
 		return userId;
 	}
@@ -329,14 +327,6 @@ public class PatientRegistrationRequest {
 
 	public void setRegistrationDate(Long registrationDate) {
 		this.registrationDate = registrationDate;
-	}
-
-	public String getInternalPromoCode() {
-		return internalPromoCode;
-	}
-
-	public void setInternalPromoCode(String internalPromoCode) {
-		this.internalPromoCode = internalPromoCode;
 	}
 
 	@Override
