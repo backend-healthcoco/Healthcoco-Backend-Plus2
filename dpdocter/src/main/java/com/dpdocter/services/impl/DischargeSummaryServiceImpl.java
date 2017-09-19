@@ -643,23 +643,28 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 				String bmi = dischargeSummaryCollection.getVitalSigns().getBmi().trim();
 
 				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-					if (bmi.length() - bmi.indexOf(".") > 2) {
-						bmi = "BMI: " + bmi.subSequence(bmi.indexOf(0), bmi.indexOf(".") + 3) + " "
-								+ VitalSignsUnit.BMI.getUnit();
-					}
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+
+					bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+				} else {
+					bmi = "";
+				}
+				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+					if (!DPDoctorUtils.allStringsEmpty(bmi))
 						vitalSigns = vitalSigns + ",  " + bmi;
 					else
 						vitalSigns = bmi;
 				}
 
+
 				String bsa = dischargeSummaryCollection.getVitalSigns().getBsa().trim();
 
 				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-					if (bsa.length() - bsa.indexOf(".") > 2) {
-						bsa = "BSA: " + bsa.subSequence(bsa.indexOf(0), bsa.indexOf(".") + 3) + " "
-								+ VitalSignsUnit.BSA.getUnit();
-					}
+
+					bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+				} else {
+					bsa = "";
+				}
+				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + bsa;
 					else
