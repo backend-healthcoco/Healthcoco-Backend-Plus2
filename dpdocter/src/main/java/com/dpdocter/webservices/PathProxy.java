@@ -188,6 +188,10 @@ public interface PathProxy {
 		public static final String GET_FORM_CONTENT = "/formContent/{doctorId}/{locationId}/{hospitalId}/";
 
 		public static final String DELETE_FORM_CONTENT = "/formContent/{contentId}/delete";
+
+		public static final String ADD_EDIT_USER_REMINDERS = "user/reminders/addEdit";
+
+		public static final String GET_USER_REMINDERS = "user/reminders/{userId}";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";

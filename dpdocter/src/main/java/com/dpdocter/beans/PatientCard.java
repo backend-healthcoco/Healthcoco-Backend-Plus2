@@ -80,6 +80,12 @@ public class PatientCard extends GenericCollection {
 	
 	private Long registrationDate;
 	
+	private List<QuestionAnswers> medicalQuestionAnswers;
+	
+	private List<QuestionAnswers> lifestyleQuestionAnswers;
+
+	private PersonalInformation personalInformation;
+
 	public String getPatientId() {
 		return patientId;
 	}
@@ -440,6 +446,30 @@ public class PatientCard extends GenericCollection {
 		this.registrationDate = registrationDate;
 	}
 
+	public List<QuestionAnswers> getMedicalQuestionAnswers() {
+		return medicalQuestionAnswers;
+	}
+
+	public void setMedicalQuestionAnswers(List<QuestionAnswers> medicalQuestionAnswers) {
+		this.medicalQuestionAnswers = medicalQuestionAnswers;
+	}
+
+	public List<QuestionAnswers> getLifestyleQuestionAnswers() {
+		return lifestyleQuestionAnswers;
+	}
+
+	public void setLifestyleQuestionAnswers(List<QuestionAnswers> lifestyleQuestionAnswers) {
+		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
+	}
+
+	public PersonalInformation getPersonalInformation() {
+		return personalInformation;
+	}
+
+	public void setPersonalInformation(PersonalInformation personalInformation) {
+		this.personalInformation = personalInformation;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCard [id=" + id + ", userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -454,8 +484,10 @@ public class PatientCard extends GenericCollection {
 				+ ", patientGroupCollections=" + patientGroupCollections + ", address=" + address + ", reference="
 				+ reference + ", patientId=" + patientId + ", profession=" + profession + ", relations=" + relations
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", registrationDate=" + registrationDate
-				+ ", addressId=" + addressId + ", secMobile=" + secMobile + ", adhaarId=" + adhaarId
-				+ ", panCardNumber=" + panCardNumber + ", drivingLicenseId=" + drivingLicenseId + ", insuranceId="
-				+ insuranceId + ", insuranceName=" + insuranceName + ", notes=" + notes + "]";
+				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
+				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + ", addressId=" + addressId
+				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+				+ insuranceName + ", notes=" + notes + "]";
 	}
 }

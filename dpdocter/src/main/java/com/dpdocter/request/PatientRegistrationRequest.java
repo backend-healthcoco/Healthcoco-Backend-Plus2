@@ -5,6 +5,8 @@ import java.util.List;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
 import com.dpdocter.beans.FileDetails;
+import com.dpdocter.beans.PersonalInformation;
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Relations;
 
@@ -72,6 +74,12 @@ public class PatientRegistrationRequest {
 	private String role;
 
 	private Long registrationDate;
+	
+	private List<QuestionAnswers> medicalQuestionAnswers;
+	
+	private List<QuestionAnswers> lifestyleQuestionAnswers;
+
+	private PersonalInformation personalInformation;
 
 	public String getUserId() {
 		return userId;
@@ -329,6 +337,30 @@ public class PatientRegistrationRequest {
 		this.registrationDate = registrationDate;
 	}
 
+	public List<QuestionAnswers> getMedicalQuestionAnswers() {
+		return medicalQuestionAnswers;
+	}
+
+	public void setMedicalQuestionAnswers(List<QuestionAnswers> medicalQuestionAnswers) {
+		this.medicalQuestionAnswers = medicalQuestionAnswers;
+	}
+
+	public List<QuestionAnswers> getLifestyleQuestionAnswers() {
+		return lifestyleQuestionAnswers;
+	}
+
+	public void setLifestyleQuestionAnswers(List<QuestionAnswers> lifestyleQuestionAnswers) {
+		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
+	}
+
+	public PersonalInformation getPersonalInformation() {
+		return personalInformation;
+	}
+
+	public void setPersonalInformation(PersonalInformation personalInformation) {
+		this.personalInformation = personalInformation;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -341,6 +373,8 @@ public class PatientRegistrationRequest {
 				+ ", medicalHistoryId=" + medicalHistoryId + ", patientNumber=" + patientNumber + ", referredBy="
 				+ referredBy + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", doctorId=" + doctorId
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + ", registrationDate="
-				+ registrationDate + "]";
+				+ registrationDate + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
+				+ personalInformation + "]";
 	}
 }

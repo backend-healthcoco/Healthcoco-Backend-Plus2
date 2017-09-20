@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.PersonalInformation;
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.Relations;
 import com.dpdocter.collections.PatientGroupCollection;
@@ -72,6 +74,12 @@ public class PatientCollectionResponse {
 	private Reference reference;
 	
 	private List<PatientGroupCollection> patientGroupCollections;
+
+	private List<QuestionAnswers> medicalQuestionAnswers;
+	
+	private List<QuestionAnswers> lifestyleQuestionAnswers;
+
+	private PersonalInformation personalInformation;
 
 	public String getId() {
 		return id;
@@ -321,5 +329,44 @@ public class PatientCollectionResponse {
 		this.patientGroupCollections = patientGroupCollections;
 	}
 
+	public List<QuestionAnswers> getMedicalQuestionAnswers() {
+		return medicalQuestionAnswers;
+	}
+
+	public void setMedicalQuestionAnswers(List<QuestionAnswers> medicalQuestionAnswers) {
+		this.medicalQuestionAnswers = medicalQuestionAnswers;
+	}
+
+	public List<QuestionAnswers> getLifestyleQuestionAnswers() {
+		return lifestyleQuestionAnswers;
+	}
+
+	public void setLifestyleQuestionAnswers(List<QuestionAnswers> lifestyleQuestionAnswers) {
+		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
+	}
+
+	public PersonalInformation getPersonalInformation() {
+		return personalInformation;
+	}
+
+	public void setPersonalInformation(PersonalInformation personalInformation) {
+		this.personalInformation = personalInformation;
+	}
+
+	@Override
+	public String toString() {
+		return "PatientCollectionResponse [id=" + id + ", firstName=" + firstName + ", localPatientName="
+				+ localPatientName + ", imageUrl=" + imageUrl + ", thumbnailUrl=" + thumbnailUrl + ", bloodGroup="
+				+ bloodGroup + ", profession=" + profession + ", relations=" + relations + ", emailAddress="
+				+ emailAddress + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId=" + hospitalId
+				+ ", secMobile=" + secMobile + ", adhaarId=" + adhaarId + ", panCardNumber=" + panCardNumber
+				+ ", drivingLicenseId=" + drivingLicenseId + ", insuranceId=" + insuranceId + ", insuranceName="
+				+ insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + ", registrationDate="
+				+ registrationDate + ", gender=" + gender + ", dob=" + dob + ", discarded=" + discarded
+				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address + ", user="
+				+ user + ", reference=" + reference + ", patientGroupCollections=" + patientGroupCollections
+				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
+				+ lifestyleQuestionAnswers + ", personalInformation=" + personalInformation + "]";
+	}
 	
 }

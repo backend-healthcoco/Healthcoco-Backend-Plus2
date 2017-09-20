@@ -36,6 +36,7 @@ import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.InternalPromoCode;
 import com.dpdocter.beans.InternalPromotionGroup;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.UserReminders;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -144,9 +145,9 @@ public class RegistrationApi {
 
 		} else {
 			registeredPatientDetails = registrationService.registerExistingPatient(request);
-			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
-					false);
-			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+//			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
+//					false);
+//			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -1082,4 +1083,32 @@ public class RegistrationApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS, notes = PathProxy.RegistrationUrls.ADD_EDIT_USER_REMINDERS)
+	public Response<UserReminders> addEditPatientReminders(UserReminders request, @QueryParam("reminderType") String reminderType) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
+
+		}else if (DPDoctorUtils.anyStringEmpty(request.getUserId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "User Id could not null");
+
+		}
+		Response<UserReminders> response = new Response<UserReminders>();
+		response.setData(registrationService.addEditPatientReminders(request, reminderType));
+		return response;
+	}
+	
+	@Path(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USER_REMINDERS, notes = PathProxy.RegistrationUrls.GET_USER_REMINDERS)
+	public Response<UserReminders> getPatientReminders(@PathParam("userId") String userId, @QueryParam("reminderType") String reminderType) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User Id could not null");
+
+		}
+		Response<UserReminders> response = new Response<UserReminders>();
+		response.setData(registrationService.getPatientReminders(userId, reminderType));
+		return response;
+	}
 }

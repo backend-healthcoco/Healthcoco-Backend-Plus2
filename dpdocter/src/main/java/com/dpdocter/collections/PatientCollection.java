@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.PersonalInformation;
+import com.dpdocter.beans.QuestionAnswers;
 import com.dpdocter.beans.Relations;
 
 @Document(collection = "patient_cl")
@@ -106,6 +108,16 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> consultantDoctorIds;
 
+	@Field
+	private PersonalInformation personalInformation;
+	
+	@Field
+	private List<QuestionAnswers> medicalQuestionAnswers;
+	
+	@Field
+	private List<QuestionAnswers> lifestyleQuestionAnswers;
+	
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -343,6 +355,30 @@ public class PatientCollection extends GenericCollection {
 		this.consultantDoctorIds = consultantDoctorIds;
 	}
 
+	public PersonalInformation getPersonalInformation() {
+		return personalInformation;
+	}
+
+	public void setPersonalInformation(PersonalInformation personalInformation) {
+		this.personalInformation = personalInformation;
+	}
+
+	public List<QuestionAnswers> getMedicalQuestionAnswers() {
+		return medicalQuestionAnswers;
+	}
+
+	public void setMedicalQuestionAnswers(List<QuestionAnswers> medicalQuestionAnswers) {
+		this.medicalQuestionAnswers = medicalQuestionAnswers;
+	}
+
+	public List<QuestionAnswers> getLifestyleQuestionAnswers() {
+		return lifestyleQuestionAnswers;
+	}
+
+	public void setLifestyleQuestionAnswers(List<QuestionAnswers> lifestyleQuestionAnswers) {
+		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -354,6 +390,9 @@ public class PatientCollection extends GenericCollection {
 				+ insuranceName + ", userId=" + userId + ", notes=" + notes + ", PID=" + PID + ", registrationDate="
 				+ registrationDate + ", gender=" + gender + ", dob=" + dob + ", discarded=" + discarded
 				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address
-				+ ", consultantDoctorIds=" + consultantDoctorIds + "]";
+				+ ", consultantDoctorIds=" + consultantDoctorIds + ", personalInformation=" + personalInformation
+				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
+				+ lifestyleQuestionAnswers + "]";
 	}
+
 }

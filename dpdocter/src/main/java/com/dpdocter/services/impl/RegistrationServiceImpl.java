@@ -64,7 +64,7 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.Prescription;
+import com.dpdocter.beans.UserReminders;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -85,6 +85,7 @@ import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
+import com.dpdocter.collections.UserRemindersCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
@@ -105,6 +106,7 @@ import com.dpdocter.enums.ColorCode.RandomEnum;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.FeedbackType;
 import com.dpdocter.enums.Range;
+import com.dpdocter.enums.ReminderType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.Type;
@@ -122,6 +124,7 @@ import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
+import com.dpdocter.repository.UserRemindersRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -274,6 +277,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private FormContentRepository formContentRepository;
 
 	@Autowired
+	private UserRemindersRepository userRemindersRepository;
+
+	@Autowired
 	private JasperReportService jasperReportService;
 
 	@Autowired
@@ -321,6 +327,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Value(value = "${register.role.not.found}")
 	private String roleNotFoundException;
 
+	@Value(value = "${user.reminder.not.found}")
+	private String reminderNotFoundException;
+	
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -663,11 +672,11 @@ public class RegistrationServiceImpl implements RegistrationService {
 					throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 				}
 				
-				if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName()))userCollection.setFirstName(request.getLocalPatientName());
+				if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName()))
+					userCollection.setFirstName(request.getLocalPatientName());
 				
 				userCollection.setIsActive(true);
 				userCollection.setUpdatedTime(new Date());
-				// userCollection.setEmailAddress(request.getEmailAddress());
 				
 				BeanUtil.map(userCollection, registeredPatientDetails);
 				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId,
@@ -685,6 +694,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setEmailAddress(request.getEmailAddress());
 					if (request.getDob() != null)
 						patientCollection.setDob(request.getDob());
+					if(request.getPersonalInformation() != null)
+						patientCollection.setPersonalInformation(request.getPersonalInformation());
+					if(request.getLifestyleQuestionAnswers() != null)
+						patientCollection.setLifestyleQuestionAnswers(request.getLifestyleQuestionAnswers());
+					if(request.getMedicalQuestionAnswers() != null)
+						patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
 					throw new BusinessException(ServiceError.InvalidInput,
@@ -724,7 +739,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 				registeredPatientDetails.setAddress(patientCollection.getAddress());
 				registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
-				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
+				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl()); 				
 			} else {
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
 						locationObjectId, hospitalObjectId);
@@ -1155,10 +1170,6 @@ public class RegistrationServiceImpl implements RegistrationService {
 				@SuppressWarnings("unchecked")
 				Collection<ObjectId> groupIds = CollectionUtils.collect(patientCard.getPatientGroupCollections(),
 						new BeanToPropertyValueTransformer("groupId"));
-				// for(PatientGroupCollection groupCollection :
-				// patientCard.getPatientGroupCollections()){
-				// if(!groupCollection.getDiscarded())groupIds.add(groupCollection.getGroupId());
-				// }
 				if (groupIds != null && !groupIds.isEmpty()) {
 					groups = mongoTemplate
 							.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(groupIds))),
@@ -3645,6 +3656,84 @@ public class RegistrationServiceImpl implements RegistrationService {
 			throw new BusinessException(ServiceError.Unknown, " Error Occurred While discarding Form Content");
 		}
 		return reponse;
+	}
+
+	@Override
+	public UserReminders addEditPatientReminders(UserReminders request, String reminderType) {
+		UserReminders response = new UserReminders();
+		try {
+			ObjectId userId = new ObjectId(request.getUserId());
+			UserRemindersCollection userRemindersCollection = userRemindersRepository.findByUserId(userId);
+			
+			if(userRemindersCollection == null) {
+				userRemindersCollection = new UserRemindersCollection();
+				userRemindersCollection.setCreatedTime(new Date());
+				userRemindersCollection.setUserId(userId);
+			}
+			
+			if(DPDoctorUtils.allStringsEmpty(reminderType)) {
+				userRemindersCollection.setFoodReminder(request.getFoodReminder());
+				userRemindersCollection.setMedicineReminder(request.getMedicineReminder());
+				userRemindersCollection.setWalkReminder(request.getWalkReminder());
+				userRemindersCollection.setWaterReminder(request.getWaterReminder());
+				userRemindersCollection.setWorkoutReminder(request.getWorkoutReminder());
+			}else {
+				switch(ReminderType.valueOf(reminderType.toUpperCase())) {
+				case WATER : userRemindersCollection.setWaterReminder(request.getWaterReminder()); break;
+				case FOOD : userRemindersCollection.setFoodReminder(request.getFoodReminder()); break;
+				case MEDICINE : userRemindersCollection.setMedicineReminder(request.getMedicineReminder()); break;
+				case WORKOUT : userRemindersCollection.setWorkoutReminder(request.getWorkoutReminder()); break;
+				case WALK : userRemindersCollection.setWalkReminder(request.getWalkReminder()); break;
+				default : break;
+				}
+			}
+			
+			userRemindersCollection.setUpdatedTime(new Date());
+			userRemindersCollection = userRemindersRepository.save(userRemindersCollection);
+			BeanUtil.map(userRemindersCollection, response);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while adding Patient Reminders");
+		}
+		return response;
+	}
+
+	@Override
+	public UserReminders getPatientReminders(String userId, String reminderType) {
+		UserReminders response = null;
+		try {
+			UserRemindersCollection userRemindersCollection = userRemindersRepository.findByUserId(new ObjectId(userId));
+			if(userRemindersCollection == null) {
+				logger.error(reminderNotFoundException);
+				throw new BusinessException(ServiceError.Unknown, reminderNotFoundException);
+			}
+			response = new UserReminders();
+			
+			if(DPDoctorUtils.allStringsEmpty(reminderType)) {
+				BeanUtil.map(userRemindersCollection, response);
+			}else {
+				switch(ReminderType.valueOf(reminderType.toUpperCase())) {
+				case WATER : response.setWaterReminder(userRemindersCollection.getWaterReminder()); break;
+				case FOOD : response.setFoodReminder(userRemindersCollection.getFoodReminder()); break;
+				case MEDICINE : response.setMedicineReminder(userRemindersCollection.getMedicineReminder()); break;
+				case WORKOUT : response.setWorkoutReminder(userRemindersCollection.getWorkoutReminder()); break;
+				case WALK : response.setWalkReminder(userRemindersCollection.getWalkReminder()); break;
+				default : break;
+				}
+				response.setId(userRemindersCollection.getId().toString());
+				response.setUserId(userRemindersCollection.getUserId().toString());
+				response.setCreatedTime(userRemindersCollection.getCreatedTime());
+				response.setUpdatedTime(userRemindersCollection.getUpdatedTime());
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Reminders");
+		}
+		return response;
 	}
 
 }

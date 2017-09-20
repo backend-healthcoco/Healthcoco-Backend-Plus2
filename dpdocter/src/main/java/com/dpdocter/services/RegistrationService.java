@@ -16,6 +16,7 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.UserReminders;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -153,4 +154,8 @@ public interface RegistrationService {
 			String type, String title, String updatedTime, boolean discarded);
 
 	public FormContent deleteFormContent(String contentId, Boolean discarded);
+
+	UserReminders addEditPatientReminders(UserReminders request, String reminderType);
+
+	UserReminders getPatientReminders(String userId, String reminderType);
 }

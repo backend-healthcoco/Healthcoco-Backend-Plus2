@@ -52,6 +52,12 @@ public class Patient {
 
 	private List<String> consultantDoctorIds;
 
+	private List<QuestionAnswers> medicalQuestionAnswers;
+	
+	private List<QuestionAnswers> lifestyleQuestionAnswers;
+
+	private PersonalInformation personalInformation;
+
 	private Long registrationDate;
 	
 	public String getLocalPatientName() {
@@ -246,6 +252,30 @@ public class Patient {
 		this.registrationDate = registrationDate;
 	}
 
+	public List<QuestionAnswers> getMedicalQuestionAnswers() {
+		return medicalQuestionAnswers;
+	}
+
+	public void setMedicalQuestionAnswers(List<QuestionAnswers> medicalQuestionAnswers) {
+		this.medicalQuestionAnswers = medicalQuestionAnswers;
+	}
+
+	public List<QuestionAnswers> getLifestyleQuestionAnswers() {
+		return lifestyleQuestionAnswers;
+	}
+
+	public void setLifestyleQuestionAnswers(List<QuestionAnswers> lifestyleQuestionAnswers) {
+		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
+	}
+
+	public PersonalInformation getPersonalInformation() {
+		return personalInformation;
+	}
+
+	public void setPersonalInformation(PersonalInformation personalInformation) {
+		this.personalInformation = personalInformation;
+	}
+
 	@Override
 	public String toString() {
 		return "Patient [firstName=" + firstName + ", localPatientName=" + localPatientName + ", patientId=" + patientId
@@ -256,6 +286,9 @@ public class Patient {
 				+ insuranceName + ", notes=" + notes + ", isDataAvailableWithOtherDoctor="
 				+ isDataAvailableWithOtherDoctor + ", isPatientOTPVerified=" + isPatientOTPVerified + ", address="
 				+ address + ", PID=" + PID + ", gender=" + gender + ", dob=" + dob + ", consultantDoctorIds="
-				+ consultantDoctorIds + ", registrationDate=" + registrationDate + "]";
+				+ consultantDoctorIds + ", medicalQuestionAnswers=" + medicalQuestionAnswers
+				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
+				+ personalInformation + ", registrationDate=" + registrationDate + "]";
 	}
+
 }
