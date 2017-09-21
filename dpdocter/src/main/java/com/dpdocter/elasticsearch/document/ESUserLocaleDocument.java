@@ -140,6 +140,9 @@ public class ESUserLocaleDocument {
 	private String paymentInfo;
 	
 	@Field(type = FieldType.String)
+	private List<String> paymentInfos;
+	
+	@Field(type = FieldType.String)
 	private String localeType = LocaleType.PHARMACY.getType();
 	
 	@Field(type = FieldType.Boolean)
@@ -533,14 +536,21 @@ public class ESUserLocaleDocument {
 		this.userId = userId;
 	}
 
-	
-
 	public Boolean getIsAcceptRequest() {
 		return isAcceptRequest;
 	}
 
 	public void setIsAcceptRequest(Boolean isAcceptRequest) {
 		this.isAcceptRequest = isAcceptRequest;
+	}
+	
+
+	public List<String> getPaymentInfos() {
+		return paymentInfos;
+	}
+
+	public void setPaymentInfos(List<String> paymentInfos) {
+		this.paymentInfos = paymentInfos;
 	}
 
 	@Override

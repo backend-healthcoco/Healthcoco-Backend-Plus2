@@ -36,11 +36,20 @@ public class Locale extends GenericCollection {
 	private Boolean isHomeDeliveryAvailable = false;
 	private double homeDeliveryRadius;
 	private String paymentInfo;
+	private List<String> paymentInfos;
 	private String localeType = LocaleType.PHARMACY.getType();
 	private Boolean isPasswordVerified = false;
 	private Boolean isLocaleRecommended = false;
 	private Boolean isAcceptRequest = true;
 	private Double minimumAmountForDelivery = 0.0;
+
+	public List<String> getPaymentInfos() {
+		return paymentInfos;
+	}
+
+	public void setPaymentInfos(List<String> paymentInfos) {
+		this.paymentInfos = paymentInfos;
+	}
 
 	public List<String> getPharmacyType() {
 		return pharmacyType;

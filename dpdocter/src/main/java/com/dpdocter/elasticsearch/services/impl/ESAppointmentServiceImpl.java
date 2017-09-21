@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -724,6 +722,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS))
 						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -912,6 +913,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
 						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS))
 						.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
@@ -996,7 +1000,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("localeName", localeName));
 			}
 			if (!DPDoctorUtils.anyStringEmpty(paymentType)) {
-				boolQueryBuilder.must(QueryBuilders.matchPhrasePrefixQuery("paymentInfo", paymentType));
+				boolQueryBuilder.must(QueryBuilders.matchQuery("paymentInfos", paymentType));
 			}
 			if (homeService != null) {
 
