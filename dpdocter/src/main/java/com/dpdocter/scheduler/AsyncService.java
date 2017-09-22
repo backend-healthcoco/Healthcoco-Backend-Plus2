@@ -193,6 +193,7 @@ public class AsyncService {
 			requestToPharmacyCollection.setReplyType(ReplyType.REQUEST_FULFILLED.getReplyType());
 		}
 		if (!LocaleIds.isEmpty() && LocaleIds != null) {
+			searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollections);
 			pushNotificationServices.notifyRefreshAll(RoleEnum.PHARMIST, LocaleIds, "refresh",
 					ComponentType.REFRESH_REQUEST);
 		}
@@ -212,7 +213,7 @@ public class AsyncService {
 			requestToPharmacyCollection.setReplyType(ReplyType.ORDER_FULFILLED.getReplyType());
 		}
 		if (searchRequestToPharmacyCollections != null && !searchRequestToPharmacyCollections.isEmpty()) {
-
+			searchRequestToPharmacyRepository.save(searchRequestToPharmacyCollections);
 			pushNotificationServices.notifyRefresh(userId.toString(), "", "", RoleEnum.PATIENT, "refresh",
 					ComponentType.REFRESH_RESPONSE);
 
