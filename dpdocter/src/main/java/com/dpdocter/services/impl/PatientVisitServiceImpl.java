@@ -1462,7 +1462,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 			}
 
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter()) {
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter() && printSettings.getFooterSetup().getBottomText() != null) {
 				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
 					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
