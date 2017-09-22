@@ -372,10 +372,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
 				orderDrugRepository.save(orderDrugCollection);
-				asyncService.changeRequestStatus(requestToPharmacyCollection.getUniqueRequestId(),
-						requestToPharmacyCollection.getLocaleId());
-				asyncService.changeOrderStatus(requestToPharmacyCollection.getUniqueRequestId(),
-						requestToPharmacyCollection.getLocaleId(), requestToPharmacyCollection.getUserId());
+				// asyncService.changeRequestStatus(requestToPharmacyCollection.getUniqueRequestId(),
+				// requestToPharmacyCollection.getLocaleId());
+				// asyncService.changeOrderStatus(requestToPharmacyCollection.getUniqueRequestId(),
+				// requestToPharmacyCollection.getLocaleId(),
+				// requestToPharmacyCollection.getUserId());
 				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
