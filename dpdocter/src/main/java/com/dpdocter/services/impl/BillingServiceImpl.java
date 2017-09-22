@@ -1774,37 +1774,38 @@ public class BillingServiceImpl implements BillingService {
 			DoctorPatientDueAmountCollection doctorPatientDueAmountCollection = doctorPatientDueAmountRepository.find(
 					new ObjectId(patientId), new ObjectId(doctorId), new ObjectId(locationId),
 					new ObjectId(hospitalId));
-			if (doctorPatientDueAmountCollection.getDueAmount() < 0) {
-				UserCollection patient = userRepository.findOne(new ObjectId(patientId));
-				UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
-				LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
-				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
-				smsTrackDetail.setDoctorId(new ObjectId(doctorId));
-				smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
-				smsTrackDetail.setLocationId(new ObjectId(locationId));
-				smsTrackDetail.setType(ComponentType.DUE_AMOUNT.getType());
-				SMSDetail smsDetail = new SMSDetail();
-				smsDetail.setUserId(new ObjectId(patientId));
-				smsDetail.setUserName(patient.getFirstName());
-				SMS sms = new SMS();
-				String message = dueAmountRemainderSMS;
-				sms.setSmsText(message.replace("{patientName}", patient.getFirstName())
-						.replace("{clinicNumber}",
-								locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber()
-										: "")
-						.replace("{clinicName}", locationCollection.getLocationName())
-						.replace("{dueAmount}", doctorPatientDueAmountCollection.getDueAmount().toString()));
-				SMSAddress smsAddress = new SMSAddress();
-				smsAddress.setRecipient(mobileNumber);
-				sms.setSmsAddress(smsAddress);
-				smsDetail.setSms(sms);
-				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
-				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
-				smsDetails.add(smsDetail);
-				smsTrackDetail.setSmsDetails(smsDetails);
-				smsServices.sendSMS(smsTrackDetail, true);
-				response = true;
-			}
+
+			UserCollection patient = userRepository.findOne(new ObjectId(patientId));
+			UserCollection doctor = userRepository.findOne(new ObjectId(doctorId));
+			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(locationId));
+			SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+			smsTrackDetail.setDoctorId(new ObjectId(doctorId));
+			smsTrackDetail.setHospitalId(new ObjectId(hospitalId));
+			smsTrackDetail.setLocationId(new ObjectId(locationId));
+			smsTrackDetail.setType(ComponentType.DUE_AMOUNT.getType());
+			SMSDetail smsDetail = new SMSDetail();
+			smsDetail.setUserId(new ObjectId(patientId));
+			smsDetail.setUserName(patient.getFirstName());
+			SMS sms = new SMS();
+			String message = dueAmountRemainderSMS;
+			sms.setSmsText(
+					message.replace("{patientName}", patient.getFirstName())
+							.replace("{clinicNumber}",
+									locationCollection.getClinicNumber() != null ? locationCollection.getClinicNumber()
+											: "")
+							.replace("{clinicName}", locationCollection.getLocationName())
+							.replace("{dueAmount}", doctorPatientDueAmountCollection.getDueAmount().toString()));
+			SMSAddress smsAddress = new SMSAddress();
+			smsAddress.setRecipient(mobileNumber);
+			sms.setSmsAddress(smsAddress);
+			smsDetail.setSms(sms);
+			smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+			List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+			smsDetails.add(smsDetail);
+			smsTrackDetail.setSmsDetails(smsDetails);
+			smsServices.sendSMS(smsTrackDetail, true);
+			response = true;
+
 		} catch (BusinessException be) {
 			logger.error(be);
 			throw be;
