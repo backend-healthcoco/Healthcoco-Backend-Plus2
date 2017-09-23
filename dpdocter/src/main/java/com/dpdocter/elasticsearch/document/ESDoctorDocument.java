@@ -20,13 +20,6 @@ import com.dpdocter.elasticsearch.beans.DoctorLocation;
 
 @Document(indexName = "doctors_in", type = "doctors")
 public class ESDoctorDocument extends DoctorLocation {
-	public List<Education> getEducation() {
-		return education;
-	}
-
-	public void setEducation(List<Education> education) {
-		this.education = education;
-	}
 
 	@Id
 	private String id;
@@ -370,6 +363,14 @@ public class ESDoctorDocument extends DoctorLocation {
 
 	public void setNoOfRecommenations(Integer noOfRecommenations) {
 		this.noOfRecommenations = noOfRecommenations;
+	}
+
+	public List<Education> getEducation() {
+		return education;
+	}
+
+	public void setEducation(List<Education> education) {
+		this.education = education;
 	}
 
 	@Override

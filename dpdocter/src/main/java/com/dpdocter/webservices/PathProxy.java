@@ -1340,4 +1340,24 @@ public interface PathProxy {
 		public static final String EMAIL_ADMIT_CARD = "/{admitCardId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 	}
+	
+	public static final String RANKING_BASE_URL = BASE_URL + "/ranking";
+	
+	public interface RankingUrls{
+		
+		public static final String GET_DOCTORS_RANKING = "/doctors";
+	}
+	
+    public static final String USER_FAVOURITES_BASE_URL = BASE_URL + "/favourite";
+	
+	public interface UserFavouritesUrls{
+		
+		public static final String ADD_REMOVE_FROM_FAVOURITES = "/addRemove/{resourceType}/{userId}/{resourceId}/{resourceType}";
+		
+		public static final String GET_FAVOURITE_DOCTORS = "/doctors/{userId}";
+		
+		public static final String GET_FAVOURITE_PHARMACIES = "/pharmacies/{userId}";
+		
+		public static final String GET_FAVOURITE_LABS = "/labs/{userId}";
+	}
 }
