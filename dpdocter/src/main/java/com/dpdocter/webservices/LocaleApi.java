@@ -15,17 +15,13 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Locale;
-import com.dpdocter.beans.LocaleImage;
-import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.RecommendationType;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
-import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
@@ -113,81 +109,6 @@ public class LocaleApi {
 		return response;
 	}
 
-	/*
-	 * @POST
-	 * 
-	 * @Path(PathProxy.LocaleUrls.EDIT_LOCALE_CONTACT_DETAILS ) public
-	 * Response<Locale> updateLocaleContact( AddEditLocaleContactDetailsRequest
-	 * request) { Response<Locale> response = null; Locale locale = null; try {
-	 * if ( request ==null || request.getId() == null) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } locale =
-	 * localeService.updateLocaleContact(request); response = new
-	 * Response<Locale>(); response.setData(locale);
-	 * 
-	 * } catch (Exception e) { LOGGER.warn(e); e.printStackTrace(); } return
-	 * response;
-	 * 
-	 * }
-	 * 
-	 * @POST
-	 * 
-	 * @Path(PathProxy.LocaleUrls.EDIT_LOCALE_ADDRESS_DETAILS) public
-	 * Response<Locale> updateLocaleAddress( AddEditLocaleAddressDetailsRequest
-	 * request) { Response<Locale> response = null; Locale locale = null; try {
-	 * if (request == null|| request.getId() == null) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } locale =
-	 * localeService.updateLocaleAddress( request); response = new
-	 * Response<Locale>(); response.setData(locale);
-	 * 
-	 * } catch (Exception e) { // TODO: handle exception LOGGER.warn(e);
-	 * e.printStackTrace(); } return response;
-	 * 
-	 * }
-	 * 
-	 * @POST
-	 * 
-	 * @Path(PathProxy.LocaleUrls.EDIT_LOCALE_VISIT_DETAILS) public
-	 * Response<Locale>
-	 * updateLocaleVisitDetails(AddEditLocaleVisitDetailsRequest request) {
-	 * Response<Locale> response = null; Locale locale = null; try { if (request
-	 * == null|| request.getId() == null) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } locale =
-	 * localeService.updateLocaleVisitDetails(request); response = new
-	 * Response<Locale>(); response.setData(locale);
-	 * 
-	 * } catch (Exception e) { // TODO: handle exception LOGGER.warn(e);
-	 * e.printStackTrace(); } return response;
-	 * 
-	 * }
-	 * 
-	 * @POST
-	 * 
-	 * @Path(PathProxy.LocaleUrls.EDIT_LOCALE_OTHER_DETAILS) public
-	 * Response<Locale>
-	 * updateLocaleOtherDetails(AddEditLocaleOtherDetailsRequest request) {
-	 * Response<Locale> response = null; Locale locale = null; try { if (request
-	 * == null|| request.getId() == null) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } locale =
-	 * localeService.updateLocaleOtherDetails(request); response = new
-	 * Response<Locale>(); response.setData(locale);
-	 * 
-	 * } catch (Exception e) { // TODO: handle exception LOGGER.warn(e);
-	 * e.printStackTrace(); } return response; }
-	 * 
-	 * @POST
-	 * 
-	 * @Path(PathProxy.LocaleUrls.EDIT_LOCALE_IMAGES) public Response<Locale>
-	 * updateLocaleImages(@PathParam("id") String localeId,
-	 * AddEditLocaleImagesRequest request) { Response<Locale> response = null;
-	 * Locale locale = null; try { if (localeId == null || localeId.isEmpty()) {
-	 * throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-	 * } locale = localeService.updateLocaleImages(localeId, request); response
-	 * = new Response<Locale>(); response.setData(locale);
-	 * 
-	 * } catch (Exception e) { // TODO: handle exception LOGGER.warn(e);
-	 * e.printStackTrace(); } return response; }
-	 */
-
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
@@ -221,20 +142,6 @@ public class LocaleApi {
 		return response;
 	}
 
-	/*
-	 * @POST
-	 * 
-	 * @Path(PathProxy.LocaleUrls.ADD_PHARMACY_RESPONSE) public
-	 * Response<Boolean> addPharmacyResponseInQueue(PharmacyResponse
-	 * pharmacyResponse) { Response<Boolean> response = null; Boolean status =
-	 * null; try { if (pharmacyResponse == null) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); } status =
-	 * pharmacyService.addResponseInQueue(pharmacyResponse); response = new
-	 * Response<Boolean>(); response.setData(status);
-	 * 
-	 * } catch (Exception e) { // TODO: handle exception LOGGER.warn(e);
-	 * e.printStackTrace(); } return response; }
-	 */
 
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDER_HISTORY)

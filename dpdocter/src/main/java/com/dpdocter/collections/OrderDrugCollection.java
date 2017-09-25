@@ -5,7 +5,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.enums.ReplyType;
+import com.dpdocter.enums.WayOfOrder;
 
 @Document(collection = "order_drug_cl")
 public class OrderDrugCollection extends GenericCollection {
@@ -21,6 +23,18 @@ public class OrderDrugCollection extends GenericCollection {
 	private String uniqueResponseId;
 	@Field
 	private ReplyType replyType = ReplyType.REQUESTED;
+
+	@Field
+	private WayOfOrder wayOfOrder;
+	
+	@Field
+	private LocaleWorkingHours time;
+	
+	@Field
+	private String day;
+	
+	@Field
+	private String address;
 
 	public ObjectId getId() {
 		return id;
@@ -62,12 +76,6 @@ public class OrderDrugCollection extends GenericCollection {
 		this.uniqueResponseId = uniqueResponseId;
 	}
 
-	@Override
-	public String toString() {
-		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", patientId=" + ", uniqueRequestId="
-				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + "]";
-	}
-
 	public ReplyType getReplyType() {
 		return replyType;
 	}
@@ -76,4 +84,42 @@ public class OrderDrugCollection extends GenericCollection {
 		this.replyType = replyType;
 	}
 
+	public WayOfOrder getWayOfOrder() {
+		return wayOfOrder;
+	}
+
+	public void setWayOfOrder(WayOfOrder wayOfOrder) {
+		this.wayOfOrder = wayOfOrder;
+	}
+
+	public LocaleWorkingHours getTime() {
+		return time;
+	}
+
+	public void setTime(LocaleWorkingHours time) {
+		this.time = time;
+	}
+
+	public String getDay() {
+		return day;
+	}
+
+	public void setDay(String day) {
+		this.day = day;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	@Override
+	public String toString() {
+		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
+				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", replyType=" + replyType
+				+ ", wayOfOrder=" + wayOfOrder + ", time=" + time + ", day=" + day + ", address=" + address + "]";
+	}
 }

@@ -1024,11 +1024,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
 			}
 			if (pharmacyType != null && !pharmacyType.isEmpty()) {
-				for (int i = 0; i < pharmacyType.size(); i++) {
-					pharmacyType.set(i, pharmacyType.get(i).toUpperCase());
-					boolQueryBuilder.must(QueryBuilders.matchQuery("pharmacyType", pharmacyType.get(i).toUpperCase()));
-				}
-
+				for (String type :  pharmacyType) boolQueryBuilder.should(QueryBuilders.matchQuery("pharmacyType", type.toUpperCase()));
+				
+				boolQueryBuilder.minimumNumberShouldMatch(1);
 			}
 
 			if (maxTime == 0) {
@@ -1072,36 +1070,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 
 			esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
-			// SearchResponse searchResponse =
-			// elasticsearchTemplate.query(searchQuery, new
-			// ResultsExtractor<SearchResponse>() {
-			// @Override
-			// public SearchResponse extract(SearchResponse response) {
-			// return response;
-			// }
-			// });
-			// System.out.println(searchResponse);
-
-			// if(distance == 4 && (esUserLocaleDocuments == null ||
-			// esUserLocaleDocuments.isEmpty() || (size > 0 &&
-			// esUserLocaleDocuments.size() < size))){
-			// distance = distance + 26;
-			// }
-
-			// if(esUserLocaleDocuments != null && response == null)response =
-			// new ArrayList<ESUserLocaleDocument>();
-			// if(response != null) {
-			// response.addAll(esUserLocaleDocuments);
-			// if(size > 0) {
-			// size = size - response.size();
-			// if(size == 0)break;
-			// }
-			// }
-			//
-			// } while (citylatitude == null && citylongitude == null &&
-			// distance <= 30 && (size > 0 && esUserLocaleDocuments.size() <
-			// size));
-
+			
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
 					if (esUserLocaleDocument.getImageUrl() != null)

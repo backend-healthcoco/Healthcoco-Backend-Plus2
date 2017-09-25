@@ -1,5 +1,7 @@
 package com.dpdocter.collections;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -34,6 +36,9 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 	@Field
 	private Double longitude;
 
+	@Field
+	private List<String> pharmacyType;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -98,10 +103,20 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 		this.longitude = longitude;
 	}
 
+	public List<String> getPharmacyType() {
+		return pharmacyType;
+	}
+
+	public void setPharmacyType(List<String> pharmacyType) {
+		this.pharmacyType = pharmacyType;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestFromUserCollection [id=" + id + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId
-				+ ", location=" + location + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", location=" + location + ", latitude=" + latitude + ", longitude=" + longitude + ", pharmacyType="
+				+ pharmacyType + "]";
 	}
+
 }

@@ -1,5 +1,7 @@
 package com.dpdocter.request;
 
+import java.util.List;
+
 public class UserSearchRequest {
 
 	private String userId;
@@ -16,6 +18,8 @@ public class UserSearchRequest {
 
 	private String uniqueRequestId;
 
+	private List<String> pharmacyType;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -72,10 +76,18 @@ public class UserSearchRequest {
 		this.uniqueRequestId = uniqueRequestId;
 	}
 
+	public List<String> getPharmacyType() {
+		return pharmacyType;
+	}
+
+	public void setPharmacyType(List<String> pharmacyType) {
+		this.pharmacyType = pharmacyType;
+	}
+
 	@Override
 	public String toString() {
 		return "UserSearchRequest [userId=" + userId + ", location=" + location + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId
-				+ ", uniqueRequestId=" + uniqueRequestId + "]";
+				+ ", uniqueRequestId=" + uniqueRequestId + ", pharmacyType=" + pharmacyType + "]";
 	}
 }
