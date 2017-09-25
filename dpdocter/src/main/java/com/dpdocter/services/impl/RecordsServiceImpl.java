@@ -285,8 +285,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(recordsURL);
 				recordsCollection.setRecordsPath(recordsURL);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(
-							FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			if (request.getFileDetails() != null) {
 				String recordLabel = request.getFileDetails().getFileName();
@@ -1603,7 +1602,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
 							.findByUserId(new ObjectId(request.getPatientId()));
-					if(oldRecord!=null){
+					if (oldRecord != null) {
 						for (RecordsFile file : oldRecord.getRecordsFiles()) {
 
 							userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
@@ -1632,7 +1631,6 @@ public class RecordsServiceImpl implements RecordsService {
 					request.setUploadedBy(RoleEnum.PATIENT);
 				}
 			}
-			
 
 			userRecordsCollection = new UserRecordsCollection();
 			BeanUtil.map(request, userRecordsCollection);
@@ -1642,7 +1640,7 @@ public class RecordsServiceImpl implements RecordsService {
 				userRecordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 				userRecordsCollection.setDiscarded(oldRecord.getDiscarded());
 				userRecordsCollection.setUniqueEmrId(oldRecord.getUniqueEmrId());
-				
+
 			} else {
 				userRecordsCollection
 						.setUniqueEmrId(UniqueIdInitial.USERREPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -2035,8 +2033,8 @@ public class RecordsServiceImpl implements RecordsService {
 
 				if (userAllowanceDetailsCollection == null) {
 					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
+					Aggregation aggregation = Aggregation.newAggregation(Aggregation
+							.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 									.and("userState").is("USERSTATECOMPLETE")));
 
 					List<UserCollection> userCollections = mongoTemplate
