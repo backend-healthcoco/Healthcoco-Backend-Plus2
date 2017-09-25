@@ -65,7 +65,7 @@ public class AsyncService {
 		System.out.println("task start");
 		System.out.println("Execute method asynchronously. " + Thread.currentThread().getName());
 		UserFakeRequestDetailResponse detailResponse = getUserFakeRequestCount(userId);
-		if (detailResponse.getNoOfAttemptInHour() >= Integer.parseInt(requestLimitForday)
+		if (detailResponse.getNoOfAttemptInHour() >= Integer.parseInt(requestLimitForhour)
 				|| detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
 
 			if (blockUserCollection != null) {
