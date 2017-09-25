@@ -42,7 +42,8 @@ public class Locale extends GenericCollection {
 	private Boolean isLocaleRecommended = false;
 	private Boolean isAcceptRequest = true;
 	private Double minimumAmountForDelivery = 0.0;
-
+	private Boolean isFavourite = false;
+	
 	public List<String> getPaymentInfos() {
 		return paymentInfos;
 	}
@@ -299,23 +300,6 @@ public class Locale extends GenericCollection {
 		this.callingNumber = callingNumber;
 	}
 
-	@Override
-	public String toString() {
-		return "Locale [id=" + id + ", localeName=" + localeName + ", registeredOwnerName=" + registeredOwnerName
-				+ ", licenseNumber=" + licenseNumber + ", localeImages=" + localeImages + ", logoUrl=" + logoUrl
-				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", contactNumber=" + contactNumber + ", callingNumber="
-				+ callingNumber + ", alternateContactNumbers=" + alternateContactNumbers + ", localeWorkingSchedules="
-				+ localeWorkingSchedules + ", address=" + address + ", localeAddress=" + localeAddress + ", websiteUrl="
-				+ websiteUrl + ", localeEmailAddress=" + localeEmailAddress + ", isTwentyFourSevenOpen="
-				+ isTwentyFourSevenOpen + ", localeUId=" + localeUId + ", openSince=" + openSince + ", userState="
-				+ userState + ", isActivate=" + isActivate + ", isLocaleListed=" + isLocaleListed
-				+ ", localeRankingCount=" + localeRankingCount + ", noOfLocaleRecommendation="
-				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
-				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", localeType="
-				+ localeType + ", isPasswordVerified=" + isPasswordVerified + ", isLocaleRecommended="
-				+ isLocaleRecommended + "]";
-	}
-
 	public Boolean getIsAcceptRequest() {
 		return isAcceptRequest;
 	}
@@ -332,4 +316,30 @@ public class Locale extends GenericCollection {
 		this.minimumAmountForDelivery = minimumAmountForDelivery;
 	}
 
+	public Boolean getIsFavourite() {
+		return isFavourite;
+	}
+
+	public void setIsFavourite(Boolean isFavourite) {
+		this.isFavourite = isFavourite;
+	}
+
+	@Override
+	public String toString() {
+		return "Locale [id=" + id + ", localeName=" + localeName + ", registeredOwnerName=" + registeredOwnerName
+				+ ", licenseNumber=" + licenseNumber + ", localeImages=" + localeImages + ", logoUrl=" + logoUrl
+				+ ", logoThumbnailUrl=" + logoThumbnailUrl + ", contactNumber=" + contactNumber + ", callingNumber="
+				+ callingNumber + ", alternateContactNumbers=" + alternateContactNumbers + ", localeWorkingSchedules="
+				+ localeWorkingSchedules + ", address=" + address + ", localeAddress=" + localeAddress + ", websiteUrl="
+				+ websiteUrl + ", localeEmailAddress=" + localeEmailAddress + ", isTwentyFourSevenOpen="
+				+ isTwentyFourSevenOpen + ", pharmacyType=" + pharmacyType + ", isGenericMedicineAvailable="
+				+ isGenericMedicineAvailable + ", localeUId=" + localeUId + ", openSince=" + openSince + ", userState="
+				+ userState + ", isActivate=" + isActivate + ", isLocaleListed=" + isLocaleListed
+				+ ", localeRankingCount=" + localeRankingCount + ", noOfLocaleRecommendation="
+				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
+				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", paymentInfos="
+				+ paymentInfos + ", localeType=" + localeType + ", isPasswordVerified=" + isPasswordVerified
+				+ ", isLocaleRecommended=" + isLocaleRecommended + ", isAcceptRequest=" + isAcceptRequest
+				+ ", minimumAmountForDelivery=" + minimumAmountForDelivery + ", isFavourite=" + isFavourite + "]";
+	}
 }

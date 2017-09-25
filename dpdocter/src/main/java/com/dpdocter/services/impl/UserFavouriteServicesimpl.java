@@ -1,7 +1,6 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +23,6 @@ import com.dpdocter.beans.DoctorInfo;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.beans.LocaleImage;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
-import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.UserResourceFavouriteCollection;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.enums.Resource;

@@ -58,6 +58,7 @@ import com.dpdocter.enums.CardioPermissionEnum;
 import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -71,6 +72,7 @@ import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.request.DoctorAchievementAddEditRequest;
 import com.dpdocter.request.DoctorAddEditFacilityRequest;
 import com.dpdocter.request.DoctorAppointmentNumbersAddEditRequest;
@@ -150,6 +152,9 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 	@Autowired
 	DynamicUIService dynamicUIService;
 
+	@Autowired
+	private UserResourceFavouriteRepository userResourceFavouriteRepository;
+	
 	@Override
 	@Transactional
 	public DoctorNameAddEditRequest addEditName(DoctorNameAddEditRequest request) {
@@ -727,6 +732,11 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId));
 					if (recommendationsCollection != null)
 						doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
+					
+					
+					Integer favCount = userResourceFavouriteRepository.findCount(doctorClinicProfileLookupResponse.getDoctorId(), Resource.DOCTOR.getType()
+									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId), false);
+					if(favCount != null && favCount > 0)doctorClinic.setIsFavourite(true);
 				}
 			}
 		} catch (BusinessException be) {

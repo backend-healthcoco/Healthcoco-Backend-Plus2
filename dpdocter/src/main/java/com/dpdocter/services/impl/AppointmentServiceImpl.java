@@ -100,6 +100,7 @@ import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.SMSFormatRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
@@ -122,6 +123,7 @@ import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SMSServices;
 import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.services.UserFavouriteService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -237,6 +239,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Autowired
 	private TransactionalManagementService transnationalService;
 
+	@Autowired
+	private UserResourceFavouriteRepository userResourceFavouriteRepository;
+	
+	@Autowired
+	private UserFavouriteService userFavouriteService;
+	
 	@Override
 	@Transactional
 	public City addCity(City city) {
@@ -727,6 +735,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			// New functionality for registering patient while adding
 			// appointment
 
+			ObjectId doctorId = new ObjectId(request.getDoctorId()), locationId = new ObjectId(request.getLocationId()), hospitalId = new ObjectId(request.getHospitalId()), patientId = null;
 			if (request.getPatientId() == null || request.getPatientId().isEmpty()) {
 				if (request.getLocalPatientName() == null || request.getMobileNumber() == null) {
 					throw new BusinessException(ServiceError.InvalidInput, "Patient not selected");
@@ -745,10 +754,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 				}
 				transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
 				esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
+				patientId = new ObjectId(request.getPatientId());
 			} else if (!DPDoctorUtils.anyStringEmpty(request.getPatientId())) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						new ObjectId(request.getPatientId()), new ObjectId(request.getLocationId()),
-						new ObjectId(request.getHospitalId()));
+				
+				patientId = new ObjectId(request.getPatientId());
+				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(patientId, locationId, hospitalId);
 				if (patient == null) {
 					PatientRegistrationRequest patientRegistrationRequest = new PatientRegistrationRequest();
 					patientRegistrationRequest.setDoctorId(request.getDoctorId());
@@ -765,36 +775,32 @@ public class AppointmentServiceImpl implements AppointmentService {
 					List<ObjectId> consultantDoctorIds = patient.getConsultantDoctorIds();
 					if (consultantDoctorIds == null)
 						consultantDoctorIds = new ArrayList<ObjectId>();
-					if (!consultantDoctorIds.contains(new ObjectId(request.getDoctorId())))
-						consultantDoctorIds.add(new ObjectId(request.getDoctorId()));
+					if (!consultantDoctorIds.contains(doctorId))
+						consultantDoctorIds.add(doctorId);
 					patient.setConsultantDoctorIds(consultantDoctorIds);
 					patient.setUpdatedTime(new Date());
 					patientRepository.save(patient);
 				}
 			}
 
-			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			LocationCollection locationCollection = locationRepository.findOne(new ObjectId(request.getLocationId()));
+			UserCollection userCollection = userRepository.findOne(doctorId);
+			LocationCollection locationCollection = locationRepository.findOne(locationId);
 			PatientCard patientCard = null;
 			List<PatientCard> patientCards = mongoTemplate
 					.aggregate(Aggregation.newAggregation(
-							Aggregation.match(new Criteria("userId").is(new ObjectId(request.getPatientId()))
-									.and("locationId").is(new ObjectId(request.getLocationId())).and("hospitalId")
-									.is(new ObjectId(request.getHospitalId()))),
+							Aggregation.match(new Criteria("userId").is(patientId).and("locationId").is(locationId).and("hospitalId").is(hospitalId)),
 							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user")),
 							PatientCollection.class, PatientCard.class)
 					.getMappedResults();
 			if (patientCards != null && !patientCards.isEmpty())
 				patientCard = patientCards.get(0);
-			AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-					new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
+			AppointmentCollection appointmentCollection = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(doctorId, locationId,
 					request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),
 					request.getToDate(), AppointmentState.CANCEL.getState());
 
 			if (userCollection != null && locationCollection != null && patientCard != null) {
 
-				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(
-						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()));
+				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorId, locationId);
 
 				if (appointmentCollection == null) {
 					appointmentCollection = new AppointmentCollection();
@@ -844,6 +850,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						} else {
 							appointmentCollection.setState(AppointmentState.NEW);
 						}
+						
+						userFavouriteService.addRemoveFavourites(request.getPatientId(), request.getDoctorId(), Resource.DOCTOR.getType(), request.getLocationId(), false);
 					}
 					appointmentCollection = appointmentRepository.save(appointmentCollection);
 
@@ -1693,7 +1701,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		List<Doctor> doctors = new ArrayList<Doctor>();
 		try {
-			Criteria criteria = new Criteria().andOperator(new Criteria("id").is(new ObjectId(locationId)),
+			ObjectId locationObjectId = new ObjectId(locationId);
+			
+			Criteria criteria = new Criteria().andOperator(new Criteria("id").is(locationObjectId),
 					new Criteria("isLab").is(true));
 			location = mongoTemplate
 					.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
@@ -1704,12 +1714,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (location == null) {
 				return null;
 			} else {
+				ObjectId patientObjectId = new ObjectId(patientId);
 				RecommendationsCollection recommendationsCollection = new RecommendationsCollection();
 				if (!DPDoctorUtils.anyStringEmpty(patientId)) {
 					recommendationsCollection = recommendationsRepository.findByDoctorIdLocationIdAndPatientId(null,
-							new ObjectId(locationId), new ObjectId(patientId));
+							locationObjectId, patientObjectId);
 					if (recommendationsCollection != null)
 						location.setIsClinicRecommended(!recommendationsCollection.getDiscarded());
+					
+					if(location.getIsLab()) {
+						Integer favCount = userResourceFavouriteRepository.findCount(locationObjectId, Resource.LAB.getType(), null, patientObjectId, false);
+						if(favCount != null && favCount > 0)location.setIsFavourite(true);
+					}
 				}
 				
 				location.setClinicAddress((!DPDoctorUtils.anyStringEmpty(location.getStreetAddress())

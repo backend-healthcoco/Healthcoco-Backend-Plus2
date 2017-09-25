@@ -18,12 +18,14 @@ import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.RecommendationType;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.LocaleRepository;
 import com.dpdocter.repository.RecommendationsRepository;
 import com.dpdocter.repository.UserRepository;
+import com.dpdocter.repository.UserResourceFavouriteRepository;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.LocaleService;
@@ -53,6 +55,9 @@ public class LocaleServiceImpl implements LocaleService {
 	@Value(value = "${image.path}")
 	private String imagePath;
 
+	@Autowired
+	private UserResourceFavouriteRepository userResourceFavouriteRepository;
+	
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
 
 	@Override
@@ -92,11 +97,15 @@ public class LocaleServiceImpl implements LocaleService {
 		}
 		BeanUtil.map(localeCollection, response);
 		if (localeCollection != null && !DPDoctorUtils.anyStringEmpty(userId)) {
+			ObjectId patientId = new ObjectId(userId);
 			RecommendationsCollection recommendationsCollection = recommendationsRepository
-					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), new ObjectId(userId));
+					.findByDoctorIdLocationIdAndPatientId(null, localeCollection.getId(), patientId);
 			if (recommendationsCollection != null) {
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
 			}
+			
+			Integer favCount = userResourceFavouriteRepository.findCount(localeCollection.getId(), Resource.PHARMACY.getType(), null, patientId, false);
+			if(favCount != null && favCount > 0)response.setIsFavourite(true);
 		}
 		return response;
 	}

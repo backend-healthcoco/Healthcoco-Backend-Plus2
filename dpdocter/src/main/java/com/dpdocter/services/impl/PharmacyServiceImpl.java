@@ -35,6 +35,7 @@ import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.ReplyType;
+import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -54,6 +55,7 @@ import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.scheduler.AsyncService;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
+import com.dpdocter.services.UserFavouriteService;
 import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
@@ -111,6 +113,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 	@Autowired
 	private BlockUserRepository blockUserRepository;
 
+	@Autowired
+	private UserFavouriteService userFavouriteService;
+	
 	@Override
 	@Transactional
 	public UserSearchRequest addSearchRequest(UserSearchRequest request) {
@@ -380,6 +385,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
 				BeanUtil.map(request, response);
+				
+				userFavouriteService.addRemoveFavourites(request.getUserId(), request.getLocaleId(), Resource.PHARMACY.getType(), null, false);
+				
 			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "already requested");
 			}

@@ -86,6 +86,8 @@ public class Location {
 	private int noOfClinicRecommendations = 0;
 
 	private Boolean isClinicRecommended = false;
+	
+	private Boolean isFavourite = false;
 
 	private Hospital hospital;
 
@@ -453,12 +455,13 @@ public class Location {
 		this.associatedLabs = associatedLabs;
 	}
 
-	/*
-	 * public String getDefaultParentLabId() { return defaultParentLabId; }
-	 * 
-	 * public void setDefaultParentLabId(String defaultParentLabId) {
-	 * this.defaultParentLabId = defaultParentLabId; }
-	 */
+	public Boolean getIsFavourite() {
+		return isFavourite;
+	}
+
+	public void setIsFavourite(Boolean isFavourite) {
+		this.isFavourite = isFavourite;
+	}
 
 	@Override
 	public String toString() {
@@ -476,9 +479,8 @@ public class Location {
 				+ ", isLocationListed=" + isLocationListed + ", clinicRankingCount=" + clinicRankingCount
 				+ ", locationType=" + locationType + ", patientInitial=" + patientInitial + ", patientCounter="
 				+ patientCounter + ", noOfClinicRecommendations=" + noOfClinicRecommendations + ", isClinicRecommended="
-				+ isClinicRecommended + ", hospital=" + hospital + ", invoiceInitial=" + invoiceInitial
-				+ ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview + ", isParent="
-				+ isParent + ", associatedLabs=" + associatedLabs + "]";
+				+ isClinicRecommended + ", isFavourite=" + isFavourite + ", hospital=" + hospital + ", invoiceInitial="
+				+ invoiceInitial + ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview
+				+ ", isParent=" + isParent + ", associatedLabs=" + associatedLabs + "]";
 	}
-
 }
