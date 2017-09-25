@@ -154,7 +154,7 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 
 	@Autowired
 	private UserResourceFavouriteRepository userResourceFavouriteRepository;
-	
+
 	@Override
 	@Transactional
 	public DoctorNameAddEditRequest addEditName(DoctorNameAddEditRequest request) {
@@ -732,11 +732,13 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId));
 					if (recommendationsCollection != null)
 						doctorClinic.setIsDoctorRecommended(!recommendationsCollection.getDiscarded());
-					
-					
-					Integer favCount = userResourceFavouriteRepository.findCount(doctorClinicProfileLookupResponse.getDoctorId(), Resource.DOCTOR.getType()
-									doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId), false);
-					if(favCount != null && favCount > 0)doctorClinic.setIsFavourite(true);
+
+					Integer favCount = userResourceFavouriteRepository.findCount(
+							doctorClinicProfileLookupResponse.getDoctorId(), Resource.DOCTOR.getType(),
+							doctorClinicProfileLookupResponse.getLocationId(), new ObjectId(patientId), false);
+
+					if (favCount != null && favCount > 0)
+						doctorClinic.setIsFavourite(true);
 				}
 			}
 		} catch (BusinessException be) {
@@ -1086,17 +1088,17 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 							doctorCollection.setSpecialities(null);
 							assignDefaultUIPermissions(request.getDoctorId());
 							specialitiesresponse = null;
-							parentSpecialitiesresponse=null;
+							parentSpecialitiesresponse = null;
 						}
 					} else {
 						doctorCollection.setSpecialities(null);
 						assignDefaultUIPermissions(request.getDoctorId());
 						specialitiesresponse = null;
-						parentSpecialitiesresponse=null;
+						parentSpecialitiesresponse = null;
 					}
 				} else {
 					doctorCollection.setSpecialities(null);
-					
+
 				}
 
 				if (request.getProfileImage() != null) {
