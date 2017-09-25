@@ -285,8 +285,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(recordsURL);
 				recordsCollection.setRecordsPath(recordsURL);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(
-							FilenameUtils.getBaseName(recordsURL).substring(0, recordsURL.length() - 13));
+					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			if (request.getFileDetails() != null) {
 				String recordLabel = request.getFileDetails().getFileName();
