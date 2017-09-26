@@ -211,4 +211,6 @@ public interface ClinicalNotesService {
 	IndirectLarygoscopyExamination deleteIndirectLarygoscopyExam(String id, String doctorId, String locationId,
 			String hospitalId, Boolean discarded);
 
+	List<Diagnoses> getDiagnosesListBySpeciality(String speciality);
+
 }

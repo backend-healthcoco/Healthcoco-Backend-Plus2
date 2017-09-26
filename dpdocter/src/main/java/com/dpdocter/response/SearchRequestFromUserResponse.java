@@ -24,6 +24,8 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 	private Integer countForNo;
 	private Integer countForYes;
 
+	private Boolean isCancelled = false;
+
 	public String getId() {
 		return id;
 	}
@@ -102,6 +104,14 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	public void setCountForYes(Integer countForYes) {
 		this.countForYes = countForYes;
+	}
+
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
 	}
 
 	@Override

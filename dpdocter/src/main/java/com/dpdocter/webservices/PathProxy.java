@@ -333,6 +333,8 @@ public interface PathProxy {
 		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
 
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
+		
+		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
 
 	}
 
@@ -1007,6 +1009,8 @@ public interface PathProxy {
 		public static final String ADD_SPECIALITY = "/addSpecialization";
 
 		public static final String SEND_SMS_TO_DOCTOR = "/smsToDoctor";
+		
+		public static final String SEND_SMS_TO_PHARMACY = "/smsToPharmacy";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";

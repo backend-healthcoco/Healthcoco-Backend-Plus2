@@ -34,6 +34,9 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 	@Field
 	private Double longitude;
 
+	@Field
+	private Boolean isCancelled = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -96,6 +99,14 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 
 	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
+	}
+
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
 	}
 
 	@Override
