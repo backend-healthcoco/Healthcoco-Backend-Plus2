@@ -13,7 +13,7 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	private PrescriptionRequest prescriptionRequest;
 
-	private String pharmacyId;
+	private String localeId;
 
 	private String location;
 
@@ -23,6 +23,8 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	private Integer countForNo;
 	private Integer countForYes;
+
+	private String pharmacyName;
 
 	public String getId() {
 		return id;
@@ -56,12 +58,20 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 		this.prescriptionRequest = prescriptionRequest;
 	}
 
-	public String getPharmacyId() {
-		return pharmacyId;
+	public String getLocaleId() {
+		return localeId;
 	}
 
-	public void setPharmacyId(String pharmacyId) {
-		this.pharmacyId = pharmacyId;
+	public void setLocaleId(String localeId) {
+		this.localeId = localeId;
+	}
+
+	public String getPharmacyName() {
+		return pharmacyName;
+	}
+
+	public void setPharmacyName(String pharmacyName) {
+		this.pharmacyName = pharmacyName;
 	}
 
 	public String getLocation() {
@@ -107,8 +117,9 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 	@Override
 	public String toString() {
 		return "SearchRequestFromUserResponse [id=" + id + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
-				+ ", prescriptionRequest=" + prescriptionRequest + ", pharmacyId=" + pharmacyId + ", location="
-				+ location + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId + ", location=" + location
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", countForNo=" + countForNo
+				+ ", countForYes=" + countForYes + ", pharmacyName=" + pharmacyName + "]";
 	}
 
 }

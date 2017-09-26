@@ -30,6 +30,7 @@ import com.amazonaws.util.json.Jackson;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.PatientNumberAndUserIds;
 import com.dpdocter.collections.BlockUserCollection;
+import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
@@ -588,6 +589,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 						ReplyType.NO.toString());
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
+				LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
+				if(localeCollection != null)
+				{
+					searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+				}
 			}
 
 		} catch (Exception e) {
