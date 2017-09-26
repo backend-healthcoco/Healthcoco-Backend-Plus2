@@ -648,6 +648,8 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			
+			
+			
 			if (!DPDoctorUtils.anyStringEmpty(daughterLabId)) {
 				criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			}

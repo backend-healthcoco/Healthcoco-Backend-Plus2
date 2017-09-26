@@ -28,8 +28,10 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.Locale;
 import com.dpdocter.beans.PatientNumberAndUserIds;
 import com.dpdocter.collections.BlockUserCollection;
+import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
@@ -52,6 +54,7 @@ import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.scheduler.AsyncService;
+import com.dpdocter.services.LocaleService;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
 import com.mongodb.BasicDBObject;
@@ -110,6 +113,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private BlockUserRepository blockUserRepository;
+	
+	@Autowired
+	private LocaleService localeService;
 
 	@Override
 	@Transactional
@@ -587,6 +593,12 @@ public class PharmacyServiceImpl implements PharmacyService {
 						ReplyType.NO.toString());
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
+				
+				LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(searchRequestFromUserResponse.getPharmacyId()));
+				if(localeCollection != null)
+				{
+					searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+				}
 			}
 
 		} catch (Exception e) {

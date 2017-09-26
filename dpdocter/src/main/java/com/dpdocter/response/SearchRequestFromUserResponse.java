@@ -15,6 +15,8 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	private String pharmacyId;
 
+	private String pharmacyName;
+
 	private String location;
 
 	private Double latitude;
@@ -112,6 +114,14 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	public void setIsCancelled(Boolean isCancelled) {
 		this.isCancelled = isCancelled;
+	}
+
+	public String getPharmacyName() {
+		return pharmacyName;
+	}
+
+	public void setPharmacyName(String pharmacyName) {
+		this.pharmacyName = pharmacyName;
 	}
 
 	@Override
