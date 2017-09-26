@@ -288,7 +288,6 @@ public class RecordsServiceImpl implements RecordsService {
 					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			if (request.getFileDetails() != null) {
-				String recordLabel = request.getFileDetails().getFileName();
 				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 				String path = "records" + File.separator + request.getPatientId();
 
@@ -301,7 +300,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 				recordsCollection.setRecordsPath(recordPath);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(recordLabel);
+					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -1602,7 +1601,7 @@ public class RecordsServiceImpl implements RecordsService {
 				if (request.getRecordsFiles() != null && !request.getRecordsFiles().isEmpty()) {
 					UserAllowanceDetailsCollection userAllowanceDetailsCollection = userAllowanceDetailsRepository
 							.findByUserId(new ObjectId(request.getPatientId()));
-					if(oldRecord!=null){
+					if (oldRecord != null) {
 						for (RecordsFile file : oldRecord.getRecordsFiles()) {
 
 							userAllowanceDetailsCollection.setAvailableRecordsSizeInMB(
@@ -1631,7 +1630,6 @@ public class RecordsServiceImpl implements RecordsService {
 					request.setUploadedBy(RoleEnum.PATIENT);
 				}
 			}
-			
 
 			userRecordsCollection = new UserRecordsCollection();
 			BeanUtil.map(request, userRecordsCollection);
@@ -1641,7 +1639,7 @@ public class RecordsServiceImpl implements RecordsService {
 				userRecordsCollection.setCreatedBy(oldRecord.getCreatedBy());
 				userRecordsCollection.setDiscarded(oldRecord.getDiscarded());
 				userRecordsCollection.setUniqueEmrId(oldRecord.getUniqueEmrId());
-				
+
 			} else {
 				userRecordsCollection
 						.setUniqueEmrId(UniqueIdInitial.USERREPORTS.getInitial() + DPDoctorUtils.generateRandomId());
@@ -2034,8 +2032,8 @@ public class RecordsServiceImpl implements RecordsService {
 
 				if (userAllowanceDetailsCollection == null) {
 					userAllowanceDetailsCollection = new UserAllowanceDetailsCollection();
-					Aggregation aggregation = Aggregation.newAggregation(
-							Aggregation.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
+					Aggregation aggregation = Aggregation.newAggregation(Aggregation
+							.match(new Criteria("userName").regex("^" + userCollection.getMobileNumber(), "i")
 									.and("userState").is("USERSTATECOMPLETE")));
 
 					List<UserCollection> userCollections = mongoTemplate
