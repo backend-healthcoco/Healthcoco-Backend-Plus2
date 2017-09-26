@@ -589,10 +589,12 @@ public class PharmacyServiceImpl implements PharmacyService {
 						ReplyType.NO.toString());
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
-				LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
-				if(localeCollection != null)
-				{
-					searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+				if (searchRequestFromUserResponse.getLocaleId() != null) {
+					LocaleCollection localeCollection = localeRepository
+							.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
+					if (localeCollection != null) {
+						searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+					}
 				}
 			}
 
