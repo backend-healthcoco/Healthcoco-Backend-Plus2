@@ -594,7 +594,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
 				
-				LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(searchRequestFromUserResponse.getPharmacyId()));
+				LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
 				if(localeCollection != null)
 				{
 					searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
