@@ -69,6 +69,7 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -109,6 +110,7 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.SystemExamCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -9350,4 +9352,19 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		return response;
 	}
 
+	
+	@Override
+	@Transactional
+	public List<Diagnoses> getDiagnosesListBySpeciality(String speciality) {
+		List<Diagnoses> response = null;
+		Aggregation aggregation = null;
+		Criteria criteria = new Criteria().and("speciality").in(speciality);
+		criteria.and("category").exists(true);
+		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+				Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+		AggregationResults<Diagnoses> aggregationResults = mongoTemplate.aggregate(aggregation,
+				DiagnosisCollection.class, Diagnoses.class);
+		response = aggregationResults.getMappedResults();
+		return response;
+	}
 }

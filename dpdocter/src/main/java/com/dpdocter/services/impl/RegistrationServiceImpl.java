@@ -34,6 +34,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
@@ -74,6 +75,7 @@ import com.dpdocter.beans.SMS;
 import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
@@ -94,6 +96,7 @@ import com.dpdocter.collections.ReferencesCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TokenCollection;
+import com.dpdocter.collections.UserAddressCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
 import com.dpdocter.collections.UserRoleCollection;
@@ -133,6 +136,7 @@ import com.dpdocter.repository.RecordsRepository;
 import com.dpdocter.repository.ReferenceRepository;
 import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.TokenRepository;
+import com.dpdocter.repository.UserAddressRepository;
 import com.dpdocter.repository.UserLocationRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
@@ -278,6 +282,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Autowired
 	private UserRemindersRepository userRemindersRepository;
+
+	@Autowired
+	private UserAddressRepository userAddressRepository;
 
 	@Autowired
 	private JasperReportService jasperReportService;
@@ -3732,6 +3739,106 @@ public class RegistrationServiceImpl implements RegistrationService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting Patient Reminders");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public UserAddress addEditUserAddress(UserAddress request) {
+		UserAddress response = null;
+		try {
+			UserAddressCollection userAddressCollection = new UserAddressCollection();
+			
+			if(DPDoctorUtils.anyStringEmpty(request.getId())) {
+				BeanUtil.map(request, userAddressCollection);
+				List<UserCollection> users = null;
+				if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+					users = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
+							Aggregation.project("id")), UserCollection.class, UserCollection.class).getMappedResults();
+				}else {
+					users = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(request.getUserIds())),
+							Aggregation.limit(1),
+							Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"), Aggregation.unwind("user"), 
+							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "user.id")))), UserCollection.class, UserCollection.class).getMappedResults();
+				}if(users == null || users.isEmpty()) {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid mobileNumber or userID");
+				}
+				List<ObjectId> userIds = (List<ObjectId>) CollectionUtils.collect(users, new BeanToPropertyValueTransformer("id"));
+				userAddressCollection.setUserIds(userIds);
+				userAddressCollection.setCreatedTime(new Date());
+			}else {
+				userAddressCollection = userAddressRepository.findOne(new ObjectId(request.getId()));
+				userAddressCollection.setUpdatedTime(new Date());
+			}
+			Address address = userAddressCollection.getAddress();
+//			List<GeocodedLocation> geocodedLocations = locationServices
+//					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+//							? address.getStreetAddress() + ", " : "")
+//							+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+//									? address.getLandmarkDetails() + ", " : "")
+//							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
+//									? address.getLocality() + ", " : "")
+//							+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
+//									? address.getCity() + ", " : "")
+//							+ (!DPDoctorUtils.anyStringEmpty(address.getState())
+//									? address.getState() + ", " : "")
+//							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
+//									? address.getCountry() + ", " : "")
+//							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
+//									? address.getPostalCode() : ""));
+//			if (geocodedLocations != null && !geocodedLocations.isEmpty())
+//				BeanUtil.map(geocodedLocations.get(0), userAddressCollection.getAddress());
+			
+			userAddressCollection = userAddressRepository.save(userAddressCollection);
+			response = new UserAddress();
+			BeanUtil.map(userAddressCollection, response);
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
+		}
+		return response;
+	}
+
+	@Override
+	public List<UserAddress> getUserAddress(String userId, String mobileNumber, Boolean discarded) {
+		List<UserAddress> response = null;
+		try {
+			Criteria criteria = new Criteria();
+			if(!DPDoctorUtils.anyStringEmpty(userId))criteria.and("userIds").is(new ObjectId(userId));
+			if(!DPDoctorUtils.anyStringEmpty(mobileNumber))criteria.and("mobileNumber").is(mobileNumber);
+			
+			if (!discarded)criteria.and("discarded").is(discarded);
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), UserAddressCollection.class, UserAddress.class).getMappedResults();
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting user address");
+		}
+		return response;
+	}
+
+	@Override
+	public UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded) {
+		UserAddress response = null;
+		try {
+			UserAddressCollection userAddressCollection = null;
+			if(!DPDoctorUtils.anyStringEmpty(mobileNumber))userAddressCollection = userAddressRepository.find(new ObjectId(addressId), mobileNumber);
+			else userAddressCollection = userAddressRepository.find(new ObjectId(addressId), new ObjectId(userId));
+			if(userAddressCollection != null) {
+				userAddressCollection.setDiscarded(discarded);
+				userAddressCollection.setUpdatedTime(new Date());
+				userAddressCollection = userAddressRepository.save(userAddressCollection);
+				response = new UserAddress();
+				BeanUtil.map(userAddressCollection, response);
+			}else {
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid addressId or userId");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
 		}
 		return response;
 	}

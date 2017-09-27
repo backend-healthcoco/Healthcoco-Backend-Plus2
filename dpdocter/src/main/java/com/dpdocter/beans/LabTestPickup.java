@@ -25,6 +25,7 @@ public class LabTestPickup extends GenericCollection {
 	private String requestId;
 	private Boolean isCompleted = false;
 	private String collectionBoyId;
+	private String serialNumber;
 
 	public String getId() {
 		return id;
@@ -86,14 +87,24 @@ public class LabTestPickup extends GenericCollection {
 		return doctorId;
 	}
 
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "LabTestPickup [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN=" + parentLabCRN
-				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSamples=" + labTestSamples
-				+ ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
-				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
-				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
-				+ numberOfSamplesPicked + ", requestId=" + requestId + "]";
+				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
+				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
+				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
+				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
+				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
+				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId
+				+ ", serialNumber=" + serialNumber + "]";
 	}
 
 	public void setDoctorId(String doctorId) {

@@ -39,6 +39,8 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 	@Field
 	private List<String> pharmacyType;
 	
+	private Boolean isCancelled = false;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -109,6 +111,14 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 
 	public void setPharmacyType(List<String> pharmacyType) {
 		this.pharmacyType = pharmacyType;
+	}
+	
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
 	}
 
 	@Override

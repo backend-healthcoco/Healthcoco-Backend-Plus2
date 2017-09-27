@@ -52,6 +52,7 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
+import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.collections.OralCavityAndThroatExaminationCollection;
 import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
@@ -1873,4 +1874,18 @@ public class ClinicalNotesApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
+	@GET
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY, notes = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
+	public Response<Diagnoses> getServicesBySpeciality(@QueryParam("speciality") String speciality) {
+		if (DPDoctorUtils.anyStringEmpty(speciality)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		List<Diagnoses> diagnoses = clinicalNotesService.getDiagnosesListBySpeciality(speciality);
+		
+		Response<Diagnoses> response = new Response<Diagnoses>();
+		response.setDataList(diagnoses);
+		return response;
+	}
 }

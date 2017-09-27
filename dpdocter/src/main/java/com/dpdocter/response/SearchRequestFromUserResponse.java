@@ -13,7 +13,9 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	private PrescriptionRequest prescriptionRequest;
 
-	private String pharmacyId;
+	private String localeId;
+
+	private String pharmacyName;
 
 	private String location;
 
@@ -23,6 +25,8 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	private Integer countForNo;
 	private Integer countForYes;
+
+	private Boolean isCancelled = false;
 
 	public String getId() {
 		return id;
@@ -56,12 +60,12 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 		this.prescriptionRequest = prescriptionRequest;
 	}
 
-	public String getPharmacyId() {
-		return pharmacyId;
+	public String getLocaleId() {
+		return localeId;
 	}
 
-	public void setPharmacyId(String pharmacyId) {
-		this.pharmacyId = pharmacyId;
+	public void setLocaleId(String localeId) {
+		this.localeId = localeId;
 	}
 
 	public String getLocation() {
@@ -104,11 +108,28 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 		this.countForYes = countForYes;
 	}
 
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
+	}
+
+	public String getPharmacyName() {
+		return pharmacyName;
+	}
+
+	public void setPharmacyName(String pharmacyName) {
+		this.pharmacyName = pharmacyName;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestFromUserResponse [id=" + id + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
-				+ ", prescriptionRequest=" + prescriptionRequest + ", pharmacyId=" + pharmacyId + ", location="
-				+ location + ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId + ", pharmacyName="
+				+ pharmacyName + ", location=" + location + ", latitude=" + latitude + ", longitude=" + longitude
+				+ ", countForNo=" + countForNo + ", countForYes=" + countForYes + ", isCancelled=" + isCancelled + "]";
 	}
 
 }
