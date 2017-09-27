@@ -12,6 +12,7 @@
 	</mongo:mongo>
 	<mongo:db-factory dbname="${db.name}" host="${db.host}"
 		mongo-ref="mongo" port="${db.port}"/>
+		
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoConverter" ref="mappingConverter" />
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />

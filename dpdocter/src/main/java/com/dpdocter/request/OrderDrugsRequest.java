@@ -15,11 +15,11 @@ public class OrderDrugsRequest {
 
 	private WayOfOrder wayOfOrder;
 	
-	private LocaleWorkingHours time;
+	private LocaleWorkingHours pickUpTime;
 	
-	private String day;
+	private String pickUpDay;
 	
-	private String address;
+	private String pickUpAddress;
 	
 	public String getLocaleId() {
 		return localeId;
@@ -61,35 +61,34 @@ public class OrderDrugsRequest {
 		this.wayOfOrder = wayOfOrder;
 	}
 
-	public LocaleWorkingHours getTime() {
-		return time;
+	public LocaleWorkingHours getPickUpTime() {
+		return pickUpTime;
 	}
 
-	public void setTime(LocaleWorkingHours time) {
-		this.time = time;
+	public void setPickUpTime(LocaleWorkingHours pickUpTime) {
+		this.pickUpTime = pickUpTime;
 	}
 
-	public String getDay() {
-		return day;
+	public String getPickUpDay() {
+		return pickUpDay;
 	}
 
-	public void setDay(String day) {
-		this.day = day;
+	public void setPickUpDay(String pickUpDay) {
+		this.pickUpDay = pickUpDay;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getPickUpAddress() {
+		return pickUpAddress;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setPickUpAddress(String pickUpAddress) {
+		this.pickUpAddress = pickUpAddress;
 	}
 
 	@Override
 	public String toString() {
 		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
-				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", time=" + time + ", day="
-				+ day + ", address=" + address + "]";
+				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", pickUpTime=" + pickUpTime
+				+ ", pickUpDay=" + pickUpDay + ", pickUpAddress=" + pickUpAddress + "]";
 	}
-
 }
