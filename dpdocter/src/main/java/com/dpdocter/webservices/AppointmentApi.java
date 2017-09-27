@@ -505,7 +505,10 @@ public class AppointmentApi {
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 			@QueryParam("doctorId") String doctorId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
-
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, doctorId)) {
+			logger.warn("invalidInput");
+			throw new BusinessException(ServiceError.InvalidInput, "invalidInput");
+		}
 		List<CustomAppointment> customAppointments = appointmentService.getCustomAppointments(page, size, locationId,
 				hospitalId, doctorId, updatedTime, discarded);
 
@@ -519,7 +522,10 @@ public class AppointmentApi {
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_AVG_DETAIL, notes = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_AVG_DETAIL)
 	public Response<AVGTimeDetail> getCustomAppointmentAVGTimeDetail(@QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("doctorId") String doctorId) {
-
+		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, doctorId)) {
+			logger.warn("invalidInput");
+			throw new BusinessException(ServiceError.InvalidInput, "invalidInput");
+		}
 		AVGTimeDetail avgTimeDetail = appointmentService.getCustomAppointmentAVGTimeDetail(locationId, hospitalId,
 				doctorId);
 
