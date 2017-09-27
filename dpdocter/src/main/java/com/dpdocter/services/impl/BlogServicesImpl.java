@@ -102,7 +102,7 @@ public class BlogServicesImpl implements BlogService {
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
-					
+
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
@@ -110,7 +110,6 @@ public class BlogServicesImpl implements BlogService {
 					if (favouriteBlogsCollection != null) {
 						blog.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
 					}
-					
 
 					if (blogLikesCollection != null) {
 						blog.setIsliked(!blogLikesCollection.getDiscarded());
@@ -291,7 +290,7 @@ public class BlogServicesImpl implements BlogService {
 				blogLikesCollection.setUpdatedTime(new Date());
 				blogLikesCollection = blogLikesRepository.save(blogLikesCollection);
 				blogCollection = blogRepository.save(blogCollection);
-				
+
 				response = new Blog();
 				FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
 						.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
@@ -393,6 +392,7 @@ public class BlogServicesImpl implements BlogService {
 			response = new ArrayList<Blog>();
 			for (BlogCollection blogCollection : blogCollections) {
 				Blog blog = new Blog();
+				blog.setIsFavourite(true);
 				BeanUtil.map(blogCollection, blog);
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
