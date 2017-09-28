@@ -1202,6 +1202,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_RECOMMENDATION = "/addEditRecommendation";
 		public static final String ORDER_DRUG = "/orderDrugs";
 		public static final String GET_USER_FAKE_REQUEST_COUNT = "/getFakeRequestCount/{patientId}";
+		public static final String GET_PATIENT_ORDERS = "/patient/orders/{userId}";
+		public static final String GET_PATIENT_REQUEST = "/patient/requests/{userId}";
 	}
 
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";

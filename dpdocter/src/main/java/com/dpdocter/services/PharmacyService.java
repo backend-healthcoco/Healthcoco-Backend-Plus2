@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.UserSearchRequest;
+import com.dpdocter.response.OrderDrugsResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
@@ -27,5 +28,9 @@ public interface PharmacyService {
 			String replyType, int page, int size, Double latitude, Double longitude);
 
 	UserFakeRequestDetailResponse getUserFakeRequestCount(String userId);
+
+	List<OrderDrugsResponse> getPatientOrders(String userId, int page, int size);
+
+	List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size);
 
 }

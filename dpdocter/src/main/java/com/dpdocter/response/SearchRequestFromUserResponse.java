@@ -1,5 +1,8 @@
 package com.dpdocter.response;
 
+import java.util.List;
+
+import com.dpdocter.beans.Address;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.request.PrescriptionRequest;
 
@@ -24,10 +27,31 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 	private Double longitude;
 
 	private Integer countForNo;
+	
 	private Integer countForYes;
 
 	private Boolean isCancelled = false;
 
+	private String localeName;
+	
+	private Address localeAddress;
+	
+	private Boolean isTwentyFourSevenOpen = false;
+	
+	private List<String> pharmacyType;
+	
+	private Long noOfLocaleRecommendation;
+	
+	private Boolean isHomeDeliveryAvailable = false;
+	
+	private Double homeDeliveryRadius;
+	
+	private String paymentInfo;
+	
+	private List<String> paymentInfos;
+	
+	private Boolean isOrdered = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -124,12 +148,96 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 		this.pharmacyName = pharmacyName;
 	}
 
+	public String getLocaleName() {
+		return localeName;
+	}
+
+	public void setLocaleName(String localeName) {
+		this.localeName = localeName;
+	}
+
+	public Address getLocaleAddress() {
+		return localeAddress;
+	}
+
+	public void setLocaleAddress(Address localeAddress) {
+		this.localeAddress = localeAddress;
+	}
+
+	public Boolean getIsTwentyFourSevenOpen() {
+		return isTwentyFourSevenOpen;
+	}
+
+	public void setIsTwentyFourSevenOpen(Boolean isTwentyFourSevenOpen) {
+		this.isTwentyFourSevenOpen = isTwentyFourSevenOpen;
+	}
+
+	public List<String> getPharmacyType() {
+		return pharmacyType;
+	}
+
+	public void setPharmacyType(List<String> pharmacyType) {
+		this.pharmacyType = pharmacyType;
+	}
+
+	public Long getNoOfLocaleRecommendation() {
+		return noOfLocaleRecommendation;
+	}
+
+	public void setNoOfLocaleRecommendation(Long noOfLocaleRecommendation) {
+		this.noOfLocaleRecommendation = noOfLocaleRecommendation;
+	}
+
+	public Boolean getIsHomeDeliveryAvailable() {
+		return isHomeDeliveryAvailable;
+	}
+
+	public void setIsHomeDeliveryAvailable(Boolean isHomeDeliveryAvailable) {
+		this.isHomeDeliveryAvailable = isHomeDeliveryAvailable;
+	}
+
+	public Double getHomeDeliveryRadius() {
+		return homeDeliveryRadius;
+	}
+
+	public void setHomeDeliveryRadius(Double homeDeliveryRadius) {
+		this.homeDeliveryRadius = homeDeliveryRadius;
+	}
+
+	public String getPaymentInfo() {
+		return paymentInfo;
+	}
+
+	public void setPaymentInfo(String paymentInfo) {
+		this.paymentInfo = paymentInfo;
+	}
+
+	public List<String> getPaymentInfos() {
+		return paymentInfos;
+	}
+
+	public void setPaymentInfos(List<String> paymentInfos) {
+		this.paymentInfos = paymentInfos;
+	}
+
+	public Boolean getIsOrdered() {
+		return isOrdered;
+	}
+
+	public void setIsOrdered(Boolean isOrdered) {
+		this.isOrdered = isOrdered;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestFromUserResponse [id=" + id + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
 				+ ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId + ", pharmacyName="
 				+ pharmacyName + ", location=" + location + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", countForNo=" + countForNo + ", countForYes=" + countForYes + ", isCancelled=" + isCancelled + "]";
+				+ ", countForNo=" + countForNo + ", countForYes=" + countForYes + ", isCancelled=" + isCancelled
+				+ ", localeName=" + localeName + ", localeAddress=" + localeAddress + ", isTwentyFourSevenOpen="
+				+ isTwentyFourSevenOpen + ", pharmacyType=" + pharmacyType + ", noOfLocaleRecommendation="
+				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
+				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", paymentInfos="
+				+ paymentInfos + ", isOrdered=" + isOrdered + "]";
 	}
-
 }

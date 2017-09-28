@@ -26,6 +26,7 @@ import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.OrderDrugsResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
@@ -273,6 +274,37 @@ public class LocaleApi {
 		response = new Response<UserFakeRequestDetailResponse>();
 		response.setData(detailResponse);
 		return response;
+	}
+
+	@GET
+	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
+	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size) {
+		
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
+		}
+
+		List<OrderDrugsResponse> list = pharmacyService.getPatientOrders(userId, page, size);
+
+		Response<OrderDrugsResponse> response = new Response<OrderDrugsResponse>();
+		response.setDataList(list);
+		return response;
+
+	}
+
+	@GET
+	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
+	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,	@QueryParam("page") int page, @QueryParam("size") int size) {
+		 if (DPDoctorUtils.anyStringEmpty(userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
+		}
+
+		 List<SearchRequestFromUserResponse> list = pharmacyService.getPatientRequests(userId, page, size);
+
+		Response<SearchRequestFromUserResponse> response = new Response<SearchRequestFromUserResponse>();
+		response.setDataList(list);
+		return response;
+
 	}
 
 }

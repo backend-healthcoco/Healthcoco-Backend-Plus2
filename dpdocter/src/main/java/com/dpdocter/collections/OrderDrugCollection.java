@@ -40,6 +40,9 @@ public class OrderDrugCollection extends GenericCollection {
 	private String pickUpDay;
 	
 	@Field
+	private String pickUpDate;
+	
+	@Field
 	private LocaleWorkingHours pickUpTime;
 	
 	public ObjectId getId() {
@@ -122,11 +125,20 @@ public class OrderDrugCollection extends GenericCollection {
 		this.pickUpTime = pickUpTime;
 	}
 
+	public String getPickUpDate() {
+		return pickUpDate;
+	}
+
+	public void setPickUpDate(String pickUpDate) {
+		this.pickUpDate = pickUpDate;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", replyType=" + replyType
 				+ ", wayOfOrder=" + wayOfOrder + ", pickUpAddress=" + pickUpAddress + ", pickUpDay=" + pickUpDay
-				+ ", pickUpTime=" + pickUpTime + "]";
+				+ ", pickUpDate=" + pickUpDate + ", pickUpTime=" + pickUpTime + "]";
 	}
+
 }

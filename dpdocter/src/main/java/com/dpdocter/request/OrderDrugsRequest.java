@@ -19,6 +19,8 @@ public class OrderDrugsRequest {
 	
 	private String pickUpDay;
 	
+	private String pickUpDate;
+	
 	private String pickUpAddress;
 	
 	public String getLocaleId() {
@@ -85,10 +87,19 @@ public class OrderDrugsRequest {
 		this.pickUpAddress = pickUpAddress;
 	}
 
+	public String getPickUpDate() {
+		return pickUpDate;
+	}
+
+	public void setPickUpDate(String pickUpDate) {
+		this.pickUpDate = pickUpDate;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
 				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", pickUpTime=" + pickUpTime
-				+ ", pickUpDay=" + pickUpDay + ", pickUpAddress=" + pickUpAddress + "]";
+				+ ", pickUpDay=" + pickUpDay + ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress + "]";
 	}
+
 }
