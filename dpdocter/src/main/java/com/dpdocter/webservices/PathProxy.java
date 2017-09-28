@@ -346,8 +346,6 @@ public interface PathProxy {
 		
 		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
 
-		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
-
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
