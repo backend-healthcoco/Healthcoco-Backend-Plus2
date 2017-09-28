@@ -805,11 +805,11 @@ public class LocationServiceImpl implements LocationServices {
 				}
 				
 				BeanUtil.map(request, labTestPickupCollection);
-				if(request.getIsCompleted() == true)
+			/*	if(request.getIsCompleted() == true)
 				{
 					String serialNumber = reportSerialNumberGenerator(request.getParentLabLocationId());
 					labTestPickupCollection.setSerialNumber(serialNumber);
-				}
+				}*/
 				for (LabTestSample labTestSample : request.getLabTestSamples()) {
 
 					if (labTestSample.getId() != null) {
@@ -1733,7 +1733,7 @@ public class LocationServiceImpl implements LocationServices {
 		return response;
 	}
 	
-	private String reportSerialNumberGenerator(String locationId) {
+	/*private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -1769,6 +1769,6 @@ public class LocationServiceImpl implements LocationServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return generatedId;
-	}
+	}*/
 
 }

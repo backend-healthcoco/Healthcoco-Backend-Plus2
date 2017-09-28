@@ -102,10 +102,18 @@ public class BlogServicesImpl implements BlogService {
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
+
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
-					if (blogLikesCollection != null)
+					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
+							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+					if (favouriteBlogsCollection != null) {
+						blog.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
+					}
+
+					if (blogLikesCollection != null) {
 						blog.setIsliked(!blogLikesCollection.getDiscarded());
+					}
 				}
 				listblog.add(blog);
 
@@ -113,7 +121,9 @@ public class BlogServicesImpl implements BlogService {
 			response.setBlogs(listblog);
 
 			response.setTotalsize((int) mongoTemplate.count(new Query(criteria), BlogCollection.class));
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
@@ -169,8 +179,14 @@ public class BlogServicesImpl implements BlogService {
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
+					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
+							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+					if (favouriteBlogsCollection != null) {
+						blog.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
+					}
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+
 					if (blogLikesCollection != null)
 						blog.setIsliked(!blogLikesCollection.getDiscarded());
 				}
@@ -215,6 +231,11 @@ public class BlogServicesImpl implements BlogService {
 				BeanUtil.map(blogCollection, response);
 				response.setArticle(this.getBlogArticle(response.getArticleId()));
 				if (!DPDoctorUtils.anyStringEmpty(userId)) {
+					FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
+							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+					if (favouriteBlogsCollection != null) {
+						response.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
+					}
 					BlogLikesCollection blogLikesCollection = blogLikesRepository
 							.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
 
@@ -269,7 +290,13 @@ public class BlogServicesImpl implements BlogService {
 				blogLikesCollection.setUpdatedTime(new Date());
 				blogLikesCollection = blogLikesRepository.save(blogLikesCollection);
 				blogCollection = blogRepository.save(blogCollection);
+
 				response = new Blog();
+				FavouriteBlogsCollection favouriteBlogsCollection = fevouriteBlogsRepository
+						.findbyBlogIdAndUserId(blogCollection.getId(), new ObjectId(userId));
+				if (favouriteBlogsCollection != null) {
+					response.setIsFavourite(!favouriteBlogsCollection.getDiscarded());
+				}
 				BeanUtil.map(blogCollection, response);
 				if (!DPDoctorUtils.anyStringEmpty(response.getTitleImage()))
 					response.setTitleImage(imagePath + response.getTitleImage());
@@ -365,6 +392,7 @@ public class BlogServicesImpl implements BlogService {
 			response = new ArrayList<Blog>();
 			for (BlogCollection blogCollection : blogCollections) {
 				Blog blog = new Blog();
+				blog.setIsFavourite(true);
 				BeanUtil.map(blogCollection, blog);
 				if (!DPDoctorUtils.anyStringEmpty(blog.getTitleImage()))
 					blog.setTitleImage(imagePath + blog.getTitleImage());

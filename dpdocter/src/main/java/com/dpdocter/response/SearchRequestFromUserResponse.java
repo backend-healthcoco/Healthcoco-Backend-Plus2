@@ -92,6 +92,14 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 		this.localeId = localeId;
 	}
 
+	public String getPharmacyName() {
+		return pharmacyName;
+	}
+
+	public void setPharmacyName(String pharmacyName) {
+		this.pharmacyName = pharmacyName;
+	}
+
 	public String getLocation() {
 		return location;
 	}
@@ -138,14 +146,6 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 
 	public void setIsCancelled(Boolean isCancelled) {
 		this.isCancelled = isCancelled;
-	}
-
-	public String getPharmacyName() {
-		return pharmacyName;
-	}
-
-	public void setPharmacyName(String pharmacyName) {
-		this.pharmacyName = pharmacyName;
 	}
 
 	public String getLocaleName() {
@@ -240,4 +240,5 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", paymentInfos="
 				+ paymentInfos + ", isOrdered=" + isOrdered + "]";
 	}
+
 }

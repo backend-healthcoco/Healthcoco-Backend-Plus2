@@ -288,7 +288,7 @@ public class RecordsServiceImpl implements RecordsService {
 					recordsCollection.setRecordsLabel(request.getFileDetails().getFileName());
 			}
 			if (request.getFileDetails() != null) {
-				String recordLabel = request.getFileDetails().getFileName();
+				String recordLable=request.getFileDetails().getFileName();
 				request.getFileDetails().setFileName(request.getFileDetails().getFileName() + createdTime.getTime());
 				String path = "records" + File.separator + request.getPatientId();
 
@@ -301,7 +301,7 @@ public class RecordsServiceImpl implements RecordsService {
 				recordsCollection.setRecordsUrl(imageURLResponse.getImageUrl());
 				recordsCollection.setRecordsPath(recordPath);
 				if (DPDoctorUtils.anyStringEmpty(request.getRecordsLabel()))
-					recordsCollection.setRecordsLabel(recordLabel);
+					recordsCollection.setRecordsLabel(recordLable);
 			}
 			recordsCollection.setCreatedTime(createdTime);
 			recordsCollection.setUniqueEmrId(UniqueIdInitial.REPORTS.getInitial() + DPDoctorUtils.generateRandomId());

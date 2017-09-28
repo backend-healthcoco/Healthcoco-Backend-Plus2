@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -140,7 +141,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 
-		BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()));
+		BlockUserCollection blockUserCollection = mongoTemplate.findOne(
+				new Query(new Criteria("userIds").is(new ObjectId(request.getUserId()))), BlockUserCollection.class);
 		if (blockUserCollection != null) {
 			if (!blockUserCollection.getDiscarded()) {
 				DateTime dateTime = null;
@@ -257,10 +259,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
 				orderDrugRepository.save(orderDrugCollection);
-				asyncService.changeRequestStatus(requestToPharmacyCollection.getUniqueRequestId(),
-						requestToPharmacyCollection.getLocaleId());
-				asyncService.changeOrderStatus(requestToPharmacyCollection.getUniqueRequestId(),
-						requestToPharmacyCollection.getLocaleId(), requestToPharmacyCollection.getUserId());
+				// asyncService.changeRequestStatus(requestToPharmacyCollection.getUniqueRequestId(),
+				// requestToPharmacyCollection.getLocaleId());
+				// asyncService.changeOrderStatus(requestToPharmacyCollection.getUniqueRequestId(),
+				// requestToPharmacyCollection.getLocaleId(),
+				// requestToPharmacyCollection.getUserId());
 				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
@@ -306,11 +309,12 @@ public class PharmacyServiceImpl implements PharmacyService {
 						ReplyType.NO.toString());
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
-				
-				LocaleCollection localeCollection = localeRepository.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
-				if(localeCollection != null)
-				{
-					searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+				if (searchRequestFromUserResponse.getLocaleId() != null) {
+					LocaleCollection localeCollection = localeRepository
+							.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
+					if (localeCollection != null) {
+						searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+					}
 				}
 			}
 

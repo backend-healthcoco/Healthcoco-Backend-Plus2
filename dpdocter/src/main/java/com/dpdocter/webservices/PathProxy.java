@@ -346,6 +346,8 @@ public interface PathProxy {
 		
 		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
 
+		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
+
 	}
 
 	public static final String FORGOT_PASSWORD_BASE_URL = BASE_URL + "/forgotPassword";
@@ -915,6 +917,17 @@ public interface PathProxy {
 		public static final String GET_DOCTORS = "/getDoctorsWithAppointmentCount/{locationId}";
 
 		public static final String CHANGE_STATUS_IN_QUEUE = "/patientQueue/changeStatus/{doctorId}/{locationId}/{hospitalId}/{patientId}/{status}";
+
+		public static final String ADD_CUSTOM_APPOINTMENT = "/custom/add";
+
+		public static final String GET_CUSTOM_APPOINTMENT_LIST = "/custom//get";
+
+		public static final String GET_CUSTOM_APPOINTMENT_BY_ID = "/custom/{appointmentId}/get";
+
+		public static final String GET_CUSTOM_APPOINTMENT_AVG_DETAIL = "/custom/getAVGdetail";
+
+		public static final String DELETE_CUSTOM_APPOINTMENT = "/custom/{appointmentId}/{doctorId}/{locationId}/{hospitalId}/DELETE";
+
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";

@@ -3,20 +3,28 @@ package com.dpdocter.services;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.City;
 import com.dpdocter.beans.Clinic;
+import com.dpdocter.beans.CustomAppointment;
 import com.dpdocter.beans.Lab;
 import com.dpdocter.beans.LandmarkLocality;
 import com.dpdocter.beans.PatientQueue;
 import com.dpdocter.request.AppointmentRequest;
 import com.dpdocter.request.EventRequest;
 import com.dpdocter.request.PatientQueueAddEditRequest;
+import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
+
+import common.util.web.Response;
 
 public interface AppointmentService {
 
@@ -67,9 +75,23 @@ public interface AppointmentService {
 
 	LocationWithPatientQueueDetails getNoOfPatientInQueue(String locationId, List<String> doctorId);
 
-	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active, String from, String to);
+	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
+			String from, String to);
 
 	Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId, String status);
 
 	public void updateQueue();
+
+	public CustomAppointment addCustomAppointment(CustomAppointment request);
+
+	public CustomAppointment deleteCustomAppointment(String appointmentId, String locationId, String hospitalId,
+			String doctorId, Boolean discarded);
+
+	public CustomAppointment getCustomAppointmentById(String appointmentId);
+
+	public List<CustomAppointment> getCustomAppointments(int page, int size, String locationId, String hospitalId,
+			String doctorId, String updatedTime, Boolean discarded);
+
+	public AVGTimeDetail getCustomAppointmentAVGTimeDetail(String locationId, String hospitalId, String doctorId);
+
 }
