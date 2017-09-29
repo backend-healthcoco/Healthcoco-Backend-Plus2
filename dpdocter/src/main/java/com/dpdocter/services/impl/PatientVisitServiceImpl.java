@@ -1021,6 +1021,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+		if (printSettings.getContentSetup() != null) {
+			parameters.put("isEnableTreatmentcost", printSettings.getContentSetup().getShowTreatmentcost());
+		}
 		List<DBObject> prescriptions = null;
 		if (!showUSG) {
 			if (patientVisitLookupResponse.getPrescriptionId() != null) {

@@ -2,9 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Field;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class CustomAppointment extends GenericCollection {
@@ -19,7 +16,12 @@ public class CustomAppointment extends GenericCollection {
 
 	private String hospitalId;
 
-	private Date fromDate;
+	private Date date;
+
+	private Integer inTime = 0;
+
+	private Integer outTime = 0;
+
 
 	private Integer engageTime = 0;
 
@@ -27,7 +29,7 @@ public class CustomAppointment extends GenericCollection {
 
 	private Integer waitingTime = 0;
 
-	private Date toDate;
+
 
 	public String getId() {
 		return id;
@@ -69,13 +71,7 @@ public class CustomAppointment extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public Date getFromDate() {
-		return fromDate;
-	}
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
 
 	public Integer getEngageTime() {
 		return engageTime;
@@ -101,12 +97,39 @@ public class CustomAppointment extends GenericCollection {
 		this.waitingTime = waitingTime;
 	}
 
-	public Date getToDate() {
-		return toDate;
+
+	@Override
+	public String toString() {
+		return "CustomAppointment [id=" + id + ", patintName=" + patintName + ", doctorId=" + doctorId
+				+ ", locatioinId=" + locatioinId + ", hospitalId=" + hospitalId + ", date=" + date + ", inTime="
+				+ inTime + ", outTime=" + outTime + ", engageTime=" + engageTime + ", treatmentTime=" + treatmentTime
+				+ ", waitingTime=" + waitingTime + "]";
 	}
 
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
+	public Date getDate() {
+		return date;
 	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public Integer getInTime() {
+		return inTime;
+	}
+
+	public void setInTime(Integer inTime) {
+		this.inTime = inTime;
+	}
+
+	public Integer getOutTime() {
+		return outTime;
+	}
+
+	public void setOutTime(Integer outTime) {
+		this.outTime = outTime;
+	}
+
+	
 
 }

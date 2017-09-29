@@ -637,7 +637,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 						vitalSigns = vitalSigns + ",  " + height;
 					else
-						vitalSigns = spo2;
+						vitalSigns = height;
 				}
 
 				String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();

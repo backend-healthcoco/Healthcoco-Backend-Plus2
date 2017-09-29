@@ -1502,6 +1502,11 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 				printSettings = new PrintSettingsCollection();
 				DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 				BeanUtil.map(defaultPrintSettings, printSettings);
+
+			}
+
+			if (printSettings.getContentSetup() != null) {
+				parameters.put("isEnableTreatmentcost", printSettings.getContentSetup().getShowTreatmentcost());
 			}
 
 			if (historyCollection != null) {
