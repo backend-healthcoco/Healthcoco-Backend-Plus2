@@ -3770,6 +3770,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				userAddressCollection = userAddressRepository.findOne(new ObjectId(request.getId()));
 				userAddressCollection.setUpdatedTime(new Date());
 			}
+			
 			Address address = userAddressCollection.getAddress();
 //			List<GeocodedLocation> geocodedLocations = locationServices
 //					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
@@ -3788,7 +3789,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 //									? address.getPostalCode() : ""));
 //			if (geocodedLocations != null && !geocodedLocations.isEmpty())
 //				BeanUtil.map(geocodedLocations.get(0), userAddressCollection.getAddress());
-			
+			userAddressCollection.setAddress(request.getAddress());
 			userAddressCollection = userAddressRepository.save(userAddressCollection);
 			response = new UserAddress();
 			BeanUtil.map(userAddressCollection, response);

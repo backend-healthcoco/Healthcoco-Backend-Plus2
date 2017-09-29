@@ -29,6 +29,7 @@ import javax.mail.MessagingException;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -295,6 +296,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Value(value = "${prescription.add.patient.download.app.message}")
 	private String downloadAppMessageToPatient;
+	
+	@Value(value = "${prescription.add.patient.download.app.message.hindi}")
+	private String downloadAppMessageToPatientInHindi;
 
 	@Value("${send.sms}")
 	private Boolean sendSMS;
@@ -1024,10 +1028,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
-			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
+			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId())) {
 				sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 						prescriptionCollection.getCreatedBy());
+				sendDownloadAppMessageInHindi(prescriptionCollection.getPatientId(),
+						prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(),
+						prescriptionCollection.getHospitalId(), prescriptionCollection.getCreatedBy());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Prescription");
@@ -1044,6 +1052,43 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					locationId, hospitalId);
 			if (userCollection != null) {
 				String message = downloadAppMessageToPatient;
+				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
+				smsTrackDetail.setDoctorId(doctorId);
+				smsTrackDetail.setLocationId(locationId);
+				smsTrackDetail.setHospitalId(hospitalId);
+				smsTrackDetail.setType("APP_LINK_THROUGH_PRESCRIPTION");
+				SMSDetail smsDetail = new SMSDetail();
+				smsDetail.setUserId(userCollection.getId());
+				SMS sms = new SMS();
+				smsDetail.setUserName(patientCollection.getLocalPatientName());
+				sms.setSmsText(message.replace("{doctorName}", doctorName));
+
+				SMSAddress smsAddress = new SMSAddress();
+				smsAddress.setRecipient(userCollection.getMobileNumber());
+				sms.setSmsAddress(smsAddress);
+
+				smsDetail.setSms(sms);
+				smsDetail.setDeliveryStatus(SMSStatus.IN_PROGRESS);
+				List<SMSDetail> smsDetails = new ArrayList<SMSDetail>();
+				smsDetails.add(smsDetail);
+				smsTrackDetail.setSmsDetails(smsDetails);
+				sMSServices.sendSMS(smsTrackDetail, true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	private void sendDownloadAppMessageInHindi(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
+			String doctorName) {
+		try {
+			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);
+			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientId,
+					locationId, hospitalId);
+			if (userCollection != null) {
+				String message = downloadAppMessageToPatientInHindi;
+				message = StringEscapeUtils.unescapeJava(message);
 				SMSTrackDetail smsTrackDetail = new SMSTrackDetail();
 				smsTrackDetail.setDoctorId(doctorId);
 				smsTrackDetail.setLocationId(locationId);
@@ -4950,9 +4995,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					"Your prescription by " + eyePrescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), eyePrescriptionCollection.getId().toString(), null);
 			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
+			{
 				sendDownloadAppMessage(eyePrescriptionCollection.getPatientId(),
 						eyePrescriptionCollection.getDoctorId(), eyePrescriptionCollection.getLocationId(),
 						eyePrescriptionCollection.getHospitalId(), eyePrescriptionCollection.getCreatedBy());
+				sendDownloadAppMessageInHindi(eyePrescriptionCollection.getPatientId(),
+						eyePrescriptionCollection.getDoctorId(), eyePrescriptionCollection.getLocationId(),
+						eyePrescriptionCollection.getHospitalId(), eyePrescriptionCollection.getCreatedBy());
+				
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e + " Error Occurred While Saving Eye Prescription");
