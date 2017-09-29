@@ -48,7 +48,6 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -58,7 +57,7 @@ import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
-import com.dpdocter.services.PromotionService;
+import com.dpdocter.response.UserAddressResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -208,19 +207,26 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber) {
+	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
 		}
-
-		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+		Response<Object> response = new Response<Object>();
 
 		List<RegisteredPatientDetails> users = registrationService.getPatientsByPhoneNumber(mobileNumber);
 		if (users != null && !users.isEmpty()) {
 			for (RegisteredPatientDetails user : users) {
 				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+			}
+			if(getAddress) {
+				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, true);
+				if(userAddress != null && !userAddress.isEmpty()) {
+					UserAddressResponse userAddressResponse = new UserAddressResponse();
+					userAddressResponse.setUserAddress(userAddress);
+					response.setData(userAddressResponse);
+				}
 			}
 		}
 		response.setDataList(users);

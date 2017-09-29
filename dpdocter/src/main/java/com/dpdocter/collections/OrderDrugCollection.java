@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.WayOfOrder;
@@ -34,13 +35,10 @@ public class OrderDrugCollection extends GenericCollection {
 	private WayOfOrder wayOfOrder;
 	
 	@Field
-	private String pickUpAddress;
-	
+	private Address pickUpAddress;
+		
 	@Field
-	private String pickUpDay;
-	
-	@Field
-	private String pickUpDate;
+	private Long pickUpDate;
 	
 	@Field
 	private LocaleWorkingHours pickUpTime;
@@ -101,20 +99,20 @@ public class OrderDrugCollection extends GenericCollection {
 		this.wayOfOrder = wayOfOrder;
 	}
 
-	public String getPickUpAddress() {
+	public Address getPickUpAddress() {
 		return pickUpAddress;
 	}
 
-	public void setPickUpAddress(String pickUpAddress) {
+	public void setPickUpAddress(Address pickUpAddress) {
 		this.pickUpAddress = pickUpAddress;
 	}
 
-	public String getPickUpDay() {
-		return pickUpDay;
+	public Long getPickUpDate() {
+		return pickUpDate;
 	}
 
-	public void setPickUpDay(String pickUpDay) {
-		this.pickUpDay = pickUpDay;
+	public void setPickUpDate(Long pickUpDate) {
+		this.pickUpDate = pickUpDate;
 	}
 
 	public LocaleWorkingHours getPickUpTime() {
@@ -125,20 +123,12 @@ public class OrderDrugCollection extends GenericCollection {
 		this.pickUpTime = pickUpTime;
 	}
 
-	public String getPickUpDate() {
-		return pickUpDate;
-	}
-
-	public void setPickUpDate(String pickUpDate) {
-		this.pickUpDate = pickUpDate;
-	}
-
 	@Override
 	public String toString() {
 		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", replyType=" + replyType
-				+ ", wayOfOrder=" + wayOfOrder + ", pickUpAddress=" + pickUpAddress + ", pickUpDay=" + pickUpDay
-				+ ", pickUpDate=" + pickUpDate + ", pickUpTime=" + pickUpTime + "]";
+				+ ", wayOfOrder=" + wayOfOrder + ", pickUpAddress=" + pickUpAddress + ", pickUpDate=" + pickUpDate
+				+ ", pickUpTime=" + pickUpTime + "]";
 	}
 
 }

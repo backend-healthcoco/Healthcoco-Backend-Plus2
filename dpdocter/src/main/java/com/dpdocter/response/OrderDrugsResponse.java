@@ -22,12 +22,12 @@ public class OrderDrugsResponse {
 	
 	private LocaleWorkingHours pickUpTime;
 	
-	private String pickUpDay;
+	private Long pickUpDate;
 	
-	private String pickUpDate;
-	
-	private String pickUpAddress;
+	private Address pickUpAddress;
 
+	private String pickUpFormattedAddress;
+	
 	private Discount discount;
 	
     private Double discountedPrice;
@@ -39,6 +39,8 @@ public class OrderDrugsResponse {
 	private String localeName;
 	
 	private Address localeAddress;
+	
+	private String localeFormattedAddress;
 	
 	public String getLocaleId() {
 		return localeId;
@@ -88,27 +90,19 @@ public class OrderDrugsResponse {
 		this.pickUpTime = pickUpTime;
 	}
 
-	public String getPickUpDay() {
-		return pickUpDay;
-	}
-
-	public void setPickUpDay(String pickUpDay) {
-		this.pickUpDay = pickUpDay;
-	}
-
-	public String getPickUpDate() {
+	public Long getPickUpDate() {
 		return pickUpDate;
 	}
 
-	public void setPickUpDate(String pickUpDate) {
+	public void setPickUpDate(Long pickUpDate) {
 		this.pickUpDate = pickUpDate;
 	}
 
-	public String getPickUpAddress() {
+	public Address getPickUpAddress() {
 		return pickUpAddress;
 	}
 
-	public void setPickUpAddress(String pickUpAddress) {
+	public void setPickUpAddress(Address pickUpAddress) {
 		this.pickUpAddress = pickUpAddress;
 	}
 
@@ -168,14 +162,31 @@ public class OrderDrugsResponse {
 		this.id = id;
 	}
 
+	public String getPickUpFormattedAddress() {
+		return pickUpFormattedAddress;
+	}
+
+	public void setPickUpFormattedAddress(String pickUpFormattedAddress) {
+		this.pickUpFormattedAddress = pickUpFormattedAddress;
+	}
+
+	public String getLocaleFormattedAddress() {
+		return localeFormattedAddress;
+	}
+
+	public void setLocaleFormattedAddress(String localeFormattedAddress) {
+		this.localeFormattedAddress = localeFormattedAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDrugsResponse [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder
-				+ ", pickUpTime=" + pickUpTime + ", pickUpDay=" + pickUpDay + ", pickUpDate=" + pickUpDate
-				+ ", pickUpAddress=" + pickUpAddress + ", discount=" + discount + ", discountedPrice=" + discountedPrice
-				+ ", realPrice=" + realPrice + ", prescriptionRequest=" + prescriptionRequest + ", localeName="
-				+ localeName + ", localeAddress=" + localeAddress + "]";
+				+ ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress
+				+ ", pickUpFormattedAddress=" + pickUpFormattedAddress + ", discount=" + discount + ", discountedPrice="
+				+ discountedPrice + ", realPrice=" + realPrice + ", prescriptionRequest=" + prescriptionRequest
+				+ ", localeName=" + localeName + ", localeAddress=" + localeAddress + ", localeFormattedAddress="
+				+ localeFormattedAddress + "]";
 	}
 
 }

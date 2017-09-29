@@ -18,6 +18,8 @@ public class UserAddress extends GenericCollection{
 	
 	private Boolean discarded = false;
 
+	private String formattedAddress;
+	
 	public String getId() {
 		return id;
 	}
@@ -66,9 +68,18 @@ public class UserAddress extends GenericCollection{
 		this.discarded = discarded;
 	}
 
+	public String getFormattedAddress() {
+		return formattedAddress;
+	}
+
+	public void setFormattedAddress(String formattedAddress) {
+		this.formattedAddress = formattedAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "UserAddress [id=" + id + ", userIds=" + userIds + ", mobileNumber=" + mobileNumber + ", fullName="
-				+ fullName + ", address=" + address + ", discarded=" + discarded + "]";
+				+ fullName + ", address=" + address + ", discarded=" + discarded + ", formattedAddress="
+				+ formattedAddress + "]";
 	}
 }

@@ -36,6 +36,8 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 	
 	private Address localeAddress;
 	
+	private String localeFormattedAddress;
+	
 	private Boolean isTwentyFourSevenOpen = false;
 	
 	private List<String> pharmacyType;
@@ -228,17 +230,24 @@ public class SearchRequestFromUserResponse extends GenericCollection {
 		this.isOrdered = isOrdered;
 	}
 
+	public String getLocaleFormattedAddress() {
+		return localeFormattedAddress;
+	}
+
+	public void setLocaleFormattedAddress(String localeFormattedAddress) {
+		this.localeFormattedAddress = localeFormattedAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestFromUserResponse [id=" + id + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
 				+ ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId + ", pharmacyName="
 				+ pharmacyName + ", location=" + location + ", latitude=" + latitude + ", longitude=" + longitude
 				+ ", countForNo=" + countForNo + ", countForYes=" + countForYes + ", isCancelled=" + isCancelled
-				+ ", localeName=" + localeName + ", localeAddress=" + localeAddress + ", isTwentyFourSevenOpen="
-				+ isTwentyFourSevenOpen + ", pharmacyType=" + pharmacyType + ", noOfLocaleRecommendation="
-				+ noOfLocaleRecommendation + ", isHomeDeliveryAvailable=" + isHomeDeliveryAvailable
-				+ ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo=" + paymentInfo + ", paymentInfos="
-				+ paymentInfos + ", isOrdered=" + isOrdered + "]";
+				+ ", localeName=" + localeName + ", localeAddress=" + localeAddress + ", localeFormattedAddress="
+				+ localeFormattedAddress + ", isTwentyFourSevenOpen=" + isTwentyFourSevenOpen + ", pharmacyType="
+				+ pharmacyType + ", noOfLocaleRecommendation=" + noOfLocaleRecommendation + ", isHomeDeliveryAvailable="
+				+ isHomeDeliveryAvailable + ", homeDeliveryRadius=" + homeDeliveryRadius + ", paymentInfo="
+				+ paymentInfo + ", paymentInfos=" + paymentInfos + ", isOrdered=" + isOrdered + "]";
 	}
-
 }

@@ -34,6 +34,7 @@ import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.beans.PatientNumberAndUserIds;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.collections.BlockUserCollection;
 import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.OrderDrugCollection;
@@ -546,7 +547,54 @@ public class PharmacyServiceImpl implements PharmacyService {
 			AggregationResults<OrderDrugsResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					OrderDrugCollection.class, OrderDrugsResponse.class);
 			response = aggregationResults.getMappedResults();
+			if(response != null && !response.isEmpty()) {
+				for(OrderDrugsResponse drugsResponse : response) {
+					Address localeAddress = drugsResponse.getLocaleAddress();
+					if(localeAddress != null) {
+						String localeFormattedAddress = (!DPDoctorUtils.anyStringEmpty(localeAddress.getStreetAddress())
+								? localeAddress.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getLandmarkDetails())
+										? localeAddress.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getLocality())
+										? localeAddress.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getCity())
+										? localeAddress.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getState())
+										? localeAddress.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getCountry())
+										? localeAddress.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getPostalCode())
+										? localeAddress.getPostalCode() : "");
 
+						if (localeFormattedAddress.charAt(localeFormattedAddress.length() - 2) == ',') {
+							localeFormattedAddress = localeFormattedAddress.substring(0, localeFormattedAddress.length() - 2);
+						}
+						drugsResponse.setLocaleFormattedAddress(localeFormattedAddress);
+					}
+					Address pickUpAddress = drugsResponse.getPickUpAddress();
+					if(pickUpAddress != null) {
+						String pickUpFormattedAddress = (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getStreetAddress())
+								? pickUpAddress.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLandmarkDetails())
+										? pickUpAddress.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLocality())
+										? pickUpAddress.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getCity())
+										? pickUpAddress.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getState())
+										? pickUpAddress.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getCountry())
+										? pickUpAddress.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getPostalCode())
+										? pickUpAddress.getPostalCode() : "");
+
+						if (pickUpFormattedAddress.charAt(pickUpFormattedAddress.length() - 2) == ',') {
+							pickUpFormattedAddress = pickUpFormattedAddress.substring(0, pickUpFormattedAddress.length() - 2);
+						}
+						drugsResponse.setPickUpFormattedAddress(pickUpFormattedAddress);
+					}
+				}
+			}
 		} catch (Exception e) {
 			logger.error("Error while getting my orders " + e.getMessage());
 			e.printStackTrace();
@@ -624,7 +672,32 @@ public class PharmacyServiceImpl implements PharmacyService {
 			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
 			response = aggregationResults.getMappedResults();
-			
+			if(response != null && !response.isEmpty()) {
+				for(SearchRequestFromUserResponse requestFromUserResponse : response) {
+					Address address = requestFromUserResponse.getLocaleAddress();
+					if(address != null) {
+						String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+								? address.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+										? address.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
+										? address.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
+										? address.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getState())
+										? address.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
+										? address.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
+										? address.getPostalCode() : "");
+
+						if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
+							formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
+						}
+						requestFromUserResponse.setLocaleFormattedAddress(formattedAddress);
+					}
+				}
+			}
 		} catch (Exception e) {
 			logger.error("Error while getting locales " + e.getMessage());
 			e.printStackTrace();

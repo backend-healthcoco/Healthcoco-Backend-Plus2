@@ -34,7 +34,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
@@ -65,7 +64,6 @@ import com.dpdocter.beans.Location;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
-import com.dpdocter.beans.UserReminders;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
@@ -76,6 +74,7 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.UserAddress;
+import com.dpdocter.beans.UserReminders;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ConsentFormCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
@@ -87,7 +86,6 @@ import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
-import com.dpdocter.collections.UserRemindersCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProfessionCollection;
@@ -99,6 +97,7 @@ import com.dpdocter.collections.TokenCollection;
 import com.dpdocter.collections.UserAddressCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.UserLocationCollection;
+import com.dpdocter.collections.UserRemindersCollection;
 import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
@@ -127,7 +126,6 @@ import com.dpdocter.repository.FeedbackRepository;
 import com.dpdocter.repository.FormContentRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.PatientGroupRepository;
-import com.dpdocter.repository.UserRemindersRepository;
 import com.dpdocter.repository.PatientRepository;
 import com.dpdocter.repository.PrescriptionRepository;
 import com.dpdocter.repository.PrintSettingsRepository;
@@ -138,6 +136,7 @@ import com.dpdocter.repository.RoleRepository;
 import com.dpdocter.repository.TokenRepository;
 import com.dpdocter.repository.UserAddressRepository;
 import com.dpdocter.repository.UserLocationRepository;
+import com.dpdocter.repository.UserRemindersRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.repository.UserRoleRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
@@ -3811,6 +3810,30 @@ public class RegistrationServiceImpl implements RegistrationService {
 			
 			if (!discarded)criteria.and("discarded").is(discarded);
 			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), UserAddressCollection.class, UserAddress.class).getMappedResults();
+			if(response != null && !response.isEmpty()) {
+				for(UserAddress userAddress : response) {
+					Address address = userAddress.getAddress();
+					String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+								? address.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+										? address.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
+										? address.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
+										? address.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getState())
+										? address.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
+										? address.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
+										? address.getPostalCode() : "");
+
+						if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
+							formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
+						}
+					userAddress.setFormattedAddress(formattedAddress);
+				}
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);

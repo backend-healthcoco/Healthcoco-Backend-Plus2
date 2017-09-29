@@ -159,7 +159,7 @@ public interface RegistrationService {
 
 	UserAddress addEditUserAddress(UserAddress request);
 
-	List<?> getUserAddress(String userId, String mobileNumber, Boolean discarded);
+	List<UserAddress> getUserAddress(String userId, String mobileNumber, Boolean discarded);
 
 	UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded);
 }

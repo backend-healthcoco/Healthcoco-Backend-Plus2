@@ -1375,7 +1375,7 @@ public interface PathProxy {
 	
 	public interface UserFavouritesUrls{
 		
-		public static final String ADD_REMOVE_FROM_FAVOURITES = "/addRemove/{resourceType}/{userId}/{resourceId}/{resourceType}";
+		public static final String ADD_REMOVE_FROM_FAVOURITES = "/addRemove/{resourceType}/{userId}/{resourceId}";
 		
 		public static final String GET_FAVOURITE_DOCTORS = "/doctors/{userId}";
 		

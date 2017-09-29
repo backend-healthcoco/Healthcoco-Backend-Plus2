@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.enums.WayOfOrder;
 
@@ -17,11 +18,9 @@ public class OrderDrugsRequest {
 	
 	private LocaleWorkingHours pickUpTime;
 	
-	private String pickUpDay;
+	private Long pickUpDate;
 	
-	private String pickUpDate;
-	
-	private String pickUpAddress;
+	private Address pickUpAddress;
 	
 	public String getLocaleId() {
 		return localeId;
@@ -71,27 +70,19 @@ public class OrderDrugsRequest {
 		this.pickUpTime = pickUpTime;
 	}
 
-	public String getPickUpDay() {
-		return pickUpDay;
-	}
-
-	public void setPickUpDay(String pickUpDay) {
-		this.pickUpDay = pickUpDay;
-	}
-
-	public String getPickUpAddress() {
+	public Address getPickUpAddress() {
 		return pickUpAddress;
 	}
 
-	public void setPickUpAddress(String pickUpAddress) {
+	public void setPickUpAddress(Address pickUpAddress) {
 		this.pickUpAddress = pickUpAddress;
 	}
 
-	public String getPickUpDate() {
+	public Long getPickUpDate() {
 		return pickUpDate;
 	}
 
-	public void setPickUpDate(String pickUpDate) {
+	public void setPickUpDate(Long pickUpDate) {
 		this.pickUpDate = pickUpDate;
 	}
 
@@ -99,7 +90,7 @@ public class OrderDrugsRequest {
 	public String toString() {
 		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
 				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", pickUpTime=" + pickUpTime
-				+ ", pickUpDay=" + pickUpDay + ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress + "]";
+				+ ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress + "]";
 	}
 
 }
