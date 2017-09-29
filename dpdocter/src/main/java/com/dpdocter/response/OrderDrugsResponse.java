@@ -3,10 +3,12 @@ package com.dpdocter.response;
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.Discount;
 import com.dpdocter.beans.LocaleWorkingHours;
+import com.dpdocter.beans.UserAddress;
+import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.WayOfOrder;
 import com.dpdocter.request.PrescriptionRequest;
 
-public class OrderDrugsResponse {
+public class OrderDrugsResponse extends GenericCollection{
 
 	private String id;
 	
@@ -24,7 +26,7 @@ public class OrderDrugsResponse {
 	
 	private Long pickUpDate;
 	
-	private Address pickUpAddress;
+	private UserAddress pickUpAddress;
 
 	private String pickUpFormattedAddress;
 	
@@ -98,11 +100,11 @@ public class OrderDrugsResponse {
 		this.pickUpDate = pickUpDate;
 	}
 
-	public Address getPickUpAddress() {
+	public UserAddress getPickUpAddress() {
 		return pickUpAddress;
 	}
 
-	public void setPickUpAddress(Address pickUpAddress) {
+	public void setPickUpAddress(UserAddress pickUpAddress) {
 		this.pickUpAddress = pickUpAddress;
 	}
 

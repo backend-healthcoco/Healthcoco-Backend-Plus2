@@ -2,6 +2,7 @@ package com.dpdocter.request;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.enums.WayOfOrder;
 
 public class OrderDrugsRequest {
@@ -20,7 +21,7 @@ public class OrderDrugsRequest {
 	
 	private Long pickUpDate;
 	
-	private Address pickUpAddress;
+	private UserAddress pickUpAddress;
 	
 	public String getLocaleId() {
 		return localeId;
@@ -70,11 +71,11 @@ public class OrderDrugsRequest {
 		this.pickUpTime = pickUpTime;
 	}
 
-	public Address getPickUpAddress() {
+	public UserAddress getPickUpAddress() {
 		return pickUpAddress;
 	}
 
-	public void setPickUpAddress(Address pickUpAddress) {
+	public void setPickUpAddress(UserAddress pickUpAddress) {
 		this.pickUpAddress = pickUpAddress;
 	}
 

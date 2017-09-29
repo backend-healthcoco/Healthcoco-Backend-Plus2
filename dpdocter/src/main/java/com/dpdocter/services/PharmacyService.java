@@ -29,8 +29,8 @@ public interface PharmacyService {
 
 	UserFakeRequestDetailResponse getUserFakeRequestCount(String userId);
 
-	List<OrderDrugsResponse> getPatientOrders(String userId, int page, int size);
+	List<OrderDrugsResponse> getPatientOrders(String userId, int page, int size, String updatedTime);
 
-	List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size);
+	List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size, String updatedTime);
 
 }

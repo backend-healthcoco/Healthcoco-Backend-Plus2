@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.WayOfOrder;
 
@@ -35,7 +36,7 @@ public class OrderDrugCollection extends GenericCollection {
 	private WayOfOrder wayOfOrder;
 	
 	@Field
-	private Address pickUpAddress;
+	private UserAddress pickUpAddress;
 		
 	@Field
 	private Long pickUpDate;
@@ -99,11 +100,11 @@ public class OrderDrugCollection extends GenericCollection {
 		this.wayOfOrder = wayOfOrder;
 	}
 
-	public Address getPickUpAddress() {
+	public UserAddress getPickUpAddress() {
 		return pickUpAddress;
 	}
 
-	public void setPickUpAddress(Address pickUpAddress) {
+	public void setPickUpAddress(UserAddress pickUpAddress) {
 		this.pickUpAddress = pickUpAddress;
 	}
 
