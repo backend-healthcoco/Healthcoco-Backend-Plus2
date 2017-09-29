@@ -30,6 +30,9 @@ public class UserAddressCollection extends GenericCollection{
 	@Field
 	private String mobileNumber;
 	
+	@Field
+	private String homeDeliveryMobileNumber;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -78,9 +81,19 @@ public class UserAddressCollection extends GenericCollection{
 		this.mobileNumber = mobileNumber;
 	}
 
+	public String getHomeDeliveryMobileNumber() {
+		return homeDeliveryMobileNumber;
+	}
+
+	public void setHomeDeliveryMobileNumber(String homeDeliveryMobileNumber) {
+		this.homeDeliveryMobileNumber = homeDeliveryMobileNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "UserAddressCollection [id=" + id + ", userIds=" + userIds + ", fullName=" + fullName + ", address="
-				+ address + ", discarded=" + discarded + ", mobileNumber=" + mobileNumber + "]";
+				+ address + ", discarded=" + discarded + ", mobileNumber=" + mobileNumber
+				+ ", homeDeliveryMobileNumber=" + homeDeliveryMobileNumber + "]";
 	}
+
 }

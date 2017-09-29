@@ -20,6 +20,8 @@ public class UserAddress extends GenericCollection{
 
 	private String formattedAddress;
 	
+	private String homeDeliveryMobileNumber;
+	
 	public String getId() {
 		return id;
 	}
@@ -76,10 +78,19 @@ public class UserAddress extends GenericCollection{
 		this.formattedAddress = formattedAddress;
 	}
 
+	public String getHomeDeliveryMobileNumber() {
+		return homeDeliveryMobileNumber;
+	}
+
+	public void setHomeDeliveryMobileNumber(String homeDeliveryMobileNumber) {
+		this.homeDeliveryMobileNumber = homeDeliveryMobileNumber;
+	}
+
 	@Override
 	public String toString() {
 		return "UserAddress [id=" + id + ", userIds=" + userIds + ", mobileNumber=" + mobileNumber + ", fullName="
 				+ fullName + ", address=" + address + ", discarded=" + discarded + ", formattedAddress="
-				+ formattedAddress + "]";
+				+ formattedAddress + ", homeDeliveryMobileNumber=" + homeDeliveryMobileNumber + "]";
 	}
+
 }

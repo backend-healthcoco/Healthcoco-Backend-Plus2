@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -278,13 +279,14 @@ public class LocaleApi {
 
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
-	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size, 
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
 
-		List<OrderDrugsResponse> list = pharmacyService.getPatientOrders(userId, page, size);
+		List<OrderDrugsResponse> list = pharmacyService.getPatientOrders(userId, page, size, updatedTime);
 
 		Response<OrderDrugsResponse> response = new Response<OrderDrugsResponse>();
 		response.setDataList(list);
@@ -294,12 +296,13 @@ public class LocaleApi {
 
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
-	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,	@QueryParam("page") int page, @QueryParam("size") int size) {
+	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,	@QueryParam("page") int page, @QueryParam("size") int size, 
+			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		 if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
 
-		 List<SearchRequestFromUserResponse> list = pharmacyService.getPatientRequests(userId, page, size);
+		 List<SearchRequestFromUserResponse> list = pharmacyService.getPatientRequests(userId, page, size, updatedTime);
 
 		Response<SearchRequestFromUserResponse> response = new Response<SearchRequestFromUserResponse>();
 		response.setDataList(list);

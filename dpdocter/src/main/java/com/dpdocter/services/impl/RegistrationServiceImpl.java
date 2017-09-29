@@ -3770,26 +3770,29 @@ public class RegistrationServiceImpl implements RegistrationService {
 				userAddressCollection = userAddressRepository.findOne(new ObjectId(request.getId()));
 				userAddressCollection.setUpdatedTime(new Date());
 			}
+			userAddressCollection.setAddress(request.getAddress());
+			userAddressCollection.setFullName(request.getFullName());
+			userAddressCollection.setHomeDeliveryMobileNumber(request.getHomeDeliveryMobileNumber());
 			
 			Address address = userAddressCollection.getAddress();
-//			List<GeocodedLocation> geocodedLocations = locationServices
-//					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
-//							? address.getStreetAddress() + ", " : "")
-//							+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
-//									? address.getLandmarkDetails() + ", " : "")
-//							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
-//									? address.getLocality() + ", " : "")
-//							+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
-//									? address.getCity() + ", " : "")
-//							+ (!DPDoctorUtils.anyStringEmpty(address.getState())
-//									? address.getState() + ", " : "")
-//							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
-//									? address.getCountry() + ", " : "")
-//							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
-//									? address.getPostalCode() : ""));
-//			if (geocodedLocations != null && !geocodedLocations.isEmpty())
-//				BeanUtil.map(geocodedLocations.get(0), userAddressCollection.getAddress());
-			userAddressCollection.setAddress(request.getAddress());
+			List<GeocodedLocation> geocodedLocations = locationServices
+					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+							? address.getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+									? address.getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
+									? address.getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
+									? address.getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getState())
+									? address.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
+									? address.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
+									? address.getPostalCode() : ""));
+			if (geocodedLocations != null && !geocodedLocations.isEmpty())
+				BeanUtil.map(geocodedLocations.get(0), userAddressCollection.getAddress());
+			
 			userAddressCollection = userAddressRepository.save(userAddressCollection);
 			response = new UserAddress();
 			BeanUtil.map(userAddressCollection, response);
