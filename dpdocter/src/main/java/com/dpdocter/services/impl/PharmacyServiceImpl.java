@@ -266,7 +266,6 @@ public class PharmacyServiceImpl implements PharmacyService {
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
 				orderDrugRepository.save(orderDrugCollection);
-
 				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
@@ -477,43 +476,46 @@ public class PharmacyServiceImpl implements PharmacyService {
 		List<OrderDrugsResponse> response = null;
 		try {
 			Long updatedTImeLong = Long.parseLong(updatedTime);
-
-			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("updatedTime")
-					.gte(new Date(updatedTImeLong));
+			
+			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("updatedTime").gte(new Date(updatedTImeLong));
 			Aggregation aggregation = null;
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project",
-					new BasicDBObject("localeId", "$localeId").append("userId", "$userId")
-							.append("uniqueRequestId", "$uniqueRequestId")
-							.append("uniqueResponseId", "$uniqueResponseId").append("wayOfOrder", "$wayOfOrder")
-							.append("pickUpTime", "$pickUpTime").append("pickUpDay", "$pickUpDay")
-							.append("pickUpDate", "$pickUpDate").append("pickUpAddress", "$pickUpAddress")
-							.append("discount", "$searchRequestToPharmacy.discount")
-							.append("discountedPrice", "$searchRequestToPharmacy.discountedPrice")
-							.append("realPrice", "$searchRequestToPharmacy.realPrice")
-							.append("prescriptionRequest", "$searchRequestFromUser.prescriptionRequest")
-							.append("localeName", "$locale.localeName").append("localeAddress", "$locale.address")
-							.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")
-							.append("isCancelled", "$isCancelled")));
-
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group",
-					new BasicDBObject("id", "$_id").append("localeId", new BasicDBObject("$first", "$localeId"))
-							.append("userId", new BasicDBObject("$first", "$userId"))
-							.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId"))
-							.append("uniqueResponseId", new BasicDBObject("$first", "$uniqueResponseId"))
-							.append("wayOfOrder", new BasicDBObject("$first", "$wayOfOrder"))
-							.append("pickUpTime", new BasicDBObject("$first", "$pickUpTime"))
-							.append("pickUpDay", new BasicDBObject("$first", "$pickUpDay"))
-							.append("pickUpDate", new BasicDBObject("$first", "$pickUpDate"))
-							.append("pickUpAddress", new BasicDBObject("$first", "$pickUpAddress"))
-							.append("discount", new BasicDBObject("$first", "$discount"))
-							.append("discountedPrice", new BasicDBObject("$first", "$discountedPrice"))
-							.append("realPrice", new BasicDBObject("$first", "$realPrice"))
-							.append("prescriptionRequest", new BasicDBObject("$first", "$prescriptionRequest"))
-							.append("localeName", new BasicDBObject("$first", "$localeName"))
-							.append("localeAddress", new BasicDBObject("$first", "$localeAddress"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))
-							.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
-							.append("isCancelled", new BasicDBObject("$first", "$isCancelled"))));
+			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", 
+					new BasicDBObject("localeId","$localeId")
+					.append("userId","$userId")
+					.append("uniqueRequestId","$uniqueRequestId")
+					.append("uniqueResponseId","$uniqueResponseId")
+					.append("wayOfOrder","$wayOfOrder")
+					.append("pickUpTime","$pickUpTime")
+					.append("pickUpDay","$pickUpDay")
+					.append("pickUpDate","$pickUpDate")
+					.append("pickUpAddress","$pickUpAddress")
+					.append("discount","$searchRequestToPharmacy.discount")
+					.append("discountedPrice","$searchRequestToPharmacy.discountedPrice")
+					.append("realPrice","$searchRequestToPharmacy.realPrice")
+					.append("prescriptionRequest","$searchRequestFromUser.prescriptionRequest")
+					.append("localeName","$locale.localeName")
+					.append("localeAddress","$locale.address")
+					.append("createdTime","$createdTime")
+					.append("updatedTime","$updatedTime")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
+					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
+					.append("userId", new BasicDBObject("$first","$userId"))
+					.append("uniqueRequestId", new BasicDBObject("$first","$uniqueRequestId"))
+					.append("uniqueResponseId", new BasicDBObject("$first","$uniqueResponseId"))
+					.append("wayOfOrder", new BasicDBObject("$first","$wayOfOrder"))
+					.append("pickUpTime", new BasicDBObject("$first","$pickUpTime"))
+					.append("pickUpDay", new BasicDBObject("$first","$pickUpDay"))
+					.append("pickUpDate", new BasicDBObject("$first","$pickUpDate"))
+					.append("pickUpAddress", new BasicDBObject("$first","$pickUpAddress"))
+					.append("discount", new BasicDBObject("$first","$discount"))
+					.append("discountedPrice", new BasicDBObject("$first","$discountedPrice"))
+					.append("realPrice", new BasicDBObject("$first","$realPrice"))
+					.append("prescriptionRequest", new BasicDBObject("$first","$prescriptionRequest"))
+					.append("localeName", new BasicDBObject("$first","$localeName"))
+					.append("localeAddress", new BasicDBObject("$first","$localeAddress"))
+					.append("createdTime", new BasicDBObject("$first","$createdTime"))
+					.append("updatedTime", new BasicDBObject("$first","$updatedTime"))));
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -577,10 +579,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 						}
 						drugsResponse.setLocaleFormattedAddress(localeFormattedAddress);
 					}
-					Address pickUpAddress = (drugsResponse.getPickUpAddress() != null
-							&& drugsResponse.getPickUpAddress().getAddress() != null)
-									? drugsResponse.getPickUpAddress().getAddress() : null;
-					if (pickUpAddress != null) {
+					Address pickUpAddress = (drugsResponse.getPickUpAddress() != null && drugsResponse.getPickUpAddress().getAddress() != null) ? drugsResponse.getPickUpAddress().getAddress() : null;
+					if(pickUpAddress != null) {
 						String pickUpFormattedAddress = (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getStreetAddress())
 								? pickUpAddress.getStreetAddress() + ", " : "")
 								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLandmarkDetails())
@@ -613,14 +613,12 @@ public class PharmacyServiceImpl implements PharmacyService {
 	}
 
 	@Override
-	public List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size,
-			String updatedTime) {
+	public List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size, String updatedTime) {
 		List<SearchRequestFromUserResponse> response = null;
 		try {
 			Long updatedTImeLong = Long.parseLong(updatedTime);
-
-			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("updatedTime")
-					.gte(new Date(updatedTImeLong));
+			
+			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("updatedTime").gte(new Date(updatedTImeLong));
 			Aggregation aggregation = null;
 			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", 
 					new BasicDBObject("localeId","$localeId")
@@ -645,9 +643,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 					        "$cond", new BasicDBObject(
 							          "if", new BasicDBObject("$gt", Arrays.asList(new BasicDBObject("$size", "$orders"), 0)))
 							        .append("then", true)
-							        .append("else", false)))
-					.append("createdTime", "$createdTime")
-					.append("updatedTime", "$updatedTime")));
+							        .append("else", false))
+							.append("createdTime", "$createdTime")
+							.append("updatedTime", "$updatedTime"))));
 
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
 					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
