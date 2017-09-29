@@ -655,7 +655,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						vitalSigns = bmi;
 				}
 
-
 				String bsa = dischargeSummaryCollection.getVitalSigns().getBsa().trim();
 
 				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
@@ -670,6 +669,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					else
 						vitalSigns = bsa;
 				}
+				parameters.put("vitalSigns", vitalSigns);
 
 			}
 

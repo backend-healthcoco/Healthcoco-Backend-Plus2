@@ -5,22 +5,29 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.WayOfOrder;
 
 @Document(collection = "order_drug_cl")
 public class OrderDrugCollection extends GenericCollection {
+	
 	@Id
 	private ObjectId id;
+	
 	@Field
 	private ObjectId localeId;
+	
 	@Field
 	private ObjectId userId;
+	
 	@Field
 	private String uniqueRequestId;
+	
 	@Field
 	private String uniqueResponseId;
+	
 	@Field
 	private ReplyType replyType = ReplyType.REQUESTED;
 
@@ -28,14 +35,14 @@ public class OrderDrugCollection extends GenericCollection {
 	private WayOfOrder wayOfOrder;
 	
 	@Field
-	private LocaleWorkingHours time;
+	private Address pickUpAddress;
+		
+	@Field
+	private Long pickUpDate;
 	
 	@Field
-	private String day;
+	private LocaleWorkingHours pickUpTime;
 	
-	@Field
-	private String address;
-
 	public ObjectId getId() {
 		return id;
 	}
@@ -92,34 +99,36 @@ public class OrderDrugCollection extends GenericCollection {
 		this.wayOfOrder = wayOfOrder;
 	}
 
-	public LocaleWorkingHours getTime() {
-		return time;
+	public Address getPickUpAddress() {
+		return pickUpAddress;
 	}
 
-	public void setTime(LocaleWorkingHours time) {
-		this.time = time;
+	public void setPickUpAddress(Address pickUpAddress) {
+		this.pickUpAddress = pickUpAddress;
 	}
 
-	public String getDay() {
-		return day;
+	public Long getPickUpDate() {
+		return pickUpDate;
 	}
 
-	public void setDay(String day) {
-		this.day = day;
+	public void setPickUpDate(Long pickUpDate) {
+		this.pickUpDate = pickUpDate;
 	}
 
-	public String getAddress() {
-		return address;
+	public LocaleWorkingHours getPickUpTime() {
+		return pickUpTime;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setPickUpTime(LocaleWorkingHours pickUpTime) {
+		this.pickUpTime = pickUpTime;
 	}
 
 	@Override
 	public String toString() {
 		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", replyType=" + replyType
-				+ ", wayOfOrder=" + wayOfOrder + ", time=" + time + ", day=" + day + ", address=" + address + "]";
+				+ ", wayOfOrder=" + wayOfOrder + ", pickUpAddress=" + pickUpAddress + ", pickUpDate=" + pickUpDate
+				+ ", pickUpTime=" + pickUpTime + "]";
 	}
+
 }

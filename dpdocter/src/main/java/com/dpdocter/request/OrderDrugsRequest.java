@@ -1,5 +1,6 @@
 package com.dpdocter.request;
 
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.enums.WayOfOrder;
 
@@ -15,11 +16,11 @@ public class OrderDrugsRequest {
 
 	private WayOfOrder wayOfOrder;
 	
-	private LocaleWorkingHours time;
+	private LocaleWorkingHours pickUpTime;
 	
-	private String day;
+	private Long pickUpDate;
 	
-	private String address;
+	private Address pickUpAddress;
 	
 	public String getLocaleId() {
 		return localeId;
@@ -61,35 +62,35 @@ public class OrderDrugsRequest {
 		this.wayOfOrder = wayOfOrder;
 	}
 
-	public LocaleWorkingHours getTime() {
-		return time;
+	public LocaleWorkingHours getPickUpTime() {
+		return pickUpTime;
 	}
 
-	public void setTime(LocaleWorkingHours time) {
-		this.time = time;
+	public void setPickUpTime(LocaleWorkingHours pickUpTime) {
+		this.pickUpTime = pickUpTime;
 	}
 
-	public String getDay() {
-		return day;
+	public Address getPickUpAddress() {
+		return pickUpAddress;
 	}
 
-	public void setDay(String day) {
-		this.day = day;
+	public void setPickUpAddress(Address pickUpAddress) {
+		this.pickUpAddress = pickUpAddress;
 	}
 
-	public String getAddress() {
-		return address;
+	public Long getPickUpDate() {
+		return pickUpDate;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setPickUpDate(Long pickUpDate) {
+		this.pickUpDate = pickUpDate;
 	}
 
 	@Override
 	public String toString() {
 		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
-				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", time=" + time + ", day="
-				+ day + ", address=" + address + "]";
+				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", pickUpTime=" + pickUpTime
+				+ ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress + "]";
 	}
 
 }

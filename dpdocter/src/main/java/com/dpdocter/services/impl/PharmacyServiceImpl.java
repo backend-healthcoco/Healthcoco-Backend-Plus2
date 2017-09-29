@@ -1,6 +1,7 @@
 
 package com.dpdocter.services.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,17 +29,24 @@ import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.util.json.Jackson;
+import com.dpdocter.beans.Address;
 import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.beans.PatientNumberAndUserIds;
+import com.dpdocter.beans.UserAddress;
 import com.dpdocter.collections.BlockUserCollection;
+import com.dpdocter.collections.LocaleCollection;
 import com.dpdocter.collections.OrderDrugCollection;
 import com.dpdocter.collections.SearchRequestFromUserCollection;
 import com.dpdocter.collections.SearchRequestToPharmacyCollection;
 import com.dpdocter.collections.UserCollection;
+import com.dpdocter.enums.DoctorExperienceUnit;
 import com.dpdocter.enums.ReplyType;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.WayOfOrder;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
@@ -48,11 +57,14 @@ import com.dpdocter.repository.SearchRequestFromUserRepository;
 import com.dpdocter.repository.SearchRequestToPharmacyRepository;
 import com.dpdocter.repository.UserRepository;
 import com.dpdocter.request.OrderDrugsRequest;
+import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
+import com.dpdocter.response.OrderDrugsResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
 import com.dpdocter.scheduler.AsyncService;
+import com.dpdocter.services.LocaleService;
 import com.dpdocter.services.PharmacyService;
 import com.dpdocter.services.PushNotificationServices;
 import com.dpdocter.services.UserFavouriteService;
@@ -112,6 +124,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 
 	@Autowired
 	private BlockUserRepository blockUserRepository;
+	
+	@Autowired
+	private LocaleService localeService;
 
 	@Autowired
 	private UserFavouriteService userFavouriteService;
@@ -127,7 +142,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 		 */
 		UserSearchRequest response = null;
 
-		BlockUserCollection blockUserCollection = blockUserRepository.findByUserId(new ObjectId(request.getUserId()));
+		BlockUserCollection blockUserCollection = mongoTemplate.findOne(
+				new Query(new Criteria("userIds").is(new ObjectId(request.getUserId()))), BlockUserCollection.class);
 		if (blockUserCollection != null) {
 			if (!blockUserCollection.getDiscarded()) {
 				DateTime dateTime = null;
@@ -244,10 +260,11 @@ public class PharmacyServiceImpl implements PharmacyService {
 				BeanUtil.map(request, orderDrugCollection);
 				orderDrugCollection.setCreatedTime(new Date());
 				orderDrugRepository.save(orderDrugCollection);
-				asyncService.changeRequestStatus(requestToPharmacyCollection.getUniqueRequestId(),
-						requestToPharmacyCollection.getLocaleId());
-				asyncService.changeOrderStatus(requestToPharmacyCollection.getUniqueRequestId(),
-						requestToPharmacyCollection.getLocaleId(), requestToPharmacyCollection.getUserId());
+				// asyncService.changeRequestStatus(requestToPharmacyCollection.getUniqueRequestId(),
+				// requestToPharmacyCollection.getLocaleId());
+				// asyncService.changeOrderStatus(requestToPharmacyCollection.getUniqueRequestId(),
+				// requestToPharmacyCollection.getLocaleId(),
+				// requestToPharmacyCollection.getUserId());
 				pushNotificationServices.notifyPharmacy(request.getLocaleId(), request.getUniqueRequestId(),
 						request.getUniqueResponseId(), RoleEnum.PHARMIST, "Keep my order ready");
 				response = new OrderDrugsRequest();
@@ -293,6 +310,13 @@ public class PharmacyServiceImpl implements PharmacyService {
 						ReplyType.NO.toString());
 				searchRequestFromUserResponse.setCountForYes(countForYes);
 				searchRequestFromUserResponse.setCountForNo(countForNo);
+				if (searchRequestFromUserResponse.getLocaleId() != null) {
+					LocaleCollection localeCollection = localeRepository
+							.findOne(new ObjectId(searchRequestFromUserResponse.getLocaleId()));
+					if (localeCollection != null) {
+						searchRequestFromUserResponse.setPharmacyName(localeCollection.getLocaleName());
+					}
+				}
 			}
 
 		} catch (Exception e) {
@@ -441,6 +465,243 @@ public class PharmacyServiceImpl implements PharmacyService {
 			throw new BusinessException(ServiceError.Unknown,
 					"Error while getting count user Fake Request " + e.getMessage());
 
+		}
+		return response;
+	}
+
+	@Override
+	public List<OrderDrugsResponse> getPatientOrders(String userId, int page, int size) {
+		List<OrderDrugsResponse> response = null;
+		try {
+			Criteria criteria = new Criteria("userId").is(new ObjectId(userId));
+			Aggregation aggregation = null;
+
+			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", 
+					new BasicDBObject("localeId","$localeId")
+					.append("userId","$userId")
+					.append("uniqueRequestId","$uniqueRequestId")
+					.append("uniqueResponseId","$uniqueResponseId")
+					.append("wayOfOrder","$wayOfOrder")
+					.append("pickUpTime","$pickUpTime")
+					.append("pickUpDay","$pickUpDay")
+					.append("pickUpDate","$pickUpDate")
+					.append("pickUpAddress","$pickUpAddress")
+					.append("discount","$searchRequestToPharmacy.discount")
+					.append("discountedPrice","$searchRequestToPharmacy.discountedPrice")
+					.append("realPrice","$searchRequestToPharmacy.realPrice")
+					.append("prescriptionRequest","$searchRequestFromUser.prescriptionRequest")
+					.append("localeName","$locale.localeName")
+					.append("localeAddress","$locale.address")));
+			
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
+					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
+					.append("userId", new BasicDBObject("$first","$userId"))
+					.append("uniqueRequestId", new BasicDBObject("$first","$uniqueRequestId"))
+					.append("uniqueResponseId", new BasicDBObject("$first","$uniqueResponseId"))
+					.append("wayOfOrder", new BasicDBObject("$first","$wayOfOrder"))
+					.append("pickUpTime", new BasicDBObject("$first","$pickUpTime"))
+					.append("pickUpDay", new BasicDBObject("$first","$pickUpDay"))
+					.append("pickUpDate", new BasicDBObject("$first","$pickUpDate"))
+					.append("pickUpAddress", new BasicDBObject("$first","$pickUpAddress"))
+					.append("discount", new BasicDBObject("$first","$discount"))
+					.append("discountedPrice", new BasicDBObject("$first","$discountedPrice"))
+					.append("realPrice", new BasicDBObject("$first","$realPrice"))
+					.append("prescriptionRequest", new BasicDBObject("$first","$prescriptionRequest"))
+					.append("localeName", new BasicDBObject("$first","$localeName"))
+					.append("localeAddress", new BasicDBObject("$first","$localeAddress"))));
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("search_request_from_user_cl", "uniqueRequestId", "uniqueRequestId", "searchRequestFromUser"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$searchRequestFromUser")
+										.append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId", "searchRequestToPharmacy"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$searchRequestToPharmacy")
+										.append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("locale_cl", "localeId", "_id", "locale"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$locale")
+										.append("preserveNullAndEmptyArrays", true))),
+						project, group,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("search_request_from_user_cl", "uniqueRequestId", "uniqueRequestId", "searchRequestFromUser"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$searchRequestFromUser")
+										.append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("search_request_to_pharmacy_cl", "uniqueRequestId", "uniqueRequestId", "searchRequestToPharmacy"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$searchRequestToPharmacy")
+										.append("preserveNullAndEmptyArrays", true))),
+						Aggregation.lookup("locale_cl", "localeId", "_id", "locale"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$locale")
+										.append("preserveNullAndEmptyArrays", true))),
+						project, group,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<OrderDrugsResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					OrderDrugCollection.class, OrderDrugsResponse.class);
+			response = aggregationResults.getMappedResults();
+			if(response != null && !response.isEmpty()) {
+				for(OrderDrugsResponse drugsResponse : response) {
+					Address localeAddress = drugsResponse.getLocaleAddress();
+					if(localeAddress != null) {
+						String localeFormattedAddress = (!DPDoctorUtils.anyStringEmpty(localeAddress.getStreetAddress())
+								? localeAddress.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getLandmarkDetails())
+										? localeAddress.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getLocality())
+										? localeAddress.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getCity())
+										? localeAddress.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getState())
+										? localeAddress.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getCountry())
+										? localeAddress.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(localeAddress.getPostalCode())
+										? localeAddress.getPostalCode() : "");
+
+						if (localeFormattedAddress.charAt(localeFormattedAddress.length() - 2) == ',') {
+							localeFormattedAddress = localeFormattedAddress.substring(0, localeFormattedAddress.length() - 2);
+						}
+						drugsResponse.setLocaleFormattedAddress(localeFormattedAddress);
+					}
+					Address pickUpAddress = drugsResponse.getPickUpAddress();
+					if(pickUpAddress != null) {
+						String pickUpFormattedAddress = (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getStreetAddress())
+								? pickUpAddress.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLandmarkDetails())
+										? pickUpAddress.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getLocality())
+										? pickUpAddress.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getCity())
+										? pickUpAddress.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getState())
+										? pickUpAddress.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getCountry())
+										? pickUpAddress.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(pickUpAddress.getPostalCode())
+										? pickUpAddress.getPostalCode() : "");
+
+						if (pickUpFormattedAddress.charAt(pickUpFormattedAddress.length() - 2) == ',') {
+							pickUpFormattedAddress = pickUpFormattedAddress.substring(0, pickUpFormattedAddress.length() - 2);
+						}
+						drugsResponse.setPickUpFormattedAddress(pickUpFormattedAddress);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting my orders " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting my orders " + e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size) {
+		List<SearchRequestFromUserResponse> response = null;
+		try {
+			Criteria criteria = new Criteria("userId").is(new ObjectId(userId));
+			Aggregation aggregation = null;
+			
+			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", 
+					new BasicDBObject("localeId","$localeId")
+					.append("userId","$userId")
+					.append("uniqueRequestId","$uniqueRequestId")
+					.append("prescriptionRequest","$prescriptionRequest")
+					.append("pharmacyName","$pharmacyName")
+					.append("location","$location")
+					.append("latitude","$latitude")
+					.append("longitude","$longitude")
+					.append("isCancelled","$isCancelled")
+					.append("localeName","$locale.localeName")
+					.append("isTwentyFourSevenOpen","$locale.isTwentyFourSevenOpen")
+					.append("pharmacyType","$locale.pharmacyType")
+					.append("noOfLocaleRecommendation","$locale.noOfLocaleRecommendation")
+					.append("isHomeDeliveryAvailable","$locale.isHomeDeliveryAvailable")
+					.append("homeDeliveryRadius","$locale.homeDeliveryRadius")
+					.append("localeAddress","$locale.address")
+					.append("paymentInfo","$locale.paymentInfo")
+					.append("paymentInfos","$locale.paymentInfos").append("isOrdered", new BasicDBObject(
+					        "$cond", new BasicDBObject(
+							          "if", new BasicDBObject("$gt", Arrays.asList(new BasicDBObject("$size", "$orders"), 0)))
+							        .append("then", true)
+							        .append("else", false)))));
+
+			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
+					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
+					.append("userId", new BasicDBObject("$first","$userId"))
+					.append("uniqueRequestId", new BasicDBObject("$first","$uniqueRequestId"))
+					.append("prescriptionRequest", new BasicDBObject("$first","$prescriptionRequest"))
+					.append("pharmacyName", new BasicDBObject("$first","$pharmacyName"))
+					.append("location", new BasicDBObject("$first","$location"))
+					.append("latitude", new BasicDBObject("$first","$latitude"))
+					.append("longitude", new BasicDBObject("$first","$longitude"))
+					.append("localeName", new BasicDBObject("$first","$localeName"))
+					.append("isTwentyFourSevenOpen", new BasicDBObject("$first","$isTwentyFourSevenOpen"))
+					.append("pharmacyType", new BasicDBObject("$first","$pharmacyType"))
+					.append("noOfLocaleRecommendation", new BasicDBObject("$first","$noOfLocaleRecommendation"))
+					.append("isHomeDeliveryAvailable", new BasicDBObject("$first","$isHomeDeliveryAvailable"))
+					.append("homeDeliveryRadius", new BasicDBObject("$first","$homeDeliveryRadius"))
+					.append("localeAddress", new BasicDBObject("$first","$localeAddress"))
+					.append("paymentInfo", new BasicDBObject("$first","$paymentInfo"))
+					.append("paymentInfos", new BasicDBObject("$first","$paymentInfos"))
+					.append("isOrdered", new BasicDBObject("$first","$isOrdered"))));
+			
+			
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+						Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$locale")
+										.append("preserveNullAndEmptyArrays", true))),
+						project, group,
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+
+			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
+			response = aggregationResults.getMappedResults();
+			if(response != null && !response.isEmpty()) {
+				for(SearchRequestFromUserResponse requestFromUserResponse : response) {
+					Address address = requestFromUserResponse.getLocaleAddress();
+					if(address != null) {
+						String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+								? address.getStreetAddress() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+										? address.getLandmarkDetails() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
+										? address.getLocality() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
+										? address.getCity() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getState())
+										? address.getState() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
+										? address.getCountry() + ", " : "")
+								+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
+										? address.getPostalCode() : "");
+
+						if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
+							formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
+						}
+						requestFromUserResponse.setLocaleFormattedAddress(formattedAddress);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting locales " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting locale List " + e.getMessage());
 		}
 		return response;
 	}

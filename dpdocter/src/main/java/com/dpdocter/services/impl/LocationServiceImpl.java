@@ -1,11 +1,15 @@
 package com.dpdocter.services.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -43,7 +47,6 @@ import com.dpdocter.collections.RateCardTestAssociationCollection;
 import com.dpdocter.collections.RecommendationsCollection;
 import com.dpdocter.collections.SpecimenCollection;
 import com.dpdocter.collections.UserCollection;
-import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.exceptions.BusinessException;
@@ -645,6 +648,8 @@ public class LocationServiceImpl implements LocationServices {
 			Aggregation aggregation = null;
 			Criteria criteria = new Criteria();
 			
+			
+			
 			if (!DPDoctorUtils.anyStringEmpty(daughterLabId)) {
 				criteria.and("daughterLabLocationId").is(new ObjectId(daughterLabId));
 			}
@@ -798,7 +803,13 @@ public class LocationServiceImpl implements LocationServices {
 				if (labTestPickupCollection == null) {
 					throw new BusinessException(ServiceError.NoRecord, "Record not found");
 				}
+				
 				BeanUtil.map(request, labTestPickupCollection);
+			/*	if(request.getIsCompleted() == true)
+				{
+					String serialNumber = reportSerialNumberGenerator(request.getParentLabLocationId());
+					labTestPickupCollection.setSerialNumber(serialNumber);
+				}*/
 				for (LabTestSample labTestSample : request.getLabTestSamples()) {
 
 					if (labTestSample.getId() != null) {
@@ -823,8 +834,10 @@ public class LocationServiceImpl implements LocationServices {
 					}
 
 				}
+				
 				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
 				labTestPickupCollection.setUpdatedTime(new Date());
+				
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			} else {
 				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
@@ -1719,5 +1732,43 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return response;
 	}
+	
+	/*private String reportSerialNumberGenerator(String locationId) {
+		String generatedId = null;
+		try {
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
+
+			ObjectId locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+
+			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long startTimeinMillis = start.getMillis();
+			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+			Long endTimeinMillis = end.getMillis();
+			int reportSize = labReportsRepository.findTodaysCompletedReport(locationObjectId, true,
+					startTimeinMillis, endTimeinMillis);
+			LocationCollection location = locationRepository.findOne(locationObjectId);
+			if (location == null) {
+				logger.warn("Invalid Location Id");
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
+			generatedId = String.valueOf((reportSize + 1));
+		} catch (BusinessException e) {
+			e.printStackTrace();
+			throw e;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return generatedId;
+	}*/
 
 }

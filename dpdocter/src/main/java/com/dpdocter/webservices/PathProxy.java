@@ -192,6 +192,12 @@ public interface PathProxy {
 		public static final String ADD_EDIT_USER_REMINDERS = "user/reminders/addEdit";
 
 		public static final String GET_USER_REMINDERS = "user/reminders/{userId}";
+		
+		public static final String GET_USER_ADDRESS = "user/address/";
+		
+		public static final String ADD_EDIT_USER_ADDRESS = "user/address/addEdit";
+		
+		public static final String DELETE_USER_ADDRESS = "user/address/{addressId}/delete";
 	}
 
 	public static final String CLINICAL_NOTES_BASE_URL = BASE_URL + "/clinicalNotes";
@@ -337,6 +343,8 @@ public interface PathProxy {
 		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
 
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
+		
+		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
 
 	}
 
@@ -907,6 +915,17 @@ public interface PathProxy {
 		public static final String GET_DOCTORS = "/getDoctorsWithAppointmentCount/{locationId}";
 
 		public static final String CHANGE_STATUS_IN_QUEUE = "/patientQueue/changeStatus/{doctorId}/{locationId}/{hospitalId}/{patientId}/{status}";
+
+		public static final String ADD_CUSTOM_APPOINTMENT = "/custom/add";
+
+		public static final String GET_CUSTOM_APPOINTMENT_LIST = "/custom//get";
+
+		public static final String GET_CUSTOM_APPOINTMENT_BY_ID = "/custom/{appointmentId}/get";
+
+		public static final String GET_CUSTOM_APPOINTMENT_AVG_DETAIL = "/custom/getAVGdetail";
+
+		public static final String DELETE_CUSTOM_APPOINTMENT = "/custom/{appointmentId}/{doctorId}/{locationId}/{hospitalId}/DELETE";
+
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1011,6 +1030,8 @@ public interface PathProxy {
 		public static final String ADD_SPECIALITY = "/addSpecialization";
 
 		public static final String SEND_SMS_TO_DOCTOR = "/smsToDoctor";
+		
+		public static final String SEND_SMS_TO_PHARMACY = "/smsToPharmacy";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
@@ -1192,6 +1213,8 @@ public interface PathProxy {
 		public static final String ADD_EDIT_RECOMMENDATION = "/addEditRecommendation";
 		public static final String ORDER_DRUG = "/orderDrugs";
 		public static final String GET_USER_FAKE_REQUEST_COUNT = "/getFakeRequestCount/{patientId}";
+		public static final String GET_PATIENT_ORDERS = "/patient/orders/{userId}";
+		public static final String GET_PATIENT_REQUEST = "/patient/requests/{userId}";
 	}
 
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";
@@ -1352,7 +1375,7 @@ public interface PathProxy {
 	
 	public interface UserFavouritesUrls{
 		
-		public static final String ADD_REMOVE_FROM_FAVOURITES = "/addRemove/{resourceType}/{userId}/{resourceId}/{resourceType}";
+		public static final String ADD_REMOVE_FROM_FAVOURITES = "/addRemove/{resourceType}/{userId}/{resourceId}";
 		
 		public static final String GET_FAVOURITE_DOCTORS = "/doctors/{userId}";
 		

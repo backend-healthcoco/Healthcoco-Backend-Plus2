@@ -2,8 +2,6 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import javax.ws.rs.QueryParam;
-
 import com.dpdocter.beans.BloodGroup;
 import com.dpdocter.beans.ClinicAddress;
 import com.dpdocter.beans.ClinicImage;
@@ -16,14 +14,14 @@ import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.UserReminders;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.User;
-import com.dpdocter.beans.UserRecords;
+import com.dpdocter.beans.UserAddress;
+import com.dpdocter.beans.UserReminders;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.request.ClinicImageAddRequest;
@@ -158,4 +156,10 @@ public interface RegistrationService {
 	UserReminders addEditPatientReminders(UserReminders request, String reminderType);
 
 	UserReminders getPatientReminders(String userId, String reminderType);
+
+	UserAddress addEditUserAddress(UserAddress request);
+
+	List<UserAddress> getUserAddress(String userId, String mobileNumber, Boolean discarded);
+
+	UserAddress deleteUserAddress(String addressId, String userId, String mobileNumber, Boolean discarded);
 }

@@ -23,6 +23,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
+import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.components.html.HtmlComponent;
 import net.sf.jasperreports.components.list.DesignListContents;
 import net.sf.jasperreports.components.list.StandardListComponent;
@@ -3382,6 +3383,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+		
+		
+		if (parameters.get("vitalSigns")!=null) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{VitalSigns}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{vitalSigns}", 18, contentFontSize - 1, false);
+		}
 
 		show = (Boolean) parameters.get("showDiagnosis");
 		if (show) {

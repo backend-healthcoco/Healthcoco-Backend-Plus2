@@ -69,6 +69,7 @@ public class UserFavouriteServicesimpl implements UserFavouriteService {
 			}else {
 				if(resourceFavouriteCollection == null) {
 					resourceFavouriteCollection = new UserResourceFavouriteCollection();
+					resourceFavouriteCollection.setDiscarded(false);
 					resourceFavouriteCollection.setUserId(userObjectId);
 					resourceFavouriteCollection.setResourceId(resourceObjectId);
 					resourceFavouriteCollection.setResourceType(Resource.valueOf(resourceType.toUpperCase()));

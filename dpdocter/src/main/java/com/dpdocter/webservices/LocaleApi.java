@@ -20,12 +20,14 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.beans.Locale;
 import com.dpdocter.elasticsearch.services.ESLocaleService;
 import com.dpdocter.enums.RecommendationType;
+import com.dpdocter.enums.WayOfOrder;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.request.OrderDrugsRequest;
 import com.dpdocter.request.PrescriptionRequest;
 import com.dpdocter.request.UserSearchRequest;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.OrderDrugsResponse;
 import com.dpdocter.response.SearchRequestFromUserResponse;
 import com.dpdocter.response.SearchRequestToPharmacyResponse;
 import com.dpdocter.response.UserFakeRequestDetailResponse;
@@ -243,22 +245,20 @@ public class LocaleApi {
 	@POST
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
 	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
-		Response<OrderDrugsRequest> response = null;
-		OrderDrugsRequest status = null;
-		try {
-			if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId())
-					|| DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId())) {
+		 if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId()) || DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId()) || request.getWayOfOrder() == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
+		}else {
+			if(request.getWayOfOrder().name().equalsIgnoreCase(WayOfOrder.PICK_UP.name())) {
+				if(request.getPickUpTime() == null || request.getPickUpDate() == null)throw new BusinessException(ServiceError.InvalidInput, "PickUp Time or Date cannot be null");
+			}else {
+				if(request.getPickUpAddress() == null)throw new BusinessException(ServiceError.InvalidInput, "PickUp Address cannot be null");
 			}
-			status = pharmacyService.orderDrugs(request);
-			response = new Response<OrderDrugsRequest>();
-			response.setData(status);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			LOGGER.warn(e);
-			e.printStackTrace();
 		}
+		
+		OrderDrugsRequest status = pharmacyService.orderDrugs(request);
+		Response<OrderDrugsRequest> response = new Response<OrderDrugsRequest>();
+		response.setData(status);
+
 		return response;
 	}
 
@@ -268,11 +268,43 @@ public class LocaleApi {
 	public Response<UserFakeRequestDetailResponse> getUserFakeRequestCount(@PathParam("patientId") String patientId) {
 		Response<UserFakeRequestDetailResponse> response = null;
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");		}
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");	
+		}
 		UserFakeRequestDetailResponse detailResponse = pharmacyService.getUserFakeRequestCount(patientId);
 		response = new Response<UserFakeRequestDetailResponse>();
 		response.setData(detailResponse);
 		return response;
+	}
+
+	@GET
+	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
+	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size) {
+		
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
+		}
+
+		List<OrderDrugsResponse> list = pharmacyService.getPatientOrders(userId, page, size);
+
+		Response<OrderDrugsResponse> response = new Response<OrderDrugsResponse>();
+		response.setDataList(list);
+		return response;
+
+	}
+
+	@GET
+	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
+	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,	@QueryParam("page") int page, @QueryParam("size") int size) {
+		 if (DPDoctorUtils.anyStringEmpty(userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
+		}
+
+		 List<SearchRequestFromUserResponse> list = pharmacyService.getPatientRequests(userId, page, size);
+
+		Response<SearchRequestFromUserResponse> response = new Response<SearchRequestFromUserResponse>();
+		response.setDataList(list);
+		return response;
+
 	}
 
 }

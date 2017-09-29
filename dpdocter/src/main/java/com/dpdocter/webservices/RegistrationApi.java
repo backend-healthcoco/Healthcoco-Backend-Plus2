@@ -33,23 +33,21 @@ import com.dpdocter.beans.ClinicTiming;
 import com.dpdocter.beans.ConsentForm;
 import com.dpdocter.beans.Feedback;
 import com.dpdocter.beans.FormContent;
-import com.dpdocter.beans.InternalPromoCode;
-import com.dpdocter.beans.InternalPromotionGroup;
 import com.dpdocter.beans.Location;
-import com.dpdocter.beans.UserReminders;
 import com.dpdocter.beans.Profession;
 import com.dpdocter.beans.Reference;
 import com.dpdocter.beans.ReferenceDetail;
 import com.dpdocter.beans.RegisteredPatientDetails;
 import com.dpdocter.beans.Role;
 import com.dpdocter.beans.Suggestion;
+import com.dpdocter.beans.UserAddress;
+import com.dpdocter.beans.UserReminders;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.Resource;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
-import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.request.ClinicImageAddRequest;
 import com.dpdocter.request.ClinicLogoAddRequest;
 import com.dpdocter.request.ClinicProfileHandheld;
@@ -59,7 +57,7 @@ import com.dpdocter.response.ClinicDoctorResponse;
 import com.dpdocter.response.PatientInitialAndCounter;
 import com.dpdocter.response.PatientStatusResponse;
 import com.dpdocter.response.RegisterDoctorResponse;
-import com.dpdocter.services.PromotionService;
+import com.dpdocter.response.UserAddressResponse;
 import com.dpdocter.services.RegistrationService;
 import com.dpdocter.services.SuggestionService;
 import com.dpdocter.services.TransactionalManagementService;
@@ -94,12 +92,6 @@ public class RegistrationApi {
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
-
-	@Autowired
-	private DoctorRepository doctorRepository;
-
-	@Autowired
-	private PromotionService promotionService;
 
 	@Context
 	private UriInfo uriInfo;
@@ -215,19 +207,26 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<RegisteredPatientDetails> getExistingPatients(@PathParam("mobileNumber") String mobileNumber) {
+	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
 		}
-
-		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+		Response<Object> response = new Response<Object>();
 
 		List<RegisteredPatientDetails> users = registrationService.getPatientsByPhoneNumber(mobileNumber);
 		if (users != null && !users.isEmpty()) {
 			for (RegisteredPatientDetails user : users) {
 				user.setImageUrl(getFinalImageURL(user.getImageUrl()));
 				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
+			}
+			if(getAddress) {
+				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, true);
+				if(userAddress != null && !userAddress.isEmpty()) {
+					UserAddressResponse userAddressResponse = new UserAddressResponse();
+					userAddressResponse.setUserAddress(userAddress);
+					response.setData(userAddressResponse);
+				}
 			}
 		}
 		response.setDataList(users);
@@ -1109,6 +1108,47 @@ public class RegistrationApi {
 		}
 		Response<UserReminders> response = new Response<UserReminders>();
 		response.setData(registrationService.getPatientReminders(userId, reminderType));
+		return response;
+	}
+
+	@Path(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS)
+	@POST
+	@ApiOperation(value = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS, notes = PathProxy.RegistrationUrls.ADD_EDIT_USER_ADDRESS)
+	public Response<UserAddress> addEditUserAddress(UserAddress request) {
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
+
+		}else if (DPDoctorUtils.anyStringEmpty(request.getMobileNumber()) && (request.getUserIds() == null || !request.getUserIds().isEmpty())) {
+			throw new BusinessException(ServiceError.InvalidInput, "User Id & Mobile Number could not null");
+
+		}
+		Response<UserAddress> response = new Response<UserAddress>();
+		response.setData(registrationService.addEditUserAddress(request));
+		return response;
+	}
+	
+	@Path(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
+	@GET
+	@ApiOperation(value = PathProxy.RegistrationUrls.GET_USER_ADDRESS, notes = PathProxy.RegistrationUrls.GET_USER_ADDRESS)
+	public Response<UserAddress> getUserAddress(@QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.allStringsEmpty(userId, mobileNumber)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User Id & MobileNumber could not null");
+}
+		Response<UserAddress> response = new Response<UserAddress>();
+		response.setDataList(registrationService.getUserAddress(userId, mobileNumber, discarded));
+		return response;
+	}
+	
+	@Path(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
+	@DELETE
+	@ApiOperation(value = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS, notes = PathProxy.RegistrationUrls.DELETE_USER_ADDRESS)
+	public Response<UserAddress> deleteUserAddress(@PathParam("addressId") String addressId, @QueryParam("userId") String userId, @QueryParam("mobileNumber") String mobileNumber, @DefaultValue("false") @QueryParam("discarded") Boolean discarded) {
+		if (DPDoctorUtils.anyStringEmpty(userId, addressId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "User Id  & Address Id could not null");
+
+		}
+		Response<UserAddress> response = new Response<UserAddress>();
+		response.setData(registrationService.deleteUserAddress(addressId, userId, mobileNumber, discarded));
 		return response;
 	}
 }
