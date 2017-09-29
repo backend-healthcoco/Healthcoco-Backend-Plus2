@@ -22,7 +22,11 @@ public class CustomAppointmentCollection extends GenericCollection {
 	@Field
 	private Boolean discarded = false;
 	@Field
-	private Date fromDate;
+	private Integer inTime;
+
+	@Field
+	private Integer outTime;
+
 	@Field
 	private Integer engageTime;
 	@Field
@@ -30,7 +34,7 @@ public class CustomAppointmentCollection extends GenericCollection {
 	@Field
 	private Integer waitingTime;
 	@Field
-	private Date toDate;
+	private Date date;
 
 	public Boolean getDiscarded() {
 		return discarded;
@@ -80,12 +84,20 @@ public class CustomAppointmentCollection extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public Date getFromDate() {
-		return fromDate;
+	public Integer getInTime() {
+		return inTime;
 	}
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
+	public void setInTime(Integer inTime) {
+		this.inTime = inTime;
+	}
+
+	public Integer getOutTime() {
+		return outTime;
+	}
+
+	public void setOutTime(Integer outTime) {
+		this.outTime = outTime;
 	}
 
 	public Integer getTreatmentTime() {
@@ -104,12 +116,12 @@ public class CustomAppointmentCollection extends GenericCollection {
 		this.waitingTime = waitingTime;
 	}
 
-	public Date getToDate() {
-		return toDate;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public Integer getEngageTime() {

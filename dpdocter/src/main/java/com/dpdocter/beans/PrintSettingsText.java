@@ -13,8 +13,20 @@ public class PrintSettingsText {
     private String fontColor;
 
     private String fontSize;
+    
+    private Boolean showTreatmentcost=false;
+    
+    
 
-    public String getText() {
+    public Boolean getShowTreatmentcost() {
+		return showTreatmentcost;
+	}
+
+	public void setShowTreatmentcost(Boolean showTreatmentcost) {
+		this.showTreatmentcost = showTreatmentcost;
+	}
+
+	public String getText() {
 	return text;
     }
 

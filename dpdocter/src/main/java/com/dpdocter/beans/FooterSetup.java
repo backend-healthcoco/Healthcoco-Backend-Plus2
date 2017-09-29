@@ -9,10 +9,22 @@ public class FooterSetup {
     private Boolean customFooter  = true;
 
     private Boolean showSignature  = true;
+    
+    private Boolean showPoweredBy=true;
 
     private List<PrintSettingsText> bottomText;
+    
+    
 
-    public Boolean getCustomFooter() {
+    public Boolean getShowPoweredBy() {
+		return showPoweredBy;
+	}
+
+	public void setShowPoweredBy(Boolean showPoweredBy) {
+		this.showPoweredBy = showPoweredBy;
+	}
+
+	public Boolean getCustomFooter() {
 	return customFooter;
     }
 
