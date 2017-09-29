@@ -564,114 +564,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 						}
 					}
 				}
-			if (dischargeSummaryCollection.getVitalSigns() != null) {
-				String vitalSigns = null;
-
-				String pulse = dischargeSummaryCollection.getVitalSigns().getPulse();
-				pulse = (pulse != null && !pulse.isEmpty()
-						? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit() : "");
-				if (!DPDoctorUtils.allStringsEmpty(pulse))
-					vitalSigns = pulse;
-
-				String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
-				temp = (temp != null && !temp.isEmpty()
-						? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
-				if (!DPDoctorUtils.allStringsEmpty(temp)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + temp;
-					else
-						vitalSigns = temp;
-				}
-
-				String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
-				breathing = (breathing != null && !breathing.isEmpty()
-						? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
-
-				if (!DPDoctorUtils.allStringsEmpty(breathing)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + breathing;
-					else
-						vitalSigns = breathing;
-				}
-
-				String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
-				weight = (weight != null && !weight.isEmpty()
-						? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
-				if (!DPDoctorUtils.allStringsEmpty(temp)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + weight;
-					else
-						vitalSigns = weight;
-				}
-
-				String bloodPressure = "";
-				if (dischargeSummaryCollection.getVitalSigns().getBloodPressure() != null) {
-					String systolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getSystolic();
-					systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
-
-					String diastolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getDiastolic();
-					diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
-
-					if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
-						bloodPressure = "B.P: " + systolic + "/" + diastolic + " "
-								+ VitalSignsUnit.BLOODPRESSURE.getUnit();
-					if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
-						if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-							vitalSigns = vitalSigns + ",  " + bloodPressure;
-						else
-							vitalSigns = bloodPressure;
-					}
-				}
-				String spo2 = dischargeSummaryCollection.getVitalSigns().getSpo2();
-				spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
-				if (!DPDoctorUtils.allStringsEmpty(spo2)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + spo2;
-					else
-						vitalSigns = spo2;
-				}
-				String height = dischargeSummaryCollection.getVitalSigns().getHeight();
-				height = (height != null && !height.isEmpty()
-						? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit() : "");
-				if (!DPDoctorUtils.allStringsEmpty(height)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + height;
-					else
-						vitalSigns = height;
-				}
-
-				String bmi = dischargeSummaryCollection.getVitalSigns().getBmi().trim();
-
-				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-
-					bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
-				} else {
-					bmi = "";
-				}
-				if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-					if (!DPDoctorUtils.allStringsEmpty(bmi))
-						vitalSigns = vitalSigns + ",  " + bmi;
-					else
-						vitalSigns = bmi;
-				}
-
-				String bsa = dischargeSummaryCollection.getVitalSigns().getBsa().trim();
-
-				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-
-					bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
-				} else {
-					bsa = "";
-				}
-				if (!DPDoctorUtils.allStringsEmpty(bsa)) {
-					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
-						vitalSigns = vitalSigns + ",  " + bsa;
-					else
-						vitalSigns = bsa;
-				}
-				parameters.put("vitalSigns", vitalSigns);
-
-			}
 
 			parameters.put("prescriptionItems", prescriptionItems);
 			parameters.put("showIntructions", showIntructions);
@@ -684,6 +576,113 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			parameters.put("showAdvice", show);
 			show = true;
+
+		}
+		if (dischargeSummaryCollection.getVitalSigns() != null) {
+			String vitalSigns = "";
+
+			String pulse = dischargeSummaryCollection.getVitalSigns().getPulse();
+			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pulse))
+				vitalSigns = pulse;
+
+			String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
+			temp = (temp != null && !temp.isEmpty()
+					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + temp;
+				else
+					vitalSigns = temp;
+			}
+
+			String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
+			breathing = (breathing != null && !breathing.isEmpty()
+					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+
+			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + breathing;
+				else
+					vitalSigns = breathing;
+			}
+
+			String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
+			weight = (weight != null && !weight.isEmpty()
+					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + weight;
+				else
+					vitalSigns = weight;
+			}
+
+			String bloodPressure = "";
+			if (dischargeSummaryCollection.getVitalSigns().getBloodPressure() != null) {
+				String systolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getSystolic();
+				systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+
+				String diastolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getDiastolic();
+				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+
+				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
+				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + bloodPressure;
+					else
+						vitalSigns = bloodPressure;
+				}
+			}
+			String spo2 = dischargeSummaryCollection.getVitalSigns().getSpo2();
+			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + spo2;
+				else
+					vitalSigns = spo2;
+			}
+			String height = dischargeSummaryCollection.getVitalSigns().getHeight();
+			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(height)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + height;
+				else
+					vitalSigns = height;
+			}
+
+			String bmi = dischargeSummaryCollection.getVitalSigns().getBmi().trim();
+
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+
+				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+			} else {
+				bmi = "";
+			}
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (!DPDoctorUtils.allStringsEmpty(bmi))
+					vitalSigns = vitalSigns + ",  " + bmi;
+				else
+					vitalSigns = bmi;
+			}
+
+			String bsa = dischargeSummaryCollection.getVitalSigns().getBsa().trim();
+
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+
+				bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+			} else {
+				bsa = "";
+			}
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bsa;
+				else
+					vitalSigns = bsa;
+			}
+			parameters.put("vitalSigns", vitalSigns);
 
 		}
 		parameters.put("showPrescription", show);

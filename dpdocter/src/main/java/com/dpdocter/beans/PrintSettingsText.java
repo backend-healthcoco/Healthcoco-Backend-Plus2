@@ -14,7 +14,7 @@ public class PrintSettingsText {
 
     private String fontSize;
     
-    private Boolean showTreatmentcost=false;
+    private Boolean showTreatmentcost=true;
     
     
 

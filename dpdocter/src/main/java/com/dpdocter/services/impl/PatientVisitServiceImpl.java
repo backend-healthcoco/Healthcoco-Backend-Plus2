@@ -1490,6 +1490,11 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			} else {
 				parameters.put("footerSignature", "");
 			}
+			if(printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowPoweredBy()){
+				parameters.put("showPaweredBy", true);
+			}else{
+				parameters.put("showPaweredBy", false);
+			}
 		}
 		parameters.put("contentFontSize", contentFontSize);
 		parameters.put("headerLeftText", headerLeftText);
