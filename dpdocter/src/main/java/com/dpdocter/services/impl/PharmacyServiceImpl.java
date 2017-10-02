@@ -645,9 +645,9 @@ public class PharmacyServiceImpl implements PharmacyService {
 					        "$cond", new BasicDBObject(
 							          "if", new BasicDBObject("$gt", Arrays.asList(new BasicDBObject("$size", "$orders"), 0)))
 							        .append("then", true)
-							        .append("else", false))
-							.append("createdTime", "$createdTime")
-							.append("updatedTime", "$updatedTime"))));
+							        .append("else", false)))
+					.append("createdTime", "$createdTime")
+					.append("updatedTime", "$updatedTime")));
 
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
 					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
