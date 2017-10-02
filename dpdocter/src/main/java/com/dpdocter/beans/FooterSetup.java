@@ -10,7 +10,7 @@ public class FooterSetup {
 
     private Boolean showSignature  = true;
     
-    private Boolean showPoweredBy=true;
+    private Boolean showPoweredBy=false;
 
     private List<PrintSettingsText> bottomText;
     

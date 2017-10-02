@@ -192,11 +192,11 @@ public interface PathProxy {
 		public static final String ADD_EDIT_USER_REMINDERS = "user/reminders/addEdit";
 
 		public static final String GET_USER_REMINDERS = "user/reminders/{userId}";
-		
+
 		public static final String GET_USER_ADDRESS = "user/address/";
-		
+
 		public static final String ADD_EDIT_USER_ADDRESS = "user/address/addEdit";
-		
+
 		public static final String DELETE_USER_ADDRESS = "user/address/{addressId}/delete";
 	}
 
@@ -343,7 +343,7 @@ public interface PathProxy {
 		public static final String DELETE_EYE_OBSERVATION = "/eyeObservation/{id}/delete";
 
 		public static final String GET_EYE_OBSERVATIONS = "/eyeObservations";
-		
+
 		public static final String GET_DIAGNOSES_BY_SPECIALITY = "/getDiagnosesBySpeciality";
 
 	}
@@ -1030,7 +1030,7 @@ public interface PathProxy {
 		public static final String ADD_SPECIALITY = "/addSpecialization";
 
 		public static final String SEND_SMS_TO_DOCTOR = "/smsToDoctor";
-		
+
 		public static final String SEND_SMS_TO_PHARMACY = "/smsToPharmacy";
 	}
 
@@ -1133,6 +1133,8 @@ public interface PathProxy {
 		public static final String GET_BLOGS_CATEGORY = "/getBlogCategory";
 
 		public static final String GET_BLOGS = "/getBlogs";
+
+		public static final String GET_BLOG_List = "/get";
 
 		public static final String GET__MOST_LIKES_OR_VIEWED_BLOGS = "/getMostLIkesOrViewedBlogs";
 
@@ -1364,24 +1366,24 @@ public interface PathProxy {
 		public static final String EMAIL_ADMIT_CARD = "/{admitCardId}/{doctorId}/{locationId}/{hospitalId}/{emailAddress}/mail";
 
 	}
-	
+
 	public static final String RANKING_BASE_URL = BASE_URL + "/ranking";
-	
-	public interface RankingUrls{
-		
+
+	public interface RankingUrls {
+
 		public static final String GET_DOCTORS_RANKING = "/doctors";
 	}
-	
-    public static final String USER_FAVOURITES_BASE_URL = BASE_URL + "/favourite";
-	
-	public interface UserFavouritesUrls{
-		
+
+	public static final String USER_FAVOURITES_BASE_URL = BASE_URL + "/favourite";
+
+	public interface UserFavouritesUrls {
+
 		public static final String ADD_REMOVE_FROM_FAVOURITES = "/addRemove/{resourceType}/{userId}/{resourceId}";
-		
+
 		public static final String GET_FAVOURITE_DOCTORS = "/doctors/{userId}";
-		
+
 		public static final String GET_FAVOURITE_PHARMACIES = "/pharmacies/{userId}";
-		
+
 		public static final String GET_FAVOURITE_LABS = "/labs/{userId}";
 	}
 }

@@ -48,6 +48,18 @@ public class BlogApi {
 		response.setData(blogresponse);
 		return response;
 	}
+	
+	@Path(value = PathProxy.BlogsUrls.GET_BLOG_List)
+	@GET
+	@ApiOperation(value = PathProxy.BlogsUrls.GET_BLOG_List, notes = PathProxy.BlogsUrls.GET_BLOG_List)
+	public Response<Blog> getBlogList(@QueryParam(value = "size") int size, @QueryParam(value = "page") int page,
+			@QueryParam(value = "userId") String userId, @QueryParam(value = "category") String category,
+			@QueryParam(value = "title") String title) {
+		BlogResponse blogresponse = blogService.getBlogs(size, page, category, userId, title);
+		Response<Blog> response = new Response<Blog>();
+		response.setDataList(blogresponse.getBlogs());
+		return response;
+	}
 
 	@Path(value = PathProxy.BlogsUrls.GET_BLOG_BY_SLUG_URL)
 	@GET
