@@ -653,7 +653,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					vitalSigns = height;
 			}
 
-			String bmi = dischargeSummaryCollection.getVitalSigns().getBmi().trim();
+			String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();
 
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 
@@ -668,7 +668,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 					vitalSigns = bmi;
 			}
 
-			String bsa = dischargeSummaryCollection.getVitalSigns().getBsa().trim();
+			String bsa = dischargeSummaryCollection.getVitalSigns().getBsa();
 
 			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
 
