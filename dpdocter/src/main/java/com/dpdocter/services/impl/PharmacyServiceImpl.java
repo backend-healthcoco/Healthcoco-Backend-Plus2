@@ -490,7 +490,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 					.append("localeName","$locale.localeName")
 					.append("localeAddress","$locale.address")
 					.append("createdTime","$createdTime")
-					.append("updatedTime","$updatedTime")));
+					.append("updatedTime","$updatedTime")
+					.append("isCancelled","$isCancelled")));
 			
 			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
 					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
@@ -509,7 +510,8 @@ public class PharmacyServiceImpl implements PharmacyService {
 					.append("localeName", new BasicDBObject("$first","$localeName"))
 					.append("localeAddress", new BasicDBObject("$first","$localeAddress"))
 					.append("createdTime", new BasicDBObject("$first","$createdTime"))
-					.append("updatedTime", new BasicDBObject("$first","$updatedTime"))));
+					.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
+					.append("isCancelled", new BasicDBObject("$first","$isCancelled"))));
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -707,9 +709,29 @@ public class PharmacyServiceImpl implements PharmacyService {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting locales " + e.getMessage());
+			logger.error("Error while getting my requests " + e.getMessage());
 			e.printStackTrace();
-			throw new BusinessException(ServiceError.Unknown, "Error while getting locale List " + e.getMessage());
+			throw new BusinessException(ServiceError.Unknown, "Error while getting my requests ");
+		}
+		return response;
+	}
+
+	@Override
+	public OrderDrugsRequest cancelOrderDrug(String orderId, String userId) {
+		OrderDrugsRequest response = null;
+		try {
+			OrderDrugCollection orderDrugCollection = orderDrugRepository.findByIdAndUserId(new ObjectId(orderId), new ObjectId(userId));
+			if(orderDrugCollection == null)throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId and userId");
+			
+			orderDrugCollection.setIsCancelled(true);
+			orderDrugCollection.setUpdatedTime(new Date());
+			orderDrugCollection = orderDrugRepository.save(orderDrugCollection);
+			response = new OrderDrugsRequest();
+			BeanUtil.map(orderDrugCollection, response);
+		}catch (Exception e) {
+			logger.error("Error while cancelling order drugs " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while cancelling order drugs");
 		}
 		return response;
 	}

@@ -1,12 +1,13 @@
 package com.dpdocter.request;
 
-import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.enums.WayOfOrder;
 
 public class OrderDrugsRequest {
 
+	private String id;
+	
 	private String localeId;
 
 	private String userId;
@@ -23,6 +24,16 @@ public class OrderDrugsRequest {
 	
 	private UserAddress pickUpAddress;
 	
+	private Boolean isCancelled = false;
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public String getLocaleId() {
 		return localeId;
 	}
@@ -87,11 +98,20 @@ public class OrderDrugsRequest {
 		this.pickUpDate = pickUpDate;
 	}
 
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
+	}
+
 	@Override
 	public String toString() {
-		return "OrderDrugsRequest [localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId=" + uniqueRequestId
-				+ ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder + ", pickUpTime=" + pickUpTime
-				+ ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress + "]";
+		return "OrderDrugsRequest [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
+				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", wayOfOrder=" + wayOfOrder
+				+ ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate + ", pickUpAddress=" + pickUpAddress
+				+ ", isCancelled=" + isCancelled + "]";
 	}
 
 }

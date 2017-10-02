@@ -33,4 +33,6 @@ public interface PharmacyService {
 
 	List<SearchRequestFromUserResponse> getPatientRequests(String userId, int page, int size, String updatedTime);
 
+	OrderDrugsRequest cancelOrderDrug(String orderId, String userId);
+
 }

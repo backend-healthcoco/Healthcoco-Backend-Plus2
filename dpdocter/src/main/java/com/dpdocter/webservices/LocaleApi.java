@@ -245,6 +245,7 @@ public class LocaleApi {
 
 	@POST
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
+	@ApiOperation(value = PathProxy.LocaleUrls.ORDER_DRUG, notes = PathProxy.LocaleUrls.ORDER_DRUG)
 	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
 		 if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId()) || DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId()) || request.getWayOfOrder() == null) {
 				throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
@@ -279,6 +280,7 @@ public class LocaleApi {
 
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
+	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_ORDERS, notes = PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
 	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size, 
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		
@@ -296,6 +298,7 @@ public class LocaleApi {
 
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
+	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_REQUEST, notes = PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
 	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,	@QueryParam("page") int page, @QueryParam("size") int size, 
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
 		 if (DPDoctorUtils.anyStringEmpty(userId)) {
@@ -308,6 +311,21 @@ public class LocaleApi {
 		response.setDataList(list);
 		return response;
 
+	}
+
+	@GET
+	@Path(PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
+	@ApiOperation(value = PathProxy.LocaleUrls.CANCEL_ORDER_DRUG, notes = PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
+	public Response<OrderDrugsRequest> cancelOrderDrug(@PathParam("orderId") String orderId, @PathParam("userId") String userId) {
+		 if (DPDoctorUtils.anyStringEmpty(orderId, userId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "OderId or UserId cannot be null");
+		}
+		
+		OrderDrugsRequest status = pharmacyService.cancelOrderDrug(orderId, userId);
+		Response<OrderDrugsRequest> response = new Response<OrderDrugsRequest>();
+		response.setData(status);
+
+		return response;
 	}
 
 }

@@ -1215,6 +1215,7 @@ public interface PathProxy {
 		public static final String GET_USER_FAKE_REQUEST_COUNT = "/getFakeRequestCount/{patientId}";
 		public static final String GET_PATIENT_ORDERS = "/patient/orders/{userId}";
 		public static final String GET_PATIENT_REQUEST = "/patient/requests/{userId}";
+		public static final String CANCEL_ORDER_DRUG = "orderDrugs/cancel/{orderId}/{userId}";
 	}
 
 	public static final String FEEDBACK_BASE_URL = BASE_URL + "/feedback";
