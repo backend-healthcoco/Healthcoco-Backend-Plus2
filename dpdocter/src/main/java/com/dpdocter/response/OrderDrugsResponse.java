@@ -44,6 +44,8 @@ public class OrderDrugsResponse extends GenericCollection{
 	
 	private String localeFormattedAddress;
 	
+	private Boolean isCancelled = false;
+	
 	public String getLocaleId() {
 		return localeId;
 	}
@@ -180,6 +182,14 @@ public class OrderDrugsResponse extends GenericCollection{
 		this.localeFormattedAddress = localeFormattedAddress;
 	}
 
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDrugsResponse [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
@@ -188,7 +198,7 @@ public class OrderDrugsResponse extends GenericCollection{
 				+ ", pickUpFormattedAddress=" + pickUpFormattedAddress + ", discount=" + discount + ", discountedPrice="
 				+ discountedPrice + ", realPrice=" + realPrice + ", prescriptionRequest=" + prescriptionRequest
 				+ ", localeName=" + localeName + ", localeAddress=" + localeAddress + ", localeFormattedAddress="
-				+ localeFormattedAddress + "]";
+				+ localeFormattedAddress + ", isCancelled=" + isCancelled + "]";
 	}
 
 }
