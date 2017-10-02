@@ -44,6 +44,9 @@ public class OrderDrugCollection extends GenericCollection {
 	@Field
 	private LocaleWorkingHours pickUpTime;
 	
+	@Field
+	private Boolean isCancelled = false;
+	
 	public ObjectId getId() {
 		return id;
 	}
@@ -124,12 +127,20 @@ public class OrderDrugCollection extends GenericCollection {
 		this.pickUpTime = pickUpTime;
 	}
 
+	public Boolean getIsCancelled() {
+		return isCancelled;
+	}
+
+	public void setIsCancelled(Boolean isCancelled) {
+		this.isCancelled = isCancelled;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDrugCollection [id=" + id + ", localeId=" + localeId + ", userId=" + userId + ", uniqueRequestId="
 				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", replyType=" + replyType
 				+ ", wayOfOrder=" + wayOfOrder + ", pickUpAddress=" + pickUpAddress + ", pickUpDate=" + pickUpDate
-				+ ", pickUpTime=" + pickUpTime + "]";
+				+ ", pickUpTime=" + pickUpTime + ", isCancelled=" + isCancelled + "]";
 	}
 
 }

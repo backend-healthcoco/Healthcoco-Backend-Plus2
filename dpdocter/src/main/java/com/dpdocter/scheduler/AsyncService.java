@@ -76,21 +76,20 @@ public class AsyncService {
 					blockUserCollection.setIsForHour(true);
 				}
 
-			} else {
-				blockUserCollection = new BlockUserCollection();
-				if (detailResponse.getNoOfAttemptIn24Hour() >= Integer.parseInt(requestLimitForday)) {
-					blockUserCollection.setIsForDay(true);
+			} /*
+				 * else { blockUserCollection = new BlockUserCollection(); if
+				 * (detailResponse.getNoOfAttemptIn24Hour() >=
+				 * Integer.parseInt(requestLimitForday)) {
+				 * blockUserCollection.setIsForDay(true);
+				 * 
+				 * } else { blockUserCollection.setIsForHour(true); }
+				 * blockUserCollection.setCreatedTime(new Date()); }
+				 */
 
-				} else {
-					blockUserCollection.setIsForHour(true);
-				}
-				blockUserCollection.setCreatedTime(new Date());
-			}
-			blockUserCollection.setDiscarded(false);
 			blockUserCollection.setUserIds(detailResponse.getUserIds());
 			blockUserCollection.setUpdatedTime(new Date());
-			System.out.println("Task completed");
 			blockUserCollection = blockUserRepository.save(blockUserCollection);
+			System.out.println("Task completed");
 
 		}
 
