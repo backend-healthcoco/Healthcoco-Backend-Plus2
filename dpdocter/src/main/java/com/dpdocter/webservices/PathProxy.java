@@ -918,7 +918,7 @@ public interface PathProxy {
 
 		public static final String ADD_CUSTOM_APPOINTMENT = "/custom/add";
 
-		public static final String GET_CUSTOM_APPOINTMENT_LIST = "/custom//get";
+		public static final String GET_CUSTOM_APPOINTMENT_LIST = "/custom/get";
 
 		public static final String GET_CUSTOM_APPOINTMENT_BY_ID = "/custom/{appointmentId}/get";
 
