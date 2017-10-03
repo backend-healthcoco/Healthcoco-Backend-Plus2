@@ -2,6 +2,10 @@ package com.dpdocter.request;
 
 import java.util.List;
 
+import com.dpdocter.beans.LocaleWorkingHours;
+import com.dpdocter.beans.UserAddress;
+import com.dpdocter.enums.WayOfOrder;
+
 public class UserSearchRequest {
 
 	private String userId;
@@ -19,6 +23,14 @@ public class UserSearchRequest {
 	private String uniqueRequestId;
 
 	private List<String> pharmacyType;
+	
+	private WayOfOrder wayOfOrder;
+	
+	private LocaleWorkingHours pickUpTime;
+	
+	private Long pickUpDate;
+	
+	private UserAddress pickUpAddress;
 	
 	public String getUserId() {
 		return userId;
@@ -84,10 +96,45 @@ public class UserSearchRequest {
 		this.pharmacyType = pharmacyType;
 	}
 
+	public WayOfOrder getWayOfOrder() {
+		return wayOfOrder;
+	}
+
+	public void setWayOfOrder(WayOfOrder wayOfOrder) {
+		this.wayOfOrder = wayOfOrder;
+	}
+
+	public LocaleWorkingHours getPickUpTime() {
+		return pickUpTime;
+	}
+
+	public void setPickUpTime(LocaleWorkingHours pickUpTime) {
+		this.pickUpTime = pickUpTime;
+	}
+
+	public Long getPickUpDate() {
+		return pickUpDate;
+	}
+
+	public void setPickUpDate(Long pickUpDate) {
+		this.pickUpDate = pickUpDate;
+	}
+
+	public UserAddress getPickUpAddress() {
+		return pickUpAddress;
+	}
+
+	public void setPickUpAddress(UserAddress pickUpAddress) {
+		this.pickUpAddress = pickUpAddress;
+	}
+
 	@Override
 	public String toString() {
 		return "UserSearchRequest [userId=" + userId + ", location=" + location + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", prescriptionRequest=" + prescriptionRequest + ", localeId=" + localeId
-				+ ", uniqueRequestId=" + uniqueRequestId + ", pharmacyType=" + pharmacyType + "]";
+				+ ", uniqueRequestId=" + uniqueRequestId + ", pharmacyType=" + pharmacyType + ", wayOfOrder="
+				+ wayOfOrder + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate + ", pickUpAddress="
+				+ pickUpAddress + "]";
 	}
+
 }
