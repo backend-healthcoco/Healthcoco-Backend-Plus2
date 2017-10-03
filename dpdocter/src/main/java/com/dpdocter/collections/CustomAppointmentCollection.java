@@ -16,7 +16,7 @@ public class CustomAppointmentCollection extends GenericCollection {
 	@Field
 	private ObjectId doctorId;
 	@Field
-	private ObjectId locatioinId;
+	private ObjectId locationId;
 	@Field
 	private ObjectId hospitalId;
 	@Field
@@ -68,12 +68,12 @@ public class CustomAppointmentCollection extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public ObjectId getLocatioinId() {
-		return locatioinId;
+	public ObjectId getLocationId() {
+		return locationId;
 	}
 
-	public void setLocatioinId(ObjectId locatioinId) {
-		this.locatioinId = locatioinId;
+	public void setLocationId(ObjectId locationId) {
+		this.locationId = locationId;
 	}
 
 	public ObjectId getHospitalId() {
