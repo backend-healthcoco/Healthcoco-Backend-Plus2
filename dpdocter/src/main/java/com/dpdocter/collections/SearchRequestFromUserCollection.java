@@ -39,6 +39,7 @@ public class SearchRequestFromUserCollection extends GenericCollection {
 	@Field
 	private List<String> pharmacyType;
 	
+	@Field
 	private Boolean isCancelled = false;
 
 	public ObjectId getId() {

@@ -683,13 +683,24 @@ public class PharmacyServiceImpl implements PharmacyService {
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+						Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind",
+								new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
+										true))),
+						project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
+			
+			
 			response = aggregationResults.getMappedResults();
 			if (response != null && !response.isEmpty()) {
 				for (SearchRequestFromUserResponse requestFromUserResponse : response) {
+					requestFromUserResponse.setCountForYes(getPharmacyListCountbyOrderHistory(requestFromUserResponse.getUniqueRequestId(),
+							ReplyType.YES.toString()));
+					requestFromUserResponse.setCountForNo(getPharmacyListCountbyOrderHistory(requestFromUserResponse.getUniqueRequestId(),
+							ReplyType.NO.toString()));
+					
 					Address address = requestFromUserResponse.getLocaleAddress();
 					if (address != null) {
 						String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())

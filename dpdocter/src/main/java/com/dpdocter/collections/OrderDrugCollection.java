@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.dpdocter.beans.Address;
 import com.dpdocter.beans.LocaleWorkingHours;
 import com.dpdocter.beans.UserAddress;
 import com.dpdocter.enums.ReplyType;
