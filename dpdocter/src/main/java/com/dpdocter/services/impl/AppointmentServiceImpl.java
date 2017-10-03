@@ -2931,6 +2931,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			}
 			BeanUtil.map(request, appointmentCollection);
 			customAppointmentRepository.save(appointmentCollection);
+			response = new CustomAppointment();
 			BeanUtil.map(appointmentCollection, response);
 
 		} catch (Exception e) {
