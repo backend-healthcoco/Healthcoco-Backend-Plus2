@@ -12,7 +12,7 @@ public class CustomAppointment extends GenericCollection {
 
 	private String doctorId;
 
-	private String locatioinId;
+	private String locationId;
 
 	private String hospitalId;
 
@@ -22,14 +22,11 @@ public class CustomAppointment extends GenericCollection {
 
 	private Integer outTime = 0;
 
-
 	private Integer engageTime = 0;
 
 	private Integer treatmentTime = 0;
 
 	private Integer waitingTime = 0;
-
-
 
 	public String getId() {
 		return id;
@@ -55,12 +52,12 @@ public class CustomAppointment extends GenericCollection {
 		this.doctorId = doctorId;
 	}
 
-	public String getLocatioinId() {
-		return locatioinId;
+	public String getLocationId() {
+		return locationId;
 	}
 
-	public void setLocatioinId(String locatioinId) {
-		this.locatioinId = locatioinId;
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
 	}
 
 	public String getHospitalId() {
@@ -70,8 +67,6 @@ public class CustomAppointment extends GenericCollection {
 	public void setHospitalId(String hospitalId) {
 		this.hospitalId = hospitalId;
 	}
-
-
 
 	public Integer getEngageTime() {
 		return engageTime;
@@ -97,12 +92,11 @@ public class CustomAppointment extends GenericCollection {
 		this.waitingTime = waitingTime;
 	}
 
-
 	@Override
 	public String toString() {
 		return "CustomAppointment [id=" + id + ", patintName=" + patintName + ", doctorId=" + doctorId
-				+ ", locatioinId=" + locatioinId + ", hospitalId=" + hospitalId + ", date=" + date + ", inTime="
-				+ inTime + ", outTime=" + outTime + ", engageTime=" + engageTime + ", treatmentTime=" + treatmentTime
+				+ ", locatioinId=" + locationId + ", hospitalId=" + hospitalId + ", date=" + date + ", inTime=" + inTime
+				+ ", outTime=" + outTime + ", engageTime=" + engageTime + ", treatmentTime=" + treatmentTime
 				+ ", waitingTime=" + waitingTime + "]";
 	}
 
@@ -129,7 +123,5 @@ public class CustomAppointment extends GenericCollection {
 	public void setOutTime(Integer outTime) {
 		this.outTime = outTime;
 	}
-
-	
 
 }

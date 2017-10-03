@@ -449,7 +449,7 @@ public class AppointmentApi {
 	@ApiOperation(value = PathProxy.AppointmentUrls.ADD_CUSTOM_APPOINTMENT, notes = PathProxy.AppointmentUrls.ADD_CUSTOM_APPOINTMENT)
 	public Response<CustomAppointment> addCustomAppointment(CustomAppointment request) throws MessagingException {
 
-		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocatioinId(), request.getHospitalId(),
+		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
 				request.getPatintName())) {
 			logger.warn("DoctorId, Location Id, Hospital Id, Patient Name cannot be empty");
 			mailService.sendExceptionMail(
