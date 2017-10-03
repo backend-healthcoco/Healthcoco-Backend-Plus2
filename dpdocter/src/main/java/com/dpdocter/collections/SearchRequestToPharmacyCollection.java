@@ -19,6 +19,14 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	@Field
 	private String uniqueRequestId;
 
+	public Boolean getIsAlreadyRequested() {
+		return isAlreadyRequested;
+	}
+
+	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
+		this.isAlreadyRequested = isAlreadyRequested;
+	}
+
 	@Field
 	private String replyType;
 
