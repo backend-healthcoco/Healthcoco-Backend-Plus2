@@ -362,7 +362,7 @@ public class BlogServicesImpl implements BlogService {
 	public List<Blog> getFevouriteBlogs(int size, int page, String category, String userId, String title) {
 		List<Blog> response = null;
 		try {
-			Criteria criteria = new Criteria().and("discarded").is(false);
+			Criteria criteria = new Criteria().and("fevourite.discarded").is(false);
 			Aggregation aggregation = null;
 
 			List<BlogCollection> blogCollections = null;
