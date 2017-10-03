@@ -450,7 +450,7 @@ public class AppointmentApi {
 	public Response<CustomAppointment> addCustomAppointment(CustomAppointment request) throws MessagingException {
 
 		if (DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(), request.getHospitalId(),
-				request.getPatintName())) {
+				request.getPatientName())) {
 			logger.warn("DoctorId, Location Id, Hospital Id, Patient Name cannot be empty");
 			mailService.sendExceptionMail(
 					"Invalid input :: DoctorId, Location Id, Hospital Id, Patient Name cannot be empty");
@@ -503,7 +503,7 @@ public class AppointmentApi {
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST, notes = PathProxy.AppointmentUrls.GET_CUSTOM_APPOINTMENT_LIST)
 	public Response<CustomAppointment> getCustomAppointments(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
-			@QueryParam("doctorId") String doctorId, @DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
+			@QueryParam("doctorId") String doctorId, @DefaultValue(value = "0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId, doctorId)) {
 			logger.warn("invalidInput");

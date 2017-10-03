@@ -8,7 +8,7 @@ public class CustomAppointment extends GenericCollection {
 
 	private String id;
 
-	private String patintName;
+	private String patientName;
 
 	private String doctorId;
 
@@ -36,12 +36,12 @@ public class CustomAppointment extends GenericCollection {
 		this.id = id;
 	}
 
-	public String getPatintName() {
-		return patintName;
+	public String getPatientName() {
+		return patientName;
 	}
 
 	public void setPatintName(String patintName) {
-		this.patintName = patintName;
+		this.patientName = patintName;
 	}
 
 	public String getDoctorId() {
@@ -94,7 +94,7 @@ public class CustomAppointment extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "CustomAppointment [id=" + id + ", patintName=" + patintName + ", doctorId=" + doctorId
+		return "CustomAppointment [id=" + id + ", patientName=" + patientName + ", doctorId=" + doctorId
 				+ ", locatioinId=" + locationId + ", hospitalId=" + hospitalId + ", date=" + date + ", inTime=" + inTime
 				+ ", outTime=" + outTime + ", engageTime=" + engageTime + ", treatmentTime=" + treatmentTime
 				+ ", waitingTime=" + waitingTime + "]";
