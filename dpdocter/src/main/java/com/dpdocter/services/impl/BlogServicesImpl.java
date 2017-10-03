@@ -382,7 +382,7 @@ public class BlogServicesImpl implements BlogService {
 			} else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("fevourite_Blogs_cl", "_id", "blogId", "fevourite"),
-						Aggregation.match(criteria), Aggregation.unwind("fevourite"),
+						Aggregation.unwind("fevourite"), Aggregation.match(criteria),
 						Aggregation.sort(Sort.Direction.DESC, "fevourite.createdTime"));
 			}
 
