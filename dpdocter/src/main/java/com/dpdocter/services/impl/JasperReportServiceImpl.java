@@ -148,8 +148,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		} else if (componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType()))
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-consent-form.jrxml");
-		 else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType()))
-				jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-admit-card.jrxml");
+		else if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType()))
+			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-admit-card.jrxml");
 		else if (componentType.getType().equalsIgnoreCase(ComponentType.DISCHARGE_SUMMARY.getType())) {
 			jasperDesign = JRXmlLoader.load(JASPER_TEMPLATES_RESOURCE + "new/mongo-discharge-summary.jrxml");
 		} else {
@@ -253,8 +253,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 					normalStyle);
 		}
 		if (componentType.getType().equalsIgnoreCase(ComponentType.ADMIT_CARD.getType())) {
-			createAdmitCard(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth,
-					normalStyle);
+			createAdmitCard(jasperDesign, parameters, contentFontSize, pageWidth, pageHeight, columnWidth, normalStyle);
 		}
 		if (parameters.get("followUpAppointment") != null
 				&& !componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType())) {
@@ -3383,6 +3382,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 
+		if (parameters.get("vitalSigns") != null) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{VitalSigns}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{vitalSigns}", 18, contentFontSize - 1, false);
+		}
+
 		show = (Boolean) parameters.get("showDiagnosis");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Diagnosis}", 18, contentFontSize - 1, true);
@@ -3557,9 +3561,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 		}
 
 	}
-	private void createAdmitCard(JasperDesign jasperDesign, Map<String, Object> parameters,
-			Integer contentFontSize, int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle)
-			throws JRException {
+
+	private void createAdmitCard(JasperDesign jasperDesign, Map<String, Object> parameters, Integer contentFontSize,
+			int pageWidth, int pageHeight, int columnWidth, JRDesignStyle normalStyle) throws JRException {
 
 		Boolean show = false;
 		band = new JRDesignBand();
@@ -3624,20 +3628,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
+
 		show = (Boolean) parameters.get("showOD");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{OperationDate}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{operationdate}", 18, contentFontSize - 1, false);
 		}
-		
+
 		show = (Boolean) parameters.get("showNOfOp");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{NatureOfOperation}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{natureOfOperation}", 18, contentFontSize - 1, false);
 		}
 
-	
 		show = (Boolean) parameters.get("showPH");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{PastHistoryTitle}", 18, contentFontSize - 1, true);
@@ -3658,19 +3661,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Complaints}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{complaints}", 18, contentFontSize - 1, false);
 		}
-		
+
 		show = (Boolean) parameters.get("showEx");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Examination}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{examination}", 18, contentFontSize - 1, false);
 		}
-		
+
 		show = (Boolean) parameters.get("showJINV");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{JointInvolvement}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{jointInvolvement}", 18, contentFontSize - 1, false);
 		}
-		
+
 		show = (Boolean) parameters.get("showXD");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{XRayDetails}", 18, contentFontSize - 1, true);
@@ -3681,16 +3684,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Diagnosis}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{diagnosis}", 18, contentFontSize - 1, false);
 		}
-	
+
 		show = (Boolean) parameters.get("showTP");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{TreatmentPlan}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{treatmentPlan}", 18, contentFontSize - 1, false);
 		}
-
-	
-	
-		
 
 	}
 
