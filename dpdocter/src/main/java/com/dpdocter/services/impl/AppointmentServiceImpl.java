@@ -2913,7 +2913,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			CustomAppointmentCollection appointmentCollection = null;
 			UserCollection doctor = userRepository.findOne(new ObjectId(request.getDoctorId()));
-			if (DPDoctorUtils.anyStringEmpty(request.getPatintName())) {
+			if (DPDoctorUtils.anyStringEmpty(request.getPatientName())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Patient Name should not Empty ");
 			}
 			if (doctor == null) {
@@ -2995,7 +2995,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 		List<CustomAppointment> response = null;
 		try {
-			long createdTimeStamp = Long.parseLong(updatedTime);
 
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 
@@ -3006,8 +3005,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
 
-			Criteria criteria = new Criteria("updatedTime").gte(new Date(createdTimeStamp));
-
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(updatedTime)) {
+				criteria.and("updatedTime").gte(new Date(Long.parseLong(updatedTime)));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(doctorObjectId)) {
 				if (!DPDoctorUtils.anyStringEmpty(doctorId))
 					criteria.and("doctorId").is(doctorObjectId);

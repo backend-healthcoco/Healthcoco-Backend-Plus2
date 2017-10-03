@@ -12,7 +12,7 @@ public class CustomAppointmentCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private ObjectId patintId;
+	private String patientName;
 	@Field
 	private ObjectId doctorId;
 	@Field
@@ -52,13 +52,7 @@ public class CustomAppointmentCollection extends GenericCollection {
 		this.id = id;
 	}
 
-	public ObjectId getPatintId() {
-		return patintId;
-	}
-
-	public void setPatintId(ObjectId patintId) {
-		this.patintId = patintId;
-	}
+	
 
 	public ObjectId getDoctorId() {
 		return doctorId;
@@ -130,6 +124,14 @@ public class CustomAppointmentCollection extends GenericCollection {
 
 	public void setEngageTime(Integer engageTime) {
 		this.engageTime = engageTime;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
 	}
 
 }
