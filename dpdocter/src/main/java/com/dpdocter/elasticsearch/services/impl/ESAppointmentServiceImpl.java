@@ -796,7 +796,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return esDoctorDocuments;
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	@Override
 	public List<LabResponse> getLabs(int page, int size, String city, String location, String latitude,
 			String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime,
@@ -827,19 +827,22 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								ESLabTestDocument.class);
 				}
 			}
-			if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
-				return null;
-			}
+			/*
+			 * if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
+			 * return null; }
+			 */
 			List<ESLocationDocument> esLocationDocuments = null;
-
-			@SuppressWarnings("unchecked")
-			Collection<String> locationIds = CollectionUtils.collect(esLabTestDocuments,
-					new BeanToPropertyValueTransformer("locationId"));
-
+			Collection<String> locationIds = null;
+			if (esLabTestDocuments == null || esLabTestDocuments.isEmpty()) {
+				locationIds = CollectionUtils.collect(esLabTestDocuments,
+						new BeanToPropertyValueTransformer("locationId"));
+			}
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isLocationListed", true))
-					.must(QueryBuilders.termsQuery("locationId", locationIds))
 					.must(QueryBuilders.termQuery("isLab", true));
+			if (locationIds != null && !locationIds.isEmpty()) {
+				boolQueryBuilder.must(QueryBuilders.termsQuery("locationId", locationIds));
+			}
 			if (booking != null && booking)
 				boolQueryBuilder.must(QueryBuilders.termQuery("facility", DoctorFacility.BOOK.getType()));
 			if (calling != null && calling)
@@ -1024,8 +1027,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						boolQuery().must(QueryBuilders.termsQuery("localeWorkingSchedules.workingDay", days))));
 			}
 			if (pharmacyType != null && !pharmacyType.isEmpty()) {
-				for (String type :  pharmacyType) boolQueryBuilder.should(QueryBuilders.matchQuery("pharmacyType", type.toUpperCase()));
-				
+				for (String type : pharmacyType)
+					boolQueryBuilder.should(QueryBuilders.matchQuery("pharmacyType", type.toUpperCase()));
+
 				boolQueryBuilder.minimumNumberShouldMatch(1);
 			}
 
@@ -1070,7 +1074,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
 
 			esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
-			
+
 			if (esUserLocaleDocuments != null) {
 				for (ESUserLocaleDocument esUserLocaleDocument : esUserLocaleDocuments) {
 					if (esUserLocaleDocument.getImageUrl() != null)
