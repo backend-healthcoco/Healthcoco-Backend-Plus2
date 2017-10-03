@@ -63,6 +63,9 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 
 	@Field
 	private String uniqueResponseId;
+	
+	@Field
+	private Boolean isAlreadyRequested=false;
 
 	@Field
 	private Boolean isAlreadyRequested=false;
