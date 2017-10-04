@@ -1,0 +1,106 @@
+package com.dpdocter.response;
+
+import com.dpdocter.collections.RankingCountCollection;
+
+public class DoctorWithRankingDetailResponse {
+
+	private String doctorId;
+	
+	private String locationId;
+	
+	private String resourceName;
+	
+	private Double experienceInMonth = 0.0;
+	
+	private Double rxCount = 0.0;
+	
+	private Double patientCount = 0.0;
+	
+	private Double totalCount = 0.0;
+	
+	private Double noOfLikes = 0.0;
+	
+	private int rankingCount = 0;
+		
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getResourceName() {
+		return resourceName;
+	}
+
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	public Double getExperienceInMonth() {
+		return experienceInMonth;
+	}
+
+	public void setExperienceInMonth(Double experienceInMonth) {
+		this.experienceInMonth = experienceInMonth;
+	}
+
+	public Double getRxCount() {
+		return rxCount;
+	}
+
+	public void setRxCount(Double rxCount) {
+		this.rxCount = rxCount;
+	}
+
+	public Double getPatientCount() {
+		return patientCount;
+	}
+
+	public void setPatientCount(Double patientCount) {
+		this.patientCount = patientCount;
+	}
+
+	public Double getTotalCount() {
+		return totalCount;
+	}
+
+	public void setTotalCount(Double totalCount) {
+		this.totalCount = totalCount;
+	}
+
+	public Double getNoOfLikes() {
+		return noOfLikes;
+	}
+
+	public void setNoOfLikes(Double noOfLikes) {
+		this.noOfLikes = noOfLikes;
+	}
+
+	public int getRankingCount() {
+		return rankingCount;
+	}
+
+	public void setRankingCount(int rankingCount) {
+		this.rankingCount = rankingCount;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	@Override
+	public String toString() {
+		return "DoctorWithRankingDetailResponse [doctorId=" + doctorId + ", locationId=" + locationId
+				+ ", resourceName=" + resourceName + ", experienceInMonth=" + experienceInMonth
+			    + ", rxCount=" + rxCount + ", patientCount="
+				+ patientCount + ", totalCount=" + totalCount + ", noOfLikes=" + noOfLikes + ", rankingCount="
+				+ rankingCount + "]";
+	}
+
+}

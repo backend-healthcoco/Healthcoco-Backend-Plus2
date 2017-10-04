@@ -14,7 +14,6 @@ import com.dpdocter.beans.DoctorExperience;
 import com.dpdocter.beans.DoctorExperienceDetail;
 import com.dpdocter.beans.DoctorRegistrationDetail;
 import com.dpdocter.beans.Education;
-import com.dpdocter.response.ImageURLResponse;
 
 @Document(collection = "docter_cl")
 public class DoctorCollection extends GenericCollection {
