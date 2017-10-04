@@ -699,12 +699,13 @@ public class DoctorProfileApi {
 		response.setData(addEditSEORequest);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
 	@GET
 	@ApiOperation(value = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL, notes = PathProxy.DoctorProfileUrls.GET_DOCTOR_PROFILE_BY_SLUG_URL)
-	public Response<DoctorProfile> getDoctorProfile(@PathParam("doctorId") String doctorId, @PathParam("slugURL") String slugURL,
-			@QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
+	public Response<DoctorProfile> getDoctorProfile(@PathParam("slugURL") String slugURL,
+			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,
 			@DefaultValue(value = "false") @QueryParam(value = "isMobileApp") Boolean isMobileApp,
 			@QueryParam(value = "patientId") String patientId,
 			@DefaultValue(value = "true") @QueryParam(value = "isSearched") Boolean isSearched) {
