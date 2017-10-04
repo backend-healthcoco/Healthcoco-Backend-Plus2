@@ -374,7 +374,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					ESDoctorDocument object = new ESDoctorDocument();
 					object.setTitle(doctor.getTitle());
 					object.setUserId(doctor.getUserId());
-					object.setDoctorSlugURL("dr-" + object.getFirstName().trim().replaceAll(" ", "-"));
+					if (!DPDoctorUtils.anyStringEmpty(object.getFirstName())) {
+						object.setDoctorSlugURL("dr-" + object.getFirstName().trim().replaceAll(" ", "-"));
+					}
 					object.setFirstName(doctor.getFirstName());
 					object.setLocationId(doctor.getLocationId());
 					object.setHospitalId(doctor.getHospitalId());
@@ -737,18 +739,24 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (esDoctorDocuments != null) {
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 					if (doctorDocument.getSpecialities() != null) {
-						slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
+						if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
+							slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
+						}
+
 						List<String> specialities = new ArrayList<>();
 						for (String specialityId : doctorDocument.getSpecialities()) {
 							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
 							if (specialityCollection != null) {
 								specialities.add(specialityCollection.getSuperSpeciality());
-								slugUrl = "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+								if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
+									slugUrl = "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+								}
 							}
 						}
 						doctorDocument.setSpecialities(specialities);
 					}
-					doctorDocument.setDoctorSlugURL(slugUrl.replaceAll(" ", "-"));
+					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
+						doctorDocument.setDoctorSlugURL(slugUrl.replaceAll(" ", "-"));
 
 					if (doctorDocument.getImageUrl() != null)
 						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
