@@ -691,7 +691,8 @@ public interface PathProxy {
 		public static final String GET_EDUCATION_INSTITUTES = "/getEducationInstitutes";
 
 		public static final String GET_DOCTOR_PROFILE = "/{doctorId}/view";
-		public static final String GET_DOCTOR_PROFILE_BY_SLUG_URL = "{slugURL}/{doctorId}/view ";
+		
+		public static final String GET_DOCTOR_PROFILE_BY_SLUG_URL = "{slugURL}/view ";
 
 		public static final String GET_EDUCATION_QUALIFICATIONS = "/getEducationQualifications";
 
@@ -924,7 +925,7 @@ public interface PathProxy {
 
 		public static final String GET_CUSTOM_APPOINTMENT_AVG_DETAIL = "/custom/getAVGdetail";
 
-		public static final String DELETE_CUSTOM_APPOINTMENT = "/custom/{appointmentId}/{doctorId}/{locationId}/{hospitalId}/DELETE";
+		public static final String DELETE_CUSTOM_APPOINTMENT = "/custom/{appointmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
 	}
 
