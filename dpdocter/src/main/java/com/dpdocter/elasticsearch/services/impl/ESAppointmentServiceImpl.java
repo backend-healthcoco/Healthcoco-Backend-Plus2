@@ -374,6 +374,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					ESDoctorDocument object = new ESDoctorDocument();
 					object.setTitle(doctor.getTitle());
 					object.setUserId(doctor.getUserId());
+					object.setDoctorSlugURL("dr-" + object.getFirstName().trim().replaceAll(" ", "-"));
 					object.setFirstName(doctor.getFirstName());
 					object.setLocationId(doctor.getLocationId());
 					object.setHospitalId(doctor.getHospitalId());
@@ -483,6 +484,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		try {
+			String slugUrl = null;
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true));
@@ -735,14 +737,19 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (esDoctorDocuments != null) {
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
 					if (doctorDocument.getSpecialities() != null) {
+						slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
 						List<String> specialities = new ArrayList<>();
 						for (String specialityId : doctorDocument.getSpecialities()) {
 							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
-							if (specialityCollection != null)
+							if (specialityCollection != null) {
 								specialities.add(specialityCollection.getSuperSpeciality());
+								slugUrl = "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+							}
 						}
 						doctorDocument.setSpecialities(specialities);
 					}
+					doctorDocument.setDoctorSlugURL(slugUrl.replaceAll(" ", "-"));
+
 					if (doctorDocument.getImageUrl() != null)
 						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
 					if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {

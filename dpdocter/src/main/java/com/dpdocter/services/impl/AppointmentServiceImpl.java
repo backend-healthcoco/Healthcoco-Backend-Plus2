@@ -2961,6 +2961,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				customAppointmentCollection.setDiscarded(discarded);
 				customAppointmentCollection.setUpdatedTime(new Date());
 				customAppointmentRepository.save(customAppointmentCollection);
+				response=new CustomAppointment();
 				BeanUtil.map(customAppointmentCollection, response);
 			}
 
