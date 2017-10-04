@@ -1,0 +1,454 @@
+package com.dpdocter.services.impl;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.RankingCount;
+import com.dpdocter.beans.RankingCountParametersWithValueInPercentage;
+import com.dpdocter.collections.DoctorClinicProfileCollection;
+import com.dpdocter.collections.LocaleCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.RankingCountCollection;
+import com.dpdocter.collections.RecommendationsCollection;
+import com.dpdocter.collections.SearchRequestFromUserCollection;
+import com.dpdocter.collections.SearchRequestToPharmacyCollection;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
+import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
+import com.dpdocter.enums.DoctorExperienceUnit;
+import com.dpdocter.enums.LocaleType;
+import com.dpdocter.enums.RankingCountParatmeter;
+import com.dpdocter.enums.ReplyType;
+import com.dpdocter.enums.Resource;
+import com.dpdocter.exceptions.BusinessException;
+import com.dpdocter.exceptions.ServiceError;
+import com.dpdocter.repository.DoctorClinicProfileRepository;
+import com.dpdocter.repository.LocaleRepository;
+import com.dpdocter.repository.RankingCountRepository;
+import com.dpdocter.response.DoctorWithRankingDetailResponse;
+import com.dpdocter.response.PharmacyWithRankingDetailResponse;
+import com.dpdocter.services.RankingAlgorithmsServices;
+import com.mongodb.BasicDBObject;
+
+@Service
+public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
+
+	private static Logger logger = Logger.getLogger(RankingAlgorithmsServiceImpl.class.getName());
+	
+	//For Doctors
+	private double doctorExperienceWeightageInPercentage = 0.2;
+	
+	private double noOfPatientsOfDoctorWeightageInPercentage = 0.2;
+	
+	private double noOfRxByDoctorWeightageInPercentage = 0.2;
+	
+	private double noOfLikesToDoctorWeightageInPercentage = 0.1;
+	
+	private double feedbackForDoctorWeightageInPercentage = 0.1;
+	
+	private double doctorAppointmentsWeightageInPercentage = 0.1;
+	
+	private double doctorRecomdationsWeightageInPercentage = 0.1;
+	
+	
+	//For Pharmacies
+	private double genericMedicineAvailabilityInPharmacy = 0.1;
+	
+	private double noOfResponseFromPharmacyWeightageInPercentage = 0.1;
+	
+	private double noOfRequestToPharmacyWeightageInPercentage = 0.1;
+	
+	private double noOfLikesToPharmacyWeightageInPercentage = 0.1;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private RankingCountRepository rankingCountRepository;
+	
+	@Autowired
+	private DoctorClinicProfileRepository doctorClinicProfileRepository;
+	
+	@Autowired
+	private ESDoctorRepository esDoctorRepository;
+	
+	@Autowired
+	private LocaleRepository localeRepository;
+	
+	@Autowired
+	private ESUserLocaleRepository esUserLocaleRepository;
+	
+	@Scheduled(cron = "0 0/30 2 * * SAT", zone = "IST")
+	@Transactional
+	@Override
+	public void calculateRankingOfResources() {
+		try {
+			rankingAlgoForDoctors();
+			rankingAlgoForPharmacies();			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+	
+	private void rankingAlgoForPharmacies() {
+		try {
+			
+			long directRequestCount = mongoTemplate.count(new Query(new Criteria("localeId").exists(true)), SearchRequestFromUserCollection.class);
+			long indirectRequestCount = mongoTemplate.count(new Query(new Criteria()), SearchRequestToPharmacyCollection.class);
+			long requestCount = directRequestCount + indirectRequestCount;
+			long responseCount = mongoTemplate.count(new Query(new Criteria("replyType").is(null).orOperator(new Criteria("replyType").exists(false))), SearchRequestToPharmacyCollection.class);
+			long likesCount = mongoTemplate.count(new Query(new Criteria("discarded").is(false).and("locationId").is(null)), RecommendationsCollection.class);
+			
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("localeType").is(LocaleType.PHARMACY.getType()).and("isActivate").is(true).and("isVerified").is(true)),
+					Aggregation.lookup("search_request_from_user_cl", "id", "localeId", "directSearchRequestToPharmacy"),
+					
+					Aggregation.lookup("search_request_to_pharmacy_cl", "_id", "localeId", "indirectSearchRequestToPharmacy"),
+					
+					Aggregation.lookup("search_request_to_pharmacy_cl", "_id", "localeId", "responseFromPharmacy"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$responseFromPharmacy").append("preserveNullAndEmptyArrays", true))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("genericMedicineCount", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+						          "if", new BasicDBObject("$eq", Arrays.asList("$isGenericMedicineAvailable", true)))
+						        .append("then", 0.1)
+						        .append("else", 0)))
+						    
+						    .append("localeId", "$_id")
+						    .append("resourceName", "$localeName")
+						    .append("directRequestCount", new BasicDBObject("$size", "$directSearchRequestToPharmacy"))
+						    .append("indirectRequestCount", new BasicDBObject("$size", "$indirectSearchRequestToPharmacy"))
+						    .append("responseCount", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$responseFromPharmacy.replyType", ReplyType.YES.name())))
+									        .append("then", 1)
+									        .append("else", 0))))),
+										
+					new CustomAggregationOperation(new BasicDBObject("$group",
+						    new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
+						    .append("localeId", new BasicDBObject("$first","$localeId"))
+						    .append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("directRequestCount", new BasicDBObject("$first","$directRequestCount"))
+						    .append("indirectRequestCount", new BasicDBObject("$first","$indirectRequestCount"))
+						    .append("responseCount", new BasicDBObject("$sum","$responseCount")))),
+					
+					Aggregation.lookup("recommendation_cl", "localeId", "localeId", "likes"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("genericMedicineCount", "$genericMedicineCount")
+						    .append("localeId", "$localeId")
+						    .append("resourceName", "$resourceName")
+						    .append("directRequestCount", "$directRequestCount")
+						    .append("indirectRequestCount", "$indirectRequestCount")
+						    .append("responseCount", "$responseCount")
+						    .append("noOfLikes", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$likes.discarded", false)))
+									        .append("then", 1)
+									        .append("else", 0))))),
+										
+					new CustomAggregationOperation(new BasicDBObject("$group",
+						    new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
+						    .append("localeId", new BasicDBObject("$first","$localeId"))
+						    .append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("directRequestCount", new BasicDBObject("$first","$directRequestCount"))
+						    .append("indirectRequestCount", new BasicDBObject("$first","$indirectRequestCount"))
+						    .append("responseCount", new BasicDBObject("$first","$responseCount"))
+						    .append("noOfLikes", new BasicDBObject("$sum","$noOfLikes")))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("localeId", "$localeId")
+						    .append("genericMedicineCount", "$genericMedicineCount")
+						    .append("resourceName", "$resourceName")
+						    .append("requestCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList(new BasicDBObject("$add", Arrays.asList("$directRequestCount","$indirectRequestCount")), requestCount)), noOfRequestToPharmacyWeightageInPercentage)))
+						    .append("responseCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$responseCount", responseCount)), noOfResponseFromPharmacyWeightageInPercentage)))
+						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToPharmacyWeightageInPercentage))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
+						    .append("localeId", new BasicDBObject("$first","$localeId"))
+						    .append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("requestCount", new BasicDBObject("$first","$requestCount"))
+						    .append("responseCount", new BasicDBObject("$first","$responseCount"))
+						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("localeId", "$localeId")
+						    .append("genericMedicineCount", "$genericMedicineCount")
+						    .append("resourceName", "$resourceName")
+						    .append("requestCount", "$requestCount")
+						    .append("responseCount", "$responseCount")
+						    .append("noOfLikes", "$noOfLikes")
+						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$genericMedicineCount", "$requestCount", "$responseCount", "$noOfLikes"))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("localeId","$localeId"))
+							.append("genericMedicineCount", new BasicDBObject("$first","$genericMedicineCount"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("requestCount", new BasicDBObject("$first","$requestCount"))
+						    .append("responseCount", new BasicDBObject("$first","$responseCount"))
+						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes"))
+						    .append("totalCount", new BasicDBObject("$first","$totalCount")))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("totalCount", -1))));
+					
+			List<PharmacyWithRankingDetailResponse> pharmacyWithRankingDetailResponses = mongoTemplate.aggregate(aggregation, LocaleCollection.class, PharmacyWithRankingDetailResponse.class).getMappedResults();
+			int i = 1;
+			for(PharmacyWithRankingDetailResponse detailResponse : pharmacyWithRankingDetailResponses) {
+				RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getLocaleId()), null, Resource.PHARMACY.getType());
+				if(rankingCountCollection == null) {
+					rankingCountCollection = new RankingCountCollection();
+					rankingCountCollection.setCreatedTime(new Date());
+				}
+				rankingCountCollection.setRankingCount(i++);
+				rankingCountCollection.setResourceType(Resource.PHARMACY);
+				rankingCountCollection.setUpdatedTime(new Date());
+				rankingCountCollection.setResourceId(new ObjectId(detailResponse.getLocaleId()));
+				rankingCountCollection.setTotalCountInPercentage(detailResponse.getTotalCount());
+				rankingCountCollection.setResourceName(detailResponse.getResourceName());
+				List<RankingCountParametersWithValueInPercentage> parameters = new ArrayList<RankingCountParametersWithValueInPercentage>();
+				
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.GENERIC_MEDICINE_AVAILABILITY, detailResponse.getGenericMedicineCount()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_LIKES, detailResponse.getNoOfLikes()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_REQUESTS, detailResponse.getRequestCount()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_RESPONSES, detailResponse.getResponseCount()));
+				rankingCountCollection.setParameters(parameters);
+				
+				rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
+				
+				LocaleCollection localeCollection = localeRepository.findOne(rankingCountCollection.getResourceId());
+				localeCollection.setLocaleRankingCount(rankingCountCollection.getRankingCount());
+				localeCollection.setUpdatedTime(new Date());
+				localeCollection = localeRepository.save(localeCollection);
+				
+				ESUserLocaleDocument esUserLocaleDocument = esUserLocaleRepository.findOne(detailResponse.getLocaleId());
+				esUserLocaleDocument.setLocaleRankingCount(localeCollection.getLocaleRankingCount());
+				esUserLocaleRepository.save(esUserLocaleDocument);
+			}		
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	private void rankingAlgoForDoctors() {
+		try {
+			
+			long rxCount = mongoTemplate.count(new Query(new Criteria()), PrescriptionCollection.class);
+			long patientCount = mongoTemplate.count(new Query(new Criteria()), PatientCollection.class);
+			long likesCount = mongoTemplate.count(new Query(new Criteria("discarded").is(false)), RecommendationsCollection.class);
+			
+			Aggregation aggregation = Aggregation.newAggregation(
+					Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+					Aggregation.unwind("user"),
+					
+					Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+					Aggregation.unwind("doctor"),
+					
+					Aggregation.match(new Criteria("user.isActive").is(true).and("user.isVerified").is(true)),
+					
+					Aggregation.lookup("prescription_cl", "doctorId", "doctorId", "prescription"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$prescription").append("preserveNullAndEmptyArrays", true))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("doctor.experience.experience", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+						          "if", new BasicDBObject("$eq", Arrays.asList("$experience.period", DoctorExperienceUnit.YEAR.name())))
+						        .append("then", new BasicDBObject("$multiply", Arrays.asList(12, "$doctor.experience.experience")))
+						        .append("else", "$doctor.experience.experience")))
+						    .append("doctorId", "$doctorId")
+						    .append("locationId", "$locationId")
+						    .append("resourceName", "$user.firstName")
+						    .append("rxCount", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$prescription.locationId", "$locationId")))
+									        .append("then", 1)
+									        .append("else", 0))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
+						    .append("experienceInMonth", new BasicDBObject("$first","$doctor.experience.experience"))
+						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
+						    .append("locationId", new BasicDBObject("$first","$locationId"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("rxCount", new BasicDBObject("$sum","$rxCount")))),
+					
+					Aggregation.lookup("patient_cl", "doctorId", "doctorId", "patient"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("experienceInMonth", "$experienceInMonth")
+						    .append("doctorId", "$doctorId")
+						    .append("locationId", "$locationId")
+						    .append("resourceName", "$resourceName")
+						    .append("rxCount", "$rxCount")
+						    .append("patientCount", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
+									        .append("then", 1)
+									        .append("else", 0))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
+						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
+						    .append("locationId", new BasicDBObject("$first","$locationId"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
+						    .append("patientCount", new BasicDBObject("$sum","$patientCount")))),
+					
+					Aggregation.lookup("recommendation_cl", "doctorId", "doctorId", "likes"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$likes").append("preserveNullAndEmptyArrays", true))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("experienceInMonth", "$experienceInMonth")
+						    .append("doctorId", "$doctorId")
+						    .append("locationId", "$locationId")
+						    .append("resourceName", "$resourceName")
+						    .append("rxCount", "$rxCount")
+						    .append("patientCount", "$patientCount")
+						    .append("noOfLikes", new BasicDBObject(
+							        "$cond", new BasicDBObject(
+									          "if", new BasicDBObject("$eq", Arrays.asList("$likes.discarded", false)))
+									        .append("then", 1)
+									        .append("else", 0))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+						    new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
+						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
+						    .append("locationId", new BasicDBObject("$first","$locationId"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
+						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
+						    .append("noOfLikes", new BasicDBObject("$sum","$noOfLikes")))),				
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("experienceInMonth", new BasicDBObject(
+						        "$cond", new BasicDBObject(
+						          "if", new BasicDBObject("$eq", Arrays.asList("$experienceInMonth", null)))
+						        .append("then", 0)
+						        .append("else", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$experienceInMonth", 100)), doctorExperienceWeightageInPercentage)))))
+						    .append("doctorId", "$doctorId")
+						    .append("locationId", "$locationId")
+						    .append("resourceName", "$resourceName")
+						    .append("rxCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$rxCount", rxCount)), noOfRxByDoctorWeightageInPercentage)))
+						    .append("patientCount", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$patientCount", patientCount)), noOfPatientsOfDoctorWeightageInPercentage)))
+						    .append("noOfLikes", new BasicDBObject("$multiply", Arrays.asList(new BasicDBObject("$divide", Arrays.asList("$noOfLikes", likesCount)), noOfLikesToDoctorWeightageInPercentage))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
+						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
+						    .append("locationId", new BasicDBObject("$first","$locationId"))
+						    .append("resourceName", new BasicDBObject("$first","$resourceName"))
+						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
+						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
+						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes")))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$project",
+						    new BasicDBObject("experienceInMonth", "$experienceInMonth")
+						    .append("doctorId", "$doctorId")
+						    .append("locationId", "$locationId")
+						    .append("resourceName", "$resourceName")
+						    .append("rxCount", "$rxCount")
+						    .append("patientCount", "$patientCount")
+						    .append("noOfLikes", "$noOfLikes")
+						    .append("totalCount", new BasicDBObject("$add", Arrays.asList("$experienceInMonth", "$rxCount", "$patientCount", "$noOfLikes"))))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$group",
+							new BasicDBObject("_id", new BasicDBObject("doctorId","$doctorId").append("locationId", "$locationId"))
+						    .append("experienceInMonth", new BasicDBObject("$first","$experienceInMonth"))
+						    .append("doctorId", new BasicDBObject("$first","$doctorId"))
+						    .append("locationId", new BasicDBObject("$first","$locationId"))
+						    .append("rankingCountResponse", new BasicDBObject("$first","$rankingCountResponse"))
+						    .append("rxCount", new BasicDBObject("$first","$rxCount"))
+						    .append("patientCount", new BasicDBObject("$first","$patientCount"))
+						    .append("noOfLikes", new BasicDBObject("$first","$noOfLikes"))
+						    .append("totalCount", new BasicDBObject("$first","$totalCount")))),
+					
+					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("totalCount", -1))));
+			
+			List<DoctorWithRankingDetailResponse> doctorWithRankingDetailResponses = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class, DoctorWithRankingDetailResponse.class).getMappedResults();
+			int i = 1;
+			for(DoctorWithRankingDetailResponse detailResponse : doctorWithRankingDetailResponses) {
+				RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getDoctorId()), new ObjectId(detailResponse.getLocationId()), Resource.DOCTOR.getType());
+				if(rankingCountCollection == null) {
+					rankingCountCollection = new RankingCountCollection();
+					rankingCountCollection.setCreatedTime(new Date());
+				}
+				rankingCountCollection.setRankingCount(i++);
+				rankingCountCollection.setResourceType(Resource.DOCTOR);
+				rankingCountCollection.setUpdatedTime(new Date());
+				rankingCountCollection.setResourceId(new ObjectId(detailResponse.getDoctorId()));
+				rankingCountCollection.setTotalCountInPercentage(detailResponse.getTotalCount());
+				rankingCountCollection.setResourceName(detailResponse.getResourceName());
+				List<RankingCountParametersWithValueInPercentage> parameters = new ArrayList<RankingCountParametersWithValueInPercentage>();
+				
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.APPOINTMENT, 0));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.EXPERIENCE, detailResponse.getExperienceInMonth()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.FEEDBACK, 0));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_LIKES, detailResponse.getNoOfLikes()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_PATIENTS, detailResponse.getPatientCount()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.NUMBER_OF_RX, detailResponse.getRxCount()));
+				parameters.add(new RankingCountParametersWithValueInPercentage(RankingCountParatmeter.RECOMMENDATIONS, 0));
+				rankingCountCollection.setParameters(parameters);
+				
+				rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
+				
+				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(rankingCountCollection.getResourceId(), rankingCountCollection.getLocationId());
+				clinicProfileCollection.setRankingCount(rankingCountCollection.getRankingCount());
+				clinicProfileCollection.setUpdatedTime(new Date());
+				clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+				
+				ESDoctorDocument doctorDocument = esDoctorRepository.findByUserIdAndLocationId(detailResponse.getDoctorId(), detailResponse.getLocationId());
+				doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
+				esDoctorRepository.save(doctorDocument);
+			}		
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+		}
+	}
+
+	@Override
+	public List<RankingCount> getDoctorsRankingCount(int page, int size) {
+		List<RankingCount> response = null;
+		try {
+			Aggregation aggregation = null;
+			if(size > 0)aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Direction.DESC, "rankingCount")), Aggregation.skip(page * size), Aggregation.limit(size));
+			else aggregation = Aggregation.newAggregation(Aggregation.sort(new Sort(Direction.DESC, "rankingCount")));
+			
+			response = mongoTemplate.aggregate(aggregation, RankingCountCollection.class, RankingCount.class).getMappedResults();
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error while getting doctors with ranking " + e.getMessage());
+		}
+		return response;
+	}
+}
