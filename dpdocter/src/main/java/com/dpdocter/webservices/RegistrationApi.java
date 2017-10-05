@@ -137,9 +137,9 @@ public class RegistrationApi {
 
 		} else {
 			registeredPatientDetails = registrationService.registerExistingPatient(request);
-//			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
-//					false);
-//			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
+					false);
+			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 		}
 		registeredPatientDetails.setImageUrl(getFinalImageURL(registeredPatientDetails.getImageUrl()));
 		registeredPatientDetails.setThumbnailUrl(getFinalImageURL(registeredPatientDetails.getThumbnailUrl()));
@@ -207,7 +207,8 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM)
 	@GET
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, notes = PathProxy.RegistrationUrls.PATIENTS_BY_PHONE_NUM, response = Response.class)
-	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress) {
+	public Response<Object> getExistingPatients(@PathParam("mobileNumber") String mobileNumber, @DefaultValue("false")  @QueryParam("getAddress") Boolean getAddress, 
+			@DefaultValue("true")  @QueryParam("discardedAddress") Boolean discardedAddress) {
 		if (DPDoctorUtils.anyStringEmpty(mobileNumber)) {
 			logger.warn(mobileNumberValidaton);
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
@@ -221,7 +222,7 @@ public class RegistrationApi {
 				user.setThumbnailUrl(getFinalImageURL(user.getThumbnailUrl()));
 			}
 			if(getAddress) {
-				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, true);
+				List<UserAddress> userAddress = registrationService.getUserAddress(null, mobileNumber, discardedAddress);
 				if(userAddress != null && !userAddress.isEmpty()) {
 					UserAddressResponse userAddressResponse = new UserAddressResponse();
 					userAddressResponse.setUserAddress(userAddress);
