@@ -19,13 +19,11 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	@Field
 	private String uniqueRequestId;
 
-	public Boolean getIsAlreadyRequested() {
-		return isAlreadyRequested;
-	}
+	@Field
+	private String uniqueResponseId;
 
-	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
-		this.isAlreadyRequested = isAlreadyRequested;
-	}
+	@Field
+	private Boolean isAlreadyRequested = false;
 
 	@Field
 	private String replyType;
@@ -35,13 +33,13 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 
 	@Field
 	private Discount discount;
-	
+
 	@Field
-    private double discountedPrice;
-	
+	private double discountedPrice;
+
 	@Field
 	private double realPrice;
-	
+
 	@Field
 	private String note;
 
@@ -68,15 +66,6 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 	public void setNote(String note) {
 		this.note = note;
 	}
-
-	@Field
-	private String uniqueResponseId;
-	
-	@Field
-	private Boolean isAlreadyRequested=false;
-
-	@Field
-	private Boolean isAlreadyRequested=false;
 
 	public ObjectId getId() {
 		return id;
