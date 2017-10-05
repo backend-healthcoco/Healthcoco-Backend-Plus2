@@ -519,7 +519,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
 					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
 				else
