@@ -2,15 +2,15 @@ package com.dpdocter.services;
 
 import java.util.List;
 
-import com.dpdocter.beans.DoctorInfo;
-import com.dpdocter.beans.Locale;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.LabResponse;
 
 public interface UserFavouriteService {
 
-	List<DoctorInfo> getFavouriteDoctors(int page, int size, String userId);
+	List<ESDoctorDocument> getFavouriteDoctors(int page, int size, String userId);
 
-	List<Locale> getFavouritePharmacies(int page, int size, String userId);
+	List<ESUserLocaleDocument> getFavouritePharmacies(int page, int size, String userId);
 
 	List<LabResponse> getFavouriteLabs(int page, int size, String userId);
 
