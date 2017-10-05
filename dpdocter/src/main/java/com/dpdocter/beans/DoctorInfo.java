@@ -3,8 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.DoctorFacility;
@@ -57,7 +55,7 @@ public class DoctorInfo extends GenericCollection{
 
 	private String colorCode;
 	
-	private List<ClinicImage> images;
+	private List<ClinicImage> clinicImages;
 	
 	private String country;
 
@@ -257,12 +255,12 @@ public class DoctorInfo extends GenericCollection{
 		this.colorCode = colorCode;
 	}
 
-	public List<ClinicImage> getImages() {
-		return images;
+	public List<ClinicImage> getClinicImages() {
+		return clinicImages;
 	}
 
-	public void setImages(List<ClinicImage> images) {
-		this.images = images;
+	public void setClinicImages(List<ClinicImage> clinicImages) {
+		this.clinicImages = clinicImages;
 	}
 
 	public String getCountry() {
@@ -330,10 +328,9 @@ public class DoctorInfo extends GenericCollection{
 				+ ", locationName=" + locationName + ", address=" + address + ", specialization=" + specialization
 				+ ", consultationFee=" + consultationFee + ", revisitConsultationFee=" + revisitConsultationFee
 				+ ", workingSchedules=" + workingSchedules + ", latitude=" + latitude + ", longitude=" + longitude
-				+ ", facility=" + facility + ", experience=" + experience + ", colorCode=" + colorCode + ", images="
-				+ images + ", country=" + country + ", state=" + state + ", city=" + city + ", postalCode=" + postalCode
-				+ ", streetAddress=" + streetAddress + ", locality=" + locality + ", landmarkDetails=" + landmarkDetails
-				+ "]";
+				+ ", facility=" + facility + ", experience=" + experience + ", colorCode=" + colorCode
+				+ ", clinicImages=" + clinicImages + ", country=" + country + ", state=" + state + ", city=" + city
+				+ ", postalCode=" + postalCode + ", streetAddress=" + streetAddress + ", locality=" + locality
+				+ ", landmarkDetails=" + landmarkDetails + "]";
 	}
-
 }
