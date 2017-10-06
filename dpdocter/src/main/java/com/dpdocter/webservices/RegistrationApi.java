@@ -137,7 +137,7 @@ public class RegistrationApi {
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
 		} else {
-			registeredPatientDetails = registrationService.registerExistingPatient(request);
+			registeredPatientDetails = registrationService.registerExistingPatient(request, null);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
