@@ -106,6 +106,8 @@ public interface DoctorProfileService {
 
 	AddEditSEORequest addEditSEO(AddEditSEORequest request);
 
+	DoctorProfile getDoctorProfile(String userUId);
+
 	
 
 }

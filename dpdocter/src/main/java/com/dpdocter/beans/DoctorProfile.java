@@ -71,7 +71,7 @@ public class DoctorProfile extends GenericCollection {
 
 	private String metaKeyword;
 
-	private String slugUrl;
+	private String doctorSlugURL;
 
 	public String getId() {
 		return id;
@@ -321,13 +321,7 @@ public class DoctorProfile extends GenericCollection {
 		this.metaKeyword = metaKeyword;
 	}
 
-	public String getSlugUrl() {
-		return slugUrl;
-	}
 
-	public void setSlugUrl(String slugUrl) {
-		this.slugUrl = slugUrl;
-	}
 
 	public List<String> getParentSpecialities() {
 		return parentSpecialities;
@@ -335,6 +329,15 @@ public class DoctorProfile extends GenericCollection {
 
 	public void setParentSpecialities(List<String> parentSpecialities) {
 		this.parentSpecialities = parentSpecialities;
+	}
+	
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		doctorSlugURL = doctorSlugURL;
 	}
 
 	@Override
@@ -351,6 +354,6 @@ public class DoctorProfile extends GenericCollection {
 				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", isGetDiscardedEMR=" + isGetDiscardedEMR
 				+ ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription + ", metaKeyword=" + metaKeyword
-				+ ", slugUrl=" + slugUrl + "]";
+				+ ", slugUrl=" + doctorSlugURL + "]";
 	}
 }

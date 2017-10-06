@@ -1420,4 +1420,93 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		return response;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public DoctorProfile getDoctorProfile(String userUId) {
+		DoctorProfile doctorProfile = null;
+		UserCollection userCollection = null;
+		DoctorCollection doctorCollection = null;
+		List<String> specialities = null;
+		List<DoctorRegistrationDetail> registrationDetails = null;
+		List<String> professionalMemberships = null;
+		List<DoctorClinicProfile> clinicProfile = new ArrayList<DoctorClinicProfile>();
+		List<DoctorClinicProfileLookupResponse> doctorClinicProfileLookupResponses = null;
+		try {
+			Criteria criteria = new Criteria("user.userUId").is(userUId);
+
+			doctorClinicProfileLookupResponses = mongoTemplate.aggregate(
+					Aggregation.newAggregation(Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.lookup("user_cl", "doctorId", "_id", "user"),
+							Aggregation.unwind("user"), Aggregation.match(criteria),
+							Aggregation.lookup("docter_cl", "doctorId", "userId", "doctor"),
+							Aggregation.unwind("doctor")),
+					DoctorClinicProfileCollection.class, DoctorClinicProfileLookupResponse.class).getMappedResults();
+			if (doctorClinicProfileLookupResponses != null && !doctorClinicProfileLookupResponses.isEmpty()) {
+				for (DoctorClinicProfileLookupResponse doctorClinicProfileLookupResponse : doctorClinicProfileLookupResponses) {
+					userCollection = doctorClinicProfileLookupResponse.getUser();
+					doctorCollection = doctorClinicProfileLookupResponse.getDoctor();
+					if (userCollection == null || doctorCollection == null) {
+						logger.error("No user found");
+						throw new BusinessException(ServiceError.NoRecord, "No user found");
+					}
+					DoctorClinicProfile doctorClinicProfile = getDoctorClinic(doctorClinicProfileLookupResponse, null,
+							false, doctorClinicProfileLookupResponses.size());
+					if (doctorClinicProfile != null)
+						clinicProfile.add(doctorClinicProfile);
+				}
+			}
+
+			doctorProfile = new DoctorProfile();
+
+			BeanUtil.map(userCollection, doctorProfile);
+
+			BeanUtil.map(doctorCollection, doctorProfile);
+
+			doctorProfile.setDoctorId(doctorCollection.getUserId().toString());
+			// set specialities using speciality ids
+			if (doctorCollection.getSpecialities() != null) {
+				List<SpecialityCollection> specialityCollections = (List<SpecialityCollection>) specialityRepository
+						.findAll(doctorCollection.getSpecialities());
+				specialities = (List<String>) CollectionUtils.collect(specialityCollections,
+						new BeanToPropertyValueTransformer("superSpeciality"));
+
+				doctorProfile.setClinicProfile(clinicProfile);
+				doctorProfile.setSpecialities(specialities);
+				// set medical councils using medical councils ids
+				registrationDetails = new ArrayList<DoctorRegistrationDetail>();
+				if (doctorProfile.getRegistrationDetails() != null
+						&& !doctorProfile.getRegistrationDetails().isEmpty()) {
+					for (DoctorRegistrationDetail registrationDetail : doctorProfile.getRegistrationDetails()) {
+						DoctorRegistrationDetail doctorRegistrationDetail = new DoctorRegistrationDetail();
+						BeanUtil.map(registrationDetail, doctorRegistrationDetail);
+						registrationDetails.add(doctorRegistrationDetail);
+					}
+				}
+				doctorProfile.setRegistrationDetails(registrationDetails);
+				// set professional memberships using professional membership
+				// ids
+				if (doctorCollection.getProfessionalMemberships() != null
+						&& !doctorCollection.getProfessionalMemberships().isEmpty()) {
+					professionalMemberships = (List<String>) CollectionUtils.collect(
+							(Collection<?>) professionalMembershipRepository
+									.findAll(doctorCollection.getProfessionalMemberships()),
+							new BeanToPropertyValueTransformer("membership"));
+				}
+			}
+			doctorProfile.setProfessionalMemberships(professionalMemberships);
+
+			// set clinic profile details
+			doctorProfile.setClinicProfile(clinicProfile);
+
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Doctor Profile by userUId");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile by userUId");
+		}
+		return doctorProfile;
+	}
 }
