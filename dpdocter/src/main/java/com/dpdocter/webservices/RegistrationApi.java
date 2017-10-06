@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -151,7 +152,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE)
 	@PUT
 	@ApiOperation(value = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, notes = PathProxy.RegistrationUrls.EDIT_PATIENT_PROFILE, response = Response.class)
-	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request) {
+	public Response<RegisteredPatientDetails> editPatientRegister(PatientRegistrationRequest request, @MatrixParam(value = "infoType") List<String> infoType) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getUserId())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -169,7 +170,7 @@ public class RegistrationApi {
 			throw new BusinessException(ServiceError.InvalidInput, mobileNumberValidaton);
 		}
 		Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
-		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request);
+		RegisteredPatientDetails registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
 		transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT, false);
 		esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
