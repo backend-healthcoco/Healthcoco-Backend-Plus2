@@ -643,7 +643,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	@Transactional
-	public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request) {
+	public RegisteredPatientDetails registerExistingPatient(PatientRegistrationRequest request, List<String> infoType) {
 		RegisteredPatientDetails registeredPatientDetails = new RegisteredPatientDetails();
 		PatientCollection patientCollection = null;
 		List<Group> groups = null;
@@ -700,12 +700,15 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setEmailAddress(request.getEmailAddress());
 					if (request.getDob() != null)
 						patientCollection.setDob(request.getDob());
-					if(request.getPersonalInformation() != null)
-						patientCollection.setPersonalInformation(request.getPersonalInformation());
-					if(request.getLifestyleQuestionAnswers() != null)
-						patientCollection.setLifestyleQuestionAnswers(request.getLifestyleQuestionAnswers());
-					if(request.getMedicalQuestionAnswers() != null)
-						patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
+					
+					if(infoType != null && !infoType.isEmpty()) {
+						if(infoType.contains("PERSONALINFO"))
+							patientCollection.setPersonalInformation(request.getPersonalInformation());
+						if(infoType.contains("LIFESTYLE"))
+							patientCollection.setLifestyleQuestionAnswers(request.getLifestyleQuestionAnswers());
+						if(infoType.contains("MEDICAL"))
+							patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
+					}
 				} else {
 					logger.error("Incorrect User Id, DoctorId, LocationId, HospitalId");
 					throw new BusinessException(ServiceError.InvalidInput,
