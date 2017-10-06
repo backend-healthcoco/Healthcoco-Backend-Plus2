@@ -486,6 +486,215 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
+
+		if (dischargeSummaryCollection.getVitalSigns() != null) {
+			String vitalSigns = "";
+
+			String pulse = dischargeSummaryCollection.getVitalSigns().getPulse();
+			pulse = (pulse != null && !pulse.isEmpty() ? "Pulse: " + pulse.trim() + " " + VitalSignsUnit.PULSE.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(pulse))
+				vitalSigns = pulse;
+
+			String temp = dischargeSummaryCollection.getVitalSigns().getTemperature();
+			temp = (temp != null && !temp.isEmpty()
+					? "Temperature: " + temp.trim() + " " + VitalSignsUnit.TEMPERATURE.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + temp;
+				else
+					vitalSigns = temp;
+			}
+
+			String breathing = dischargeSummaryCollection.getVitalSigns().getBreathing();
+			breathing = (breathing != null && !breathing.isEmpty()
+					? "Breathing: " + breathing.trim() + " " + VitalSignsUnit.BREATHING.getUnit() : "");
+
+			if (!DPDoctorUtils.allStringsEmpty(breathing)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + breathing;
+				else
+					vitalSigns = breathing;
+			}
+
+			String weight = dischargeSummaryCollection.getVitalSigns().getWeight();
+			weight = (weight != null && !weight.isEmpty()
+					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + weight;
+				else
+					vitalSigns = weight;
+			}
+
+			String bloodPressure = "";
+			if (dischargeSummaryCollection.getVitalSigns().getBloodPressure() != null) {
+				String systolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getSystolic();
+				systolic = systolic != null && !systolic.isEmpty() ? systolic.trim() : "";
+
+				String diastolic = dischargeSummaryCollection.getVitalSigns().getBloodPressure().getDiastolic();
+				diastolic = diastolic != null && !diastolic.isEmpty() ? diastolic.trim() : "";
+
+				if (!DPDoctorUtils.anyStringEmpty(systolic, diastolic))
+					bloodPressure = "B.P: " + systolic + "/" + diastolic + " " + VitalSignsUnit.BLOODPRESSURE.getUnit();
+				if (!DPDoctorUtils.allStringsEmpty(bloodPressure)) {
+					if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+						vitalSigns = vitalSigns + ",  " + bloodPressure;
+					else
+						vitalSigns = bloodPressure;
+				}
+			}
+			String spo2 = dischargeSummaryCollection.getVitalSigns().getSpo2();
+			spo2 = (spo2 != null && !spo2.isEmpty() ? "SPO2: " + spo2 + " " + VitalSignsUnit.SPO2.getUnit() : "");
+			if (!DPDoctorUtils.allStringsEmpty(spo2)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + spo2;
+				else
+					vitalSigns = spo2;
+			}
+			String height = dischargeSummaryCollection.getVitalSigns().getHeight();
+			height = (height != null && !height.isEmpty() ? "Height: " + height + " " + VitalSignsUnit.HEIGHT.getUnit()
+					: "");
+			if (!DPDoctorUtils.allStringsEmpty(height)) {
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + height;
+				else
+					vitalSigns = height;
+			}
+
+			String bmi = dischargeSummaryCollection.getVitalSigns().getBmi();
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				if (bmi.equalsIgnoreCase("nan"))
+					bmi = "";
+				else
+					bmi = "Bmi: " + bmi;
+
+			} else {
+				bmi = "";
+			}
+
+			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+				bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
+				if (!DPDoctorUtils.allStringsEmpty(bmi))
+					vitalSigns = vitalSigns + ",  " + bmi;
+				else
+					vitalSigns = bmi;
+			}
+
+			String bsa = dischargeSummaryCollection.getVitalSigns().getBsa();
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				if (bsa.equalsIgnoreCase("nan"))
+					bsa = "";
+				else
+					bmi = "Bsa: " + bsa;
+
+			} else {
+				bsa = "";
+			}
+			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+				bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
+				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
+					vitalSigns = vitalSigns + ",  " + bsa;
+				else
+					vitalSigns = bsa;
+			}
+			parameters.put("vitalSigns", vitalSigns);
+
+		}
+		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
+			PrescriptionCollection prescription = prescriptionRepository
+					.findOne(dischargeSummaryCollection.getPrescriptionId());
+			int no = 0;
+			Boolean showIntructions = false, showDirection = false;
+
+			if (prescription.getItems() != null && !prescription.getItems().isEmpty())
+
+				for (PrescriptionItem prescriptionItem : prescription.getItems()) {
+
+					if (prescriptionItem != null && prescriptionItem.getDrugId() != null) {
+						show = true;
+						DrugCollection drug = drugRepository.findOne(prescriptionItem.getDrugId());
+						if (drug != null) {
+							String drugType = drug.getDrugType() != null
+									? (drug.getDrugType().getType() != null ? drug.getDrugType().getType() + " " : "")
+									: "";
+							String genericName = "";
+							if (printSettings.getShowDrugGenericNames() && drug.getGenericNames() != null
+									&& !drug.getGenericNames().isEmpty()) {
+								for (GenericCode genericCode : drug.getGenericNames()) {
+									if (DPDoctorUtils.anyStringEmpty(genericName))
+										genericName = genericCode.getName();
+									else
+										genericName = genericName + "+" + genericCode.getName();
+								}
+								genericName = "<br><font size='1'><i>" + genericName + "</i></font>";
+							}
+							String drugName = drug.getDrugName() != null ? drug.getDrugName() : "";
+							drugName = (drugType + drugName) == "" ? "--" : drugType + " " + drugName + genericName;
+							String durationValue = prescriptionItem.getDuration() != null
+									? (prescriptionItem.getDuration().getValue() != null
+											? prescriptionItem.getDuration().getValue() : "")
+									: "";
+							String durationUnit = prescriptionItem.getDuration() != null
+									? (prescriptionItem.getDuration()
+											.getDurationUnit() != null
+													? (!DPDoctorUtils.anyStringEmpty(
+															prescriptionItem.getDuration().getDurationUnit().getUnit())
+																	? prescriptionItem.getDuration().getDurationUnit()
+																			.getUnit()
+																	: "")
+													: "")
+									: "";
+
+							String directions = "";
+							if (prescriptionItem.getDirection() != null && !prescriptionItem.getDirection().isEmpty()) {
+								showDirection = true;
+								if (prescriptionItem.getDirection().get(0).getDirection() != null) {
+									if (directions == "")
+										directions = directions
+												+ (prescriptionItem.getDirection().get(0).getDirection());
+									else
+										directions = directions + ","
+												+ (prescriptionItem.getDirection().get(0).getDirection());
+								}
+							}
+							if (!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())) {
+								showIntructions = true;
+							}
+							String duration = "";
+							if (durationValue == "" && durationValue == "")
+								duration = "--";
+							else
+								duration = durationValue + " " + durationUnit;
+							no = no + 1;
+
+							PrescriptionJasperDetails prescriptionJasperDetails = new PrescriptionJasperDetails(no,
+									drugName,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getDosage())
+											? prescriptionItem.getDosage() : "--",
+									duration, directions.isEmpty() ? "--" : directions,
+									!DPDoctorUtils.anyStringEmpty(prescriptionItem.getInstructions())
+											? prescriptionItem.getInstructions() : "--",
+									genericName);
+							prescriptionItems.add(prescriptionJasperDetails);
+						}
+					}
+				}
+
+			parameters.put("prescriptionItems", prescriptionItems);
+			parameters.put("showIntructions", showIntructions);
+			parameters.put("showDirection", showDirection);
+			parameters.put("showPrescriptionItems", show);
+			show = false;
+			if (!DPDoctorUtils.allStringsEmpty(prescription.getAdvice())) {
+				show = true;
+				parameters.put("advice", prescription.getAdvice());
+			}
+			parameters.put("showAdvice", show);
+			show = true;
+
+		}
+
 		if (dischargeSummaryCollection.getVitalSigns() != null) {
 			String vitalSigns = "";
 
@@ -593,6 +802,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("vitalSigns", vitalSigns);
 
 		}
+
 		if (!DPDoctorUtils.anyStringEmpty(dischargeSummaryCollection.getPrescriptionId())) {
 			PrescriptionCollection prescription = prescriptionRepository
 					.findOne(dischargeSummaryCollection.getPrescriptionId());
@@ -686,6 +896,7 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			show = true;
 
 		}
+
 
 		parameters.put("showPrescription", show);
 		show = false;

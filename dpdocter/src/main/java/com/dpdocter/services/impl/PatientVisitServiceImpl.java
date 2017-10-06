@@ -1702,12 +1702,17 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+							if (bmi.equalsIgnoreCase("nan"))
+								bmi = "";
+							else
+								bmi = "Bmi: " + bmi;
 
-							bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
 						} else {
 							bmi = "";
 						}
+
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
+							bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
 							if (!DPDoctorUtils.allStringsEmpty(bmi))
 								vitalSigns = vitalSigns + ",  " + bmi;
 							else
@@ -1716,12 +1721,16 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
 						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+							if (bsa.equalsIgnoreCase("nan"))
+								bsa = "";
+							else
+								bmi = "Bsa: " + bsa;
 
-							bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
 						} else {
 							bsa = "";
 						}
 						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
+							bsa = "Bsa: " + String.format("%.3f", Double.parseDouble(bsa));
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + bsa;
 							else
