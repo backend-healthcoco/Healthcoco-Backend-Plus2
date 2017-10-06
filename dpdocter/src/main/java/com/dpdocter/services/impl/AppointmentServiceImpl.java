@@ -777,7 +777,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					patientRegistrationRequest.setLocationId(request.getLocationId());
 					patientRegistrationRequest.setHospitalId(request.getHospitalId());
 					RegisteredPatientDetails patientDetails = registrationService
-							.registerExistingPatient(patientRegistrationRequest);
+							.registerExistingPatient(patientRegistrationRequest, null);
 					transnationalService.addResource(new ObjectId(patientDetails.getUserId()), Resource.PATIENT, false);
 					esRegistrationService.addPatient(registrationService.getESPatientDocument(patientDetails));
 				} else {

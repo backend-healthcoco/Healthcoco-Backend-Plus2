@@ -254,7 +254,7 @@ public class RecordsServiceImpl implements RecordsService {
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
 				RegisteredPatientDetails patientDetails = registrationService
-						.registerExistingPatient(patientRegistrationRequest);
+						.registerExistingPatient(patientRegistrationRequest, null);
 				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
@@ -1325,7 +1325,7 @@ public class RecordsServiceImpl implements RecordsService {
 				patientRegistrationRequest.setLocationId(request.getLocationId());
 				patientRegistrationRequest.setHospitalId(request.getHospitalId());
 				RegisteredPatientDetails patientDetails = registrationService
-						.registerExistingPatient(patientRegistrationRequest);
+						.registerExistingPatient(patientRegistrationRequest, null);
 				patientEmailAddress = patientDetails.getPatient().getEmailAddress();
 				localPatientName = patientDetails.getLocalPatientName();
 				patientMobileNumber = patientDetails.getMobileNumber();
