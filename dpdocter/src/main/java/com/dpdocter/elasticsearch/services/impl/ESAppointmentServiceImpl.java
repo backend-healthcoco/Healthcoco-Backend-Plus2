@@ -52,6 +52,7 @@ import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
+import com.dpdocter.elasticsearch.response.ESDoctorResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 import com.dpdocter.enums.AppointmentResponseType;
@@ -749,14 +750,17 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							if (specialityCollection != null) {
 								specialities.add(specialityCollection.getSuperSpeciality());
 								if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
-									slugUrl = "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+									slugUrl = slugUrl + "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+								} else {
+									slugUrl = specialityCollection.getSuperSpeciality().toLowerCase();
 								}
+
 							}
 						}
 						doctorDocument.setSpecialities(specialities);
 					}
 					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
-						doctorDocument.setDoctorSlugURL(slugUrl.replaceAll(" ", "-"));
+						doctorDocument.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-"));
 
 					if (doctorDocument.getImageUrl() != null)
 						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
@@ -1191,4 +1195,5 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return status;
 	}
+
 }

@@ -1,5 +1,6 @@
 package com.dpdocter.webservices;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -15,11 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.Doctor;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
+import com.dpdocter.elasticsearch.response.ESDoctorResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
+import com.dpdocter.reflections.BeanUtil;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;
@@ -58,8 +62,7 @@ public class ESAppointmentApi {
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTORS, notes = PathProxy.SolrAppointmentUrls.GET_DOCTORS)
 	public Response<ESDoctorDocument> getDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
-			 @QueryParam(value = "latitude") String latitude,
-			 @QueryParam(value = "longitude") String longitude,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
 			@DefaultValue("false") @QueryParam("booking") Boolean booking,
 			@DefaultValue("false") @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee,
@@ -82,8 +85,7 @@ public class ESAppointmentApi {
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES)
 	public Response<ESUserLocaleDocument> getPharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
-			 @QueryParam(value = "latitude") String latitude,
-			 @QueryParam(value = "longitude") String longitude,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
 			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
 			@QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days,
@@ -115,12 +117,12 @@ public class ESAppointmentApi {
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS, notes = PathProxy.SolrAppointmentUrls.GET_LABS)
 	public Response<LabResponse> getLabs(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
-			 @QueryParam(value = "latitude") String latitude,
-			@QueryParam(value = "longitude") String longitude, @QueryParam("test") String test,
-			@QueryParam("booking") Boolean booking, @QueryParam("calling") Boolean calling,
-			@QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
-			@MatrixParam("days") List<String> days, @QueryParam("onlineReports") Boolean onlineReports,
-			@QueryParam("homeService") Boolean homeService, @QueryParam("nabl") Boolean nabl) {
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("test") String test, @QueryParam("booking") Boolean booking,
+			@QueryParam("calling") Boolean calling, @QueryParam("minTime") int minTime,
+			@QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
+			@QueryParam("onlineReports") Boolean onlineReports, @QueryParam("homeService") Boolean homeService,
+			@QueryParam("nabl") Boolean nabl) {
 
 		List<LabResponse> doctors = solrAppointmentService.getLabs(page, size, city, location, latitude, longitude,
 				test, booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl);
@@ -163,6 +165,39 @@ public class ESAppointmentApi {
 	// return response;
 	// }
 
+	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB, notes = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
+	public Response<ESDoctorResponse> getDoctorForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("city") String city, @QueryParam("location") String location,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
+			@DefaultValue("false") @QueryParam("booking") Boolean booking,
+			@DefaultValue("false") @QueryParam("calling") Boolean calling, @QueryParam("minFee") int minFee,
+			@QueryParam("maxFee") int maxFee, @QueryParam("minTime") int minTime, @QueryParam("maxTime") int maxTime,
+			@MatrixParam("days") List<String> days, @QueryParam("gender") String gender,
+			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
+			@QueryParam("service") String service) {
+
+		List<ESDoctorDocument> doctors = solrAppointmentService.getDoctors(page, size, city, location, latitude,
+				longitude, speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender,
+				minExperience, maxExperience, service);
+		Response<ESDoctorResponse> response = response = new Response<ESDoctorResponse>();
+		List<ESDoctorResponse> doctorResponses = null;
+		if (doctors != null && !doctors.isEmpty()) {
+			doctorResponses = new ArrayList<ESDoctorResponse>();
+			ESDoctorResponse doctorResponse = null;
+			for (ESDoctorDocument doctor : doctors) {
+				doctorResponse = new ESDoctorResponse();
+				BeanUtil.map(doctor, doctorResponse);
+				doctorResponses.add(doctorResponse);
+			}
+		}
+
+		response.setDataList(doctorResponses);
+		return response;
+	}
+
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;
@@ -170,5 +205,5 @@ public class ESAppointmentApi {
 			return null;
 
 	}
-	
+
 }
