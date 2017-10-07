@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.DoctorInfo;
-import com.dpdocter.beans.Locale;
+import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -58,15 +58,15 @@ public class UserFavouritesApi {
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_DOCTORS)
-	public Response<DoctorInfo> getFavouriteDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESDoctorDocument> getFavouriteDoctors(@QueryParam("page") int page, @QueryParam("size") int size,
 			@PathParam("userId") String userId) {
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
-		List<DoctorInfo> doctors = userFavouriteService.getFavouriteDoctors(page, size, userId);
+		List<ESDoctorDocument> doctors = userFavouriteService.getFavouriteDoctors(page, size, userId);
 
-		Response<DoctorInfo> response = new Response<DoctorInfo>();
+		Response<ESDoctorDocument> response = new Response<ESDoctorDocument>();
 		response.setDataList(doctors);
 		return response;
 	}
@@ -74,12 +74,12 @@ public class UserFavouritesApi {
 	@Path(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
 	@GET
 	@ApiOperation(value = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES, notes = PathProxy.UserFavouritesUrls.GET_FAVOURITE_PHARMACIES)
-	public Response<Locale> getFavouritePharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESUserLocaleDocument> getFavouritePharmacies(@QueryParam("page") int page, @QueryParam("size") int size,
 			@PathParam("userId") String userId) {
 
-		List<Locale> pharmacies = userFavouriteService.getFavouritePharmacies(page, size, userId);
+		List<ESUserLocaleDocument> pharmacies = userFavouriteService.getFavouritePharmacies(page, size, userId);
 
-		Response<Locale> response = new Response<Locale>();
+		Response<ESUserLocaleDocument> response = new Response<ESUserLocaleDocument>();
 		response.setDataList(pharmacies);
 		return response;
 	}

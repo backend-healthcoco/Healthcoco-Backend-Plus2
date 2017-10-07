@@ -754,7 +754,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 								} else {
 									slugUrl = specialityCollection.getSuperSpeciality().toLowerCase();
 								}
-
 							}
 						}
 						doctorDocument.setSpecialities(specialities);
