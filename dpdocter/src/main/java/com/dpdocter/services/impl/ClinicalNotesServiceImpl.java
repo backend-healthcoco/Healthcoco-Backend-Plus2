@@ -5728,7 +5728,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 			String weight = clinicalNotesCollection.getVitalSigns().getWeight();
 			weight = (weight != null && !weight.isEmpty()
 					? "Weight: " + weight.trim() + " " + VitalSignsUnit.WEIGHT.getUnit() : "");
-			if (!DPDoctorUtils.allStringsEmpty(temp)) {
+			if (!DPDoctorUtils.allStringsEmpty(weight)) {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + weight;
 				else
@@ -5767,7 +5767,7 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 					vitalSigns = vitalSigns + ",  " + height;
 				else
-					vitalSigns = spo2;
+					vitalSigns = height;
 			}
 
 			String bmi = clinicalNotesCollection.getVitalSigns().getBmi();

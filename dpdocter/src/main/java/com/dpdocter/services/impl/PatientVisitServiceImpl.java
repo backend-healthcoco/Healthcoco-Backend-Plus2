@@ -1698,7 +1698,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							if (!DPDoctorUtils.allStringsEmpty(vitalSigns))
 								vitalSigns = vitalSigns + ",  " + height;
 							else
-								vitalSigns = spo2;
+								vitalSigns = height;
 						}
 
 						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
