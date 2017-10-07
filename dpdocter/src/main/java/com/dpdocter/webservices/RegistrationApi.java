@@ -112,7 +112,7 @@ public class RegistrationApi {
 	@Path(value = PathProxy.RegistrationUrls.PATIENT_REGISTER)
 	@POST
 	@ApiOperation(value = PathProxy.RegistrationUrls.PATIENT_REGISTER, notes = PathProxy.RegistrationUrls.PATIENT_REGISTER, response = Response.class)
-	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request) {
+	public Response<RegisteredPatientDetails> patientRegister(PatientRegistrationRequest request, @MatrixParam(value = "infoType") List<String> infoType) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocalPatientName())) {
 			logger.warn(invalidInput);
 			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
@@ -137,7 +137,7 @@ public class RegistrationApi {
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
 
 		} else {
-			registeredPatientDetails = registrationService.registerExistingPatient(request, null);
+			registeredPatientDetails = registrationService.registerExistingPatient(request, infoType);
 			transnationalService.addResource(new ObjectId(registeredPatientDetails.getUserId()), Resource.PATIENT,
 					false);
 			esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
