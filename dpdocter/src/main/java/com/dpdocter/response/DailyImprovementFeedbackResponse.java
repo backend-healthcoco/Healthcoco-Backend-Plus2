@@ -5,6 +5,7 @@ import java.util.List;
 import com.dpdocter.beans.DailyPatientFeedback;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.PatientShortCard;
+import com.dpdocter.beans.Prescription;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.FeelingTypeEnum;
 
@@ -22,6 +23,8 @@ public class DailyImprovementFeedbackResponse extends GenericCollection {
 	private String prescriptionId;
 	private List<DailyPatientFeedback> dailyPatientFeedbacks;
 	private Boolean discarded;
+	private Prescription prescription;
+	private String uniqueEmrId;
 
 	public String getId() {
 		return id;
@@ -117,6 +120,22 @@ public class DailyImprovementFeedbackResponse extends GenericCollection {
 
 	public void setDiscarded(Boolean discarded) {
 		this.discarded = discarded;
+	}
+
+	public Prescription getPrescription() {
+		return prescription;
+	}
+
+	public void setPrescription(Prescription prescription) {
+		this.prescription = prescription;
+	}
+
+	public String getUniqueEmrId() {
+		return uniqueEmrId;
+	}
+
+	public void setUniqueEmrId(String uniqueEmrId) {
+		this.uniqueEmrId = uniqueEmrId;
 	}
 
 	@Override
