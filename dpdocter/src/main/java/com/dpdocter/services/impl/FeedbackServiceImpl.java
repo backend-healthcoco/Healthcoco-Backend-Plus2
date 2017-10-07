@@ -412,6 +412,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 				dailyImprovementFeedbacks = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
 						Aggregation.unwind("patientCard"),
+						Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+						Aggregation.unwind("prescription"),
 						Aggregation.skip(page * size), Aggregation.limit(size),
 						Aggregation.sort(new Sort(Direction.DESC, "createdTime"))), DailyImprovementFeedbackCollection.class,
 						DailyImprovementFeedbackResponse.class).getMappedResults();
@@ -420,6 +422,8 @@ public class FeedbackServiceImpl implements FeedbackService {
 						Aggregation.newAggregation(Aggregation.match(criteria),
 								Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
 								Aggregation.unwind("patientCard"),
+								Aggregation.lookup("prescription_cl", "prescriptionId", "_id", "prescription"),
+								Aggregation.unwind("prescription"),
 								Aggregation.sort(new Sort(Direction.DESC, "createdTime"))),
 						DailyImprovementFeedbackCollection.class, DailyImprovementFeedbackResponse.class).getMappedResults();
 			
@@ -436,6 +440,11 @@ public class FeedbackServiceImpl implements FeedbackService {
 				if(hospitalCollection != null)
 				{
 					dailyImprovementFeedbackResponse.setHospitalName(hospitalCollection.getHospitalName());
+				}
+				if(dailyImprovementFeedbackResponse.getPrescription() != null)
+				{
+					dailyImprovementFeedbackResponse.setUniqueEmrId(dailyImprovementFeedbackResponse.getPrescription().getUniqueEmrId());
+					dailyImprovementFeedbackResponse.setPrescription(null);
 				}
 			}
 		} catch (Exception e) {
