@@ -565,8 +565,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 				if (bmi.equalsIgnoreCase("nan"))
 					bmi = "";
-				else
-					bmi = "Bmi: " + bmi;
 
 			} else {
 				bmi = "";
@@ -584,8 +582,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			if (!DPDoctorUtils.allStringsEmpty(bsa)) {
 				if (bsa.equalsIgnoreCase("nan"))
 					bsa = "";
-				else
-					bmi = "Bsa: " + bsa;
 
 			} else {
 				bsa = "";

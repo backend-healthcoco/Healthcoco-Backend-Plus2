@@ -1465,7 +1465,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				logoURL = getFinalImageURL(printSettings.getClinicLogoUrl());
 			}
 
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter() && printSettings.getFooterSetup().getBottomText() != null) {
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getCustomFooter()
+					&& printSettings.getFooterSetup().getBottomText() != null) {
 				for (PrintSettingsText str : printSettings.getFooterSetup().getBottomText()) {
 					boolean isBold = containsIgnoreCase(FONTSTYLE.BOLD.getStyle(), str.getFontStyle());
 					boolean isItalic = containsIgnoreCase(FONTSTYLE.ITALIC.getStyle(), str.getFontStyle());
@@ -1490,9 +1491,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			} else {
 				parameters.put("footerSignature", "");
 			}
-			if(printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowPoweredBy()){
+			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowPoweredBy()) {
 				parameters.put("showPaweredBy", true);
-			}else{
+			} else {
 				parameters.put("showPaweredBy", false);
 			}
 		}
@@ -1702,10 +1703,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-							if (bmi.equalsIgnoreCase("nan"))
+							if (bmi.equalsIgnoreCase("nan")){
 								bmi = "";
-							else
-								bmi = "Bmi: " + bmi;
+							}
 
 						} else {
 							bmi = "";
@@ -1713,18 +1713,18 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 							bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
-							if (!DPDoctorUtils.allStringsEmpty(bmi))
+							if (!DPDoctorUtils.allStringsEmpty(bmi)){
 								vitalSigns = vitalSigns + ",  " + bmi;
-							else
+							}
+							else{
 								vitalSigns = bmi;
+							}
 						}
 
 						String bsa = clinicalNotesCollection.getVitalSigns().getBsa();
 						if (!DPDoctorUtils.allStringsEmpty(bsa)) {
 							if (bsa.equalsIgnoreCase("nan"))
 								bsa = "";
-							else
-								bmi = "Bsa: " + bsa;
 
 						} else {
 							bsa = "";
