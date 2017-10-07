@@ -6,6 +6,8 @@ public class QuestionAnswers {
 
 	private String question;
 	
+	private String questionType;
+	
 	private List<String> answers;
 
 	public String getQuestion() {
@@ -24,8 +26,18 @@ public class QuestionAnswers {
 		this.answers = answers;
 	}
 
+	public String getQuestionType() {
+		return questionType;
+	}
+
+	public void setQuestionType(String questionType) {
+		this.questionType = questionType;
+	}
+
 	@Override
 	public String toString() {
-		return "QuestionAnswers [question=" + question + ", answers=" + answers + "]";
+		return "QuestionAnswers [question=" + question + ", questionType=" + questionType + ", answers=" + answers
+				+ "]";
 	}
+	
 }
