@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +68,6 @@ import com.dpdocter.beans.PresentingComplaintThroat;
 import com.dpdocter.beans.ProcedureNote;
 import com.dpdocter.beans.ProvisionalDiagnosis;
 import com.dpdocter.beans.SystemExam;
-import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.beans.XRayDetails;
 import com.dpdocter.collections.AppointmentCollection;
 import com.dpdocter.collections.ClinicalNotesCollection;
@@ -110,42 +108,12 @@ import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.ProcedureNoteCollection;
 import com.dpdocter.collections.ProvisionalDiagnosisCollection;
 import com.dpdocter.collections.SystemExamCollection;
-import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.collections.XRayDetailsCollection;
-import com.dpdocter.elasticsearch.document.ESComplaintsDocument;
-import com.dpdocter.elasticsearch.document.ESDiagnosesDocument;
-import com.dpdocter.elasticsearch.document.ESECGDetailsDocument;
-import com.dpdocter.elasticsearch.document.ESEarsExaminationDocument;
-import com.dpdocter.elasticsearch.document.ESEchoDocument;
-import com.dpdocter.elasticsearch.document.ESGeneralExamDocument;
-import com.dpdocter.elasticsearch.document.ESHolterDocument;
-import com.dpdocter.elasticsearch.document.ESIndicationOfUSGDocument;
-import com.dpdocter.elasticsearch.document.ESIndirectLarygoscopyExaminationDocument;
-import com.dpdocter.elasticsearch.document.ESInvestigationsDocument;
-import com.dpdocter.elasticsearch.document.ESMenstrualHistoryDocument;
-import com.dpdocter.elasticsearch.document.ESNeckExaminationDocument;
-import com.dpdocter.elasticsearch.document.ESNotesDocument;
-import com.dpdocter.elasticsearch.document.ESObservationsDocument;
-import com.dpdocter.elasticsearch.document.ESObstetricHistoryDocument;
-import com.dpdocter.elasticsearch.document.ESOralCavityAndThroatExaminationDocument;
-import com.dpdocter.elasticsearch.document.ESPADocument;
-import com.dpdocter.elasticsearch.document.ESPSDocument;
-import com.dpdocter.elasticsearch.document.ESPVDocument;
-import com.dpdocter.elasticsearch.document.ESPresentComplaintDocument;
-import com.dpdocter.elasticsearch.document.ESPresentComplaintHistoryDocument;
-import com.dpdocter.elasticsearch.document.ESPresentingComplaintEarsDocument;
-import com.dpdocter.elasticsearch.document.ESPresentingComplaintNoseDocument;
-import com.dpdocter.elasticsearch.document.ESPresentingComplaintThroatDocument;
-import com.dpdocter.elasticsearch.document.ESProcedureNoteDocument;
-import com.dpdocter.elasticsearch.document.ESProvisionalDiagnosisDocument;
-import com.dpdocter.elasticsearch.document.ESSystemExamDocument;
-import com.dpdocter.elasticsearch.document.ESXRayDetailsDocument;
 import com.dpdocter.elasticsearch.services.ESClinicalNotesService;
 import com.dpdocter.enums.ClinicalItems;
 import com.dpdocter.enums.ComponentType;
 import com.dpdocter.enums.Range;
-import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.UniqueIdInitial;
 import com.dpdocter.enums.VitalSignsUnit;
 import com.dpdocter.exceptions.BusinessException;
@@ -5833,7 +5801,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 				patient,
 				"<b>CID: </b>" + (clinicalNotesCollection.getUniqueEmrId() != null
 						? clinicalNotesCollection.getUniqueEmrId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				clinicalNotesCollection.getUpdatedTime());
 		patientVisitService.generatePrintSetup(parameters, printSettings, clinicalNotesCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "CLINICALNOTES-"
 				+ clinicalNotesCollection.getUniqueEmrId() + new Date().getTime();

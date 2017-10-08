@@ -1443,7 +1443,7 @@ public class BillingServiceImpl implements BillingService {
 					patient,
 					"<b>INVID: </b>" + (doctorPatientInvoiceCollection.getUniqueInvoiceId() != null
 							? doctorPatientInvoiceCollection.getUniqueInvoiceId() : "--"),
-					patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+					patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date());
 			patientVisitService.generatePrintSetup(parameters, printSettings,
 					doctorPatientInvoiceCollection.getDoctorId());
 			String pdfName = (user != null ? user.getFirstName() : "") + "INVOICE-"
@@ -1538,7 +1538,7 @@ public class BillingServiceImpl implements BillingService {
 				patient,
 				"<b>RECEIPTID: </b>" + (doctorPatientReceiptCollection.getUniqueReceiptId() != null
 						? doctorPatientReceiptCollection.getUniqueReceiptId() : "--"),
-				patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+				patient.getLocalPatientName(), user.getMobileNumber(), parameters, new Date());
 		patientVisitService.generatePrintSetup(parameters, printSettings, doctorPatientReceiptCollection.getDoctorId());
 		String pdfName = (user != null ? user.getFirstName() : "") + "RECEIPT-"
 				+ doctorPatientReceiptCollection.getUniqueReceiptId() + new Date().getTime();

@@ -58,7 +58,7 @@ public interface PatientVisitService {
 	void generatePrintSetup(Map<String, Object> parameters, PrintSettingsCollection printSettings, ObjectId doctorId);
 
 	void generatePatientDetails(PatientDetails patientDetails, PatientCollection patient, String uniqueEMRId,
-			String firstName, String mobileNumber, Map<String, Object> parameters);
+			String firstName, String mobileNumber, Map<String, Object> parameters, Date date);
 
 	void updateAppointmentTime(ObjectId visitId, String appointmentId, WorkingHours workingHours, Date fromDate);
 
