@@ -1203,7 +1203,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 		generatePatientDetails(
 				(printSettings != null && printSettings.getHeaderSetup() != null
 						? printSettings.getHeaderSetup().getPatientDetails() : null),
-				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters);
+				patient, resourceId, patient.getLocalPatientName(), user.getMobileNumber(), parameters,
+				patientVisitLookupResponse.getUpdatedTime());
 		generatePrintSetup(parameters, printSettings, patientVisitLookupResponse.getDoctorId());
 		String layout = printSettings != null
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
@@ -1511,10 +1512,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	@Override
 	public void generatePatientDetails(PatientDetails patientDetails, PatientCollection patientCard, String uniqueEMRId,
-			String firstName, String mobileNumber, Map<String, Object> parameters) {
+			String firstName, String mobileNumber, Map<String, Object> parameters, Date date) {
 		String age = null,
 				gender = (patientCard != null && patientCard.getGender() != null ? patientCard.getGender() : null),
 				patientLeftText = "", patientRightText = "";
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 		if (patientDetails == null) {
 			patientDetails = new PatientDetails();
 		}
@@ -1556,13 +1559,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		patientDetailList.add(uniqueEMRId);
 		if (patientDetails.getShowDOB()) {
-			patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+			patientDetailList.add("<b>Date: </b>" + sdf.format(new Date()));
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 		} else {
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			patientDetailList.add("<b>Date: </b>" + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+			patientDetailList.add("<b>Date: </b>" + sdf.format(new Date()));
 		}
 
 		if (patientDetails.getShowBloodGroup() && patientCard != null
@@ -1703,7 +1706,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						String bmi = clinicalNotesCollection.getVitalSigns().getBmi();
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
-							if (bmi.equalsIgnoreCase("nan")){
+							if (bmi.equalsIgnoreCase("nan")) {
 								bmi = "";
 							}
 
@@ -1713,10 +1716,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 						if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 							bmi = "Bmi: " + String.format("%.3f", Double.parseDouble(bmi));
-							if (!DPDoctorUtils.allStringsEmpty(bmi)){
+							if (!DPDoctorUtils.allStringsEmpty(bmi)) {
 								vitalSigns = vitalSigns + ",  " + bmi;
-							}
-							else{
+							} else {
 								vitalSigns = bmi;
 							}
 						}
