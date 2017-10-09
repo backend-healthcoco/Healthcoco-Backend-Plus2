@@ -759,7 +759,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						doctorDocument.setSpecialities(specialities);
 					}
 					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
-						doctorDocument.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-"));
+						doctorDocument.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-").replaceAll("/", "-"));
 
 					if (doctorDocument.getImageUrl() != null)
 						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
