@@ -38,10 +38,25 @@ public class QuestionAnswers {
 		this.questionType = questionType;
 	}
 
+	public Boolean getIsNone() {
+		return isNone;
+	}
+
+	public void setIsNone(Boolean isNone) {
+		this.isNone = isNone;
+	}
+
+	public Boolean getIsAnswerNone() {
+		return isAnswerNone;
+	}
+
+	public void setIsAnswerNone(Boolean isAnswerNone) {
+		this.isAnswerNone = isAnswerNone;
+	}
+
 	@Override
 	public String toString() {
 		return "QuestionAnswers [question=" + question + ", questionType=" + questionType + ", answers=" + answers
-				+ "]";
+				+ ", isNone=" + isNone + ", isAnswerNone=" + isAnswerNone + "]";
 	}
-	
 }
