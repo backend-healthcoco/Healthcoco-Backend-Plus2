@@ -8,6 +8,9 @@ import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.DoctorExperience;
 
 public class ESDoctorResponse {
+
+	private String colorCode;
+	
 	private String userId;
 
 	private String title;
@@ -286,6 +289,15 @@ public class ESDoctorResponse {
 
 	public void setLocationName(String locationName) {
 		this.locationName = locationName;
+	}
+	
+
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
 	}
 
 	@Override
