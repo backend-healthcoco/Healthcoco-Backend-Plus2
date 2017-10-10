@@ -812,6 +812,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 						new ObjectId(request.getDoctorId()), new ObjectId(request.getLocationId()),
 						request.getTime().getFromTime(), request.getTime().getToTime(), request.getFromDate(),
 						request.getToDate(), AppointmentState.CANCEL.getState());
+				
+				if(appointmentCollection != null) {
+					logger.error(timeSlotIsBooked);
+					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
+				}
 			}
 			
 
@@ -819,7 +824,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 				clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(doctorId, locationId);
 
-				if (appointmentCollection == null) {
+//				if (appointmentCollection == null) {
 					appointmentCollection = new AppointmentCollection();
 					BeanUtil.map(request, appointmentCollection);
 					appointmentCollection.setCreatedTime(new Date());
@@ -932,10 +937,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 						}
 					}
 
-				} else {
-					logger.error(timeSlotIsBooked);
-					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
-				}
+//				} else {
+//					logger.error(timeSlotIsBooked);
+//					throw new BusinessException(ServiceError.NotAcceptable, timeSlotIsBooked);
+//				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
