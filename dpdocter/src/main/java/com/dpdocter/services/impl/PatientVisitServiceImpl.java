@@ -138,6 +138,9 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 	private static Logger logger = Logger.getLogger(PatientVisitServiceImpl.class.getName());
 
+	@Value(value = "${pdf.footer.text}")
+	private String footerText;
+
 	@Autowired
 	private PatientTreatmentServices patientTreatmentServices;
 
@@ -1492,10 +1495,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			} else {
 				parameters.put("footerSignature", "");
 			}
-			if (printSettings.getFooterSetup() != null && printSettings.getFooterSetup().getShowPoweredBy()) {
-				parameters.put("showPaweredBy", true);
+			if (printSettings.getFooterSetup() != null) {
+				if (printSettings.getFooterSetup().getShowPoweredBy()) {
+					parameters.put("poweredBy", footerText);
+				}
 			} else {
-				parameters.put("showPaweredBy", false);
+				parameters.put("poweredBy", " ");
 			}
 		}
 		parameters.put("contentFontSize", contentFontSize);

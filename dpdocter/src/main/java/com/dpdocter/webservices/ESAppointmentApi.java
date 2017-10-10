@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.Doctor;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
+import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.ESDoctorResponse;
@@ -179,22 +180,11 @@ public class ESAppointmentApi {
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 			@QueryParam("service") String service) {
 
-		List<ESDoctorDocument> doctors = solrAppointmentService.getDoctors(page, size, city, location, latitude,
-				longitude, speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender,
-				minExperience, maxExperience, service);
-		Response<ESDoctorResponse> response = response = new Response<ESDoctorResponse>();
-		List<ESDoctorResponse> doctorResponses = null;
-		if (doctors != null && !doctors.isEmpty()) {
-			doctorResponses = new ArrayList<ESDoctorResponse>();
-			ESDoctorResponse doctorResponse = null;
-			for (ESDoctorDocument doctor : doctors) {
-				doctorResponse = new ESDoctorResponse();
-				BeanUtil.map(doctor, doctorResponse);
-				doctorResponses.add(doctorResponse);
-			}
-		}
+		Response<ESDoctorResponse> response = new Response<ESDoctorResponse>();
 
-		response.setDataList(doctorResponses);
+		response.setData(solrAppointmentService.getDoctorForWeb(page, size, city, location, latitude, longitude,
+				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
+				maxExperience, service));
 		return response;
 	}
 
