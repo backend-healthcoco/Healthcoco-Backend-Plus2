@@ -1568,11 +1568,23 @@ public class JasperReportServiceImpl implements JasperReportService {
 		band.setHeight(80);
 
 		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(3);
+		jrDesignTextField.setHeight(20);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
+
+		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerSignature}.isEmpty()"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
-		jrDesignTextField.setX(0);
+		jrDesignTextField.setX(250);
 		jrDesignTextField.setY(3);
 		jrDesignTextField.setHeight(20);
 		jrDesignTextField.setWidth(columnWidth);
@@ -1598,28 +1610,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
-		
-		jrDesignLine = new JRDesignLine();
-		jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
-		jrDesignLine.setX(0);
-		jrDesignLine.setY(25);
-		jrDesignLine.setHeight(1);
-		jrDesignLine.setWidth(columnWidth);
-		band.addElement(jrDesignLine);
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
-		jrDesignTextField.setUnderline(true);
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(63);
-		jrDesignTextField.setHeight(10);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
 		return band;
 	}
 
