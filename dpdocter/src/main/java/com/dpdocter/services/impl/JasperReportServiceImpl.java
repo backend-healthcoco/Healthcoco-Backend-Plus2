@@ -1598,6 +1598,14 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
+		
+		jrDesignLine = new JRDesignLine();
+		jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
+		jrDesignLine.setX(0);
+		jrDesignLine.setY(25);
+		jrDesignLine.setHeight(1);
+		jrDesignLine.setWidth(columnWidth);
+		band.addElement(jrDesignLine);
 
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
