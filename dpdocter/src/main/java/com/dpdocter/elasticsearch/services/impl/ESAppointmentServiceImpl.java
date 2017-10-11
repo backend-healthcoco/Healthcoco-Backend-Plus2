@@ -35,6 +35,7 @@ import com.dpdocter.beans.SMSAddress;
 import com.dpdocter.beans.SMSDetail;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
+import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESCityDocument;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
@@ -52,6 +53,7 @@ import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
+import com.dpdocter.elasticsearch.response.ESDoctorResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 import com.dpdocter.enums.AppointmentResponseType;
@@ -307,6 +309,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			String location, String latitude, String longitude, String searchTerm) {
 		if (response.size() < 50) {
 			List<ESDoctorDocument> esDoctorDocuments = null;
+			String slugUrl = null;
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 				if (DPDoctorUtils.allStringsEmpty(city, location)) {
 					if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
@@ -374,9 +377,24 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					ESDoctorDocument object = new ESDoctorDocument();
 					object.setTitle(doctor.getTitle());
 					object.setUserId(doctor.getUserId());
-					if (!DPDoctorUtils.anyStringEmpty(object.getFirstName())) {
-						object.setDoctorSlugURL("dr-" + object.getFirstName().trim().replaceAll(" ", "-"));
+					if (!DPDoctorUtils.anyStringEmpty(doctor.getFirstName())) {
+						slugUrl = "dr-" + doctor.getFirstName().toLowerCase().trim();
 					}
+					List<String> specialities = new ArrayList<>();
+					for (String specialityId : doctor.getSpecialities()) {
+						ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+						if (specialityCollection != null) {
+							specialities.add(specialityCollection.getSuperSpeciality());
+							if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
+								slugUrl = slugUrl + "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+							} else {
+								slugUrl = specialityCollection.getSuperSpeciality().toLowerCase();
+							}
+						}
+					}
+					doctor.setSpecialities(specialities);
+					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
+						object.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-").replaceAll("/", "-"));
 					object.setFirstName(doctor.getFirstName());
 					object.setLocationId(doctor.getLocationId());
 					object.setHospitalId(doctor.getHospitalId());
@@ -1192,4 +1210,42 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return status;
 	}
+
+	@Override
+	@Transactional
+	public ESDoctorResponse getDoctorForWeb(int page, int size, String city, String location, String latitude,
+			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
+			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
+			int maxExperience, String service) {
+		ESDoctorResponse doctorResponse = null;
+		try {
+			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
+					symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
+					maxExperience, service);
+			doctorResponse = new ESDoctorResponse();
+			List<ESDoctorWEbSearch> doctorList = new ArrayList<ESDoctorWEbSearch>();
+			ESDoctorWEbSearch doctorWEbSearch = null;
+			if (doctors != null && !doctors.isEmpty()) {
+				for (ESDoctorDocument doctor : doctors) {
+					doctorWEbSearch = new ESDoctorWEbSearch();
+					BeanUtil.map(doctor, doctorWEbSearch);
+					doctorList.add(doctorWEbSearch);
+				}
+				doctorResponse.setDoctors(doctorList);
+
+			}
+			if (!DPDoctorUtils.anyStringEmpty(speciality)) {
+				doctorResponse.setMetaData(speciality + " in " + city);
+			} else {
+				doctorResponse.setMetaData("doctor in " + city);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Doctor Details From ES for Web : " + e.getMessage());
+
+		}
+		return doctorResponse;
+	}
+
 }

@@ -115,8 +115,6 @@ public class ESDoctorDocument extends DoctorLocation {
 	private Integer noOfRecommenations = 0;
 
 	private String doctorSlugURL;
-	
-	
 
 	public String getDoctorSlugURL() {
 		return doctorSlugURL;

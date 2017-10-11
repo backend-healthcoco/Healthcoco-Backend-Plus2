@@ -23,7 +23,6 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
-import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.components.html.HtmlComponent;
 import net.sf.jasperreports.components.list.DesignListContents;
 import net.sf.jasperreports.components.list.StandardListComponent;
@@ -68,9 +67,6 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 public class JasperReportServiceImpl implements JasperReportService {
 
 	private static Logger logger = Logger.getLogger(JasperReportServiceImpl.class.getName());
-
-	@Value(value = "${pdf.footer.text}")
-	private String footerText;
 
 	@Value(value = "${mongo.host.uri}")
 	private String MONGO_HOST_URI;
@@ -1603,6 +1599,19 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 
+		jrDesignTextField = new JRDesignTextField();
+		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+		jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+		jrDesignTextField.setBold(true);
+		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setUnderline(true);
+		jrDesignTextField.setX(0);
+		jrDesignTextField.setY(63);
+		jrDesignTextField.setHeight(10);
+		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+		jrDesignTextField.setStretchWithOverflow(true);
+		band.addElement(jrDesignTextField);
 		return band;
 	}
 
@@ -3496,13 +3505,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 
 		}
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		
-		
-		if (parameters.get("vitalSigns")!=null) {
+
+		if (parameters.get("vitalSigns") != null) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{VitalSigns}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{vitalSigns}", 18, contentFontSize - 1, false);
 		}
-
 
 		show = (Boolean) parameters.get("showDiagnosis");
 		if (show) {
