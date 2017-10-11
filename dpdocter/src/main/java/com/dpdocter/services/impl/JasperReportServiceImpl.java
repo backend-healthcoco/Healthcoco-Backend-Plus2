@@ -1570,11 +1570,12 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField = new JRDesignTextField();
 		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-		jrDesignTextField.setFontSize(new Float(contentFontSize));
+		jrDesignTextField.setFontSize(new Float(contentFontSize - 3));
 		jrDesignTextField.setX(0);
 		jrDesignTextField.setY(3);
 		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setWidth(175);
+		jrDesignTextField.setMarkup("html");
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
@@ -1584,10 +1585,10 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
 		jrDesignTextField.setBold(true);
 		jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
-		jrDesignTextField.setX(250);
+		jrDesignTextField.setX(176);
 		jrDesignTextField.setY(3);
 		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(columnWidth);
+		jrDesignTextField.setWidth(columnWidth - 179);
 		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);

@@ -1497,7 +1497,7 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 			if (printSettings.getFooterSetup() != null) {
 				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					parameters.put("poweredBy", footerText);
+					parameters.put("poweredBy", "<font color='#9d9fa0'>"+footerText+"</font>");
 				}
 			} else {
 				parameters.put("poweredBy", " ");
