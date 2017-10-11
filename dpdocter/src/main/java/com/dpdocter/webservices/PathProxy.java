@@ -1002,6 +1002,13 @@ public interface PathProxy {
 
 	}
 
+	public static final String EMAIL_BASE_URL = BASE_URL + "/mail";
+
+	public interface EmailUrls {
+		public static final String UNSUBSCRIBE_MAIL = "/unsubscribe";
+
+	}
+
 	public static final String OTP_BASE_URL = BASE_URL + "/otp";
 
 	public interface OTPUrls {
