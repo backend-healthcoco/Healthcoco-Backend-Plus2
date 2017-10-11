@@ -20,18 +20,22 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.LabTestPickupLookupResponse;
 import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.MyVideo;
 import com.dpdocter.beans.UIPermissions;
 import com.dpdocter.beans.Video;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.LabTestPickupCollection;
 import com.dpdocter.collections.LabTestSampleCollection;
+import com.dpdocter.collections.MyVideoCollection;
 import com.dpdocter.collections.SpecialityCollection;
 import com.dpdocter.collections.VideoCollection;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.DoctorRepository;
+import com.dpdocter.repository.MyVideoRepository;
 import com.dpdocter.repository.SpecialityRepository;
 import com.dpdocter.repository.VideoRepository;
+import com.dpdocter.request.AddMyVideoRequest;
 import com.dpdocter.request.AddVideoRequest;
 import com.dpdocter.response.ImageURLResponse;
 import com.dpdocter.services.FileManager;
@@ -44,6 +48,11 @@ public class VideoServiceImpl implements VideoService {
 
 	@Autowired
 	private VideoRepository videoRepository;
+	
+	@Autowired
+	private MyVideoRepository myVideoRepository;
+	
+	
 
 	@Autowired
 	private FileManager fileManager;
@@ -89,6 +98,39 @@ public class VideoServiceImpl implements VideoService {
 		}
 		return response;
 	}
+	
+
+	@Override
+	@Transactional
+	public MyVideo addMyVideo(FormDataBodyPart file, AddMyVideoRequest request) {
+		MyVideo response = null;
+		MyVideoCollection myVideoCollection = null;
+		ImageURLResponse imageURLResponse = null;
+		try {
+			if (file != null) {
+				String path = "video" + File.separator + request.getDoctorId();
+				FormDataContentDisposition fileDetail = file.getFormDataContentDisposition();
+				String fileExtension = FilenameUtils.getExtension(fileDetail.getFileName());
+				String fileName = fileDetail.getFileName().replaceFirst("." + fileExtension, "");
+				String recordPath = path + File.separator + fileName + System.currentTimeMillis() + "." + fileExtension;
+				imageURLResponse = fileManager.saveImage(file, recordPath, false);
+			}
+			if (imageURLResponse != null) {
+				myVideoCollection = new MyVideoCollection();
+				BeanUtil.map(request, myVideoCollection);
+				myVideoCollection.setVideoUrl(imageURLResponse.getImageUrl());
+				myVideoCollection.setCreatedTime(new Date());
+			}
+			myVideoCollection = myVideoRepository.save(myVideoCollection);
+			response = new MyVideo();
+			BeanUtil.map(myVideoCollection, response);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
 
 	@Override
 	@Transactional
@@ -118,6 +160,26 @@ public class VideoServiceImpl implements VideoService {
 					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<Video> aggregationResults = mongoTemplate.aggregate(aggregation, VideoCollection.class,
 					Video.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<MyVideo> getMyVideos(String doctorId, String searchTerm, int page, int size) {
+		Aggregation aggregation = null;
+		List<MyVideo> response = null;
+		try {
+			
+			aggregation = Aggregation.newAggregation(
+					Aggregation.match(new Criteria().and("doctorId").in(new ObjectId(doctorId)))
+					, Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+			AggregationResults<MyVideo> aggregationResults = mongoTemplate.aggregate(aggregation, MyVideoCollection.class,
+					MyVideo.class);
 			response = aggregationResults.getMappedResults();
 		} catch (Exception e) {
 			// TODO: handle exception

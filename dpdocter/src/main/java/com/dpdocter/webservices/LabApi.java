@@ -38,6 +38,7 @@ import com.dpdocter.request.EditLabReportsRequest;
 import com.dpdocter.request.LabReportsAddRequest;
 import com.dpdocter.request.RecordUploadRequest;
 import com.dpdocter.request.RecordsAddRequestMultipart;
+import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LabReportsService;
@@ -163,6 +164,22 @@ public class LabApi {
 		}
 		Response<RateCardTestAssociationLookupResponse> response = new Response<RateCardTestAssociationLookupResponse>();
 		response.setDataList(locationServices.getRateCardTests(page, size, searchTerm, rateCardId, labId));
+
+		return response;
+	}
+	
+	@Path(value = PathProxy.LabUrls.GET_GROUPED_LAB_TEST)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_GROUPED_LAB_TEST, notes = PathProxy.LabUrls.GET_GROUPED_LAB_TEST)
+	public Response<LabTestGroupResponse> getGroupedLabTest(@QueryParam("daughterLabId") String daughterLabId,@QueryParam("parentLabId") String parentLabId,
+			@QueryParam("labId") String labId, @QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (daughterLabId == null || parentLabId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<LabTestGroupResponse> response = new Response<LabTestGroupResponse>();
+		response.setDataList(locationServices.getGroupedLabTests(page, size, searchTerm, daughterLabId, parentLabId, labId));
 
 		return response;
 	}

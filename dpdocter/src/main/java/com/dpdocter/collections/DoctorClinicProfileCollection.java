@@ -12,6 +12,7 @@ import com.dpdocter.beans.AppointmentSlot;
 import com.dpdocter.beans.ConsultationFee;
 import com.dpdocter.beans.WorkingSchedule;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @Document(collection = "doctor_clinic_profile_cl")
@@ -84,6 +85,9 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	@Field
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
+
+	@Field
+	private String packageType = PackageType.ADVANCE.getType();
 
 	public ObjectId getId() {
 		return id;
@@ -267,6 +271,14 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 
 	public void setCheckUpTypeEnum(RegularCheckUpTypeEnum checkUpTypeEnum) {
 		this.checkUpTypeEnum = checkUpTypeEnum;
+	}
+
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
 	}
 
 	@Override

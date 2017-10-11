@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,7 @@ import com.dpdocter.response.CBLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyLabAssociationLookupResponse;
 import com.dpdocter.response.CollectionBoyResponse;
 import com.dpdocter.response.LabAssociationLookupResponse;
+import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.services.LocationServices;
@@ -1770,5 +1772,67 @@ public class LocationServiceImpl implements LocationServices {
 		}
 		return generatedId;
 	}*/
+	
+	@Override
+	@Transactional
+	public List<LabTestGroupResponse> getGroupedLabTests(int page, int size, String searchTerm,
+			String daughterLabId, String parentLabId, String labId)
+	{
+		List<LabTestGroupResponse> testGroupResponses = null;
+		// List<RateCardTestAssociationLookupResponse> responses = null;
+		ObjectId rateCardId = null;
+		try {
+
+			RateCardLabAssociationCollection rateCardLabAssociationCollection = rateCardLabAssociationRepository
+					.getByLocation(new ObjectId(daughterLabId), new ObjectId(parentLabId));
+			if (rateCardLabAssociationCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "Association not found");
+			} else {
+				if (rateCardLabAssociationCollection.getDiscarded() == true) {
+					RateCardCollection rateCardCollection = rateCardRepository
+							.getDefaultRateCard(new ObjectId(parentLabId));
+					if (rateCardCollection != null) {
+						rateCardId = rateCardCollection.getId();
+					} else {
+						throw new BusinessException(ServiceError.NoRecord, "Association not found");
+					}
+				} else {
+					rateCardId = rateCardLabAssociationCollection.getRateCardId();
+				}
+			}
+			
+			AggregationOperation aggregationOperation = new CustomAggregationOperation(
+					new BasicDBObject("$group",
+							new BasicDBObject("_id",
+									new BasicDBObject("specimen", "$diagnosticTest.specimen")).append("diagnosticTests", new BasicDBObject("$push", "$diagnosticTest"))
+													.append("specimen", new BasicDBObject("$first", "$diagnosticTest.specimen"))));
+			
+			Aggregation aggregation = null;
+
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("diagnosticTest.testName").regex("^" + searchTerm, "i"),
+						new Criteria("diagnosticTest.testName").regex("^" + searchTerm));
+			}
+			criteria.and("rateCardId").is(rateCardId);
+
+				aggregation = Aggregation.newAggregation(
+						Aggregation.lookup("diagnostic_test_cl", "diagnosticTestId", "_id", "diagnosticTest"),
+						Aggregation.unwind("diagnosticTest"), Aggregation.match(criteria),aggregationOperation);
+			AggregationResults<LabTestGroupResponse> aggregationResults = mongoTemplate.aggregate(
+					aggregation, RateCardTestAssociationCollection.class, LabTestGroupResponse.class);
+			testGroupResponses = aggregationResults.getMappedResults();
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting rate cards");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting rate cards");
+		}
+		return testGroupResponses;
+		
+		
+		
+	}
 
 }

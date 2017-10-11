@@ -14,6 +14,7 @@ import com.dpdocter.beans.RateCardTestAssociation;
 import com.dpdocter.beans.Specimen;
 import com.dpdocter.request.AddEditLabTestPickupRequest;
 import com.dpdocter.response.CollectionBoyResponse;
+import com.dpdocter.response.LabTestGroupResponse;
 import com.dpdocter.response.LabTestSampleLookUpResponse;
 import com.dpdocter.response.RateCardTestAssociationLookupResponse;
 import com.dpdocter.beans.CollectionBoyLabAssociation;
@@ -106,4 +107,7 @@ public interface LocationServices {
 
 	List<LabTestPickupLookupResponse> getRequestForPL(String parentLabId, String daughterLabId, Long from, Long to,
 			String searchTerm, int size, int page);
+
+	List<LabTestGroupResponse> getGroupedLabTests(int page, int size, String searchTerm, String daughterLabId,
+			String parentLabId, String labId);
 }

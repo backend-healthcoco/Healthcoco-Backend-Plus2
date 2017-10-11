@@ -1278,6 +1278,10 @@ public interface PathProxy {
 		public static final String ADD_VIDEO = "add";
 
 		public static final String GET_VIDEO = "get";
+		
+		public static final String ADD_MY_VIDEO = "addMyVideo";
+		
+		public static final String GET_MY_VIDEO = "getMyVideo";
 
 	}
 
@@ -1318,6 +1322,7 @@ public interface PathProxy {
 		public static final String GET_REPORTS_FOR_SAMPLES = "/getReportsForSample";
 		public static final String UPDATE_REQUEST_STATUS = "/updateRequestStatus/{id}";
 		public static final String EDIT_LAB_REPORTS = "/editLabReports";
+		public static final String GET_GROUPED_LAB_TEST = "/getGroupedLabTest";
 
 	}
 
