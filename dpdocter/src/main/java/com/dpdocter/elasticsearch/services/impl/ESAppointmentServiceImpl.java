@@ -396,7 +396,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
 						object.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-").replaceAll("/", "-"));
 					object.setFirstName(doctor.getFirstName());
-					doctor.setUserUId(doctor.getUserUId());
+					object.setUserUId(doctor.getUserUId());
 					object.setLocationId(doctor.getLocationId());
 					object.setHospitalId(doctor.getHospitalId());
 					appointmentSearchResponse.setResponse(object);
