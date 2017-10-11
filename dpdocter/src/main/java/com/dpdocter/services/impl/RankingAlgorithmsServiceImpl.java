@@ -401,6 +401,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 					rankingCountCollection = new RankingCountCollection();
 					rankingCountCollection.setCreatedTime(new Date());
 				}
+				
 				rankingCountCollection.setRankingCount(i++);
 				rankingCountCollection.setResourceType(Resource.DOCTOR);
 				rankingCountCollection.setUpdatedTime(new Date());
@@ -419,15 +420,16 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 				rankingCountCollection.setParameters(parameters);
 				
 				rankingCountCollection = rankingCountRepository.save(rankingCountCollection);
-				
 				DoctorClinicProfileCollection clinicProfileCollection = doctorClinicProfileRepository.findByDoctorIdLocationId(rankingCountCollection.getResourceId(), rankingCountCollection.getLocationId());
-				clinicProfileCollection.setRankingCount(rankingCountCollection.getRankingCount());
-				clinicProfileCollection.setUpdatedTime(new Date());
-				clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
-				
-				ESDoctorDocument doctorDocument = esDoctorRepository.findByUserIdAndLocationId(detailResponse.getDoctorId(), detailResponse.getLocationId());
-				doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
-				esDoctorRepository.save(doctorDocument);
+				if(clinicProfileCollection != null) {
+					clinicProfileCollection.setRankingCount(rankingCountCollection.getRankingCount());
+					clinicProfileCollection.setUpdatedTime(new Date());
+					clinicProfileCollection = doctorClinicProfileRepository.save(clinicProfileCollection);
+					
+					ESDoctorDocument doctorDocument = esDoctorRepository.findByUserIdAndLocationId(detailResponse.getDoctorId(), detailResponse.getLocationId());
+					doctorDocument.setRankingCount(clinicProfileCollection.getRankingCount());
+					esDoctorRepository.save(doctorDocument);
+				}
 			}		
 		} catch (Exception e) {
 			e.printStackTrace();

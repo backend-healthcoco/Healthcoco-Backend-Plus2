@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
 
-import common.util.web.JacksonUtil;
-
 public class Manufacturer extends GenericCollection {
 
 	private String id;

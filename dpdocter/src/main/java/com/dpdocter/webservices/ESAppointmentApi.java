@@ -1,6 +1,5 @@
 package com.dpdocter.webservices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -16,15 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.dpdocter.beans.Doctor;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
-import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 import com.dpdocter.elasticsearch.response.ESDoctorResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
-import com.dpdocter.reflections.BeanUtil;
 
 import common.util.web.Response;
 import io.swagger.annotations.Api;

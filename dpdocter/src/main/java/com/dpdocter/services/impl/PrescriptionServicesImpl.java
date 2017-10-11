@@ -80,7 +80,6 @@ import com.dpdocter.beans.TemplateAddItem;
 import com.dpdocter.beans.TemplateItem;
 import com.dpdocter.beans.TemplateItemDetail;
 import com.dpdocter.beans.TestAndRecordData;
-import com.dpdocter.beans.TreatmentService;
 import com.dpdocter.collections.AdviceCollection;
 import com.dpdocter.collections.DiagnosticTestCollection;
 import com.dpdocter.collections.DoctorCollection;
@@ -102,7 +101,6 @@ import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.PrintSettingsCollection;
 import com.dpdocter.collections.SMSTrackDetail;
 import com.dpdocter.collections.TemplateCollection;
-import com.dpdocter.collections.TreatmentServicesCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.elasticsearch.document.ESDiagnosticTestDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDrugDocument;
@@ -130,7 +128,6 @@ import com.dpdocter.repository.DrugDurationUnitRepository;
 import com.dpdocter.repository.DrugRepository;
 import com.dpdocter.repository.DrugTypeRepository;
 import com.dpdocter.repository.EyePrescriptionRepository;
-import com.dpdocter.repository.GenericCodeRepository;
 import com.dpdocter.repository.GenericCodesAndReactionsRepository;
 import com.dpdocter.repository.HistoryRepository;
 import com.dpdocter.repository.LabTestRepository;
@@ -315,19 +312,11 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private GenericCodesAndReactionsRepository genericCodesAndReactionsRepository;
 
-	@Autowired
-	private GenericCodeRepository genericCodeRepository;
-
-	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100) // maximum
-																						// 100
-																						// records
-																						// can
-																						// be
-																						// cached
-			.expireAfterAccess(30, TimeUnit.MINUTES) // cache will expire after
-														// 30 minutes of access
-			.build(new CacheLoader<String, List<Code>>() { // build the
-															// cacheloader
+	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100) 
+			// maximum 100 records can be cached
+			.expireAfterAccess(30, TimeUnit.MINUTES) 
+			// cache will expire after 30 minutes of access
+			.build(new CacheLoader<String, List<Code>>() { // build the cacheloader
 
 				@Override
 				public List<Code> load(String id) throws Exception {
@@ -378,37 +367,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			drugCollection.setRankingCount(1);
 
 			drugCollection = drugRepository.save(drugCollection);
-			// DoctorDrugCollection doctorDrugCollection =
-			// doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-			// drugCollection.getId(), drugCollection.getDoctorId(),
-			// drugCollection.getLocationId(),
-			// drugCollection.getHospitalId());
-			// if (doctorDrugCollection == null) {
-			// doctorDrugCollection = new
-			// DoctorDrugCollection(drugCollection.getId(),
-			// drugCollection.getDoctorId(),
-			// drugCollection.getLocationId(), drugCollection.getHospitalId(),
-			// 1, false,
-			// drugCollection.getDuration(), drugCollection.getDosage(),
-			// drugCollection.getDosageTime(),
-			// drugCollection.getDirection(), drugCollection.getGenericNames(),
-			// drugCollection.getCreatedBy());
-			// doctorDrugCollection.setCreatedTime(new Date());
-			// }
-			// doctorDrugCollection.setUpdatedTime(new Date());
-			// doctorDrugCollection =
-			// doctorDrugRepository.save(doctorDrugCollection);
-			// transnationalService.addResource(doctorDrugCollection.getId(),
-			// Resource.DOCTORDRUG, false);
-			// if (doctorDrugCollection != null) {
-			// ESDoctorDrugDocument esDoctorDrugDocument = new
-			// ESDoctorDrugDocument();
-			// BeanUtil.map(drugCollection, esDoctorDrugDocument);
-			// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-			// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-			// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-			// doctorDrugCollection.getId());
-			// }
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -417,7 +375,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While saving drugs", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Saving Drug");
@@ -463,42 +420,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 					esPrescriptionService.addDrug(esDrugDocument);
 				}
 			}
-			// DoctorDrugCollection doctorDrugCollection =
-			// doctorDrugRepository.findByDrugIdDoctorIdLocaationIdHospitalId(
-			// drugCollection.getId(), new ObjectId(request.getDoctorId()), new
-			// ObjectId(request.getLocationId()),
-			// new ObjectId(request.getHospitalId()));
-			// if (doctorDrugCollection == null) {
-			// doctorDrugCollection = new
-			// DoctorDrugCollection(drugCollection.getId(),
-			// new ObjectId(request.getDoctorId()), new
-			// ObjectId(request.getLocationId()),
-			// new ObjectId(request.getHospitalId()), 1, false,
-			// drugCollection.getDuration(),
-			// drugCollection.getDosage(), drugCollection.getDosageTime(),
-			// drugCollection.getDirection(),
-			// drugCollection.getGenericNames(), drugCollection.getCreatedBy());
-			// doctorDrugCollection.setCreatedTime(new Date());
-			// } else {
-			// doctorDrugCollection.setDirection(request.getDirection());
-			// doctorDrugCollection.setDosage(request.getDosage());
-			// doctorDrugCollection.setDosageTime(request.getDosageTime());
-			// doctorDrugCollection.setDuration(request.getDuration());
-			// }
-			// doctorDrugCollection.setUpdatedTime(new Date());
-			// doctorDrugCollection =
-			// doctorDrugRepository.save(doctorDrugCollection);
-			// transnationalService.addResource(doctorDrugCollection.getId(),
-			// Resource.DOCTORDRUG, false);
-			// if (doctorDrugCollection != null) {
-			// ESDoctorDrugDocument esDoctorDrugDocument = new
-			// ESDoctorDrugDocument();
-			// BeanUtil.map(drugCollection, esDoctorDrugDocument);
-			// BeanUtil.map(doctorDrugCollection, esDoctorDrugDocument);
-			// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-			// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-			// doctorDrugCollection.getId());
-			// }
 			response = new Drug();
 			BeanUtil.map(drugCollection, response);
 		} catch (Exception e) {
@@ -507,7 +428,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While editing drugs", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Editing Drug");
@@ -525,36 +445,15 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (drugCollection != null) {
 				if (drugCollection.getDoctorId() != null && drugCollection.getHospitalId() != null
 						&& drugCollection.getLocationId() != null) {
-					if (drugCollection.getDoctorId().equals(doctorId)
-							&& drugCollection.getHospitalId().equals(hospitalId)
-							&& drugCollection.getLocationId().equals(locationId)) {
+					if (drugCollection.getDoctorId().toString().equals(doctorId)
+							&& drugCollection.getHospitalId().toString().equals(hospitalId)
+							&& drugCollection.getLocationId().toString().equals(locationId)) {
 						drugCollection.setDiscarded(discarded);
 						drugCollection.setUpdatedTime(new Date());
 						drugCollection = drugRepository.save(drugCollection);
 						response = new Drug();
 						BeanUtil.map(drugCollection, response);
 
-						// DoctorDrugCollection doctorDrugCollection =
-						// doctorDrugRepository
-						// .findByDrugIdDoctorIdLocaationIdHospitalId(drugCollection.getId(),
-						// new ObjectId(doctorId), new ObjectId(locationId), new
-						// ObjectId(hospitalId));
-						// if (doctorDrugCollection != null) {
-						// doctorDrugCollection.setDiscarded(discarded);
-						// doctorDrugCollection.setUpdatedTime(new Date());
-						// doctorDrugCollection =
-						// doctorDrugRepository.save(doctorDrugCollection);
-						// if (doctorDrugCollection != null) {
-						// ESDoctorDrugDocument esDoctorDrugDocument = new
-						// ESDoctorDrugDocument();
-						// BeanUtil.map(drugCollection, esDoctorDrugDocument);
-						// BeanUtil.map(doctorDrugCollection,
-						// esDoctorDrugDocument);
-						// esDoctorDrugDocument.setId(drugCollection.getId().toString());
-						// esPrescriptionService.addDoctorDrug(esDoctorDrugDocument,
-						// doctorDrugCollection.getId());
-						// }
-						// }
 					} else {
 						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
 						throw new BusinessException(ServiceError.NotAuthorized,
@@ -588,7 +487,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			try {
 				mailService.sendExceptionMail("Backend Business Exception :: While deleting Drug", e.getMessage());
 			} catch (MessagingException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Deleting Drug");
@@ -759,9 +657,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			if (templateCollection != null) {
 				if (templateCollection.getDoctorId() != null && templateCollection.getHospitalId() != null
 						&& templateCollection.getLocationId() != null) {
-					if (templateCollection.getDoctorId().equals(doctorId)
-							&& templateCollection.getHospitalId().equals(hospitalId)
-							&& templateCollection.getLocationId().equals(locationId)) {
+					if (templateCollection.getDoctorId().toString().equals(doctorId)
+							&& templateCollection.getHospitalId().toString().equals(hospitalId)
+							&& templateCollection.getLocationId().toString().equals(locationId)) {
 						templateCollection.setUpdatedTime(new Date());
 						templateCollection.setDiscarded(discarded);
 						templateCollection = templateRepository.save(templateCollection);

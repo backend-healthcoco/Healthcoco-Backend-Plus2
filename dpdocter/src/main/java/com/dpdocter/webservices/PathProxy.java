@@ -1401,4 +1401,12 @@ public interface PathProxy {
 
 		public static final String GET_FAVOURITE_LABS = "/labs/{userId}";
 	}
+	
+	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
+
+	public interface SearchUrls {
+
+		public static final String SEARCH_LABS_BY_TEST = "/labs";
+	}
+
 }

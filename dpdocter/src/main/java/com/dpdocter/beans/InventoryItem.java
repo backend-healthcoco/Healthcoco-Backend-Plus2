@@ -1,9 +1,6 @@
 package com.dpdocter.beans;
 
 import com.dpdocter.collections.GenericCollection;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import common.util.web.JacksonUtil;
 
 public class InventoryItem extends GenericCollection {
 

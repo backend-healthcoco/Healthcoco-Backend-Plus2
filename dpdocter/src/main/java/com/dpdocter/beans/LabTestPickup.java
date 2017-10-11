@@ -2,8 +2,6 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
-
 import com.dpdocter.collections.GenericCollection;
 
 public class LabTestPickup extends GenericCollection {

@@ -73,14 +73,6 @@ public class LocaleCollection extends GenericCollection {
 	@Field
 	private List<String> paymentInfos;
 
-	public List<String> getPaymentInfos() {
-		return paymentInfos;
-	}
-
-	public void setPaymentInfos(List<String> paymentInfos) {
-		this.paymentInfos = paymentInfos;
-	}
-
 	@Field
 	private String localeType = LocaleType.PHARMACY.getType();
 	@Field
@@ -94,6 +86,14 @@ public class LocaleCollection extends GenericCollection {
 
 	@Field
 	private Double minimumAmountForDelivery = 0.0;
+
+	public List<String> getPaymentInfos() {
+		return paymentInfos;
+	}
+
+	public void setPaymentInfos(List<String> paymentInfos) {
+		this.paymentInfos = paymentInfos;
+	}
 
 	public Double getMinimumAmountForDelivery() {
 		return minimumAmountForDelivery;

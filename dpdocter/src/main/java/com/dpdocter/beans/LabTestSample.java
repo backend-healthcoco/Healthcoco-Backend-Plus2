@@ -3,7 +3,6 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import com.dpdocter.collections.GenericCollection;
-import com.dpdocter.enums.TestSampleType;
 
 public class LabTestSample extends GenericCollection {
 
