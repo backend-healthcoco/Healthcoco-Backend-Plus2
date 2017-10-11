@@ -1033,6 +1033,8 @@ public interface PathProxy {
 		public static final String SEND_SMS_TO_DOCTOR = "/smsToDoctor";
 
 		public static final String SEND_SMS_TO_PHARMACY = "/smsToPharmacy";
+		
+		public static final String GET_DOCTOR_WEB = "/doctors/web";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
