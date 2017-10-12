@@ -41,7 +41,6 @@ import com.dpdocter.request.PatientQueueAddEditRequest;
 import com.dpdocter.response.AVGTimeDetail;
 import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
-import com.dpdocter.response.PatientTreatmentResponse;
 import com.dpdocter.response.SlotDataResponse;
 import com.dpdocter.services.AppointmentService;
 import com.dpdocter.services.MailService;

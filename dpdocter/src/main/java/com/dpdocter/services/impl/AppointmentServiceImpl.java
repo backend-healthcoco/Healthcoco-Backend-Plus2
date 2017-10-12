@@ -575,15 +575,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 						.findByDoctorIdLocationId(new ObjectId(appointmentLookupResponse.getDoctorId()),
 								new ObjectId(appointmentLookupResponse.getLocationId()));
 
-				AppointmentCollection appointmentCollectionToCheck = null;
-				if (request.getState().equals(AppointmentState.RESCHEDULE))
-					appointmentCollectionToCheck = appointmentRepository.findAppointmentbyUserLocationIdTimeDate(
-							new ObjectId(appointmentLookupResponse.getDoctorId()),
-							new ObjectId(appointmentLookupResponse.getLocationId()), request.getTime().getFromTime(),
-							request.getTime().getToTime(), request.getFromDate(), request.getToDate(),
-							AppointmentState.CANCEL.getState());
-				if (appointmentCollectionToCheck == null) {
-					AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
+				    AppointmentWorkFlowCollection appointmentWorkFlowCollection = new AppointmentWorkFlowCollection();
 					BeanUtil.map(appointmentLookupResponse, appointmentWorkFlowCollection);
 					appointmentWorkFlowRepository.save(appointmentWorkFlowCollection);
 
@@ -717,11 +709,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 						response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 						response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
 					}
-
-				} else {
-					logger.error(timeSlotIsBooked);
-					throw new BusinessException(ServiceError.InvalidInput, timeSlotIsBooked);
-				}
 			} else {
 				logger.error(incorrectAppointmentId);
 				throw new BusinessException(ServiceError.InvalidInput, incorrectAppointmentId);
