@@ -1566,13 +1566,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		patientDetailList.add(uniqueEMRId);
 		if (patientDetails.getShowDOB()) {
-			patientDetailList.add("<b>Date: </b>" + sdf.format(new Date()));
+			patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 		} else {
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			patientDetailList.add("<b>Date: </b>" + sdf.format(new Date()));
+			patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 		}
 
 		if (patientDetails.getShowBloodGroup() && patientCard != null
