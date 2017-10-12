@@ -735,7 +735,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 					if (address.charAt(address.length() - 2) == ',') {
 						address = address.substring(0, address.length() - 2);
 					}
-
 					response.setClinicAddress(address);
 					response.setLatitude(appointmentLookupResponse.getLocation().getLatitude());
 					response.setLongitude(appointmentLookupResponse.getLocation().getLongitude());
