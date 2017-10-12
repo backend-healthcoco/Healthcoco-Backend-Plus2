@@ -689,7 +689,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			show = true;
 
 		}
-		
 
 		parameters.put("showPrescription", show);
 		show = false;
