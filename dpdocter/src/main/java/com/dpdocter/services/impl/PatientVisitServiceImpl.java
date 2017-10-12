@@ -1497,10 +1497,12 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 			}
 			if (printSettings.getFooterSetup() != null) {
 				if (printSettings.getFooterSetup().getShowPoweredBy()) {
-					parameters.put("poweredBy", "<font color='#9d9fa0'>"+footerText+"</font>");
+					parameters.put("poweredBy", "<font color='#9d9fa0'>" + footerText + "</font>");
+				} else {
+					parameters.put("poweredBy", "");
 				}
 			} else {
-				parameters.put("poweredBy", " ");
+				parameters.put("poweredBy", "");
 			}
 		}
 		parameters.put("contentFontSize", contentFontSize);
@@ -1564,13 +1566,13 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 
 		patientDetailList.add(uniqueEMRId);
 		if (patientDetails.getShowDOB()) {
-			patientDetailList.add("<b>Date: </b>" + sdf.format(new Date()));
+			patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
 		} else {
 			patientDetailList
 					.add("<b>Mobile: </b>" + (mobileNumber != null && mobileNumber != null ? mobileNumber : "--"));
-			patientDetailList.add("<b>Date: </b>" + sdf.format(new Date()));
+			patientDetailList.add("<b>Date: </b>" + sdf.format(date));
 		}
 
 		if (patientDetails.getShowBloodGroup() && patientCard != null

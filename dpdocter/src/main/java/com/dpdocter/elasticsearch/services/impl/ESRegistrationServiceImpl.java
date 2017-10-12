@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -112,7 +113,11 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 		ESPatientResponseDetails patientResponseDetails = null;
 		try {
 
-			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+			QueryBuilder searchQueryBuilder = QueryBuilders.multiMatchQuery(searchTerm, AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType(), AdvancedSearchType.EMAIL_ADDRESS.getSearchType(),
+					AdvancedSearchType.MOBILE_NUMBER.getSearchType(), AdvancedSearchType.PID.getSearchType(), AdvancedSearchType.LOCAL_PATIENT_NAME.getSearchType())
+		    .type(MatchQueryBuilder.Type.PHRASE_PREFIX);
+			
+			/*BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.termQuery("locationId", locationId))
 					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
 					.should(QueryBuilders
@@ -127,6 +132,14 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
 							.boost(1))
 					.minimumNumberShouldMatch(1);
+			*/
+			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
+					.must(QueryBuilders.termQuery("locationId", locationId))
+					.must(QueryBuilders.termQuery("hospitalId", hospitalId))
+					.should(searchQueryBuilder)
+					.minimumNumberShouldMatch(1);
+			
+			
 			
 			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
 				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));

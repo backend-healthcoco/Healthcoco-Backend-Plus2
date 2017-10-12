@@ -807,11 +807,11 @@ public class LocationServiceImpl implements LocationServices {
 				}
 				
 				BeanUtil.map(request, labTestPickupCollection);
-			/*	if(request.getIsCompleted() == true)
+				if(request.getIsCompleted() == true)
 				{
 					String serialNumber = reportSerialNumberGenerator(request.getParentLabLocationId());
 					labTestPickupCollection.setSerialNumber(serialNumber);
-				}*/
+				}
 				for (LabTestSample labTestSample : request.getLabTestSamples()) {
 
 					if (labTestSample.getId() != null) {
@@ -1735,7 +1735,7 @@ public class LocationServiceImpl implements LocationServices {
 		return response;
 	}
 	
-	/*private String reportSerialNumberGenerator(String locationId) {
+	private String reportSerialNumberGenerator(String locationId) {
 		String generatedId = null;
 		try {
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
@@ -1744,10 +1744,15 @@ public class LocationServiceImpl implements LocationServices {
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 			int currentYear = localCalendar.get(Calendar.YEAR);
 
-			ObjectId locationObjectId = null, hospitalObjectId = null;
+			ObjectId locationObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				locationObjectId = new ObjectId(locationId);
 
+			LocationCollection location = locationRepository.findOne(locationObjectId);
+			if (location == null) {
+				logger.warn("Invalid Location Id");
+				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+			}
 			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 			Long startTimeinMillis = start.getMillis();
@@ -1756,11 +1761,7 @@ public class LocationServiceImpl implements LocationServices {
 			Long endTimeinMillis = end.getMillis();
 			int reportSize = labReportsRepository.findTodaysCompletedReport(locationObjectId, true,
 					startTimeinMillis, endTimeinMillis);
-			LocationCollection location = locationRepository.findOne(locationObjectId);
-			if (location == null) {
-				logger.warn("Invalid Location Id");
-				throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
-			}
+			
 			generatedId = String.valueOf((reportSize + 1));
 		} catch (BusinessException e) {
 			e.printStackTrace();
@@ -1771,7 +1772,7 @@ public class LocationServiceImpl implements LocationServices {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return generatedId;
-	}*/
+	}
 	
 	@Override
 	@Transactional

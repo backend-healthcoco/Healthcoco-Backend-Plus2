@@ -23,6 +23,7 @@ import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
 import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
+import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.components.html.HtmlComponent;
 import net.sf.jasperreports.components.list.DesignListContents;
 import net.sf.jasperreports.components.list.StandardListComponent;
@@ -270,8 +271,9 @@ public class JasperReportServiceImpl implements JasperReportService {
 			band.addElement(jrDesignTextField);
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 		}
+
 		if (!componentType.getType().equalsIgnoreCase(ComponentType.CONSENT_FORM.getType()))
-			jasperDesign.setPageFooter(createPageFooter(columnWidth, contentFontSize));
+			jasperDesign.setPageFooter(createPageFooter(columnWidth, parameters, contentFontSize));
 		// dsr.setDataSourceExpression(new JRDesignExpression("new
 		// net.sf.jasperreports.engine.JREmptyDataSource(1)"));
 		// String logoURL = (String) parameters.get("logoURL");
@@ -1563,56 +1565,69 @@ public class JasperReportServiceImpl implements JasperReportService {
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
 	}
 
-	private JRBand createPageFooter(int columnWidth, Integer contentFontSize) throws JRException {
+	private JRBand createPageFooter(int columnWidth, Map<String, Object> parameter, Integer contentFontSize)
+			throws JRException {
 		band = new JRDesignBand();
-		band.setHeight(80);
+		int bandHeight = 0;
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString(),
+				parameter.get("footerBottomText").toString())) {
+			bandHeight = 80;
+		} else {
+			bandHeight = 25;
+		}
+		band.setHeight(bandHeight);
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("poweredBy").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
+			jrDesignTextField.setFontSize(new Float(9));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(3);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(175);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.CENTER);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString())) {
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerSignature}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
+			jrDesignTextField.setBold(true);
+			jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
+			jrDesignTextField.setX(176);
+			jrDesignTextField.setY(3);
+			jrDesignTextField.setHeight(20);
+			jrDesignTextField.setWidth(columnWidth - 176);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
+			jrDesignLine = new JRDesignLine();
+			jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
+			jrDesignLine.setX(0);
+			jrDesignLine.setY(25);
+			jrDesignLine.setHeight(1);
+			jrDesignLine.setWidth(columnWidth);
+			band.addElement(jrDesignLine);
 
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{poweredBy}.isEmpty()"));
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{poweredBy}"));
-		jrDesignTextField.setFontSize(new Float(contentFontSize - 3));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(3);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(175);
-		jrDesignTextField.setMarkup("html");
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerSignature}.isEmpty()"));
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{footerSignature}"));
-		jrDesignTextField.setBold(true);
-		jrDesignTextField.setFontSize(new Float(contentFontSize + 2));
-		jrDesignTextField.setX(176);
-		jrDesignTextField.setY(3);
-		jrDesignTextField.setHeight(20);
-		jrDesignTextField.setWidth(columnWidth - 179);
-		jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.RIGHT);
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
-
-		jrDesignLine = new JRDesignLine();
-		jrDesignLine.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
-		jrDesignLine.setX(0);
-		jrDesignLine.setY(25);
-		jrDesignLine.setHeight(1);
-		jrDesignLine.setWidth(columnWidth);
-		band.addElement(jrDesignLine);
-
-		jrDesignTextField = new JRDesignTextField();
-		jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
-		jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
-		jrDesignTextField.setX(0);
-		jrDesignTextField.setY(27);
-		jrDesignTextField.setHeight(40);
-		jrDesignTextField.setWidth(columnWidth);
-		jrDesignTextField.setMarkup("html");
-		jrDesignTextField.setStretchWithOverflow(true);
-		band.addElement(jrDesignTextField);
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setPrintWhenExpression(new JRDesignExpression("!$P{footerBottomText}.isEmpty()"));
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{footerBottomText}"));
+			jrDesignTextField.setX(0);
+			jrDesignTextField.setY(27);
+			jrDesignTextField.setHeight(40);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setStretchWithOverflow(true);
+			band.addElement(jrDesignTextField);
+		}
 
 		return band;
+
 	}
 
 	private void createTreatmentServices(JasperDesign jasperDesign, Map<String, Object> parameters,

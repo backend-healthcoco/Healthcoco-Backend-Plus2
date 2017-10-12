@@ -1,6 +1,7 @@
 package com.dpdocter.collections;
 
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -113,9 +114,86 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String procedureNote;
 	@Field
 	private String doctorIncharge;
-
 	@Field
 	private VitalSigns vitalSigns;
+	@Field
+	private Date operationDate;
+	@Field
+	private List<String> surgeonNames;
+	@Field
+	private List<String> anesthetistNames;
+	@Field
+	private String implant;
+	@Field
+	private String cement;
+
+	public Date getOperationDate() {
+		return operationDate;
+	}
+
+	public void setOperationDate(Date operationDate) {
+		this.operationDate = operationDate;
+	}
+
+	public List<String> getSurgeonNames() {
+		return surgeonNames;
+	}
+
+	public void setSurgeonNames(List<String> surgeonNames) {
+		this.surgeonNames = surgeonNames;
+	}
+
+	public String getImplant() {
+		return implant;
+	}
+
+	public void setImplant(String implant) {
+		this.implant = implant;
+	}
+
+	public String getCement() {
+		return cement;
+	}
+
+	public void setCement(String cement) {
+		this.cement = cement;
+	}
+
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
+	}
+
+	public void setPresentComplaints(String presentComplaints) {
+		this.presentComplaints = presentComplaints;
+	}
+
+	public void setPrescriptions(PrescriptionAndAdvice prescriptions) {
+		this.prescriptions = prescriptions;
+	}
+
+	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
+		this.historyOfPresentComplaints = historyOfPresentComplaints;
+	}
+
+	public void setGeneralExamination(String generalExamination) {
+		this.generalExamination = generalExamination;
+	}
+
+	public void setSystemicExamination(String systemicExamination) {
+		this.systemicExamination = systemicExamination;
+	}
+
+	public void setDischargeId(String dischargeId) {
+		this.dischargeId = dischargeId;
+	}
+
+	public List<String> getAnesthetistNames() {
+		return anesthetistNames;
+	}
+
+	public void setAnesthetistNames(List<String> anesthetistNames) {
+		this.anesthetistNames = anesthetistNames;
+	}
 
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
