@@ -3675,7 +3675,48 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{TreatmentGiven}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{treatmentGiven}", 18, contentFontSize - 1, false);
 		}
+		show = (Boolean) parameters.get("showDtOfOp");
 
+		if (show) {
+
+			jrDesignTextField = new JRDesignTextField();
+			jrDesignTextField.setExpression(new JRDesignExpression("$P{operationDate}"));
+			jrDesignTextField.setX(1);
+			jrDesignTextField.setY(0);
+			jrDesignTextField.setHeight(18);
+			jrDesignTextField.setWidth(columnWidth);
+			jrDesignTextField.setHorizontalTextAlign(HorizontalTextAlignEnum.LEFT);
+			jrDesignTextField.setVerticalTextAlign(VerticalTextAlignEnum.MIDDLE);
+			jrDesignTextField.setBold(false);
+			jrDesignTextField.setStretchWithOverflow(true);
+			jrDesignTextField.setMarkup("html");
+			jrDesignTextField.setFontSize(new Float(contentFontSize - 1));
+			band.addElement(jrDesignTextField);
+
+		}
+		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
+
+		show = (Boolean) parameters.get("showSGN");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Surgeon}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{surgeon}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showANST");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Anesthetist}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{anesthetist}", 18, contentFontSize - 1, false);
+		}
+		show = (Boolean) parameters.get("showIMPL");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Implant}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{implant}", 18, contentFontSize - 1, false);
+		}
+
+		show = (Boolean) parameters.get("showCMT");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{Cement}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{cement}", 18, contentFontSize - 1, false);
+		}
 		show = (Boolean) parameters.get("showSum");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Summary}", 18, contentFontSize - 1, true);

@@ -119,9 +119,9 @@ public class DischargeSummaryCollection extends GenericCollection {
 	@Field
 	private Date operationDate;
 	@Field
-	private List<String> surgeonNames;
+	private String surgeon;
 	@Field
-	private List<String> anesthetistNames;
+	private String anesthetist;
 	@Field
 	private String implant;
 	@Field
@@ -135,12 +135,20 @@ public class DischargeSummaryCollection extends GenericCollection {
 		this.operationDate = operationDate;
 	}
 
-	public List<String> getSurgeonNames() {
-		return surgeonNames;
+	public String getSurgeon() {
+		return surgeon;
 	}
 
-	public void setSurgeonNames(List<String> surgeonNames) {
-		this.surgeonNames = surgeonNames;
+	public void setSurgeon(String surgeon) {
+		this.surgeon = surgeon;
+	}
+
+	public String getAnesthetist() {
+		return anesthetist;
+	}
+
+	public void setAnesthetist(String anesthetist) {
+		this.anesthetist = anesthetist;
 	}
 
 	public String getImplant() {
@@ -185,14 +193,6 @@ public class DischargeSummaryCollection extends GenericCollection {
 
 	public void setDischargeId(String dischargeId) {
 		this.dischargeId = dischargeId;
-	}
-
-	public List<String> getAnesthetistNames() {
-		return anesthetistNames;
-	}
-
-	public void setAnesthetistNames(List<String> anesthetistNames) {
-		this.anesthetistNames = anesthetistNames;
 	}
 
 	public VitalSigns getVitalSigns() {

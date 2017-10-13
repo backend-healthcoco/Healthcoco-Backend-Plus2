@@ -706,10 +706,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showDOD", show);
 		show = false;
+		if (dischargeSummaryCollection.getOperationDate() != null) {
+			show = true;
+			parameters.put("operationDate", "<b>Date of Operation:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
+		}
+		parameters.put("showDtOfOp", show);
+		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
 			show = true;
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
+
 		parameters.put("showBabyNotes", show);
 		show = false;
 
@@ -834,6 +842,31 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showPH", show);
 		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getImplant())) {
+			show = true;
+			parameters.put("implant", dischargeSummaryCollection.getImplant());
+		}
+		parameters.put("showIMPL", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getCement())) {
+			show = true;
+			parameters.put("cement", dischargeSummaryCollection.getCement());
+		}
+		parameters.put("showCMT", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSurgeon())) {
+			show = true;
+			parameters.put("surgeon", dischargeSummaryCollection.getSurgeon());
+		}
+		parameters.put("showSGN", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAnesthetist())) {
+			show = true;
+			parameters.put("anesthetist", dischargeSummaryCollection.getAnesthetist());
+		}
+		show = false;
+		parameters.put("showANST", show);
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
 			show = true;
