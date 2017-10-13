@@ -1402,11 +1402,15 @@ public interface PathProxy {
 		public static final String GET_FAVOURITE_LABS = "/labs/{userId}";
 	}
 	
-	public static final String SEARCH_BASE_URL = BASE_URL + "/search";
+	public static final String DIAGNOSTIC_TEST_ORDER_BASE_URL = BASE_URL + "/test";
 
-	public interface SearchUrls {
+	public interface DiagnosticTestOrderUrls {
 
-		public static final String SEARCH_LABS_BY_TEST = "/labs";
+		public static final String SEARCH_LABS_BY_TEST = "/searchLabs";
+		
+		public static final String GET_SAMPLE_PICKUP_TIME_SLOTS = "/pickUpTimeSlots";
+		
+		public static final String PLACE_ORDER = "/placeOrder";
 	}
 
 }

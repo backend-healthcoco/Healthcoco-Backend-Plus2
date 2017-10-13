@@ -132,7 +132,9 @@ public class DiagnosticTest extends GenericCollection {
 		return "DiagnosticTest [id=" + id + ", testName=" + testName + ", explanation=" + explanation + ", locationId="
 				+ locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded + ", specimen=" + specimen
 				+ ", diagnosticTestCode=" + diagnosticTestCode + ", diagnosticTestCost=" + diagnosticTestCost
-				+ ", diagnosticTestCostForPatient=" + diagnosticTestCostForPatient + ", rankingCount=" + rankingCount
-				+ "]";
+				+ ", diagnosticTestComission=" + diagnosticTestComission + ", diagnosticTestCostForPatient="
+				+ diagnosticTestCostForPatient + ", rankingCount=" + rankingCount + "]";
 	}
+
+
 }

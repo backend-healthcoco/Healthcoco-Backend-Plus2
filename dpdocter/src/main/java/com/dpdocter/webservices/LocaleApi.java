@@ -67,28 +67,6 @@ public class LocaleApi {
 	@Autowired
 	private TransactionalManagementService transnationalService;
 
-	/*
-	 * @POST
-	 * 
-	 * @Path(value = PathProxy.LocaleUrls.UPLOAD)
-	 * 
-	 * @Consumes({ MediaType.MULTIPART_FORM_DATA })
-	 * 
-	 * @ApiOperation(value = PathProxy.LocaleUrls.UPLOAD, notes =
-	 * PathProxy.LocaleUrls.UPLOAD) public Response<LocaleImage>
-	 * addRecordsMultipart(@FormDataParam("file") FormDataBodyPart file,
-	 * 
-	 * @FormDataParam("data") FormDataBodyPart data) {
-	 * data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-	 * LocaleImageAddEditRequest request =
-	 * data.getValueAs(LocaleImageAddEditRequest.class);
-	 * 
-	 * if (request == null) { throw new
-	 * BusinessException(ServiceError.InvalidInput, "Invalid Input"); }
-	 * 
-	 * return null; }
-	 */
-
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_LOCALE_DETAILS)
 	public Response<Locale> getLocaleDetails(@QueryParam("id") String id,

@@ -9,7 +9,8 @@ public enum UniqueIdInitial {
 	CONSENT_FORM("CF"), DISCHARGE_SUMMARY("DS"),
 
 	PHARMACY_RESPONSE("PHRS"), LAB_PICKUP_REQUEST("LPR"), LAB_PICKUP_SAMPLE("LPS"), COLLECTION_BOYS("CB"), ADMIT_CARD(
-			"AC");
+			"AC"),
+	ORDER_DIAGNOSTIC_TEST("ODT");
 
 	private String initial;
 
