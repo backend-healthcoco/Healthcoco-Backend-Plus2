@@ -1569,8 +1569,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 			throws JRException {
 		band = new JRDesignBand();
 		int bandHeight = 0;
-		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerSignature").toString(),
-				parameter.get("footerBottomText").toString())) {
+		if (!DPDoctorUtils.anyStringEmpty(parameter.get("footerBottomText").toString())) {
 			bandHeight = 80;
 		} else {
 			bandHeight = 25;
