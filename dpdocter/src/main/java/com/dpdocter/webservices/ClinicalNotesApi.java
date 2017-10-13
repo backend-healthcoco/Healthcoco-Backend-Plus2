@@ -1877,12 +1877,12 @@ public class ClinicalNotesApi {
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
 		@GET
 		@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY, notes = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
-		public Response<Diagnoses> getServicesBySpeciality(@QueryParam("speciality") String speciality) {
+		public Response<Diagnoses> getServicesBySpeciality(@QueryParam("speciality") String speciality , @QueryParam("searchTerm") String searchTerm) {
 			if (DPDoctorUtils.anyStringEmpty(speciality)) {
 				logger.error("Invalid Input");
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 			}
-			List<Diagnoses> diagnoses = clinicalNotesService.getDiagnosesListBySpeciality(speciality);
+			List<Diagnoses> diagnoses = clinicalNotesService.getDiagnosesListBySpeciality(speciality,searchTerm);
 			
 			Response<Diagnoses> response = new Response<Diagnoses>();
 			response.setDataList(diagnoses);

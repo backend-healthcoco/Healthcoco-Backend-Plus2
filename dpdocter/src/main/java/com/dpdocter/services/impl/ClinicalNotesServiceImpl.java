@@ -9780,10 +9780,14 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 
 	@Override
 	@Transactional
-	public List<Diagnoses> getDiagnosesListBySpeciality(String speciality) {
+	public List<Diagnoses> getDiagnosesListBySpeciality(String speciality , String searchTerm) {
 		List<Diagnoses> response = null;
 		Aggregation aggregation = null;
 		Criteria criteria = new Criteria().and("speciality").in(speciality);
+		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+			criteria = criteria.orOperator(new Criteria("diagnosis").regex("^" + searchTerm, "i"),
+					new Criteria("diagnosis").regex("^" + searchTerm));
+		}
 		criteria.and("category").exists(true);
 		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 				Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
