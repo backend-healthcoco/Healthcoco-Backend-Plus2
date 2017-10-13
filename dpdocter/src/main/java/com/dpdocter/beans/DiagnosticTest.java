@@ -103,4 +103,6 @@ public class DiagnosticTest extends GenericCollection {
 				+ specimen + ", locationId=" + locationId + ", hospitalId=" + hospitalId + ", discarded=" + discarded
 				+ ", code=" + code + ", count=" + count + "]";
 	}
+
+
 }
