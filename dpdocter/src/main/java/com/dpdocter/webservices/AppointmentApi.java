@@ -227,10 +227,10 @@ public class AppointmentApi {
 			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime) {
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "status") String status) {
 
 		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime);
+				page, size, updatedTime, status);
 		Response<Appointment> response = new Response<Appointment>();
 		response.setDataList(appointment);
 		return response;
@@ -381,9 +381,9 @@ public class AppointmentApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.AppointmentUrls.NO_OF_PATIENT_IN_QUEUE)
+	@Path(value = PathProxy.AppointmentUrls.PATIENT_COUNT)
 	@GET
-	@ApiOperation(value = "NO_OF_PATIENT_IN_QUEUE", notes = "NO_OF_PATIENT_IN_QUEUE")
+	@ApiOperation(value = "PATIENT_COUNT", notes = "PATIENT_COUNT")
 	public Response<LocationWithPatientQueueDetails> getNoOfPatientInQueue(
 			@PathParam(value = "locationId") String locationId, @MatrixParam(value = "doctorId") List<String> doctorId)
 			throws MessagingException {
@@ -420,22 +420,23 @@ public class AppointmentApi {
 
 	}
 
-	@Path(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_QUEUE)
+	@Path(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT)
 	@GET
-	@ApiOperation(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_QUEUE, notes = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_QUEUE)
-	public Response<Boolean> changeStatusInQueue(@PathParam(value = "doctorId") String doctorId,
+	@ApiOperation(value = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT, notes = PathProxy.AppointmentUrls.CHANGE_STATUS_IN_APPOINTMENT)
+	public Response<Boolean> changeStatusInAppointment(@PathParam(value = "doctorId") String doctorId,
 			@PathParam(value = "locationId") String locationId, @PathParam(value = "hospitalId") String hospitalId,
-			@PathParam(value = "patientId") String patientId, @PathParam(value = "status") String status)
+			@PathParam(value = "patientId") String patientId, @PathParam(value = "appointmentId") String appointmentId, 
+			@PathParam(value = "status") String status)
 			throws MessagingException {
 
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId, status)) {
-			logger.warn("DoctorId, Location Id, Hospital Id, Patient Id, status cannot be empty");
+		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId, patientId, appointmentId, status)) {
+			logger.warn("DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
 			mailService.sendExceptionMail(
-					"Invalid input :: DoctorId, Location Id, Hospital Id, Patient Id, status cannot be empty");
+					"Invalid input :: DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
 			throw new BusinessException(ServiceError.InvalidInput,
-					"DoctorId, Location Id, Hospital Id, Patient Id, status cannot be empty");
+					"DoctorId, Location Id, Hospital Id, Patient Id, AppointmentId, status cannot be empty");
 		}
-		Boolean changeStatus = appointmentService.changeStatusInQueue(doctorId, locationId, hospitalId, patientId,
+		Boolean changeStatus = appointmentService.changeStatusInAppointment(doctorId, locationId, hospitalId, patientId, appointmentId,
 				status);
 		Response<Boolean> response = new Response<Boolean>();
 		response.setData(changeStatus);
@@ -474,8 +475,7 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput, "invalidInput");
 		}
 
-		CustomAppointment customAppointment = appointmentService.deleteCustomAppointment(appointmentId, locationId,
-				hospitalId, doctorId, discarded);
+		CustomAppointment customAppointment = appointmentService.deleteCustomAppointment(appointmentId, locationId, hospitalId, doctorId, discarded);
 
 		Response<CustomAppointment> response = new Response<CustomAppointment>();
 		response.setData(customAppointment);

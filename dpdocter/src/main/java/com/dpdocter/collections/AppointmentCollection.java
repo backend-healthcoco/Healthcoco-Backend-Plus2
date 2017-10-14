@@ -13,11 +13,11 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.QueueStatus;
 
 @Document(collection = "appointment_cl")
 @CompoundIndexes({
-    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")
-})
+    @CompoundIndex(def = "{'locationId' : 1, 'hospitalId': 1}")})
 public class AppointmentCollection extends GenericCollection {
 
     @Id
@@ -89,6 +89,24 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private ObjectId visitId;
 
+    @Field
+    private QueueStatus status = QueueStatus.SCHEDULED;
+    
+    @Field
+    private long waitedFor = 0;
+    
+    @Field
+    private long engagedFor = 0;
+    
+    @Field
+    private long engagedAt = 0;
+    
+    @Field
+    private long checkedInAt = 0;
+    
+    @Field
+    private long checkedOutAt = 0;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -273,6 +291,53 @@ public class AppointmentCollection extends GenericCollection {
 		this.visitId = visitId;
 	}
 
+	public QueueStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueueStatus status) {
+		this.status = status;
+	}
+
+	public long getWaitedFor() {
+		return waitedFor;
+	}
+
+	public void setWaitedFor(long waitedFor) {
+		this.waitedFor = waitedFor;
+	}
+
+	public long getEngagedFor() {
+		return engagedFor;
+	}
+
+	public void setEngagedFor(long engagedFor) {
+		this.engagedFor = engagedFor;
+	}
+
+	public long getEngagedAt() {
+		return engagedAt;
+	}
+
+	public void setEngagedAt(long engagedAt) {
+		this.engagedAt = engagedAt;
+	}
+
+	public long getCheckedInAt() {
+		return checkedInAt;
+	}
+
+	public void setCheckedInAt(long checkedInAt) {
+		this.checkedInAt = checkedInAt;
+	}
+
+	public long getCheckedOutAt() {
+		return checkedOutAt;
+	}
+
+	public void setCheckedOutAt(long checkedOutAt) {
+		this.checkedOutAt = checkedOutAt;
+	}
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -282,8 +347,9 @@ public class AppointmentCollection extends GenericCollection {
 				+ toDate + ", isCalenderBlocked=" + isCalenderBlocked + ", isFeedbackAvailable=" + isFeedbackAvailable
 				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms="
 				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
-				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId + "]";
+				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
+				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
+				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + "]";
 	}
 
-	
 }

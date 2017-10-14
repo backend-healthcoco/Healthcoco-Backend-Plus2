@@ -911,11 +911,11 @@ public interface PathProxy {
 
 		public static final String GET_APPOINTMENT_ID = "/{appointmentId}/view";
 
-		public static final String NO_OF_PATIENT_IN_QUEUE = "/numofpatientinqueue/{locationId}";
+		public static final String PATIENT_COUNT = "/patientCount/{locationId}";
 
 		public static final String GET_DOCTORS = "/getDoctorsWithAppointmentCount/{locationId}";
 
-		public static final String CHANGE_STATUS_IN_QUEUE = "/patientQueue/changeStatus/{doctorId}/{locationId}/{hospitalId}/{patientId}/{status}";
+		public static final String CHANGE_STATUS_IN_APPOINTMENT = "/changeStatus/{doctorId}/{locationId}/{hospitalId}/{patientId}/{appointmentId}/{status}";
 
 		public static final String ADD_CUSTOM_APPOINTMENT = "/custom/add";
 
