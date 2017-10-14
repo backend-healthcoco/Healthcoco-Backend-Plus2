@@ -1597,7 +1597,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 									Aggregation.unwind("doctor"),
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
-
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
 									new CustomAggregationOperation(new BasicDBObject("$unwind",
 											new BasicDBObject("path", "$patientCard")
@@ -1652,7 +1651,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 									Aggregation.unwind("doctor"),
 									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 									Aggregation.unwind("location"),
-
 									Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
 									new CustomAggregationOperation(new BasicDBObject("$unwind",
 											new BasicDBObject("path", "$patientCard")
@@ -3026,7 +3024,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (appointmentCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
 
-			if (status.equalsIgnoreCase(QueueStatus.CHECKED_IN.name())) {
+			if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
 				appointmentCollection.setCheckedInAt(new Date().getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
 				appointmentCollection.setEngagedAt(new Date().getTime());
