@@ -3022,27 +3022,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			AppointmentCollection appointmentCollection = appointmentRepository.find(doctorObjectId, locationObjectId,
-					hospitalObjectId, patientObjectId, appointmentId);
+			AppointmentCollection appointmentCollection = appointmentRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId, appointmentId);
 			if (appointmentCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
 
-			if (status.equalsIgnoreCase(QueueStatus.SCHEDULED.name())) {
-				appointmentCollection.setCheckedInAt(0);
-				appointmentCollection.setEngagedAt(0);
-				appointmentCollection.setWaitedFor(0);
-				appointmentCollection.setCheckedOutAt(0);
-				appointmentCollection.setEngagedFor(0);
-			} else if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
-				appointmentCollection.setCheckedInAt(new Date(System.currentTimeMillis()).getTime());
+			if (status.equalsIgnoreCase(QueueStatus.CHECKED_IN.name())) {
+				appointmentCollection.setCheckedInAt(new Date().getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
 				appointmentCollection.setEngagedAt(new Date().getTime());
-				appointmentCollection
-						.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
+				appointmentCollection.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
 				appointmentCollection.setCheckedOutAt(new Date().getTime());
-				appointmentCollection
-						.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
+				appointmentCollection.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
 			}
 
 			appointmentCollection.setStatus(QueueStatus.valueOf(status));

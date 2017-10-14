@@ -365,5 +365,4 @@ public class AppointmentCollection extends GenericCollection {
 				+ category + "]";
 	}
 
-	
 }
