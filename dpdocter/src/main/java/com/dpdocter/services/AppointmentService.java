@@ -3,10 +3,6 @@ package com.dpdocter.services;
 import java.util.Date;
 import java.util.List;
 
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
 import org.bson.types.ObjectId;
 
 import com.dpdocter.beans.Appointment;
@@ -24,8 +20,6 @@ import com.dpdocter.response.LocationWithAppointmentCount;
 import com.dpdocter.response.LocationWithPatientQueueDetails;
 import com.dpdocter.response.SlotDataResponse;
 
-import common.util.web.Response;
-
 public interface AppointmentService {
 
 	City addCity(City city);
@@ -41,7 +35,7 @@ public interface AppointmentService {
 	Clinic getClinic(String locationId, String role, Boolean active);
 
 	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime);
+			String to, int page, int size, String updatedTime, String status);
 
 	List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
@@ -78,7 +72,7 @@ public interface AppointmentService {
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
 
-	Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId, String status);
+	Boolean changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, String status);
 
 	public void updateQueue();
 

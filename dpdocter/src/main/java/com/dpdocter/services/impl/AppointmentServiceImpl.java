@@ -1477,7 +1477,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime) {
+			String to, int page, int size, String updatedTime, String status) {
 		List<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1496,6 +1496,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
 
+			if (!DPDoctorUtils.anyStringEmpty(status))
+				criteria.and("status").is(status.toUpperCase());
+			
 			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
 			if (!DPDoctorUtils.anyStringEmpty(from)) {
@@ -2722,25 +2725,25 @@ public class AppointmentServiceImpl implements AppointmentService {
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 					Aggregation.group("$status").count().as("count"));
 
-			List<PatientQueue> patientQueueCollections = mongoTemplate
-					.aggregate(aggregation, PatientQueueCollection.class, PatientQueue.class).getMappedResults();
-			if (patientQueueCollections != null && !patientQueueCollections.isEmpty()) {
+			List<Appointment> appointments = mongoTemplate
+					.aggregate(aggregation, AppointmentCollection.class, Appointment.class).getMappedResults();
+			if (appointments != null && !appointments.isEmpty()) {
 				response = new LocationWithPatientQueueDetails();
 				response.setLocationId(locationId);
-				for (PatientQueue patientQueueCollection : patientQueueCollections) {
-					switch (QueueStatus.valueOf(patientQueueCollection.getId().toUpperCase())) {
+				for (Appointment appointment : appointments) {
+					switch (QueueStatus.valueOf(appointment.getId().toUpperCase())) {
 
 					case SCHEDULED:
-						response.setScheduledPatientNum(patientQueueCollection.getCount());
+						response.setScheduledPatientNum(appointment.getCount());
 						break;
 					case CHECKED_IN:
-						response.setWaitingPatientNum(patientQueueCollection.getCount());
+						response.setWaitingPatientNum(appointment.getCount());
 						break;
 					case ENGAGED:
-						response.setEngagedPatientNum(patientQueueCollection.getCount());
+						response.setEngagedPatientNum(appointment.getCount());
 						break;
 					case CHECKED_OUT:
-						response.setCheckedOutPatientNum(patientQueueCollection.getCount());
+						response.setCheckedOutPatientNum(appointment.getCount());
 						break;
 					default:
 						break;
@@ -2852,7 +2855,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	}
 
 	@Override
-	public Boolean changeStatusInQueue(String doctorId, String locationId, String hospitalId, String patientId,
+	public Boolean changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId,
 			String status) {
 		Boolean response = false;
 		try {
@@ -2866,37 +2869,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				patientObjectId = new ObjectId(patientId);
 
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-			localCalendar.setTime(new Date());
-			int currentDay = localCalendar.get(Calendar.DATE);
-			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
-			int currentYear = localCalendar.get(Calendar.YEAR);
-
-			DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
-					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
-
-			PatientQueueCollection patientQueueCollection = patientQueueRepository.find(doctorObjectId,
-					locationObjectId, hospitalObjectId, patientObjectId, start, end);
-			if (patientQueueCollection == null)
-				throw new BusinessException(ServiceError.Unknown, "Patient In Queue is not present");
+			AppointmentCollection appointmentCollection = appointmentRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, patientObjectId, appointmentId);
+			if (appointmentCollection == null)
+				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
 
 			if (status.equalsIgnoreCase(QueueStatus.CHECKED_IN.name())) {
-				patientQueueCollection.setCheckedInAt(new Date().getTime());
+				appointmentCollection.setCheckedInAt(new Date().getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-				patientQueueCollection.setEngagedAt(new Date().getTime());
-				patientQueueCollection
-						.setWaitedFor(patientQueueCollection.getEngagedAt() - patientQueueCollection.getCheckedInAt());
+				appointmentCollection.setEngagedAt(new Date().getTime());
+				appointmentCollection.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
-				patientQueueCollection.setCheckedOutAt(new Date().getTime());
-				patientQueueCollection.setEngagedFor(
-						patientQueueCollection.getCheckedOutAt() - patientQueueCollection.getEngagedAt());
+				appointmentCollection.setCheckedOutAt(new Date().getTime());
+				appointmentCollection.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
 			}
 
-			patientQueueCollection.setStatus(QueueStatus.valueOf(status));
-			patientQueueCollection.setUpdatedTime(new Date());
-			patientQueueRepository.save(patientQueueCollection);
+			appointmentCollection.setStatus(QueueStatus.valueOf(status));
+			appointmentCollection.setUpdatedTime(new Date());
+			appointmentRepository.save(appointmentCollection);
 			response = true;
 		} catch (Exception e) {
 			e.printStackTrace();
