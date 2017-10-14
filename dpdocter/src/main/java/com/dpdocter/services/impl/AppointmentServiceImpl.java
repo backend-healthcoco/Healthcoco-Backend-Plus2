@@ -1477,7 +1477,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime, String status) {
+			String to, int page, int size, String updatedTime, String status, String sortBy) {
 		List<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1526,23 +1526,44 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 			List<AppointmentLookupResponse> appointmentLookupResponses = null;
 
-			if (size > 0) {
-				appointmentLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
-						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-						Aggregation.unwind("doctor"),
-						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.skip((page) * size), Aggregation.limit(size),
-						Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
-						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
-			} else {
-				appointmentLookupResponses = mongoTemplate.aggregate(
-						Aggregation.newAggregation(Aggregation.match(criteria),
-								Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
-								Aggregation.unwind("doctor"),
-								Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-								Aggregation.unwind("location"),
-								Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
-						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+			if(DPDoctorUtils.anyStringEmpty(sortBy) || sortBy.equalsIgnoreCase("startTime")) {
+				if (size > 0) {
+					appointmentLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+							Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.skip((page) * size), Aggregation.limit(size),
+							Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
+							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+				} else {
+					appointmentLookupResponses = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime"))),
+							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+				}
+			}else if(sortBy.equalsIgnoreCase("updatedTime")){
+				if (size > 0) {
+					appointmentLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+							Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+							Aggregation.unwind("doctor"),
+							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+							Aggregation.unwind("location"), Aggregation.skip((page) * size), Aggregation.limit(size),
+							Aggregation.sort(new Sort(Direction.DESC, "updatedTime"))),
+							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+				} else {
+					appointmentLookupResponses = mongoTemplate.aggregate(
+							Aggregation.newAggregation(Aggregation.match(criteria),
+									Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+									Aggregation.unwind("doctor"),
+									Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+									Aggregation.unwind("location"),
+									Aggregation.sort(new Sort(Direction.DESC, "updatedTime"))),
+							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+				}
 			}
 
 			if (appointmentLookupResponses != null && !appointmentLookupResponses.isEmpty()) {
@@ -2736,7 +2757,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 					case SCHEDULED:
 						response.setScheduledPatientNum(appointment.getCount());
 						break;
-					case CHECKED_IN:
+					case WAITING:
 						response.setWaitingPatientNum(appointment.getCount());
 						break;
 					case ENGAGED:
@@ -2873,7 +2894,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (appointmentCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
 
-			if (status.equalsIgnoreCase(QueueStatus.CHECKED_IN.name())) {
+			if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
 				appointmentCollection.setCheckedInAt(new Date().getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
 				appointmentCollection.setEngagedAt(new Date().getTime());

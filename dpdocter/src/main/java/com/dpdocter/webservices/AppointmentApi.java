@@ -227,10 +227,11 @@ public class AppointmentApi {
 			@MatrixParam(value = "doctorId") List<String> doctorId, @QueryParam(value = "patientId") String patientId,
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
-			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, @QueryParam(value = "status") String status) {
+			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, 
+			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy) {
 
 		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status);
+				page, size, updatedTime, status, sortBy);
 		Response<Appointment> response = new Response<Appointment>();
 		response.setDataList(appointment);
 		return response;
