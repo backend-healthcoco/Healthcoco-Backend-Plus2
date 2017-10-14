@@ -2,5 +2,5 @@ package com.dpdocter.enums;
 
 public enum QueueStatus {
 
-	SCHEDULED, WAITING, ENGAGED, CHECKED_OUT, CHECKED_IN;
+	SCHEDULED, WAITING, ENGAGED, CHECKED_OUT;
 }
