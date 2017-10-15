@@ -2,6 +2,8 @@ package com.dpdocter.beans;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.dpdocter.enums.PageSize;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class PageSetup {
 
@@ -17,7 +19,7 @@ public class PageSetup {
     
     private Integer bottomMargin = 20 ;
 
-    private String pageSize;
+    private String pageSize = PageSize.A4.name();
 
     public String getLayout() {
 	return layout;
