@@ -3832,7 +3832,27 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userAddressCollection = userAddressRepository.save(userAddressCollection);
 			response = new UserAddress();
 			BeanUtil.map(userAddressCollection, response);
-		} catch (Exception e) {
+			
+			String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
+						? address.getStreetAddress() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+								? address.getLandmarkDetails() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
+								? address.getLocality() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
+								? address.getCity() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(address.getState())
+								? address.getState() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
+								? address.getCountry() + ", " : "")
+						+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
+								? address.getPostalCode() : "");
+
+				if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
+					formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
+				}
+				response.setFormattedAddress(formattedAddress);
+		}catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
