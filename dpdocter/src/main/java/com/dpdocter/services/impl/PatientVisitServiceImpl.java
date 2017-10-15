@@ -1217,7 +1217,8 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getLayout() : "PORTRAIT")
 				: "PORTRAIT";
 		String pageSize = printSettings != null
-				? (printSettings.getPageSetup() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4";
+				? (printSettings.getPageSetup() != null ? (printSettings.getPageSetup().getPageSize() != null ? printSettings.getPageSetup().getPageSize() : "A4") : "A4") : "A4";
+		
 		String pdfName = (patient != null ? patient.getLocalPatientName() : "") + "VISITS-"
 				+ patientVisitLookupResponse.getUniqueEmrId() + new Date().getTime();
 		Integer topMargin = printSettings != null

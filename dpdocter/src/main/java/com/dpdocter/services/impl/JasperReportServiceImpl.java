@@ -159,7 +159,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jasperDesign.setName("sampleDynamicJasperDesign");
 		jasperDesign.setWhenNoDataType(WhenNoDataTypeEnum.NO_PAGES);
 		int pageWidth = 595, pageHeight = 842;
-		if (pageSize.equalsIgnoreCase(PageSize.A5.name())) {
+		if (pageSize != null && pageSize.equalsIgnoreCase(PageSize.A5.name())) {
 			topMargin = topMargin - 25;
 			pageWidth = 420;
 			pageHeight = 595;
