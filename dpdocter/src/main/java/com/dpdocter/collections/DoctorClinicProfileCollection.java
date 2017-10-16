@@ -87,7 +87,7 @@ public class DoctorClinicProfileCollection extends GenericCollection {
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
 
 	@Field
-	private String packageType = PackageType.ADVANCE.getType();
+	private String packageType;
 
 	public ObjectId getId() {
 		return id;
