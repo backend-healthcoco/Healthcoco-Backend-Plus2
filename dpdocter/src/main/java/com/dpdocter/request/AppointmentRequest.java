@@ -59,6 +59,8 @@ public class AppointmentRequest {
     
     private long checkedOutAt = 0;
     
+    private String category;
+    
 	public String getAppointmentId() {
 		return appointmentId;
 	}
@@ -259,6 +261,14 @@ public class AppointmentRequest {
 		this.checkedOutAt = checkedOutAt;
 	}
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentRequest [appointmentId=" + appointmentId + ", state=" + state + ", explanation="
@@ -269,7 +279,7 @@ public class AppointmentRequest {
 				+ notifyDoctorByEmail + ", cancelledBy=" + cancelledBy + ", localPatientName=" + localPatientName
 				+ ", mobileNumber=" + mobileNumber + ", visitId=" + visitId + ", status=" + status + ", waitedFor="
 				+ waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt
-				+ ", checkedOutAt=" + checkedOutAt + "]";
+				+ ", checkedOutAt=" + checkedOutAt + ", category=" + category + "]";
 	}
 
 }

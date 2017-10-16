@@ -107,6 +107,9 @@ public class AppointmentCollection extends GenericCollection {
     @Field
     private long checkedOutAt = 0;
     
+    @Field
+    private String category;
+    
     public ObjectId getId() {
 	return id;
     }
@@ -338,6 +341,15 @@ public class AppointmentCollection extends GenericCollection {
 	public void setCheckedOutAt(long checkedOutAt) {
 		this.checkedOutAt = checkedOutAt;
 	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentCollection [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -349,7 +361,9 @@ public class AppointmentCollection extends GenericCollection {
 				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
 				+ ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt="
-				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + "]";
+				+ engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", category="
+				+ category + "]";
 	}
 
+	
 }

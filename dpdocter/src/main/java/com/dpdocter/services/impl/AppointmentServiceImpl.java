@@ -2724,7 +2724,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 		LocationWithPatientQueueDetails response = null;
 		try {
 			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId));
-			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 			localCalendar.setTime(new Date());
 			int currentDay = localCalendar.get(Calendar.DATE);
 			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
@@ -2735,7 +2735,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 			DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 					DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-			criteria.and("date").gt(start).lte(end).and("discarded").is(false);
+			criteria.and("fromDate").gte(start).and("toDate").lte(end);
 
 			if (doctorId != null && !doctorId.isEmpty()) {
 				List<ObjectId> doctorObjectIds = new ArrayList<ObjectId>();

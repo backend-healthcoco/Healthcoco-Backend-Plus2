@@ -85,6 +85,8 @@ public class Appointment extends GenericCollection {
 
     private Integer count; 
     
+    private String category;
+    
 	public String getId() {
 		return id;
 	}
@@ -381,6 +383,14 @@ public class Appointment extends GenericCollection {
 		this.count = count;
 	}
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	@Override
 	public String toString() {
 		return "Appointment [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
@@ -395,7 +405,7 @@ public class Appointment extends GenericCollection {
 				+ ", notifyDoctorBySms=" + notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail
 				+ ", visitId=" + visitId + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor="
 				+ engagedFor + ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt="
-				+ checkedOutAt + ", count=" + count + "]";
+				+ checkedOutAt + ", count=" + count + ", category=" + category + "]";
 	}
 
 }

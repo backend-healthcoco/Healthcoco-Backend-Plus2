@@ -8,6 +8,7 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.AppointmentState;
 import com.dpdocter.enums.AppointmentType;
+import com.dpdocter.enums.QueueStatus;
 
 public class AppointmentLookupResponse extends GenericCollection {
 
@@ -62,7 +63,23 @@ public class AppointmentLookupResponse extends GenericCollection {
     private Location location;
     
     private User patient;
+	
+    private QueueStatus status = QueueStatus.SCHEDULED;
+    
+    private long waitedFor = 0;
+    
+    private long engagedFor = 0;
+    
+    private long engagedAt = 0;
+    
+    private long checkedInAt = 0;
+    
+    private long checkedOutAt = 0;
 
+    private Integer count; 
+    
+    private String category;
+    
 	public String getId() {
 		return id;
 	}
@@ -271,6 +288,70 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.patient = patient;
 	}
 
+	public QueueStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(QueueStatus status) {
+		this.status = status;
+	}
+
+	public long getWaitedFor() {
+		return waitedFor;
+	}
+
+	public void setWaitedFor(long waitedFor) {
+		this.waitedFor = waitedFor;
+	}
+
+	public long getEngagedFor() {
+		return engagedFor;
+	}
+
+	public void setEngagedFor(long engagedFor) {
+		this.engagedFor = engagedFor;
+	}
+
+	public long getEngagedAt() {
+		return engagedAt;
+	}
+
+	public void setEngagedAt(long engagedAt) {
+		this.engagedAt = engagedAt;
+	}
+
+	public long getCheckedInAt() {
+		return checkedInAt;
+	}
+
+	public void setCheckedInAt(long checkedInAt) {
+		this.checkedInAt = checkedInAt;
+	}
+
+	public long getCheckedOutAt() {
+		return checkedOutAt;
+	}
+
+	public void setCheckedOutAt(long checkedOutAt) {
+		this.checkedOutAt = checkedOutAt;
+	}
+
+	public Integer getCount() {
+		return count;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentLookupResponse [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -281,6 +362,10 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms="
 				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
-				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + "]";
+				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", status=" + status
+				+ ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt
+				+ ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count + ", category="
+				+ category + "]";
 	}
+
 }
