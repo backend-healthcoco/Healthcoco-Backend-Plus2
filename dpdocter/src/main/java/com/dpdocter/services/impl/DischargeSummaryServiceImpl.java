@@ -937,6 +937,13 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showProcedureNote", show);
 		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationName())) {
+			show = true;
+			parameters.put("operationName", dischargeSummaryCollection.getOperationName());
+		}
+		parameters.put("showOpName", show);
+		show = false;
+
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
