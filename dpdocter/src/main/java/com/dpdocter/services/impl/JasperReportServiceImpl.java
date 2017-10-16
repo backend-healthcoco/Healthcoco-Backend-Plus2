@@ -1651,7 +1651,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		if ((boolean) parameters.get("isEnableTreatmentcost")) {
+		if ((Boolean) parameters.get("isEnableTreatmentcost")) {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters,
 					contentFontSize, columnWidth, pageWidth, pageHeight, "$P{services}", normalStyle));
 
@@ -2198,7 +2198,7 @@ public class JasperReportServiceImpl implements JasperReportService {
 		jrDesignTextField.setStretchWithOverflow(true);
 		band.addElement(jrDesignTextField);
 		((JRDesignSection) jasperDesign.getDetailSection()).addBand(band);
-		if ((boolean) parameters.get("isEnableTreatmentcost")) {
+		if ((Boolean) parameters.get("isEnableTreatmentcost")) {
 			((JRDesignSection) jasperDesign.getDetailSection()).addBand(addTreatmentServices(parameters,
 					contentFontSize, columnWidth, pageWidth, pageHeight, "$F{services}", normalStyle));
 
