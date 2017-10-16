@@ -85,9 +85,9 @@ public class DoctorClinicProfile {
 
 	private Boolean isSendBirthdaySMS = true;
 
-	private Boolean isDoctorRecommended = false;//is recommended by patient
-	
-	private Boolean isFavourite = false; //is patient's Favourite Dr
+	private Boolean isDoctorRecommended = false;// is recommended by patient
+
+	private Boolean isFavourite = false; // is patient's Favourite Dr
 
 	private Boolean isAutoSMS = false;
 
@@ -98,6 +98,8 @@ public class DoctorClinicProfile {
 	private Integer regularCheckupMonth;
 
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
+
+	private String packageType;
 
 	public String getId() {
 		return id;
@@ -459,6 +461,14 @@ public class DoctorClinicProfile {
 		this.isFavourite = isFavourite;
 	}
 
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorClinicProfile [id=" + id + ", doctorId=" + doctorId + ", locationId=" + locationId
@@ -475,9 +485,8 @@ public class DoctorClinicProfile {
 				+ ", treatmentServiceCosts=" + treatmentServiceCosts + ", noOfServices=" + noOfServices + ", feedbacks="
 				+ feedbacks + ", noOfFeedbacks=" + noOfFeedbacks + ", roles=" + roles + ", isDoctorListed="
 				+ isDoctorListed + ", rankingCount=" + rankingCount + ", isSendBirthdaySMS=" + isSendBirthdaySMS
-				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite
-				+ ", isAutoSMS=" + isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS="
-				+ isSendRegularCheckupSMS + ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum="
-				+ checkUpTypeEnum + "]";
+				+ ", isDoctorRecommended=" + isDoctorRecommended + ", isFavourite=" + isFavourite + ", isAutoSMS="
+				+ isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS=" + isSendRegularCheckupSMS
+				+ ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum=" + checkUpTypeEnum + "]";
 	}
 }
