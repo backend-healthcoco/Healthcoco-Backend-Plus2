@@ -1507,6 +1507,8 @@ public class PatientTreatmentServicesImpl implements PatientTreatmentServices {
 
 			if (printSettings.getContentSetup() != null) {
 				parameters.put("isEnableTreatmentcost", printSettings.getContentSetup().getShowTreatmentcost());
+			} else {
+				parameters.put("isEnableTreatmentcost", true);
 			}
 
 			if (historyCollection != null) {
