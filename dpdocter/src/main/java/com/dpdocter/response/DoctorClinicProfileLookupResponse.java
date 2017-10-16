@@ -13,6 +13,7 @@ import com.dpdocter.collections.HospitalCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.UserCollection;
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.PackageType;
 
 public class DoctorClinicProfileLookupResponse extends GenericCollection{
 
@@ -63,6 +64,8 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 	private DoctorCollection doctor;
 	
 	private UserCollection user;
+	
+	private String packageType;
 	
 	public ObjectId getId() {
 		return id;
@@ -254,6 +257,14 @@ public class DoctorClinicProfileLookupResponse extends GenericCollection{
 
 	public void setHospital(HospitalCollection hospital) {
 		this.hospital = hospital;
+	}
+
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
 	}
 
 	@Override

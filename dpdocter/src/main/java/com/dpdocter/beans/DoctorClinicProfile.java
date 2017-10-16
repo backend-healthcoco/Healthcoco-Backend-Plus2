@@ -100,7 +100,7 @@ public class DoctorClinicProfile {
 
 	private RegularCheckUpTypeEnum checkUpTypeEnum;
 
-	private String packageType;
+	private String packageType = PackageType.ADVANCE.getType();
 
 	public String getId() {
 		return id;
