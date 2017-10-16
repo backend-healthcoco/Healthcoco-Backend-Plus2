@@ -61,6 +61,8 @@ public class DischargeSummaryRequest extends GenericCollection {
 	private String anesthetist;
 	private String implant;
 	private String cement;
+	private String operationName;
+	
 
 	public Date getOperationDate() {
 		return operationDate;
@@ -470,6 +472,14 @@ public class DischargeSummaryRequest extends GenericCollection {
 
 	public void setDoctorIncharge(String doctorIncharge) {
 		this.doctorIncharge = doctorIncharge;
+	}
+
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
 	}
 
 }

@@ -3717,6 +3717,11 @@ public class JasperReportServiceImpl implements JasperReportService {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Cement}", 18, contentFontSize - 1, true);
 			addDischargeitems(jasperDesign, columnWidth, "$P{cement}", 18, contentFontSize - 1, false);
 		}
+		show = (Boolean) parameters.get("showOpName");
+		if (show) {
+			addDischargeitems(jasperDesign, columnWidth, "$P{OperationName}", 18, contentFontSize - 1, true);
+			addDischargeitems(jasperDesign, columnWidth, "$P{operationName}", 18, contentFontSize - 1, false);
+		}
 		show = (Boolean) parameters.get("showSum");
 		if (show) {
 			addDischargeitems(jasperDesign, columnWidth, "$P{Summary}", 18, contentFontSize - 1, true);
@@ -3738,6 +3743,8 @@ public class JasperReportServiceImpl implements JasperReportService {
 				addDischargeitems(jasperDesign, columnWidth, "$P{Advice}", 18, contentFontSize - 1, true);
 				addDischargeitems(jasperDesign, columnWidth, "$P{advice}", 18, contentFontSize - 1, false);
 			}
+			
+			
 		}
 
 	}
