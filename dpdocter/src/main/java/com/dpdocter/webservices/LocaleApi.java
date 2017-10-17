@@ -225,9 +225,9 @@ public class LocaleApi {
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
 	@ApiOperation(value = PathProxy.LocaleUrls.ORDER_DRUG, notes = PathProxy.LocaleUrls.ORDER_DRUG)
 	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
-		 if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId()) || DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId()) || request.getWayOfOrder() == null) {
+		 if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId()) || DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId())) {
 				throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
-		}else {
+		}else if(request.getWayOfOrder() != null){
 			if(request.getWayOfOrder().name().equalsIgnoreCase(WayOfOrder.PICK_UP.name())) {
 				if(request.getPickUpTime() == null || request.getPickUpDate() == null)throw new BusinessException(ServiceError.InvalidInput, "PickUp Time or Date cannot be null");
 			}else {

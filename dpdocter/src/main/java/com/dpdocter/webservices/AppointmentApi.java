@@ -534,4 +534,18 @@ public class AppointmentApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.AppointmentUrls.GET_PATIENT_LAST_APPOINTMENT)
+	@GET
+	@ApiOperation(value = PathProxy.AppointmentUrls.GET_PATIENT_LAST_APPOINTMENT, notes = PathProxy.AppointmentUrls.GET_PATIENT_LAST_APPOINTMENT)
+	public Response<Appointment> getPatientLastAppointment(@PathParam(value = "patientId") String patientId,  @PathParam(value = "locationId") String locationId,
+			@QueryParam(value = "doctorId") String doctorId) {
+		if (DPDoctorUtils.anyStringEmpty(patientId, locationId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Appointment appointment = appointmentService.getPatientLastAppointment(locationId, doctorId, patientId);
+		Response<Appointment> response = new Response<Appointment>();
+		response.setData(appointment);
+		return response;
+	}
 }
