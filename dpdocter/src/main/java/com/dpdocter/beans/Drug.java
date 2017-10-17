@@ -5,43 +5,46 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class Drug extends GenericCollection{
-   
+public class Drug extends GenericCollection {
+
 	private String id;
 
-    private DrugType drugType;
+	private DrugType drugType;
 
-    private String drugName;
+	private String drugName;
 
-    private String explanation;
+	private String explanation;
 
-    private Boolean discarded = false;
+	private Boolean discarded = false;
 
-    private String doctorId;
+	private String doctorId;
 
-    private String hospitalId;
+	private String hospitalId;
 
-    private String locationId;
+	private String locationId;
 
-    private Duration duration;
+	private Duration duration;
 
-    private String dosage;
+	private String dosage;
 
-    private List<Long> dosageTime;
-    
-    private List<DrugDirection> direction;
+	private List<Long> dosageTime;
 
-    private List<String> categories;
-    
-    private long rankingCount = 0;
+	private List<DrugDirection> direction;
 
-    private List<GenericCode> genericNames;
-    
-    private String drugCode;
+	private List<String> categories;
 
-    private long count;
-    
+	private long rankingCount = 0;
+
+	private List<GenericCode> genericNames;
+
+	private List<String> gcStrengthIds;
+
+	private String drugCode;
+
+	private long count;
+
 	public String getId() {
 		return id;
 	}
@@ -176,6 +179,14 @@ public class Drug extends GenericCollection{
 
 	public void setCount(long count) {
 		this.count = count;
+	}
+
+	public List<String> getGcStrengthIds() {
+		return gcStrengthIds;
+	}
+
+	public void setGcStrengthIds(List<String> gcStrengthIds) {
+		this.gcStrengthIds = gcStrengthIds;
 	}
 
 	@Override
