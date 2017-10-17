@@ -2895,12 +2895,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
 
 			if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
-				appointmentCollection.setCheckedInAt(new Date().getTime());
+				appointmentCollection.setCheckedInAt(new Date(System.currentTimeMillis()).getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
-				appointmentCollection.setEngagedAt(new Date().getTime());
+				appointmentCollection.setEngagedAt(new Date(System.currentTimeMillis()).getTime());
 				appointmentCollection.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
 			} else if (status.equalsIgnoreCase(QueueStatus.CHECKED_OUT.name())) {
-				appointmentCollection.setCheckedOutAt(new Date().getTime());
+				appointmentCollection.setCheckedOutAt(new Date(System.currentTimeMillis()).getTime());
 				appointmentCollection.setEngagedFor(appointmentCollection.getCheckedOutAt() - appointmentCollection.getEngagedAt());
 			}
 
