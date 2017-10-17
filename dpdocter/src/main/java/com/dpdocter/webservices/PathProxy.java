@@ -899,6 +899,8 @@ public interface PathProxy {
 
 		public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 
+		public static final String GET_PATIENT_LAST_APPOINTMENT = "/patient/last/{patientId}/{locationId}";
+		
 		public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}/{date}";
 
 		public static final String SEND_REMINDER_TO_PATIENT = "/sendReminder/patient/{appointmentId}";
@@ -1399,6 +1401,10 @@ public interface PathProxy {
 		public static final String GET_SAMPLE_PICKUP_TIME_SLOTS = "/pickUpTimeSlots";
 		
 		public static final String PLACE_ORDER = "/placeOrder";
+
+		public static final String GET_PATIENT_ORDERS = "/orders/patient/{userId}";
+		
+		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
 	}
 
 }

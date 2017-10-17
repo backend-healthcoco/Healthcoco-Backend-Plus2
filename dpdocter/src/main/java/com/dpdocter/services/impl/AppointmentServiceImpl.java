@@ -1551,8 +1551,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 							Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 							Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location"), Aggregation.skip((page) * size), Aggregation.limit(size),
-							Aggregation.sort(new Sort(Direction.DESC, "updatedTime"))),
+							Aggregation.unwind("location"),
+							Aggregation.sort(new Sort(Direction.DESC, "updatedTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size)),
 							AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 				} else {
 					appointmentLookupResponses = mongoTemplate.aggregate(
@@ -1673,8 +1674,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
 						Aggregation.unwind("doctor"),
 						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-						Aggregation.unwind("location"), Aggregation.skip((page) * size), Aggregation.limit(size),
-						Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.from"))),
+						Aggregation.unwind("location"), 
+						Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.from")),
+						Aggregation.skip((page) * size), Aggregation.limit(size)),
 						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
 			} else {
 				appointmentLookupResponses = mongoTemplate.aggregate(
@@ -2894,8 +2896,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 			if (appointmentCollection == null)
 				throw new BusinessException(ServiceError.InvalidInput, "Appointment Not Found");
 
-			if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
-				appointmentCollection.setCheckedInAt(new Date().getTime());
+			if (status.equalsIgnoreCase(QueueStatus.SCHEDULED.name())) {
+				appointmentCollection.setCheckedInAt(0);
+				appointmentCollection.setEngagedAt(0);
+				appointmentCollection.setWaitedFor(0);
+				appointmentCollection.setCheckedOutAt(0);
+				appointmentCollection.setEngagedFor(0);
+			}else if (status.equalsIgnoreCase(QueueStatus.WAITING.name())) {
+				appointmentCollection.setCheckedInAt(new Date(System.currentTimeMillis()).getTime());
 			} else if (status.equalsIgnoreCase(QueueStatus.ENGAGED.name())) {
 				appointmentCollection.setEngagedAt(new Date().getTime());
 				appointmentCollection.setWaitedFor(appointmentCollection.getEngagedAt() - appointmentCollection.getCheckedInAt());
@@ -3091,6 +3099,37 @@ public class AppointmentServiceImpl implements AppointmentService {
 			logger.error("Error while AVG Time Detail of Custom Appointment", e);
 			e.printStackTrace();
 			throw new BusinessException(ServiceError.Unknown, "Error while AVG Time Detail of Custom Appointment");
+		}
+		return response;
+	}
+
+	@Override
+	public Appointment getPatientLastAppointment(String locationId, String doctorId, String patientId) {
+		Appointment response = null;
+		try {
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("patientId").is(new ObjectId(patientId));
+			
+			List<AppointmentLookupResponse> appointmentLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime")),
+						Aggregation.limit(1)),
+						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+			
+			if (appointmentLookupResponses != null) {
+				response = new Appointment();
+				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
+					BeanUtil.map(collection, response);
+					if (collection.getDoctor() != null) {
+						response.setDoctorName(collection.getDoctor().getTitle() + " " + collection.getDoctor().getFirstName());
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("Error while getting patient last appointment", e);
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting patient last appointment");
 		}
 		return response;
 	}

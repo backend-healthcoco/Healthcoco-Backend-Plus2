@@ -88,4 +88,6 @@ public interface AppointmentService {
 
 	public AVGTimeDetail getCustomAppointmentAVGTimeDetail(String locationId, String hospitalId, String doctorId);
 
+	Appointment getPatientLastAppointment(String locationId, String doctorId, String patientId);
+
 }
