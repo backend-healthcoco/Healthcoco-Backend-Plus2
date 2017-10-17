@@ -1448,6 +1448,8 @@ public interface PathProxy {
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
 	}
 
 }
