@@ -865,8 +865,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			show = true;
 			parameters.put("anesthetist", dischargeSummaryCollection.getAnesthetist());
 		}
-		show = false;
 		parameters.put("showANST", show);
+		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
 			show = true;
@@ -943,7 +943,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showOpName", show);
 		show = false;
-
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd");
