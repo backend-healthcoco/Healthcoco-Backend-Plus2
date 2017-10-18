@@ -700,9 +700,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setEmailAddress(request.getEmailAddress());
 					if (request.getDob() != null)
 						patientCollection.setDob(request.getDob());
-
-					if (infoType != null && !infoType.isEmpty()) {
-						if (infoType.contains("PERSONALINFO"))
+					if(request.getAddress() != null)patientCollection.setAddress(request.getAddress());
+					
+					if(infoType != null && !infoType.isEmpty()) {
+						if(infoType.contains("PERSONALINFO"))
 							patientCollection.setPersonalInformation(request.getPersonalInformation());
 						if (infoType.contains("LIFESTYLE"))
 							patientCollection.setLifestyleQuestionAnswers(request.getLifestyleQuestionAnswers());
