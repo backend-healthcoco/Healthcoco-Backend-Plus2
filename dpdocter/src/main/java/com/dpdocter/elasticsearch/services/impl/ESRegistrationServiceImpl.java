@@ -127,7 +127,6 @@ public class ESRegistrationServiceImpl implements ESRegistrationService {
 					.should(QueryBuilders.matchPhrasePrefixQuery(AdvancedSearchType.PID.getSearchType(), searchTerm)
 							.boost(1.0f))
 					.minimumNumberShouldMatch(1);
-
 			if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
 				boolQueryBuilder.must(QueryBuilders.termQuery("consultantDoctorIds", doctorId));
 			}
