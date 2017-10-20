@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
 import com.dpdocter.beans.Patient;
@@ -62,6 +63,7 @@ import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
 import com.dpdocter.services.OTPService;
 import com.dpdocter.services.SMSServices;
+import com.mongodb.BasicDBObject;
 
 import common.util.web.DPDoctorUtils;
 
@@ -214,15 +216,73 @@ public class ContactsServiceImpl implements ContactsService {
 
 		Aggregation aggregation = null;
 		if (sortByFirstName) {
+			
+			CustomAggregationOperation projectOperations = new CustomAggregationOperation(new BasicDBObject("$project", 
+					new BasicDBObject("_id", "$_id").append("userId","$userId")
+					.append("firstName","$firstName").append("localPatientName","$localPatientName")
+					.append("insensitiveLocalPatientName", new BasicDBObject("$toLower", "$localPatientName"))
+					.append("userName","$userName").append("emailAddress","$emailAddress")
+					.append("imageUrl","$imageUrl").append("thumbnailUrl","$thumbnailUrl")
+					.append("bloodGroup","$bloodGroup").append("PID","$PID")
+					.append("gender","$gender").append("countryCode","$countryCode")
+					.append("mobileNumber","$mobileNumber").append("secPhoneNumber","$secPhoneNumber")
+					.append("dob","$dob")
+					.append("dateOfVisit","$dateOfVisit").append("doctorId","$doctorId")
+					.append("locationId","$locationId").append("hospitalId","$hospitalId")
+					.append("colorCode","$user.colorCode").append("user","$user")
+					.append("address","$address").append("patientId","$userId")
+					.append("profession","$profession").append("relations","$relations")
+					.append("consultantDoctorIds","$consultantDoctorIds").append("registrationDate","$registrationDate")
+					.append("relations","$relations")
+					.append("consultantDoctorIds","$consultantDoctorIds").append("registrationDate","$registrationDate")
+					.append("createdTime","$createdTime")
+					.append("updatedTime","$updatedTime")
+					.append("createdBy","$createdBy")));
+			
+			CustomAggregationOperation groupOperations = new CustomAggregationOperation(new BasicDBObject("$group", 
+					new BasicDBObject("id", "$_id")
+					.append("userId", new BasicDBObject("$first", "$userId"))
+					.append("firstName",new BasicDBObject("$first", "$firstName"))
+					.append("localPatientName", new BasicDBObject("$first", "$localPatientName"))
+					.append("userName", new BasicDBObject("$first", "$userName"))
+					.append("emailAddress", new BasicDBObject("$first", "$emailAddress"))
+					.append("imageUrl", new BasicDBObject("$first", "$imageUrl"))
+					.append("thumbnailUrl", new BasicDBObject("$first", "$thumbnailUrl"))
+					.append("bloodGroup", new BasicDBObject("$first", "$bloodGroup"))
+					.append("PID", new BasicDBObject("$first", "$PID"))
+					.append("gender", new BasicDBObject("$first", "$gender"))
+					.append("countryCode", new BasicDBObject("$first", "$countryCode"))
+					.append("mobileNumber", new BasicDBObject("$first", "$mobileNumber"))
+					.append("secPhoneNumber", new BasicDBObject("$first", "$secPhoneNumber"))
+					.append("dob", new BasicDBObject("$first", "$dob"))
+					.append("dateOfVisit", new BasicDBObject("$first", "$dateOfVisit"))
+					.append("doctorId", new BasicDBObject("$first", "$doctorId"))
+					.append("locationId", new BasicDBObject("$first", "$locationId"))
+					.append("hospitalId", new BasicDBObject("$first", "$hospitalId"))
+					.append("colorCode", new BasicDBObject("$first", "$user.colorCode"))
+					.append("user", new BasicDBObject("$first", "$user"))
+					.append("address", new BasicDBObject("$first", "$address"))
+					.append("patientId", new BasicDBObject("$first", "$userId"))
+					.append("profession", new BasicDBObject("$first", "$profession"))
+					.append("relations", new BasicDBObject("$first", "$relations"))
+					.append("consultantDoctorIds", new BasicDBObject("$first", "$consultantDoctorIds"))
+					.append("registrationDate", new BasicDBObject("$first", "$registrationDate"))
+					.append("insensitiveLocalPatientName", new BasicDBObject("$first", "$insensitiveLocalPatientName"))
+					.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+					.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))
+					.append("createdBy", new BasicDBObject("$first", "$createdBy"))));
+			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "localPatientName")),
+						projectOperations, groupOperations,
+						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))),
 						Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
 						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-						Aggregation.sort(new Sort(Sort.Direction.ASC, "localPatientName")));
+						projectOperations, groupOperations,
+						new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("insensitiveLocalPatientName", 1))));
 		} else {
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
