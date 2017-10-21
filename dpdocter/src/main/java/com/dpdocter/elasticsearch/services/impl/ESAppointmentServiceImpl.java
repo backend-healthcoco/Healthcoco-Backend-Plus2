@@ -768,18 +768,19 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							if (specialityCollection != null) {
 								specialities.add(specialityCollection.getSuperSpeciality());
 								if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
-									slugUrl = "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+									slugUrl = slugUrl + "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+								} else {
+									slugUrl = specialityCollection.getSuperSpeciality().toLowerCase();
 								}
 							}
 						}
 						doctorDocument.setSpecialities(specialities);
 					}
-					if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
+					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
 						doctorDocument.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-").replaceAll("/", "-"));
-					}
-					if (doctorDocument.getImageUrl() != null) {
+
+					if (doctorDocument.getImageUrl() != null)
 						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
-					}
 					if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
 						List<String> images = new ArrayList<String>();
 						for (String clinicImage : doctorDocument.getImages()) {

@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.collections.GenericCollection;
+import com.dpdocter.enums.PackageType;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class DoctorProfile extends GenericCollection {
@@ -71,7 +72,9 @@ public class DoctorProfile extends GenericCollection {
 
 	private String metaKeyword;
 
-	private String slugUrl;
+	private String doctorSlugURL;
+
+	private String packageType = PackageType.PRO.getType();
 
 	public String getId() {
 		return id;
@@ -321,20 +324,28 @@ public class DoctorProfile extends GenericCollection {
 		this.metaKeyword = metaKeyword;
 	}
 
-	public String getSlugUrl() {
-		return slugUrl;
-	}
-
-	public void setSlugUrl(String slugUrl) {
-		this.slugUrl = slugUrl;
-	}
-
 	public List<String> getParentSpecialities() {
 		return parentSpecialities;
 	}
 
 	public void setParentSpecialities(List<String> parentSpecialities) {
 		this.parentSpecialities = parentSpecialities;
+	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
+	}
+
+	public String getPackageType() {
+		return packageType;
+	}
+
+	public void setPackageType(String packageType) {
+		this.packageType = packageType;
 	}
 
 	@Override
@@ -351,6 +362,6 @@ public class DoctorProfile extends GenericCollection {
 				+ ", professionalMemberships=" + professionalMemberships + ", clinicProfile=" + clinicProfile
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", isGetDiscardedEMR=" + isGetDiscardedEMR
 				+ ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription + ", metaKeyword=" + metaKeyword
-				+ ", slugUrl=" + slugUrl + "]";
+				+ ", doctorSlugURL=" + doctorSlugURL + ", packageType=" + packageType + "]";
 	}
 }
