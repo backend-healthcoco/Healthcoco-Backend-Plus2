@@ -5,6 +5,7 @@ import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.dpdocter.enums.DoctorFacility;
+import com.dpdocter.enums.PackageType;
 import com.dpdocter.enums.RegularCheckUpTypeEnum;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
