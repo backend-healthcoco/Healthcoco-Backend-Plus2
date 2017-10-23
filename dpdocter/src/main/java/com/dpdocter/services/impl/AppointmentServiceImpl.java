@@ -1477,7 +1477,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 	@Override
 	@Transactional
 	public List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime, String status, String sortBy) {
+			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime, String toTime) {
 		List<Appointment> response = null;
 		try {
 			long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -1507,10 +1507,10 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime fromTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+				DateTime fromDateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				criteria.and("fromDate").gte(fromTime);
+				criteria.and("fromDate").gte(fromDateTime);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(to)) {
 				localCalendar.setTime(new Date(Long.parseLong(to)));
@@ -1518,12 +1518,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 				int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
 				int currentYear = localCalendar.get(Calendar.YEAR);
 
-				DateTime toTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+				DateTime toDateTime = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
 						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
 
-				criteria.and("toDate").lte(toTime);
+				criteria.and("toDate").lte(toDateTime);
 			}
 
+			if (!DPDoctorUtils.anyStringEmpty(fromTime))
+				criteria.and("time.fromTime").is(Integer.parseInt(fromTime));
+
+			if (!DPDoctorUtils.anyStringEmpty(toTime))
+				criteria.and("time.toTime").is(Integer.parseInt(toTime));
+			
 			List<AppointmentLookupResponse> appointmentLookupResponses = null;
 
 			if(DPDoctorUtils.anyStringEmpty(sortBy) || sortBy.equalsIgnoreCase("startTime")) {

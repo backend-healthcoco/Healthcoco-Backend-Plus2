@@ -228,10 +228,11 @@ public class AppointmentApi {
 			@QueryParam(value = "from") String from, @QueryParam(value = "to") String to,
 			@QueryParam(value = "page") int page, @QueryParam(value = "size") int size,
 			@DefaultValue(value = "0") @QueryParam(value = "updatedTime") String updatedTime, 
-			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy) {
+			@QueryParam(value = "status") String status, @QueryParam(value = "sortBy") String sortBy,
+			@QueryParam(value = "fromTime") String fromTime, @QueryParam(value = "toTime") String toTime) {
 
 		List<Appointment> appointment = appointmentService.getAppointments(locationId, doctorId, patientId, from, to,
-				page, size, updatedTime, status, sortBy);
+				page, size, updatedTime, status, sortBy, fromTime, toTime);
 		Response<Appointment> response = new Response<Appointment>();
 		response.setDataList(appointment);
 		return response;
