@@ -83,7 +83,7 @@ public class DoctorContactUSServiceImpl implements DoctorContactUsService {
 			} catch (DuplicateKeyException de) {
 				logger.error(de);
 				throw new BusinessException(ServiceError.Unknown,
-						"An account already exists with this email address.Please use another email address to register.");
+						"An account already exists with " + doctorContactUs.getEmailAddress()+" .Please use another email address to register.");
 			} catch (BusinessException be) {
 				logger.error(be);
 				throw be;
