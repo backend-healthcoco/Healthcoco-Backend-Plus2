@@ -2,9 +2,11 @@ package com.dpdocter.beans;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.enums.OrderStatus;
-
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class OrderDiagnosticTest extends GenericCollection{
 
 	private String id;
@@ -35,6 +37,12 @@ public class OrderDiagnosticTest extends GenericCollection{
 	
 	private Boolean isCancelled = false;
 
+	private String locationName;
+	
+	private String patientName;
+	
+	private Boolean isNABLAccredited = false;
+	
 	public String getId() {
 		return id;
 	}
@@ -147,6 +155,30 @@ public class OrderDiagnosticTest extends GenericCollection{
 		this.isCancelled = isCancelled;
 	}
 
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public void setLocationName(String locationName) {
+		this.locationName = locationName;
+	}
+
+	public Boolean getIsNABLAccredited() {
+		return isNABLAccredited;
+	}
+
+	public void setIsNABLAccredited(Boolean isNABLAccredited) {
+		this.isNABLAccredited = isNABLAccredited;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDiagnosticTest [id=" + id + ", locationId=" + locationId + ", userId=" + userId
@@ -154,6 +186,8 @@ public class OrderDiagnosticTest extends GenericCollection{
 				+ ", testsPackageId=" + testsPackageId + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
 				+ pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost=" + totalCost + ", totalCostForPatient="
 				+ totalCostForPatient + ", totalSavingInPercentage=" + totalSavingInPercentage + ", isCancelled="
-				+ isCancelled + "]";
+				+ isCancelled + ", locationName=" + locationName + ", patientName=" + patientName
+				+ ", isNABLAccredited=" + isNABLAccredited + "]";
 	}
+
 }

@@ -54,7 +54,8 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 	private OrderDiagnosticTestRepository orderDiagnosticTestRepository;
 	
 	@Override
-	public List<LabSearchResponse> searchLabsByTest(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames) {
+	public List<LabSearchResponse> searchLabsByTest(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames,
+			int page, int size) {
 		List<LabSearchResponse> response = null;
 		try{
 			Aggregation aggregation = Aggregation.newAggregation(
@@ -113,9 +114,9 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 							.append("totalCost", new BasicDBObject("$first", "$totalCost"))
 							.append("totalCostForPatient", new BasicDBObject("$first", "$totalCostForPatient"))
 							.append("totalSavingInPercentage", new BasicDBObject("$first", "$totalSavingInPercentage")))),
-					
-					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("localeRankingCount", -1)))
-					);
+					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
+					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),		
+					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("localeRankingCount", -1))));
 			
 			response  = mongoTemplate.aggregate(aggregation, DiagnosticTestCollection.class, LabSearchResponse.class).getMappedResults();
 		}catch(Exception e){
@@ -200,6 +201,118 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 			logger.error("Error while placing Diagnostic Test Sample Order "+ e.getMessage());
 			e.printStackTrace();
 		    throw new BusinessException(ServiceError.Unknown,"Error while placing Diagnostic Test Sample Order");
+		}
+		return response;
+	}
+
+	@Override
+	public List<OrderDiagnosticTest> getPatientOrders(String userId, int page, int size) {
+		List<OrderDiagnosticTest> response = null;
+		try {
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("userId").is(new ObjectId(userId))),
+					Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							.append("locationId","$locationId")
+							.append("userId","$userId")
+							.append("uniqueOrderId","$uniqueOrderId")
+							.append("pickUpTime","$pickUpTime")
+							.append("pickUpDate","$pickUpDate")
+							.append("testsPackageId","$testsPackageId")
+							.append("diagnosticTests","$diagnosticTests")
+							.append("pickUpAddress","$pickUpAddress")
+							.append("orderStatus","$orderStatus")
+							.append("totalCost","$totalCost")
+							.append("totalCostForPatient","$totalCostForPatient")
+							.append("totalSavingInPercentage","$totalSavingInPercentage")
+							.append("isCancelled","$isCancelled")
+							.append("createdTime","$createdTime")
+							.append("updatedTime","$updatedTime")
+							.append("locationName","$location.locationName")
+							.append("isNABLAccredited","$location.isNABLAccredited"))),
+					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+							.append("locationId", new BasicDBObject("$first","$locationId"))
+							.append("userId", new BasicDBObject("$first","$userId"))
+							.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
+							.append("pickUpTime", new BasicDBObject("$first","$pickUpTime"))
+							.append("pickUpDate", new BasicDBObject("$first","$pickUpDate"))
+							.append("testsPackageId", new BasicDBObject("$first","$testsPackageId"))
+							.append("diagnosticTests", new BasicDBObject("$first","$diagnosticTests"))
+							.append("pickUpAddress", new BasicDBObject("$first","$pickUpAddress"))
+							.append("orderStatus", new BasicDBObject("$first","$orderStatus"))
+							.append("totalCost", new BasicDBObject("$first","$totalCost"))
+							.append("totalCostForPatient", new BasicDBObject("$first","$totalCostForPatient"))
+							.append("totalSavingInPercentage", new BasicDBObject("$first","$totalSavingInPercentage"))
+							.append("isCancelled", new BasicDBObject("$first","$isCancelled"))
+							.append("locationName", new BasicDBObject("$first","$locationName"))
+							.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
+							.append("createdTime", new BasicDBObject("$first","$createdTime"))
+							.append("isNABLAccredited", new BasicDBObject("$first","$isNABLAccredited")))),
+					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
+					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),	
+					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("updatedTime", -1)))
+					);
+			
+			response = mongoTemplate.aggregate(aggregation, OrderDiagnosticTestCollection.class, OrderDiagnosticTest.class).getMappedResults();
+		}catch(Exception e){
+			logger.error("Error while getting patient orders"+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while getting patient orders");
+		}
+		return response;
+	}
+
+	@Override
+	public List<OrderDiagnosticTest> getLabOrders(String locationId, int page, int size) {
+		List<OrderDiagnosticTest> response = null;
+		try {
+			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("locationId").is(new ObjectId(locationId))),
+					Aggregation.lookup("patient_cl", "userId", "userId", "patient"),
+					new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+					new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+							.append("locationId","$locationId")
+							.append("userId","$userId")
+							.append("uniqueOrderId","$uniqueOrderId")
+							.append("pickUpTime","$pickUpTime")
+							.append("pickUpDate","$pickUpDate")
+							.append("testsPackageId","$testsPackageId")
+							.append("diagnosticTests","$diagnosticTests")
+							.append("pickUpAddress","$pickUpAddress")
+							.append("orderStatus","$orderStatus")
+							.append("totalCost","$totalCost")
+							.append("totalCostForPatient","$totalCostForPatient")
+							.append("totalSavingInPercentage","$totalSavingInPercentage")
+							.append("isCancelled","$isCancelled")
+							.append("createdTime","$createdTime")
+							.append("updatedTime","$updatedTime")
+							.append("patientName","$patient.localPatientName"))),
+					new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+							.append("locationId", new BasicDBObject("$first","$locationId"))
+							.append("userId", new BasicDBObject("$first","$userId"))
+							.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
+							.append("pickUpTime", new BasicDBObject("$first","$pickUpTime"))
+							.append("pickUpDate", new BasicDBObject("$first","$pickUpDate"))
+							.append("testsPackageId", new BasicDBObject("$first","$testsPackageId"))
+							.append("diagnosticTests", new BasicDBObject("$first","$diagnosticTests"))
+							.append("pickUpAddress", new BasicDBObject("$first","$pickUpAddress"))
+							.append("orderStatus", new BasicDBObject("$first","$orderStatus"))
+							.append("totalCost", new BasicDBObject("$first","$totalCost"))
+							.append("totalCostForPatient", new BasicDBObject("$first","$totalCostForPatient"))
+							.append("totalSavingInPercentage", new BasicDBObject("$first","$totalSavingInPercentage"))
+							.append("isCancelled", new BasicDBObject("$first","$isCancelled"))
+							.append("patientName", new BasicDBObject("$first","$patientName"))
+							.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
+							.append("createdTime", new BasicDBObject("$first","$createdTime")))),
+					(size > 0) ? Aggregation.skip(page * size) : Aggregation.match(new Criteria()),
+					(size > 0) ? Aggregation.limit(size) : Aggregation.match(new Criteria()),	
+					new CustomAggregationOperation(new BasicDBObject("$sort", new BasicDBObject("updatedTime", -1)))
+					);
+			
+			response = mongoTemplate.aggregate(aggregation, OrderDiagnosticTestCollection.class, OrderDiagnosticTest.class).getMappedResults();
+		}catch(Exception e){
+			logger.error("Error while getting lab orders"+ e.getMessage());
+			e.printStackTrace();
+		    throw new BusinessException(ServiceError.Unknown,"Error while getting lab orders");
 		}
 		return response;
 	}

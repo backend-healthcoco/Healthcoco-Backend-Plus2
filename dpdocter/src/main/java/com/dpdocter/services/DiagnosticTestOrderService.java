@@ -8,10 +8,13 @@ import com.dpdocter.response.LabSearchResponse;
 
 public interface DiagnosticTestOrderService {
 
-	List<LabSearchResponse> searchLabsByTest(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames);
+	List<LabSearchResponse> searchLabsByTest(String city, String location, String latitude, String longitude, String searchTerm, List<String> testNames, int page, int size);
 
 	List<DiagnosticTestSamplePickUpSlot> getDiagnosticTestSamplePickUpTimeSlots();
 
 	OrderDiagnosticTest placeDiagnosticTestOrder(OrderDiagnosticTest request);
 
+	List<OrderDiagnosticTest> getPatientOrders(String userId, int page, int size);
+
+	List<OrderDiagnosticTest> getLabOrders(String locationId, int page, int size);
 }

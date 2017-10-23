@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
-import com.dpdocter.collections.DiagnosticTestPickUpSlotCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.LabSearchResponse;
@@ -47,9 +46,9 @@ public class DiagnosticTestOrderApi {
 	public Response<LabSearchResponse> searchLabsByTest(@QueryParam("city") String city,
 			@QueryParam("location") String location, @QueryParam(value = "latitude") String latitude,
 			@QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm, 
-			@MatrixParam(value = "test") List<String> testNames) {
+			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") int page, @QueryParam("size") int size) {
 
-		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabsByTest(city, location, latitude, longitude, searchTerm, testNames);
+		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabsByTest(city, location, latitude, longitude, searchTerm, testNames, page, size);
 
 		Response<LabSearchResponse> response = new Response<LabSearchResponse>();
 		response.setDataList(labSearchResponses);
@@ -82,5 +81,28 @@ public class DiagnosticTestOrderApi {
 		response.setData(diagnosticTestOrderService.placeDiagnosticTestOrder(request));
 		return response;
 	}
+
+	@Path(value = PathProxy.DiagnosticTestOrderUrls.GET_PATIENT_ORDERS)
+	@GET
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_PATIENT_ORDERS, notes = DiagnosticTestOrderUrls.GET_PATIENT_ORDERS)
+	public Response<OrderDiagnosticTest> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size) {
+
+		List<OrderDiagnosticTest> orderDiagnosticTests = diagnosticTestOrderService.getPatientOrders(userId, page, size);
+		
+		Response<OrderDiagnosticTest> response = new Response<OrderDiagnosticTest>();
+		response.setDataList(orderDiagnosticTests);
+		return response;
+	}
 	
+	@Path(value = PathProxy.DiagnosticTestOrderUrls.GET_LAB_ORDERS)
+	@GET
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_LAB_ORDERS, notes = DiagnosticTestOrderUrls.GET_LAB_ORDERS)
+	public Response<OrderDiagnosticTest> getLabOrders(@PathParam("locationId") String locationId, @QueryParam("page") int page, @QueryParam("size") int size) {
+
+		List<OrderDiagnosticTest> orderDiagnosticTests = diagnosticTestOrderService.getLabOrders(locationId, page, size);
+		
+		Response<OrderDiagnosticTest> response = new Response<OrderDiagnosticTest>();
+		response.setDataList(orderDiagnosticTests);
+		return response;
+	}
 }
