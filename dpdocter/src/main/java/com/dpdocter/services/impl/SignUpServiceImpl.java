@@ -25,7 +25,6 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.CollectionBoyCollection;
 import com.dpdocter.collections.DoctorClinicProfileCollection;
 import com.dpdocter.collections.LocaleCollection;
-import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.RoleCollection;
 import com.dpdocter.collections.SMSTrackDetail;

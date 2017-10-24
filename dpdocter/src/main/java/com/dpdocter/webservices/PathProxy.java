@@ -1417,6 +1417,12 @@ public interface PathProxy {
 		public static final String GET_PATIENT_ORDERS = "/orders/patient/{userId}";
 		
 		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
+
+		public static final String CANCEL_ORDER_DIAGNOSTIC_TEST = "/cancelOrder/{orderId}/{userId}";
+
+		public static final String GET_ORDER_BY_ID = "/order/{orderId}/view";
+		
+		public static final String GET_ORDERS = "orders";
 	}
 
 }

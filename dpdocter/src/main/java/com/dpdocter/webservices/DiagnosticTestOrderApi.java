@@ -3,6 +3,7 @@ package com.dpdocter.webservices;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -24,6 +25,7 @@ import com.dpdocter.response.LabSearchResponse;
 import com.dpdocter.services.DiagnosticTestOrderService;
 import com.dpdocter.webservices.PathProxy.DiagnosticTestOrderUrls;
 
+import common.util.web.DPDoctorUtils;
 import common.util.web.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -103,6 +105,35 @@ public class DiagnosticTestOrderApi {
 		
 		Response<OrderDiagnosticTest> response = new Response<OrderDiagnosticTest>();
 		response.setDataList(orderDiagnosticTests);
+		return response;
+	}
+	
+	@GET
+	@Path(PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST)
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST, notes = PathProxy.DiagnosticTestOrderUrls.CANCEL_ORDER_DIAGNOSTIC_TEST)
+	public Response<OrderDiagnosticTest> cancelOrderDiagnosticTest(@PathParam("orderId") String orderId, @PathParam("userId") String userId) {
+		 if (DPDoctorUtils.anyStringEmpty(orderId, userId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "OderId or UserId cannot be null");
+		}
+		
+		Response<OrderDiagnosticTest> response = new Response<OrderDiagnosticTest>();
+		response.setData(diagnosticTestOrderService.cancelOrderDiagnosticTest(orderId, userId));
+
+		return response;
+	}
+	
+	@GET
+	@Path(PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID)
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID, notes = PathProxy.DiagnosticTestOrderUrls.GET_ORDER_BY_ID)
+	public Response<OrderDiagnosticTest> getDiagnosticTestOrderById(@PathParam("orderId") String orderId, 
+			@DefaultValue(value="false") @QueryParam("isLab") Boolean isLab, @DefaultValue(value="false") @QueryParam("isUser") Boolean isUser) {
+		 if (DPDoctorUtils.anyStringEmpty(orderId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "OderId cannot be null");
+		}
+		
+		Response<OrderDiagnosticTest> response = new Response<OrderDiagnosticTest>();
+		response.setData(diagnosticTestOrderService.getDiagnosticTestOrderById(orderId, isLab, isUser));
+
 		return response;
 	}
 }

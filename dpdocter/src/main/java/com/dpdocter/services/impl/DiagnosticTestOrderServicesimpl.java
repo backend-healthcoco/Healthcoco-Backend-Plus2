@@ -316,4 +316,143 @@ public class DiagnosticTestOrderServicesimpl implements DiagnosticTestOrderServi
 		}
 		return response;
 	}
+
+	@Override
+	public OrderDiagnosticTest cancelOrderDiagnosticTest(String orderId, String userId) {
+		OrderDiagnosticTest response = null;
+		try {
+			OrderDiagnosticTestCollection orderDiagnosticTestCollection = orderDiagnosticTestRepository.findByIdAndUserId(new ObjectId(orderId),
+					new ObjectId(userId));
+			if (orderDiagnosticTestCollection == null)
+				throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId and userId");
+
+			orderDiagnosticTestCollection.setIsCancelled(true);
+			orderDiagnosticTestCollection.setUpdatedTime(new Date());
+			orderDiagnosticTestCollection = orderDiagnosticTestRepository.save(orderDiagnosticTestCollection);
+			response = new OrderDiagnosticTest();
+			BeanUtil.map(orderDiagnosticTestCollection, response);
+		} catch (Exception e) {
+			logger.error("Error while cancelling order test " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while cancelling order test");
+		}
+		return response;
+	}
+
+	@Override
+	public OrderDiagnosticTest getDiagnosticTestOrderById(String orderId, Boolean isLab, Boolean isUser) {
+		OrderDiagnosticTest response = null;
+		try {
+			OrderDiagnosticTestCollection orderDiagnosticTestCollection = null;
+			
+			if(isLab) {
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(orderId))),
+						Aggregation.lookup("patient_cl", "userId", "userId", "patient"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$patient").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+								new BasicDBObject("if", new BasicDBObject("$eq", Arrays.asList("$patient.locationId", "$locationId")))
+								.append("then", "$$KEEP").append("else", "$$PRUNE")))),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+								.append("locationId","$locationId")
+								.append("userId","$userId")
+								.append("uniqueOrderId","$uniqueOrderId")
+								.append("pickUpTime","$pickUpTime")
+								.append("pickUpDate","$pickUpDate")
+								.append("testsPackageId","$testsPackageId")
+								.append("diagnosticTests","$diagnosticTests")
+								.append("pickUpAddress","$pickUpAddress")
+								.append("orderStatus","$orderStatus")
+								.append("totalCost","$totalCost")
+								.append("totalCostForPatient","$totalCostForPatient")
+								.append("totalSavingInPercentage","$totalSavingInPercentage")
+								.append("isCancelled","$isCancelled")
+								.append("createdTime","$createdTime")
+								.append("updatedTime","$updatedTime")
+								.append("patientName","$patient.localPatientName"))),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+								.append("locationId", new BasicDBObject("$first","$locationId"))
+								.append("userId", new BasicDBObject("$first","$userId"))
+								.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
+								.append("pickUpTime", new BasicDBObject("$first","$pickUpTime"))
+								.append("pickUpDate", new BasicDBObject("$first","$pickUpDate"))
+								.append("testsPackageId", new BasicDBObject("$first","$testsPackageId"))
+								.append("diagnosticTests", new BasicDBObject("$first","$diagnosticTests"))
+								.append("pickUpAddress", new BasicDBObject("$first","$pickUpAddress"))
+								.append("orderStatus", new BasicDBObject("$first","$orderStatus"))
+								.append("totalCost", new BasicDBObject("$first","$totalCost"))
+								.append("totalCostForPatient", new BasicDBObject("$first","$totalCostForPatient"))
+								.append("totalSavingInPercentage", new BasicDBObject("$first","$totalSavingInPercentage"))
+								.append("isCancelled", new BasicDBObject("$first","$isCancelled"))
+								.append("patientName", new BasicDBObject("$first","$patientName"))
+								.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
+								.append("createdTime", new BasicDBObject("$first","$createdTime")))));
+				
+				List<OrderDiagnosticTest> orderDiagnosticTests = mongoTemplate.aggregate(aggregation, OrderDiagnosticTestCollection.class, OrderDiagnosticTest.class).getMappedResults();
+				if(orderDiagnosticTests != null && !orderDiagnosticTests.isEmpty())response = orderDiagnosticTests.get(0);
+				else {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId");
+				}
+			}else if(isUser) {
+				Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(orderId))),
+						Aggregation.lookup("location_cl", "locationId", "_id", "location"),
+						new CustomAggregationOperation(new BasicDBObject("$unwind", new BasicDBObject("path", "$location").append("preserveNullAndEmptyArrays", true))),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("_id", "$_id")
+								.append("locationId","$locationId")
+								.append("userId","$userId")
+								.append("uniqueOrderId","$uniqueOrderId")
+								.append("pickUpTime","$pickUpTime")
+								.append("pickUpDate","$pickUpDate")
+								.append("testsPackageId","$testsPackageId")
+								.append("diagnosticTests","$diagnosticTests")
+								.append("pickUpAddress","$pickUpAddress")
+								.append("orderStatus","$orderStatus")
+								.append("totalCost","$totalCost")
+								.append("totalCostForPatient","$totalCostForPatient")
+								.append("totalSavingInPercentage","$totalSavingInPercentage")
+								.append("isCancelled","$isCancelled")
+								.append("createdTime","$createdTime")
+								.append("updatedTime","$updatedTime")
+								.append("locationName","$location.locationName")
+								.append("isNABLAccredited","$location.isNABLAccredited"))),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", "$_id")
+								.append("locationId", new BasicDBObject("$first","$locationId"))
+								.append("userId", new BasicDBObject("$first","$userId"))
+								.append("uniqueOrderId", new BasicDBObject("$first","$uniqueOrderId"))
+								.append("pickUpTime", new BasicDBObject("$first","$pickUpTime"))
+								.append("pickUpDate", new BasicDBObject("$first","$pickUpDate"))
+								.append("testsPackageId", new BasicDBObject("$first","$testsPackageId"))
+								.append("diagnosticTests", new BasicDBObject("$first","$diagnosticTests"))
+								.append("pickUpAddress", new BasicDBObject("$first","$pickUpAddress"))
+								.append("orderStatus", new BasicDBObject("$first","$orderStatus"))
+								.append("totalCost", new BasicDBObject("$first","$totalCost"))
+								.append("totalCostForPatient", new BasicDBObject("$first","$totalCostForPatient"))
+								.append("totalSavingInPercentage", new BasicDBObject("$first","$totalSavingInPercentage"))
+								.append("isCancelled", new BasicDBObject("$first","$isCancelled"))
+								.append("locationName", new BasicDBObject("$first","$locationName"))
+								.append("updatedTime", new BasicDBObject("$first","$updatedTime"))
+								.append("createdTime", new BasicDBObject("$first","$createdTime"))
+								.append("isNABLAccredited", new BasicDBObject("$first","$isNABLAccredited")))));
+				
+				List<OrderDiagnosticTest> orderDiagnosticTests = mongoTemplate.aggregate(aggregation, OrderDiagnosticTestCollection.class, OrderDiagnosticTest.class).getMappedResults();
+				if(orderDiagnosticTests != null && !orderDiagnosticTests.isEmpty())response = orderDiagnosticTests.get(0);
+				else {
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId");
+				}
+			}else {
+				orderDiagnosticTestCollection = orderDiagnosticTestRepository.findOne(new ObjectId(orderId));
+				if (orderDiagnosticTestCollection == null)
+					throw new BusinessException(ServiceError.InvalidInput, "Invalid orderId");
+
+				response = new OrderDiagnosticTest();
+				BeanUtil.map(orderDiagnosticTestCollection, response);
+			}
+			
+			
+		} catch (Exception e) {
+			logger.error("Error while getting order test " + e.getMessage());
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown, "Error while getting order test");
+		}
+		return response;
+	}
 }

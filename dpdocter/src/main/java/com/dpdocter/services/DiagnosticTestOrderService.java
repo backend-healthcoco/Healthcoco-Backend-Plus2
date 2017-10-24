@@ -17,4 +17,9 @@ public interface DiagnosticTestOrderService {
 	List<OrderDiagnosticTest> getPatientOrders(String userId, int page, int size);
 
 	List<OrderDiagnosticTest> getLabOrders(String locationId, int page, int size);
+
+	OrderDiagnosticTest cancelOrderDiagnosticTest(String orderId, String userId);
+
+	OrderDiagnosticTest getDiagnosticTestOrderById(String orderId, Boolean isLab, Boolean isUser);
+
 }
