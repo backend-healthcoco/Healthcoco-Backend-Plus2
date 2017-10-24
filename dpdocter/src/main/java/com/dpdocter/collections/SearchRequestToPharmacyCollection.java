@@ -123,12 +123,19 @@ public class SearchRequestToPharmacyCollection extends GenericCollection {
 		this.uniqueResponseId = uniqueResponseId;
 	}
 
+	public Boolean getIsAlreadyRequested() {
+		return isAlreadyRequested;
+	}
+
+	public void setIsAlreadyRequested(Boolean isAlreadyRequested) {
+		this.isAlreadyRequested = isAlreadyRequested;
+	}
+
 	@Override
 	public String toString() {
 		return "SearchRequestToPharmacyCollection [id=" + id + ", userId=" + userId + ", uniqueRequestId="
-				+ uniqueRequestId + ", replyType=" + replyType + ", localeId=" + localeId + ", discount=" + discount
-				+ ", discountedPrice=" + discountedPrice + ", realPrice=" + realPrice + ", note=" + note
-				+ ", uniqueResponseId=" + uniqueResponseId + "]";
+				+ uniqueRequestId + ", uniqueResponseId=" + uniqueResponseId + ", isAlreadyRequested="
+				+ isAlreadyRequested + ", replyType=" + replyType + ", localeId=" + localeId + ", discount=" + discount
+				+ ", discountedPrice=" + discountedPrice + ", realPrice=" + realPrice + ", note=" + note + "]";
 	}
-	
 }
