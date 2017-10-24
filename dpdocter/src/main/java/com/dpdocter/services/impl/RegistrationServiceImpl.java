@@ -335,7 +335,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Value(value = "${user.reminder.not.found}")
 	private String reminderNotFoundException;
-	
+
 	@Override
 	@Transactional
 	public User checkIfPatientExist(PatientRegistrationRequest request) {
@@ -677,13 +677,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 					logger.error("Incorrect User Id");
 					throw new BusinessException(ServiceError.InvalidInput, "Incorrect User Id");
 				}
-				
+
 				if (!DPDoctorUtils.anyStringEmpty(request.getLocalPatientName()))
 					userCollection.setFirstName(request.getLocalPatientName());
-				
+
 				userCollection.setIsActive(true);
 				userCollection.setUpdatedTime(new Date());
-				
+
 				BeanUtil.map(userCollection, registeredPatientDetails);
 				patientCollection = patientRepository.findByUserIdDoctorIdLocationIdAndHospitalId(userObjectId,
 						doctorObjectId, locationObjectId, hospitalObjectId);
@@ -700,13 +700,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 						patientCollection.setEmailAddress(request.getEmailAddress());
 					if (request.getDob() != null)
 						patientCollection.setDob(request.getDob());
-					
-					if(infoType != null && !infoType.isEmpty()) {
-						if(infoType.contains("PERSONALINFO"))
+
+					if (infoType != null && !infoType.isEmpty()) {
+						if (infoType.contains("PERSONALINFO"))
 							patientCollection.setPersonalInformation(request.getPersonalInformation());
-						if(infoType.contains("LIFESTYLE"))
+						if (infoType.contains("LIFESTYLE"))
 							patientCollection.setLifestyleQuestionAnswers(request.getLifestyleQuestionAnswers());
-						if(infoType.contains("MEDICAL"))
+						if (infoType.contains("MEDICAL"))
 							patientCollection.setMedicalQuestionAnswers(request.getMedicalQuestionAnswers());
 					}
 				} else {
@@ -724,7 +724,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 					patientCollection.setThumbnailUrl(imageURLResponse.getThumbnailUrl());
 					userCollection.setThumbnailUrl(null);
 				}
-				
+
 				patientCollection.setUpdatedTime(new Date());
 				userCollection = userRepository.save(userCollection);
 				patientCollection = patientRepository.save(patientCollection);
@@ -748,7 +748,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				registeredPatientDetails.setCreatedTime(patientCollection.getCreatedTime());
 				registeredPatientDetails.setAddress(patientCollection.getAddress());
 				registeredPatientDetails.setImageUrl(patientCollection.getImageUrl());
-				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl()); 				
+				registeredPatientDetails.setThumbnailUrl(patientCollection.getThumbnailUrl());
 			} else {
 				patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(userObjectId,
 						locationObjectId, hospitalObjectId);
@@ -1846,6 +1846,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			BeanUtil.map(request, userCollection);
 			userCollection.setUserName(request.getEmailAddress());
 			userCollection.setCreatedTime(new Date());
+			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
 			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
 			userCollection.setUserState(UserState.NOTVERIFIED);
 			userCollection = userRepository.save(userCollection);
@@ -3008,7 +3009,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality,
 									streetAddress)) {
 								Address address = new Address(country, city, state, postalCode, locality, null, null,
-										null,streetAddress);
+										null, streetAddress);
 								request.setAddress(address);
 							}
 							if (!DPDoctorUtils.anyStringEmpty(fields[19]) && !fields[19].equalsIgnoreCase("NULL")) {
@@ -3673,34 +3674,45 @@ public class RegistrationServiceImpl implements RegistrationService {
 		try {
 			ObjectId userId = new ObjectId(request.getUserId());
 			UserRemindersCollection userRemindersCollection = userRemindersRepository.findByUserId(userId);
-			
-			if(userRemindersCollection == null) {
+
+			if (userRemindersCollection == null) {
 				userRemindersCollection = new UserRemindersCollection();
 				userRemindersCollection.setCreatedTime(new Date());
 				userRemindersCollection.setUserId(userId);
 			}
-			
-			if(DPDoctorUtils.allStringsEmpty(reminderType)) {
+
+			if (DPDoctorUtils.allStringsEmpty(reminderType)) {
 				userRemindersCollection.setFoodReminder(request.getFoodReminder());
 				userRemindersCollection.setMedicineReminder(request.getMedicineReminder());
 				userRemindersCollection.setWalkReminder(request.getWalkReminder());
 				userRemindersCollection.setWaterReminder(request.getWaterReminder());
 				userRemindersCollection.setWorkoutReminder(request.getWorkoutReminder());
-			}else {
-				switch(ReminderType.valueOf(reminderType.toUpperCase())) {
-				case WATER : userRemindersCollection.setWaterReminder(request.getWaterReminder()); break;
-				case FOOD : userRemindersCollection.setFoodReminder(request.getFoodReminder()); break;
-				case MEDICINE : userRemindersCollection.setMedicineReminder(request.getMedicineReminder()); break;
-				case WORKOUT : userRemindersCollection.setWorkoutReminder(request.getWorkoutReminder()); break;
-				case WALK : userRemindersCollection.setWalkReminder(request.getWalkReminder()); break;
-				default : break;
+			} else {
+				switch (ReminderType.valueOf(reminderType.toUpperCase())) {
+				case WATER:
+					userRemindersCollection.setWaterReminder(request.getWaterReminder());
+					break;
+				case FOOD:
+					userRemindersCollection.setFoodReminder(request.getFoodReminder());
+					break;
+				case MEDICINE:
+					userRemindersCollection.setMedicineReminder(request.getMedicineReminder());
+					break;
+				case WORKOUT:
+					userRemindersCollection.setWorkoutReminder(request.getWorkoutReminder());
+					break;
+				case WALK:
+					userRemindersCollection.setWalkReminder(request.getWalkReminder());
+					break;
+				default:
+					break;
 				}
 			}
-			
+
 			userRemindersCollection.setUpdatedTime(new Date());
 			userRemindersCollection = userRemindersRepository.save(userRemindersCollection);
 			BeanUtil.map(userRemindersCollection, response);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3713,30 +3725,42 @@ public class RegistrationServiceImpl implements RegistrationService {
 	public UserReminders getPatientReminders(String userId, String reminderType) {
 		UserReminders response = null;
 		try {
-			UserRemindersCollection userRemindersCollection = userRemindersRepository.findByUserId(new ObjectId(userId));
-			if(userRemindersCollection == null) {
+			UserRemindersCollection userRemindersCollection = userRemindersRepository
+					.findByUserId(new ObjectId(userId));
+			if (userRemindersCollection == null) {
 				logger.error(reminderNotFoundException);
 				throw new BusinessException(ServiceError.Unknown, reminderNotFoundException);
 			}
 			response = new UserReminders();
-			
-			if(DPDoctorUtils.allStringsEmpty(reminderType)) {
+
+			if (DPDoctorUtils.allStringsEmpty(reminderType)) {
 				BeanUtil.map(userRemindersCollection, response);
-			}else {
-				switch(ReminderType.valueOf(reminderType.toUpperCase())) {
-				case WATER : response.setWaterReminder(userRemindersCollection.getWaterReminder()); break;
-				case FOOD : response.setFoodReminder(userRemindersCollection.getFoodReminder()); break;
-				case MEDICINE : response.setMedicineReminder(userRemindersCollection.getMedicineReminder()); break;
-				case WORKOUT : response.setWorkoutReminder(userRemindersCollection.getWorkoutReminder()); break;
-				case WALK : response.setWalkReminder(userRemindersCollection.getWalkReminder()); break;
-				default : break;
+			} else {
+				switch (ReminderType.valueOf(reminderType.toUpperCase())) {
+				case WATER:
+					response.setWaterReminder(userRemindersCollection.getWaterReminder());
+					break;
+				case FOOD:
+					response.setFoodReminder(userRemindersCollection.getFoodReminder());
+					break;
+				case MEDICINE:
+					response.setMedicineReminder(userRemindersCollection.getMedicineReminder());
+					break;
+				case WORKOUT:
+					response.setWorkoutReminder(userRemindersCollection.getWorkoutReminder());
+					break;
+				case WALK:
+					response.setWalkReminder(userRemindersCollection.getWalkReminder());
+					break;
+				default:
+					break;
 				}
 				response.setId(userRemindersCollection.getId().toString());
 				response.setUserId(userRemindersCollection.getUserId().toString());
 				response.setCreatedTime(userRemindersCollection.getCreatedTime());
 				response.setUpdatedTime(userRemindersCollection.getUpdatedTime());
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
@@ -3751,55 +3775,64 @@ public class RegistrationServiceImpl implements RegistrationService {
 		UserAddress response = null;
 		try {
 			UserAddressCollection userAddressCollection = new UserAddressCollection();
-			
-			if(DPDoctorUtils.anyStringEmpty(request.getId())) {
+
+			if (DPDoctorUtils.anyStringEmpty(request.getId())) {
 				BeanUtil.map(request, userAddressCollection);
 				List<UserCollection> users = null;
-				if(!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
-					users = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
-							Aggregation.project("id")), UserCollection.class, UserCollection.class).getMappedResults();
-				}else {
-					users = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("id").in(request.getUserIds())),
-							Aggregation.limit(1),
-							Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"), Aggregation.unwind("user"), 
-							new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("id", "user.id")))), UserCollection.class, UserCollection.class).getMappedResults();
-				}if(users == null || users.isEmpty()) {
+				if (!DPDoctorUtils.anyStringEmpty(request.getMobileNumber())) {
+					users = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(
+											Aggregation
+													.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
+											Aggregation.project("id")),
+									UserCollection.class, UserCollection.class)
+							.getMappedResults();
+				} else {
+					users = mongoTemplate
+							.aggregate(
+									Aggregation.newAggregation(
+											Aggregation.match(new Criteria("id").in(request.getUserIds())),
+											Aggregation.limit(1),
+											Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"),
+											Aggregation.unwind("user"),
+											new CustomAggregationOperation(
+													new BasicDBObject("$project", new BasicDBObject("id", "user.id")))),
+									UserCollection.class, UserCollection.class)
+							.getMappedResults();
+				}
+				if (users == null || users.isEmpty()) {
 					throw new BusinessException(ServiceError.InvalidInput, "Invalid mobileNumber or userID");
 				}
-				List<ObjectId> userIds = (List<ObjectId>) CollectionUtils.collect(users, new BeanToPropertyValueTransformer("id"));
+				List<ObjectId> userIds = (List<ObjectId>) CollectionUtils.collect(users,
+						new BeanToPropertyValueTransformer("id"));
 				userAddressCollection.setUserIds(userIds);
 				userAddressCollection.setCreatedTime(new Date());
-			}else {
+			} else {
 				userAddressCollection = userAddressRepository.findOne(new ObjectId(request.getId()));
 				userAddressCollection.setUpdatedTime(new Date());
 			}
 			userAddressCollection.setAddress(request.getAddress());
 			userAddressCollection.setFullName(request.getFullName());
 			userAddressCollection.setHomeDeliveryMobileNumber(request.getHomeDeliveryMobileNumber());
-			
+
 			Address address = userAddressCollection.getAddress();
-			List<GeocodedLocation> geocodedLocations = locationServices
-					.geocodeLocation((!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
-							? address.getStreetAddress() + ", " : "")
+			List<GeocodedLocation> geocodedLocations = locationServices.geocodeLocation(
+					(!DPDoctorUtils.anyStringEmpty(address.getStreetAddress()) ? address.getStreetAddress() + ", " : "")
 							+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
 									? address.getLandmarkDetails() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
-									? address.getLocality() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
-									? address.getCity() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getState())
-									? address.getState() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
-									? address.getCountry() + ", " : "")
-							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
-									? address.getPostalCode() : ""));
+							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ? address.getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getCity()) ? address.getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getState()) ? address.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry()) ? address.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode()) ? address.getPostalCode() : ""));
 			if (geocodedLocations != null && !geocodedLocations.isEmpty())
 				BeanUtil.map(geocodedLocations.get(0), userAddressCollection.getAddress());
-			
+
 			userAddressCollection = userAddressRepository.save(userAddressCollection);
 			response = new UserAddress();
 			BeanUtil.map(userAddressCollection, response);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");
@@ -3812,36 +3845,35 @@ public class RegistrationServiceImpl implements RegistrationService {
 		List<UserAddress> response = null;
 		try {
 			Criteria criteria = new Criteria();
-			if(!DPDoctorUtils.anyStringEmpty(userId))criteria.and("userIds").is(new ObjectId(userId));
-			if(!DPDoctorUtils.anyStringEmpty(mobileNumber))criteria.and("mobileNumber").is(mobileNumber);
-			
-			if (!discarded)criteria.and("discarded").is(discarded);
-			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)), UserAddressCollection.class, UserAddress.class).getMappedResults();
-			if(response != null && !response.isEmpty()) {
-				for(UserAddress userAddress : response) {
+			if (!DPDoctorUtils.anyStringEmpty(userId))
+				criteria.and("userIds").is(new ObjectId(userId));
+			if (!DPDoctorUtils.anyStringEmpty(mobileNumber))
+				criteria.and("mobileNumber").is(mobileNumber);
+
+			if (!discarded)
+				criteria.and("discarded").is(discarded);
+			response = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(criteria)),
+					UserAddressCollection.class, UserAddress.class).getMappedResults();
+			if (response != null && !response.isEmpty()) {
+				for (UserAddress userAddress : response) {
 					Address address = userAddress.getAddress();
 					String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
-								? address.getStreetAddress() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
-										? address.getLandmarkDetails() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(address.getLocality())
-										? address.getLocality() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(address.getCity())
-										? address.getCity() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(address.getState())
-										? address.getState() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(address.getCountry())
-										? address.getCountry() + ", " : "")
-								+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode())
-										? address.getPostalCode() : "");
+							? address.getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getLandmarkDetails())
+									? address.getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getLocality()) ? address.getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getCity()) ? address.getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getState()) ? address.getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getCountry()) ? address.getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(address.getPostalCode()) ? address.getPostalCode() : "");
 
-						if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
-							formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
-						}
+					if (formattedAddress.charAt(formattedAddress.length() - 2) == ',') {
+						formattedAddress = formattedAddress.substring(0, formattedAddress.length() - 2);
+					}
 					userAddress.setFormattedAddress(formattedAddress);
 				}
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while getting user address");
@@ -3854,18 +3886,20 @@ public class RegistrationServiceImpl implements RegistrationService {
 		UserAddress response = null;
 		try {
 			UserAddressCollection userAddressCollection = null;
-			if(!DPDoctorUtils.anyStringEmpty(mobileNumber))userAddressCollection = userAddressRepository.find(new ObjectId(addressId), mobileNumber);
-			else userAddressCollection = userAddressRepository.find(new ObjectId(addressId), new ObjectId(userId));
-			if(userAddressCollection != null) {
+			if (!DPDoctorUtils.anyStringEmpty(mobileNumber))
+				userAddressCollection = userAddressRepository.find(new ObjectId(addressId), mobileNumber);
+			else
+				userAddressCollection = userAddressRepository.find(new ObjectId(addressId), new ObjectId(userId));
+			if (userAddressCollection != null) {
 				userAddressCollection.setDiscarded(discarded);
 				userAddressCollection.setUpdatedTime(new Date());
 				userAddressCollection = userAddressRepository.save(userAddressCollection);
 				response = new UserAddress();
 				BeanUtil.map(userAddressCollection, response);
-			}else {
+			} else {
 				throw new BusinessException(ServiceError.InvalidInput, "Invalid addressId or userId");
 			}
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error while adding user address");

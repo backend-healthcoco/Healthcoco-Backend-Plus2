@@ -43,6 +43,7 @@ public class DpDocterLoggingAspect {
 		long start = System.currentTimeMillis();
 	    LOGGER.warn("Going to call the method " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + new Date());
 	    Object response =  pjp.proceed();
+	    //System.out.println(response);
 	    LOGGER.warn("Method execution completed for " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + new Date());
 	    long elapsedTime = System.currentTimeMillis() - start;
 	    LOGGER.warn("Method " + pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " took "+ elapsedTime + " milliseconds for execution");
@@ -59,7 +60,9 @@ public class DpDocterLoggingAspect {
 		TimeZone timeZone=TimeZone.getTimeZone("IST");
 		sdf.setTimeZone(timeZone);
 		String expceptionMsg = ExceptionUtils.getStackTrace(e);
-		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(expceptionMsg));
+		Object oapObject = pjp.getThis();
+		mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(String.valueOf(oapObject) + expceptionMsg));
+		
 		LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 		LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 		Response<Exception> response = new Response<Exception>();
@@ -78,7 +81,8 @@ public class DpDocterLoggingAspect {
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
 			sdf.setTimeZone(timeZone);
 			String expceptionMsg = ExceptionUtils.getStackTrace(e);
-			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(expceptionMsg));
+			Object oapObject = pjp.getThis();
+			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(String.valueOf(oapObject) + expceptionMsg));
 			LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 			LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 			Response<Exception> response = new Response<Exception>();
@@ -96,7 +100,8 @@ public class DpDocterLoggingAspect {
 			TimeZone timeZone=TimeZone.getTimeZone("IST");
 			sdf.setTimeZone(timeZone);
 			String expceptionMsg = ExceptionUtils.getStackTrace(e);
-			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(expceptionMsg));
+			Object oapObject = pjp.getThis();
+			mailService.sendExceptionMail("Exception Thrown in "+  pjp.getSignature().getName() + "() in " + pjp.getTarget().getClass().getSimpleName() + " at " + sdf.format(new Date()),mailBodyGenerator.generateExceptionEmailBody(String.valueOf(oapObject) + expceptionMsg));
 			LOGGER.warn("LoggingAspect.logAfterThrowingAllMethods()");
 			LOGGER.warn("Exception catched : " + e.getClass().getCanonicalName());
 			Response<Exception> response = new Response<Exception>();
