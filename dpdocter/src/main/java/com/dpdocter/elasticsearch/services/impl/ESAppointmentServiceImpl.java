@@ -760,12 +760,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (esDoctorDocuments != null) {
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+
+					if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
+						slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
+					}
 					if (doctorDocument.getSpecialities() != null) {
-						if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
-							slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
-						}
 
 						List<String> specialities = new ArrayList<>();
+
 						for (String specialityId : doctorDocument.getSpecialities()) {
 							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
 							if (specialityCollection != null) {
