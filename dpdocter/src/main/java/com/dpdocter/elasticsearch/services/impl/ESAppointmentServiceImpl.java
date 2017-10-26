@@ -380,7 +380,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (!DPDoctorUtils.anyStringEmpty(doctor.getFirstName())) {
 						slugUrl = "dr-" + doctor.getFirstName().toLowerCase().trim();
 					}
-					List<String> specialities = new ArrayList<>();
+					List<String> specialities = new ArrayList<String>();
 					if (doctor.getSpecialities() != null && !doctor.getSpecialities().isEmpty()) {
 						for (String specialityId : doctor.getSpecialities()) {
 							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
