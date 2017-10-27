@@ -380,19 +380,21 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					if (!DPDoctorUtils.anyStringEmpty(doctor.getFirstName())) {
 						slugUrl = "dr-" + doctor.getFirstName().toLowerCase().trim();
 					}
-					List<String> specialities = new ArrayList<>();
-					for (String specialityId : doctor.getSpecialities()) {
-						ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
-						if (specialityCollection != null) {
-							specialities.add(specialityCollection.getSuperSpeciality());
-							if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
-								slugUrl = slugUrl + "-" + specialityCollection.getSuperSpeciality().toLowerCase();
-							} else {
-								slugUrl = specialityCollection.getSuperSpeciality().toLowerCase();
+					List<String> specialities = new ArrayList<String>();
+					if (doctor.getSpecialities() != null) {
+						for (String specialityId : doctor.getSpecialities()) {
+							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
+							if (specialityCollection != null) {
+								specialities.add(specialityCollection.getSuperSpeciality());
+								if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
+									slugUrl = slugUrl + "-" + specialityCollection.getSuperSpeciality().toLowerCase();
+								} else {
+									slugUrl = specialityCollection.getSuperSpeciality().toLowerCase();
+								}
 							}
 						}
+						object.setSpecialities(specialities);
 					}
-					doctor.setSpecialities(specialities);
 					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
 						object.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-").replaceAll("/", "-"));
 					object.setFirstName(doctor.getFirstName());
@@ -757,12 +759,11 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (esDoctorDocuments != null) {
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+					if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
+						slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
+					}
 					if (doctorDocument.getSpecialities() != null) {
-						if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
-							slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
-						}
-
-						List<String> specialities = new ArrayList<>();
+						List<String> specialities = new ArrayList<String>();
 						for (String specialityId : doctorDocument.getSpecialities()) {
 							ESSpecialityDocument specialityCollection = esSpecialityRepository.findOne(specialityId);
 							if (specialityCollection != null) {
@@ -776,9 +777,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						}
 						doctorDocument.setSpecialities(specialities);
 					}
-					if (!DPDoctorUtils.anyStringEmpty(slugUrl))
+					if (!DPDoctorUtils.anyStringEmpty(slugUrl)) {
 						doctorDocument.setDoctorSlugURL(slugUrl.trim().replaceAll(" ", "-").replaceAll("/", "-"));
-
+					}
 					if (doctorDocument.getImageUrl() != null)
 						doctorDocument.setImageUrl(getFinalImageURL(doctorDocument.getImageUrl()));
 					if (doctorDocument.getImages() != null && !doctorDocument.getImages().isEmpty()) {
