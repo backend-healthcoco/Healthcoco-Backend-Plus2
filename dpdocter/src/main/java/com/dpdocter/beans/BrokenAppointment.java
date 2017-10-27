@@ -21,8 +21,6 @@ public class BrokenAppointment extends GenericCollection {
 
 	private String patientName;
 
-	private String signature;
-
 	private String remark;
 
 	private Boolean discarded = false;
@@ -97,14 +95,6 @@ public class BrokenAppointment extends GenericCollection {
 
 	public void setPatientName(String patientName) {
 		this.patientName = patientName;
-	}
-
-	public String getSignature() {
-		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
 	}
 
 	public String getRemark() {

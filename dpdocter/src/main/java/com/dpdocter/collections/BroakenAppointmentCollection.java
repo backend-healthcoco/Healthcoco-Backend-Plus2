@@ -1,32 +1,34 @@
 package com.dpdocter.collections;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-public class RepairRecordsOrComplianceBookCollection extends GenericCollection {
+@Document(collection = "broken_appointment_cl")
+public class BroakenAppointmentCollection extends GenericCollection {
+	@Id
 	private ObjectId id;
-
+	@Field
 	private ObjectId doctorId;
-
+	@Field
 	private ObjectId locationId;
-
+	@Field
 	private ObjectId hospitalId;
-
+	@Field
 	private Long date;
+	@Field
+	private Integer totalAppointment;
+	@Field
+	private Integer noOfBrokenAppointment;
+	@Field
+	private String work;
+	@Field
+	private String patientName;
 
-	private String nameOfEquipment;
-
-	private String idNum;
-
-	private String complaints;
-
-	private Long breakDownDateTime;
-
-	private String repairDetail;
-
-	private Long repairDateTime;
-
+	@Field
 	private String remark;
-
+	@Field
 	private Boolean discarded = false;
 
 	public ObjectId getId() {
@@ -69,52 +71,36 @@ public class RepairRecordsOrComplianceBookCollection extends GenericCollection {
 		this.date = date;
 	}
 
-	public String getNameOfEquipment() {
-		return nameOfEquipment;
+	public Integer getTotalAppointment() {
+		return totalAppointment;
 	}
 
-	public void setNameOfEquipment(String nameOfEquipment) {
-		this.nameOfEquipment = nameOfEquipment;
+	public void setTotalAppointment(Integer totalAppointment) {
+		this.totalAppointment = totalAppointment;
 	}
 
-	public String getIdNum() {
-		return idNum;
+	public Integer getNoOfBrokenAppointment() {
+		return noOfBrokenAppointment;
 	}
 
-	public void setIdNum(String idNum) {
-		this.idNum = idNum;
+	public void setNoOfBrokenAppointment(Integer noOfBrokenAppointment) {
+		this.noOfBrokenAppointment = noOfBrokenAppointment;
 	}
 
-	public String getComplaints() {
-		return complaints;
+	public String getWork() {
+		return work;
 	}
 
-	public void setComplaints(String complaints) {
-		this.complaints = complaints;
+	public void setWork(String work) {
+		this.work = work;
 	}
 
-	public Long getBreakDownDateTime() {
-		return breakDownDateTime;
+	public String getPatientName() {
+		return patientName;
 	}
 
-	public void setBreakDownDateTime(Long breakDownDateTime) {
-		this.breakDownDateTime = breakDownDateTime;
-	}
-
-	public String getRepairDetail() {
-		return repairDetail;
-	}
-
-	public void setRepairDetail(String repairDetail) {
-		this.repairDetail = repairDetail;
-	}
-
-	public Long getRepairDateTime() {
-		return repairDateTime;
-	}
-
-	public void setRepairDateTime(Long repairDateTime) {
-		this.repairDateTime = repairDateTime;
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
 	}
 
 	public String getRemark() {

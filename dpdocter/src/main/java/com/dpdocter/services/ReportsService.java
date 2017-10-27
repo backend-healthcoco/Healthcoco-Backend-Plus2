@@ -2,6 +2,7 @@ package com.dpdocter.services;
 
 import java.util.List;
 
+import com.dpdocter.beans.BrokenAppointment;
 import com.dpdocter.beans.ClinicalIndicator;
 import com.dpdocter.beans.DeliveryReports;
 import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
@@ -42,8 +43,8 @@ public interface ReportsService {
 
 	public ClinicalIndicator discardClinicalIndicators(String indicatorId, boolean discarded);
 
-	public List<ClinicalIndicator> getClinicalIndicators(int size, int page, String docterId, String locationId,
-			String hospitalId, boolean discarded);
+	public List<ClinicalIndicator> getClinicalIndicators(int size, int page, String doctorId, String locationId,
+			String hospitalId, boolean discarded, String type);
 
 	public ClinicalIndicator getClinicalIndicatorById(String indicatorId);
 
@@ -53,14 +54,14 @@ public interface ReportsService {
 			boolean discarded);
 
 	public List<EquipmentLogAMCAndServicingRegister> getEquipmentLogAMCAndServicingRegisters(int size, int page,
-			String docterId, String locationId, String hospitalId, boolean discarded);
+			String doctorId, String locationId, String hospitalId, boolean discarded);
 
 	public EquipmentLogAMCAndServicingRegister addEquipmentLogAMCAndServicingRegister(
 			EquipmentLogAMCAndServicingRegister request);
 
 	public EquipmentLogAMCAndServicingRegister getEquipmentLogAMCAndServicingRegisterById(String registerid);
 
-	public List<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBooks(int size, int page, String docterId,
+	public List<RepairRecordsOrComplianceBook> getRepairRecordsOrComplianceBooks(int size, int page, String doctorId,
 			String locationId, String hospitalId, boolean discarded);
 
 	public RepairRecordsOrComplianceBook discardrepairRecordsOrComplianceBook(String bookId, boolean discarded);
@@ -68,4 +69,13 @@ public interface ReportsService {
 	public RepairRecordsOrComplianceBook getRepairRecordsOrComplianceBookById(String bookid);
 
 	public RepairRecordsOrComplianceBook addRepairRecordsOrComplianceBook(RepairRecordsOrComplianceBook request);
+
+	public BrokenAppointment discardBrokenAppointment(String appointmentId, boolean discarded);
+
+	public List<BrokenAppointment> getBrokenAppointments(int size, int page, String doctorId, String locationId,
+			String hospitalId, boolean discarded);
+
+	public BrokenAppointment getBrokenAppointment(String appointmentId);
+
+	public BrokenAppointment addBrokenAppointment(BrokenAppointment request);
 }

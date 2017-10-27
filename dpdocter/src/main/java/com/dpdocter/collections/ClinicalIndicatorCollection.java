@@ -32,7 +32,7 @@ public class ClinicalIndicatorCollection extends GenericCollection {
 	@Field
 	private Boolean discarded=false;
 	@Field
-	private ClinicalIndicatorEnum type = ClinicalIndicatorEnum.RCT_FAILURE;
+	private ClinicalIndicatorEnum indicatortype = ClinicalIndicatorEnum.RCT_FAILURE;
 
 	
 	public Boolean getDiscarded() {
@@ -123,12 +123,14 @@ public class ClinicalIndicatorCollection extends GenericCollection {
 		this.remark = remark;
 	}
 
-	public ClinicalIndicatorEnum getType() {
-		return type;
+	public ClinicalIndicatorEnum getIndicatortype() {
+		return indicatortype;
 	}
 
-	public void setType(ClinicalIndicatorEnum type) {
-		this.type = type;
+	public void setIndicatortype(ClinicalIndicatorEnum indicatortype) {
+		this.indicatortype = indicatortype;
 	}
+
+	
 
 }

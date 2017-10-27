@@ -25,8 +25,6 @@ public class RepairRecordsOrComplianceBook extends GenericCollection {
 
 	private Long repairDateTime;
 
-	private String signature;
-
 	private String remark;
 
 	private Boolean discarded = false;
@@ -117,14 +115,6 @@ public class RepairRecordsOrComplianceBook extends GenericCollection {
 
 	public void setRepairDateTime(Long repairDateTime) {
 		this.repairDateTime = repairDateTime;
-	}
-
-	public String getSignature() {
-		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
 	}
 
 	public String getRemark() {

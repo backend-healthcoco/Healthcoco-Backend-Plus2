@@ -25,7 +25,7 @@ public class ClinicalIndicator extends GenericCollection {
 
 	private String remark;
 
-	private ClinicalIndicatorEnum type = ClinicalIndicatorEnum.RCT_FAILURE;
+	private ClinicalIndicatorEnum indicatortype = ClinicalIndicatorEnum.RCT_FAILURE;
 
 	private Boolean discarded = false;
 
@@ -117,12 +117,12 @@ public class ClinicalIndicator extends GenericCollection {
 		this.hospitalId = hospitalId;
 	}
 
-	public ClinicalIndicatorEnum getType() {
-		return type;
+	public ClinicalIndicatorEnum getIndicatortype() {
+		return indicatortype;
 	}
 
-	public void setType(ClinicalIndicatorEnum type) {
-		this.type = type;
+	public void setIndicatortype(ClinicalIndicatorEnum indicatortype) {
+		this.indicatortype = indicatortype;
 	}
 
 }

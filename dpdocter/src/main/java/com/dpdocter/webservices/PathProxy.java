@@ -1,5 +1,7 @@
 package com.dpdocter.webservices;
 
+import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
+
 /**
  * @author veeraj
  */
@@ -900,7 +902,7 @@ public interface PathProxy {
 		public static final String GET_PATIENT_APPOINTMENTS = "/patient";
 
 		public static final String GET_PATIENT_LAST_APPOINTMENT = "/patient/last/{patientId}/{locationId}";
-		
+
 		public static final String GET_TIME_SLOTS = "getTimeSlots/{doctorId}/{locationId}/{date}";
 
 		public static final String SEND_REMINDER_TO_PATIENT = "/sendReminder/patient/{appointmentId}";
@@ -1127,7 +1129,22 @@ public interface PathProxy {
 		public static final String SUBMIT_DELIVERY_REPORTS = "/submitDeliveryReports";
 
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
-
+		public static final String ADD_CLINICAL_INDICATOR = "/addClinicalIndicator";
+		public static final String GET_CLINICAL_INDICATOR = "/getClinicalIndicator/{id}";
+		public static final String GET_CLINICAL_INDICATORS = "/getClinicalIndicator";
+		public static final String DELETE_CLINICAL_INDICATORS = "/clinicalIndicator/{id}";
+		public static final String ADD_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/addEquipmentLogAMCAndServicingRegister";
+		public static final String GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/getEquipmentLogAMCAndServicingRegister/{id}";
+		public static final String GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTERS = "/getEquipmentLogAMCAndServicingRegister";
+		public static final String DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/equipmentLogAMCAndServicingRegister/{id}";
+		public static final String ADD_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/addRepairRecordsOrComplianceBook";
+		public static final String GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/getRepairRecordsOrComplianceBook/{id}";
+		public static final String GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOKS = "/getRepairRecordsOrComplianceBook";
+		public static final String DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/repairRecordsOrComplianceBook/{id}";
+		public static final String ADD_BROKEN_APPOINTMENT = "/addBrokenAppointment";
+		public static final String GET_BROKEN_APPOINTMENT = "/getBrokenAppointment/{id}";
+		public static final String GET_BROKEN_APPOINTMENTS = "/getBrokenAppointment";
+		public static final String DELETE_BROKEN_APPOINTMENT = "/brokenAppointment/{id}";
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";
@@ -1287,9 +1304,9 @@ public interface PathProxy {
 		public static final String ADD_VIDEO = "add";
 
 		public static final String GET_VIDEO = "get";
-		
+
 		public static final String ADD_MY_VIDEO = "addMyVideo";
-		
+
 		public static final String GET_MY_VIDEO = "getMyVideo";
 
 	}
@@ -1403,25 +1420,25 @@ public interface PathProxy {
 
 		public static final String GET_FAVOURITE_LABS = "/labs/{userId}";
 	}
-	
+
 	public static final String DIAGNOSTIC_TEST_ORDER_BASE_URL = BASE_URL + "/test";
 
 	public interface DiagnosticTestOrderUrls {
 
 		public static final String SEARCH_LABS_BY_TEST = "/searchLabs";
-		
+
 		public static final String GET_SAMPLE_PICKUP_TIME_SLOTS = "/pickUpTimeSlots";
-		
+
 		public static final String PLACE_ORDER = "/placeOrder";
 
 		public static final String GET_PATIENT_ORDERS = "/orders/patient/{userId}";
-		
+
 		public static final String GET_LAB_ORDERS = "/orders/lab/{locationId}";
 
 		public static final String CANCEL_ORDER_DIAGNOSTIC_TEST = "/cancelOrder/{orderId}/{userId}";
 
 		public static final String GET_ORDER_BY_ID = "/order/{orderId}/view";
-		
+
 		public static final String GET_ORDERS = "orders";
 	}
 

@@ -32,8 +32,6 @@ public class EquipmentLogAMCAndServicingRegisterCollection extends GenericCollec
 	@Field
 	private Long nextServicingDate;
 	@Field
-	private String signature;
-	@Field
 	private String remark;
 	@Field
 	private Boolean discarded = false;
@@ -132,14 +130,6 @@ public class EquipmentLogAMCAndServicingRegisterCollection extends GenericCollec
 
 	public void setNextServicingDate(Long nextServicingDate) {
 		this.nextServicingDate = nextServicingDate;
-	}
-
-	public String getSignature() {
-		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
 	}
 
 	public String getRemark() {
