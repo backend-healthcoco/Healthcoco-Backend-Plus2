@@ -611,6 +611,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 							}
 						}
 					}
+					appointmentCollection.setCategory(request.getCategory());
 					appointmentCollection.setExplanation(request.getExplanation());
 					appointmentCollection.setNotifyDoctorByEmail(request.getNotifyDoctorByEmail());
 					appointmentCollection.setNotifyDoctorBySms(request.getNotifyDoctorBySms());
