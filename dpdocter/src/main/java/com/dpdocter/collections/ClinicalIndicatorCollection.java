@@ -26,15 +26,14 @@ public class ClinicalIndicatorCollection extends GenericCollection {
 	@Field
 	private Integer totalOfFailure;
 	@Field
-	private String DoctorName;
+	private String doctorName;
 	@Field
 	private String remark;
 	@Field
-	private Boolean discarded=false;
+	private Boolean discarded = false;
 	@Field
 	private ClinicalIndicatorEnum indicatortype = ClinicalIndicatorEnum.RCT_FAILURE;
 
-	
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -108,11 +107,11 @@ public class ClinicalIndicatorCollection extends GenericCollection {
 	}
 
 	public String getDoctorName() {
-		return DoctorName;
+		return doctorName;
 	}
 
 	public void setDoctorName(String doctorName) {
-		DoctorName = doctorName;
+		this.doctorName = doctorName;
 	}
 
 	public String getRemark() {
@@ -130,7 +129,5 @@ public class ClinicalIndicatorCollection extends GenericCollection {
 	public void setIndicatortype(ClinicalIndicatorEnum indicatortype) {
 		this.indicatortype = indicatortype;
 	}
-
-	
 
 }

@@ -1131,20 +1131,20 @@ public interface PathProxy {
 		public static final String ADD_PRESCRIPTION_IN_OPD_REPORTS = "/addOPDReports";
 		public static final String ADD_CLINICAL_INDICATOR = "/addClinicalIndicator";
 		public static final String GET_CLINICAL_INDICATOR = "/getClinicalIndicator/{id}";
-		public static final String GET_CLINICAL_INDICATORS = "/getClinicalIndicator";
-		public static final String DELETE_CLINICAL_INDICATORS = "/clinicalIndicator/{id}";
+		public static final String GET_CLINICAL_INDICATORS = "/getClinicalIndicator/get";
+		public static final String DELETE_CLINICAL_INDICATORS = "/clinicalIndicator/{id}/delete";
 		public static final String ADD_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/addEquipmentLogAMCAndServicingRegister";
 		public static final String GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/getEquipmentLogAMCAndServicingRegister/{id}";
 		public static final String GET_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTERS = "/getEquipmentLogAMCAndServicingRegister";
-		public static final String DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/equipmentLogAMCAndServicingRegister/{id}";
+		public static final String DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER = "/equipmentLogAMCAndServicingRegister/{id}/delete";
 		public static final String ADD_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/addRepairRecordsOrComplianceBook";
 		public static final String GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/getRepairRecordsOrComplianceBook/{id}";
 		public static final String GET_REPAIR_RECORDS_OR_COMPLAINCE_BOOKS = "/getRepairRecordsOrComplianceBook";
-		public static final String DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/repairRecordsOrComplianceBook/{id}";
+		public static final String DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK = "/repairRecordsOrComplianceBook/{id}/delete";
 		public static final String ADD_BROKEN_APPOINTMENT = "/addBrokenAppointment";
 		public static final String GET_BROKEN_APPOINTMENT = "/getBrokenAppointment/{id}";
 		public static final String GET_BROKEN_APPOINTMENTS = "/getBrokenAppointment";
-		public static final String DELETE_BROKEN_APPOINTMENT = "/brokenAppointment/{id}";
+		public static final String DELETE_BROKEN_APPOINTMENT = "/brokenAppointment/{id}/delete";
 	}
 
 	public static final String DYNAMIC_UI_BASE_URL = BASE_URL + "/dynamicUI";

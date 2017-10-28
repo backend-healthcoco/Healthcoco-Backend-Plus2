@@ -208,7 +208,7 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS)
 	@GET
 	@ApiOperation(value = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS, notes = PathProxy.ReportsUrls.GET_CLINICAL_INDICATORS)
-	public Response<ClinicalIndicator> getClinicalIndicator(@QueryParam("size") int size, @QueryParam("page") int page,
+	public Response<ClinicalIndicator> getClinicalIndicators(@QueryParam("size") int size, @QueryParam("page") int page,
 			@QueryParam("doctorId") String doctorId, @QueryParam("locationId") String locationId,
 			@QueryParam("hospitalId") String hospitalId, @QueryParam("discarded") boolean discarded,
 			@QueryParam("type") String type) {
@@ -226,7 +226,7 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS)
 	@DELETE
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS, notes = PathProxy.ReportsUrls.DELETE_CLINICAL_INDICATORS)
-	public Response<ClinicalIndicator> getClinicalIndicator(@PathParam("id") String id,
+	public Response<ClinicalIndicator> deleteClinicalIndicator(@PathParam("id") String id,
 			@QueryParam("discarded") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -238,10 +238,10 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR)
+	@Path(value = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT)
 	@POST
-	@ApiOperation(value = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR, notes = PathProxy.ReportsUrls.ADD_CLINICAL_INDICATOR)
-	public Response<BrokenAppointment> addClinicalIndicator(BrokenAppointment request) {
+	@ApiOperation(value = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT, notes = PathProxy.ReportsUrls.ADD_BROKEN_APPOINTMENT)
+	public Response<BrokenAppointment> addBrokenAppointment(BrokenAppointment request) {
 		if (request == null) {
 			logger.warn("Request send  is NULL");
 			throw new BusinessException(ServiceError.InvalidInput, "Request send  is NULL");
@@ -291,7 +291,7 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
 	@DELETE
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT, notes = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
-	public Response<BrokenAppointment> getBrokenAppointment(@PathParam("id") String id,
+	public Response<BrokenAppointment> deleteBrokenAppointment(@PathParam("id") String id,
 			@QueryParam("discarded") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -357,10 +357,10 @@ public class ReportsAPI {
 		return response;
 	}
 
-	@Path(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
+	@Path(value = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
 	@DELETE
-	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT, notes = PathProxy.ReportsUrls.DELETE_BROKEN_APPOINTMENT)
-	public Response<EquipmentLogAMCAndServicingRegister> getEquipmentLogAMCAndServicingRegister(
+	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER, notes = PathProxy.ReportsUrls.DELETE_EQUIPMENT_LOG_AMC_AND_SERVICING_REGISTER)
+	public Response<EquipmentLogAMCAndServicingRegister> deleteEquipmentLogAMCAndServicingRegister(
 			@PathParam("id") String id, @QueryParam("discarded") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");
@@ -427,7 +427,7 @@ public class ReportsAPI {
 	@Path(value = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
 	@DELETE
 	@ApiOperation(value = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK, notes = PathProxy.ReportsUrls.DELETE_REPAIR_RECORDS_OR_COMPLAINCE_BOOK)
-	public Response<RepairRecordsOrComplianceBook> getdele(@PathParam("id") String id,
+	public Response<RepairRecordsOrComplianceBook> deleteRepairRecordsOrComplianceBook(@PathParam("id") String id,
 			@QueryParam("discarded") boolean discarded) {
 		if (DPDoctorUtils.anyStringEmpty(id)) {
 			logger.warn("Invalid Input");

@@ -1710,15 +1710,16 @@ public class RecordsServiceImpl implements RecordsService {
 
 			ObjectId patientObjectId = null;
 			ObjectId doctorObjectId = null;
-			if (!DPDoctorUtils.anyStringEmpty(patientId))
+			if (!DPDoctorUtils.anyStringEmpty(patientId)){
 				patientObjectId = new ObjectId(patientId);
+			}
 
 			Criteria criteria = new Criteria("updatedTime").gt(new Date(createdTimeStamp));
 			if (!DPDoctorUtils.anyStringEmpty(patientObjectId)) {
 				criteria = criteria.orOperator(new Criteria("patientId").is(patientObjectId),
 						new Criteria("shareWith").is(patientObjectId));
 			}
-			if (!DPDoctorUtils.anyStringEmpty(doctorId, hospitalId, locationId)) {
+			if (!DPDoctorUtils.allStringsEmpty(doctorId, hospitalId, locationId)) {
 				doctorObjectId = new ObjectId(doctorId);
 				criteria.and("doctorId").is(doctorObjectId).and("locationId").is(new ObjectId(locationId))
 						.and("hospitalId").is(new ObjectId(hospitalId));

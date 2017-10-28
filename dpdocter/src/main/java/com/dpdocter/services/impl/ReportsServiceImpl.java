@@ -865,6 +865,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
 					.findOne(new ObjectId(indicatorId));
+			response=new ClinicalIndicator();
 			BeanUtil.map(clinicalIndicatorCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
