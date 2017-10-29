@@ -7,7 +7,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
-import com.dpdocter.collections.DiagnosticTestPickUpSlotCollection;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.LabSearchResponse;
