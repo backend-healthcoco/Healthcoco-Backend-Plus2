@@ -1947,75 +1947,74 @@ public class AppointmentServiceImpl implements AppointmentService {
 					response = new SlotDataResponse();
 					response.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
 					slotResponse = new ArrayList<Slot>();
+					List<WorkingHours> workingHours = null;
 					for (WorkingSchedule workingSchedule : doctorClinicProfileCollection.getWorkingSchedules()) {
 						if (workingSchedule.getWorkingDay().getDay().equalsIgnoreCase(day)) {
-							List<WorkingHours> workingHours = workingSchedule.getWorkingHours();
-							if (workingHours != null && !workingHours.isEmpty()) {
-								for (WorkingHours workingHour : workingHours) {
-									if (workingHour.getFromTime() != null && workingHour.getToTime() != null
-											&& doctorClinicProfileCollection.getAppointmentSlot().getTime() > 0) {
-										startTime = workingHour.getFromTime();
-										endTime = workingHour.getToTime();
-										slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
+							workingHours = workingSchedule.getWorkingHours();
+						}
+					}
+					
+					if(workingHours != null && !workingHours.isEmpty()) {
+						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
+						localCalendar.setTime(date);
+						int dayOfDate = localCalendar.get(Calendar.DATE);
+						int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
+						int yearOfDate = localCalendar.get(Calendar.YEAR);
+
+						DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
+								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
+						DateTime end = new DateTime(yearOfDate, monthOfDate, dayOfDate, 23, 59, 59, DateTimeZone
+								.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
+						
+						for(WorkingHours hours : workingHours) {
+							startTime = hours.getFromTime();
+							endTime = hours.getToTime();
+							List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end, hours.getFromTime(), hours.getToTime(), new Sort(Direction.ASC, "time.fromTime"));
+
+							for(AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
+								if(endTime > startTime) {
+									if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
+										if (bookedSlot.getIsAllDayEvent()) {
+											if (bookedSlot.getFromDate().equals(date))
+												bookedSlot.getTime().setToTime(719);
+											if (bookedSlot.getToDate().equals(date))
+												bookedSlot.getTime().setFromTime(0);
+										}
 									}
+									List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
+											bookedSlot.getTime().getFromTime(),
+											Math.round(slotTime), true);
+									if (slots != null)
+										slotResponse.addAll(slots);
+									
+									slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
+											bookedSlot.getTime().getToTime(),
+											Math.round(slotTime), false);
+									if (slots != null)
+										slotResponse.addAll(slots);
+									startTime = bookedSlot.getTime().getToTime();
 								}
 							}
-						}
-					}
-					Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone()));
-					localCalendar.setTime(date);
-					int dayOfDate = localCalendar.get(Calendar.DATE);
-					int monthOfDate = localCalendar.get(Calendar.MONTH) + 1;
-					int yearOfDate = localCalendar.get(Calendar.YEAR);
-
-					DateTime start = new DateTime(yearOfDate, monthOfDate, dayOfDate, 0, 0, 0, DateTimeZone
-							.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-					DateTime end = new DateTime(yearOfDate, monthOfDate, dayOfDate, 23, 59, 59, DateTimeZone
-							.forTimeZone(TimeZone.getTimeZone(doctorClinicProfileCollection.getTimeZone())));
-					List<AppointmentBookedSlotCollection> bookedSlots = appointmentBookedSlotRepository
-							.findByDoctorLocationId(doctorObjectId, locationObjectId, start, end, new Sort(Direction.ASC, "time.fromTime"));
-
-					for(AppointmentBookedSlotCollection bookedSlot : bookedSlots) {
-						if(endTime > startTime) {
-							if (!bookedSlot.getFromDate().equals(bookedSlot.getToDate())) {
-								if (bookedSlot.getIsAllDayEvent()) {
-									if (bookedSlot.getFromDate().equals(date))
-										bookedSlot.getTime().setToTime(719);
-									if (bookedSlot.getToDate().equals(date))
-										bookedSlot.getTime().setFromTime(0);
-								}
-							}
-							List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
-									bookedSlot.getTime().getFromTime(),
-									Math.round(slotTime), true);
-							if (slots != null)
-								slotResponse.addAll(slots);
 							
-							slots = DateAndTimeUtility.sliceTime(bookedSlot.getTime().getFromTime(),
-									bookedSlot.getTime().getToTime(),
-									Math.round(slotTime), false);
-							if (slots != null)
-								slotResponse.addAll(slots);
-							startTime = bookedSlot.getTime().getToTime();
-						}
-					}
-					
-					if(endTime > startTime) {
-						List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
-								endTime,
-								Math.round(slotTime), true);
-						if (slots != null)
-							slotResponse.addAll(slots);
-					}
-					
-					if (checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate,
-							doctorClinicProfileCollection.getTimeZone()))
-						for (Slot slot : slotResponse) {
-							if (slot.getMinutesOfDay() < getMinutesOfDay(date)) {
-								slot.setIsAvailable(false);
-								slotResponse.set(slotResponse.indexOf(slot), slot);
+							if(endTime > startTime) {
+								List<Slot> slots = DateAndTimeUtility.sliceTime(startTime,
+										endTime,
+										Math.round(slotTime), true);
+								if (slots != null)
+									slotResponse.addAll(slots);
 							}
 						}
+						
+						if (checkToday(localCalendar.get(Calendar.DAY_OF_YEAR), yearOfDate,
+								doctorClinicProfileCollection.getTimeZone()))
+							for (Slot slot : slotResponse) {
+								if (slot.getMinutesOfDay() < getMinutesOfDay(date)) {
+									slot.setIsAvailable(false);
+									slotResponse.set(slotResponse.indexOf(slot), slot);
+								}
+							}
+				
+					}
 					response.setSlots(slotResponse);
 				}
 			}
