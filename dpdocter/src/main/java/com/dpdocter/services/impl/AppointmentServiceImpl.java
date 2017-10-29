@@ -2133,7 +2133,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 									slotResponse.set(slotResponse.indexOf(slot), slot);
 								}
 							}
-
 					}
 					response.setSlots(slotResponse);
 				}
