@@ -616,55 +616,58 @@ public class PharmacyServiceImpl implements PharmacyService {
 			
 			Criteria criteria = new Criteria("userId").is(new ObjectId(userId)).and("updatedTime").gte(new Date(updatedTImeLong));
 			Aggregation aggregation = null;
-			CustomAggregationOperation project = new CustomAggregationOperation(new BasicDBObject("$project", 
-					new BasicDBObject("localeId","$localeId")
-					.append("userId","$userId")
-					.append("uniqueRequestId","$uniqueRequestId")
-					.append("prescriptionRequest","$prescriptionRequest")
-					.append("pharmacyName","$pharmacyName")
-					.append("location","$location")
-					.append("latitude","$latitude")
-					.append("longitude","$longitude")
-					.append("isCancelled","$isCancelled")
-					.append("localeName","$locale.localeName")
-					.append("isTwentyFourSevenOpen","$locale.isTwentyFourSevenOpen")
-					.append("pharmacyType","$locale.pharmacyType")
-					.append("noOfLocaleRecommendation","$locale.noOfLocaleRecommendation")
-					.append("isHomeDeliveryAvailable","$locale.isHomeDeliveryAvailable")
-					.append("homeDeliveryRadius","$locale.homeDeliveryRadius")
-					.append("localeAddress","$locale.address")
-					.append("paymentInfo","$locale.paymentInfo")
-					.append("paymentInfos","$locale.paymentInfos")
-					.append("isOrdered", new BasicDBObject(
-					        "$cond", new BasicDBObject(
-							          "if", new BasicDBObject("$gt", Arrays.asList(new BasicDBObject("$size", "$orders"), 0)))
-							        .append("then", true)
-							        .append("else", false)))
-					.append("createdTime", "$createdTime")
-					.append("updatedTime", "$updatedTime")));
+			CustomAggregationOperation project = new CustomAggregationOperation(
+					new BasicDBObject("$project",
+							new BasicDBObject("localeId", "$localeId").append("userId", "$userId")
+									.append("uniqueRequestId", "$uniqueRequestId")
+									.append("prescriptionRequest", "$prescriptionRequest")
+									.append("pharmacyName", "$pharmacyName").append("location", "$location")
+									.append("latitude", "$latitude").append("longitude", "$longitude")
+									.append("isCancelled", "$isCancelled").append("localeName", "$locale.localeName")
+									.append("isTwentyFourSevenOpen", "$locale.isTwentyFourSevenOpen")
+									.append("pharmacyType", "$locale.pharmacyType")
+									.append("noOfLocaleRecommendation", "$locale.noOfLocaleRecommendation")
+									.append("isHomeDeliveryAvailable", "$locale.isHomeDeliveryAvailable")
+									.append("homeDeliveryRadius", "$locale.homeDeliveryRadius")
+									.append("localeAddress", "$locale.address")
+									.append("paymentInfo", "$locale.paymentInfo")
+									.append("paymentInfos",
+											"$locale.paymentInfos")
+									.append("isOrdered",
+											new BasicDBObject("$cond",
+													new BasicDBObject("if",
+															new BasicDBObject("$gt",
+																	Arrays.asList(new BasicDBObject("$size", "$orders"),
+																			0))).append("then", true).append("else",
+																					false)))
+									.append("createdTime", "$createdTime").append("updatedTime", "$updatedTime")));
 
-			CustomAggregationOperation group = new CustomAggregationOperation(new BasicDBObject("$group", 
-					new BasicDBObject("id","$_id").append("localeId", new BasicDBObject("$first","$localeId"))
-					.append("userId", new BasicDBObject("$first","$userId"))
-					.append("uniqueRequestId", new BasicDBObject("$first","$uniqueRequestId"))
-					.append("prescriptionRequest", new BasicDBObject("$first","$prescriptionRequest"))
-					.append("pharmacyName", new BasicDBObject("$first","$pharmacyName"))
-					.append("location", new BasicDBObject("$first","$location"))
-					.append("latitude", new BasicDBObject("$first","$latitude"))
-					.append("longitude", new BasicDBObject("$first","$longitude"))
-					.append("localeName", new BasicDBObject("$first","$localeName"))
-					.append("isTwentyFourSevenOpen", new BasicDBObject("$first","$isTwentyFourSevenOpen"))
-					.append("pharmacyType", new BasicDBObject("$first","$pharmacyType"))
-					.append("noOfLocaleRecommendation", new BasicDBObject("$first","$noOfLocaleRecommendation"))
-					.append("isHomeDeliveryAvailable", new BasicDBObject("$first","$isHomeDeliveryAvailable"))
-					.append("homeDeliveryRadius", new BasicDBObject("$first","$homeDeliveryRadius"))
-					.append("localeAddress", new BasicDBObject("$first","$localeAddress"))
-					.append("paymentInfo", new BasicDBObject("$first","$paymentInfo"))
-					.append("paymentInfos", new BasicDBObject("$first","$paymentInfos"))
-					.append("isOrdered", new BasicDBObject("$first","$isOrdered"))
-					.append("createdTime", new BasicDBObject("$first","$createdTime"))
-					.append("updatedTime", new BasicDBObject("$first","$updatedTime"))));
-			
+			CustomAggregationOperation group = new CustomAggregationOperation(
+					new BasicDBObject("$group",
+							new BasicDBObject("id", "$_id").append("localeId", new BasicDBObject("$first", "$localeId"))
+									.append("userId", new BasicDBObject("$first", "$userId"))
+									.append("uniqueRequestId", new BasicDBObject("$first", "$uniqueRequestId"))
+									.append("prescriptionRequest", new BasicDBObject("$first", "$prescriptionRequest"))
+									.append("pharmacyName", new BasicDBObject("$first", "$pharmacyName"))
+									.append("location", new BasicDBObject("$first", "$location"))
+									.append("latitude", new BasicDBObject("$first", "$latitude"))
+									.append("longitude", new BasicDBObject("$first", "$longitude"))
+									.append("localeName", new BasicDBObject("$first", "$localeName"))
+									.append("isTwentyFourSevenOpen",
+											new BasicDBObject("$first", "$isTwentyFourSevenOpen"))
+									.append("pharmacyType", new BasicDBObject("$first", "$pharmacyType"))
+									.append("noOfLocaleRecommendation",
+											new BasicDBObject("$first", "$noOfLocaleRecommendation"))
+									.append("isHomeDeliveryAvailable",
+											new BasicDBObject("$first", "$isHomeDeliveryAvailable"))
+									.append("homeDeliveryRadius", new BasicDBObject("$first", "$homeDeliveryRadius"))
+									.append("localeAddress", new BasicDBObject("$first", "$localeAddress"))
+									.append("paymentInfo", new BasicDBObject("$first", "$paymentInfo"))
+									.append("paymentInfos", new BasicDBObject("$first", "$paymentInfos"))
+									.append("isOrdered", new BasicDBObject("$first", "$isOrdered"))
+									.append("createdTime", new BasicDBObject("$first", "$createdTime"))
+									.append("updatedTime", new BasicDBObject("$first", "$updatedTime"))));
+
 			if (size > 0)
 				aggregation = Aggregation
 						.newAggregation(Aggregation.match(criteria),
@@ -676,25 +679,26 @@ public class PharmacyServiceImpl implements PharmacyService {
 								project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")),
 								Aggregation.skip((page) * size), Aggregation.limit(size));
 			else
-				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-						Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
-						new CustomAggregationOperation(new BasicDBObject("$unwind",
-								new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
-										true))),
-						project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+				aggregation = Aggregation
+						.newAggregation(Aggregation.match(criteria),
+								Aggregation.lookup("order_drug_cl", "uniqueRequestId", "uniqueRequestId", "orders"),
+								Aggregation.lookup("locale_cl", "localeId", "localeId", "locale"),
+								new CustomAggregationOperation(new BasicDBObject("$unwind",
+										new BasicDBObject("path", "$locale").append("preserveNullAndEmptyArrays",
+												true))),
+								project, group, Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
 
 			AggregationResults<SearchRequestFromUserResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
 					SearchRequestFromUserCollection.class, SearchRequestFromUserResponse.class);
-			
-			
+
 			response = aggregationResults.getMappedResults();
 			if (response != null && !response.isEmpty()) {
 				for (SearchRequestFromUserResponse requestFromUserResponse : response) {
-					requestFromUserResponse.setCountForYes(getPharmacyListCountbyOrderHistory(requestFromUserResponse.getUniqueRequestId(),
-							ReplyType.YES.toString()));
-					requestFromUserResponse.setCountForNo(getPharmacyListCountbyOrderHistory(requestFromUserResponse.getUniqueRequestId(),
-							ReplyType.NO.toString()));
-					
+					requestFromUserResponse.setCountForYes(getPharmacyListCountbyOrderHistory(
+							requestFromUserResponse.getUniqueRequestId(), ReplyType.YES.toString()));
+					requestFromUserResponse.setCountForNo(getPharmacyListCountbyOrderHistory(
+							requestFromUserResponse.getUniqueRequestId(), ReplyType.NO.toString()));
+
 					Address address = requestFromUserResponse.getLocaleAddress();
 					if (address != null) {
 						String formattedAddress = (!DPDoctorUtils.anyStringEmpty(address.getStreetAddress())
