@@ -9786,7 +9786,8 @@ public class ClinicalNotesServiceImpl implements ClinicalNotesService {
 		Criteria criteria = new Criteria().and("speciality").in(speciality);
 		if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
 			criteria = criteria.orOperator(new Criteria("diagnosis").regex("^" + searchTerm, "i"),
-					new Criteria("diagnosis").regex("^" + searchTerm));
+					new Criteria("diagnosis").regex("^" + searchTerm),new Criteria("category").regex("^" + searchTerm, "i"),
+					new Criteria("category").regex("^" + searchTerm));
 		}
 		criteria.and("category").exists(true);
 		aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
