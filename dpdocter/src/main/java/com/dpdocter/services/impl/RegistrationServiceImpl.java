@@ -2403,22 +2403,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 						clinicDoctorResponse.setUserId(doctorClinicProfileLookupResponse.getUser().getId().toString());
 						clinicDoctorResponse.setIsActivate(doctorClinicProfileLookupResponse.getIsActivate());
 						clinicDoctorResponse.setDiscarded(doctorClinicProfileLookupResponse.getDiscarded());
-						if(clinicDoctorResponse.getRole() != null){
-							for (Role userRole : clinicDoctorResponse.getRole()) {
-								if(userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))
-								{
-									clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole());
-								}
-									
-							}
-						}
-						if(clinicDoctorResponse.getWebRole() == null || clinicDoctorResponse.getWebRole().isEmpty())
-						{
-							if(clinicDoctorResponse.getRole() != null)
-							{
-								clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
-							}
-						}
+						
 						if (doctorClinicProfileLookupResponse.getDoctor() != null)
 							clinicDoctorResponse.setRegisterNumber(
 									doctorClinicProfileLookupResponse.getDoctor().getRegisterNumber());
@@ -2481,6 +2466,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 							clinicDoctorResponse.setRole(roles);
 							clinicDoctorResponse
 									.setColorCode(doctorClinicProfileLookupResponse.getUser().getColorCode());
+							if(clinicDoctorResponse.getRole() != null){
+								for (Role userRole : clinicDoctorResponse.getRole()) {
+									if(userRole.getRole().equalsIgnoreCase(RoleEnum.LOCATION_ADMIN.getRole()) || userRole.getRole().equalsIgnoreCase(RoleEnum.HOSPITAL_ADMIN.getRole()))
+									{
+										clinicDoctorResponse.setWebRole(RoleEnum.ADMIN.getRole());
+									}
+										
+								}
+							}
+							if(clinicDoctorResponse.getWebRole() == null || clinicDoctorResponse.getWebRole().isEmpty())
+							{
+								if(clinicDoctorResponse.getRole() != null)
+								{
+									clinicDoctorResponse.setWebRole(clinicDoctorResponse.getRole().get(0).getRole());
+								}
+							}
 							response.add(clinicDoctorResponse);
 						}
 					}
