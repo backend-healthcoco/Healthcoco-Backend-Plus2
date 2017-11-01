@@ -114,6 +114,7 @@ public class ESDoctorDocument extends DoctorLocation {
 	@Field(type = FieldType.Integer)
 	private Integer noOfRecommenations = 0;
 
+	@Field(type = FieldType.String)
 	private String doctorSlugURL;
 
 	public String getDoctorSlugURL() {

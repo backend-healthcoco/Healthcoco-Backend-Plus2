@@ -507,7 +507,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		List<ESDoctorDocument> esDoctorDocuments = null;
 		List<ESTreatmentServiceCostDocument> esTreatmentServiceCostDocuments = null;
 		try {
-			String slugUrl = null;
+
 			BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
 					.must(QueryBuilders.matchQuery("isDoctorListed", true))
 					.must(QueryBuilders.matchQuery("isClinic", true));
@@ -759,6 +759,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 			if (esDoctorDocuments != null) {
 				for (ESDoctorDocument doctorDocument : esDoctorDocuments) {
+					String slugUrl = null;
 					if (!DPDoctorUtils.anyStringEmpty(doctorDocument.getFirstName())) {
 						slugUrl = "dr-" + doctorDocument.getFirstName().toLowerCase().trim();
 					}
@@ -852,7 +853,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			if (!DPDoctorUtils.anyStringEmpty(test)) {
 				List<ESDiagnosticTestDocument> diagnosticTests = esDiagnosticTestRepository.findByTestName(test);
 				if (diagnosticTests != null) {
-					@SuppressWarnings("unchecked")
 					Collection<String> testIds = CollectionUtils.collect(diagnosticTests,
 							new BeanToPropertyValueTransformer("id"));
 					int count = (int) elasticsearchTemplate.count(new CriteriaQuery(new Criteria("testId").in(testIds)),
