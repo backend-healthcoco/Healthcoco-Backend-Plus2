@@ -492,4 +492,12 @@ public class DoctorClinicProfile {
 				+ isAutoSMS + ", isActivate=" + isActivate + ", isSendRegularCheckupSMS=" + isSendRegularCheckupSMS
 				+ ", regularCheckupMonth=" + regularCheckupMonth + ", checkUpTypeEnum=" + checkUpTypeEnum + "]";
 	}
+
+	public String getDoctorSlugURL() {
+		return doctorSlugURL;
+	}
+
+	public void setDoctorSlugURL(String doctorSlugURL) {
+		this.doctorSlugURL = doctorSlugURL;
+	}
 }
