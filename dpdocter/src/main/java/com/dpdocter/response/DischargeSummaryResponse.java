@@ -1,7 +1,6 @@
 package com.dpdocter.response;
 
 import java.util.Date;
-import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -57,51 +56,6 @@ public class DischargeSummaryResponse extends GenericCollection {
 	private String procedureNote;
 	private String doctorIncharge;
 	private VitalSigns vitalSigns;
-	private Date operationDate;
-	private List<String> surgeonNames;
-	private List<String> anesthetistNames;
-	private String implant;
-	private String cement;
-
-	public Date getOperationDate() {
-		return operationDate;
-	}
-
-	public void setOperationDate(Date operationDate) {
-		this.operationDate = operationDate;
-	}
-
-	public List<String> getSurgeonNames() {
-		return surgeonNames;
-	}
-
-	public void setSurgeonNames(List<String> surgeonNames) {
-		this.surgeonNames = surgeonNames;
-	}
-
-	public List<String> getAnesthetistNames() {
-		return anesthetistNames;
-	}
-
-	public void setAnesthetistNames(List<String> anesthetistNames) {
-		this.anesthetistNames = anesthetistNames;
-	}
-
-	public String getImplant() {
-		return implant;
-	}
-
-	public void setImplant(String implant) {
-		this.implant = implant;
-	}
-
-	public String getCement() {
-		return cement;
-	}
-
-	public void setCement(String cement) {
-		this.cement = cement;
-	}
 
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;
