@@ -102,6 +102,8 @@ public class DoctorClinicProfile {
 
 	private String packageType = PackageType.ADVANCE.getType();
 
+	private String doctorSlugURL;
+
 	public String getId() {
 		return id;
 	}
