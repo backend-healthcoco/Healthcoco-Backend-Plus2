@@ -24,6 +24,7 @@ import com.dpdocter.enums.DischargeSummaryPermissions;
 import com.dpdocter.enums.ENTPermissionType;
 import com.dpdocter.enums.GynacPermissionsEnum;
 import com.dpdocter.enums.OpthoPermissionEnums;
+import com.dpdocter.enums.OrthoPermissionType;
 import com.dpdocter.enums.PatientVisitPermissionEnum;
 import com.dpdocter.enums.PrescriptionPermissionEnum;
 import com.dpdocter.enums.ProfilePermissionEnum;
@@ -288,6 +289,31 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
 			uiPermissions.setAdmitCardPermissions(admitCardPermission);
 			break;
+			
+		case "ORTHOPEDIST":
+			uiPermissions = new UIPermissions();
+			clinicalNotesPermission = new ArrayList<String>(Arrays.asList(clinicalNotesPermission()));
+			prescriptionPermission = new ArrayList<String>(Arrays.asList(prescriptionPermission()));
+			profilePermission = new ArrayList<String>(Arrays.asList(historyPermission()));
+			tabPermission = new ArrayList<String>(Arrays.asList(tabPermission()));
+			vitalSignPermission = new ArrayList<String>(Arrays.asList(vitalSignPermission()));
+			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
+			dischargeSummaryPermission = new ArrayList<String>(Arrays.asList(dischargeSummaryPermission()));
+			List<String> orthoPermission = new ArrayList<String>(Arrays.asList(orthoPermission()));
+			dischargeSummaryPermission.addAll(orthoPermission);
+			admitCardPermission = new ArrayList<String>(Arrays.asList(admitcardPermission()));
+			uiPermissions.setClinicalNotesPermissions(clinicalNotesPermission);
+			uiPermissions.setPrescriptionPermissions(prescriptionPermission);
+			uiPermissions.setProfilePermissions(profilePermission);
+			uiPermissions.setTabPermissions(tabPermission);
+			uiPermissions.setPatientVisitPermissions(patientVisitPermission);
+			uiPermissions.setVitalSignPermissions(vitalSignPermission);
+			uiPermissions.setDischargeSummaryPermissions(dischargeSummaryPermission);
+			
+			uiPermissions.setAdmitCardPermissions(admitCardPermission);
+			break;
+			
+			
 		case "EMPTY":
 			uiPermissions = new UIPermissions();
 			patientVisitPermission = new ArrayList<String>(Arrays.asList(patientVisitPermission()));
@@ -418,6 +444,10 @@ public class DynamicUIServiceImpl implements DynamicUIService {
 
 	private String[] entPermission() {
 		return Arrays.toString(ENTPermissionType.values()).replaceAll("^.|.$", "").split(", ");
+	}
+	
+	private String[] orthoPermission() {
+		return Arrays.toString(OrthoPermissionType.values()).replaceAll("^.|.$", "").split(", ");
 	}
 
 	@Override
