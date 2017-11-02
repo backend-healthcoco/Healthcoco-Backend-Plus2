@@ -39,9 +39,9 @@ public class DiagnosticTestOrderApi {
 	@Autowired
 	private DiagnosticTestOrderService diagnosticTestOrderService;
 
-	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS_BY_TEST)
+	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS)
 	@GET
-	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS_BY_TEST, notes = DiagnosticTestOrderUrls.SEARCH_LABS_BY_TEST)
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS, notes = DiagnosticTestOrderUrls.SEARCH_LABS)
 	public Response<LabSearchResponse> searchLabsByTest(@QueryParam("city") String city,
 			@QueryParam("location") String location, @QueryParam(value = "latitude") String latitude,
 			@QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm, 

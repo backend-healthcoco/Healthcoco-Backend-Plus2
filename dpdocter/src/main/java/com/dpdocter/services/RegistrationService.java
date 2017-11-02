@@ -124,8 +124,6 @@ public interface RegistrationService {
 
 	RegisterDoctorResponse editUserInClinic(DoctorRegisterRequest request);
 
-	Boolean registerPatients(String doctorId, String locationId, String hospitalId);
-
 	Boolean updateDoctorClinicProfile();
 
 	ESPatientDocument getESPatientDocument(RegisteredPatientDetails patient);

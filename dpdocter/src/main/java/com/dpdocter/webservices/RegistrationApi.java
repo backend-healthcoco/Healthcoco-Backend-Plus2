@@ -850,20 +850,6 @@ public class RegistrationApi {
 		return response;
 	}
 
-	@Path(value = PathProxy.RegistrationUrls.REGISTER_PATIENTS_IN_BULK)
-	@GET
-	public Response<Boolean> registerPatients(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("hospitalId") String hospitalId) {
-		if (DPDoctorUtils.anyStringEmpty(doctorId, locationId, hospitalId)) {
-			logger.warn(invalidInput);
-			throw new BusinessException(ServiceError.InvalidInput, invalidInput);
-		}
-		Boolean changePatientNumberResponse = registrationService.registerPatients(doctorId, locationId, hospitalId);
-		Response<Boolean> response = new Response<Boolean>();
-		response.setData(changePatientNumberResponse);
-		return response;
-	}
-
 	// @Path(value =
 	// PathProxy.RegistrationUrls.UPDATE_PATIENT_INITIAL_COUNTER_ON_CLINIC_LEVEL)
 	// @GET

@@ -81,6 +81,8 @@ public class PatientRegistrationRequest {
 
 	private PersonalInformation personalInformation;
 
+	private String PNUM;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -361,6 +363,14 @@ public class PatientRegistrationRequest {
 		this.personalInformation = personalInformation;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientRegistrationRequest [userId=" + userId + ", firstName=" + firstName + ", localPatientName="
@@ -375,6 +385,7 @@ public class PatientRegistrationRequest {
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", role=" + role + ", registrationDate="
 				+ registrationDate + ", medicalQuestionAnswers=" + medicalQuestionAnswers
 				+ ", lifestyleQuestionAnswers=" + lifestyleQuestionAnswers + ", personalInformation="
-				+ personalInformation + "]";
+				+ personalInformation + ", PNUM=" + PNUM + "]";
 	}
+
 }

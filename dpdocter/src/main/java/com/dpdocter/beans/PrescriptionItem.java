@@ -24,11 +24,27 @@ public class PrescriptionItem {
 
 	private String instructions;
 
+	public PrescriptionItem() {
+		super();
+	}
+
+	public PrescriptionItem(ObjectId drugId, Duration duration, String dosage, DrugType drugType, String drugName,
+			String explanation, List<Long> dosageTime, List<DrugDirection> direction, String instructions) {
+		super();
+		this.drugId = drugId;
+		this.duration = duration;
+		this.dosage = dosage;
+		this.drugType = drugType;
+		this.drugName = drugName;
+		this.explanation = explanation;
+		this.dosageTime = dosageTime;
+		this.direction = direction;
+		this.instructions = instructions;
+	}
+
 	@Transient
 	private Long arrayIndex1;
 	
-	
-
 	public DrugType getDrugType() {
 		return drugType;
 	}

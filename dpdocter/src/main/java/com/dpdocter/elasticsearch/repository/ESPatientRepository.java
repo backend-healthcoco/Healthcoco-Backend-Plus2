@@ -1,11 +1,18 @@
 package com.dpdocter.elasticsearch.repository;
 
+import java.util.List;
+
+import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 
 public interface ESPatientRepository extends ElasticsearchRepository<ESPatientDocument, String>{
-//    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND (firstName:?3* OR emailAddress:?3* OR mobileNumber:?3* OR PID:?3*)")
+
+	@Query("{\"bool\": {\"must\": [{\"match\": {\"doctorId\": \"?0\"}}]}}")
+	List<ESPatientDocument> findByDoctorId(String doctorId);
+
+	//    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND (firstName:?3* OR emailAddress:?3* OR mobileNumber:?3* OR PID:?3*)")
 //    List<ESPatientDocument> find(String doctorId, String locationId, String hospitalId, String searchTerm, Pageable pageRequest);
 //
 //    @Query("doctorId:*?0* AND locationId:*?1* AND hospitalId:*?2* AND (firstName:?3* OR emailAddress:?3* OR mobileNumber:?3* OR PID:?3*)")
