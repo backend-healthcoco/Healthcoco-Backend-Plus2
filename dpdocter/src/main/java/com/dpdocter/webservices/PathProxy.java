@@ -1386,7 +1386,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String RANKING_BASE_URL = BASE_URL + "/ranking";
+	public static final String RANKING_BASE_URL = BASE_URL + "/ranking"; 
 
 	public interface RankingUrls {
 
@@ -1436,13 +1436,13 @@ public interface PathProxy {
 	public interface UploadDataUrls {
 
 		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
-
+		
 		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
-
+		
 		public static final String APPOINTMENTS = "/appointments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String TREATMENT_PLANS = "/treatments/plans/{doctorId}/{locationId}/{hospitalId}";
-
+		
 		public static final String TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";

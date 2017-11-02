@@ -101,7 +101,10 @@ public interface DrugRepository extends MongoRepository<DrugCollection, ObjectId
 	@Query("{'$or': [{'drugName' : {$regex : '^?0', $options : 'i'}, 'drugType.type' : {$regex : '^?1', $options : 'i'}, 'doctorId': ?2,  'locationId': ?3, 'hospitalId': ?4},{'drugName' : {$regex : '^?0', $options : 'i'}, 'drugType.type' : {$regex : '^?1', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
     List<DrugCollection> findByNameAndDoctorLocationHospital(String drugName, String drugType, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 
+<<<<<<< HEAD
 	@Query("{'locationId': ?0}")
 	List<DrugCollection> findByLocationId(ObjectId locationObjectId);
 
+=======
+>>>>>>> b905b17a... -Added Upload Bulk Data APIs
 }
