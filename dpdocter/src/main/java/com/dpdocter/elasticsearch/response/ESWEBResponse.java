@@ -3,10 +3,14 @@ package com.dpdocter.elasticsearch.response;
 import java.util.List;
 
 import com.dpdocter.elasticsearch.beans.ESDoctorWEbSearch;
+import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
 
-public class ESDoctorResponse {
- private List<ESDoctorWEbSearch> doctors;
- private String metaData;
+public class ESWEBResponse {
+	private List<ESDoctorWEbSearch> doctors;
+	private List<ESUserLocaleDocument> pharmacies;
+	private String metaData;
+	
+	
 public List<ESDoctorWEbSearch> getDoctors() {
 	return doctors;
 }
@@ -18,6 +22,12 @@ public String getMetaData() {
 }
 public void setMetaData(String metaData) {
 	this.metaData = metaData;
+}
+public List<ESUserLocaleDocument> getPharmacies() {
+	return pharmacies;
+}
+public void setPharmacies(List<ESUserLocaleDocument> pharmacies) {
+	this.pharmacies = pharmacies;
 }
  
  

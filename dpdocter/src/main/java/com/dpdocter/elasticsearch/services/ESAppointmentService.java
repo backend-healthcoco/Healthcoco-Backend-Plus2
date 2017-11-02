@@ -5,7 +5,7 @@ import java.util.List;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
-import com.dpdocter.elasticsearch.response.ESDoctorResponse;
+import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 
 public interface ESAppointmentService {
@@ -14,7 +14,6 @@ public interface ESAppointmentService {
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
 			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
 			int maxExperience, String service);
-
 
 	List<AppointmentSearchResponse> search(String city, String location, String latitude, String longitude,
 			String searchTerm);
@@ -28,10 +27,13 @@ public interface ESAppointmentService {
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable);
 
 	Boolean sendSMSToDoctors();
-	
-	ESDoctorResponse getDoctorForWeb(int page, int size, String city, String location, String latitude,
-			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
-			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
-			int maxExperience, String service);
+
+	ESWEBResponse getDoctorForWeb(int page, int size, String city, String location, String latitude, String longitude,
+			String speciality, String symptom, Boolean booking, Boolean calling, int minFee, int maxFee, int minTime,
+			int maxTime, List<String> days, String gender, int minExperience, int maxExperience, String service);
+
+	public ESWEBResponse getPharmacyForWeb(int page, int size, String city, String localeName, String latitude,
+			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
+			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable);
 
 }

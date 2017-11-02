@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -86,6 +87,17 @@ public class LocaleCollection extends GenericCollection {
 
 	@Field
 	private Double minimumAmountForDelivery = 0.0;
+
+	@Field
+	private String pharmacySlugURL;
+
+	public String getPharmacySlugURL() {
+		return pharmacySlugURL;
+	}
+
+	public void setPharmacySlugURL(String pharmacySlugURL) {
+		this.pharmacySlugURL = pharmacySlugURL;
+	}
 
 	public List<String> getPaymentInfos() {
 		return paymentInfos;

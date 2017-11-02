@@ -20,148 +20,159 @@ import com.dpdocter.enums.LocaleType;
 public class ESUserLocaleDocument {
 
 	@Id
-    private String id;//This is localeId
+	private String id;// This is localeId
 
 	@Field(type = FieldType.String)
-    private String title;
+	private String title;
 
 	@Field(type = FieldType.String)
-    private String firstName;
+	private String firstName;
 
 	@Field(type = FieldType.String)
-    private String userName;
-    
-	@Field(type = FieldType.String)
-    private String emailAddress;
+	private String userName;
 
 	@Field(type = FieldType.String)
-    private String mobileNumber;
+	private String emailAddress;
 
 	@Field(type = FieldType.String)
-    private String imageUrl;
+	private String mobileNumber;
 
 	@Field(type = FieldType.String)
-    private String thumbnailUrl;
+	private String imageUrl;
+
+	@Field(type = FieldType.String)
+	private String thumbnailUrl;
 
 	@Field(type = FieldType.Boolean)
-    private Boolean isActive = false;
+	private Boolean isActive = false;
 
 	@Field(type = FieldType.Boolean)
-    private Boolean isVerified = false;
+	private Boolean isVerified = false;
 
 	@Field(type = FieldType.String)
-    private String coverImageUrl;
+	private String coverImageUrl;
 
 	@Field(type = FieldType.String)
-    private String coverThumbnailImageUrl;
+	private String coverThumbnailImageUrl;
 
 	@Field(type = FieldType.String)
-    private String colorCode;
+	private String colorCode;
 
 	@Field(type = FieldType.String)
-    private String userUId;
+	private String userUId;
 
 	@Field(type = FieldType.String)
-    private String userId;
+	private String userId;
 
 	@Field(type = FieldType.String)
-    private String localeId;
-    
+	private String localeId;
+
 	@Field(type = FieldType.String)
 	private String localeName;
-	
+
 	@Field(type = FieldType.String)
 	private String registeredOwnerName;
-	
+
 	@Field(type = FieldType.String)
 	private String licenseNumber;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<LocaleImage> localeImages;
-	
+
 	@Field(type = FieldType.String)
 	private String logoUrl;
-	
+
 	@Field(type = FieldType.String)
 	private String logoThumbnailUrl;
-	
+
 	@Field(type = FieldType.String)
 	private String contactNumber;
-	
+
 	@MultiField(mainField = @Field(type = FieldType.String))
 	private List<String> alternateContactNumbers;
-	
+
 	@Field(type = FieldType.Nested)
 	private List<LocaleWorkingSchedule> localeWorkingSchedules;
-	
+
 	@Field(type = FieldType.Nested)
 	private Address address;
-	
+
 	@GeoPointField
 	private GeoPoint geoPoint;
 
 	@Field(type = FieldType.String)
 	private String localeAddress;
-	
+
 	@Field(type = FieldType.String)
 	private String websiteUrl;
-	
+
 	@Field(type = FieldType.String)
 	private String localeEmailAddress;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isTwentyFourSevenOpen;
-	
+
 	@Field(type = FieldType.String)
 	private String localeUId;
-	
+
 	@Field(type = FieldType.Integer)
 	private int openSince;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isActivate = false;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isLocaleListed = true;
-	
+
 	@Field(type = FieldType.Long)
 	private long localeRankingCount = 0;
-	
+
 	@Field(type = FieldType.Long)
 	private long noOfLocaleRecommendation = 0;
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isHomeDeliveryAvailable = false;
-	
+
 	@Field(type = FieldType.Double)
 	private double homeDeliveryRadius;
-	
+
 	@Field(type = FieldType.String)
 	private String paymentInfo;
-	
+
 	@Field(type = FieldType.String)
 	private List<String> paymentInfos;
-	
+
 	@Field(type = FieldType.String)
 	private String localeType = LocaleType.PHARMACY.getType();
-	
+
 	@Field(type = FieldType.Boolean)
 	private Boolean isPasswordVerified = false;
 
 	@Transient
 	private Double distance;
-	
+
 	@Field(type = FieldType.Boolean)
-	private Boolean isAcceptRequest=true;
-	
+	private Boolean isAcceptRequest = true;
+
 	@Field(type = FieldType.String)
 	private List<String> pharmacyType;
 
 	@Field(type = FieldType.Boolean)
 	private Boolean isGenericMedicineAvailable = false;
-	
+
 	@Field(type = FieldType.Double)
 	private Double minimumAmountForDelivery = 0.0;
+
+	@Field(type = FieldType.String)
+	private String pharmacySlugURL;
+
+	public String getPharmacySlugURL() {
+		return pharmacySlugURL;
+	}
+
+	public void setPharmacySlugURL(String pharmacySlugURL) {
+		this.pharmacySlugURL = pharmacySlugURL;
+	}
 
 	public Double getMinimumAmountForDelivery() {
 		return minimumAmountForDelivery;
@@ -479,7 +490,6 @@ public class ESUserLocaleDocument {
 		this.isHomeDeliveryAvailable = isHomeDeliveryAvailable;
 	}
 
-	
 	public double getHomeDeliveryRadius() {
 		return homeDeliveryRadius;
 	}
@@ -543,7 +553,6 @@ public class ESUserLocaleDocument {
 	public void setIsAcceptRequest(Boolean isAcceptRequest) {
 		this.isAcceptRequest = isAcceptRequest;
 	}
-	
 
 	public List<String> getPaymentInfos() {
 		return paymentInfos;
@@ -575,6 +584,5 @@ public class ESUserLocaleDocument {
 				+ ", isGenericMedicineAvailable=" + isGenericMedicineAvailable + ", minimumAmountForDelivery="
 				+ minimumAmountForDelivery + "]";
 	}
-
 
 }
