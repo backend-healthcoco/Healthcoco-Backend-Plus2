@@ -1,0 +1,1174 @@
+package com.dpdocter.services.impl;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
+
+import com.dpdocter.beans.Address;
+import com.dpdocter.beans.CustomAggregationOperation;
+import com.dpdocter.beans.DOB;
+import com.dpdocter.beans.Discount;
+import com.dpdocter.beans.Drug;
+import com.dpdocter.beans.DrugDirection;
+import com.dpdocter.beans.DrugDurationUnit;
+import com.dpdocter.beans.DrugType;
+import com.dpdocter.beans.Duration;
+import com.dpdocter.beans.OPDReports;
+import com.dpdocter.beans.PrescriptionItem;
+import com.dpdocter.beans.Quantity;
+import com.dpdocter.beans.Reference;
+import com.dpdocter.beans.RegisteredPatientDetails;
+import com.dpdocter.beans.Treatment;
+import com.dpdocter.beans.TreatmentFields;
+import com.dpdocter.beans.TreatmentService;
+import com.dpdocter.beans.WorkingHours;
+import com.dpdocter.collections.AppointmentBookedSlotCollection;
+import com.dpdocter.collections.AppointmentCollection;
+import com.dpdocter.collections.DiseasesCollection;
+import com.dpdocter.collections.DrugCollection;
+import com.dpdocter.collections.DrugDirectionCollection;
+import com.dpdocter.collections.DrugDurationUnitCollection;
+import com.dpdocter.collections.DrugTypeCollection;
+import com.dpdocter.collections.GroupCollection;
+import com.dpdocter.collections.PatientCollection;
+import com.dpdocter.collections.PatientTreatmentCollection;
+import com.dpdocter.collections.PatientVisitCollection;
+import com.dpdocter.collections.PrescriptionCollection;
+import com.dpdocter.collections.ReferencesCollection;
+import com.dpdocter.collections.TreatmentServicesCollection;
+import com.dpdocter.collections.UserCollection;
+import com.dpdocter.elasticsearch.document.ESPatientDocument;
+import com.dpdocter.elasticsearch.repository.ESPatientRepository;
+import com.dpdocter.elasticsearch.services.ESRegistrationService;
+import com.dpdocter.enums.AppointmentState;
+import com.dpdocter.enums.QuantityEnum;
+import com.dpdocter.enums.Resource;
+import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.UnitType;
+import com.dpdocter.enums.VisitedFor;
+import com.dpdocter.reflections.BeanUtil;
+import com.dpdocter.repository.AppointmentBookedSlotRepository;
+import com.dpdocter.repository.AppointmentRepository;
+import com.dpdocter.repository.DiseasesRepository;
+import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.DrugTypeRepository;
+import com.dpdocter.repository.GroupRepository;
+import com.dpdocter.repository.LocationRepository;
+import com.dpdocter.repository.PatientRepository;
+import com.dpdocter.repository.PatientTreamentRepository;
+import com.dpdocter.repository.PatientVisitRepository;
+import com.dpdocter.repository.PrescriptionRepository;
+import com.dpdocter.repository.ReferenceRepository;
+import com.dpdocter.repository.TreatmentServicesRepository;
+import com.dpdocter.repository.UserRepository;
+import com.dpdocter.request.DrugAddEditRequest;
+import com.dpdocter.request.PatientRegistrationRequest;
+import com.dpdocter.services.HistoryServices;
+import com.dpdocter.services.PatientTreatmentServices;
+import com.dpdocter.services.PrescriptionServices;
+import com.dpdocter.services.RegistrationService;
+import com.dpdocter.services.ReportsService;
+import com.dpdocter.services.TransactionalManagementService;
+import com.dpdocter.services.UploadDateService;
+import com.mongodb.BasicDBObject;
+
+import common.util.web.DPDoctorUtils;
+import common.util.web.PrescriptionUtils;
+
+@Service
+public class UploadDataServicesimpl implements UploadDateService {
+
+	private static Logger logger = Logger.getLogger(UploadDataServicesimpl.class.getName());
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
+
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private LocationRepository locationRepository;
+	
+	@Autowired
+	private ReferenceRepository referenceRepository;
+
+	@Autowired
+	private GroupRepository groupRepository;
+
+	@Autowired
+	private DiseasesRepository diseasesRepository;
+
+	@Autowired
+	private RegistrationService registrationService;
+
+	@Autowired
+	private PatientVisitRepository patientVisitRepository;
+
+	@Autowired
+	private ReportsService reportsService;
+	
+	@Autowired
+	private TransactionalManagementService transactionalManagementService;
+	
+	@Autowired
+	private ESRegistrationService esRegistrationService;
+	
+	@Autowired
+	private HistoryServices historyServices;
+	
+	@Autowired
+	private PatientRepository patientRepository;
+	
+	@Autowired
+	private PrescriptionRepository prescriptionRepository;
+	
+	@Autowired
+	private PatientTreamentRepository patientTreamentRepository;
+	
+	@Autowired
+	private DrugRepository drugRepository;
+	
+	@Autowired
+	private TreatmentServicesRepository treatmentServicesRepository;
+	
+	@Autowired
+	private PatientTreatmentServices patientTreatmentServices;
+	
+	@Autowired
+	private AppointmentRepository appointmentRepository;
+	
+	@Autowired
+	private AppointmentBookedSlotRepository appointmentBookedSlotRepository;
+	
+	@Autowired
+	private DrugTypeRepository drugTypeRepository;
+	
+	@Autowired
+	private PrescriptionServices prescriptionServices;
+	
+	@Value(value = "${patient.count}")
+	private String patientCount;
+	
+	private static final String COMMA_DELIMITER = ",";
+	
+	private static final String NEW_LINE_SEPARATOR = "\n";
+
+	private static final String FILE_HEADER = "PatientNumber,PatientName";
+	
+	@Value(value = "${upload.patients.data.file}")
+	private String UPLOAD_PATIENTS_DATA_FILE;
+	
+	@Value(value = "${upload.appointments.data.file}")
+	private String UPLOAD_APPOINTMENTS_DATA_FILE;
+	
+	@Value(value = "${upload.prescriptions.data.file}")
+	private String UPLOAD_PRESCRIPTIONS_DATA_FILE;
+	
+	@Value(value = "${list.patients.not.registered.file}")
+	private String LIST_PATIENTS_NOT_REGISTERED_FILE;
+	
+	@Value(value = "${upload.treatments.data.file}")
+	private String UPLOAD_TREATMENTS_DATA_FILE;
+	
+	@Value(value = "${upload.treatments.plan.data.file}")
+	private String UPLOAD_TREATMENTS_PLAN_DATA_FILE;
+	
+	private String patientInitial ="";
+	
+	@Autowired
+	private ESPatientRepository esPatientRepository;
+	
+	@Override
+	public Boolean deletePatients(String doctorId, String locationId, String hospitalId) {
+		try {
+			ObjectId doctorObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			
+			
+			List<PatientCollection> patientCollections = patientRepository.findByDoctorId(doctorObjectId, new Date(Long.parseLong("0")), 
+					new Sort(Direction.ASC, "createdTime"));
+			for(PatientCollection patientCollection : patientCollections) {
+				
+				ESPatientDocument document = esPatientRepository.findOne(patientCollection.getId().toString());
+				if(document != null)esPatientRepository.delete(document);
+				userRepository.delete(patientCollection.getUserId());
+				patientRepository.delete(patientCollection);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	@Override
+	public Boolean uploadPatientData(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		FileWriter fileWriter = null;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "%";
+		int lineCount = 0;
+		
+		try {
+			fileWriter = new FileWriter(LIST_PATIENTS_NOT_REGISTERED_FILE);
+			fileWriter.append(FILE_HEADER.toString());
+			fileWriter.append(NEW_LINE_SEPARATOR);
+			
+			br = new BufferedReader(new FileReader(UPLOAD_PATIENTS_DATA_FILE));
+			
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			
+			PatientRegistrationRequest request = null;
+			
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
+					String[] fields = line.split(cvsSplitBy);
+					if (!DPDoctorUtils.anyStringEmpty(fields[2]) && !fields[2].equalsIgnoreCase("NONE'")) {
+						
+						request = new PatientRegistrationRequest();
+						String mobileNumber = fields[2].replace("'", "");
+						if(mobileNumber.startsWith("+91"))mobileNumber = mobileNumber.replace("+91", "");
+						request.setMobileNumber(mobileNumber);
+						int count = 0;
+						
+						List<UserCollection> userCollections = userRepository.findByMobileNumber(mobileNumber);
+						if (userCollections != null && !userCollections.isEmpty()) {
+							for (UserCollection userCollection : userCollections) {
+								if (!userCollection.getUserName().equalsIgnoreCase(userCollection.getEmailAddress()))
+									count++;
+							}
+						}
+
+						if (count < Integer.parseInt(patientCount)) {
+							if (!DPDoctorUtils.anyStringEmpty(fields[1]) && !fields[1].equalsIgnoreCase("NONE'")) {
+								request.setFirstName(fields[1].replace("'", ""));
+								request.setLocalPatientName(fields[1].replace("'", ""));
+							}
+							if (!DPDoctorUtils.anyStringEmpty(fields[6]) && !fields[6].equalsIgnoreCase("NONE'"))
+								request.setGender(fields[6].replace("'", ""));
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[12]) && !fields[12].equalsIgnoreCase("NONE'")) {
+								String[] dob = fields[12].split("/");
+								DOB dobObject = new DOB(Integer.parseInt(dob[0]), Integer.parseInt(dob[1]),
+										Integer.parseInt(dob[2]));
+								request.setDob(dobObject);
+							}
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[13]) && !fields[13].equalsIgnoreCase("NONE'"))
+								request.setAge(Integer.parseInt(fields[13].replace("'", "")));
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[4]) && !fields[4].equalsIgnoreCase("NONE'"))
+								request.setEmailAddress(fields[4].replace("'", ""));
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[15]) && !fields[15].equalsIgnoreCase("NONE'"))
+								request.setBloodGroup(fields[15].replace("'", ""));
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[3]) && !fields[3].equalsIgnoreCase("NONE'"))
+								request.setSecMobile(fields[3].replace("'", ""));
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[5]) && !fields[5].equalsIgnoreCase("NONE'"))
+								request.setSecMobile(fields[5].replace("'", ""));
+							
+							String country = null, city = null, state = null, postalCode = null, locality = null,
+									streetAddress = null;
+
+							if (!DPDoctorUtils.anyStringEmpty(fields[7]) && !fields[7].equalsIgnoreCase("NONE'"))
+								streetAddress = fields[7].replace("'", "");
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[8]) && !fields[8].equalsIgnoreCase("NONE'"))
+								locality = fields[8].replace("'", "");
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[9]) && !fields[9].equalsIgnoreCase("NONE'"))
+								city = fields[9].replace("'", "");
+							
+//							if (!DPDoctorUtils.anyStringEmpty(fields[16]) && !fields[16].equalsIgnoreCase("NULL"))
+//								state = fields[16];
+//							if (!DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NULL"))
+								country = "India";
+							
+							if (!DPDoctorUtils.anyStringEmpty(fields[10]) && !fields[10].equalsIgnoreCase("NONE'"))
+								postalCode = fields[10].replace("'", "");
+
+							if (!DPDoctorUtils.allStringsEmpty(country, city, state, postalCode, locality, streetAddress)) {
+								Address address = new Address(country, city, state, postalCode, locality, null, null, null, streetAddress);
+								request.setAddress(address);
+							}
+						
+							if (fields.length > 18 && !DPDoctorUtils.anyStringEmpty(fields[18]) && !fields[18].equalsIgnoreCase("NONE'")) {
+								String referredBy = fields[18].replace("'", "");
+								Reference reference = new Reference();
+								reference.setReference(referredBy);
+								
+								ReferencesCollection referencesCollection = referenceRepository.find(referredBy, doctorObjectId, locationObjectId, hospitalObjectId);
+								if (referencesCollection != null)reference.setId(referencesCollection.getId().toString());
+								
+								request.setReferredBy(reference);
+							}
+							
+							if(fields.length > 19 && !DPDoctorUtils.anyStringEmpty(fields[19]) && !fields[19].equalsIgnoreCase("NONE'")) {
+								String groupName = fields[19].replace("'", "");
+								GroupCollection groupCollection = groupRepository.findByName(groupName, doctorObjectId, locationObjectId, hospitalObjectId, false);
+								if(groupCollection == null) {
+									groupCollection = new GroupCollection();
+									groupCollection.setDoctorId(doctorObjectId);
+									groupCollection.setLocationId(locationObjectId);
+									groupCollection.setHospitalId(hospitalObjectId);
+									groupCollection.setName(groupName);
+									groupCollection.setCreatedTime(new Date());
+									if (drCollection != null) {
+										groupCollection.setCreatedBy((drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
+														+ drCollection.getFirstName());
+								     }
+								   groupCollection = groupRepository.save(groupCollection);	
+								}
+								request.setGroups(Arrays.asList(groupCollection.getId().toString()));
+							}
+							request.setDoctorId(doctorId);
+							request.setLocationId(locationId);
+							request.setHospitalId(hospitalId);
+							
+							
+							if(!DPDoctorUtils.anyStringEmpty(fields[0])) {
+								request.setPNUM(fields[0].replace("'", ""));
+								
+								patientInitial = request.getPNUM().replaceAll("[0-9]","");
+								BufferedReader br1 = new BufferedReader(new FileReader(UPLOAD_APPOINTMENTS_DATA_FILE));
+								String appointmentDataLine = null;
+								while ((appointmentDataLine = br1.readLine()) != null) {
+									String[] splittedAppointmentData = appointmentDataLine.split(cvsSplitBy);
+									if(splittedAppointmentData[1].equalsIgnoreCase(fields[0])) {
+										SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy h:mm");
+										
+										String dateSTri = splittedAppointmentData[0].replace("'", "");
+										dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+										Date date = dateFormat.parse(dateSTri);
+										request.setRegistrationDate(date.getTime());
+										br1.close();
+										break;
+									}
+								
+								}
+							}else {
+								request.setRegistrationDate(new Date().getTime());
+							}
+							
+							
+							RegisteredPatientDetails registeredPatientDetails = registrationService.registerNewPatient(request);
+
+							transactionalManagementService.addResource(new ObjectId(registeredPatientDetails.getUserId()),
+									Resource.PATIENT, false);
+							esRegistrationService.addPatient(registrationService.getESPatientDocument(registeredPatientDetails));
+							
+							if(!DPDoctorUtils.anyStringEmpty(fields[17]) && !fields[17].equalsIgnoreCase("NONE'")) {
+								fields[17] = fields[17].replace("'", "");
+								String diseases[] = fields[17].split(",");
+								for(String disease : diseases) {
+									DiseasesCollection diseasesCollection = diseasesRepository.find(disease.replace("?", "\\\\?"), doctorObjectId, locationObjectId, hospitalObjectId, false);
+									if(diseasesCollection == null) {
+										diseasesCollection = new DiseasesCollection();
+										diseasesCollection.setCreatedTime(new Date());
+										diseasesCollection.setDoctorId(doctorObjectId);
+										diseasesCollection.setLocationId(locationObjectId);
+										diseasesCollection.setHospitalId(hospitalObjectId);
+										diseasesCollection.setDisease(disease);
+										
+										if (drCollection != null) {
+											diseasesCollection.setCreatedBy((drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
+															+ drCollection.getFirstName());
+									     }
+										diseasesCollection = diseasesRepository.save(diseasesCollection);
+									}
+									historyServices.assignMedicalHistory(diseasesCollection.getId().toString(), registeredPatientDetails.getUserId(), doctorId, hospitalId, locationId);
+								}
+							}
+							
+						} else {
+							System.out.println(patientCount + " patients already exist with mobile number "
+									+ request.getMobileNumber());
+						}
+					} else {
+						fileWriter.append(fields[0]+COMMA_DELIMITER+fields[1]);
+					}
+				}
+				lineCount++;
+				response = true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+					if(fileWriter != null) {
+						fileWriter.flush();
+						fileWriter.close();
+					}
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean uploadPrescriptionData(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "\\|";
+		int lineCount = 0;
+		try {
+			
+			br = new BufferedReader(new FileReader(UPLOAD_PRESCRIPTIONS_DATA_FILE));
+			
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			PrescriptionCollection prescriptionCollection = null;
+			
+			Map<String, DrugType> drugTypesMap = new HashMap<String, DrugType>();
+			List<DrugType> drugTypes = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria())), DrugTypeCollection.class, DrugType.class).getMappedResults();
+			if(drugTypes!= null && !drugTypes.isEmpty()) {
+				for(DrugType drugType : drugTypes)drugTypesMap.put(drugType.getType(), drugType);
+			}
+			
+			Map<String, DrugDurationUnit> drugDurationMap = new HashMap<String, DrugDurationUnit>();
+			List<DrugDurationUnit> drugDurationUnits = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria())), DrugDurationUnitCollection.class, DrugDurationUnit.class).getMappedResults();
+			if(drugDurationUnits!= null && !drugDurationUnits.isEmpty()) {
+				for(DrugDurationUnit durationUnit : drugDurationUnits)drugDurationMap.put(durationUnit.getUnit(), durationUnit);
+			}
+			
+			DrugDirection beforeMealDirection = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("direction").is("Before meal").and("doctorId").is(null))), DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+			DrugDirection afterMealDirection = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("direction").is("After meal").and("doctorId").is(null))), DrugDirectionCollection.class, DrugDirection.class).getUniqueMappedResult();
+			
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
+					Boolean createVisit = false;
+					String[] fields = line.split(cvsSplitBy);
+					
+					if(!DPDoctorUtils.anyStringEmpty(fields[2], fields[3])) {
+						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(locationObjectId, hospitalObjectId, fields[2].replace("'", ""));
+						if(patientCollection != null) {
+							
+							
+							Date createdTime = new Date();
+							if(!DPDoctorUtils.anyStringEmpty(fields[0])) {
+								SimpleDateFormat dateFormat = new SimpleDateFormat("y-M-d hh:mm:ss");
+								
+								String dateSTri = fields[0].replace("'", "");
+								dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+								createdTime = dateFormat.parse(dateSTri);
+							}
+							
+							prescriptionCollection = prescriptionRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, patientCollection.getUserId(), createdTime);
+							if(prescriptionCollection == null) {
+								createVisit = true;
+								prescriptionCollection = new PrescriptionCollection();
+								
+								prescriptionCollection.setDoctorId(doctorObjectId);
+								prescriptionCollection.setLocationId(locationObjectId);
+								prescriptionCollection.setHospitalId(hospitalObjectId);
+								prescriptionCollection.setPatientId(patientCollection.getUserId());
+								prescriptionCollection.setCreatedTime(createdTime);
+								prescriptionCollection.setUpdatedTime(createdTime);
+								prescriptionCollection.setPrescriptionCode(PrescriptionUtils.generatePrescriptionCode());
+								prescriptionCollection.setUniqueEmrId(UniqueIdInitial.PRESCRIPTION.getInitial() + DPDoctorUtils.generateRandomId());
+								prescriptionCollection.setCreatedBy((drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
+										+ drCollection.getFirstName());
+								
+							}
+							
+							List<PrescriptionItem> items = prescriptionCollection.getItems();
+							
+							String drugName = fields[3].replace("'", "") + ((!DPDoctorUtils.anyStringEmpty(fields[5])) ? " "+fields[5].replace("'", "") : "")
+									+ ((!DPDoctorUtils.anyStringEmpty(fields[6])) ? " "+fields[6].replace("'", "") : "");
+							
+							String drugType = (!DPDoctorUtils.anyStringEmpty(fields[4])) ? fields[4].replace("'", "") : null;
+							
+							List<DrugCollection> drugCollections = drugRepository.findByNameAndDoctorLocationHospital(drugName, drugType, doctorObjectId, locationObjectId, hospitalObjectId);
+							
+							DrugCollection drugCollection = null;
+							if(drugCollections != null && !drugCollections.isEmpty()) {
+								drugCollection = drugCollections.get(0);
+								
+								for(DrugCollection drug : drugCollections) {
+									if(!DPDoctorUtils.anyStringEmpty(drugCollection.getDoctorId())) {
+										drugCollection = drug;break;
+									}
+								}
+							}
+							
+							if(drugCollection == null) {
+								drugCollection = new DrugCollection();
+							}
+							
+							DrugAddEditRequest drugAddEditRequest = new DrugAddEditRequest();
+							if (drugCollection != null) {
+								BeanUtil.map(drugCollection, drugAddEditRequest);
+							}
+							drugAddEditRequest.setDoctorId(doctorId);
+							drugAddEditRequest.setHospitalId(hospitalId);
+							drugAddEditRequest.setLocationId(locationId);
+							if (!DPDoctorUtils.allStringsEmpty(drugName)) {
+								drugAddEditRequest.setDrugName(drugName);
+							}
+							//DrugType
+							DrugType drugTypeObj = null;
+							if (!DPDoctorUtils.anyStringEmpty(drugType)) {
+								
+								if(drugType.equalsIgnoreCase("TABLET"))drugType = "TAB";
+								if(drugType.equalsIgnoreCase("CAPSULE"))drugType = "CAP";
+								if(drugType.equalsIgnoreCase("OINTMENT"))drugType = "OINT";
+								if(drugType.equalsIgnoreCase("SYRUP"))drugType = "SYP";
+								
+								
+								drugTypeObj = drugTypesMap.get(drugType);
+								if(drugTypeObj == null) {
+									List<DrugType> types = mongoTemplate.aggregate(Aggregation.newAggregation(Aggregation.match(new Criteria("type").regex("^" + drugType, "i")
+											.orOperator(
+													new Criteria("doctorId").is(new ObjectId(doctorId)).and("locationId")
+															.is(new ObjectId(locationId)).and("hospitalId").is(new ObjectId(hospitalId)),
+													new Criteria("doctorId").is(null).and("locationId").is(null).and("hospitalId").is(null)))), DrugTypeCollection.class, DrugType.class).getMappedResults();
+									if(types!= null && !types.isEmpty()) {
+										drugTypeObj = types.get(0);
+										drugTypesMap.put(drugType, drugTypeObj);
+									}else {
+										DrugTypeCollection drugTypeCollection = new DrugTypeCollection();
+										drugTypeCollection.setCreatedBy((drCollection.getTitle() != null ? drCollection.getTitle() + " " : "")
+															+ drCollection.getFirstName());
+										drugTypeCollection.setCreatedTime(new Date());
+										drugTypeCollection.setType(drugType);
+										drugTypeCollection = drugTypeRepository.save(drugTypeCollection);
+										drugTypeObj = new DrugType();
+										BeanUtil.map(drugTypeCollection, drugTypeObj);
+										drugTypesMap.put(drugType, drugTypeObj);
+									}
+								}
+								drugAddEditRequest.setDrugType(drugTypeObj);
+							}
+							//DrugDirection
+							List<DrugDirection> drugDirections = null;
+							if(checkIfNotNullOrNone(fields[7]) && fields[7].contains("1")) {
+								drugDirections = new ArrayList<DrugDirection>();
+								drugDirections.add(beforeMealDirection);
+							}
+							if(checkIfNotNullOrNone(fields[8]) && fields[8].contains("1")) {
+								if(drugDirections == null)drugDirections = new ArrayList<DrugDirection>();
+								drugDirections.add(afterMealDirection);
+							}
+							drugAddEditRequest.setDirection(drugDirections);
+							
+							//DrugDuration14 15
+							Duration duration = new Duration();
+							duration.setValue(checkIfNotNullOrNone(fields[14]) ? fields[14].replace("'", "") : "");
+							duration.setDurationUnit(drugDurationMap.get(fields[15].replace("'", "")));
+							drugAddEditRequest.setDuration(duration);
+							
+							//DrugDosage
+							
+							//Instructions13
+							String instruction = fields[13].replace("'", "");
+							
+							Drug drug = prescriptionServices.addFavouriteDrug(drugAddEditRequest);
+							
+							PrescriptionItem prescriptionItem = new PrescriptionItem(new ObjectId(drug.getId()), duration, null, drugTypeObj, drugName, null, null, drugDirections, instruction);
+							
+							
+							if(items == null) items = new ArrayList<PrescriptionItem>();
+							items.add(prescriptionItem);
+							
+							prescriptionCollection.setItems(items);
+							
+							prescriptionCollection = prescriptionRepository.save(prescriptionCollection);
+
+							
+							 if(createVisit)addRecord(prescriptionCollection, VisitedFor.PRESCRIPTION, null, prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(), prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
+									 prescriptionCollection.getId());
+							 
+							if (prescriptionCollection != null) {
+								OPDReports opdReports = new OPDReports(String.valueOf(prescriptionCollection.getPatientId()),
+										String.valueOf(prescriptionCollection.getId()),
+										String.valueOf(prescriptionCollection.getDoctorId()),
+										String.valueOf(prescriptionCollection.getLocationId()),
+										String.valueOf(prescriptionCollection.getHospitalId()),
+										prescriptionCollection.getCreatedTime());
+
+								opdReports = reportsService.submitOPDReport(opdReports);
+							}
+						}
+					}
+				}
+				lineCount++;
+				response = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean uploadAppointmentData(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "\\|";
+		
+		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		int lineCount = 0;
+		try {
+			
+			br = new BufferedReader(new FileReader(UPLOAD_APPOINTMENTS_DATA_FILE));
+			
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			doctors.put(drCollection.getFirstName(), drCollection);
+			
+			AppointmentCollection appointmentCollection = null;
+			
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
+					String[] fields = line.split(cvsSplitBy);
+					
+					if(!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
+						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+						if(patientCollection != null) {
+							
+							SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy h:mm");
+							String dateSTri = fields[0].replace("'", "");
+							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+							Date fromDate = dateFormat.parse(dateSTri);
+							
+							Calendar c  = Calendar.getInstance();
+							c.setTimeZone(TimeZone.getTimeZone("IST"));
+							c.setTime(fromDate);
+					        int hour = c.get(Calendar.HOUR_OF_DAY);
+					        int fromTime = hour * 60 + c.get(Calendar.MINUTE);
+							
+					        WorkingHours workingHours = new WorkingHours();
+					        workingHours.setFromTime(fromTime);workingHours.setToTime(fromTime + 15);
+					        
+					        appointmentCollection = new AppointmentCollection();
+							appointmentCollection.setTime(workingHours);
+							appointmentCollection.setCreatedTime(fromDate);
+							appointmentCollection.setUpdatedTime(fromDate);
+							appointmentCollection.setFromDate(fromDate);
+							appointmentCollection.setToDate(fromDate);
+							appointmentCollection.setAppointmentId(UniqueIdInitial.APPOINTMENT.getInitial() + DPDoctorUtils.generateRandomId());
+							
+							if(checkIfNotNullOrNone(fields[8]))appointmentCollection.setState(AppointmentState.CONFIRM);
+							if(checkIfNotNullOrNone(fields[6]))appointmentCollection.setExplanation(fields[6].replace("'", ""));
+							
+							appointmentCollection.setLocationId(locationObjectId);
+							appointmentCollection.setHospitalId(hospitalObjectId);
+							appointmentCollection.setPatientId(patientCollection.getUserId());
+							
+							
+							String drName = fields[7].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							UserCollection userCollection = doctors.get(drName);
+							if(userCollection == null) {
+								List<UserCollection> collections = mongoTemplate.aggregate(Aggregation.newAggregation(
+										Aggregation.match(new Criteria("firstName").is(drName)),
+										new CustomAggregationOperation(new BasicDBObject("$redact",
+												new BasicDBObject("$cond",
+														new BasicDBObject("if",new BasicDBObject("$eq",
+																Arrays.asList("$emailAddress", "$userName")))
+												.append("then", "$$PRUNE").append("else", "$$KEEP"))))), 
+										UserCollection.class, UserCollection.class).getMappedResults();
+								if(collections != null && !collections.isEmpty()) {
+									userCollection = collections.get(0);
+									doctors.put(userCollection.getFirstName(), userCollection);
+								}
+							}
+							if(userCollection != null) {
+								appointmentCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+								appointmentCollection.setDoctorId(userCollection.getId());
+								
+								appointmentCollection = appointmentRepository.save(appointmentCollection);
+
+								AppointmentBookedSlotCollection bookedSlotCollection = new AppointmentBookedSlotCollection();
+								BeanUtil.map(appointmentCollection, bookedSlotCollection);
+								bookedSlotCollection.setDoctorId(appointmentCollection.getDoctorId());
+								bookedSlotCollection.setLocationId(appointmentCollection.getLocationId());
+								bookedSlotCollection.setHospitalId(appointmentCollection.getHospitalId());
+								bookedSlotCollection.setId(null);
+								appointmentBookedSlotRepository.save(bookedSlotCollection);
+							}
+						}
+					System.out.println(lineCount +".."+fields[1]);
+					}
+				}
+				lineCount++;
+				response = true;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+
+	
+	private Boolean checkIfNotNullOrNone(String value) {
+		if(value.equalsIgnoreCase("NONE'") || value.equalsIgnoreCase("NONE") || DPDoctorUtils.allStringsEmpty(value)) return false;
+		else return true;
+		
+	}
+
+	@Override
+	public Boolean uploadTreatmentPlansData(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "\\|";
+		
+		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		int lineCount = 0;
+		try {
+			
+			br = new BufferedReader(new FileReader(UPLOAD_TREATMENTS_PLAN_DATA_FILE));
+			
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			doctors.put(drCollection.getFirstName(), drCollection);
+			
+			PatientTreatmentCollection patientTreatmentCollection = null;
+			
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
+					String[] fields = line.split(cvsSplitBy);
+					Boolean createVisit = false;
+					if(!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
+						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+						if(patientCollection != null) {
+							
+							SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy");
+							String dateSTri = fields[0].replace("'", "");
+							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+							Date fromDate = dateFormat.parse(dateSTri);
+							
+							String drName = fields[3].replace("'", "").replace("Dr. ", "").replace("Dr ", "");
+							UserCollection userCollection = doctors.get(drName);
+							if(userCollection == null) {
+								List<UserCollection> collections = mongoTemplate.aggregate(Aggregation.newAggregation(
+										Aggregation.match(new Criteria("firstName").is(drName)),
+										new CustomAggregationOperation(new BasicDBObject("$redact",
+												new BasicDBObject("$cond",
+														new BasicDBObject("if",new BasicDBObject("$eq",
+																Arrays.asList("$emailAddress", "$userName")))
+												.append("then", "$$PRUNE").append("else", "$$KEEP"))))), 
+										UserCollection.class, UserCollection.class).getMappedResults();
+								if(collections != null && !collections.isEmpty()) {
+									userCollection = collections.get(0);
+									doctors.put(userCollection.getFirstName(), userCollection);
+								}
+							}
+							if(userCollection != null) {
+								patientTreatmentCollection = patientTreamentRepository.find(userCollection.getId(), locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
+								
+						        if(patientTreatmentCollection == null) {
+						        		createVisit = true;
+						        		patientTreatmentCollection = new PatientTreatmentCollection();
+									
+							        patientTreatmentCollection.setCreatedTime(fromDate);
+							        patientTreatmentCollection.setUpdatedTime(fromDate);
+							        patientTreatmentCollection.setFromDate(fromDate);
+							        patientTreatmentCollection.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
+							        patientTreatmentCollection.setLocationId(locationObjectId);
+							        patientTreatmentCollection.setHospitalId(hospitalObjectId);
+							        patientTreatmentCollection.setPatientId(patientCollection.getUserId());
+									
+									if(userCollection != null) {
+										patientTreatmentCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
+										patientTreatmentCollection.setDoctorId(userCollection.getId());
+									}
+						        }
+								List<Treatment> treatments = patientTreatmentCollection.getTreatments();
+
+								String treatmentName = fields[4].replace("'", "");
+								List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId, locationObjectId, hospitalObjectId);
+
+								TreatmentServicesCollection treatmentServicesCollection = null;
+								TreatmentService treatmentService = new TreatmentService();
+								if(treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
+									treatmentServicesCollection = treatmentServicesCollections.get(0);
+									BeanUtil.map(treatmentServicesCollection, treatmentService);
+								}else {
+									treatmentService.setName(treatmentName);
+								}
+								
+								if(checkIfNotNullOrNone(fields[5]))treatmentService.setCost(Double.parseDouble(fields[5].replace("'", "")));
+
+								treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
+								treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
+								treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
+								treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService);
+								
+								
+								Treatment treatment = new Treatment();
+								BeanUtil.map(treatmentService, treatment);
+								treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
+								if(checkIfNotNullOrNone(fields[6])) {
+									Quantity quantity = new Quantity();
+									quantity.setType(QuantityEnum.QTY);
+									quantity.setValue(Integer.parseInt(fields[6].replace("'", "")));
+									treatment.setQuantity(quantity);
+								}
+								
+								if(checkIfNotNullOrNone(fields[7])) {
+									Discount discount = new Discount();
+									if(!checkIfNotNullOrNone(fields[8].replace("'", ""))) {
+										discount.setUnit(UnitType.PERCENT);
+									}else if((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+										discount.setUnit(UnitType.INR);
+									}else {
+										discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
+									}
+									discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
+									treatment.setDiscount(discount);
+								}
+								
+								if(checkIfNotNullOrNone(fields[9])) treatment.setFinalCost(Double.parseDouble(fields[9].replace("'", "")));
+								
+								if(fields.length > 10 && checkIfNotNullOrNone(fields[10]))treatment.setNote(fields[10].replace("'", ""));
+								
+								if(treatments == null)treatments = new ArrayList<Treatment>();
+								treatments.add(treatment);
+								
+								patientTreatmentCollection.setTreatments(treatments);
+								patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
+
+								if(createVisit)addRecord(patientTreatmentCollection, VisitedFor.TREATMENT, null, patientTreatmentCollection.getPatientId(), 
+										patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(), patientTreatmentCollection.getHospitalId(),
+										patientTreatmentCollection.getId());
+							}
+							
+						}
+						System.out.println(lineCount +".."+fields[1]);
+					}
+				}
+				lineCount++;
+				response = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+
+	@Override
+	public Boolean uploadTreatmentData(String doctorId, String locationId, String hospitalId) {
+		Boolean response = false;
+		BufferedReader br = null;
+		String line = "";
+		String cvsSplitBy = "\\|";
+		
+		Map<String, UserCollection> doctors = new HashMap<String, UserCollection>();
+		int lineCount = 0;
+		try {
+			
+			br = new BufferedReader(new FileReader(UPLOAD_TREATMENTS_DATA_FILE));
+			
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			UserCollection drCollection = userRepository.findOne(doctorObjectId);
+			doctors.put(drCollection.getFirstName(), drCollection);
+			
+			PatientTreatmentCollection patientTreatmentCollection = null;
+			
+			while ((line = br.readLine()) != null) {
+
+				if (lineCount > 0) {
+					String[] fields = line.split(cvsSplitBy);
+					Boolean createVisit = false;
+					if(!DPDoctorUtils.anyStringEmpty(fields[0], fields[1])) {
+						PatientCollection patientCollection = patientRepository.findByLocationIDHospitalIDAndPNUM(locationObjectId, hospitalObjectId, fields[1].replace("'", ""));
+						if(patientCollection != null) {
+							
+							SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy");
+							String dateSTri = fields[0].replace("'", "");
+							dateFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+							Date fromDate = dateFormat.parse(dateSTri);
+							
+							patientTreatmentCollection = patientTreamentRepository.find(doctorObjectId, locationObjectId, hospitalObjectId, patientCollection.getUserId(), fromDate);
+							
+					        if(patientTreatmentCollection == null) {
+					        		createVisit = true;
+					        		patientTreatmentCollection = new PatientTreatmentCollection();
+								
+						        patientTreatmentCollection.setCreatedTime(fromDate);
+						        patientTreatmentCollection.setUpdatedTime(fromDate);
+						        patientTreatmentCollection.setFromDate(fromDate);
+						        patientTreatmentCollection.setUniqueEmrId(UniqueIdInitial.TREATMENT.getInitial() + DPDoctorUtils.generateRandomId());
+						        patientTreatmentCollection.setLocationId(locationObjectId);
+						        patientTreatmentCollection.setHospitalId(hospitalObjectId);
+						        patientTreatmentCollection.setPatientId(patientCollection.getUserId());
+								
+								patientTreatmentCollection.setCreatedBy(drCollection.getTitle() + " " + drCollection.getFirstName());
+								patientTreatmentCollection.setDoctorId(drCollection.getId());
+					        }
+							List<Treatment> treatments = patientTreatmentCollection.getTreatments();
+
+							String treatmentName = fields[3].replace("'", "");
+							List<TreatmentServicesCollection> treatmentServicesCollections = treatmentServicesRepository.findByNameAndDoctorLocationHospital(treatmentName, doctorObjectId, locationObjectId, hospitalObjectId);
+
+							TreatmentServicesCollection treatmentServicesCollection = null;
+							TreatmentService treatmentService = new TreatmentService();
+							if(treatmentServicesCollections != null && !treatmentServicesCollections.isEmpty()) {
+								treatmentServicesCollection = treatmentServicesCollections.get(0);
+								BeanUtil.map(treatmentServicesCollection, treatmentService);
+							}else {
+								treatmentService.setName(treatmentName);
+							}
+							
+							if(checkIfNotNullOrNone(fields[6]))treatmentService.setCost(Double.parseDouble(fields[6].replace("'", "")));
+
+							treatmentService.setDoctorId(patientTreatmentCollection.getDoctorId().toString());
+							treatmentService.setLocationId(patientTreatmentCollection.getLocationId().toString());
+							treatmentService.setHospitalId(patientTreatmentCollection.getHospitalId().toString());
+							treatmentService = patientTreatmentServices.addFavouritesToService(treatmentService);
+							
+							
+							Treatment treatment = new Treatment();
+							BeanUtil.map(treatmentService, treatment);
+							treatment.setTreatmentServiceId(new ObjectId(treatmentService.getId()));
+							
+							if(checkIfNotNullOrNone(fields[4])) {
+								List<TreatmentFields> treatmentFieldList = new ArrayList<>();
+								TreatmentFields treatmentFields = new TreatmentFields();
+								treatmentFields.setKey("toothNumber");treatmentFields.setValue(fields[4].replace("'", ""));
+								treatmentFieldList.add(treatmentFields);
+							}
+							
+							if(checkIfNotNullOrNone(fields[5]))treatment.setNote(fields[5].replace("'", ""));
+							
+							if(checkIfNotNullOrNone(fields[7])) {
+								Discount discount = new Discount();
+								if(checkIfNotNullOrNone(fields[8])) {
+									discount.setUnit(UnitType.PERCENT);
+								}else if((fields[8].replace("'", "")).equalsIgnoreCase("NUMBER")) {
+									discount.setUnit(UnitType.INR);
+								}else {
+									discount.setUnit(UnitType.valueOf(fields[8].replace("'", "")));
+								}
+								discount.setValue(Double.parseDouble(fields[7].replace("'", "")));
+								treatment.setDiscount(discount);
+							}
+							
+							if(treatments == null)treatments = new ArrayList<Treatment>();
+							treatments.add(treatment);
+							
+							patientTreatmentCollection.setTreatments(treatments);
+							patientTreatmentCollection = patientTreamentRepository.save(patientTreatmentCollection);
+							if(createVisit)addRecord(patientTreatmentCollection, VisitedFor.TREATMENT, null,
+									patientTreatmentCollection.getPatientId(), patientTreatmentCollection.getDoctorId(), patientTreatmentCollection.getLocationId(), 
+									patientTreatmentCollection.getHospitalId(), patientTreatmentCollection.getId());
+						}
+						System.out.println(lineCount +".."+fields[1]);
+					}
+				}
+				lineCount++;
+				response = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return response;
+	}
+	
+	@Override
+	public Boolean assignPNUMToPatientsHavingPNUMAsNull(String doctorId, String locationId, String hospitalId) {
+		try {
+			System.out.println(patientInitial);
+			if(DPDoctorUtils.anyStringEmpty(patientInitial))patientInitial = "P";
+			
+			ObjectId locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			
+			List<PatientCollection> patientCollections = patientRepository.findByLocationIDHospitalIDAndNullPNUM(locationObjectId, hospitalObjectId);
+			Integer patientCount = patientRepository.findCountByLocationIDHospitalIDAndNotPNUM(locationObjectId, hospitalObjectId, null);
+			if(patientCollections != null && !patientCollections.isEmpty()) {
+				for(PatientCollection patientCollection : patientCollections) {
+					patientCollection.setPNUM(patientInitial+patientCount);
+					patientRepository.save(patientCollection);
+					patientCount ++;
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true; 
+	}
+	
+	public String addRecord(Object details, VisitedFor visitedFor, String visitId, ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId, ObjectId id) {
+		PatientVisitCollection patientVisitCollection = new PatientVisitCollection();
+		try {
+
+			BeanUtil.map(details, patientVisitCollection);
+			
+			patientVisitCollection.setPatientId(patientId);
+			patientVisitCollection.setDoctorId(doctorId);
+			patientVisitCollection.setLocationId(locationId);
+			patientVisitCollection.setHospitalId(hospitalId);
+			
+			patientVisitCollection.setUniqueEmrId(UniqueIdInitial.VISITS.getInitial() + DPDoctorUtils.generateRandomId());
+	
+			List<VisitedFor> visitedforList = new ArrayList<VisitedFor>();
+			visitedforList.add(visitedFor);
+			patientVisitCollection.setVisitedFor(visitedforList);
+			
+
+			patientVisitCollection.setVisitedTime(patientVisitCollection.getCreatedTime());
+			if (visitedFor.equals(VisitedFor.PRESCRIPTION)) {
+				if (patientVisitCollection.getPrescriptionId() == null) {
+					List<ObjectId> prescriptionId = new ArrayList<ObjectId>();
+					prescriptionId.add(id);
+					patientVisitCollection.setPrescriptionId(prescriptionId);
+				} else {
+					if (!patientVisitCollection.getPrescriptionId().contains(id))
+						patientVisitCollection.getPrescriptionId().add(id);
+				}
+
+			} else if (visitedFor.equals(VisitedFor.CLINICAL_NOTES)) {
+				if (patientVisitCollection.getClinicalNotesId() == null) {
+					List<ObjectId> clinicalNotes = new ArrayList<ObjectId>();
+					clinicalNotes.add(id);
+					patientVisitCollection.setClinicalNotesId(clinicalNotes);
+				} else {
+					if (!patientVisitCollection.getClinicalNotesId().contains(id))
+						patientVisitCollection.getClinicalNotesId().add(id);
+				}
+			} else if (visitedFor.equals(VisitedFor.REPORTS)) {
+				if (patientVisitCollection.getRecordId() == null) {
+					List<ObjectId> recordId = new ArrayList<ObjectId>();
+					recordId.add(id);
+					patientVisitCollection.setRecordId(recordId);
+				} else {
+					if (!patientVisitCollection.getRecordId().contains(id))
+						patientVisitCollection.getRecordId().add(id);
+				}
+			} else if (visitedFor.equals(VisitedFor.TREATMENT)) {
+				if (patientVisitCollection.getTreatmentId() == null) {
+					List<ObjectId> treatmentId = new ArrayList<ObjectId>();
+					treatmentId.add(id);
+					patientVisitCollection.setTreatmentId(treatmentId);
+				} else {
+					if (!patientVisitCollection.getTreatmentId().add(id))
+						patientVisitCollection.getTreatmentId().add(id);
+				}
+			}
+
+			else if (visitedFor.equals(VisitedFor.EYE_PRESCRIPTION)) {
+				if (patientVisitCollection.getEyePrescriptionId() == null) {
+					patientVisitCollection.setEyePrescriptionId(id);
+				}
+			}
+			patientVisitCollection.setId(null);
+			patientVisitCollection = patientVisitRepository.save(patientVisitCollection);
+			System.out.println(patientVisitCollection.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return patientVisitCollection.getId().toString();
+	}
+
+
+}
