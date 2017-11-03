@@ -1333,7 +1333,7 @@ public class RecordsServiceImpl implements RecordsService {
 				 * Sort(Sort.Direction.DESC, "createdTime"));
 				 */
 
-				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("patientId")
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("doctorId")
 						.is(doctorObjectId);
 				if (!discarded)
 					criteria.and("discarded").is(discarded);
