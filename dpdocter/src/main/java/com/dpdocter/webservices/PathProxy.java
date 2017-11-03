@@ -428,7 +428,7 @@ public interface PathProxy {
 
 		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
 		
-		public static final String GET_RECORDS_DOCTOR_ID = "/{doctorId}";
+		public static final String GET_RECORDS_DOCTOR_ID = "getByDoctorId/{doctorId}";
 
 	}
 
