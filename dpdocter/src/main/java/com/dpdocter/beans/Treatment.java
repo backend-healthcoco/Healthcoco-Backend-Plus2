@@ -33,8 +33,6 @@ public class Treatment extends GenericCollection {
 		this.treatmentServiceId = treatmentServiceId;
 	}
 
-	
-
 	public String getStatus() {
 		return status;
 	}
