@@ -3,6 +3,7 @@ package com.dpdocter.beans;
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.enums.LocationType;
 
@@ -101,6 +102,7 @@ public class Location {
 
 	private List<String> associatedLabs;
 
+	private String locationSlugUrl;
 	/* private String defaultParentLabId; */
 
 	public String getId() {
@@ -482,5 +484,13 @@ public class Location {
 				+ isClinicRecommended + ", isFavourite=" + isFavourite + ", hospital=" + hospital + ", invoiceInitial="
 				+ invoiceInitial + ", receiptInitial=" + receiptInitial + ", noOfClinicReview=" + noOfClinicReview
 				+ ", isParent=" + isParent + ", associatedLabs=" + associatedLabs + "]";
+	}
+
+	public String getLocationSlugUrl() {
+		return locationSlugUrl;
+	}
+
+	public void setLocationSlugUrl(String locationSlugUrl) {
+		this.locationSlugUrl = locationSlugUrl;
 	}
 }

@@ -194,6 +194,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						appointmentSearchResponse.setId(locationDocument.getLocationId());
 						appointmentSearchResponse.setResponse(locationDocument.getLocationName());
 						appointmentSearchResponse.setResponseType(AppointmentResponseType.CLINIC);
+						appointmentSearchResponse.setSlugUrl(locationDocument.getLocationSlugUrl());
 						response.add(appointmentSearchResponse);
 					}
 				}
@@ -207,6 +208,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						appointmentSearchResponse.setId(locationDocument.getLocationId());
 						appointmentSearchResponse.setResponse(locationDocument.getLocationName());
 						appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
+						appointmentSearchResponse.setSlugUrl(locationDocument.getLocationSlugUrl());
 						response.add(appointmentSearchResponse);
 					}
 				}
@@ -299,6 +301,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					appointmentSearchResponse.setId(esUserLocaleDocument.getId());
 					appointmentSearchResponse.setResponse(esUserLocaleDocument.getLocaleName());
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.PHARMACY);
+					appointmentSearchResponse.setSlugUrl(esUserLocaleDocument.getPharmacySlugURL());
 					response.add(appointmentSearchResponse);
 				}
 		}

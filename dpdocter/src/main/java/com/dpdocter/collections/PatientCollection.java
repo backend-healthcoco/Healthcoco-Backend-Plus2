@@ -117,7 +117,9 @@ public class PatientCollection extends GenericCollection {
 	@Field
 	private List<QuestionAnswers> lifestyleQuestionAnswers;
 	
-	
+	@Field
+	private String PNUM;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -379,6 +381,14 @@ public class PatientCollection extends GenericCollection {
 		this.lifestyleQuestionAnswers = lifestyleQuestionAnswers;
 	}
 
+	public String getPNUM() {
+		return PNUM;
+	}
+
+	public void setPNUM(String pNUM) {
+		PNUM = pNUM;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientCollection [id=" + id + ", firstName=" + firstName + ", localPatientName=" + localPatientName
@@ -392,7 +402,7 @@ public class PatientCollection extends GenericCollection {
 				+ ", dateOfVisit=" + dateOfVisit + ", referredBy=" + referredBy + ", address=" + address
 				+ ", consultantDoctorIds=" + consultantDoctorIds + ", personalInformation=" + personalInformation
 				+ ", medicalQuestionAnswers=" + medicalQuestionAnswers + ", lifestyleQuestionAnswers="
-				+ lifestyleQuestionAnswers + "]";
+				+ lifestyleQuestionAnswers + ", PNUM=" + PNUM + "]";
 	}
 
 }

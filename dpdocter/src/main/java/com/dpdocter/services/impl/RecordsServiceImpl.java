@@ -1303,6 +1303,80 @@ public class RecordsServiceImpl implements RecordsService {
 		}
 		return records;
 	}
+	
+	@Override
+	@Transactional
+	public List<Records> getRecordsByDoctorId(String doctorId, int page, int size, String updatedTime,
+			Boolean discarded) {
+		List<Records> records = null;
+		// List<RecordsCollection> recordsCollections = null;
+		List<RecordsLookupResponse> recordsLookupResponses = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
+		try {
+			long updatedTimeLong = Long.parseLong(updatedTime);
+			if (discarded)
+				discards[1] = true;
+
+			ObjectId doctorObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+
+			
+				/*
+				 * if (size > 0) recordsCollections =
+				 * recordsRepository.findRecordsByPatientId(patientObjectId, new
+				 * Date(updatedTimeLong), discards, new PageRequest(page, size,
+				 * Sort.Direction.DESC, "createdTime")); else recordsCollections
+				 * = recordsRepository.findRecordsByPatientId(patientObjectId,
+				 * new Date(updatedTimeLong), discards, new
+				 * Sort(Sort.Direction.DESC, "createdTime"));
+				 */
+
+				Criteria criteria = new Criteria("updatedTime").gt(new Date(updatedTimeLong)).and("doctorId")
+						.is(doctorObjectId);
+				if (!discarded)
+					criteria.and("discarded").is(discarded);
+
+				Aggregation aggregation = null;
+
+				if (size > 0)
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")),
+							Aggregation.skip((page) * size), Aggregation.limit(size));
+				else
+					aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+							Aggregation.lookup("patient_visit_cl", "_id", "recordId", "patientVisit"),
+							Aggregation.unwind("patientVisit"),
+							Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
+
+				AggregationResults<RecordsLookupResponse> aggregationResults = mongoTemplate.aggregate(aggregation,
+						RecordsCollection.class, RecordsLookupResponse.class);
+				recordsLookupResponses = aggregationResults.getMappedResults();
+
+			records = new ArrayList<Records>();
+			for (RecordsLookupResponse recordsLookupResponse : recordsLookupResponses) {
+				Records record = new Records();
+				BeanUtil.map(recordsLookupResponse, record);
+				/*
+				 * PatientVisitCollection patientVisitCollection =
+				 * patientVisitRepository
+				 * .findByRecordId(recordsLookupResponse.getId());
+				 */
+				if (recordsLookupResponse.getPatientVisit() != null)
+					record.setVisitId(recordsLookupResponse.getPatientVisit().getId().toString());
+				record.setRecordsUrl(getFinalImageURL(record.getRecordsUrl()));
+				records.add(record);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return records;
+	}
 
 	@Override
 	@Transactional

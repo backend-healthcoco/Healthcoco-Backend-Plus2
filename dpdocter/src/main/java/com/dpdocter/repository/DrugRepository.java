@@ -98,4 +98,7 @@ public interface DrugRepository extends MongoRepository<DrugCollection, ObjectId
 	@Query("{'drugCode': ?0, 'doctorId': ?1}")
 	DrugCollection findByCodeAndDoctorId(String drugCode, ObjectId objectId);
 
+	@Query("{'$or': [{'drugName' : {$regex : '^?0', $options : 'i'}, 'drugType.type' : {$regex : '^?1', $options : 'i'}, 'doctorId': ?2,  'locationId': ?3, 'hospitalId': ?4},{'drugName' : {$regex : '^?0', $options : 'i'}, 'drugType.type' : {$regex : '^?1', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
+    List<DrugCollection> findByNameAndDoctorLocationHospital(String drugName, String drugType, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+
 }

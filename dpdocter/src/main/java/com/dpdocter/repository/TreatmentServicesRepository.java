@@ -14,5 +14,8 @@ public interface TreatmentServicesRepository extends MongoRepository<TreatmentSe
 
 	@Query("{'treatmentCode' : ?0,'doctorId':?1}")
 	public TreatmentServicesCollection findbyTreatmentCodeAndDoctorId(String treatmentCode, ObjectId doctorId);
+	
+	@Query("{'$or': [{'name' : {$regex : '^?0', $options : 'i'}, 'doctorId': ?1,  'locationId': ?2, 'hospitalId': ?3},{'name' : {$regex : '^?0', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
+    public List<TreatmentServicesCollection> findByNameAndDoctorLocationHospital(String treatmentName, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
 
 }

@@ -1,7 +1,5 @@
 package com.dpdocter.webservices;
 
-import com.dpdocter.beans.EquipmentLogAMCAndServicingRegister;
-
 /**
  * @author veeraj
  */
@@ -429,6 +427,8 @@ public interface PathProxy {
 		public static final String UPDATE_RECORDS_DATA = "/updateData";
 
 		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
+		
+		public static final String GET_RECORDS_DOCTOR_ID = "getByDoctorId/{doctorId}";
 
 	}
 
@@ -1403,7 +1403,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String RANKING_BASE_URL = BASE_URL + "/ranking";
+	public static final String RANKING_BASE_URL = BASE_URL + "/ranking"; 
 
 	public interface RankingUrls {
 
@@ -1427,8 +1427,8 @@ public interface PathProxy {
 
 	public interface DiagnosticTestOrderUrls {
 
-		public static final String SEARCH_LABS_BY_TEST = "/searchLabs";
-
+		public static final String SEARCH_LABS = "/searchLabs";
+		
 		public static final String GET_SAMPLE_PICKUP_TIME_SLOTS = "/pickUpTimeSlots";
 
 		public static final String PLACE_ORDER = "/placeOrder";
@@ -1442,6 +1442,29 @@ public interface PathProxy {
 		public static final String GET_ORDER_BY_ID = "/order/{orderId}/view";
 
 		public static final String GET_ORDERS = "orders";
+
+		public static final String ADD_EDIT_DIAGNOSTIC_TEST_PACKAGE = "packages/addEdit";
+
+		public static final String GET_DIAGNOSTIC_TEST_PACKAGES = "packages/{locationId}/{hospitalId}";
+	}
+	
+	public static final String UPLOAD_DATA_BASE_URL = BASE_URL + "/upload";
+
+	public interface UploadDataUrls {
+
+		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String APPOINTMENTS = "/appointments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String TREATMENT_PLANS = "/treatments/plans/{doctorId}/{locationId}/{hospitalId}";
+		
+		public static final String TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
+
+		public static final String DELETE_PATIENTS = "/deletePatients/{doctorId}/{locationId}/{hospitalId}";
 	}
 
 }
