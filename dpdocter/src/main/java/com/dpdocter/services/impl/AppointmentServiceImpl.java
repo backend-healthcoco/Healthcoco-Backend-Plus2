@@ -1944,6 +1944,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				String day = sdf.format(date);
 				if (doctorClinicProfileCollection.getWorkingSchedules() != null
 						&& doctorClinicProfileCollection.getAppointmentSlot() != null) {
+					slotTime = doctorClinicProfileCollection.getAppointmentSlot().getTime();
 					response = new SlotDataResponse();
 					response.setAppointmentSlot(doctorClinicProfileCollection.getAppointmentSlot());
 					slotResponse = new ArrayList<Slot>();
@@ -2761,6 +2762,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response = new LocationWithPatientQueueDetails();
 				response.setLocationId(locationId);
 				for (Appointment appointment : appointments) {
+					if(!DPDoctorUtils.anyStringEmpty(appointment.getId()))
 					switch (QueueStatus.valueOf(appointment.getId().toUpperCase())) {
 
 					case SCHEDULED:
