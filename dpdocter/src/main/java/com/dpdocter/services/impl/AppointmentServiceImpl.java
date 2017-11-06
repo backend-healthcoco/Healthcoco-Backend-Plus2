@@ -2880,6 +2880,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 				response = new LocationWithPatientQueueDetails();
 				response.setLocationId(locationId);
 				for (Appointment appointment : appointments) {
+
 					if (!DPDoctorUtils.anyStringEmpty(appointment.getId()))
 						switch (QueueStatus.valueOf(appointment.getId().toUpperCase())) {
 						case SCHEDULED:
