@@ -8,6 +8,9 @@ import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +42,7 @@ public class LocaleServiceImpl implements LocaleService {
 
 	@Autowired
 	LocaleRepository localeRepository;
-	
+
 	@Autowired
 	ESLocaleService esLocaleService;
 
@@ -50,15 +53,59 @@ public class LocaleServiceImpl implements LocaleService {
 	RecommendationsRepository recommendationsRepository;
 
 	@Autowired
+	public MongoTemplate mongoTemplate;
+
+	@Autowired
 	FileManager fileManager;
-	
+
 	@Value(value = "${image.path}")
 	private String imagePath;
 
 	@Autowired
 	private UserResourceFavouriteRepository userResourceFavouriteRepository;
-	
+
 	private static Logger logger = Logger.getLogger(LoginServiceImpl.class.getName());
+
+	@Override
+	@Transactional
+	public Locale getLocaleDetailBySlugUrl(String slugUrl) {
+		Locale response = null;
+		LocaleCollection localeCollection = mongoTemplate.findOne(
+				new Query(new Criteria("pharmacySlugURL").regex("^" + slugUrl + "*", "i")), LocaleCollection.class);
+		if (localeCollection == null) {
+			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
+		}
+		response = new Locale();
+		if (localeCollection.getLocaleImages() != null && !localeCollection.getLocaleImages().isEmpty()) {
+
+			for (LocaleImage image : localeCollection.getLocaleImages()) {
+				image.setImageUrl(imagePath + image.getImageUrl());
+				image.setThumbnailUrl(imagePath + image.getThumbnailUrl());
+			}
+
+		}
+		if (localeCollection.getAddress() != null) {
+
+			localeCollection
+					.setLocaleAddress((!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getStreetAddress())
+							? localeCollection.getAddress().getStreetAddress() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getLandmarkDetails())
+									? localeCollection.getAddress().getLandmarkDetails() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getLocality())
+									? localeCollection.getAddress().getLocality() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getCity())
+									? localeCollection.getAddress().getCity() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getState())
+									? localeCollection.getAddress().getState() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getCountry())
+									? localeCollection.getAddress().getCountry() + ", " : "")
+							+ (!DPDoctorUtils.anyStringEmpty(localeCollection.getAddress().getPostalCode())
+									? localeCollection.getAddress().getPostalCode() : ""));
+		}
+		BeanUtil.map(localeCollection, response);
+
+		return response;
+	}
 
 	@Override
 	@Transactional
@@ -103,9 +150,11 @@ public class LocaleServiceImpl implements LocaleService {
 			if (recommendationsCollection != null) {
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
 			}
-			
-			Integer favCount = userResourceFavouriteRepository.findCount(localeCollection.getId(), Resource.PHARMACY.getType(), null, patientId, false);
-			if(favCount != null && favCount > 0)response.setIsFavourite(true);
+
+			Integer favCount = userResourceFavouriteRepository.findCount(localeCollection.getId(),
+					Resource.PHARMACY.getType(), null, patientId, false);
+			if (favCount != null && favCount > 0)
+				response.setIsFavourite(true);
 		}
 		return response;
 	}
@@ -183,18 +232,18 @@ public class LocaleServiceImpl implements LocaleService {
 				} else {
 					switch (type) {
 					case LIKE:
-						if(recommendationsCollection.getDiscarded()){
-						localeCollection
-								.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() + 1);
-						recommendationsCollection.setDiscarded(false);
+						if (recommendationsCollection.getDiscarded()) {
+							localeCollection
+									.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() + 1);
+							recommendationsCollection.setDiscarded(false);
 						}
 						break;
 
 					case UNLIKE:
-						if(!recommendationsCollection.getDiscarded()){
-						localeCollection
-								.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() - 1);
-						recommendationsCollection.setDiscarded(true);
+						if (!recommendationsCollection.getDiscarded()) {
+							localeCollection
+									.setNoOfLocaleRecommendation(localeCollection.getNoOfLocaleRecommendation() - 1);
+							recommendationsCollection.setDiscarded(true);
 						}
 						break;
 
@@ -208,7 +257,6 @@ public class LocaleServiceImpl implements LocaleService {
 				response = new Locale();
 				BeanUtil.map(localeCollection, response);
 				response.setIsLocaleRecommended(!recommendationsCollection.getDiscarded());
-				
 
 			} else {
 				throw new BusinessException(ServiceError.Unknown, "Error  location  not found");

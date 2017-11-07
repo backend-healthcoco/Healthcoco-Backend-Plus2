@@ -34,13 +34,18 @@ public interface AppointmentService {
 
 	Clinic getClinic(String locationId, String role, Boolean active);
 
+	Clinic getClinic(String slugUrl);
+
 	List<Appointment> getAppointments(String locationId, List<String> doctorId, String patientId, String from,
-			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime, String toTime);
+			String to, int page, int size, String updatedTime, String status, String sortBy, String fromTime,
+			String toTime);
 
 	List<Appointment> getPatientAppointments(String locationId, String doctorId, String patientId, String from,
 			String to, int page, int size, String updatedTime);
 
 	Lab getLab(String locationId, String patientId, Boolean active);
+
+	Lab getLab(String slugUrl);
 
 	List<City> getCountries();
 
@@ -72,7 +77,8 @@ public interface AppointmentService {
 	LocationWithAppointmentCount getDoctorsWithAppointmentCount(String locationId, String role, Boolean active,
 			String from, String to);
 
-	Boolean changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId, String appointmentId, String status);
+	Boolean changeStatusInAppointment(String doctorId, String locationId, String hospitalId, String patientId,
+			String appointmentId, String status);
 
 	public void updateQueue();
 

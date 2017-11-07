@@ -1270,4 +1270,28 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		}
 		return response;
 	}
+
+	@Override
+	@Transactional
+	public ESWEBResponse getLabForWeb(int page, int size, String city, String location, String latitude,
+			String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime,
+			List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl) {
+		ESWEBResponse response = null;
+		try {
+			List<LabResponse> labs = getLabs(page, size, city, location, latitude, longitude, test, booking, calling,
+					minTime, maxTime, days, onlineReports, homeService, nabl);
+			response = new ESWEBResponse();
+			if (labs != null && !labs.isEmpty()) {
+				response.setLabs(labs);
+			}
+			response.setMetaData("lab in " + city);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting lab Details From ES for Web : " + e.getMessage());
+
+		}
+		return response;
+	}
 }

@@ -63,7 +63,7 @@ public class LocaleApi {
 
 	@Autowired
 	ServletContext context;
-	
+
 	@Autowired
 	private TransactionalManagementService transnationalService;
 
@@ -90,6 +90,23 @@ public class LocaleApi {
 		return response;
 	}
 
+	@GET
+	@Path(PathProxy.LocaleUrls.GET_LOCALE_BY_SLUGURL)
+	public Response<Locale> getLocaleDetails(@PathParam("slugUrl") String slugUrl) {
+		Response<Locale> response = null;
+		Locale locale = null;
+
+		if (DPDoctorUtils.allStringsEmpty(slugUrl)) {
+			throw new BusinessException(ServiceError.InvalidInput, "Please provide slugUrl cannot be null");
+		}
+		if (slugUrl != null && !slugUrl.isEmpty()) {
+			locale = localeService.getLocaleDetailBySlugUrl(slugUrl);
+			response = new Response<Locale>();
+			response.setData(locale);
+		}
+		return response;
+	}
+
 	@POST
 	@Path(PathProxy.LocaleUrls.ADD_USER_REQUEST)
 	@Consumes({ MediaType.MULTIPART_FORM_DATA })
@@ -97,32 +114,30 @@ public class LocaleApi {
 			@FormDataParam("data") FormDataBodyPart data) {
 		Response<UserSearchRequest> response = null;
 		UserSearchRequest status = null;
-			data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-			// System.out.println(data.toString());
-			UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
-			// System.out.println(request);
-			ImageURLResponse imageURLResponse = null;
-			if (file != null) {
-				imageURLResponse = localeService.addRXImageMultipart(file);
-				// System.out.println(imageURLResponse);
-				if (request != null) {
-					PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
-					prescriptionRequest.setPrescriptionURL(imageURLResponse);
-					request.setPrescriptionRequest(prescriptionRequest);
-				}
+		data.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+		// System.out.println(data.toString());
+		UserSearchRequest request = data.getValueAs(UserSearchRequest.class);
+		// System.out.println(request);
+		ImageURLResponse imageURLResponse = null;
+		if (file != null) {
+			imageURLResponse = localeService.addRXImageMultipart(file);
+			// System.out.println(imageURLResponse);
+			if (request != null) {
+				PrescriptionRequest prescriptionRequest = new PrescriptionRequest();
+				prescriptionRequest.setPrescriptionURL(imageURLResponse);
+				request.setPrescriptionRequest(prescriptionRequest);
 			}
+		}
 
-			if (request == null) {
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-			}
-			status = pharmacyService.addSearchRequest(request);
-			response = new Response<UserSearchRequest>();
-			response.setData(status);
+		if (request == null) {
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		status = pharmacyService.addSearchRequest(request);
+		response = new Response<UserSearchRequest>();
+		response.setData(status);
 
-		
 		return response;
 	}
-
 
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDER_HISTORY)
@@ -225,16 +240,19 @@ public class LocaleApi {
 	@Path(PathProxy.LocaleUrls.ORDER_DRUG)
 	@ApiOperation(value = PathProxy.LocaleUrls.ORDER_DRUG, notes = PathProxy.LocaleUrls.ORDER_DRUG)
 	public Response<OrderDrugsRequest> orderDrug(OrderDrugsRequest request) {
-		 if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId()) || DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId())) {
-				throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
-		}else if(request.getWayOfOrder() != null){
-			if(request.getWayOfOrder().name().equalsIgnoreCase(WayOfOrder.PICK_UP.name())) {
-				if(request.getPickUpTime() == null || request.getPickUpDate() == null)throw new BusinessException(ServiceError.InvalidInput, "PickUp Time or Date cannot be null");
-			}else {
-				if(request.getPickUpAddress() == null)throw new BusinessException(ServiceError.InvalidInput, "PickUp Address cannot be null");
+		if (request == null || DPDoctorUtils.anyStringEmpty(request.getLocaleId(), request.getUserId())
+				|| DPDoctorUtils.anyStringEmpty(request.getUniqueRequestId())) {
+			throw new BusinessException(ServiceError.InvalidInput, "Request cannot be null");
+		} else if (request.getWayOfOrder() != null) {
+			if (request.getWayOfOrder().name().equalsIgnoreCase(WayOfOrder.PICK_UP.name())) {
+				if (request.getPickUpTime() == null || request.getPickUpDate() == null)
+					throw new BusinessException(ServiceError.InvalidInput, "PickUp Time or Date cannot be null");
+			} else {
+				if (request.getPickUpAddress() == null)
+					throw new BusinessException(ServiceError.InvalidInput, "PickUp Address cannot be null");
 			}
 		}
-		
+
 		OrderDrugsRequest status = pharmacyService.orderDrugs(request);
 		Response<OrderDrugsRequest> response = new Response<OrderDrugsRequest>();
 		response.setData(status);
@@ -248,7 +266,7 @@ public class LocaleApi {
 	public Response<UserFakeRequestDetailResponse> getUserFakeRequestCount(@PathParam("patientId") String patientId) {
 		Response<UserFakeRequestDetailResponse> response = null;
 		if (DPDoctorUtils.anyStringEmpty(patientId)) {
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");	
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 		UserFakeRequestDetailResponse detailResponse = pharmacyService.getUserFakeRequestCount(patientId);
 		response = new Response<UserFakeRequestDetailResponse>();
@@ -259,9 +277,10 @@ public class LocaleApi {
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_ORDERS, notes = PathProxy.LocaleUrls.GET_PATIENT_ORDERS)
-	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId, @QueryParam("page") int page, @QueryParam("size") int size, 
+	public Response<OrderDrugsResponse> getPatientOrders(@PathParam("userId") String userId,
+			@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
-		
+
 		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
@@ -277,13 +296,14 @@ public class LocaleApi {
 	@GET
 	@Path(PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
 	@ApiOperation(value = PathProxy.LocaleUrls.GET_PATIENT_REQUEST, notes = PathProxy.LocaleUrls.GET_PATIENT_REQUEST)
-	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,	@QueryParam("page") int page, @QueryParam("size") int size, 
+	public Response<SearchRequestFromUserResponse> getPatientRequests(@PathParam("userId") String userId,
+			@QueryParam("page") int page, @QueryParam("size") int size,
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime) {
-		 if (DPDoctorUtils.anyStringEmpty(userId)) {
+		if (DPDoctorUtils.anyStringEmpty(userId)) {
 			throw new BusinessException(ServiceError.InvalidInput, "User id is null");
 		}
 
-		 List<SearchRequestFromUserResponse> list = pharmacyService.getPatientRequests(userId, page, size, updatedTime);
+		List<SearchRequestFromUserResponse> list = pharmacyService.getPatientRequests(userId, page, size, updatedTime);
 
 		Response<SearchRequestFromUserResponse> response = new Response<SearchRequestFromUserResponse>();
 		response.setDataList(list);
@@ -294,11 +314,12 @@ public class LocaleApi {
 	@GET
 	@Path(PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
 	@ApiOperation(value = PathProxy.LocaleUrls.CANCEL_ORDER_DRUG, notes = PathProxy.LocaleUrls.CANCEL_ORDER_DRUG)
-	public Response<OrderDrugsRequest> cancelOrderDrug(@PathParam("orderId") String orderId, @PathParam("userId") String userId) {
-		 if (DPDoctorUtils.anyStringEmpty(orderId, userId)) {
-				throw new BusinessException(ServiceError.InvalidInput, "OderId or UserId cannot be null");
+	public Response<OrderDrugsRequest> cancelOrderDrug(@PathParam("orderId") String orderId,
+			@PathParam("userId") String userId) {
+		if (DPDoctorUtils.anyStringEmpty(orderId, userId)) {
+			throw new BusinessException(ServiceError.InvalidInput, "OderId or UserId cannot be null");
 		}
-		
+
 		OrderDrugsRequest status = pharmacyService.cancelOrderDrug(orderId, userId);
 		Response<OrderDrugsRequest> response = new Response<OrderDrugsRequest>();
 		response.setData(status);

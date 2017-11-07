@@ -36,4 +36,8 @@ public interface ESAppointmentService {
 			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
 			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable);
 
+	ESWEBResponse getLabForWeb(int page, int size, String city, String location, String latitude, String longitude,
+			String test, Boolean booking, Boolean calling, int minTime, int maxTime, List<String> days,
+			Boolean onlineReports, Boolean homeService, Boolean nabl);
+
 }

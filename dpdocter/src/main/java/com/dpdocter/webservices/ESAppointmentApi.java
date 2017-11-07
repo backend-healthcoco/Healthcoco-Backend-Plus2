@@ -203,6 +203,26 @@ public class ESAppointmentApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.SolrAppointmentUrls.GET_LABS_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS_WEB, notes = PathProxy.SolrAppointmentUrls.GET_LABS_WEB)
+	public Response<ESWEBResponse> getLabsForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("city") String city, @QueryParam("location") String location,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("test") String test, @QueryParam("booking") Boolean booking,
+			@QueryParam("calling") Boolean calling, @QueryParam("minTime") int minTime,
+			@QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
+			@QueryParam("onlineReports") Boolean onlineReports, @QueryParam("homeService") Boolean homeService,
+			@QueryParam("nabl") Boolean nabl) {
+
+		ESWEBResponse labs = solrAppointmentService.getLabForWeb(page, size, city, location, latitude, longitude, test,
+				booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl);
+
+		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
+		response.setData(labs);
+		return response;
+	}
+
 	private String getFinalImageURL(String imageURL) {
 		if (imageURL != null) {
 			return imagePath + imageURL;

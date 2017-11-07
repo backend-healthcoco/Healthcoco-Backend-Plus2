@@ -427,7 +427,7 @@ public interface PathProxy {
 		public static final String UPDATE_RECORDS_DATA = "/updateData";
 
 		public static final String SHARE_USER_RECORDS_WITH_PATIENT = "user/file/{recordId}/{patientId}/share";
-		
+
 		public static final String GET_RECORDS_DOCTOR_ID = "getByDoctorId/{doctorId}";
 
 	}
@@ -931,6 +931,9 @@ public interface PathProxy {
 
 		public static final String DELETE_CUSTOM_APPOINTMENT = "/custom/{appointmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
+		public static final String GET_CLINIC_BY_SLUG_URL = "/clinic/{slugUrl}";
+
+		public static final String GET_LAB_BY_SLUG_URL = "/lab/{slugUrl}";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1048,6 +1051,8 @@ public interface PathProxy {
 		public static final String GET_DOCTOR_WEB = "/doctors/web";
 
 		public static final String GET_PHARMACIES_WEB = "/pharmacies/web";
+
+		public static final String GET_LABS_WEB = "/labs/web";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
@@ -1237,6 +1242,7 @@ public interface PathProxy {
 		public static final String EDIT_LOCALE_VISIT_DETAILS = "/editVisitDetails";
 		public static final String EDIT_LOCALE_IMAGES = "/{id}/editImages";
 		public static final String GET_LOCALE_DETAILS = "/get";
+		public static final String GET_LOCALE_BY_SLUGURL = "/get/{slugUrl}";
 		public static final String ADD_USER_REQUEST = "/addUserRequest";
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
 		public static final String GET_PATIENT_ORDER_HISTORY = "/getPatientOrderHistory/{userId}";
@@ -1403,7 +1409,7 @@ public interface PathProxy {
 
 	}
 
-	public static final String RANKING_BASE_URL = BASE_URL + "/ranking"; 
+	public static final String RANKING_BASE_URL = BASE_URL + "/ranking";
 
 	public interface RankingUrls {
 
@@ -1428,7 +1434,7 @@ public interface PathProxy {
 	public interface DiagnosticTestOrderUrls {
 
 		public static final String SEARCH_LABS = "/searchLabs";
-		
+
 		public static final String GET_SAMPLE_PICKUP_TIME_SLOTS = "/pickUpTimeSlots";
 
 		public static final String PLACE_ORDER = "/placeOrder";
@@ -1447,19 +1453,19 @@ public interface PathProxy {
 
 		public static final String GET_DIAGNOSTIC_TEST_PACKAGES = "packages/{locationId}/{hospitalId}";
 	}
-	
+
 	public static final String UPLOAD_DATA_BASE_URL = BASE_URL + "/upload";
 
 	public interface UploadDataUrls {
 
 		public static final String PATIENTS = "/patients/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String PRESCRIPTIONS = "/prescriptions/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String APPOINTMENTS = "/appointments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String TREATMENT_PLANS = "/treatments/plans/{doctorId}/{locationId}/{hospitalId}";
-		
+
 		public static final String TREATMENTS = "/treatments/{doctorId}/{locationId}/{hospitalId}";
 
 		public static final String ASSIGN_PNUM_TO_PATIENTS = "/assignPNUMToPatients/{doctorId}/{locationId}/{hospitalId}";
