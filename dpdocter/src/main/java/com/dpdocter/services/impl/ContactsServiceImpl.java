@@ -758,7 +758,7 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
-			Criteria criteria = new Criteria();
+			Criteria criteria = new Criteria().and("discarded").is(!discarded);
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -897,9 +897,7 @@ public class ContactsServiceImpl implements ContactsService {
 				if (patientCards != null) {
 					mobileNumbers = new ArrayList<>();
 					for (PatientCard patientCard : patientCards) {
-
 						mobileNumbers.add(patientCard.getUser().getMobileNumber());
-
 					}
 
 				}
