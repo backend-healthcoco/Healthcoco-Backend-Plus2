@@ -48,6 +48,8 @@ public class Prescription extends GenericCollection {
 
 	private Appointment appointmentRequest;
 
+	private Quantity quantity;
+
 	public String getId() {
 		return id;
 	}
@@ -190,6 +192,14 @@ public class Prescription extends GenericCollection {
 
 	public void setTests(List<TestAndRecordData> tests) {
 		this.tests = tests;
+	}
+
+	public Quantity getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Quantity quantity) {
+		this.quantity = quantity;
 	}
 
 	@Override
