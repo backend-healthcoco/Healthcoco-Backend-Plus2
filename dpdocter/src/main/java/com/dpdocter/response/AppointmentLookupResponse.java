@@ -373,10 +373,9 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms="
 				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
-				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", status=" + status
-				+ ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt
-				+ ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count + ", category="
-				+ category + "]";
+				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", patientCard="
+				+ patientCard + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
+				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
+				+ ", count=" + count + ", category=" + category + "]";
 	}
-
 }
