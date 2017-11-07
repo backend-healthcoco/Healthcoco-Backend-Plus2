@@ -46,7 +46,7 @@ public class Locale extends GenericCollection {
 	private Boolean isAcceptRequest = true;
 	private Double minimumAmountForDelivery = 0.0;
 	private Boolean isFavourite = false;
-	private String pharmacySlugURL;
+	private String pharmacySlugUrl;
 
 	public List<String> getPaymentInfos() {
 		return paymentInfos;
@@ -347,11 +347,12 @@ public class Locale extends GenericCollection {
 				+ ", minimumAmountForDelivery=" + minimumAmountForDelivery + ", isFavourite=" + isFavourite + "]";
 	}
 
-	public String getPharmacySlugURL() {
-		return pharmacySlugURL;
+	public String getPharmacySlugUrl() {
+		return pharmacySlugUrl;
 	}
 
-	public void setPharmacySlugURL(String pharmacySlugURL) {
-		this.pharmacySlugURL = pharmacySlugURL;
+	public void setPharmacySlugUrl(String pharmacySlugUrl) {
+		this.pharmacySlugUrl = pharmacySlugUrl;
 	}
+
 }

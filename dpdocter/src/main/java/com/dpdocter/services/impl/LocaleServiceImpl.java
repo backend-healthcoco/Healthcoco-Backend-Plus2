@@ -71,7 +71,7 @@ public class LocaleServiceImpl implements LocaleService {
 	public Locale getLocaleDetailBySlugUrl(String slugUrl) {
 		Locale response = null;
 		LocaleCollection localeCollection = mongoTemplate.findOne(
-				new Query(new Criteria("pharmacySlugURL").regex("^" + slugUrl + "*", "i")), LocaleCollection.class);
+				new Query(new Criteria("pharmacySlugUrl").regex("^" + slugUrl + "*", "i")), LocaleCollection.class);
 		if (localeCollection == null) {
 			throw new BusinessException(ServiceError.NoRecord, "Record for id not found");
 		}

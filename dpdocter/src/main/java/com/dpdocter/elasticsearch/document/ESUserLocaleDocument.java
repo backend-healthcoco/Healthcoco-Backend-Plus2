@@ -164,14 +164,14 @@ public class ESUserLocaleDocument {
 	private Double minimumAmountForDelivery = 0.0;
 
 	@Field(type = FieldType.String)
-	private String pharmacySlugURL;
+	private String pharmacySlugUrl;
 
-	public String getPharmacySlugURL() {
-		return pharmacySlugURL;
+	public String getPharmacySlugUrl() {
+		return pharmacySlugUrl;
 	}
 
-	public void setPharmacySlugURL(String pharmacySlugURL) {
-		this.pharmacySlugURL = pharmacySlugURL;
+	public void setPharmacySlugUrl(String pharmacySlugUrl) {
+		this.pharmacySlugUrl = pharmacySlugUrl;
 	}
 
 	public Double getMinimumAmountForDelivery() {
