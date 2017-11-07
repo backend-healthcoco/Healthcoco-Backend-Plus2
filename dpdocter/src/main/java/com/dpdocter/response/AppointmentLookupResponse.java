@@ -3,6 +3,7 @@ package com.dpdocter.response;
 import java.util.Date;
 
 import com.dpdocter.beans.Location;
+import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.User;
 import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.GenericCollection;
@@ -64,6 +65,8 @@ public class AppointmentLookupResponse extends GenericCollection {
     
     private User patient;
 	
+    private PatientCard patientCard;
+    
     private QueueStatus status = QueueStatus.SCHEDULED;
     
     private long waitedFor = 0;
@@ -352,6 +355,14 @@ public class AppointmentLookupResponse extends GenericCollection {
 		this.category = category;
 	}
 
+	public PatientCard getPatientCard() {
+		return patientCard;
+	}
+
+	public void setPatientCard(PatientCard patientCard) {
+		this.patientCard = patientCard;
+	}
+
 	@Override
 	public String toString() {
 		return "AppointmentLookupResponse [id=" + id + ", subject=" + subject + ", explanation=" + explanation
@@ -362,10 +373,9 @@ public class AppointmentLookupResponse extends GenericCollection {
 				+ ", isAllDayEvent=" + isAllDayEvent + ", cancelledBy=" + cancelledBy + ", notifyPatientBySms="
 				+ notifyPatientBySms + ", notifyPatientByEmail=" + notifyPatientByEmail + ", notifyDoctorBySms="
 				+ notifyDoctorBySms + ", notifyDoctorByEmail=" + notifyDoctorByEmail + ", visitId=" + visitId
-				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", status=" + status
-				+ ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor + ", engagedAt=" + engagedAt
-				+ ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt + ", count=" + count + ", category="
-				+ category + "]";
+				+ ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", patientCard="
+				+ patientCard + ", status=" + status + ", waitedFor=" + waitedFor + ", engagedFor=" + engagedFor
+				+ ", engagedAt=" + engagedAt + ", checkedInAt=" + checkedInAt + ", checkedOutAt=" + checkedOutAt
+				+ ", count=" + count + ", category=" + category + "]";
 	}
-
 }
