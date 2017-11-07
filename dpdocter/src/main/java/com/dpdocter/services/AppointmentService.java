@@ -46,7 +46,7 @@ public interface AppointmentService {
 
 	List<City> getStates(String country);
 
-	SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date);
+	SlotDataResponse getTimeSlots(String doctorId, String locationId, Date date, Boolean isPatient);
 
 	Appointment addAppointment(AppointmentRequest request);
 

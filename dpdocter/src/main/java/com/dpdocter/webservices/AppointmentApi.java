@@ -258,7 +258,8 @@ public class AppointmentApi {
 	@GET
 	@ApiOperation(value = PathProxy.AppointmentUrls.GET_TIME_SLOTS, notes = PathProxy.AppointmentUrls.GET_TIME_SLOTS)
 	public Response<SlotDataResponse> getTimeSlots(@PathParam("doctorId") String doctorId,
-			@PathParam("locationId") String locationId, @PathParam("date") String date) throws MessagingException {
+			@PathParam("locationId") String locationId, @PathParam("date") String date, 
+			@DefaultValue(value="true") @QueryParam(value = "isPatient") Boolean isPatient) throws MessagingException {
 
 		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
 			logger.warn("Doctor Id Cannot Be Empty");
@@ -266,7 +267,7 @@ public class AppointmentApi {
 			throw new BusinessException(ServiceError.InvalidInput, "Doctor Id Cannot Be Empty");
 		}
 		Date dateObj = new Date(Long.parseLong(date));
-		SlotDataResponse slotDataResponse = appointmentService.getTimeSlots(doctorId, locationId, dateObj);
+		SlotDataResponse slotDataResponse = appointmentService.getTimeSlots(doctorId, locationId, dateObj, isPatient);
 		Response<SlotDataResponse> response = new Response<SlotDataResponse>();
 		response.setData(slotDataResponse);
 		return response;
