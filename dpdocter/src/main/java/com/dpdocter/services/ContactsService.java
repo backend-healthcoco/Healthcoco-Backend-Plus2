@@ -32,7 +32,7 @@ public interface ContactsService {
 
     DoctorContactsResponse getDoctorContacts(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, int page, int size, String role);
 
-    List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, String role);
+   // List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId, String updatedTime, boolean discarded, String role);
 
     PatientGroupAddEditRequest addGroupToPatient(PatientGroupAddEditRequest request);
 
@@ -46,5 +46,11 @@ public interface ContactsService {
 			throws Exception;
 
 	Boolean sendSMSToGroup(BulkSMSRequest request);
+
+	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
+			String updatedTime, boolean discarded, String role, int page, int size);
+
+	Long getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
+			String role);
 
 }

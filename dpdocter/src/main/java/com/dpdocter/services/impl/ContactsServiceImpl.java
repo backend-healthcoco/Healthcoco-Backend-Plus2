@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -34,6 +35,7 @@ import com.dpdocter.beans.User;
 import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
+import com.dpdocter.collections.InventoryItemCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -58,6 +60,7 @@ import com.dpdocter.request.GetDoctorContactsRequest;
 import com.dpdocter.request.ImportContactsRequest;
 import com.dpdocter.request.PatientGroupAddEditRequest;
 import com.dpdocter.response.ImageURLResponse;
+import com.dpdocter.response.InventoryItemLookupResposne;
 import com.dpdocter.response.PatientGroupLookupResponse;
 import com.dpdocter.services.ContactsService;
 import com.dpdocter.services.FileManager;
@@ -113,6 +116,9 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Autowired
 	private SMSServices smsServices;
+	
+	@Autowired
+	private MongoOperations mongoOperations;
 	
 	@Value(value = "${Contacts.checkIfGroupIsExistWithSameName}")
 	private String checkIfGroupIsExistWithSameName;
@@ -586,10 +592,11 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,
-			String hospitalId, String updatedTime, boolean discarded, String role) {
+			String hospitalId, String updatedTime, boolean discarded, String role , int page ,int size) {
 		List<RegisteredPatientDetails> registeredPatientDetails = null;
 		List<PatientCard> patientCards = null;
 		List<Group> groups = null;
+		Aggregation aggregation = null;
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
 
@@ -620,6 +627,23 @@ public class ContactsServiceImpl implements ContactsService {
 							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 							Aggregation.sort(Direction.DESC, "createdTime")),
 					PatientCollection.class, PatientCard.class).getMappedResults();
+			
+			
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+						Aggregation.sort(Direction.DESC, "createdTime"), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+						Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+						Aggregation.sort(Direction.DESC, "createdTime"));
+		
+			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientCollection.class, PatientCard.class);
+			patientCards = aggregationResults.getMappedResults();
 
 			if (!patientCards.isEmpty()) {
 				registeredPatientDetails = new ArrayList<RegisteredPatientDetails>();
@@ -716,6 +740,46 @@ public class ContactsServiceImpl implements ContactsService {
 			throw new BusinessException(ServiceError.Unknown, e.getMessage());
 		}
 		return registeredPatientDetails;
+	}
+	
+	
+	@Override
+	@Transactional
+	public Long getDoctorContactsHandheldCount(String doctorId, String locationId,
+			String hospitalId, boolean discarded, String role) {
+	
+		Long count =  0l;
+		
+		try {
+			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				doctorObjectId = new ObjectId(doctorId);
+			if (!DPDoctorUtils.anyStringEmpty(locationId))
+				locationObjectId = new ObjectId(locationId);
+			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
+				hospitalObjectId = new ObjectId(hospitalId);
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
+					criteria.and("consultantDoctorIds").is(doctorObjectId);
+				}
+				else criteria.and("doctorId").is(doctorObjectId);
+			}
+			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
+			}
+			
+			Query query = new Query();
+			query.addCriteria(criteria);
+			count = mongoOperations.count(query, PatientCollection.class);
+
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return count;
 	}
 
 	@Override

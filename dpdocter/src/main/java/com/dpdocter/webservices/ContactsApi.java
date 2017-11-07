@@ -126,21 +126,23 @@ public class ContactsApi {
     @Path(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
     @GET
     @ApiOperation(value = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD, notes = PathProxy.ContactsUrls.DOCTOR_CONTACTS_HANDHELD)
-    public Response<RegisteredPatientDetails> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
+    public Response<Object> getDoctorContactsHandheld(@QueryParam(value = "doctorId") String doctorId,
 	    @QueryParam(value = "locationId") String locationId, @QueryParam(value = "hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam(value = "updatedTime") String updatedTime,
-	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("role") String role) {
+	    @DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded, @QueryParam("role") String role , @QueryParam("page") int page, @QueryParam("size") int size) {
 
     
-    List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded, role);
+    List<RegisteredPatientDetails> registeredPatientDetails = contactsService.getDoctorContactsHandheld(doctorId, locationId, hospitalId, updatedTime, discarded, role , page, size);
     	if (registeredPatientDetails != null && !registeredPatientDetails.isEmpty()) {
     	    for (RegisteredPatientDetails registeredPatientDetail : registeredPatientDetails) {
     		registeredPatientDetail.setImageUrl(getFinalImageURL(registeredPatientDetail.getImageUrl()));
     		registeredPatientDetail.setThumbnailUrl(getFinalImageURL(registeredPatientDetail.getThumbnailUrl()));
     	    }
     	}
-    	Response<RegisteredPatientDetails> response = new Response<RegisteredPatientDetails>();
+    	
+    	Response<Object> response = new Response<Object>();
     	response.setDataList(registeredPatientDetails);
+    	response.setData(contactsService.getDoctorContactsHandheldCount(doctorId, locationId, hospitalId, discarded, role));
     	return response;
     }
 
