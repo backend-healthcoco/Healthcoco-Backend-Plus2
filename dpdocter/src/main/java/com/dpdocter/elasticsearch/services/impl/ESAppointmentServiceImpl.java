@@ -301,7 +301,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					appointmentSearchResponse.setId(esUserLocaleDocument.getId());
 					appointmentSearchResponse.setResponse(esUserLocaleDocument.getLocaleName());
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.PHARMACY);
-					appointmentSearchResponse.setSlugUrl(esUserLocaleDocument.getPharmacySlugURL());
+					appointmentSearchResponse.setSlugUrl(esUserLocaleDocument.getPharmacySlugUrl());
 					response.add(appointmentSearchResponse);
 				}
 		}
