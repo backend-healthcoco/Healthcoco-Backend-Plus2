@@ -1264,9 +1264,13 @@ public interface PathProxy {
 		public static final String ADD_BABY_NOTES = "/babyNotes/add";
 		public static final String ADD_LABOUR_NOTES = "/loabourNotes/add";
 		public static final String ADD_OPERATION_NOTES = "/operationNotes/add";
+		public static final String ADD_CEMENT = "/cement/add";
+		public static final String ADD_IMPLANT = "/implant/add";
 		public static final String DELETE_BABY_NOTES = "/babyNotes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DELETE_OPERAION_NOTES = "/operationNotes/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String DELETE_LABOUR_NOTES = "/labourNote/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_CEMENT = "/cement/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
+		public static final String DELETE_IMPLANT = "/implant/{id}/{doctorId}/{locationId}/{hospitalId}/delete";
 		public static final String GET_DISCHARGE_SUMMARY_ITEMS = "/{type}/{range}";
 	}
 

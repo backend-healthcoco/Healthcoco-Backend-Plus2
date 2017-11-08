@@ -19,12 +19,16 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
 import com.dpdocter.elasticsearch.document.ESBabyNoteDocument;
+import com.dpdocter.elasticsearch.document.ESCementDocument;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
+import com.dpdocter.elasticsearch.document.ESImplantDocument;
 import com.dpdocter.elasticsearch.document.ESOperationNoteDocument;
 import com.dpdocter.elasticsearch.document.ESSpecialityDocument;
 import com.dpdocter.elasticsearch.document.EsLabourNoteDocument;
 import com.dpdocter.elasticsearch.repository.ESBabyNoteRepository;
+import com.dpdocter.elasticsearch.repository.ESCementRepository;
 import com.dpdocter.elasticsearch.repository.ESDoctorRepository;
+import com.dpdocter.elasticsearch.repository.ESImplantRepository;
 import com.dpdocter.elasticsearch.repository.ESLabourNoteRepository;
 import com.dpdocter.elasticsearch.repository.ESOperationNoteRepository;
 import com.dpdocter.elasticsearch.services.ESDischargeSummaryService;
@@ -55,6 +59,12 @@ public class ESDischargeSummaryServiceImpl implements ESDischargeSummaryService 
 
 	@Autowired
 	private ESDoctorRepository esDoctorRepository;
+
+	@Autowired
+	private ESImplantRepository esImplantRepository;
+
+	@Autowired
+	private ESCementRepository esCementRepository;
 
 	@Autowired
 	private TransactionalManagementService transnationalService;
@@ -234,7 +244,7 @@ public class ESDischargeSummaryServiceImpl implements ESDischargeSummaryService 
 		return response;
 	}
 
-		private List<ESBabyNoteDocument> getCustomGlobalBabyNote(int page, int size, String doctorId, String locationId,
+	private List<ESBabyNoteDocument> getCustomGlobalBabyNote(int page, int size, String doctorId, String locationId,
 			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
 		List<ESBabyNoteDocument> response = null;
 		try {
@@ -497,6 +507,128 @@ public class ESDischargeSummaryServiceImpl implements ESDischargeSummaryService 
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting labour Note");
+		}
+		return response;
+	}
+
+	@Override
+	public boolean addImplant(ESImplantDocument request) {
+		boolean response = false;
+		try {
+			esImplantRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.IMPLANT, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Implant");
+		}
+		return response;
+	}
+
+	@Override
+	public boolean addCement(ESCementDocument request) {
+		boolean response = false;
+		try {
+			esCementRepository.save(request);
+			response = true;
+			transnationalService.addResource(new ObjectId(request.getId()), Resource.CEMENT, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Occurred While Saving Cement");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ESImplantDocument> searchImplant(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESImplantDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.IMPLANT, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"implant");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESImplantDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting implant");
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ESCementDocument> searchCement(String range, int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded, String searchTerm) {
+		List<ESCementDocument> response = null;
+		try {
+			List<ESDoctorDocument> doctorCollections = null;
+			Collection<String> specialities = Collections.EMPTY_LIST;
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				doctorCollections = esDoctorRepository.findByUserId(doctorId, new PageRequest(0, 1));
+				if (doctorCollections != null && !doctorCollections.isEmpty()) {
+					List<String> specialitiesId = doctorCollections.get(0).getSpecialities();
+					if (specialitiesId != null && !specialitiesId.isEmpty() && !specialitiesId.contains(null)) {
+						BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+								.must(QueryBuilders.termsQuery("_id", specialitiesId));
+
+						int count = (int) elasticsearchTemplate.count(
+								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder).build(),
+								ESSpecialityDocument.class);
+						if (count > 0) {
+							SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+									.withPageable(new PageRequest(0, count)).build();
+							List<ESSpecialityDocument> resultsSpeciality = elasticsearchTemplate
+									.queryForList(searchQuery, ESSpecialityDocument.class);
+							if (resultsSpeciality != null && !resultsSpeciality.isEmpty()) {
+								specialities = CollectionUtils.collect(resultsSpeciality,
+										new BeanToPropertyValueTransformer("speciality"));
+								specialities.add("ALL");
+							}
+						}
+					}
+				}
+			}
+
+			SearchQuery searchQuery = DPDoctorUtils.createCustomGlobalQuery(Resource.CEMENT, page, size, doctorId,
+					locationId, hospitalId, updatedTime, discarded, null, searchTerm, specialities, null, null,
+					"cement");
+			response = elasticsearchTemplate.queryForList(searchQuery, ESCementDocument.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting cement");
 		}
 		return response;
 	}
