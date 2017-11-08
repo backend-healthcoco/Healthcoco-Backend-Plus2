@@ -220,11 +220,6 @@ public class ClinicalNotesApi {
 			@DefaultValue("0") @QueryParam("updatedTime") String updatedTime,
 			@DefaultValue("true") @QueryParam(value = "discarded") Boolean discarded) {
 
-		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
-			logger.warn("Invalid Input");
-			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-		}
-
 		List<ClinicalNotes> clinicalNotes = clinicalNotesService.getClinicalNotes(page, size, doctorId, locationId,
 				hospitalId, patientId, updatedTime,
 				otpService.checkOTPVerified(doctorId, locationId, hospitalId, patientId), discarded, false);
@@ -990,7 +985,7 @@ public class ClinicalNotesApi {
 		response.setData(holter);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE, notes = PathProxy.ClinicalNotesUrls.ADD_PC_NOSE)
@@ -1011,7 +1006,7 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintNose);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_EARS, notes = PathProxy.ClinicalNotesUrls.ADD_PC_EARS)
@@ -1032,7 +1027,7 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintEars);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.ADD_PC_THROAT)
@@ -1052,7 +1047,7 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintThroat);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY, notes = PathProxy.ClinicalNotesUrls.ADD_PC_ORAL_CAVITY)
@@ -1066,14 +1061,14 @@ public class ClinicalNotesApi {
 		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.addEditPCOralCavity(request);
 
 		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.PC_NOSE, false);
-		ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavity= new ESPresentingComplaintOralCavityDocument();
+		ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavity = new ESPresentingComplaintOralCavityDocument();
 		BeanUtil.map(presentingComplaintOralCavity, esPresentingComplaintOralCavity);
 		esClinicalNotesService.addPCOralCavity(esPresentingComplaintOralCavity);
 		Response<PresentingComplaintOralCavity> response = new Response<PresentingComplaintOralCavity>();
 		response.setData(presentingComplaintOralCavity);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_NOSE_EXAM)
@@ -1094,7 +1089,7 @@ public class ClinicalNotesApi {
 		response.setData(noseExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_NECK_EXAM)
@@ -1115,7 +1110,7 @@ public class ClinicalNotesApi {
 		response.setData(neckExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_EARS_EXAM)
@@ -1136,20 +1131,23 @@ public class ClinicalNotesApi {
 		response.setData(earsExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_ORAL_CAVITY_THROAT_EXAM)
-	public Response<OralCavityAndThroatExamination> addEditOralCavityThroatExam(OralCavityAndThroatExamination request) {
+	public Response<OralCavityAndThroatExamination> addEditOralCavityThroatExam(
+			OralCavityAndThroatExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getOralCavityThroatExam())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService.addEditOralCavityThroatExam(request);
+		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService
+				.addEditOralCavityThroatExam(request);
 
-		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM, false);
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.ORAL_CAVITY_THROAT_EXAM,
+				false);
 		ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
 		BeanUtil.map(oralCavityAndThroatExamination, esOralCavityAndThroatExaminationDocument);
 		esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
@@ -1157,20 +1155,23 @@ public class ClinicalNotesApi {
 		response.setData(oralCavityAndThroatExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
 	@POST
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.ADD_INDIRECT_LARYGOSCOPY_EXAM)
-	public Response<IndirectLarygoscopyExamination> addEditIndirectLarygosccopyExam(IndirectLarygoscopyExamination request) {
+	public Response<IndirectLarygoscopyExamination> addEditIndirectLarygosccopyExam(
+			IndirectLarygoscopyExamination request) {
 		if (request == null || DPDoctorUtils.anyStringEmpty(request.getDoctorId(), request.getLocationId(),
 				request.getHospitalId(), request.getIndirectLarygoscopyExam())) {
 			logger.warn("Invalid Input");
 			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
 
-		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.addEditIndirectLarygoscopyExam(request);
-		
-		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM, false);
+		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService
+				.addEditIndirectLarygoscopyExam(request);
+
+		transactionalManagementService.addResource(new ObjectId(request.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM,
+				false);
 		ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
 		BeanUtil.map(indirectLarygoscopyExamination, esIndirectLarygoscopyExaminationDocument);
 		esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
@@ -1642,7 +1643,7 @@ public class ClinicalNotesApi {
 		response.setData(procedureNote);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_NOSE)
@@ -1655,7 +1656,8 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		PresentingComplaintNose presentingComplaintNose = clinicalNotesService.deletePCNose(id, doctorId, locationId, hospitalId, discarded);
+		PresentingComplaintNose presentingComplaintNose = clinicalNotesService.deletePCNose(id, doctorId, locationId,
+				hospitalId, discarded);
 
 		if (presentingComplaintNose != null) {
 			transactionalManagementService.addResource(new ObjectId(presentingComplaintNose.getId()), Resource.PC_NOSE,
@@ -1668,7 +1670,7 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintNose);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_EARS)
@@ -1681,7 +1683,8 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		PresentingComplaintEars presentingComplaintEars = clinicalNotesService.deletePCEars(id, doctorId, locationId, hospitalId, discarded);
+		PresentingComplaintEars presentingComplaintEars = clinicalNotesService.deletePCEars(id, doctorId, locationId,
+				hospitalId, discarded);
 
 		if (presentingComplaintEars != null) {
 			transactionalManagementService.addResource(new ObjectId(presentingComplaintEars.getId()), Resource.PC_EARS,
@@ -1694,8 +1697,7 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintEars);
 		return response;
 	}
-	
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_ORAL_CAVITY)
@@ -1708,11 +1710,12 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.deletePCOralCavity(id, doctorId, locationId, hospitalId, discarded);
+		PresentingComplaintOralCavity presentingComplaintOralCavity = clinicalNotesService.deletePCOralCavity(id,
+				doctorId, locationId, hospitalId, discarded);
 
 		if (presentingComplaintOralCavity != null) {
-			transactionalManagementService.addResource(new ObjectId(presentingComplaintOralCavity.getId()), Resource.PC_EARS,
-					false);
+			transactionalManagementService.addResource(new ObjectId(presentingComplaintOralCavity.getId()),
+					Resource.PC_EARS, false);
 			ESPresentingComplaintOralCavityDocument esPresentingComplaintOralCavityDocument = new ESPresentingComplaintOralCavityDocument();
 			BeanUtil.map(presentingComplaintOralCavity, esPresentingComplaintOralCavityDocument);
 			esClinicalNotesService.addPCOralCavity(esPresentingComplaintOralCavityDocument);
@@ -1721,8 +1724,7 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintOralCavity);
 		return response;
 	}
-		
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_NOSE_EXAM)
@@ -1735,7 +1737,8 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		NoseExamination noseExamination = clinicalNotesService.deleteNoseExam(id, doctorId, locationId, hospitalId, discarded);
+		NoseExamination noseExamination = clinicalNotesService.deleteNoseExam(id, doctorId, locationId, hospitalId,
+				discarded);
 		if (noseExamination != null) {
 			transactionalManagementService.addResource(new ObjectId(noseExamination.getId()), Resource.NOSE_EXAM,
 					false);
@@ -1747,8 +1750,7 @@ public class ClinicalNotesApi {
 		response.setData(noseExamination);
 		return response;
 	}
-		
-		
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_NECK_EXAM)
@@ -1761,7 +1763,8 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		NeckExamination neckExamination = clinicalNotesService.deleteNeckExam(id, doctorId, locationId, hospitalId, discarded);
+		NeckExamination neckExamination = clinicalNotesService.deleteNeckExam(id, doctorId, locationId, hospitalId,
+				discarded);
 		if (neckExamination != null) {
 			transactionalManagementService.addResource(new ObjectId(neckExamination.getId()), Resource.NECK_EXAM,
 					false);
@@ -1773,7 +1776,7 @@ public class ClinicalNotesApi {
 		response.setData(neckExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_EARS_EXAM)
@@ -1786,7 +1789,8 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		EarsExamination EarsExamination = clinicalNotesService.deleteEarsExam(id, doctorId, locationId, hospitalId, discarded);
+		EarsExamination EarsExamination = clinicalNotesService.deleteEarsExam(id, doctorId, locationId, hospitalId,
+				discarded);
 		if (EarsExamination != null) {
 			transactionalManagementService.addResource(new ObjectId(EarsExamination.getId()), Resource.EARS_EXAM,
 					false);
@@ -1798,7 +1802,7 @@ public class ClinicalNotesApi {
 		response.setData(EarsExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_ORAL_CAVITY_THROAT_EXAM)
@@ -1811,10 +1815,11 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService.deleteOralCavityThroatExam(id, doctorId, locationId, hospitalId, discarded);
+		OralCavityAndThroatExamination oralCavityAndThroatExamination = clinicalNotesService
+				.deleteOralCavityThroatExam(id, doctorId, locationId, hospitalId, discarded);
 		if (oralCavityAndThroatExamination != null) {
-			transactionalManagementService.addResource(new ObjectId(oralCavityAndThroatExamination.getId()), Resource.ORAL_CAVITY_THROAT_EXAM,
-					false);
+			transactionalManagementService.addResource(new ObjectId(oralCavityAndThroatExamination.getId()),
+					Resource.ORAL_CAVITY_THROAT_EXAM, false);
 			ESOralCavityAndThroatExaminationDocument esOralCavityAndThroatExaminationDocument = new ESOralCavityAndThroatExaminationDocument();
 			BeanUtil.map(oralCavityAndThroatExamination, esOralCavityAndThroatExaminationDocument);
 			esClinicalNotesService.addOralCavityThroatExam(esOralCavityAndThroatExaminationDocument);
@@ -1823,7 +1828,7 @@ public class ClinicalNotesApi {
 		response.setData(oralCavityAndThroatExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM, notes = PathProxy.ClinicalNotesUrls.DELETE_INDIRECT_LARYGOSCOPY_EXAM)
@@ -1836,10 +1841,11 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService.deleteIndirectLarygoscopyExam(id, doctorId, locationId, hospitalId, discarded);
+		IndirectLarygoscopyExamination indirectLarygoscopyExamination = clinicalNotesService
+				.deleteIndirectLarygoscopyExam(id, doctorId, locationId, hospitalId, discarded);
 		if (indirectLarygoscopyExamination != null) {
-			transactionalManagementService.addResource(new ObjectId(indirectLarygoscopyExamination.getId()), Resource.INDIRECT_LARYGOSCOPY_EXAM,
-					false);
+			transactionalManagementService.addResource(new ObjectId(indirectLarygoscopyExamination.getId()),
+					Resource.INDIRECT_LARYGOSCOPY_EXAM, false);
 			ESIndirectLarygoscopyExaminationDocument esIndirectLarygoscopyExaminationDocument = new ESIndirectLarygoscopyExaminationDocument();
 			BeanUtil.map(indirectLarygoscopyExamination, esIndirectLarygoscopyExaminationDocument);
 			esClinicalNotesService.addIndirectLarygoscopyExam(esIndirectLarygoscopyExaminationDocument);
@@ -1848,7 +1854,7 @@ public class ClinicalNotesApi {
 		response.setData(indirectLarygoscopyExamination);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
 	@DELETE
 	@ApiOperation(value = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT, notes = PathProxy.ClinicalNotesUrls.DELETE_PC_THROAT)
@@ -1861,10 +1867,11 @@ public class ClinicalNotesApi {
 			throw new BusinessException(ServiceError.InvalidInput,
 					"Complaint Id, Doctor Id, Hospital Id, Location Id Cannot Be Empty");
 		}
-		PresentingComplaintThroat presentingComplaintThroat = clinicalNotesService.deletePCThroat(id, doctorId, locationId, hospitalId, discarded);
+		PresentingComplaintThroat presentingComplaintThroat = clinicalNotesService.deletePCThroat(id, doctorId,
+				locationId, hospitalId, discarded);
 		if (presentingComplaintThroat != null) {
-			transactionalManagementService.addResource(new ObjectId(presentingComplaintThroat.getId()), Resource.PC_EARS,
-					false);
+			transactionalManagementService.addResource(new ObjectId(presentingComplaintThroat.getId()),
+					Resource.PC_EARS, false);
 			ESPresentingComplaintThroatDocument esPresentingComplaintThroatDocument = new ESPresentingComplaintThroatDocument();
 			BeanUtil.map(presentingComplaintThroat, esPresentingComplaintThroatDocument);
 			esClinicalNotesService.addPCThroat(esPresentingComplaintThroatDocument);
@@ -1873,20 +1880,21 @@ public class ClinicalNotesApi {
 		response.setData(presentingComplaintThroat);
 		return response;
 	}
-	
+
 	@Path(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
-		@GET
-		@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY, notes = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
-		public Response<Diagnoses> getServicesBySpeciality(@QueryParam("speciality") String speciality , @QueryParam("searchTerm") String searchTerm) {
-			if (DPDoctorUtils.anyStringEmpty(speciality)) {
-				logger.error("Invalid Input");
-				throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
-			}
-			List<Diagnoses> diagnoses = clinicalNotesService.getDiagnosesListBySpeciality(speciality,searchTerm);
-			
-			Response<Diagnoses> response = new Response<Diagnoses>();
-			response.setDataList(diagnoses);
-			return response;
-	
+	@GET
+	@ApiOperation(value = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY, notes = PathProxy.ClinicalNotesUrls.GET_DIAGNOSES_BY_SPECIALITY)
+	public Response<Diagnoses> getServicesBySpeciality(@QueryParam("speciality") String speciality,
+			@QueryParam("searchTerm") String searchTerm) {
+		if (DPDoctorUtils.anyStringEmpty(speciality)) {
+			logger.error("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 		}
+		List<Diagnoses> diagnoses = clinicalNotesService.getDiagnosesListBySpeciality(speciality, searchTerm);
+
+		Response<Diagnoses> response = new Response<Diagnoses>();
+		response.setDataList(diagnoses);
+		return response;
+
+	}
 }
