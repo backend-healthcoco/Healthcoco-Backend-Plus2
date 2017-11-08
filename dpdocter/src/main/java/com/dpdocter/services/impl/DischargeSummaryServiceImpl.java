@@ -28,9 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dpdocter.beans.Appointment;
 import com.dpdocter.beans.BabyNote;
+import com.dpdocter.beans.Cement;
 import com.dpdocter.beans.ClinicalNotes;
 import com.dpdocter.beans.DefaultPrintSettings;
 import com.dpdocter.beans.GenericCode;
+import com.dpdocter.beans.Implant;
 import com.dpdocter.beans.LabourNote;
 import com.dpdocter.beans.MailAttachment;
 import com.dpdocter.beans.OperationNote;
@@ -40,10 +42,12 @@ import com.dpdocter.beans.PrescriptionItem;
 import com.dpdocter.beans.PrescriptionItemDetail;
 import com.dpdocter.beans.PrescriptionJasperDetails;
 import com.dpdocter.collections.BabyNoteCollection;
+import com.dpdocter.collections.CementCollection;
 import com.dpdocter.collections.DischargeSummaryCollection;
 import com.dpdocter.collections.DoctorCollection;
 import com.dpdocter.collections.DrugCollection;
 import com.dpdocter.collections.EmailTrackCollection;
+import com.dpdocter.collections.ImplantCollection;
 import com.dpdocter.collections.LabourNoteCollection;
 import com.dpdocter.collections.LocationCollection;
 import com.dpdocter.collections.OperationNoteCollection;
@@ -63,9 +67,11 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.reflections.BeanUtil;
 import com.dpdocter.repository.BabyNoteRepository;
+import com.dpdocter.repository.CementRepository;
 import com.dpdocter.repository.DischargeSummaryRepository;
 import com.dpdocter.repository.DoctorRepository;
 import com.dpdocter.repository.DrugRepository;
+import com.dpdocter.repository.ImplantRepository;
 import com.dpdocter.repository.LabourNoteRepository;
 import com.dpdocter.repository.LocationRepository;
 import com.dpdocter.repository.OperationNoteRepository;
@@ -123,6 +129,8 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 	private PrescriptionRepository prescriptionRepository;
 
 	@Autowired
+	private CementRepository cementRepository;
+	@Autowired
 	private EmailTackService emailTackService;
 
 	@Autowired
@@ -145,6 +153,9 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 
 	@Autowired
 	private OperationNoteRepository operationNoteRepository;
+
+	@Autowired
+	private ImplantRepository implantRepository;
 
 	@Autowired
 	private MailBodyGenerator mailBodyGenerator;
@@ -1697,6 +1708,40 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			}
 			break;
 		}
+		case IMPLANT: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalImplant(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomImplant(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalImplant(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
+		case CEMENT: {
+			switch (Range.valueOf(range.toUpperCase())) {
+
+			case GLOBAL:
+				response = getGlobalCement(page, size, doctorId, updatedTime, discarded);
+				break;
+			case CUSTOM:
+				response = getCustomCement(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			case BOTH:
+				response = getCustomGlobalCement(page, size, doctorId, locationId, hospitalId, updatedTime, discarded);
+				break;
+			default:
+				break;
+			}
+			break;
+		}
 		}
 
 		return response;
@@ -1950,6 +1995,317 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			e.printStackTrace();
 			logger.error(e);
 			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Labour Note");
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public Implant addEditImplant(Implant implant) {
+		try {
+			ImplantCollection implantCollection = new ImplantCollection();
+			BeanUtil.map(implant, implantCollection);
+			if (DPDoctorUtils.anyStringEmpty(implant.getId())) {
+				implantCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(implantCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(implantCollection.getDoctorId());
+					if (userCollection != null) {
+						implantCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					implantCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				ImplantCollection oldImplantCollection = implantRepository.findOne(implantCollection.getId());
+				implantCollection.setCreatedBy(oldImplantCollection.getCreatedBy());
+				implantCollection.setCreatedTime(oldImplantCollection.getCreatedTime());
+				implantCollection.setDiscarded(oldImplantCollection.getDiscarded());
+			}
+			implantCollection = implantRepository.save(implantCollection);
+			BeanUtil.map(implantCollection, implant);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Adding Implant");
+		}
+		return implant;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Implant> getCustomGlobalImplant(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<Implant> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<Implant> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					ImplantCollection.class, Implant.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Implant");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Implant> getGlobalImplant(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<Implant> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<Implant> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), ImplantCollection.class,
+					Implant.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Implant");
+		}
+		return response;
+	}
+
+	private List<Implant> getCustomImplant(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Implant> response = null;
+		try {
+			AggregationResults<Implant> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
+					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null),
+					ImplantCollection.class, Implant.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Implant");
+		}
+		return response;
+	}
+
+	@Override
+	public Implant deleteImplant(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		Implant response = null;
+		try {
+			ImplantCollection implantCollection = implantRepository.findOne(new ObjectId(id));
+			if (implantCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(implantCollection.getDoctorId(), implantCollection.getHospitalId(),
+						implantCollection.getLocationId())) {
+					if (implantCollection.getDoctorId().toString().equals(doctorId)
+							&& implantCollection.getHospitalId().toString().equals(hospitalId)
+							&& implantCollection.getLocationId().toString().equals(locationId)) {
+
+						implantCollection.setDiscarded(discarded);
+						implantCollection.setUpdatedTime(new Date());
+						implantRepository.save(implantCollection);
+						response = new Implant();
+						BeanUtil.map(implantCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					implantCollection.setDiscarded(discarded);
+					implantCollection.setUpdatedTime(new Date());
+					implantRepository.save(implantCollection);
+					response = new Implant();
+					BeanUtil.map(implantCollection, response);
+				}
+			} else {
+				logger.warn("Implant  not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Implant not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@Override
+	public Cement addEditCement(Cement cement) {
+		try {
+			CementCollection cementCollection = new CementCollection();
+			BeanUtil.map(cement, cementCollection);
+			if (DPDoctorUtils.anyStringEmpty(cement.getId())) {
+				cementCollection.setCreatedTime(new Date());
+				if (!DPDoctorUtils.anyStringEmpty(cementCollection.getDoctorId())) {
+					UserCollection userCollection = userRepository.findOne(cementCollection.getDoctorId());
+					if (userCollection != null) {
+						cementCollection
+								.setCreatedBy((userCollection.getTitle() != null ? userCollection.getTitle() + " " : "")
+										+ userCollection.getFirstName());
+					}
+				} else {
+					cementCollection.setCreatedBy("ADMIN");
+				}
+			} else {
+				CementCollection oldCementCollection = cementRepository.findOne(cementCollection.getId());
+				cementCollection.setCreatedBy(oldCementCollection.getCreatedBy());
+				cementCollection.setCreatedTime(oldCementCollection.getCreatedTime());
+				cementCollection.setDiscarded(oldCementCollection.getDiscarded());
+			}
+			cementCollection = cementRepository.save(cementCollection);
+			BeanUtil.map(cementCollection, cement);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Adding Cement");
+		}
+		return cement;
+	}
+
+	@Override
+	public Cement deleteCement(String id, String doctorId, String locationId, String hospitalId, Boolean discarded) {
+		Cement response = null;
+		try {
+			CementCollection cementCollection = cementRepository.findOne(new ObjectId(id));
+			if (cementCollection != null) {
+				if (!DPDoctorUtils.anyStringEmpty(cementCollection.getDoctorId(), cementCollection.getHospitalId(),
+						cementCollection.getLocationId())) {
+					if (cementCollection.getDoctorId().toString().equals(doctorId)
+							&& cementCollection.getHospitalId().toString().equals(hospitalId)
+							&& cementCollection.getLocationId().toString().equals(locationId)) {
+
+						cementCollection.setDiscarded(discarded);
+						cementCollection.setUpdatedTime(new Date());
+						cementRepository.save(cementCollection);
+						response = new Cement();
+						BeanUtil.map(cementCollection, response);
+					} else {
+						logger.warn("Invalid Doctor Id, Hospital Id, Or Location Id");
+						throw new BusinessException(ServiceError.InvalidInput,
+								"Invalid Doctor Id, Hospital Id, Or Location Id");
+					}
+				} else {
+					cementCollection.setDiscarded(discarded);
+					cementCollection.setUpdatedTime(new Date());
+					cementRepository.save(cementCollection);
+					response = new Cement();
+					BeanUtil.map(cementCollection, response);
+				}
+			} else {
+				logger.warn("Cement not found!");
+				throw new BusinessException(ServiceError.NoRecord, "Cement not found!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Cement> getCustomGlobalCement(int page, int size, String doctorId, String locationId,
+			String hospitalId, String updatedTime, Boolean discarded) {
+		List<Cement> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add(null);
+				specialities.add("ALL");
+			}
+
+			AggregationResults<Cement> results = mongoTemplate.aggregate(
+					DPDoctorUtils.createCustomGlobalAggregation(page, size, doctorId, locationId, hospitalId,
+							updatedTime, discarded, null, null, specialities, null),
+					CementCollection.class, Cement.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Cement");
+		}
+		return response;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Cement> getGlobalCement(int page, int size, String doctorId, String updatedTime, Boolean discarded) {
+		List<Cement> response = null;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				logger.warn("No Doctor Found");
+				throw new BusinessException(ServiceError.InvalidInput, "No Doctor Found");
+			}
+			Collection<String> specialities = null;
+			if (doctorCollection.getSpecialities() != null && !doctorCollection.getSpecialities().isEmpty()) {
+				specialities = CollectionUtils.collect(
+						(Collection<?>) specialityRepository.findAll(doctorCollection.getSpecialities()),
+						new BeanToPropertyValueTransformer("speciality"));
+				specialities.add("ALL");
+				specialities.add(null);
+			}
+
+			AggregationResults<Cement> results = mongoTemplate.aggregate(DPDoctorUtils.createGlobalAggregation(page,
+					size, updatedTime, discarded, null, null, specialities, null), CementCollection.class,
+					Cement.class);
+			response = results.getMappedResults();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Cement");
+		}
+		return response;
+	}
+
+	private List<Cement> getCustomCement(int page, int size, String doctorId, String locationId, String hospitalId,
+			String updatedTime, Boolean discarded) {
+		List<Cement> response = null;
+		try {
+			AggregationResults<Cement> results = mongoTemplate.aggregate(DPDoctorUtils.createCustomAggregation(page,
+					size, doctorId, locationId, hospitalId, updatedTime, discarded, null, null, null),
+					CementCollection.class, Cement.class);
+			response = results.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, "Error Occurred While Getting Cement");
 		}
 		return response;
 	}
