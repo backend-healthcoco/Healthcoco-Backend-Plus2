@@ -293,7 +293,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 	@Value(value = "${prescription.add.patient.download.app.message}")
 	private String downloadAppMessageToPatient;
-	
+
 	@Value(value = "${prescription.add.patient.download.app.message.hindi}")
 	private String downloadAppMessageToPatientInHindi;
 
@@ -312,11 +312,12 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	@Autowired
 	private GenericCodesAndReactionsRepository genericCodesAndReactionsRepository;
 
-	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100) 
+	LoadingCache<String, List<Code>> Cache = CacheBuilder.newBuilder().maximumSize(100)
 			// maximum 100 records can be cached
-			.expireAfterAccess(30, TimeUnit.MINUTES) 
+			.expireAfterAccess(30, TimeUnit.MINUTES)
 			// cache will expire after 30 minutes of access
-			.build(new CacheLoader<String, List<Code>>() { // build the cacheloader
+			.build(new CacheLoader<String, List<Code>>() { // build the
+															// cacheloader
 
 				@Override
 				public List<Code> load(String id) throws Exception {
@@ -759,6 +760,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		PrescriptionAddEditResponse response = null;
 		List<PrescriptionItemDetail> itemDetails = null;
 		try {
+			DoctorCollection doctorCollection = null;
 			Appointment appointment = null;
 			if (isAppointmentAdd) {
 				if (request.getAppointmentRequest() != null) {
@@ -923,10 +925,13 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				opdReports = reportsService.submitOPDReport(opdReports);
 			}
+			if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+				doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
+			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
-			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId())) {
+			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()) && doctorCollection.getIsPrescriptionSMS()) {
 				sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 						prescriptionCollection.getCreatedBy());
@@ -977,9 +982,9 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 		}
 
 	}
-	
-	private void sendDownloadAppMessageInHindi(ObjectId patientId, ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
-			String doctorName) {
+
+	private void sendDownloadAppMessageInHindi(ObjectId patientId, ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId, String doctorName) {
 		try {
 			UserCollection userCollection = userRepository.findByIdAndNotSignedUp(patientId, false);
 			PatientCollection patientCollection = patientRepository.findByUserIdLocationIdAndHospitalId(patientId,
@@ -4893,15 +4898,14 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			pushNotificationServices.notifyUser(eyePrescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + eyePrescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), eyePrescriptionCollection.getId().toString(), null);
-			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()))
-			{
+			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId())) {
 				sendDownloadAppMessage(eyePrescriptionCollection.getPatientId(),
 						eyePrescriptionCollection.getDoctorId(), eyePrescriptionCollection.getLocationId(),
 						eyePrescriptionCollection.getHospitalId(), eyePrescriptionCollection.getCreatedBy());
 				sendDownloadAppMessageInHindi(eyePrescriptionCollection.getPatientId(),
 						eyePrescriptionCollection.getDoctorId(), eyePrescriptionCollection.getLocationId(),
 						eyePrescriptionCollection.getHospitalId(), eyePrescriptionCollection.getCreatedBy());
-				
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -752,4 +752,19 @@ public class DoctorProfileApi {
 		return response;
 	}
 
+	@Path(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
+	@GET
+	@ApiOperation(value = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS, notes = PathProxy.DoctorProfileUrls.UPDATE_PRESCRIPTION_SMS)
+	public Response<Boolean> updatePresccriptionSMS(@PathParam("doctorId") String doctorId,
+			@QueryParam("isSendSMS") boolean isSendSMS) {
+		if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+
+		Response<Boolean> response = new Response<Boolean>();
+		response.setData(doctorProfileService.updatePrescriptionSMS(doctorId, isSendSMS));
+		return response;
+	}
+
 }

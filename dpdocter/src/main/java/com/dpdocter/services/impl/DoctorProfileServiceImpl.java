@@ -1509,4 +1509,28 @@ public class DoctorProfileServiceImpl implements DoctorProfileService {
 		}
 		return doctorProfile;
 	}
+
+	@Override
+	public Boolean updatePrescriptionSMS(String doctorId, Boolean isSendSMS) {
+		Boolean response = false;
+		try {
+			DoctorCollection doctorCollection = doctorRepository.findByUserId(new ObjectId(doctorId));
+			if (doctorCollection == null) {
+				throw new BusinessException(ServiceError.NoRecord, "No doctor found by doctorId");
+			}
+			doctorCollection.setIsPrescriptionSMS(isSendSMS);
+			doctorCollection.setUpdatedTime(new Date());
+			doctorRepository.save(doctorCollection);
+			response = true;
+
+		} catch (BusinessException be) {
+			logger.error(be);
+			throw be;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e + " Error Getting Doctor Profile by doctorId");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting Doctor Profile by doctorId");
+		}
+		return response;
+	}
 }
