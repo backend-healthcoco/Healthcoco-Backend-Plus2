@@ -735,6 +735,8 @@ public interface PathProxy {
 		public static final String GET_VISIT = "/{visitId}";
 
 		public static final String GET_VISITS = "/{doctorId}/{locationId}/{hospitalId}/{patientId}";
+		
+		public static final String GET_VISITS_FOR_WEB = "/get";
 
 		public static final String GET_VISITS_HANDHELD = "/handheld/{doctorId}/{locationId}/{hospitalId}/{patientId}";
 
