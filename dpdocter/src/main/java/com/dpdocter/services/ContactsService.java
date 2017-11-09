@@ -50,7 +50,7 @@ public interface ContactsService {
 	List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId, String hospitalId,
 			String updatedTime, boolean discarded, String role, int page, int size);
 
-	Long getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
+	Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
 			String role);
 
 }

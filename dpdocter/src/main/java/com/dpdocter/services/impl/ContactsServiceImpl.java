@@ -620,14 +620,7 @@ public class ContactsServiceImpl implements ContactsService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-			}
-			patientCards = mongoTemplate.aggregate(
-					Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
-							Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
-							Aggregation.sort(Direction.DESC, "createdTime")),
-					PatientCollection.class, PatientCard.class).getMappedResults();
-			
+			}			
 			
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
@@ -745,12 +738,19 @@ public class ContactsServiceImpl implements ContactsService {
 	
 	@Override
 	@Transactional
-	public Long getDoctorContactsHandheldCount(String doctorId, String locationId,
+	public Integer getDoctorContactsHandheldCount(String doctorId, String locationId,
 			String hospitalId, boolean discarded, String role) {
 	
-		Long count =  0l;
+		Integer count =  0;
 		
+		List<PatientCard> patientCards = null;
+		Aggregation aggregation = null;
+		boolean[] discards = new boolean[2];
+		discards[0] = false;
+
 		try {
+			if (discarded)
+				discards[1] = true;
 			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				doctorObjectId = new ObjectId(doctorId);
@@ -758,7 +758,8 @@ public class ContactsServiceImpl implements ContactsService {
 				locationObjectId = new ObjectId(locationId);
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
 				hospitalObjectId = new ObjectId(hospitalId);
-			Criteria criteria = new Criteria().and("discarded").is(!discarded);
+			
+			Criteria criteria = new Criteria();
 			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				if(RoleEnum.CONSULTANT_DOCTOR.getRole().equalsIgnoreCase(role)){
 					criteria.and("consultantDoctorIds").is(doctorObjectId);
@@ -767,12 +768,19 @@ public class ContactsServiceImpl implements ContactsService {
 			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
-			}
+			}			
 			
-			Query query = new Query();
-			query.addCriteria(criteria);
-			count = mongoOperations.count(query, PatientCollection.class);
+			
+			
+			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
+					Aggregation.sort(Direction.DESC, "createdTime"));
 
+			AggregationResults<PatientCard> aggregationResults = mongoTemplate.aggregate(aggregation,
+					PatientCollection.class, PatientCard.class);
+			patientCards = aggregationResults.getMappedResults();
+			count = patientCards.size();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
