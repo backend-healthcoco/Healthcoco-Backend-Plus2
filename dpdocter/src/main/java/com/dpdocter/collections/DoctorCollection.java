@@ -80,6 +80,17 @@ public class DoctorCollection extends GenericCollection {
 	@Field
 	private String slugUrl;
 
+	@Field
+	private Boolean isPrescriptionSMS = true;
+
+	public Boolean getIsPrescriptionSMS() {
+		return isPrescriptionSMS;
+	}
+
+	public void setIsPrescriptionSMS(Boolean isPrescriptionSMS) {
+		this.isPrescriptionSMS = isPrescriptionSMS;
+	}
+
 	public ObjectId getId() {
 		return id;
 	}

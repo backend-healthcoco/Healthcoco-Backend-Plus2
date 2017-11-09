@@ -104,6 +104,8 @@ public interface DoctorProfileService {
 
 	Boolean updateEMRSetting(String doctorId, Boolean discarded);
 
+	Boolean updatePrescriptionSMS(String doctorId, Boolean isSendSMS);
+
 	AddEditSEORequest addEditSEO(AddEditSEORequest request);
 
 	DoctorProfile getDoctorProfile(String userUId);

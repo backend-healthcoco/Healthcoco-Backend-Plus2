@@ -1,5 +1,7 @@
 package com.dpdocter.beans;
 
+
+
 import java.util.List;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -75,6 +77,8 @@ public class DoctorProfile extends GenericCollection {
 	private String doctorSlugURL;
 
 	private String packageType = PackageType.PRO.getType();
+	
+	private boolean isPrescriptionSMS=true;
 
 	public String getId() {
 		return id;
@@ -363,5 +367,13 @@ public class DoctorProfile extends GenericCollection {
 				+ ", regularCheckUpMonths=" + regularCheckUpMonths + ", isGetDiscardedEMR=" + isGetDiscardedEMR
 				+ ", metaTitle=" + metaTitle + ", metaDesccription=" + metaDesccription + ", metaKeyword=" + metaKeyword
 				+ ", doctorSlugURL=" + doctorSlugURL + ", packageType=" + packageType + "]";
+	}
+
+	public boolean isPrescriptionSMS() {
+		return isPrescriptionSMS;
+	}
+
+	public void setPrescriptionSMS(boolean isPrescriptionSMS) {
+		this.isPrescriptionSMS = isPrescriptionSMS;
 	}
 }
