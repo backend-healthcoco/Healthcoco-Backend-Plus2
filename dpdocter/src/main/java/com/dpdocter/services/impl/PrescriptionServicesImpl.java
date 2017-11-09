@@ -861,7 +861,6 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 	public PrescriptionAddEditResponse addPrescription(PrescriptionAddEditRequest request, Boolean isAppointmentAdd) {
 		PrescriptionAddEditResponse response = null;
 		List<PrescriptionItemDetail> itemDetails = null;
-		Boolean sendsms=true;
 		try {
 			DoctorCollection doctorCollection = null;
 			Appointment appointment = null;
@@ -1034,8 +1033,8 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
 					"Your prescription by " + prescriptionCollection.getCreatedBy() + " is here - Tap to view it!",
 					ComponentType.PRESCRIPTIONS.getType(), prescriptionCollection.getId().toString(), null);
-			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()) ) {
-				
+			if (sendSMS && DPDoctorUtils.allStringsEmpty(request.getId()) && doctorCollection.getIsPrescriptionSMS()) {
+
 				sendDownloadAppMessage(prescriptionCollection.getPatientId(), prescriptionCollection.getDoctorId(),
 						prescriptionCollection.getLocationId(), prescriptionCollection.getHospitalId(),
 						prescriptionCollection.getCreatedBy());
