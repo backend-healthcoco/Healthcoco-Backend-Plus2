@@ -1282,6 +1282,10 @@ public interface PathProxy {
 		public static final String SEARCH_OPERATION_NOTES = "searchOperationNotes/{range}";
 
 		public static final String SEARCH_BABY_NOTES = "searchBabyNotes/{range}";
+
+		public static final String SEARCH_CEMENT = "searchCement/{range}";
+
+		public static final String SEARCH_IMPLANT = "searchImplant/{range}";
 	}
 
 	public static final String VIDEO_BASE_URL = BASE_URL + "/video";
