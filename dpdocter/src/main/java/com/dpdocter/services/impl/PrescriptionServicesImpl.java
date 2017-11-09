@@ -925,7 +925,7 @@ public class PrescriptionServicesImpl implements PrescriptionServices {
 
 				opdReports = reportsService.submitOPDReport(opdReports);
 			}
-			if (DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
+			if (!DPDoctorUtils.anyStringEmpty(request.getDoctorId())) {
 				doctorCollection = doctorRepository.findByUserId(new ObjectId(request.getDoctorId()));
 			}
 			pushNotificationServices.notifyUser(prescriptionCollection.getPatientId().toString(),
