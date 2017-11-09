@@ -113,9 +113,96 @@ public class DischargeSummaryCollection extends GenericCollection {
 	private String procedureNote;
 	@Field
 	private String doctorIncharge;
-
 	@Field
 	private VitalSigns vitalSigns;
+	@Field
+	private Date operationDate;
+	@Field
+	private String surgeon;
+	@Field
+	private String anesthetist;
+	@Field
+	private String implant;
+	@Field
+	private String cement;
+	@Field
+	private String operationName;
+
+	public Date getOperationDate() {
+		return operationDate;
+	}
+
+	public void setOperationDate(Date operationDate) {
+		this.operationDate = operationDate;
+	}
+
+	public String getSurgeon() {
+		return surgeon;
+	}
+
+	public void setSurgeon(String surgeon) {
+		this.surgeon = surgeon;
+	}
+
+	public String getAnesthetist() {
+		return anesthetist;
+	}
+
+	public void setAnesthetist(String anesthetist) {
+		this.anesthetist = anesthetist;
+	}
+
+	public String getImplant() {
+		return implant;
+	}
+
+	public void setImplant(String implant) {
+		this.implant = implant;
+	}
+
+	public String getCement() {
+		return cement;
+	}
+
+	public void setCement(String cement) {
+		this.cement = cement;
+	}
+
+	public String getOperationName() {
+		return operationName;
+	}
+
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
+	}
+
+	public void setComplaints(String complaints) {
+		this.complaints = complaints;
+	}
+
+	public void setPresentComplaints(String presentComplaints) {
+		this.presentComplaints = presentComplaints;
+	}
+
+	public void setPrescriptions(PrescriptionAndAdvice prescriptions) {
+		this.prescriptions = prescriptions;
+	}
+
+	public void setHistoryOfPresentComplaints(String historyOfPresentComplaints) {
+		this.historyOfPresentComplaints = historyOfPresentComplaints;
+	}
+
+	public void setGeneralExamination(String generalExamination) {
+		this.generalExamination = generalExamination;
+	}
+
+	public void setSystemicExamination(String systemicExamination) {
+		this.systemicExamination = systemicExamination;
+	}
+
+	public void setDischargeId(String dischargeId) {
+		this.dischargeId = dischargeId;
+	}
 
 	public VitalSigns getVitalSigns() {
 		return vitalSigns;

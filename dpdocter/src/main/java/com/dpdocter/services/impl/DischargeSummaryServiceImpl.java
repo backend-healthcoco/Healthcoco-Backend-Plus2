@@ -486,7 +486,6 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			DefaultPrintSettings defaultPrintSettings = new DefaultPrintSettings();
 			BeanUtil.map(defaultPrintSettings, printSettings);
 		}
-
 		if (dischargeSummaryCollection.getVitalSigns() != null) {
 			String vitalSigns = "";
 
@@ -707,10 +706,18 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showDOD", show);
 		show = false;
+		if (dischargeSummaryCollection.getOperationDate() != null) {
+			show = true;
+			parameters.put("operationDate", "<b>Date of Operation:-</b>"
+					+ simpleDateFormat.format(dischargeSummaryCollection.getOperationDate()));
+		}
+		parameters.put("showDtOfOp", show);
+		show = false;
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getBabyNotes())) {
 			show = true;
 			parameters.put("babyNotes", dischargeSummaryCollection.getBabyNotes());
 		}
+
 		parameters.put("showBabyNotes", show);
 		show = false;
 
@@ -835,6 +842,31 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 		}
 		parameters.put("showPH", show);
 		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getImplant())) {
+			show = true;
+			parameters.put("implant", dischargeSummaryCollection.getImplant());
+		}
+		parameters.put("showIMPL", show);
+		show = false;
+
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getCement())) {
+			show = true;
+			parameters.put("cement", dischargeSummaryCollection.getCement());
+		}
+		parameters.put("showCMT", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getSurgeon())) {
+			show = true;
+			parameters.put("surgeon", dischargeSummaryCollection.getSurgeon());
+		}
+		parameters.put("showSGN", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getAnesthetist())) {
+			show = true;
+			parameters.put("anesthetist", dischargeSummaryCollection.getAnesthetist());
+		}
+		parameters.put("showANST", show);
+		show = false;
 
 		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationNotes())) {
 			show = true;
@@ -904,6 +936,12 @@ public class DischargeSummaryServiceImpl implements DischargeSummaryService {
 			parameters.put("procedureNote", dischargeSummaryCollection.getProcedureNote());
 		}
 		parameters.put("showProcedureNote", show);
+		show = false;
+		if (!DPDoctorUtils.allStringsEmpty(dischargeSummaryCollection.getOperationName())) {
+			show = true;
+			parameters.put("operationName", dischargeSummaryCollection.getOperationName());
+		}
+		parameters.put("showOpName", show);
 		show = false;
 
 		if (dischargeSummaryCollection.getFromDate() != null && dischargeSummaryCollection.getTime() != null) {
