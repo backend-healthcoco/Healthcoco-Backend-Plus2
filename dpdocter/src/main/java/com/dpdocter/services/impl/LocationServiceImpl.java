@@ -819,6 +819,7 @@ public class LocationServiceImpl implements LocationServices {
 								.findOne(new ObjectId(labTestSample.getId()));
 						BeanUtil.map(labTestSample, labTestSampleCollection);
 						labTestSampleCollection.setRateCardTestAssociation(labTestSample.getRateCardTestAssociation());
+						labTestSampleCollection.setLabTestPickUpId(new ObjectId(request.getId()));
 						labTestSampleCollection.setIsCompleted(request.getIsCompleted());
 						labTestSampleCollection.setUpdatedTime(new Date());
 						labTestSampleCollection = labTestSampleRepository.save(labTestSampleCollection);
@@ -828,6 +829,7 @@ public class LocationServiceImpl implements LocationServices {
 								UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
 						LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
 						BeanUtil.map(labTestSample, labTestSampleCollection);
+						labTestSampleCollection.setLabTestPickUpId(new ObjectId(request.getId()));
 						labTestSampleCollection.setCreatedTime(new Date());
 						labTestSampleCollection.setUpdatedTime(new Date());
 						labTestSampleCollection.setIsCompleted(request.getIsCompleted());

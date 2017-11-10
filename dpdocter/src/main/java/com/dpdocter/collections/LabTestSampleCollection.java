@@ -41,6 +41,8 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Field
 	private String sampleId;
 	@Field
+	private ObjectId labTestPickUpId;
+	@Field
 	private ObjectId daughterLabLocationId;
 	@Field
 	private ObjectId parentLabLocationId;
@@ -191,6 +193,14 @@ public class LabTestSampleCollection extends GenericCollection {
 
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
+	}
+
+	public ObjectId getLabTestPickUpId() {
+		return labTestPickUpId;
+	}
+
+	public void setLabTestPickUpId(ObjectId labTestPickUpId) {
+		this.labTestPickUpId = labTestPickUpId;
 	}
 
 	@Override

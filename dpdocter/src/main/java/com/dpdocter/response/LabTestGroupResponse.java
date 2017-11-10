@@ -8,7 +8,7 @@ public class LabTestGroupResponse {
 
 	private String specimen;
 
-	private List<DiagnosticTest> diagnosticTests;
+	private List<DiagnosticTestResponse> diagnosticTests;
 
 	
 
@@ -20,11 +20,11 @@ public class LabTestGroupResponse {
 		this.specimen = specimen;
 	}
 
-	public List<DiagnosticTest> getDiagnosticTests() {
+	public List<DiagnosticTestResponse> getDiagnosticTests() {
 		return diagnosticTests;
 	}
 
-	public void setDiagnosticTests(List<DiagnosticTest> diagnosticTests) {
+	public void setDiagnosticTests(List<DiagnosticTestResponse> diagnosticTests) {
 		this.diagnosticTests = diagnosticTests;
 	}
 
