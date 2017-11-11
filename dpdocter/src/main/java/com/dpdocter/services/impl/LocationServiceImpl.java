@@ -17,6 +17,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1419,23 +1421,29 @@ public class LocationServiceImpl implements LocationServices {
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
 								new Criteria("specimen").regex("^" + specimen)));
 			}
+			ProjectionOperation projectList = new ProjectionOperation(
+					Fields.from(Fields.field("specimen", "$specimen"), Fields.field("rateCardTest", "$rateCardTest"),
+							Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
+							Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("specimen", "$specimen"))
-							.append("rateCards", new BasicDBObject("$push", "$rateCardTest"))
-							.append("specimen", new BasicDBObject("$first", "$specimen"))
-							.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
+							.append("rateCards", new BasicDBObject("$push", "$rateCardTest")).append("createdTime",
+									new BasicDBObject("$first", "$createdTime"))));
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
 						Aggregation.unwind("rateCardTest"),
+						Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
+								"diagnosticTest"),
+						Aggregation.unwind("diagnosticTest"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
 						 * Aggregation.unwind("specimen"),
 						 */
-						Aggregation.match(criteria), aggregationOperation,
+						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
 
@@ -1448,7 +1456,7 @@ public class LocationServiceImpl implements LocationServices {
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
 						 * Aggregation.unwind("specimen"),
 						 */
-						Aggregation.match(criteria), aggregationOperation,
+						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 			AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = mongoTemplate
 					.aggregate(aggregation, DiagnosticTestCollection.class, RateCardTestAssociationByLBResponse.class);
