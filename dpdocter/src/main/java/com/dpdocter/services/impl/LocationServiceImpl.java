@@ -1421,10 +1421,18 @@ public class LocationServiceImpl implements LocationServices {
 						.andOperator(new Criteria().orOperator(new Criteria("specimen").regex("^" + specimen, "i"),
 								new Criteria("specimen").regex("^" + specimen)));
 			}
-			ProjectionOperation projectList = new ProjectionOperation(
-					Fields.from(Fields.field("specimen", "$specimen"), Fields.field("rateCardTest", "$rateCardTest"),
-							Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
-							Fields.field("createdTime", "$createdTime")));
+			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("specimen", "$specimen"),
+					Fields.field("rateCardTest.id", "$rateCardTest.id"),
+					Fields.field("rateCardTest.locationId", "$rateCardTest.locationId"),
+					Fields.field("rateCardTest.hospitalId", "$rateCardTest.hospitalId"),
+					Fields.field("rateCardTest.rateCardId", "$rateCardTest.rateCardId"),
+					Fields.field("rateCardTest.diagnosticTestId", "$rateCardTest.diagnosticTestId"),
+					Fields.field("rateCardTest.turnaroundTime", "$rateCardTest.turnaroundTime"),
+					Fields.field("rateCardTest.category", "$rateCardTest.category"),
+					Fields.field("rateCardTest.labId", "$rateCardTest.labId"),
+					Fields.field("rateCardTest.isAvailable", "$isAvailable"),
+					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
+					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("specimen", "$specimen"))
