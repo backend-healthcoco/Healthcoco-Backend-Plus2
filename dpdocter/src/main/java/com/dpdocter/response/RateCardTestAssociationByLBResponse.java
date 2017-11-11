@@ -6,18 +6,22 @@ import com.dpdocter.beans.RateCardTestAssociation;
 
 public class RateCardTestAssociationByLBResponse {
 	private String specimen;
-	private List<RateCardTestAssociation> ratecards;
+	private List<RateCardTestAssociation> rateCards;
+
 	public String getSpecimen() {
 		return specimen;
 	}
+
 	public void setSpecimen(String specimen) {
 		this.specimen = specimen;
 	}
-	public List<RateCardTestAssociation> getRatecards() {
-		return ratecards;
+
+	public List<RateCardTestAssociation> getRateCards() {
+		return rateCards;
 	}
-	public void setRatecards(List<RateCardTestAssociation> ratecards) {
-		this.ratecards = ratecards;
+
+	public void setRateCards(List<RateCardTestAssociation> rateCards) {
+		this.rateCards = rateCards;
 	}
-	
+
 }

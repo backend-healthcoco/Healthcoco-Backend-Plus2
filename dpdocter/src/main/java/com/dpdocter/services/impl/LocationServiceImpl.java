@@ -1422,7 +1422,7 @@ public class LocationServiceImpl implements LocationServices {
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
 					new BasicDBObject("_id", new BasicDBObject("specimen", "$specimen"))
-							.append("rateCardTest", new BasicDBObject("$push", "$rateCardTest"))
+							.append("rateCards", new BasicDBObject("$push", "$rateCardTest"))
 							.append("specimen", new BasicDBObject("$first", "$specimen"))
 							.append("createdTime", new BasicDBObject("$first", "$createdTime"))));
 
