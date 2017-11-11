@@ -1422,7 +1422,7 @@ public class LocationServiceImpl implements LocationServices {
 								new Criteria("specimen").regex("^" + specimen)));
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("specimen", "$specimen"),
-					Fields.field("rateCardTest.id", "$rateCardTest.id"),
+					Fields.field("rateCardTest.id", "$rateCardTest._id"),
 					Fields.field("rateCardTest.locationId", "$rateCardTest.locationId"),
 					Fields.field("rateCardTest.hospitalId", "$rateCardTest.hospitalId"),
 					Fields.field("rateCardTest.rateCardId", "$rateCardTest.rateCardId"),
