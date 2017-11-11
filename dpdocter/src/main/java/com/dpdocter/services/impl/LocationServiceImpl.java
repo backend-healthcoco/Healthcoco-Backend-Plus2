@@ -1428,10 +1428,11 @@ public class LocationServiceImpl implements LocationServices {
 					Fields.field("rateCardTest.rateCardId", "$rateCardTest.rateCardId"),
 					Fields.field("rateCardTest.diagnosticTestId", "$rateCardTest.diagnosticTestId"),
 					Fields.field("rateCardTest.turnaroundTime", "$rateCardTest.turnaroundTime"),
+					Fields.field("rateCardTest.cost", "$rateCardTest.cost"),
 					Fields.field("rateCardTest.category", "$rateCardTest.category"),
 					Fields.field("rateCardTest.labId", "$rateCardTest.labId"),
 					Fields.field("rateCardTest.isAvailable", "$rateCardTest.isAvailable"),
-					Fields.field("rateCardTest.diagnosticTest", "$rateCardTest.diagnosticTest"),
+					Fields.field("rateCardTest.diagnosticTest", "$diagnosticTest"),
 					Fields.field("createdTime", "$createdTime")));
 
 			CustomAggregationOperation aggregationOperation = new CustomAggregationOperation(new BasicDBObject("$group",
