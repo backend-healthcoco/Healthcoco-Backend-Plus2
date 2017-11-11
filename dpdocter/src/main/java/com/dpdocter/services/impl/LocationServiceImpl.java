@@ -1422,7 +1422,7 @@ public class LocationServiceImpl implements LocationServices {
 								new Criteria("specimen").regex("^" + specimen)));
 			}
 			ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("specimen", "$specimen"),
-					Fields.field("rateCardTest.id", "$rateCardTest._id"),
+					Fields.field("rateCardTest._id", "$rateCardTest._id"),
 					Fields.field("rateCardTest.locationId", "$rateCardTest.locationId"),
 					Fields.field("rateCardTest.hospitalId", "$rateCardTest.hospitalId"),
 					Fields.field("rateCardTest.rateCardId", "$rateCardTest.rateCardId"),
@@ -1440,7 +1440,7 @@ public class LocationServiceImpl implements LocationServices {
 							.append("rateCards", new BasicDBObject("$push", "$rateCardTest")).append("createdTime",
 									new BasicDBObject("$first", "$createdTime"))));
 
-			if (size > 0)
+			if (size > 0) {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
 						Aggregation.unwind("rateCardTest"),
@@ -1455,11 +1455,15 @@ public class LocationServiceImpl implements LocationServices {
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")), Aggregation.skip((page) * size),
 						Aggregation.limit(size));
+			}
 
-			else
+			else {
 				aggregation = Aggregation.newAggregation(
 						Aggregation.lookup("rate_card_test_association_cl", "_id", "diagnosticTestId", "rateCardTest"),
 						Aggregation.unwind("rateCardTest"),
+						Aggregation.lookup("diagnostic_test_cl", "rateCardTest.diagnosticTestId", "_id",
+								"diagnosticTest"),
+						Aggregation.unwind("diagnosticTest"),
 						/*
 						 * Aggregation.lookup("specimen_cl",
 						 * "diagnosticTest.specimenId", "_id", "specimen"),
@@ -1467,9 +1471,10 @@ public class LocationServiceImpl implements LocationServices {
 						 */
 						Aggregation.match(criteria), projectList, aggregationOperation,
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
-			AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = mongoTemplate
-					.aggregate(aggregation, DiagnosticTestCollection.class, RateCardTestAssociationByLBResponse.class);
-			rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
+				AggregationResults<RateCardTestAssociationByLBResponse> aggregationResults = mongoTemplate.aggregate(
+						aggregation, DiagnosticTestCollection.class, RateCardTestAssociationByLBResponse.class);
+				rateCardTestAssociationLookupResponses = aggregationResults.getMappedResults();
+			}
 			/*
 			 * if (!DPDoctorUtils.anyStringEmpty(labId)) { aggregation =
 			 * Aggregation.newAggregation(
