@@ -115,8 +115,8 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 			long directRequestCount = mongoTemplate.count(new Query(new Criteria("localeId").exists(true)), SearchRequestFromUserCollection.class);
 			long indirectRequestCount = mongoTemplate.count(new Query(new Criteria()), SearchRequestToPharmacyCollection.class);
 			long requestCount = directRequestCount + indirectRequestCount;
-			long responseCount = mongoTemplate.count(new Query(new Criteria("replyType").is(null).orOperator(new Criteria("replyType").exists(false))), SearchRequestToPharmacyCollection.class);
-			long likesCount = mongoTemplate.count(new Query(new Criteria("discarded").is(false).and("locationId").is(null)), RecommendationsCollection.class);
+			long responseCount = mongoTemplate.count(new Query(new Criteria().orOperator(new Criteria("replyType").ne(null), new Criteria("replyType").exists(true))), SearchRequestToPharmacyCollection.class);
+			long likesCount = mongoTemplate.count(new Query(new Criteria("discarded").is(false).and("doctorId").is(null)), RecommendationsCollection.class);
 			
 			Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(new Criteria("localeType").is(LocaleType.PHARMACY.getType()).and("isActivate").is(true).and("isVerified").is(true)),
 					Aggregation.lookup("search_request_from_user_cl", "id", "localeId", "directSearchRequestToPharmacy"),
@@ -396,6 +396,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 			List<DoctorWithRankingDetailResponse> doctorWithRankingDetailResponses = mongoTemplate.aggregate(aggregation, DoctorClinicProfileCollection.class, DoctorWithRankingDetailResponse.class).getMappedResults();
 			int i = 1;
 			for(DoctorWithRankingDetailResponse detailResponse : doctorWithRankingDetailResponses) {
+				
 				RankingCountCollection rankingCountCollection = rankingCountRepository.findByResourceIdAndLocationId(new ObjectId(detailResponse.getDoctorId()), new ObjectId(detailResponse.getLocationId()), Resource.DOCTOR.getType());
 				if(rankingCountCollection == null) {
 					rankingCountCollection = new RankingCountCollection();
@@ -405,6 +406,7 @@ public class RankingAlgorithmsServiceImpl implements RankingAlgorithmsServices{
 				rankingCountCollection.setResourceType(Resource.DOCTOR);
 				rankingCountCollection.setUpdatedTime(new Date());
 				rankingCountCollection.setResourceId(new ObjectId(detailResponse.getDoctorId()));
+				rankingCountCollection.setLocationId(new ObjectId(detailResponse.getLocationId()));
 				rankingCountCollection.setTotalCountInPercentage(detailResponse.getTotalCount());
 				rankingCountCollection.setResourceName(detailResponse.getResourceName());
 				List<RankingCountParametersWithValueInPercentage> parameters = new ArrayList<RankingCountParametersWithValueInPercentage>();
