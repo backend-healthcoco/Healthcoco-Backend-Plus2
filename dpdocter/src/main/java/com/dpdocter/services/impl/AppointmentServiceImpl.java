@@ -528,10 +528,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
 						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
 						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-						ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-								Fields.field("id", "$_id"), Fields.field("role", "$role.role"),
-								Fields.field("explanation", "$explanation"), Fields.field("locationId", "$locationId"),
-								Fields.field("hospitalId", "$hospitalId")));
+						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+								Fields.field("role", "$role.role"), Fields.field("explanation", "$explanation"),
+								Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId")));
 						List<Role> roles = mongoTemplate
 								.aggregate(
 										Aggregation
@@ -550,7 +549,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 														Aggregation.unwind("role"), projectList),
 										UserRoleCollection.class, Role.class)
 								.getMappedResults();
-						
+
 						doctorClinicProfile.setRoles(roles);
 						doctor.setDoctorClinicProfile(doctorClinicProfile);
 
