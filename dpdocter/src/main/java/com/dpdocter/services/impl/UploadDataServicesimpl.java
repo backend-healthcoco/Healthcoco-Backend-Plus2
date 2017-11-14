@@ -576,8 +576,9 @@ public class UploadDataServicesimpl implements UploadDateService {
 							
 							List<PrescriptionItem> items = prescriptionCollection.getItems();
 							
-							String drugName = fields[3].replace("'", "") + ((!DPDoctorUtils.anyStringEmpty(fields[5])) ? " "+fields[5].replace("'", "") : "")
-									+ ((!DPDoctorUtils.anyStringEmpty(fields[6])) ? " "+fields[6].replace("'", "") : "");
+							String drugName = fields[3].replace("'", "") + 
+									((checkIfNotNullOrNone(fields[5]) && !DPDoctorUtils.anyStringEmpty(fields[5])) ? " "+fields[5].replace("'", "") : "")
+									+ ((checkIfNotNullOrNone(fields[5]) &&  checkIfNotNullOrNone(fields[6]) && !DPDoctorUtils.anyStringEmpty(fields[6])) ? " "+fields[6].replace("'", "") : "");
 							
 							String drugType = (!DPDoctorUtils.anyStringEmpty(fields[4])) ? fields[4].replace("'", "") : null;
 							//DrugType
