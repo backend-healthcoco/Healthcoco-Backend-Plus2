@@ -531,17 +531,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
 								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
+
 						List<Role> roles = mongoTemplate
 								.aggregate(
 										Aggregation
 												.newAggregation(
-														Aggregation
-																.match(new Criteria("locationId")
-																		.is(doctorClinicProfileCollection
-																				.getLocationId())
+														Aggregation.match(
+																new Criteria("locationId")
+																		.is(new ObjectId(doctorClinicProfileCollection
+																				.getLocationId()))
 																		.and("userId")
-																		.is(doctorClinicProfileCollection
-																				.getDoctorId())),
+																		.is(new ObjectId(doctorClinicProfileCollection
+																				.getDoctorId()))),
 														Aggregation.lookup("role_cl", "roleId", "_id", "role"),
 														Aggregation.unwind("role"), projectList),
 										UserRoleCollection.class, Role.class)
