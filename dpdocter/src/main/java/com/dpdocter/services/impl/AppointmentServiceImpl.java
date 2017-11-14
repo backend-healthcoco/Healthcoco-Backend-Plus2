@@ -539,9 +539,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 																.match(new Criteria("locationId")
 																		.is(doctorClinicProfileCollection
 																				.getLocationId())
-																		.and("hospitalId")
-																		.is(doctorClinicProfileCollection
-																				.getHospitalId())
 																		.and("userId")
 																		.is(doctorClinicProfileCollection
 																				.getDoctorId())),
@@ -549,8 +546,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 														Aggregation.unwind("role"), projectList),
 										UserRoleCollection.class, Role.class)
 								.getMappedResults();
-
-						doctorClinicProfile.setRoles(roles);
+						if (!roles.isEmpty() && roles != null) {
+							doctorClinicProfile.setRoles(roles);
+						}
 						doctor.setDoctorClinicProfile(doctorClinicProfile);
 
 						if (doctorCollection.getSpecialities() != null
