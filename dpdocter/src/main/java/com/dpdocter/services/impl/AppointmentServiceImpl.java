@@ -529,8 +529,8 @@ public class AppointmentServiceImpl implements AppointmentService {
 						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
 						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
 						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
-								Fields.field("role", "$role.role"), Fields.field("explanation", "$explanation"),
-								Fields.field("locationId", "$locationId"), Fields.field("hospitalId", "$hospitalId")));
+								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
+								Fields.field("hospitalId", "$hospitalId")));
 						List<Role> roles = mongoTemplate
 								.aggregate(
 										Aggregation
