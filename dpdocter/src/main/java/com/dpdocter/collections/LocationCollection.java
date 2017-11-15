@@ -137,12 +137,22 @@ public class LocationCollection extends GenericCollection {
 	@Field
 	private List<ObjectId> associatedLabs;
 
+	@Field
+	private String locationSlugUrl;
 	/*
 	 * @Field private ObjectId defaultParentLabId;
 	 */
 
 	public Integer getNoOfClinicReview() {
 		return noOfClinicReview;
+	}
+
+	public String getLocationSlugUrl() {
+		return locationSlugUrl;
+	}
+
+	public void setLocationSlugUrl(String locationSlugUrl) {
+		this.locationSlugUrl = locationSlugUrl;
 	}
 
 	public void setNoOfClinicReview(Integer noOfClinicReview) {

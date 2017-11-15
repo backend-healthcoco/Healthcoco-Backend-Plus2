@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import com.dpdocter.elasticsearch.beans.AppointmentSearchResponse;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESUserLocaleDocument;
-import com.dpdocter.elasticsearch.response.ESDoctorResponse;
+import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 
@@ -165,7 +165,7 @@ public class ESAppointmentApi {
 	@Path(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
 	@GET
 	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB, notes = PathProxy.SolrAppointmentUrls.GET_DOCTOR_WEB)
-	public Response<ESDoctorResponse> getDoctorForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+	public Response<ESWEBResponse> getDoctorForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
 			@QueryParam("city") String city, @QueryParam("location") String location,
 			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
 			@QueryParam("speciality") String speciality, @QueryParam("symptom") String symptom,
@@ -176,11 +176,50 @@ public class ESAppointmentApi {
 			@QueryParam("minExperience") int minExperience, @QueryParam("maxExperience") int maxExperience,
 			@QueryParam("service") String service) {
 
-		Response<ESDoctorResponse> response = new Response<ESDoctorResponse>();
-
+		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
 		response.setData(solrAppointmentService.getDoctorForWeb(page, size, city, location, latitude, longitude,
 				speciality, symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 				maxExperience, service));
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB, notes = PathProxy.SolrAppointmentUrls.GET_PHARMACIES_WEB)
+	public Response<ESWEBResponse> getPharmaciesForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("city") String city, @QueryParam("localeName") String localeName,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("paymentType") String paymentType, @QueryParam("homeService") Boolean homeService,
+			@QueryParam("isTwentyFourSevenOpen") Boolean isTwentyFourSevenOpen, @QueryParam("minTime") long minTime,
+			@QueryParam("maxTime") long maxTime, @MatrixParam("days") List<String> days,
+			@MatrixParam("types") List<String> pharmacyType,
+			@QueryParam("isGenericMedicineAvailable") Boolean isGenericMedicineAvailable) {
+
+		ESWEBResponse pharmacies = solrAppointmentService.getPharmacyForWeb(page, size, city, localeName, latitude,
+				longitude, paymentType, homeService, isTwentyFourSevenOpen, minTime, maxTime, days, pharmacyType,
+				isGenericMedicineAvailable);
+		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
+		response.setData(pharmacies);
+		return response;
+	}
+
+	@Path(value = PathProxy.SolrAppointmentUrls.GET_LABS_WEB)
+	@GET
+	@ApiOperation(value = PathProxy.SolrAppointmentUrls.GET_LABS_WEB, notes = PathProxy.SolrAppointmentUrls.GET_LABS_WEB)
+	public Response<ESWEBResponse> getLabsForWeb(@QueryParam("page") int page, @QueryParam("size") int size,
+			@QueryParam("city") String city, @QueryParam("location") String location,
+			@QueryParam(value = "latitude") String latitude, @QueryParam(value = "longitude") String longitude,
+			@QueryParam("test") String test, @QueryParam("booking") Boolean booking,
+			@QueryParam("calling") Boolean calling, @QueryParam("minTime") int minTime,
+			@QueryParam("maxTime") int maxTime, @MatrixParam("days") List<String> days,
+			@QueryParam("onlineReports") Boolean onlineReports, @QueryParam("homeService") Boolean homeService,
+			@QueryParam("nabl") Boolean nabl) {
+
+		ESWEBResponse labs = solrAppointmentService.getLabForWeb(page, size, city, location, latitude, longitude, test,
+				booking, calling, minTime, maxTime, days, onlineReports, homeService, nabl);
+
+		Response<ESWEBResponse> response = new Response<ESWEBResponse>();
+		response.setData(labs);
 		return response;
 	}
 

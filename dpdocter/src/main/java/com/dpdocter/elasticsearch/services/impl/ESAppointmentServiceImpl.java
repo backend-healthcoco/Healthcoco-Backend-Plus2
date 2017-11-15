@@ -53,7 +53,7 @@ import com.dpdocter.elasticsearch.repository.ESLocationRepository;
 import com.dpdocter.elasticsearch.repository.ESSpecialityRepository;
 import com.dpdocter.elasticsearch.repository.ESTreatmentServiceRepository;
 import com.dpdocter.elasticsearch.repository.ESUserLocaleRepository;
-import com.dpdocter.elasticsearch.response.ESDoctorResponse;
+import com.dpdocter.elasticsearch.response.ESWEBResponse;
 import com.dpdocter.elasticsearch.response.LabResponse;
 import com.dpdocter.elasticsearch.services.ESAppointmentService;
 import com.dpdocter.enums.AppointmentResponseType;
@@ -194,6 +194,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						appointmentSearchResponse.setId(locationDocument.getLocationId());
 						appointmentSearchResponse.setResponse(locationDocument.getLocationName());
 						appointmentSearchResponse.setResponseType(AppointmentResponseType.CLINIC);
+						appointmentSearchResponse.setSlugUrl(locationDocument.getLocationSlugUrl());
 						response.add(appointmentSearchResponse);
 					}
 				}
@@ -207,6 +208,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						appointmentSearchResponse.setId(locationDocument.getLocationId());
 						appointmentSearchResponse.setResponse(locationDocument.getLocationName());
 						appointmentSearchResponse.setResponseType(AppointmentResponseType.LAB);
+						appointmentSearchResponse.setSlugUrl(locationDocument.getLocationSlugUrl());
 						response.add(appointmentSearchResponse);
 					}
 				}
@@ -299,6 +301,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 					appointmentSearchResponse.setId(esUserLocaleDocument.getId());
 					appointmentSearchResponse.setResponse(esUserLocaleDocument.getLocaleName());
 					appointmentSearchResponse.setResponseType(AppointmentResponseType.PHARMACY);
+					appointmentSearchResponse.setSlugUrl(esUserLocaleDocument.getPharmacySlugUrl());
 					response.add(appointmentSearchResponse);
 				}
 		}
@@ -1201,16 +1204,17 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 	@Override
 	@Transactional
-	public ESDoctorResponse getDoctorForWeb(int page, int size, String city, String location, String latitude,
+	public ESWEBResponse getDoctorForWeb(int page, int size, String city, String location, String latitude,
 			String longitude, String speciality, String symptom, Boolean booking, Boolean calling, int minFee,
 			int maxFee, int minTime, int maxTime, List<String> days, String gender, int minExperience,
 			int maxExperience, String service) {
-		ESDoctorResponse doctorResponse = null;
+		ESWEBResponse doctorResponse = null;
 		try {
+
 			List<ESDoctorDocument> doctors = getDoctors(page, size, city, location, latitude, longitude, speciality,
 					symptom, booking, calling, minFee, maxFee, minTime, maxTime, days, gender, minExperience,
 					maxExperience, service);
-			doctorResponse = new ESDoctorResponse();
+			doctorResponse = new ESWEBResponse();
 			List<ESDoctorWEbSearch> doctorList = new ArrayList<ESDoctorWEbSearch>();
 			ESDoctorWEbSearch doctorWEbSearch = null;
 			if (doctors != null && !doctors.isEmpty()) {
@@ -1236,4 +1240,58 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 		return doctorResponse;
 	}
 
+	@Override
+	@Transactional
+	public ESWEBResponse getPharmacyForWeb(int page, int size, String city, String localeName, String latitude,
+			String longitude, String paymentType, Boolean homeService, Boolean isTwentyFourSevenOpen, long minTime,
+			long maxTime, List<String> days, List<String> pharmacyType, Boolean isGenericMedicineAvailable) {
+		ESWEBResponse response = null;
+		try {
+			List<ESUserLocaleDocument> pharmacies = getPharmacies(page, size, city, localeName, latitude, longitude,
+					paymentType, homeService, isTwentyFourSevenOpen, minTime, maxTime, days, pharmacyType,
+					isGenericMedicineAvailable);
+			response = new ESWEBResponse();
+			if (pharmacies != null && !pharmacies.isEmpty()) {
+				response.setPharmacies(pharmacies);
+			}
+			response.setMetaData("pharmacy in " + city);
+			if (!pharmacyType.isEmpty() && pharmacyType != null) {
+				for (String type : pharmacyType) {
+					if (!DPDoctorUtils.anyStringEmpty(type)) {
+						response.setMetaData(type + "," + response);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting Pharmacy Details From ES for Web : " + e.getMessage());
+
+		}
+		return response;
+	}
+
+	@Override
+	@Transactional
+	public ESWEBResponse getLabForWeb(int page, int size, String city, String location, String latitude,
+			String longitude, String test, Boolean booking, Boolean calling, int minTime, int maxTime,
+			List<String> days, Boolean onlineReports, Boolean homeService, Boolean nabl) {
+		ESWEBResponse response = null;
+		try {
+			List<LabResponse> labs = getLabs(page, size, city, location, latitude, longitude, test, booking, calling,
+					minTime, maxTime, days, onlineReports, homeService, nabl);
+			response = new ESWEBResponse();
+			if (labs != null && !labs.isEmpty()) {
+				response.setLabs(labs);
+			}
+			response.setMetaData("lab in " + city);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(ServiceError.Unknown,
+					"Error While Getting lab Details From ES for Web : " + e.getMessage());
+
+		}
+		return response;
+	}
 }

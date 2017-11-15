@@ -935,6 +935,9 @@ public interface PathProxy {
 
 		public static final String DELETE_CUSTOM_APPOINTMENT = "/custom/{appointmentId}/{doctorId}/{locationId}/{hospitalId}/delete";
 
+		public static final String GET_CLINIC_BY_SLUG_URL = "/clinic/{slugUrl}/web";
+
+		public static final String GET_LAB_BY_SLUG_URL = "/lab/{slugUrl}/web";
 	}
 
 	public static final String PATIENT_TREATMENT_BASE_URL = BASE_URL + "/treatment";
@@ -1050,6 +1053,10 @@ public interface PathProxy {
 		public static final String SEND_SMS_TO_PHARMACY = "/smsToPharmacy";
 
 		public static final String GET_DOCTOR_WEB = "/doctors/web";
+
+		public static final String GET_PHARMACIES_WEB = "/pharmacies/web";
+
+		public static final String GET_LABS_WEB = "/labs/web";
 	}
 
 	public static final String GENERAL_TESTS_URL = BASE_URL + "/tests";
@@ -1239,6 +1246,7 @@ public interface PathProxy {
 		public static final String EDIT_LOCALE_VISIT_DETAILS = "/editVisitDetails";
 		public static final String EDIT_LOCALE_IMAGES = "/{id}/editImages";
 		public static final String GET_LOCALE_DETAILS = "/get";
+		public static final String GET_LOCALE_BY_SLUGURL = "/get/{slugUrl}";
 		public static final String ADD_USER_REQUEST = "/addUserRequest";
 		public static final String ADD_PHARMACY_RESPONSE = "/addPharmacyResponse";
 		public static final String GET_PATIENT_ORDER_HISTORY = "/getPatientOrderHistory/{userId}";

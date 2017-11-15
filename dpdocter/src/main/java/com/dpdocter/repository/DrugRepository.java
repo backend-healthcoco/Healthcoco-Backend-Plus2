@@ -12,69 +12,75 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.dpdocter.collections.DrugCollection;
 
-public interface DrugRepository extends MongoRepository<DrugCollection, ObjectId>, PagingAndSortingRepository<DrugCollection, ObjectId> {
+public interface DrugRepository
+		extends MongoRepository<DrugCollection, ObjectId>, PagingAndSortingRepository<DrugCollection, ObjectId> {
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-    List<DrugCollection> getCustomDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Pageable pageable);
+	@Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
+	List<DrugCollection> getCustomDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date,
+			boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DrugCollection> getGlobalDrugs(Date date, boolean[] discards, Pageable pageable);
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugCollection> getGlobalDrugs(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DrugCollection> getGlobalDrugs(Date date, boolean[] discards, Sort sort);
+	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugCollection> getGlobalDrugs(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Pageable pageable);
+	@Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
+	List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date,
+			boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
-    List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
+	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
+	List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
-    List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
+	@Query("{'$or': [{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}},{'doctorId': null, 'updatedTime': {'$gt': ?1},'discarded': {$in: ?2}}]}")
+	List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
-    List<DrugCollection> getCustomDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Sort sort);
+	@Query("{'doctorId': ?0, 'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}}")
+	List<DrugCollection> getCustomDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date,
+			boolean[] discards, Sort sort);
 
-    @Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
-    List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date, boolean[] discards, Sort sort);
+	@Query("{'$or': [{'doctorId': ?0,  'hospitalId': ?1, 'locationId': ?2, 'updatedTime': {'$gt': ?3}, 'discarded': {$in: ?4}},{'doctorId': null, 'locationId': null, 'hospitalId': null, 'updatedTime': {'$gt': ?3},'discarded': {$in: ?4}}]}")
+	List<DrugCollection> getCustomGlobalDrugs(ObjectId doctorId, ObjectId hospitalId, ObjectId locationId, Date date,
+			boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<DrugCollection> getCustomDrugs(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
+	@Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+	List<DrugCollection> getCustomDrugs(ObjectId doctorId, Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
-    List<DrugCollection> getCustomDrugs(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
+	@Query("{'doctorId': ?0, 'updatedTime': {'$gt': ?1}, 'discarded': {$in: ?2}}")
+	List<DrugCollection> getCustomDrugs(ObjectId doctorId, Date date, boolean[] discards, Sort sort);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DrugCollection> getCustomGlobalDrugs(Date date, boolean[] discards, Pageable pageable);
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugCollection> getCustomGlobalDrugs(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
-    List<DrugCollection> getCustomGlobalDrugs(Date date, boolean[] discards, Sort sort);
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	List<DrugCollection> getCustomGlobalDrugs(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'drugCode': ?0}")
+	@Query("{'drugCode': ?0}")
 	DrugCollection findByDrugCode(String drugCode);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugCollection> getCustomGlobalDrugsForAdmin(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugCollection> getCustomGlobalDrugsForAdmin(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
-	List<DrugCollection> getCustomGlobalDrugsForAdmin(Date date, boolean[] discards, String searchTerm,	Pageable pageable);
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
+	List<DrugCollection> getCustomGlobalDrugsForAdmin(Date date, boolean[] discards, String searchTerm,
+			Pageable pageable);
 
-    @Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
+	@Query("{'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugCollection> getCustomGlobalDrugsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugCollection> getCustomDrugsForAdmin(Date date, boolean[] discards, Pageable pageable);
 
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
 	List<DrugCollection> getCustomDrugsForAdmin(Date date, boolean[] discards, Sort sort);
 
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugCollection> getCustomDrugsForAdmin(Date date, boolean[] discards, String searchTerm, Pageable pageable);
 
-    @Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
+	@Query("{'doctorId': {'$ne' : null}, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}, 'drugName' : {$regex : '^?2', $options : 'i'}}")
 	List<DrugCollection> getCustomDrugsForAdmin(Date date, boolean[] discards, String searchTerm, Sort sort);
 
 	@Query("{'doctorId': null, 'updatedTime': {'$gt': ?0}, 'discarded': {$in: ?1}}")
@@ -99,7 +105,8 @@ public interface DrugRepository extends MongoRepository<DrugCollection, ObjectId
 	DrugCollection findByCodeAndDoctorId(String drugCode, ObjectId objectId);
 
 	@Query("{'$or': [{'drugName' : {$regex : '^?0', $options : 'i'}, 'drugType.type' : {$regex : '^?1', $options : 'i'}, 'doctorId': ?2,  'locationId': ?3, 'hospitalId': ?4},{'drugName' : {$regex : '^?0', $options : 'i'}, 'drugType.type' : {$regex : '^?1', $options : 'i'}, 'doctorId': null, 'locationId': null, 'hospitalId': null}]}")
-    List<DrugCollection> findByNameAndDoctorLocationHospital(String drugName, String drugType, ObjectId doctorObjectId, ObjectId locationObjectId, ObjectId hospitalObjectId);
+	List<DrugCollection> findByNameAndDoctorLocationHospital(String drugName, String drugType, ObjectId doctorObjectId,
+			ObjectId locationObjectId, ObjectId hospitalObjectId);
 
 	@Query("{'locationId': ?0}")
 	List<DrugCollection> findByLocationId(ObjectId locationObjectId);

@@ -111,14 +111,16 @@ public interface PatientRepository extends MongoRepository<PatientCollection, Ob
 
 	@Query(value = "{'locationId': ?0, 'hospitalId': ?1, 'PNUM': {'$ne' : ?2}}", count = true)
 	Integer findCountByLocationIDHospitalIDAndNotPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
-	
+
 	@Query("{'locationId': ?0, 'hospitalId': ?1, 'PNUM': ?2}")
 	PatientCollection findByLocationIDHospitalIDAndPNUM(ObjectId locationId, ObjectId hospitalId, String pnum);
-	
+
 	@Query(value = "{'doctorId': ?0, 'locationId': ?1, 'hospitalId': ?2}", count = true)
-	Integer findCountByDoctorIdLocationIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,boolean discarded);
-	
+	Integer findCountByDoctorIdLocationIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId,
+			boolean discarded);
+
 	@Query(value = "{'consultantDoctorIds': ?0, 'locationId': ?1, 'hospitalId': ?2, 'discarded': ?3}", count = true)
-	Integer findCountByConsultantDoctorIdLocationIdHospitalId(ObjectId doctorId, ObjectId locationId, ObjectId hospitalId , boolean discarded);
+	Integer findCountByConsultantDoctorIdLocationIdHospitalId(ObjectId doctorId, ObjectId locationId,
+			ObjectId hospitalId, boolean discarded);
 
 }
