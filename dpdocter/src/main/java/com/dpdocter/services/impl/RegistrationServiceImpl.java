@@ -99,6 +99,7 @@ import com.dpdocter.collections.UserRoleCollection;
 import com.dpdocter.elasticsearch.document.ESDoctorDocument;
 import com.dpdocter.elasticsearch.document.ESPatientDocument;
 import com.dpdocter.elasticsearch.document.ESReferenceDocument;
+import com.dpdocter.elasticsearch.repository.ESPatientRepository;
 import com.dpdocter.elasticsearch.services.ESRegistrationService;
 import com.dpdocter.enums.ColorCode;
 import com.dpdocter.enums.ColorCode.RandomEnum;
@@ -110,6 +111,7 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UniqueIdInitial;
+import com.dpdocter.enums.UnitType;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
@@ -189,6 +191,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 	@Autowired
 	private PatientRepository patientRepository;
 
+	@Autowired
+	private ESPatientRepository esPatientRepository;
+	
 	@Autowired
 	private GenerateUniqueUserNameService generateUniqueUserNameService;
 
@@ -426,6 +431,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			else
 				patientCollection.setRegistrationDate(new Date().getTime());
 
+			System.out.println("registerNewPatient"+request.getRegistrationDate()+".."+patientCollection.getRegistrationDate());
 			patientCollection.setCreatedTime(createdTime);
 			patientCollection.setPID(patientIdGenerator(request.getLocationId(), request.getHospitalId(),
 					patientCollection.getRegistrationDate()));
@@ -753,6 +759,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 				if (patientCollection != null) {
 					ObjectId patientId = patientCollection.getId();
 					ObjectId patientDoctorId = patientCollection.getDoctorId();
+					request.setRegistrationDate(patientCollection.getRegistrationDate());
 					BeanUtil.map(request, patientCollection);
 					patientCollection.setId(patientId);
 					patientCollection.setUpdatedTime(new Date());
@@ -1352,6 +1359,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 			Long endTimeinMillis = end.getMillis();
 			Integer patientSize = patientRepository.findTodaysRegisteredPatient(locationObjectId, hospitalObjectId,
 					startTimeinMillis, endTimeinMillis);
+			
 			if (patientCount == null)
 				patientSize = 0;
 			LocationCollection location = locationRepository.findOne(locationObjectId);
@@ -1366,6 +1374,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 			generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
 					+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
 					+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+			
+			System.out.println(locationId +".."+patientSize+".."+patientCounter);  
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			throw e;
@@ -3396,29 +3406,83 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	public Integer updateRegisterPID(long createdTime) {
-		String PID = "";
-		List<PatientCollection> patientCollections = patientRepository.findbyRegistrationDate(new Date(createdTime),
-				new Sort(Sort.Direction.ASC, "createdTime"));
+		try {
 
-		// find all location Collection---- for loop---find patient by above
-		// query---
-		// for loop on patient collection
-		//
-		// if(pid != null && pid==patientcollection.getPID)generatePID
-		// pid = patientcollection.getPID
+		List<PatientCollection> patientCollections = mongoTemplate.aggregate(
+				Aggregation.newAggregation(Aggregation.match(new Criteria("PID").ne(null)),
+						Aggregation.sort(new Sort(Direction.ASC, "createdTime")),
+						new CustomAggregationOperation(new BasicDBObject("$group", new BasicDBObject("_id", 
+								new BasicDBObject("locationId", "$locationId").append("PID","$PID")).append("count", new BasicDBObject("$sum", 1)))),
+						new CustomAggregationOperation(new BasicDBObject("$project", new BasicDBObject("locationId", "$locationId").append("PID", "$PID")
+								.append("keep", new BasicDBObject(
+								        "$cond", new BasicDBObject(
+										          "if", new BasicDBObject("$gt", Arrays.asList("$count", 1)))
+										        .append("then", "$count")
+										        .append("else", 0))))),
+				Aggregation.match(new Criteria("keep").gt(1))), PatientCollection.class, PatientCollection.class).getMappedResults();
 
+		if(patientCollections != null)
 		for (PatientCollection patientCollection : patientCollections) {
+			List<PatientCollection> samePIDPatientCollections = mongoTemplate.aggregate(Aggregation.newAggregation(
+					Aggregation.match(new Criteria("locationId").is(patientCollection.getLocationId()).and("PID").is(patientCollection.getPID())), Aggregation.sort(new Sort(Direction.ASC, "createdTime"))), PatientCollection.class, PatientCollection.class).getMappedResults();
+			
+			if(samePIDPatientCollections != null) {
+				for (int i=0; i<samePIDPatientCollections.size(); i++) {
+					PatientCollection patient = samePIDPatientCollections.get(i);
+					
+					if(patient.getRegistrationDate() == null) {
+						patient.setRegistrationDate(patient.getCreatedTime().getTime());
+					}
+					if(i > 0) {
+						Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
+						localCalendar.setTime(new Date(patient.getRegistrationDate()));
+						int currentDay = localCalendar.get(Calendar.DATE);
+						int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+						int currentYear = localCalendar.get(Calendar.YEAR);
 
-			if (!DPDoctorUtils.anyStringEmpty(patientCollection.getLocationId(), patientCollection.getHospitalId()))
-				patientCollection.setRegistrationDate(patientCollection.getCreatedTime().getTime());
-			PID = patientIdGenerator(patientCollection.getLocationId().toString(),
-					patientCollection.getHospitalId().toString(), patientCollection.getRegistrationDate());
-			patientCollection.setPID(PID);
-
+						DateTime start = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+								DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+						Long startTimeinMillis = start.getMillis();
+						DateTime end = new DateTime(currentYear, currentMonth, currentDay, 23, 59, 59,
+								DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+						Long endTimeinMillis = end.getMillis();
+						List<PatientCollection> lastPatients = patientRepository.findTodaysRegisteredPatient(patient.getLocationId(), patient.getHospitalId(), startTimeinMillis, endTimeinMillis, new PageRequest(0, 1, Direction.DESC, "PID"));
+						 
+						PatientCollection lastPatient = lastPatients.get(0);
+						Integer patientSize = Integer.parseInt(lastPatient.getPID().substring(lastPatient.getPID().length()-2, lastPatient.getPID().length()));
+						LocationCollection location = locationRepository.findOne(patient.getLocationId());
+						if (location == null) {
+							logger.warn("Invalid Location Id");
+							throw new BusinessException(ServiceError.NoRecord, "Invalid Location Id");
+						}
+						String patientInitial = location.getPatientInitial();
+						int patientCounter = location.getPatientCounter();
+						if (patientCounter <= patientSize)
+							patientCounter = patientCounter + patientSize;
+						String generatedId = patientInitial + DPDoctorUtils.getPrefixedNumber(currentDay)
+								+ DPDoctorUtils.getPrefixedNumber(currentMonth) + DPDoctorUtils.getPrefixedNumber(currentYear % 100)
+								+ DPDoctorUtils.getPrefixedNumber(patientCounter);
+						
+						patient.setPID(generatedId);
+					}
+					patient = patientRepository.save(patient);
+					ESPatientDocument esPatientDocument = esPatientRepository.findOne(patient.getId().toString());
+					if(esPatientDocument != null) {
+						esPatientDocument.setPID(patient.getPID());
+						esPatientDocument.setRegistrationDate(patient.getRegistrationDate());
+						esPatientDocument = esPatientRepository.save(esPatientDocument);
+					}
+					
+				}
+			}
 		}
-		patientCollections = patientRepository.save(patientCollections);
+		
+		} catch (Exception e) {
+			logger.error(e);
+			throw new BusinessException(ServiceError.Unknown, e.getMessage());
+		}
 
-		return patientCollections.size();
+		return 1;
 	}
 
 	@Override
