@@ -183,7 +183,7 @@ public class LabReportsServiceImpl implements LabReportsService{
 				smsDetail.setUserId(daughterlocationCollection.getId());
 				SMS sms = new SMS();
 				smsDetail.setUserName(daughterlocationCollection.getLocationName());
-				message = message.replace("{patientName}", labTestSampleCollection.getPatientName());
+				//message = message.replace("{patientName}", labTestSampleCollection.getPatientName());
 				message = message.replace("{specimenName}", labTestSampleCollection.getSampleType());
 				message = message.replace("{parentLab}", parentLocationCollection.getLocationName());
 				System.out.println(message);

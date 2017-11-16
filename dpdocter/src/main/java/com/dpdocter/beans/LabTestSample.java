@@ -7,10 +7,6 @@ import com.dpdocter.collections.GenericCollection;
 public class LabTestSample extends GenericCollection {
 
 	private String id;
-	private String patientName;
-	private String mobileNumber;
-	private Integer age;
-	private String gender;
 	private String sampleType;
 	private String daughterLabLocationId;
 	private String parentLabLocationId;
@@ -38,30 +34,6 @@ public class LabTestSample extends GenericCollection {
 
 	public void setRateCardTestAssociation(List<RateCardTestAssociation> rateCardTestAssociation) {
 		this.rateCardTestAssociation = rateCardTestAssociation;
-	}
-
-	public String getPatientName() {
-		return patientName;
-	}
-
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
 	}
 
 	public String getSampleType() {
@@ -152,18 +124,9 @@ public class LabTestSample extends GenericCollection {
 		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
 	@Override
 	public String toString() {
-		return "LabTestSample [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
-				+ age + ", gender=" + gender + ", sampleType=" + sampleType + ", daughterLabLocationId="
+		return "LabTestSample [id=" + id + ", sampleType=" + sampleType + ", daughterLabLocationId="
 				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", rateCardTestAssociation="
 				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
 				+ isCollected + ", isCollectedAtLab=" + isCollectedAtLab + ", isHardCopyRequired=" + isHardCopyRequired

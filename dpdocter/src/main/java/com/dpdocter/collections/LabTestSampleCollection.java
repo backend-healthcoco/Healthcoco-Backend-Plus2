@@ -15,14 +15,6 @@ public class LabTestSampleCollection extends GenericCollection {
 	@Id
 	private ObjectId id;
 	@Field
-	private String patientName;
-	@Field
-	private Integer age;
-	@Field
-	private String gender;
-	@Field
-	private String mobileNumber;
-	@Field
 	private String sampleType;
 	@Field
 	private List<RateCardTestAssociation> rateCardTestAssociation;
@@ -58,32 +50,9 @@ public class LabTestSampleCollection extends GenericCollection {
 	public void setId(ObjectId id) {
 		this.id = id;
 	}
-
-	public String getPatientName() {
-		return patientName;
-	}
-
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getSampleType() {
+	
+	public String getSampleType()
+	{
 		return sampleType;
 	}
 
@@ -187,14 +156,6 @@ public class LabTestSampleCollection extends GenericCollection {
 		this.isCollectedAtLab = isCollectedAtLab;
 	}
 
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
 	public ObjectId getLabTestPickUpId() {
 		return labTestPickUpId;
 	}
@@ -205,11 +166,10 @@ public class LabTestSampleCollection extends GenericCollection {
 
 	@Override
 	public String toString() {
-		return "LabTestSampleCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
-				+ gender + ", mobileNumber=" + mobileNumber + ", sampleType=" + sampleType
-				+ ", rateCardTestAssociation=" + rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime="
-				+ urgentTime + ", isCollected=" + isCollected + ", isHardCopyRequired=" + isHardCopyRequired
-				+ ", isHardCopyGiven=" + isHardCopyGiven + ", status=" + status + ", sampleId=" + sampleId
+		return "LabTestSampleCollection [id=" + id + ", sampleType=" + sampleType + ", rateCardTestAssociation="
+				+ rateCardTestAssociation + ", isUrgent=" + isUrgent + ", urgentTime=" + urgentTime + ", isCollected="
+				+ isCollected + ", isHardCopyRequired=" + isHardCopyRequired + ", isHardCopyGiven=" + isHardCopyGiven
+				+ ", status=" + status + ", sampleId=" + sampleId + ", labTestPickUpId=" + labTestPickUpId
 				+ ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId
 				+ ", isCompleted=" + isCompleted + ", isCollectedAtLab=" + isCollectedAtLab + "]";
 	}

@@ -7,6 +7,10 @@ import com.dpdocter.collections.GenericCollection;
 public class LabTestPickup extends GenericCollection {
 
 	private String id;
+	private String patientName;
+	private String mobileNumber;
+	private Integer age;
+	private String gender;
 	private String daughterLabCRN;
 	private String parentLabCRN;
 	private Long pickupTime;
@@ -93,18 +97,6 @@ public class LabTestPickup extends GenericCollection {
 		this.serialNumber = serialNumber;
 	}
 
-	@Override
-	public String toString() {
-		return "LabTestPickup [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN=" + parentLabCRN
-				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
-				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
-				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
-				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
-				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
-				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId
-				+ ", serialNumber=" + serialNumber + "]";
-	}
-
 	public void setDoctorId(String doctorId) {
 		this.doctorId = doctorId;
 	}
@@ -179,6 +171,51 @@ public class LabTestPickup extends GenericCollection {
 
 	public void setLabTestSampleIds(List<String> labTestSampleIds) {
 		this.labTestSampleIds = labTestSampleIds;
+	}
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	@Override
+	public String toString() {
+		return "LabTestPickup [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
+				+ age + ", gender=" + gender + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN=" + parentLabCRN
+				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
+				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
+				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
+				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
+				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
+				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId
+				+ ", serialNumber=" + serialNumber + "]";
 	}
 
 }
