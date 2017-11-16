@@ -592,6 +592,18 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 				List<ESSpecialityDocument> esSpecialityDocuments = esSpecialityRepository
 						.findByQueryAnnotation(speciality);
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")) {
+					speciality = "FAMILY PHYSICIAN";
+				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					speciality = "GENERAL PHYSICIAN";
+				}
+				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")
+						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					for (ESSpecialityDocument esSpecialityDocument : esSpecialityRepository
+							.findByQueryAnnotation(speciality)) {
+						esSpecialityDocuments.add(esSpecialityDocument);
+					}
+				}
 				if (esSpecialityDocuments != null) {
 					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
 							new BeanToPropertyValueTransformer("id"));
