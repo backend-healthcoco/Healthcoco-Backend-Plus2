@@ -6,7 +6,9 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -599,10 +601,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				}
 				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")
 						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+					if (esSpecialityDocuments == null) {
+						esSpecialityDocuments = new ArrayList<ESSpecialityDocument>();
+					}
+
 					for (ESSpecialityDocument esSpecialityDocument : esSpecialityRepository
 							.findByQueryAnnotation(speciality)) {
 						if (esSpecialityDocument != null) {
-							esSpecialityDocuments.add(esSpecialityDocuments.size(), esSpecialityDocument);
+							esSpecialityDocuments.set(esSpecialityDocuments.size(), esSpecialityDocument);
 						}
 					}
 				}
