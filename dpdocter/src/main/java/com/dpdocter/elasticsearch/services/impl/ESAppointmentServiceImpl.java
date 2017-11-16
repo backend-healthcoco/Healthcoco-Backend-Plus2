@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -599,21 +600,19 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
 					speciality = "GENERAL PHYSICIAN";
 				}
+				List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(esSpecialityDocuments);
+
 				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")
 						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
-					if (esSpecialityDocuments == null) {
-						esSpecialityDocuments = new ArrayList<ESSpecialityDocument>();
-					}
-
-					for (ESSpecialityDocument esSpecialityDocument : esSpecialityRepository
-							.findByQueryAnnotation(speciality)) {
+					esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
+					for (ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
 						if (esSpecialityDocument != null) {
-							esSpecialityDocuments.set(esSpecialityDocuments.size(), esSpecialityDocument);
+							esSpecialityDocuments2.add(esSpecialityDocuments2.size(), esSpecialityDocument);
 						}
 					}
 				}
-				if (esSpecialityDocuments != null) {
-					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments,
+				if (esSpecialityDocuments2 != null) {
+					Collection<String> specialityIds = CollectionUtils.collect(esSpecialityDocuments2,
 							new BeanToPropertyValueTransformer("id"));
 					if (specialityIds == null)
 						specialityIds = CollectionUtils.EMPTY_COLLECTION;
