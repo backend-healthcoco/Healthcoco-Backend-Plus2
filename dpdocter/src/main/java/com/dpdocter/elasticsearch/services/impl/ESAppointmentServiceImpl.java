@@ -601,7 +601,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
 					for (ESSpecialityDocument esSpecialityDocument : esSpecialityRepository
 							.findByQueryAnnotation(speciality)) {
-						esSpecialityDocuments.add(esSpecialityDocument);
+						if (esSpecialityDocument != null) {
+							esSpecialityDocuments.add(esSpecialityDocuments.size(), esSpecialityDocument);
+						}
 					}
 				}
 				if (esSpecialityDocuments != null) {
