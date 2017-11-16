@@ -622,6 +622,8 @@ public interface PathProxy {
 
 		public static final String GET_PATIENT_HISTORY_OTP_VERIFIED = "/getPatientHistory/{patientId}/{doctorId}/{locationId}/{hospitalId}/{otpVerified}";
 
+		public static final String GET_PATIENT_HISTORY_OTP_VERIFIED_WEB = "/getPatientHistory";
+
 		public static final String GET_PATIENT_HISTORY = "/{patientId}";
 
 		public static final String MAIL_MEDICAL_DATA = "mailMedicalData";
