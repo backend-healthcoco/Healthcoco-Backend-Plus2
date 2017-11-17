@@ -10,7 +10,8 @@ import com.dpdocter.enums.UserState;
 public class RegisterDoctorResponse {
 
 	private String title;
-    private String userId;
+   
+	private String userId;
 
     private String firstName;
 
@@ -45,6 +46,8 @@ public class RegisterDoctorResponse {
     private List<Role> role;
 
     private UserState userState = UserState.USERSTATECOMPLETE;
+    
+    private String colorCode;
     
     public String getUserId() {
 	return userId;
@@ -198,6 +201,14 @@ public class RegisterDoctorResponse {
 		this.userState = userState;
 	}
 
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
 	@Override
 	public String toString() {
 		return "RegisterDoctorResponse [title=" + title + ", userId=" + userId + ", firstName=" + firstName
@@ -205,6 +216,8 @@ public class RegisterDoctorResponse {
 				+ Arrays.toString(password) + ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber
 				+ ", gender=" + gender + ", dob=" + dob + ", phoneNumber=" + phoneNumber + ", imageUrl=" + imageUrl
 				+ ", specialization=" + specialization + ", locationId=" + locationId + ", hospitalId=" + hospitalId
-				+ ", registerNumber=" + registerNumber + ", role=" + role + ", userState=" + userState + "]";
+				+ ", registerNumber=" + registerNumber + ", role=" + role + ", userState=" + userState + ", colorCode="
+				+ colorCode + "]";
 	}
+
 }
