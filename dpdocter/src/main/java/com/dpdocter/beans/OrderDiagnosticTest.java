@@ -21,7 +21,7 @@ public class OrderDiagnosticTest extends GenericCollection{
 	
 	private Long pickUpDate;
 	
-	private String testsPackageId;
+	private List<String> testsPackageIds;
 
 	private List<DiagnosticTest> diagnosticTests;
 	
@@ -42,6 +42,8 @@ public class OrderDiagnosticTest extends GenericCollection{
 	private String patientName;
 	
 	private Boolean isNABLAccredited = false;
+	
+	List<DiagnosticTestPackage> testsPackages;
 	
 	public String getId() {
 		return id;
@@ -89,14 +91,6 @@ public class OrderDiagnosticTest extends GenericCollection{
 
 	public void setPickUpDate(Long pickUpDate) {
 		this.pickUpDate = pickUpDate;
-	}
-
-	public String getTestsPackageId() {
-		return testsPackageId;
-	}
-
-	public void setTestsPackageId(String testsPackageId) {
-		this.testsPackageId = testsPackageId;
 	}
 
 	public List<DiagnosticTest> getDiagnosticTests() {
@@ -179,15 +173,30 @@ public class OrderDiagnosticTest extends GenericCollection{
 		this.patientName = patientName;
 	}
 
+	public List<String> getTestsPackageIds() {
+		return testsPackageIds;
+	}
+
+	public void setTestsPackageIds(List<String> testsPackageIds) {
+		this.testsPackageIds = testsPackageIds;
+	}
+
+	public List<DiagnosticTestPackage> getTestsPackages() {
+		return testsPackages;
+	}
+
+	public void setTestsPackages(List<DiagnosticTestPackage> testsPackages) {
+		this.testsPackages = testsPackages;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderDiagnosticTest [id=" + id + ", locationId=" + locationId + ", userId=" + userId
 				+ ", uniqueOrderId=" + uniqueOrderId + ", pickUpTime=" + pickUpTime + ", pickUpDate=" + pickUpDate
-				+ ", testsPackageId=" + testsPackageId + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
+				+ ", testsPackageIds=" + testsPackageIds + ", diagnosticTests=" + diagnosticTests + ", pickUpAddress="
 				+ pickUpAddress + ", orderStatus=" + orderStatus + ", totalCost=" + totalCost + ", totalCostForPatient="
 				+ totalCostForPatient + ", totalSavingInPercentage=" + totalSavingInPercentage + ", isCancelled="
 				+ isCancelled + ", locationName=" + locationName + ", patientName=" + patientName
-				+ ", isNABLAccredited=" + isNABLAccredited + "]";
+				+ ", isNABLAccredited=" + isNABLAccredited + ", testsPackages=" + testsPackages + "]";
 	}
-
 }

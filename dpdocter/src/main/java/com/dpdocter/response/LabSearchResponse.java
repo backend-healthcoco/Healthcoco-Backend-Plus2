@@ -8,6 +8,8 @@ public class LabSearchResponse {
 
 	private String id;
 	
+	private String hospitalId;
+	
 	private String locationName;
 	
 	private Boolean isNABLAccredited = false;
@@ -76,11 +78,19 @@ public class LabSearchResponse {
 		this.totalSavingInPercentage = totalSavingInPercentage;
 	}
 
+	public String getHospitalId() {
+		return hospitalId;
+	}
+
+	public void setHospitalId(String hospitalId) {
+		this.hospitalId = hospitalId;
+	}
+
 	@Override
 	public String toString() {
-		return "LabSearchResponse [id=" + id + ", locationName=" + locationName + ", isNABLAccredited="
-				+ isNABLAccredited + ", diagnosticTests=" + diagnosticTests + ", totalCost=" + totalCost
-				+ ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
+		return "LabSearchResponse [id=" + id + ", hospitalId=" + hospitalId + ", locationName=" + locationName
+				+ ", isNABLAccredited=" + isNABLAccredited + ", diagnosticTests=" + diagnosticTests + ", totalCost="
+				+ totalCost + ", totalCostForPatient=" + totalCostForPatient + ", totalSavingInPercentage="
 				+ totalSavingInPercentage + "]";
 	}
 

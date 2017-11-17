@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.dpdocter.beans.DiagnosticTestPackage;
 import com.dpdocter.beans.DiagnosticTestSamplePickUpSlot;
 import com.dpdocter.beans.OrderDiagnosticTest;
 import com.dpdocter.exceptions.BusinessException;
@@ -45,12 +46,13 @@ public class DiagnosticTestOrderApi {
 	@Path(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS)
 	@GET
 	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.SEARCH_LABS, notes = DiagnosticTestOrderUrls.SEARCH_LABS)
-	public Response<LabSearchResponse> searchLabsByTest(@QueryParam("city") String city,
+	public Response<LabSearchResponse> searchLabs(@QueryParam("city") String city,
 			@QueryParam("location") String location, @QueryParam(value = "latitude") String latitude,
 			@QueryParam(value = "longitude") String longitude, @QueryParam("searchTerm") String searchTerm, 
-			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") int page, @QueryParam("size") int size) {
+			@MatrixParam(value = "test") List<String> testNames, @QueryParam("page") int page, @QueryParam("size") int size,
+			@DefaultValue(value = "false") @QueryParam("havePackage") Boolean havePackage) {
 
-		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabsByTest(city, location, latitude, longitude, searchTerm, testNames, page, size);
+		List<LabSearchResponse> labSearchResponses = diagnosticTestOrderService.searchLabs(city, location, latitude, longitude, searchTerm, testNames, page, size, havePackage);
 
 		Response<LabSearchResponse> response = new Response<LabSearchResponse>();
 		response.setDataList(labSearchResponses);
@@ -136,4 +138,20 @@ public class DiagnosticTestOrderApi {
 
 		return response;
 	}
+	
+	@GET
+	@Path(PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES)
+	@ApiOperation(value = PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES, notes = PathProxy.DiagnosticTestOrderUrls.GET_DIAGNOSTIC_TEST_PACKAGES)
+	public Response<DiagnosticTestPackage> getDiagnosticTestPackages(@PathParam("locationId") String locationId, 
+			@PathParam("hospitalId") String hospitalId, @DefaultValue(value="true") @QueryParam("discarded") Boolean discarded, @QueryParam("page") int page, @QueryParam("size") int size) {
+		 if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
+				throw new BusinessException(ServiceError.InvalidInput, "LocationId or HospitalId cannot be null");
+		}
+		
+		Response<DiagnosticTestPackage> response = new Response<DiagnosticTestPackage>();
+		response.setDataList(diagnosticTestOrderService.getDiagnosticTestPackages(locationId, hospitalId, discarded, page, size));
+
+		return response;
+	}
+
 }
