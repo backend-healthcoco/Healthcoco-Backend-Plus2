@@ -22,6 +22,7 @@ public class DoctorRegisterRequest {
 
     private Boolean isActivate;
 
+    private String colorCode;
     
     public String getTitle() {
 		return title;
@@ -103,11 +104,20 @@ public class DoctorRegisterRequest {
 	this.isActivate = isActivate;
     }
 
+	public String getColorCode() {
+		return colorCode;
+	}
+
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+
 	@Override
 	public String toString() {
 		return "DoctorRegisterRequest [title=" + title + ", userId=" + userId + ", firstName=" + firstName
 				+ ", emailAddress=" + emailAddress + ", mobileNumber=" + mobileNumber + ", locationId=" + locationId
 				+ ", hospitalId=" + hospitalId + ", registerNumber=" + registerNumber + ", roleId=" + roleId
-				+ ", isActivate=" + isActivate + "]";
+				+ ", isActivate=" + isActivate + ", colorCode=" + colorCode + "]";
 	}
+
 }

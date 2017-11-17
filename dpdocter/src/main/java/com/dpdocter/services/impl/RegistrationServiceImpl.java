@@ -1847,7 +1847,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 			userCollection.setUserName(request.getEmailAddress());
 			userCollection.setUserUId(UniqueIdInitial.USER.getInitial() + DPDoctorUtils.generateRandomId());
 			userCollection.setCreatedTime(new Date());
-			userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+			if(DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
+				userCollection.setColorCode(new RandomEnum<ColorCode>(ColorCode.class).random().getColor());
+			}
 			userCollection.setUserState(UserState.NOTVERIFIED);
 			userCollection = userRepository.save(userCollection);
 
@@ -2059,6 +2061,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 			}
 
 			UserCollection userCollection = userRepository.findOne(new ObjectId(request.getUserId()));
+			
+			if(!DPDoctorUtils.anyStringEmpty(request.getColorCode())) {
+				userCollection.setColorCode(request.getColorCode());
+				userCollection.setUpdatedTime(new Date());
+				userRepository.save(userCollection);
+			}
+			
 			if (doctorRole != null) {
 
 				UserRoleCollection userRoleCollection = userRoleRepository.findByUserIdLocationIdHospitalId(
@@ -3677,6 +3686,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 									Aggregation.newAggregation(
 											Aggregation
 													.match(new Criteria("mobileNumber").is(request.getMobileNumber())),
+													
+													new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+															new BasicDBObject("if", new BasicDBObject("$neq", Arrays.asList("$emailAddress", "$userName")))
+															.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 											Aggregation.project("id")),
 									UserCollection.class, UserCollection.class)
 							.getMappedResults();
@@ -3688,6 +3701,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 											Aggregation.limit(1),
 											Aggregation.lookup("user_cl", "mobileNumber", "mobileNumber", "user"),
 											Aggregation.unwind("user"),
+											new CustomAggregationOperation(new BasicDBObject("$redact",new BasicDBObject("$cond",
+													new BasicDBObject("if", new BasicDBObject("$neq", Arrays.asList("$user.emailAddress", "$user.userName")))
+													.append("then", "$$KEEP").append("else", "$$PRUNE")))),
 											new CustomAggregationOperation(
 													new BasicDBObject("$project", new BasicDBObject("id", "user.id")))),
 									UserCollection.class, UserCollection.class)

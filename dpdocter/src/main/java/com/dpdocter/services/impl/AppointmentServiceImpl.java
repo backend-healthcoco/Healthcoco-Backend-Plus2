@@ -3246,16 +3246,38 @@ public class AppointmentServiceImpl implements AppointmentService {
 	public Appointment getPatientLastAppointment(String locationId, String doctorId, String patientId) {
 		Appointment response = null;
 		try {
-			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("patientId")
-					.is(new ObjectId(patientId));
+			Criteria criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("patientId").is(new ObjectId(patientId));
+			
+			Calendar localCalendar = Calendar.getInstance(TimeZone.getTimeZone("IST"));
 
-			List<AppointmentLookupResponse> appointmentLookupResponses = mongoTemplate
-					.aggregate(Aggregation.newAggregation(Aggregation.match(criteria),
-							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
-							Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime")),
-							Aggregation.limit(1)), AppointmentCollection.class, AppointmentLookupResponse.class)
-					.getMappedResults();
+			localCalendar.setTime(new Date());
+			int currentDay = localCalendar.get(Calendar.DATE);
+			int currentMonth = localCalendar.get(Calendar.MONTH) + 1;
+			int currentYear = localCalendar.get(Calendar.YEAR);
 
+			DateTime dateTime = new DateTime(currentYear, currentMonth, currentDay, 0, 0, 0,
+						DateTimeZone.forTimeZone(TimeZone.getTimeZone("IST")));
+
+			criteria.and("fromDate").lte(dateTime);
+			
+			List<AppointmentLookupResponse> appointmentLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Direction.DESC, "fromDate", "time.fromTime")),
+						Aggregation.limit(1)),
+						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+			
+			if (appointmentLookupResponses == null || appointmentLookupResponses.isEmpty()) {
+				criteria = new Criteria("locationId").is(new ObjectId(locationId)).and("patientId").is(new ObjectId(patientId)).and("fromDate").gte(dateTime);
+				
+				appointmentLookupResponses = mongoTemplate.aggregate(Aggregation.newAggregation(
+						Aggregation.match(criteria), Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"),
+						Aggregation.unwind("doctor"),
+						Aggregation.sort(new Sort(Direction.ASC, "fromDate", "time.fromTime")),
+						Aggregation.limit(1)),
+						AppointmentCollection.class, AppointmentLookupResponse.class).getMappedResults();
+			}
+			
 			if (appointmentLookupResponses != null) {
 				response = new Appointment();
 				for (AppointmentLookupResponse collection : appointmentLookupResponses) {
