@@ -746,7 +746,7 @@ public class ContactsServiceImpl implements ContactsService {
 	@Override
 	@Transactional
 	public Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId,
-			boolean discarded, String role) {
+			boolean discarded, String role, String searchTerm) {
 
 		Integer count = 0;
 
@@ -776,9 +776,13 @@ public class ContactsServiceImpl implements ContactsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
+						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
+			}
 
-			aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
-					Aggregation.lookup("user_cl", "userId", "_id", "user"), Aggregation.unwind("user"),
+			aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
+					Aggregation.unwind("user"), Aggregation.match(criteria),
 					Aggregation.lookup("patient_group_cl", "userId", "patientId", "patientGroupCollections"),
 					Aggregation.sort(Direction.DESC, "createdTime"));
 

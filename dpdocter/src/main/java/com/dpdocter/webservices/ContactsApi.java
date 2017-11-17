@@ -151,8 +151,8 @@ public class ContactsApi {
 
 		Response<Object> response = new Response<Object>();
 		response.setDataList(registeredPatientDetails);
-		response.setData(
-				contactsService.getDoctorContactsHandheldCount(doctorId, locationId, hospitalId, discarded, role));
+		response.setData(contactsService.getDoctorContactsHandheldCount(doctorId, locationId, hospitalId, discarded,
+				role, searchTerm));
 		return response;
 	}
 

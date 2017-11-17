@@ -55,6 +55,6 @@ public interface ContactsService {
 			String updatedTime, boolean discarded, String role, int page, int size, String searchTerm);
 
 	Integer getDoctorContactsHandheldCount(String doctorId, String locationId, String hospitalId, boolean discarded,
-			String role);
+			String role, String searchTerm);
 
 }
