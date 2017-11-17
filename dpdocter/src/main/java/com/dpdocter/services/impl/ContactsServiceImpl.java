@@ -627,8 +627,8 @@ public class ContactsServiceImpl implements ContactsService {
 				criteria.and("locationId").is(locationObjectId).and("hospitalId").is(hospitalObjectId);
 			}
 			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
-				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "$i"),
-						new Criteria("localPatientName").regex("^" + searchTerm, "$i"));
+				criteria.orOperator(new Criteria("user.mobileNumber").regex("^" + searchTerm, "i"),
+						new Criteria("localPatientName").regex("^" + searchTerm, "i"));
 			}
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.lookup("user_cl", "userId", "_id", "user"),
