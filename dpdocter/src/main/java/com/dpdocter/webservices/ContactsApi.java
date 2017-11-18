@@ -250,6 +250,7 @@ public class ContactsApi {
 		int ttlCount = contactsService.getContactsTotalSize(request);
 		Response<Integer> response = new Response<Integer>();
 		response.setData(ttlCount);
+<<<<<<< c6d23a5d96f3a851f90232b8448723d26bfaae87
 		return response;
 	}
 
@@ -268,6 +269,7 @@ public class ContactsApi {
 		}
 		List<Group> groups = contactsService.getAllGroups(page, size, doctorId, locationId, hospitalId, updatedTime,
 				discarded);
+		
 		if (groups != null) {
 			for (Group group : groups) {
 				GetDoctorContactsRequest getDoctorContactsRequest = new GetDoctorContactsRequest();

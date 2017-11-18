@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dpdocter.beans.CustomAggregationOperation;
 import com.dpdocter.beans.DoctorContactsResponse;
 import com.dpdocter.beans.Group;
+import com.dpdocter.beans.LabReports;
 import com.dpdocter.beans.Patient;
 import com.dpdocter.beans.PatientCard;
 import com.dpdocter.beans.Reference;
@@ -36,6 +37,7 @@ import com.dpdocter.collections.ExportContactsRequestCollection;
 import com.dpdocter.collections.GroupCollection;
 import com.dpdocter.collections.ImportContactsRequestCollection;
 import com.dpdocter.collections.InventoryItemCollection;
+import com.dpdocter.collections.LabReportsCollection;
 import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientGroupCollection;
 import com.dpdocter.collections.ReferencesCollection;
@@ -502,45 +504,38 @@ public class ContactsServiceImpl implements ContactsService {
 		boolean[] discards = new boolean[2];
 		discards[0] = false;
 		try {
+			long createdTimeStamp = Long.parseLong(updatedTime);
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
 			if (discarded) {
 				discards[1] = true;
 			}
-			ObjectId doctorObjectId = null, locationObjectId = null, hospitalObjectId = null;
 			if (!DPDoctorUtils.anyStringEmpty(doctorId))
-				doctorObjectId = new ObjectId(doctorId);
+			{
+				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
-				locationObjectId = new ObjectId(locationId);
+			{
+				criteria.and("locationId").is(new ObjectId(locationId));
+			}
 			if (!DPDoctorUtils.anyStringEmpty(hospitalId))
-				hospitalObjectId = new ObjectId(hospitalId);
-
-			long createdTimeStamp = Long.parseLong(updatedTime);
-			if (size > 0) {
-				if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					groupCollections = groupRepository.findAll(doctorObjectId, discards, new Date(createdTimeStamp),
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				} else {
-					groupCollections = groupRepository.findAll(doctorObjectId, locationObjectId, hospitalObjectId,
-							discards, new Date(createdTimeStamp),
-							new PageRequest(page, size, Direction.DESC, "createdTime"));
-				}
-			} else {
-				if (DPDoctorUtils.anyStringEmpty(locationId, hospitalId)) {
-					groupCollections = groupRepository.findAll(doctorObjectId, discards, new Date(createdTimeStamp),
-							new Sort(Sort.Direction.DESC, "createdTime"));
-				} else {
-					groupCollections = groupRepository.findAll(doctorObjectId, locationObjectId, hospitalObjectId,
-							discards, new Date(createdTimeStamp), new Sort(Sort.Direction.DESC, "createdTime"));
-				}
+			{
+				criteria.and("hospitalId").is(new ObjectId(hospitalId));
 			}
+			criteria.and("updatedTime").gte(createdTimeStamp);
+			criteria.and("discarded").in(discards);
 
-			if (groupCollections != null && !groupCollections.isEmpty()) {
-				groups = new ArrayList<Group>();
-				for (GroupCollection groupCollection : groupCollections) {
-					Group group = new Group();
-					BeanUtil.map(groupCollection, group);
-					groups.add(group);
-				}
-			}
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<Group> aggregationResults = mongoTemplate.aggregate(aggregation,
+					GroupCollection.class, Group.class);
+			groups = aggregationResults.getMappedResults();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e);
