@@ -600,10 +600,12 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				} else if (speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
 					speciality = "GENERAL PHYSICIAN";
 				}
-				List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(esSpecialityDocuments);
+				List<ESSpecialityDocument> esSpecialityDocuments2 = new LinkedList<ESSpecialityDocument>(
+						esSpecialityDocuments);
 
 				if (speciality.equalsIgnoreCase("GENERAL PHYSICIAN")
 						|| speciality.equalsIgnoreCase("FAMILY PHYSICIAN")) {
+
 					esSpecialityDocuments = esSpecialityRepository.findByQueryAnnotation(speciality);
 					for (ESSpecialityDocument esSpecialityDocument : esSpecialityDocuments) {
 						if (esSpecialityDocument != null) {
