@@ -152,7 +152,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(ipdReports, ipdReportsCollection);
 			try {
 				ipdReportsCollection.setCreatedTime(new Date());
-				ipdReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				ipdReportsCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				ipdReportsCollection = ipdReportsRepository.save(ipdReportsCollection);
 
 				if (ipdReportsCollection != null) {
@@ -222,7 +222,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(otReports, otReportsCollection);
 			try {
 				otReportsCollection.setCreatedTime(new Date());
-				otReportsCollection.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				otReportsCollection.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				otReportsCollection = otReportsRepository.save(otReportsCollection);
 
 				if (otReportsCollection != null) {
@@ -249,7 +249,7 @@ public class ReportsServiceImpl implements ReportsService {
 			BeanUtil.map(deliveryReports, deliveryReportsCollection);
 			try {
 				deliveryReportsCollection.setCreatedTime(new Date());
-				deliveryReports.setCreatedBy(userCollection.getFirstName() + " " + userCollection.getLastName());
+				deliveryReports.setCreatedBy(userCollection.getTitle() + " " + userCollection.getFirstName());
 				deliveryReportsCollection = deliveryReportsRepository.save(deliveryReportsCollection);
 				if (deliveryReportsCollection != null) {
 					BeanUtil.map(deliveryReportsCollection, deliveryReports);
@@ -281,8 +281,9 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
 				criteria.and("doctorId").is(new ObjectId(doctorId));
+			}
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
 				criteria.and("patientId").is(new ObjectId(patientId));
@@ -566,7 +567,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -693,7 +694,7 @@ public class ReportsServiceImpl implements ReportsService {
 			if (!DPDoctorUtils.anyStringEmpty(locationId))
 				criteria.and("locationId").is(new ObjectId(locationId));
 
-			if (doctorId != null)
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
 				criteria.and("doctorId").is(new ObjectId(doctorId));
 
 			if (!DPDoctorUtils.anyStringEmpty(patientId))
@@ -865,7 +866,7 @@ public class ReportsServiceImpl implements ReportsService {
 		try {
 			ClinicalIndicatorCollection clinicalIndicatorCollection = clinicalIndicatorRepository
 					.findOne(new ObjectId(indicatorId));
-			response=new ClinicalIndicator();
+			response = new ClinicalIndicator();
 			BeanUtil.map(clinicalIndicatorCollection, response);
 		} catch (Exception e) {
 			e.printStackTrace();
