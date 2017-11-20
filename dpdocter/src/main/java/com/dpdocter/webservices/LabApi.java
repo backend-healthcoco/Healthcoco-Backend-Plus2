@@ -632,5 +632,34 @@ public class LabApi {
 		}
 		return response;
 	}
+	
+	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_DOCTOR)
+	public Response<LabReports> getLabReportsForDoctor(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<LabReports> response = new Response<LabReports>();
+		response.setDataList(labReportsService.getLabReportsForDoctor(doctorId, locationId, hospitalId, searchTerm, page, size));
+		return response;
+	}
+	
+	
+	@Path(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
+	@GET
+	@ApiOperation(value = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB, notes = PathProxy.LabUrls.GET_LAB_REPORTS_FOR_LAB)
+	public Response<LabReports> getLabReportsForLab(@QueryParam("doctorId") String doctorId,@QueryParam("locationId") String locationId,
+			@QueryParam("hospitalId") String hospitalId,@QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("searchTerm") String searchTerm) {
+		if (locationId == null) {
+			logger.warn("Invalid Input");
+			throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
+		}
+		Response<LabReports> response = new Response<LabReports>();
+		response.setDataList(labReportsService.getLabReportsForLab(doctorId, locationId, hospitalId, searchTerm, page, size));
+		return response;
+	}
 
 }

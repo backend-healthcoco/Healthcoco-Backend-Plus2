@@ -17,5 +17,11 @@ public interface LabReportsService {
 	LabReports addLabReportBase64(FileDetails fileDetails, LabReportsAddRequest request);
 
 	LabReports editLabReports(EditLabReportsRequest request);
+
+	List<LabReports> getLabReportsForDoctor(String doctorId, String locationId, String hospitalId, String searchTerm,
+			int page, int size);
+
+	List<LabReports> getLabReportsForLab(String doctorId, String locationId, String hospitalId, String searchTerm,
+			int page, int size);
 	
 }

@@ -1,8 +1,6 @@
 package com.dpdocter.request;
 
-import java.util.List;
-
-import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.PatientLabTestSample;
 
 public class AddEditLabTestPickupRequest {
 
@@ -10,7 +8,7 @@ public class AddEditLabTestPickupRequest {
 	private String daughterLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
-	private List<LabTestSample> labTestSamples;
+	private PatientLabTestSample patientLabTestSample;
 	private String status;
 	private String doctorId;
 	private String daughterLabLocationId;
@@ -85,14 +83,6 @@ public class AddEditLabTestPickupRequest {
 		this.parentLabLocationId = parentLabLocationId;
 	}
 
-	public List<LabTestSample> getLabTestSamples() {
-		return labTestSamples;
-	}
-
-	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
-		this.labTestSamples = labTestSamples;
-	}
-
 	public Boolean getDiscarded() {
 		return discarded;
 	}
@@ -133,14 +123,22 @@ public class AddEditLabTestPickupRequest {
 		this.isCompleted = isCompleted;
 	}
 
+	public PatientLabTestSample getPatientLabTestSample() {
+		return patientLabTestSample;
+	}
+
+	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
+		this.patientLabTestSample = patientLabTestSample;
+	}
+
 	@Override
 	public String toString() {
 		return "AddEditLabTestPickupRequest [id=" + id + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime="
-				+ pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSamples=" + labTestSamples + ", status="
-				+ status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
+				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSample=" + patientLabTestSample
+				+ ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
-				+ numberOfSamplesPicked + ", requestId=" + requestId + "]";
+				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted + "]";
 	}
 
 }

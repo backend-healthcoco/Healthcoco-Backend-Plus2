@@ -1371,6 +1371,8 @@ public interface PathProxy {
 		public static final String UPDATE_REQUEST_STATUS = "/updateRequestStatus/{id}";
 		public static final String EDIT_LAB_REPORTS = "/editLabReports";
 		public static final String GET_GROUPED_LAB_TEST = "/getGroupedLabTest";
+		public static final String GET_LAB_REPORTS_FOR_DOCTOR = "/getLabReportsForDoctor";
+		public static final String GET_LAB_REPORTS_FOR_LAB= "/getLabReportsForLab";
 
 	}
 

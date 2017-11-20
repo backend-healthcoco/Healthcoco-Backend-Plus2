@@ -6,11 +6,17 @@ import common.util.web.JacksonUtil;
 
 public class LabReportsAddRequest extends GenericCollection {
 
+	private String patientName;
+
+	private String doctorId;
+
 	private String locationId;
 
 	private String hospitalId;
 
 	private Boolean discarded = false;
+
+	private String uploadedByDoctorId;
 
 	private String uploadedByLocationId;
 
@@ -19,6 +25,14 @@ public class LabReportsAddRequest extends GenericCollection {
 	private String labTestSampleId;
 
 	private String recordsState;
+
+	public String getPatientName() {
+		return patientName;
+	}
+
+	public void setPatientName(String patientName) {
+		this.patientName = patientName;
+	}
 
 	public String getLocationId() {
 		return locationId;
@@ -74,6 +88,30 @@ public class LabReportsAddRequest extends GenericCollection {
 
 	public void setRecordsState(String recordsState) {
 		this.recordsState = recordsState;
+	}
+
+	public String getDoctorId() {
+		return doctorId;
+	}
+
+	public void setDoctorId(String doctorId) {
+		this.doctorId = doctorId;
+	}
+
+	public String getUploadedByDoctorId() {
+		return uploadedByDoctorId;
+	}
+
+	public void setUploadedByDoctorId(String uploadedByDoctorId) {
+		this.uploadedByDoctorId = uploadedByDoctorId;
+	}
+
+	@Override
+	public String toString() {
+		return "LabReportsAddRequest [doctorId=" + doctorId + ", locationId=" + locationId + ", hospitalId="
+				+ hospitalId + ", discarded=" + discarded + ", uploadedByDoctorId=" + uploadedByDoctorId
+				+ ", uploadedByLocationId=" + uploadedByLocationId + ", uploadedByHospitalId=" + uploadedByHospitalId
+				+ ", labTestSampleId=" + labTestSampleId + ", recordsState=" + recordsState + "]";
 	}
 
 }

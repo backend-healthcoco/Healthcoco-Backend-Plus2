@@ -119,14 +119,6 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.parentLabLocationId = parentLabLocationId;
 	}
 
-	public List<ObjectId> getLabTestSampleIds() {
-		return labTestSampleIds;
-	}
-
-	public void setLabTestSampleIds(List<ObjectId> labTestSampleIds) {
-		this.labTestSampleIds = labTestSampleIds;
-	}
-
 	public String getRequestId() {
 		return requestId;
 	}
@@ -215,12 +207,20 @@ public class LabTestPickupCollection extends GenericCollection {
 		this.mobileNumber = mobileNumber;
 	}
 
+	public PatientLabTestSample getPatientLabTestSample() {
+		return patientLabTestSample;
+	}
+
+	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
+		this.patientLabTestSample = patientLabTestSample;
+	}
+
 	@Override
 	public String toString() {
 		return "LabTestPickupCollection [id=" + id + ", patientName=" + patientName + ", age=" + age + ", gender="
 				+ gender + ", mobileNumber=" + mobileNumber + ", daughterLabCRN=" + daughterLabCRN + ", pickupTime="
-				+ pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds=" + labTestSampleIds + ", status="
-				+ status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
+				+ pickupTime + ", deliveryTime=" + deliveryTime + ", patientLabTestSample=" + patientLabTestSample
+				+ ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId=" + daughterLabLocationId
 				+ ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
 				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
 				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted

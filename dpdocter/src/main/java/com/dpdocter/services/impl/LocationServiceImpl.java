@@ -343,12 +343,12 @@ public class LocationServiceImpl implements LocationServices {
 			response = aggregationResults.getUniqueMappedResult();
 			if (response != null) {
 				aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria().and("id").in(response.getLabTestSampleIds())),
+						Aggregation.match(new Criteria().and("id").in(response.getPatientLabTestSample().getLabTestSampleIds())),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				AggregationResults<LabTestSample> labAggregationResults = mongoTemplate.aggregate(aggregation,
 						LabTestSampleCollection.class, LabTestSample.class);
 				labTestSamples = labAggregationResults.getMappedResults();
-				response.setLabTestSamples(labTestSamples);
+				response.getPatientLabTestSample().setLabTestSamples(labTestSamples);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -375,12 +375,12 @@ public class LocationServiceImpl implements LocationServices {
 			response = aggregationResults.getUniqueMappedResult();
 			if (response != null) {
 				aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria().and("id").in(response.getLabTestSampleIds())),
+						Aggregation.match(new Criteria().and("id").in(response.getPatientLabTestSample().getLabTestSampleIds())),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				AggregationResults<LabTestSample> labAggregationResults = mongoTemplate.aggregate(aggregation,
 						LabTestSampleCollection.class, LabTestSample.class);
 				labTestSamples = labAggregationResults.getMappedResults();
-				response.setLabTestSamples(labTestSamples);
+				response.getPatientLabTestSample().setLabTestSamples(labTestSamples);
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -539,8 +539,8 @@ public class LocationServiceImpl implements LocationServices {
 						new Criteria("daughterLab.locationName").regex("^" + searchTerm),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm, "i"),
 						new Criteria("parentLab.locationName").regex("^" + searchTerm),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm, "i"),
-						new Criteria("labTestSamples.patientName").regex("^" + searchTerm));
+						new Criteria("patientLabTestSample.patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientLabTestSample.patientName").regex("^" + searchTerm));
 			}
 
 			if (size > 0)
@@ -570,7 +570,7 @@ public class LocationServiceImpl implements LocationServices {
 														new BasicDBObject("$push", "$labTestSampleIds"))
 												.append("parentLabLocationId",
 														new BasicDBObject("$first", "$parentLabLocationId"))
-												.append("labTestSamples", new BasicDBObject("$push", "$labTestSamples"))
+												.append("patientLabTestSample", new BasicDBObject("$push", "$patientLabTestSample"))
 												.append("discarded", new BasicDBObject("$first", "$discarded"))
 												.append("numberOfSamplesRequested",
 														new BasicDBObject("$first", "$numberOfSamplesRequested"))
@@ -775,12 +775,12 @@ public class LocationServiceImpl implements LocationServices {
 			for (LabTestPickupLookupResponse labTestPickup : response) {
 
 				aggregation = Aggregation.newAggregation(
-						Aggregation.match(new Criteria().and("id").in(labTestPickup.getLabTestSampleIds())),
+						Aggregation.match(new Criteria().and("id").in(labTestPickup.getPatientLabTestSample().getLabTestSampleIds())),
 						Aggregation.sort(new Sort(Sort.Direction.DESC, "createdTime")));
 				AggregationResults<LabTestSample> labAggregationResults = mongoTemplate.aggregate(aggregation,
 						LabTestSampleCollection.class, LabTestSample.class);
 				labTestSamples = labAggregationResults.getMappedResults();
-				labTestPickup.setLabTestSamples(labTestSamples);
+				labTestPickup.getPatientLabTestSample().setLabTestSamples(labTestSamples);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -811,7 +811,7 @@ public class LocationServiceImpl implements LocationServices {
 					String serialNumber = reportSerialNumberGenerator(request.getParentLabLocationId());
 					labTestPickupCollection.setSerialNumber(serialNumber);
 				}
-				for (LabTestSample labTestSample : request.getLabTestSamples()) {
+				for (LabTestSample labTestSample : request.getPatientLabTestSample().getLabTestSamples()) {
 
 					if (labTestSample.getId() != null) {
 						LabTestSampleCollection labTestSampleCollection = labTestSampleRepository
@@ -838,14 +838,14 @@ public class LocationServiceImpl implements LocationServices {
 
 				}
 
-				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
+				//labTestPickupCollection.getPatientLabTestSample().setLabTestSampleIds(labTestSampleIds);
 				labTestPickupCollection.setUpdatedTime(new Date());
 
 				labTestPickupCollection = labTestPickupRepository.save(labTestPickupCollection);
 			} else {
 				requestId = UniqueIdInitial.LAB_PICKUP_REQUEST.getInitial() + DPDoctorUtils.generateRandomId();
 				request.setDaughterLabCRN(saveCRN(request.getDaughterLabLocationId(), requestId, 5));
-				for (LabTestSample labTestSample : request.getLabTestSamples()) {
+				for (LabTestSample labTestSample : request.getPatientLabTestSample().getLabTestSamples()) {
 					labTestSample.setSampleId(
 							UniqueIdInitial.LAB_PICKUP_SAMPLE.getInitial() + DPDoctorUtils.generateRandomId());
 					LabTestSampleCollection labTestSampleCollection = new LabTestSampleCollection();
@@ -857,7 +857,7 @@ public class LocationServiceImpl implements LocationServices {
 				labTestPickupCollection = new LabTestPickupCollection();
 				BeanUtil.map(request, labTestPickupCollection);
 				labTestPickupCollection.setRequestId(requestId);
-				labTestPickupCollection.setLabTestSampleIds(labTestSampleIds);
+			//	labTestPickupCollection.getsetLabTestSampleIds(labTestSampleIds);
 				CollectionBoyLabAssociationCollection collectionBoyLabAssociationCollection = collectionBoyLabAssociationRepository
 						.findbyParentIdandDaughterIdandIsActive(new ObjectId(request.getParentLabLocationId()),
 								new ObjectId(request.getDaughterLabLocationId()), true);
@@ -894,7 +894,7 @@ public class LocationServiceImpl implements LocationServices {
 
 			response = new LabTestPickup();
 			BeanUtil.map(labTestPickupCollection, response);
-			response.setLabTestSamples(labTestSamples);
+			response.getPatientLabTestSample().setLabTestSamples(labTestSamples);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.warn(e);

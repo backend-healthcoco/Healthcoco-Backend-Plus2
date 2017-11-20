@@ -135,7 +135,8 @@ public class LabReportsServiceImpl implements LabReportsService{
 				//String path = "lab-reports";
 				//String recordLabel = fileDetails.getFileName();
 				fileDetails.setFileName(fileDetails.getFileName() + createdTime.getTime());
-				String path = "lab-reports" + File.separator + request.getLabTestSampleId();
+				
+				String path = "lab-reports" + File.separator + request.getPatientName();
 
 				imageURLResponse = fileManager.saveImageAndReturnImageUrl(fileDetails,
 						path, true);
@@ -221,6 +222,76 @@ public class LabReportsServiceImpl implements LabReportsService{
 			}
 
 			criteria.and("labTestSampleId").is(new ObjectId(labTestSampleId));
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<LabReports> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabReportsCollection.class, LabReports.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error(e + " Error Getting lab Reports");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting lab reports");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<LabReports> getLabReportsForDoctor(String doctorId,String locationId,String hospitalId,
+			String searchTerm, int page, int size) {
+		List<LabReports> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientName").regex("^" + searchTerm));
+			}
+
+			criteria.and("doctorId").is(new ObjectId(doctorId));
+			criteria.and("locationId").is(new ObjectId(locationId));
+			criteria.and("hospitalId").is(new ObjectId(hospitalId));
+
+			if (size > 0)
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")), Aggregation.skip((page) * size),
+						Aggregation.limit(size));
+			else
+				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
+						Aggregation.sort(new Sort(Sort.Direction.DESC, "updatedTime")));
+			AggregationResults<LabReports> aggregationResults = mongoTemplate.aggregate(aggregation,
+					LabReportsCollection.class, LabReports.class);
+			response = aggregationResults.getMappedResults();
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error(e + " Error Getting lab Reports");
+			throw new BusinessException(ServiceError.Unknown, "Error Getting lab reports");
+		}
+		return response;
+	}
+	
+	@Override
+	@Transactional
+	public List<LabReports> getLabReportsForLab(String doctorId,String locationId,String hospitalId,
+			String searchTerm, int page, int size) {
+		List<LabReports> response = null;
+		try {
+			Aggregation aggregation = null;
+			Criteria criteria = new Criteria();
+			if (!DPDoctorUtils.anyStringEmpty(searchTerm)) {
+				criteria = criteria.orOperator(new Criteria("patientName").regex("^" + searchTerm, "i"),
+						new Criteria("patientName").regex("^" + searchTerm));
+			}
+
+			criteria.and("uploadedByDoctorId").is(new ObjectId(doctorId));
+			criteria.and("uploadedByLocationId").is(new ObjectId(locationId));
+			criteria.and("uploadedByHospitalId").is(new ObjectId(hospitalId));
 
 			if (size > 0)
 				aggregation = Aggregation.newAggregation(Aggregation.match(criteria),
