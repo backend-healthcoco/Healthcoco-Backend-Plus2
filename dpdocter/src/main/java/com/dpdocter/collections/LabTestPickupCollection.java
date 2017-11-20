@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.dpdocter.beans.LabTestSample;
+import com.dpdocter.beans.PatientLabTestSample;
 
 @Document(collection = "lab_test_pickup_cl")
 public class LabTestPickupCollection extends GenericCollection {
@@ -30,7 +31,7 @@ public class LabTestPickupCollection extends GenericCollection {
 	@Field
 	private Long deliveryTime;
 	@Field
-	private List<ObjectId> labTestSampleIds;
+	private PatientLabTestSample patientLabTestSample;
 	@Field
 	private String status;
 	@Field

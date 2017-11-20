@@ -588,7 +588,7 @@ public class ContactsServiceImpl implements ContactsService {
 		}
 		return response;
 	}
-
+ 
 	@Override
 	@Transactional
 	public List<RegisteredPatientDetails> getDoctorContactsHandheld(String doctorId, String locationId,

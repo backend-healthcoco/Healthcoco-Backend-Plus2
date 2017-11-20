@@ -7,16 +7,11 @@ import com.dpdocter.collections.GenericCollection;
 public class LabTestPickup extends GenericCollection {
 
 	private String id;
-	private String patientName;
-	private String mobileNumber;
-	private Integer age;
-	private String gender;
+	private PatientLabTestSample patientLabTestSample;
 	private String daughterLabCRN;
 	private String parentLabCRN;
 	private Long pickupTime;
 	private Long deliveryTime;
-	private List<String> labTestSampleIds;
-	private List<LabTestSample> labTestSamples;
 	private String status;
 	private String doctorId;
 	private String daughterLabLocationId;
@@ -69,12 +64,12 @@ public class LabTestPickup extends GenericCollection {
 		this.deliveryTime = deliveryTime;
 	}
 
-	public List<LabTestSample> getLabTestSamples() {
-		return labTestSamples;
+	public PatientLabTestSample getPatientLabTestSample() {
+		return patientLabTestSample;
 	}
 
-	public void setLabTestSamples(List<LabTestSample> labTestSamples) {
-		this.labTestSamples = labTestSamples;
+	public void setPatientLabTestSample(PatientLabTestSample patientLabTestSample) {
+		this.patientLabTestSample = patientLabTestSample;
 	}
 
 	public String getStatus() {
@@ -165,57 +160,15 @@ public class LabTestPickup extends GenericCollection {
 		this.collectionBoyId = collectionBoyId;
 	}
 
-	public List<String> getLabTestSampleIds() {
-		return labTestSampleIds;
-	}
-
-	public void setLabTestSampleIds(List<String> labTestSampleIds) {
-		this.labTestSampleIds = labTestSampleIds;
-	}
-
-	public String getPatientName() {
-		return patientName;
-	}
-
-	public void setPatientName(String patientName) {
-		this.patientName = patientName;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
 	@Override
 	public String toString() {
-		return "LabTestPickup [id=" + id + ", patientName=" + patientName + ", mobileNumber=" + mobileNumber + ", age="
-				+ age + ", gender=" + gender + ", daughterLabCRN=" + daughterLabCRN + ", parentLabCRN=" + parentLabCRN
-				+ ", pickupTime=" + pickupTime + ", deliveryTime=" + deliveryTime + ", labTestSampleIds="
-				+ labTestSampleIds + ", labTestSamples=" + labTestSamples + ", status=" + status + ", doctorId="
-				+ doctorId + ", daughterLabLocationId=" + daughterLabLocationId + ", parentLabLocationId="
-				+ parentLabLocationId + ", discarded=" + discarded + ", numberOfSamplesRequested="
-				+ numberOfSamplesRequested + ", numberOfSamplesPicked=" + numberOfSamplesPicked + ", requestId="
-				+ requestId + ", isCompleted=" + isCompleted + ", collectionBoyId=" + collectionBoyId
-				+ ", serialNumber=" + serialNumber + "]";
+		return "LabTestPickup [id=" + id + ", patientLabTestSample=" + patientLabTestSample + ", daughterLabCRN="
+				+ daughterLabCRN + ", parentLabCRN=" + parentLabCRN + ", pickupTime=" + pickupTime + ", deliveryTime="
+				+ deliveryTime + ", status=" + status + ", doctorId=" + doctorId + ", daughterLabLocationId="
+				+ daughterLabLocationId + ", parentLabLocationId=" + parentLabLocationId + ", discarded=" + discarded
+				+ ", numberOfSamplesRequested=" + numberOfSamplesRequested + ", numberOfSamplesPicked="
+				+ numberOfSamplesPicked + ", requestId=" + requestId + ", isCompleted=" + isCompleted
+				+ ", collectionBoyId=" + collectionBoyId + ", serialNumber=" + serialNumber + "]";
 	}
 
 }
