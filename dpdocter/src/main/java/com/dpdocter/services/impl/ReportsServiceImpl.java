@@ -272,6 +272,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<IPDReports> response = null;
 		IPDReportsResponse ipdReportsResponse = null;
 		List<IPDReportLookupResponse> ipdReportLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -364,7 +365,13 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(ipdReports);
 				}
 			}
-			int count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				count = ipdReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			} else {
+				count = ipdReportsRepository.getReportsCount(new ObjectId(locationId));
+			}
+
 			ipdReportsResponse = new IPDReportsResponse();
 			ipdReportsResponse.setIpdReports(response);
 			ipdReportsResponse.setCount(count);
@@ -558,6 +565,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<OTReports> response = null;
 		OTReportsResponse otReportsResponse = null;
 		List<OTReportsLookupResponse> otReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -666,7 +674,11 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(otReports);
 				}
 			}
-			int count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId))
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			else
+				count = otReportsRepository.getReportsCount(new ObjectId(locationId));
+
 			otReportsResponse = new OTReportsResponse();
 			otReportsResponse.setOtReports(response);
 			otReportsResponse.setCount(count);
@@ -685,6 +697,7 @@ public class ReportsServiceImpl implements ReportsService {
 		List<DeliveryReports> response = null;
 		DeliveryReportsResponse deliveryReportsResponse = null;
 		List<DeliveryReportsLookupResponse> deliveryReportsLookupResponses = null;
+		int count = 0;
 		try {
 
 			// long updatedTimeStamp = Long.parseLong(updatedTime);
@@ -780,7 +793,11 @@ public class ReportsServiceImpl implements ReportsService {
 					response.add(deliveryReports);
 				}
 			}
-			int count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			if (!DPDoctorUtils.anyStringEmpty(doctorId)) {
+				count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId), new ObjectId(doctorId));
+			} else {
+				count = deliveryReportsRepository.getReportsCount(new ObjectId(locationId));
+			}
 			deliveryReportsResponse = new DeliveryReportsResponse();
 			deliveryReportsResponse.setDeliveryReports(response);
 			deliveryReportsResponse.setCount(count);
