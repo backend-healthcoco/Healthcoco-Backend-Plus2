@@ -107,8 +107,6 @@ public class JasperReportServiceImpl implements JasperReportService {
 		AmazonS3 s3client = new AmazonS3Client(credentials);
 
 		try {
-			MongoDbConnection mongoConnection = new MongoDbConnection(MONGO_HOST_URI, null, null);
-			parameters.put("REPORT_CONNECTION", mongoConnection);
 			parameters.put("SUBREPORT_DIR", JASPER_TEMPLATES_RESOURCE);
 			JasperDesign design = createDesign(parameters, pageSize, contentFontSize, topMargin + 45, bottonMargin,
 					leftMargin + 28, rightMargin + 28, componentType);
