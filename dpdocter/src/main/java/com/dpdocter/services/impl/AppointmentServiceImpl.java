@@ -418,7 +418,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 		}
 		return landmarkLocality;
 	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
@@ -528,30 +527,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 						BeanUtil.map(doctorClinicProfileCollection, doctorClinicProfile);
 						doctorClinicProfile.setLocationId(doctorClinicProfileCollection.getLocationId());
 						doctorClinicProfile.setDoctorId(doctorClinicProfileCollection.getDoctorId());
-						ProjectionOperation projectList = new ProjectionOperation(Fields.from(
-								Fields.field("id", "$_id"), Fields.field("role", "$role.role"),
-								Fields.field("explanation", "$explanation"), Fields.field("locationId", "$locationId"),
+						ProjectionOperation projectList = new ProjectionOperation(Fields.from(Fields.field("id", "$id"),
+								Fields.field("role", "$role.role"), Fields.field("locationId", "$locationId"),
 								Fields.field("hospitalId", "$hospitalId")));
+
 						List<Role> roles = mongoTemplate
 								.aggregate(
 										Aggregation
 												.newAggregation(
-														Aggregation
-																.match(new Criteria("locationId")
-																		.is(doctorClinicProfileCollection
-																				.getLocationId())
-																		.and("hospitalId")
-																		.is(doctorClinicProfileCollection
-																				.getHospitalId())
+														Aggregation.match(
+																new Criteria("locationId")
+																		.is(new ObjectId(doctorClinicProfileCollection
+																				.getLocationId()))
 																		.and("userId")
-																		.is(doctorClinicProfileCollection
-																				.getDoctorId())),
+																		.is(new ObjectId(doctorClinicProfileCollection
+																				.getDoctorId()))),
 														Aggregation.lookup("role_cl", "roleId", "_id", "role"),
 														Aggregation.unwind("role"), projectList),
 										UserRoleCollection.class, Role.class)
 								.getMappedResults();
-
-						doctorClinicProfile.setRoles(roles);
+						if (!roles.isEmpty() && roles != null) {
+							doctorClinicProfile.setRoles(roles);
+						}
 						doctor.setDoctorClinicProfile(doctorClinicProfile);
 
 						if (doctorCollection.getSpecialities() != null

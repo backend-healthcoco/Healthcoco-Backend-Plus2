@@ -246,7 +246,7 @@ public class ContactsApi {
 	    @QueryParam("locationId") String locationId, @QueryParam("hospitalId") String hospitalId,
 	    @DefaultValue("0") @QueryParam("updatedTime") String updatedTime, @DefaultValue("true") @QueryParam("discarded") Boolean discarded) {
 
-	    if (DPDoctorUtils.anyStringEmpty(doctorId)) {
+	    if (DPDoctorUtils.anyStringEmpty(locationId)) {
 	    	    logger.warn("Invalid Input");
 	    	    throw new BusinessException(ServiceError.InvalidInput, "Invalid Input");
 	    }
