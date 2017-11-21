@@ -923,20 +923,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patientCard")
+									new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(new BasicDBObject("$redact",
 									new BasicDBObject("$cond",
 											new BasicDBObject("if",
 													new BasicDBObject("$eq",
-															Arrays.asList("$patientCard.locationId",
+															Arrays.asList("$patient.locationId",
 																	"$locationId"))).append("then", "$$KEEP")
 																			.append("else", "$$PRUNE")))),
 
-							Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-							Aggregation.unwind("patientCard.user")),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")),
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
@@ -2355,20 +2355,20 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
 							Aggregation.unwind("location"),
-							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patient"),
 							new CustomAggregationOperation(new BasicDBObject("$unwind",
-									new BasicDBObject("path", "$patientCard")
+									new BasicDBObject("path", "$patient")
 											.append("preserveNullAndEmptyArrays", true))),
 							new CustomAggregationOperation(new BasicDBObject("$redact",
 									new BasicDBObject("$cond",
 											new BasicDBObject("if",
 													new BasicDBObject("$eq",
-															Arrays.asList("$patientCard.locationId",
+															Arrays.asList("$patient.locationId",
 																	"$locationId"))).append("then", "$$KEEP")
 																			.append("else", "$$PRUNE")))),
 
-							Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
-							Aggregation.unwind("patientCard.user")),
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientUser"),
+							Aggregation.unwind("patientUser")),
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
