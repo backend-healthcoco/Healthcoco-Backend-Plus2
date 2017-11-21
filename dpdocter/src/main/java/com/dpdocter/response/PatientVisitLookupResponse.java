@@ -9,6 +9,7 @@ import com.dpdocter.beans.WorkingHours;
 import com.dpdocter.collections.ClinicalNotesCollection;
 import com.dpdocter.collections.GenericCollection;
 import com.dpdocter.collections.LocationCollection;
+import com.dpdocter.collections.PatientCollection;
 import com.dpdocter.collections.PatientTreatmentCollection;
 import com.dpdocter.collections.PrescriptionCollection;
 import com.dpdocter.collections.RecordsCollection;
@@ -59,10 +60,14 @@ public class PatientVisitLookupResponse extends GenericCollection{
 
 	private Date fromDate;
 
-	UserCollection doctor;
+	private UserCollection doctor;
 	
-	LocationCollection location;
+	private LocationCollection location;
 	
+	private PatientCollection patient;
+	
+	private UserCollection patientUser;
+
 	public ObjectId getId() {
 		return id;
 	}
@@ -247,6 +252,22 @@ public class PatientVisitLookupResponse extends GenericCollection{
 		this.eyePrescriptionId = eyePrescriptionId;
 	}
 
+	public PatientCollection getPatient() {
+		return patient;
+	}
+
+	public void setPatient(PatientCollection patient) {
+		this.patient = patient;
+	}
+
+	public UserCollection getPatientUser() {
+		return patientUser;
+	}
+
+	public void setPatientUser(UserCollection patientUser) {
+		this.patientUser = patientUser;
+	}
+
 	@Override
 	public String toString() {
 		return "PatientVisitLookupResponse [id=" + id + ", uniqueEmrId=" + uniqueEmrId + ", patientId=" + patientId
@@ -256,6 +277,8 @@ public class PatientVisitLookupResponse extends GenericCollection{
 				+ treatmentId + ", recordId=" + recordId + ", eyePrescriptionId=" + eyePrescriptionId
 				+ ", prescriptions=" + prescriptions + ", clinicalNotes=" + clinicalNotes + ", treatments=" + treatments
 				+ ", records=" + records + ", appointmentId=" + appointmentId + ", time=" + time + ", fromDate="
-				+ fromDate + ", doctor=" + doctor + ", location=" + location + "]";
+				+ fromDate + ", doctor=" + doctor + ", location=" + location + ", patient=" + patient + ", patientUser="
+				+ patientUser + "]";
 	}
+
 }

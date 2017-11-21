@@ -922,13 +922,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location")),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$patientCard")
+											.append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patientCard.locationId",
+																	"$locationId"))).append("then", "$$KEEP")
+																			.append("else", "$$PRUNE")))),
+
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+							Aggregation.unwind("patientCard.user")),
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
+
 			if (patientVisitLookupResponse != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
-						patientVisitLookupResponse.getHospitalId());
-				UserCollection user = userRepository.findOne(patientVisitLookupResponse.getPatientId());
+				PatientCollection patient = patientVisitLookupResponse.getPatient();
+				UserCollection user = patientVisitLookupResponse.getPatientUser();
 				user.setFirstName(patient.getLocalPatientName());
 				JasperReportResponse jasperReportResponse = createJasper(patientVisitLookupResponse, patient, user,
 						null, false, false, false, false, false, false, false, false, false, false);
@@ -2341,14 +2354,26 @@ public class PatientVisitServiceImpl implements PatientVisitService {
 					Aggregation.newAggregation(Aggregation.match(new Criteria("id").is(new ObjectId(visitId))),
 							Aggregation.lookup("user_cl", "doctorId", "_id", "doctor"), Aggregation.unwind("doctor"),
 							Aggregation.lookup("location_cl", "locationId", "_id", "location"),
-							Aggregation.unwind("location")),
+							Aggregation.unwind("location"),
+							Aggregation.lookup("patient_cl", "patientId", "userId", "patientCard"),
+							new CustomAggregationOperation(new BasicDBObject("$unwind",
+									new BasicDBObject("path", "$patientCard")
+											.append("preserveNullAndEmptyArrays", true))),
+							new CustomAggregationOperation(new BasicDBObject("$redact",
+									new BasicDBObject("$cond",
+											new BasicDBObject("if",
+													new BasicDBObject("$eq",
+															Arrays.asList("$patientCard.locationId",
+																	"$locationId"))).append("then", "$$KEEP")
+																			.append("else", "$$PRUNE")))),
+
+							Aggregation.lookup("user_cl", "patientId", "_id", "patientCard.user"),
+							Aggregation.unwind("patientCard.user")),
 					PatientVisitCollection.class, PatientVisitLookupResponse.class).getUniqueMappedResult();
 
 			if (patientVisitLookupResponse != null) {
-				PatientCollection patient = patientRepository.findByUserIdLocationIdAndHospitalId(
-						patientVisitLookupResponse.getPatientId(), patientVisitLookupResponse.getLocationId(),
-						patientVisitLookupResponse.getHospitalId());
-				UserCollection user = userRepository.findOne(patientVisitLookupResponse.getPatientId());
+				PatientCollection patient = patientVisitLookupResponse.getPatient();
+				UserCollection user = patientVisitLookupResponse.getPatientUser();
 
 				if (showPH || showPLH || showFH || showDA) {
 					historyCollection = historyRepository.findHistory(patientVisitLookupResponse.getLocationId(),
