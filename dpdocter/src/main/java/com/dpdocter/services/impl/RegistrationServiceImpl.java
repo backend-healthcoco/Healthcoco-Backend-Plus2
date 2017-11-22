@@ -111,7 +111,6 @@ import com.dpdocter.enums.Resource;
 import com.dpdocter.enums.RoleEnum;
 import com.dpdocter.enums.Type;
 import com.dpdocter.enums.UniqueIdInitial;
-import com.dpdocter.enums.UnitType;
 import com.dpdocter.enums.UserState;
 import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;

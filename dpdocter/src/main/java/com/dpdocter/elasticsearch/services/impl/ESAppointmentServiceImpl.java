@@ -6,10 +6,8 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
@@ -91,9 +89,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 	private ESSpecialityRepository esSpecialityRepository;
 
 	@Autowired
-	private ESComplaintsRepository esComplaintsRepository;
-
-	@Autowired
 	private ESDiagnosticTestRepository esDiagnosticTestRepository;
 
 	@Autowired
@@ -147,8 +142,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									.must(QueryBuilders.matchPhrasePrefixQuery("locationName", searchTerm))
 									.must(QueryBuilders.matchPhrasePrefixQuery("isLocationListed", true));
 							esLocationDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
-									.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.DESC))
+									.withQuery(boolQueryBuilder)
+									.withSort(SortBuilders.fieldSort("clinicRankingCount").order(SortOrder.ASC))
+									.withPageable(new PageRequest(0, 50 - response.size()))
 									.build(), ESLocationDocument.class);
 						}
 					}
@@ -238,9 +234,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 							esUserLocaleDocuments = elasticsearchTemplate
 									.queryForList(
 											new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-													.withPageable(new PageRequest(0, 50 - response.size()))
-													.withSort(SortBuilders.fieldSort("localeRankingCount")
-															.order(SortOrder.DESC))
+													.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.ASC))
+															.withPageable(new PageRequest(0, 50 - response.size()))
 													.build(),
 											ESUserLocaleDocument.class);
 						}
@@ -260,8 +255,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										QueryBuilders.matchPhrasePrefixQuery("address.locality", location)))));
 					}
 					esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
-							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
+							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.ASC))
+							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).build(),
 							ESUserLocaleDocument.class);
 				}
 			} else {
@@ -272,8 +267,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										.lon(Double.parseDouble(longitude)).distance("30km"))
 								.must(QueryBuilders.matchPhrasePrefixQuery("isLocaleListed", true));
 						esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
-								.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
+								.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.ASC))
+								.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).build(),
 								ESUserLocaleDocument.class);
 					}
 				} else {
@@ -290,8 +285,8 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 										QueryBuilders.matchPhrasePrefixQuery("address.locality", location)))));
 					}
 					esUserLocaleDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
-							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build(),
+							.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.ASC))
+							.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size())).build(),
 							ESUserLocaleDocument.class);
 				}
 			}
@@ -320,7 +315,7 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				if (DPDoctorUtils.allStringsEmpty(city, location)) {
 					if (DPDoctorUtils.allStringsEmpty(latitude, longitude))
 						esDoctorDocuments = esDoctorRepository.findByFirstName(searchTerm, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 					else {
 						if (latitude != null && longitude != null) {
 							BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder()
@@ -329,8 +324,9 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 									.must(QueryBuilders.matchPhrasePrefixQuery("firstName", searchTerm))
 									.must(QueryBuilders.matchPhrasePrefixQuery("isDoctorListed", true));
 							esDoctorDocuments = elasticsearchTemplate.queryForList(new NativeSearchQueryBuilder()
-									.withQuery(boolQueryBuilder).withPageable(new PageRequest(0, 50 - response.size()))
-									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
+									.withQuery(boolQueryBuilder)
+									.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+									.withPageable(new PageRequest(0, 50 - response.size())).build(),
 									ESDoctorDocument.class);
 						}
 
@@ -338,13 +334,13 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 				} else {
 					if (city != null && location != null)
 						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, searchTerm, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 					else if (city != null)
 						esDoctorDocuments = esDoctorRepository.findByCity(city, searchTerm, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 					else if (location != null)
 						esDoctorDocuments = esDoctorRepository.findByLocation(location, searchTerm, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 				}
 			} else {
 				if (DPDoctorUtils.allStringsEmpty(city, location)) {
@@ -356,21 +352,22 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 
 						esDoctorDocuments = elasticsearchTemplate.queryForList(
 								new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
+								.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
 										.withPageable(new PageRequest(0, 50 - response.size()))
-										.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build(),
+										.build(),
 								ESDoctorDocument.class);
 					}
 
 				} else {
 					if (city != null && location != null)
 						esDoctorDocuments = esDoctorRepository.findByCityLocation(city, location, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 					else if (city != null)
 						esDoctorDocuments = esDoctorRepository.findByCity(city, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 					else if (location != null)
 						esDoctorDocuments = esDoctorRepository.findByLocation(location, true,
-								new PageRequest(0, 50 - response.size(), Direction.DESC, "rankingCount"));
+								new PageRequest(0, 50 - response.size(), Direction.ASC, "rankingCount"));
 				}
 			}
 
@@ -745,18 +742,6 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 												.lt(minTime)))))));
 			}
 
-			// if (minTime != 0 || maxTime != 0) {
-			// if (maxTime == 0) {
-			// maxTime = 1439;
-			// }
-			// boolQueryBuilder.mustNot(QueryBuilders.nestedQuery("workingSchedules",
-			// boolQuery().must(nestedQuery(
-			// "workingSchedules.workingHours",
-			// boolQuery().must(QueryBuilders.orQuery(
-			// QueryBuilders.rangeQuery("workingSchedules.workingHours.toTime").lte(minTime),
-			// QueryBuilders.rangeQuery("workingSchedules.workingHours.fromTime").gte(maxTime)))))));
-			// }
-
 			if (latitude != null && longitude != null)
 				boolQueryBuilder.filter(QueryBuilders.geoDistanceQuery("geoPoint").lat(Double.parseDouble(latitude))
 						.lon(Double.parseDouble(longitude)).distance("30km"));
@@ -764,15 +749,18 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
 						.withSort(SortBuilders.geoDistanceSort("geoPoint")
 								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
 								.unit(DistanceUnit.KILOMETERS))
-						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
+						.withPageable(new PageRequest(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.DESC)).build();
-			System.out.println(searchQuery);
+						.withSort(SortBuilders.fieldSort("rankingCount").order(SortOrder.ASC))
+						.withSort(SortBuilders.geoDistanceSort("geoPoint")
+								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
+								.unit(DistanceUnit.KILOMETERS)).build();
+			
 			esDoctorDocuments = elasticsearchTemplate.queryForList(searchQuery, ESDoctorDocument.class);
 
 			if (esDoctorDocuments != null) {
@@ -1114,14 +1102,14 @@ public class ESAppointmentServiceImpl implements ESAppointmentService {
 			SearchQuery searchQuery = null;
 			if (size > 0)
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withPageable(new PageRequest(page, size))
 						.withSort(SortBuilders.geoDistanceSort("geoPoint")
 								.point(Double.parseDouble(latitude), Double.parseDouble(longitude)).order(SortOrder.ASC)
 								.unit(DistanceUnit.KILOMETERS))
-						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.ASC))
+						.withPageable(new PageRequest(page, size)).build();
 			else
 				searchQuery = new NativeSearchQueryBuilder().withQuery(boolQueryBuilder)
-						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.DESC)).build();
+						.withSort(SortBuilders.fieldSort("localeRankingCount").order(SortOrder.ASC)).build();
 
 			esUserLocaleDocuments = elasticsearchTemplate.queryForList(searchQuery, ESUserLocaleDocument.class);
 

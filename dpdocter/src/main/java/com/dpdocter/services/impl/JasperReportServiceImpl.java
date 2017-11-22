@@ -21,7 +21,6 @@ import com.dpdocter.exceptions.BusinessException;
 import com.dpdocter.exceptions.ServiceError;
 import com.dpdocter.response.JasperReportResponse;
 import com.dpdocter.services.JasperReportService;
-import com.jaspersoft.mongodb.connection.MongoDbConnection;
 
 import common.util.web.DPDoctorUtils;
 import net.sf.jasperreports.components.html.HtmlComponent;
